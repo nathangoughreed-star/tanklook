@@ -84,7 +84,7 @@ body.paused .flow{animation-play-state:paused}
  svg.diag{padding:108px 2px 112px}
 }`;
 
-const frame = ({ title, project, chips, svgs, legend }) => `<!doctype html>
+const frame = ({ title, project, chips, svgs, legend }) => { svgs = svgs.replace(/<g class="loss">[\s\S]*?<\/g>/g, '').replace(/<g class="loss"><path[\s\S]*?<\/g>/g, ''); return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title><style>${CSS}</style></head>
 <body>
@@ -98,22 +98,22 @@ const frame = ({ title, project, chips, svgs, legend }) => `<!doctype html>
    <div class="chips">${chips.map(c => `<span class="chip glass"><b>${esc(c[0])}</b> ${esc(c[1])}${c[2] ? ` <span class="pill ${c[2]}">${esc(c[3])}</span>` : ''}</span>`).join('')}</div></div>
   ${svgs}
   <div class="vbot"><div class="legend glass">${legend}</div>
-   <div class="ctl"><button class="btn glass" id="pz" type="button">❚❚ Pause</button><button class="btn glass" id="ls" type="button">☐ Show losses</button></div></div>
+   <div class="ctl"><button class="btn glass" id="pz" type="button">❚❚ Pause</button></div></div>
  </main>
  <nav class="tabbar" aria-label="Sections">${['Tank', 'Scape', 'Plants', 'Animals', 'More'].map(s => `<div><i></i>${s}</div>`).join('')}</nav>
 </div>
 <script>
-const b=document.body,pz=document.getElementById('pz'),ls=document.getElementById('ls');
-const set=()=>{pz.textContent=b.classList.contains('paused')?'▶ Play':'❚❚ Pause';ls.textContent=(b.classList.contains('losses')?'☑':'☐')+' Show losses';ls.classList.toggle('on',b.classList.contains('losses'))};
+const b=document.body,pz=document.getElementById('pz');
+const set=()=>{pz.textContent=b.classList.contains('paused')?'▶ Play':'❚❚ Pause';};
 if(matchMedia('(prefers-reduced-motion:reduce)').matches)b.classList.add('paused');
-if(location.hash.includes('losses'))b.classList.add('losses');if(location.hash.includes('pause'))b.classList.add('paused');
-pz.onclick=()=>{b.classList.toggle('paused');set()};ls.onclick=()=>{b.classList.toggle('losses');set()};set();
-</script></body></html>`;
+if(location.hash.includes('pause'))b.classList.add('paused');
+pz.onclick=()=>{b.classList.toggle('paused');set()};set();
+</script></body></html>`; };
 
 const lg = (k, label, dots) => `<span><u class="${dots ? 'dot' : ''}" style="border-color:${C[k]}"></u>${label}</span>`;
 const LEG_BASE = lg('clean', 'clean water') + lg('dirty', 'dirty water to the filter');
 const LEG_CO2 = lg('co2', 'CO₂ in, then out through plants + the surface', true);
-const LEG_HEAT = lg('heat', 'heat in at the heater (losses faint, toggle)', true);
+const LEG_HEAT = lg('heat', 'heat in at the heater', true);
 
 // ============ 1. HOB planted 20 long ============
 const hob = `<svg class="diag" viewBox="0 90 860 450" role="img" aria-label="Plumbing: HOB filter on a 20 gallon long">${defs}
@@ -133,8 +133,7 @@ const hob = `<svg class="diag" viewBox="0 90 860 450" role="img" aria-label="Plu
  ${[330, 360, 390].map((x, i) => pipe(`M${x} 316 L${x} 288`, 'heat', { w: 2.5, tw: 6, off: i * 5 })).join('')}
  ${T(300, 352, 'Eheim Jäger 50 W · in tank', 'th')}
  ${T(560, 252, 'outflow lip', 'tc')}${T(640, 404, 'intake', 'td', 'end')}${T(690, 150, 'intake tube', 'td', 'end')}
- ${lossA([200, 270, 340, 410, 480, 550].map(x => `M${x} 218 L${x} 190`))}${lossA([250, 305, 360].map(y => `M118 ${y} L84 ${y}`))}
- <g class="loss">${T(30, 384, 'heat lost through', 't3')}${T(30, 398, 'the glass', 't3')}${T(205, 176, 'heat lost at the surface', 't3')}</g>
+ 
 </svg>`;
 
 // ============ 2a. Planted 40 breeder, side cutaway ============
@@ -158,7 +157,6 @@ const cut = `<svg class="diag" viewBox="0 40 820 520" role="img" aria-label="Plu
  ${T(742, 250, 'return hose', 'tc')}${T(160, 360, 'intake hose', 'td')}${T(566, 150, 'outflow', 'tc')}
  ${upG([300, 380, 460, 540], 216, 196)}${T(420, 232, 'plant uptake', 'tg', 'middle')}
  ${upG([190, 270, 350, 430, 510], 104, 78)}${T(190, 64, 'off-gassing at the surface', 'tg')}
- <g class="loss">${lossA([230, 310, 390, 470, 550].map(x => `M${x} 94 L${x} 66`))}${lossA([140, 190, 240].map(y => `M88 ${y} L56 ${y}`))}${lossA([140, 190, 240].map(y => `M612 ${y} L644 ${y}`))}${T(14, 268, 'heat lost through', 't3')}${T(14, 282, 'the glass', 't3')}${T(540, 64, 'heat lost at the surface', 't3', 'end')}</g>
 </svg>`;
 
 // ============ 2b. flat layout (landscape + portrait) ============
@@ -168,7 +166,6 @@ const flatL = `<svg class="diag hasport" viewBox="0 40 980 545" role="img" aria-
  ${plants([300, 340, 380, 420, 460, 500, 540, 580, 620, 660], 190, [52, 70, 44, 66, 58, 74, 48, 62, 54, 68])}
  ${upG([660, 720, 780, 840], 108, 86)}${T(750, 80, 'off-gassing', 'tg', 'middle')}
  ${upG([360, 460, 560], 160, 140)}${T(460, 130, 'plant uptake', 'tg', 'middle')}
- <g class="loss">${lossA([240, 330, 420, 510, 600, 690, 780].map(x => `M${x} 98 L${x} 66`))}${lossA([110, 150, 190].map(y => `M64 ${y} L34 ${y}`))}${T(930, 52, 'heat lost: surface + glass', 't3', 'end')}</g>
  ${pipe('M120 200 L120 380', 'dirty')}${T(132, 300, 'intake', 'td')}
  ${box(60, 380, 210, 110, 'Fluval 307 canister', ['303 GPH rated · 16 W', 'foam · bio rings · carbon', 'cleans the water'])}
  ${pipe('M270 435 L340 435', 'clean')}
@@ -186,7 +183,6 @@ const flatP = `<svg class="diag port" viewBox="0 0 390 610" role="img" aria-labe
  ${plants([90, 120, 150, 180, 210, 240, 270], 110, [36, 50, 32, 46, 38, 52, 34])}
  ${upG([200, 240, 280], 50, 38)}${T(318, 36, 'off-gassing', 'tg', 'end')}
  ${upG([110, 160], 90, 74)}${T(140, 70, 'plant uptake', 'tg', 'middle')}
- <g class="loss">${lossA([60, 100, 140].map(x => `M${x} 44 L${x} 22`))}${lossA([60, 90].map(y => `M22 ${y} L6 ${y}`))}${T(326, 158, 'heat lost: surface + glass', 't3', 'end')}</g>
  ${pipe('M60 120 L60 206', 'dirty')}${T(70, 170, 'intake', 'td')}
  ${box(14, 206, 230, 84, 'Fluval 307 canister', ['303 GPH rated · 16 W', 'foam · bio rings · carbon'])}
  ${pipe('M129 290 L129 340', 'clean')}
@@ -226,9 +222,8 @@ const reef = `<svg class="diag" viewBox="0 30 840 540" role="img" aria-label="Pl
  ${pipe('M506 482 L545 482 L545 48 L420 48 L420 120', 'clean', { w: 3.5, tw: 11 })}${strand('M545 482 L545 48 L420 48 L420 120', 'heat', 4)}
  <rect x="505" y="296" width="80" height="44" rx="8" fill="#0f2f34" stroke="${C.cold}" stroke-dasharray="5 4"/>${T(545, 314, 'chiller', 't1', 'middle')}${T(545, 329, '(optional)', 't3', 'middle')}${pipe('M585 318 L625 318', 'cold', { w: 2, trk: false, faint: true })}${T(631, 322, 'cooling', 't3')}
  ${box(660, 410, 140, 120, 'ATO reservoir', ['5 gal fresh water', 'level sensor + pump'])}
- ${pipe('M730 410 L730 346 L551 346 A6 6 0 0 0 539 346 L490 346 L490 402', 'clean', { w: 2.5, tw: 7 })}${T(620, 338, 'top-off water (evaporation)', 't2', 'middle')}
+ ${pipe('M730 410 L730 346 L551 346 A6 6 0 0 0 539 346 L490 346 L490 402', 'clean', { w: 2.5, tw: 7 })}${T(700, 338, 'top-off water', 't2', 'middle')}
  ${T(560, 40, 'return line (clean, warm)', 'tc', 'middle')}
- <g class="loss">${lossA([110, 190, 270, 350, 410].map(x => `M${x} 88 L${x} 62`))}${lossA([110, 160, 210].map(y => `M56 ${y} L28 ${y}`))}${T(240, 56, 'surface + evaporation', 't3', 'middle')}${T(10, 250, 'through the glass', 't3')}</g>
 </svg>`;
 
 const mk = (file, o) => writeFileSync(join(here, file), frame(o));
@@ -246,6 +241,6 @@ mk('02b-canister-40-flat.html', {
   svgs: flatL + flatP, legend: LEG_BASE + LEG_CO2 + LEG_HEAT });
 mk('03-reef-75.html', {
   title: 'PV1 mockup 3: reef 75 with overflow, sump, return pump, skimmer, heater, ATO', project: 'Reef 75',
-  chips: [['Return vs overflow', '800 GPH vs 700 GPH rated', 'warn', 'return > overflow'], ['Turnover', '800 ÷ 95 gal system = 8.4×/hr', 'ok', 'reef 5–10×'], ['Heater', '200 W ≈ 2.1 W/gal', 'ok', 'ok']],
+  chips: [['Turnover', '800 ÷ 95 gal system = 8.4×/hr', 'ok', 'reef 5–10×'], ['Heater', '200 W ≈ 2.1 W/gal', 'ok', 'ok']],
   svgs: reef, legend: LEG_BASE + lg('waste', 'skimmate out') + LEG_HEAT + lg('cold', 'cooling (optional chiller)') });
 console.log('built');

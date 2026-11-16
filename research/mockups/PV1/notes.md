@@ -1,85 +1,46 @@
 # PV1: Plumbing view mockups (R100)
 
-Open the `.html` files in a browser. All are self-contained (inline SVG, CSS, a few lines of JS). Mockups only, nothing in `src/` changes. `build.mjs` generates the HTML, `shoot.sh` makes the PNGs (headless Chrome).
+Open the `.html` files in a browser (self-contained). Mockups only; nothing in `src/` changes. `build.mjs` generates the HTML, `shoot.sh` makes the PNGs (headless Chrome).
 
-## Files and shots (`research/screens/PV1/`)
-| Mockup | HTML | 1280 shot | 1280 + losses | 390 shot |
-|---|---|---|---|---|
-| 1 HOB planted 20 long | `01-hob-20-long.html` | `01-hob-20-long-1280.png` | `...-1280-losses.png` | none (landscape only) |
-| 2a Canister 40, side cutaway | `02a-canister-40-cutaway.html` | `02a-canister-40-cutaway-1280.png` | `...-1280-losses.png` | `...-390.png`, `...-390-losses.png` |
-| 2b Canister 40, flat | `02b-canister-40-flat.html` | `02b-canister-40-flat-1280.png` | `...-1280-losses.png` | `...-390.png`, `...-390-losses.png` (own portrait drawing) |
-| 3 Reef 75 | `03-reef-75.html` | `03-reef-75-1280.png` | `...-1280-losses.png` | none |
+## Nathan's decisions (2026-11-16)
+1. **Side cutaway** is the layout for the build (not flat). Flat (`02b`) stays here only as a reference.
+2. **No heat-loss arrows, no toggle.** Removed from every mockup. Heat is shown only as heat entering at the heater.
+3. **Where the Plumbing switch lives** ("rec" = take my recommendation): keep the Tank | Plumbing segmented control at the top left of the viewer, as drawn. It is where the eye already is, it is one click, and it doesn't use a rail slot or bury it in the View menu.
+4. **Chiller:** fine, keep it as the optional cyan box.
+5. **Flow numbers:** just "rated". No real-flow estimate.
+6. **Return-vs-overflow badge:** not needed. Dropped from mockup 3; the overflow box still states its rated GPH.
 
-Each page shows the app frame (header, rail, a **Tank | Plumbing** switch at the top left of the viewer, Pause and "Show losses" at the bottom right). The page respects `prefers-reduced-motion` (starts paused). `#losses` or `#pause` in the URL pre-sets those two.
+Still open for the build, not asked: the cutaway is unreadable at 390 px (see the phone pair). Phone needs its own answer: the flat portrait drawing (`02b-canister-40-flat-390.png`) is available if wanted.
 
 ## Pictures
-
 **1 HOB planted 20 long**
 
 ![HOB 20 long](../../screens/PV1/01-hob-20-long-1280.png)
 
-**2a Canister 40, side cutaway**
+**2a Canister 40, side cutaway (the pick)**
 
-![canister cutaway](../../screens/PV1/02a-canister-40-cutaway-1280.png)
-
-![cutaway with losses](../../screens/PV1/02a-canister-40-cutaway-1280-losses.png)
-
-**2b Canister 40, flat**
-
-![canister flat](../../screens/PV1/02b-canister-40-flat-1280.png)
-
-![flat with losses](../../screens/PV1/02b-canister-40-flat-1280-losses.png)
-
-**Phone, 390 px: flat (left) vs cutaway (right)**
-
-![flat phone](../../screens/PV1/02b-canister-40-flat-390.png) ![cutaway phone](../../screens/PV1/02a-canister-40-cutaway-390.png)
+![cutaway](../../screens/PV1/02a-canister-40-cutaway-1280.png)
 
 **3 Reef 75**
 
 ![reef 75](../../screens/PV1/03-reef-75-1280.png)
 
-![reef with losses](../../screens/PV1/03-reef-75-1280-losses.png)
+**Phone, 390 px: cutaway (left) vs flat (right)**
 
-## Layout pick for mockup 2: **flat (2b)**
-- It is the only one that works at 390 px. The cutaway shrinks to unreadable text on a phone (see `02a-...-390.png`); the flat one has a real portrait layout where the same loop reads top to bottom.
-- It keeps the part Nathan finds cool in one glance: canister, then CO2 joins, then heat joins, then clean water goes back to the tank. Each box has room for its label and GPH / watts.
-- The cutaway is prettier and tells "the canister lives in the stand", and it matches the 3D view more. **Open idea:** flat as the default, cutaway as a desktop-only "Realistic" toggle. That is double the drawing work, so build flat first.
-- Mockup 1 and 3 use the cutaway because a HOB on the rim and a sump with sections are physical places; a flat sump with sections would also work if we only build flat.
+![cutaway phone](../../screens/PV1/02a-canister-40-cutaway-390.png) ![flat phone](../../screens/PV1/02b-canister-40-flat-390.png)
+
+**2b Flat (reference)**
+
+![flat](../../screens/PV1/02b-canister-40-flat-1280.png)
 
 ## Legend
-- Blue dashed, bright = clean water. Duller grey-blue = dirty water on its way to the filter (and the tank circulation arrow fades from bright to dull).
-- Green dots = CO2. Joins the water at the reactor, rides the return as dots. Out again through two small faint green arrows: plant uptake (down into the plants) and off-gassing (up at the surface).
-- Red dots = heat. Joins at the heater, rides the return. "Show losses" adds faint red arrows out through the surface and the glass.
+- Blue dashed, bright = clean water. Duller grey-blue = dirty water going to the filter.
+- Green dots = CO2: joins at the reactor, rides the return; out through plant uptake (down into plants) and off-gassing (up at the surface).
+- Red dots = heat: joins at the heater, rides the return.
 - Amber-brown = skimmate. Cyan = cooling (optional chiller). Dashed outline = optional gear.
-- Chips at the top give the plain sums: turnover = rated GPH / net gallons, heater W/gal, return GPH vs the overflow's rating (green / amber pill). Gear labels use real catalogue names and numbers (AquaClear 50 200 GPH 9 W, Fluval 307 303 GPH 16 W, Eheim Jäger, Sicce Voyager 2 800 GPH). Net gallons (18 / 38 / 95 system) are my estimates; the build would use the tank model.
+- Chips at the top: turnover (rated GPH / net gal), heater W/gal. Gear uses real catalogue names and numbers (AquaClear 50, Fluval 307, Eheim Jäger, Sicce Voyager 2). Net gallons are my estimates; the build would use the tank model.
+- Pause button bottom right; `prefers-reduced-motion` starts paused.
 
-## Notes on what I invented
-- The in-line CO2 reactor and in-line heater are generic boxes (no catalogue entry yet; R99 / IL1 builds the real gear). Heater 200 W and the 5 lb CO2 cylinder are placeholders.
-- Mockup 3's return (800 GPH) is deliberately over the overflow's 700 GPH rating so the amber badge shows. A passing case would be green.
-- The real app has no tab strip over the viewer today (the header has a View menu). I drew a Tank | Plumbing segmented control in the app's `.seg` style at the viewer's top left; where it really goes is a question below.
-
-## Open questions for Nathan
-1. **Flat or cutaway for the build?** (pictures: `02b-canister-40-flat-1280.png` vs `02a-canister-40-cutaway-1280.png`, and the phone pair `02b-...-390.png` vs `02a-...-390.png`.) My pick is flat first.
-
-   ![flat](../../screens/PV1/02b-canister-40-flat-1280.png) ![cutaway](../../screens/PV1/02a-canister-40-cutaway-1280.png)
-
-2. **Heat losses: keep the toggle or drop it?** (`02a-canister-40-cutaway-1280-losses.png` vs `02a-canister-40-cutaway-1280.png`.) They look busy when on; I left them off by default.
-
-   ![losses on](../../screens/PV1/02a-canister-40-cutaway-1280-losses.png)
-
-3. **Where does the Plumbing switch live?** Over the viewer top left as drawn, as an item inside the View menu, or as a rail section. (`03-reef-75-1280.png`)
-
-   ![switch at top left](../../screens/PV1/03-reef-75-1280.png)
-
-4. **Cooling:** the chiller is drawn as optional cyan in mockup 3. Is that wanted, or heat only? (`03-reef-75-1280.png`)
-
-   ![chiller](../../screens/PV1/03-reef-75-1280.png)
-
-5. **Real flow vs rated GPH:** a canister delivers well under its rating once media loads and hoses add head. Show only "rated" (as drawn) or also an "about 60 % real" estimate? (chips in `02a-...-1280.png`)
-
-   ![chips](../../screens/PV1/02a-canister-40-cutaway-1280.png)
-
-6. **Reef amber badge:** is "return GPH over the overflow's rating" the right warning to show, or should the badge speak in turnover terms only? (`03-reef-75-1280.png`)
-
-   ![amber badge](../../screens/PV1/03-reef-75-1280.png)
-
+## What I invented
+- In-line CO2 reactor and in-line heater are generic boxes (200 W heater, 5 lb cylinder) until R99 / IL1 adds real gear.
+- The app has no tab strip over the viewer today (the header has a View menu); the Tank | Plumbing control is a proposal.

@@ -83,18 +83,17 @@ body.paused .flow{animation-play-state:paused}
  <g class=""><path d="M330 316 L330 288" class="trk" stroke="#ff5b52" stroke-width="6"/><path d="M330 316 L330 288" class="flow" stroke="#ff5b52" stroke-width="2.5" style="--o:0px" marker-end="url(#a-heat)"/></g><g class=""><path d="M360 316 L360 288" class="trk" stroke="#ff5b52" stroke-width="6"/><path d="M360 316 L360 288" class="flow" stroke="#ff5b52" stroke-width="2.5" style="--o:5px" marker-end="url(#a-heat)"/></g><g class=""><path d="M390 316 L390 288" class="trk" stroke="#ff5b52" stroke-width="6"/><path d="M390 316 L390 288" class="flow" stroke="#ff5b52" stroke-width="2.5" style="--o:10px" marker-end="url(#a-heat)"/></g>
  <text x="300" y="352" class="th" text-anchor="start">Eheim Jäger 50 W · in tank</text>
  <text x="560" y="252" class="tc" text-anchor="start">outflow lip</text><text x="640" y="404" class="td" text-anchor="end">intake</text><text x="690" y="150" class="td" text-anchor="end">intake tube</text>
- <g class="loss faint"><path d="M200 218 L200 190" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M270 218 L270 190" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M340 218 L340 190" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M410 218 L410 190" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M480 218 L480 190" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M550 218 L550 190" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M118 250 L84 250" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M118 305 L84 305" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g><g class="loss faint"><path d="M118 360 L84 360" class="flow" stroke="#ff5b52" stroke-width="2" style="--o:0px" marker-end="url(#a-heat)"/></g>
- <g class="loss"><text x="30" y="384" class="t3" text-anchor="start">heat lost through</text><text x="30" y="398" class="t3" text-anchor="start">the glass</text><text x="205" y="176" class="t3" text-anchor="start">heat lost at the surface</text></g>
+ 
 </svg>
-  <div class="vbot"><div class="legend glass"><span><u class="" style="border-color:#47a3ff"></u>clean water</span><span><u class="" style="border-color:#6f88a8"></u>dirty water to the filter</span><span><u class="dot" style="border-color:#ff5b52"></u>heat in at the heater (losses faint, toggle)</span></div>
-   <div class="ctl"><button class="btn glass" id="pz" type="button">❚❚ Pause</button><button class="btn glass" id="ls" type="button">☐ Show losses</button></div></div>
+  <div class="vbot"><div class="legend glass"><span><u class="" style="border-color:#47a3ff"></u>clean water</span><span><u class="" style="border-color:#6f88a8"></u>dirty water to the filter</span><span><u class="dot" style="border-color:#ff5b52"></u>heat in at the heater</span></div>
+   <div class="ctl"><button class="btn glass" id="pz" type="button">❚❚ Pause</button></div></div>
  </main>
  <nav class="tabbar" aria-label="Sections"><div><i></i>Tank</div><div><i></i>Scape</div><div><i></i>Plants</div><div><i></i>Animals</div><div><i></i>More</div></nav>
 </div>
 <script>
-const b=document.body,pz=document.getElementById('pz'),ls=document.getElementById('ls');
-const set=()=>{pz.textContent=b.classList.contains('paused')?'▶ Play':'❚❚ Pause';ls.textContent=(b.classList.contains('losses')?'☑':'☐')+' Show losses';ls.classList.toggle('on',b.classList.contains('losses'))};
+const b=document.body,pz=document.getElementById('pz');
+const set=()=>{pz.textContent=b.classList.contains('paused')?'▶ Play':'❚❚ Pause';};
 if(matchMedia('(prefers-reduced-motion:reduce)').matches)b.classList.add('paused');
-if(location.hash.includes('losses'))b.classList.add('losses');if(location.hash.includes('pause'))b.classList.add('paused');
-pz.onclick=()=>{b.classList.toggle('paused');set()};ls.onclick=()=>{b.classList.toggle('losses');set()};set();
+if(location.hash.includes('pause'))b.classList.add('paused');
+pz.onclick=()=>{b.classList.toggle('paused');set()};set();
 </script></body></html>

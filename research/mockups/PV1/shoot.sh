@@ -7,10 +7,9 @@ shot() { # name file W H hash
 }
 for f in 01-hob-20-long 02a-canister-40-cutaway 02b-canister-40-flat 03-reef-75; do
   shot "$f-1280" $f.html 1280 800 ""
-  shot "$f-1280-losses" $f.html 1280 800 "losses"
 done
 for f in 02a-canister-40-cutaway 02b-canister-40-flat; do
-  for h in "" "losses"; do
+  for h in ""; do
     n="$f-390"; [ -n "$h" ] && n="$f-390-losses"
     W="$(cygpath -m "$R")/research/mockups/PV1/_phone.html"; W="$(echo "$W" | sed "s/ /%20/g")"
     printf '<body style="margin:0;background:#000"><iframe src="%s#%s" width="390" height="844" style="border:0"></iframe>' "$f.html" "$h" > "$R/research/mockups/PV1/_phone.html"
