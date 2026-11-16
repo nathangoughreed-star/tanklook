@@ -121,6 +121,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R103 | 11-16 | Glass thickness list offers both metric (4-19 mm) and inch stock sizes in either unit setting; defaults / solver answers land on a stocked size in the user's unit (Nathan: 'I in the US can go to home depot and get 4mm glass'). Also W13 answered: yes to the rec | GS2 | - | - | - | sent to GS2 11-16 |
 | R104 | 11-16 | Fish info screen shows where each fish is from (native range); continent is a selectable filter in the animal picker | OR1 | - | - | - | lane started by C26 11-16 |
 | R105 | 11-16 | Better fish animation and behaviour: kuhli loaches dig / burrow in the substrate; fish that hold still in place and fan their fins | FB1 | - | - | - | lane started by C26 11-16 |
+| R106 | 11-16 | Small darting fish (danios, neons, rasboras, tetras and similar) swim pulse-and-coast: a quick tail burst, a glide that slows, small heading changes at each pulse; not a constant forward speed | FB1 | - | - | - | sent to FB1 as Part 2 11-16 |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
