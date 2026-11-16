@@ -1,0 +1,461 @@
+[
+ {
+  "id": "hydor-eth-200-5-8",
+  "brand": "Hydor",
+  "model": "ETH 200 In-Line Heater (5/8 in hose)",
+  "kind": "heater",
+  "hoseIdIn": [
+   0.625
+  ],
+  "priceUsd": 59.99,
+  "url": "https://aquariadise.com/inline-aquarium-heater/",
+  "asOf": "2026-11-16",
+  "bodyMm": {
+   "d": 70,
+   "l": 310
+  },
+  "colors": {
+   "body": {
+    "hex": "#2b2d30"
+   },
+   "cap": {
+    "hex": "#1c1d1f"
+   }
+  },
+  "colorsEst": [
+   "body",
+   "cap"
+  ],
+  "colorsNote": "No product photo was read: colours are estimated from the maker's / retailer's description (metal = silver, plastic = dark grey), so every colour is marked estimated.",
+  "est": [
+   "bodyMm",
+   "flowLossPct",
+   "minFlowGph",
+   "priceUsd"
+  ],
+  "watts": 200,
+  "minF": 68,
+  "maxF": 93,
+  "galMin": 26,
+  "galMax": 53,
+  "priceNote": "Amazon price quoted without a date on aquariadise.com; treated as an estimate.",
+  "flowLossPct": 3,
+  "minFlowGph": 20,
+  "mistVisible": false,
+  "visibleInTank": false
+ },
+ {
+  "id": "hydor-eth-200-1-2",
+  "brand": "Hydor",
+  "model": "ETH 200 In-Line Heater (1/2 in hose)",
+  "kind": "heater",
+  "hoseIdIn": [
+   0.5
+  ],
+  "priceUsd": 59.99,
+  "url": "https://aquariadise.com/inline-aquarium-heater/",
+  "asOf": "2026-11-16",
+  "bodyMm": {
+   "d": 70,
+   "l": 310
+  },
+  "colors": {
+   "body": {
+    "hex": "#2b2d30"
+   },
+   "cap": {
+    "hex": "#1c1d1f"
+   }
+  },
+  "colorsEst": [
+   "body",
+   "cap"
+  ],
+  "colorsNote": "No product photo was read: colours are estimated from the maker's / retailer's description (metal = silver, plastic = dark grey), so every colour is marked estimated.",
+  "est": [
+   "bodyMm",
+   "flowLossPct",
+   "minFlowGph",
+   "priceUsd"
+  ],
+  "watts": 200,
+  "minF": 68,
+  "maxF": 93,
+  "galMin": 26,
+  "galMax": 53,
+  "priceNote": "Same price as the 5/8 in version, estimate.",
+  "flowLossPct": 3,
+  "minFlowGph": 20,
+  "mistVisible": false,
+  "visibleInTank": false
+ },
+ {
+  "id": "hydor-eth-300-5-8",
+  "brand": "Hydor",
+  "model": "ETH 300 In-Line Heater (5/8 in hose)",
+  "kind": "heater",
+  "hoseIdIn": [
+   0.625
+  ],
+  "priceUsd": 103.96,
+  "url": "https://petphenom.com/products/hydor-eth-external-thermal-heater-in-line-eth-300-300-watts-5-8-internal-diameter-for-53-80-gallon-tanks",
+  "asOf": "2026-11-16",
+  "bodyMm": {
+   "d": 70,
+   "l": 330
+  },
+  "colors": {
+   "body": {
+    "hex": "#2b2d30"
+   },
+   "cap": {
+    "hex": "#1c1d1f"
+   }
+  },
+  "colorsEst": [
+   "body",
+   "cap"
+  ],
+  "colorsNote": "No product photo was read: colours are estimated from the maker's / retailer's description (metal = silver, plastic = dark grey), so every colour is marked estimated.",
+  "est": [
+   "bodyMm",
+   "flowLossPct",
+   "maxF",
+   "minF",
+   "minFlowGph"
+  ],
+  "watts": 300,
+  "minF": 68,
+  "maxF": 93,
+  "galMin": 53,
+  "galMax": 80,
+  "flowLossPct": 3,
+  "minFlowGph": 20,
+  "mistVisible": false,
+  "visibleInTank": false
+ },
+ {
+  "id": "co2art-inline-1-2",
+  "brand": "CO2Art",
+  "model": "In-Line CO2 Diffuser (12/16 mm, 1/2 in hose)",
+  "kind": "diffuser",
+  "hoseIdIn": [
+   0.5
+  ],
+  "priceUsd": 41.99,
+  "url": "https://www.bulkreefsupply.com/inline-co2-diffuser-co2art.html",
+  "asOf": "2026-11-16",
+  "bodyMm": {
+   "d": 40,
+   "l": 110
+  },
+  "colors": {
+   "body": {
+    "hex": "#b9bcc0"
+   },
+   "barb": {
+    "hex": "#b9bcc0"
+   }
+  },
+  "colorsEst": [
+   "body",
+   "barb"
+  ],
+  "colorsNote": "No product photo was read: colours are estimated from the maker's / retailer's description (metal = silver, plastic = dark grey), so every colour is marked estimated.",
+  "est": [
+   "bodyMm",
+   "flowLossPct",
+   "minFlowGph"
+  ],
+  "diffuserNote": "Metal body, replaceable ceramic membrane; a fine mist leaves the outflow.",
+  "flowLossPct": 8,
+  "minFlowGph": 80,
+  "mistVisible": true,
+  "visibleInTank": true
+ },
+ {
+  "id": "co2art-inline-5-8",
+  "brand": "CO2Art",
+  "model": "In-Line CO2 Diffuser (16/22 mm, 5/8 in hose)",
+  "kind": "diffuser",
+  "hoseIdIn": [
+   0.625
+  ],
+  "priceUsd": 43.99,
+  "url": "https://www.bulkreefsupply.com/inline-co2-diffuser-co2art.html",
+  "asOf": "2026-11-16",
+  "bodyMm": {
+   "d": 45,
+   "l": 120
+  },
+  "colors": {
+   "body": {
+    "hex": "#b9bcc0"
+   },
+   "barb": {
+    "hex": "#b9bcc0"
+   }
+  },
+  "colorsEst": [
+   "body",
+   "barb"
+  ],
+  "colorsNote": "No product photo was read: colours are estimated from the maker's / retailer's description (metal = silver, plastic = dark grey), so every colour is marked estimated.",
+  "est": [
+   "bodyMm",
+   "flowLossPct",
+   "minFlowGph"
+  ],
+  "diffuserNote": "Metal body, replaceable ceramic membrane; a fine mist leaves the outflow.",
+  "flowLossPct": 8,
+  "minFlowGph": 80,
+  "mistVisible": true,
+  "visibleInTank": true
+ },
+ {
+  "id": "upaqua-inline-1-2",
+  "brand": "Up Aqua",
+  "model": "Inline CO2 Atomizer (12/16 mm, 1/2 in hose)",
+  "kind": "diffuser",
+  "hoseIdIn": [
+   0.5
+  ],
+  "priceUsd": 43.04,
+  "url": "https://sevenports.com/?p=57183",
+  "asOf": "2026-11-16",
+  "bodyMm": {
+   "d": 40,
+   "l": 100
+  },
+  "colors": {
+   "body": {
+    "hex": "#e6e8ea"
+   },
+   "barb": {
+    "hex": "#2a2d30"
+   }
+  },
+  "colorsEst": [
+   "body",
+   "barb"
+  ],
+  "colorsNote": "No product photo was read: colours are estimated from the maker's / retailer's description (metal = silver, plastic = dark grey), so every colour is marked estimated.",
+  "est": [
+   "bodyMm",
+   "flowLossPct",
+   "minFlowGph",
+   "priceUsd"
+  ],
+  "priceNote": "Sevenports list $43.04 (marked down to $28.69 the day read); currency not stated on the page, so an estimate.",
+  "diffuserNote": "ABS plastic with a ceramic disc.",
+  "flowLossPct": 8,
+  "minFlowGph": 80,
+  "mistVisible": true,
+  "visibleInTank": true
+ },
+ {
+  "id": "upaqua-inline-5-8",
+  "brand": "Up Aqua",
+  "model": "Inline CO2 Atomizer (16/22 mm, 5/8 in hose)",
+  "kind": "diffuser",
+  "hoseIdIn": [
+   0.625
+  ],
+  "priceUsd": 43.04,
+  "url": "https://sevenports.com/?p=283922",
+  "asOf": "2026-11-16",
+  "bodyMm": {
+   "d": 45,
+   "l": 110
+  },
+  "colors": {
+   "body": {
+    "hex": "#e6e8ea"
+   },
+   "barb": {
+    "hex": "#2a2d30"
+   }
+  },
+  "colorsEst": [
+   "body",
+   "barb"
+  ],
+  "colorsNote": "No product photo was read: colours are estimated from the maker's / retailer's description (metal = silver, plastic = dark grey), so every colour is marked estimated.",
+  "est": [
+   "bodyMm",
+   "flowLossPct",
+   "minFlowGph",
+   "priceUsd"
+  ],
+  "priceNote": "Sevenports list $43.04; currency not stated, so an estimate.",
+  "diffuserNote": "ABS plastic with a ceramic disc.",
+  "flowLossPct": 8,
+  "minFlowGph": 80,
+  "mistVisible": true,
+  "visibleInTank": true
+ },
+ {
+  "id": "chihiros-external-diffuser-m",
+  "brand": "Chihiros",
+  "model": "External CO2 Diffuser M (12/16 mm, 1/2 in hose)",
+  "kind": "diffuser",
+  "hoseIdIn": [
+   0.5
+  ],
+  "priceUsd": 43.0,
+  "url": "https://www.aquaristiconline.com.au/products/chihiros-external-co2-diffuser-m-1216mm",
+  "asOf": "2026-11-16",
+  "bodyMm": {
+   "d": 38,
+   "l": 105
+  },
+  "colors": {
+   "body": {
+    "hex": "#17181a"
+   },
+   "barb": {
+    "hex": "#17181a"
+   }
+  },
+  "colorsEst": [
+   "body",
+   "barb"
+  ],
+  "colorsNote": "No product photo was read: colours are estimated from the maker's / retailer's description (metal = silver, plastic = dark grey), so every colour is marked estimated.",
+  "est": [
+   "bodyMm",
+   "flowLossPct",
+   "minFlowGph",
+   "priceUsd"
+  ],
+  "priceNote": "Listed in Australian dollars (aquaristiconline.com.au); no US listing read, so the figure is an estimate.",
+  "diffuserNote": "Aluminium body.",
+  "flowLossPct": 8,
+  "minFlowGph": 80,
+  "mistVisible": true,
+  "visibleInTank": true
+ },
+ {
+  "id": "chihiros-external-diffuser-l",
+  "brand": "Chihiros",
+  "model": "External CO2 Diffuser L (16/22 mm, 5/8 in hose)",
+  "kind": "diffuser",
+  "hoseIdIn": [
+   0.625
+  ],
+  "priceUsd": 56.0,
+  "url": "https://www.aquaristiconline.com.au/collections/all/products/chihiros-external-co2-diffuser-l-1622mm",
+  "asOf": "2026-11-16",
+  "bodyMm": {
+   "d": 42,
+   "l": 115
+  },
+  "colors": {
+   "body": {
+    "hex": "#17181a"
+   },
+   "barb": {
+    "hex": "#17181a"
+   }
+  },
+  "colorsEst": [
+   "body",
+   "barb"
+  ],
+  "colorsNote": "No product photo was read: colours are estimated from the maker's / retailer's description (metal = silver, plastic = dark grey), so every colour is marked estimated.",
+  "est": [
+   "bodyMm",
+   "flowLossPct",
+   "minFlowGph",
+   "priceUsd"
+  ],
+  "priceNote": "Listed in Australian dollars; estimate.",
+  "diffuserNote": "Aluminium body.",
+  "flowLossPct": 8,
+  "minFlowGph": 80,
+  "mistVisible": true,
+  "visibleInTank": true
+ },
+ {
+  "id": "aquatop-inline-co2-diffuser",
+  "brand": "Aquatop",
+  "model": "In-Line CO2 Diffuser for Canister Filters (1/2, 5/8, 3/4 in adapters)",
+  "kind": "diffuser",
+  "hoseIdIn": [
+   0.5,
+   0.625,
+   0.75
+  ],
+  "priceUsd": 29.99,
+  "url": "https://fishtanksdirect.com/aquatop-inline-co2-diffuser-for-canister-filters",
+  "asOf": "2026-11-16",
+  "bodyMm": {
+   "d": 38,
+   "l": 90
+  },
+  "colors": {
+   "body": {
+    "hex": "#e6e8ea"
+   },
+   "barb": {
+    "hex": "#2a2d30"
+   }
+  },
+  "colorsEst": [
+   "body",
+   "barb"
+  ],
+  "colorsNote": "No product photo was read: colours are estimated from the maker's / retailer's description (metal = silver, plastic = dark grey), so every colour is marked estimated.",
+  "est": [
+   "bodyMm",
+   "flowLossPct",
+   "minFlowGph"
+  ],
+  "diffuserNote": "Ceramic atomizer; ships with adapters for 1/2, 5/8 and 3/4 in hose.",
+  "flowLossPct": 8,
+  "minFlowGph": 80,
+  "mistVisible": true,
+  "visibleInTank": true
+ },
+ {
+  "id": "bioscape-inline-reactor-5-8",
+  "brand": "Bioscape",
+  "model": "In-Line CO2 Reactor (16 mm, 5/8 in hose)",
+  "kind": "reactor",
+  "hoseIdIn": [
+   0.625
+  ],
+  "priceUsd": 53.0,
+  "url": "https://www.aquaristiconline.com.au/collections/all/products/bioscape-in-line-co2-reactor-16mm",
+  "asOf": "2026-11-16",
+  "bodyMm": {
+   "d": 60,
+   "l": 200
+  },
+  "colors": {
+   "body": {
+    "hex": "#b9bcc0"
+   },
+   "barb": {
+    "hex": "#b9bcc0"
+   }
+  },
+  "colorsEst": [
+   "body",
+   "barb"
+  ],
+  "colorsNote": "No product photo was read: colours are estimated from the maker's / retailer's description (metal = silver, plastic = dark grey), so every colour is marked estimated.",
+  "est": [
+   "bodyMm",
+   "flowLossPct",
+   "minFlowGph",
+   "priceUsd"
+  ],
+  "priceNote": "Listed in Australian dollars; no US listing read, estimate.",
+  "diffuserNote": "Aluminium reactor chamber: the gas dissolves inside and no bubbles leave the outflow.",
+  "flowLossPct": 10,
+  "minFlowGph": 100,
+  "mistVisible": false,
+  "visibleInTank": false
+ }
+]

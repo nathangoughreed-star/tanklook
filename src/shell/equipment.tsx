@@ -6,7 +6,7 @@ import type { ComponentChildren } from 'preact';
 import type { Store } from '../scene/store';
 import { GENERIC } from '../scene/gearOwn';
 import {
-  categoryGroups, groupOfKind, buyTree, categoryView, presetLadder, applyPresetEdit, useItem, setOwned, setLock, ownSum, addOwnAny, specOf, isCat, type CatId, type GearRow,
+  categoryGroups, groupOfKind, buyTree, returnView, addInline, removeInline, categoryView, presetLadder, applyPresetEdit, useItem, setOwned, setLock, ownSum, addOwnAny, specOf, isCat, type CatId, type GearRow,
 } from './logic/equipment';
 import { LightingGroup, LightLayoutGroup } from './lighting';
 import { artOf } from './logic/gearArt';
@@ -157,6 +157,41 @@ function PlacementGroup({ store }: { store: Store }) {
   );
 }
 
+/** The canister's return hose (lane IL1): what is on it in flow order, the flow it takes, and what else fits the hose. */
+function ReturnGroup({ store }: { store: Store }) {
+  const [open, setOpen] = useState(true), v = returnView(store.tank);
+  if (!v) return null;
+  return (
+    <Group title="On the return hose" sum={v.items.length ? `${v.items.length} in line · ${v.delivered}` : `${v.hose} hose · nothing in line`} open={open} onToggle={() => setOpen(!open)}>
+      <div class="hint">In flow order on the canister's {v.hose} return hose, outside the tank: an in-line heater counts as the heater, an in-line CO2 diffuser or reactor as the CO2 diffuser (the kit's regulator and cylinder stay).</div>
+      {v.items.map(i => (
+        <div class="erow inuse" data-inline={i.id}>
+          <span class="thumb"><Icon name="gear" /></span>
+          <span class="eb">
+            <span class="t" title={i.name}>{i.name}</span>
+            <span class="eline"><span class="efacts"><span class="m">{i.kind} · {i.flow} · {i.shows}</span><span class="pills"><span class="m">{i.price}</span>{i.warn ? <Pill tone="warn">{i.warn}</Pill> : null}</span></span>
+              <span class="acts"><button type="button" class="btn sm ghost" onClick={() => store.edit(s => removeInline(s, i.id))}>Remove</button></span></span>
+          </span>
+        </div>
+      ))}
+      {v.items.length ? <div class="hint">{v.delivered}: the in-line gear takes flow off the canister.</div> : null}
+      {v.options.map(o => (
+        <div class="type" data-type={o.label}>
+          <div class="th">{o.label}<span class="n">{o.rows.length}</span></div>
+          <div class="bb">{o.rows.map(r => (
+            <div class="erow" data-inline-add={r.id}>
+              <span class="thumb"><Icon name="gear" /></span>
+              <span class="eb"><span class="t" title={r.name}>{r.name}</span>
+                <span class="eline"><span class="efacts"><span class="m">{r.sub} · {r.shows}</span><span class="pills"><span class="m">{r.price}</span></span></span>
+                  <span class="acts"><button type="button" class="btn sm" onClick={() => store.edit(s => addInline(s, r.id))}>Add</button></span></span></span>
+            </div>
+          ))}</div>
+        </div>
+      ))}
+    </Group>
+  );
+}
+
 function KindBody({ store, units, cat }: { store: Store; units: 'in' | 'cm'; cat: CatId }) {
   const [own, setOwn] = useState(true), [bands, setBands] = useState<Record<string, boolean>>({});
   const S = store.tank, v = categoryView(S, cat, units, { showAll: true }), tree = buyTree(S, cat, units), multiType = tree.length > 1;
@@ -169,6 +204,7 @@ function KindBody({ store, units, cat }: { store: Store; units: 'in' | 'cm'; cat
         <div class="hint">Owning is not the same as using: the plan prefers what you own, at $0, when it fits.</div>
       </Group>
       <Sales store={store} cat={cat} />
+      {cat === 'filter' ? <ReturnGroup store={store} /> : null}
       <div class="buyhead"><span>Buy</span><span class="sum">{v.buyTotal} · fits this tank, price</span></div>
       {tree.map(t => (
         <div class="type" data-type={t.label}>

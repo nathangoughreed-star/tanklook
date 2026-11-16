@@ -3,11 +3,11 @@
 // each tech edit is `(S: TankSetup, ...) => TechSetup` to hand to `commitTech` (inside store.edit); the light edits
 // change `s.light` in place. The Tech menu keeps its markup, tabs, previews and status; the new shell can call these.
 import { FILTER_MODELS, type FilterKind } from '../demand/gear';
-import { FILTER_PRODUCTS, HEATER_PRODUCTS, genericHeaterW, lightProduct } from '../data/gearCatalog';
+import { FILTER_PRODUCTS, HEATER_PRODUCTS, genericHeaterW, inlineProduct, lightProduct } from '../data/gearCatalog';
 import { fromUnits } from '../units';
 import { applyLightProduct } from './lightproduct';
 import {
-  applyPreset, feedFor, filterUnits, heatLoss, keepSet, optionDef, ownKeep, setFeed, sumpDefault, sumpFromModel, sumpOf, techOf, withChoice, withUnits, withoutUnit,
+  applyPreset, canisterOf, feedFor, filterUnits, heatLoss, keepSet, optionDef, ownKeep, setFeed, sumpDefault, sumpFromModel, sumpOf, techOf, withChoice, withUnits, withoutUnit,
   type FilterUnit, type HeaterUnit, type TechSetup,
 } from './tech';
 import type { TankSetup } from './types';
@@ -28,7 +28,9 @@ export const pickRowOption = (S: TankSetup, row: string, opt: string): TechSetup
 
 // ---- heaters
 /** The heaters as saved units, each at the size it has now (a heater sized to the need keeps that size once another is added). */
-export const heatersNow = (S: TankSetup, t: TechSetup): HeaterUnit[] => heatLoss(S, t).units.map(u => ({ ...(u.product ? { product: u.product.id } : { w: u.watts }), ...(u.kit ? { kit: true } : {}), ...ownKeep(u) }));
+export const heatersNow = (S: TankSetup, t: TechSetup): HeaterUnit[] => heatLoss(S, t).units.filter(u => !u.builtIn && !u.inline).map(u => ({ ...(u.product ? { product: u.product.id } : { w: u.watts }), ...(u.kit ? { kit: true } : {}), ...ownKeep(u) }));
+/** How many of the heater cards come first and are not separate heaters: one built into a filter, and the in-line ones (lane IL1). */
+export const heatSpecialCount = (S: TankSetup, t: TechSetup): number => heatLoss(S, t).units.filter(u => u.builtIn || u.inline).length;
 /** The generic heater to add: the size still missing for a cold night, else a full-size backup. */
 export const nextHeaterW = (S: TankSetup, t: TechSetup): number => { const h = heatLoss(S, t), more = h.needW - h.totalW; return genericHeaterW(Math.max(more > 0.5 ? more : h.needW, 1)); };
 /** Add a heater: a catalogued product, or a generic one at the size still missing. */
@@ -95,3 +97,18 @@ export const setRoomTemp = (S: TankSetup, value: number, us: boolean, fToC: (f: 
 export const pickLightProduct = (s: TankSetup, id: string): void => { applyLightProduct(s.light, s.tank, lightProduct(id)); };
 export const setLightWatts = (s: TankSetup, v: number): void => { s.light.watts = Math.min(1000, Math.max(1, Math.round(v))); };
 export const tuneLight = (s: TankSetup): void => { delete s.light.product; };
+
+// ---- the canister's return hose (lane IL1)
+/** Put an in-line product on the canister's return, after what is there (flow order). A CO2 diffuser or reactor takes the place of another (one injector); the same heater twice is refused. Unchanged when it does not fit the hose. */
+export const addReturnInline = (S: TankSetup, id: string): TechSetup => {
+  const t = techOf(S), c = canisterOf(S, t), p = inlineProduct(id);
+  if (!c || !p || !p.hoseIdIn.includes(c.hoseIn)) return t;
+  const keep = (t.returnInline ?? []).filter(x => { const q = inlineProduct(x); return q && (p.kind === 'heater' ? q.kind !== 'heater' || x !== id : q.kind === 'heater'); });
+  return { ...t, preset: 'custom', returnInline: [...keep, id] };
+};
+/** Take an in-line product off the return. */
+export const removeReturnInline = (S: TankSetup, id: string): TechSetup => {
+  const t = techOf(S), next = { ...t, preset: 'custom' }, left = (t.returnInline ?? []).filter(x => x !== id);
+  if (left.length) next.returnInline = left; else delete next.returnInline;
+  return next;
+};

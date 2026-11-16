@@ -16,7 +16,7 @@ import { LIBRARY } from './items';
 import type { Build } from './builds';
 import { finSensitiveNames, plantNeeds, priceScape } from './scapes';
 import { IDEAL_MAX, countsAgainstWater, stockingOf } from './stocking';
-import { ROOM_C, techOf, tempEvidence, tempFit } from './tech';
+import { ROOM_C, specialHeaters, techOf, tempEvidence, tempFit } from './tech';
 import { dryFit, lenTxt, sizeTxt, tankLabel, type AnimalCount } from './tankfit';
 import { dryGearOf } from './drygear';
 import { volume } from './physics';
@@ -175,7 +175,7 @@ export function planOf(S: TankSetup, build?: Build, now = Date.now(), u: Units =
   }
   for (const g of ['animal', 'hard', 'plant', 'fake'] as const) { const r = grouped.get(g); if (r) rows.push(r); }
   const missing: string[] = [];
-  if (wantsHeat && !D.items.some(r => r.key === 'heater' && (r.setup || inKit(r)))) missing.push('Heater: your animals want warmer water than a room and the list has none');
+  if (wantsHeat && !specialHeaters(S, techOf(S)).length && !D.items.some(r => r.key === 'heater' && (r.setup || inKit(r)))) missing.push('Heater: your animals want warmer water than a room and the list has none');
   if (st.filtrationPercent > 100) missing.push('Filter: none on the list clears what these animals produce (choose a stronger one or a bigger tank)');
   const heater = D.items.some(r => r.key === 'heater');
   const truths = hardTruths(S, animals, heater, u);

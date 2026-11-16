@@ -16,7 +16,7 @@ import { price as rowPrice, tankRowPrice } from '../demand/prices';
 import { filterModelPrice } from '../demand/pricecurves';
 import type { Range3 } from '../demand/types';
 import { volume } from './physics';
-import { filterProduct, genericHeaterW, heaterProduct, listedPrice, pumpProduct, PUMP_GEAR_KINDS, reefOptionProducts, reefProduct, skimmerSuitsGal, type AtoProduct, type ChillerProduct, type FilterProduct, type HeaterProduct, type PumpProduct, type SkimmerProduct, type UvProduct } from '../data/gearCatalog';
+import { filterProduct, genericCanisterHoseIn, genericHeaterW, heaterProduct, inlineProduct, listedPrice, pumpProduct, PUMP_GEAR_KINDS, reefOptionProducts, reefProduct, skimmerSuitsGal, type AtoProduct, type ChillerProduct, type FilterProduct, type HeaterProduct, type InlineProduct, type PumpProduct, type SkimmerProduct, type UvProduct } from '../data/gearCatalog';
 import { footprint } from './shape';
 import { NEEDS, isCoralNeed, isLand, type PlantNeed } from './lightneeds';
 import { isFloat } from '../art/plants';
@@ -59,6 +59,10 @@ export interface TechSetup {
   heaterW?: number;
   /** a real heater picked from the gear catalogue (data/gear-catalog.json; lane TG): its watts size the heat, its size is drawn */
   heaterProduct?: string;
+  /** what sits on a canister's return hose outside the tank, in flow order (lane IL1, Nathan 2026-11-16): in-line heaters, CO2 diffusers
+   *  (atomizers) and reactors, ids in data/gear/inline.json. Only a canister has one, and each must fit its hose (techOf drops the rest);
+   *  the schematic Plumbing view draws the water path from this list. */
+  returnInline?: string[];
   /** real pumps picked from the gear catalogue (lane GP): gear part (airpump, powerhead, wavemaker) -> product id. A chosen product
    *  replaces that part's generic price and watts, the flow rows count its gal/h, and it is drawn at its own size and colours;
    *  absent = the generic pump, priced and powered as before */
@@ -91,6 +95,34 @@ export interface SumpSize { model?: string; L: number; D: number; H: number }
  *  bundle the tank was started from ships (its price is in the bundle's while the bundle is pinned). */
 /** `owned` (lane GM6): the owner already has this one, so its set-up price is $0 "you have" (power and welfare still count); `paidUsd` is what it cost them (shown, never priced). */
 export interface HeaterUnit { product?: string; w?: number; kit?: boolean; owned?: boolean; paidUsd?: number }
+
+// ---- the canister's return path (lane IL1)
+/** The canister the return-path gear sits on: the first canister unit, its flow and its hose (inside diameter, inches; a generic one's is an estimate by flow). */
+export function canisterOf(S: TankSetup, t: TechSetup) {
+  const u = filterUnits(t).find(x => x.kind === 'canister'); if (!u) return undefined;
+  const f = filterFor(S, 'canister', u.model, u.product);
+  return { unit: u, f, hoseIn: f.product?.hoseIdIn ?? genericCanisterHoseIn(f.model.gph) };
+}
+/** The in-line products on this tank's canister return, in flow order: none without a canister, and any that do not fit its hose are left out. */
+export function returnInlineOf(S: TankSetup, t: TechSetup): InlineProduct[] {
+  const c = t.returnInline?.length ? canisterOf(S, t) : undefined; if (!c) return [];
+  return t.returnInline!.flatMap(id => { const p = inlineProduct(id); return p && p.hoseIdIn.includes(c.hoseIn) ? [p] : []; });
+}
+/** The heat the filters and the return path bring with them: a heater built into a filter (Oase Thermo), and the in-line heaters. They are the tank's heaters (no separate one, no second price). */
+export function specialHeaters(S: TankSetup, t: TechSetup): { w: number; builtIn?: FilterProduct; inline?: InlineProduct }[] {
+  return [
+    ...filterUnits(t).flatMap(u => { const p = filterProduct(u.product); return p?.heater && p.kind === u.kind ? [{ w: p.heater.w, builtIn: p }] : []; }),
+    ...returnInlineOf(S, t).filter(p => p.kind === 'heater').map(p => ({ w: p.watts ?? 0, inline: p })),
+  ];
+}
+/** Share of the canister's flow the return-path gear takes (0..1): each unit's loss compounds. */
+export const inlineFlowLoss = (items: InlineProduct[]) => 1 - items.reduce((k, p) => k * (1 - p.flowLossPct / 100), 1);
+/** The canister's delivered flow: rated (per unit, times units) less what the in-line gear takes. */
+export function deliveredFlow(S: TankSetup, t: TechSetup) {
+  const c = canisterOf(S, t); if (!c) return undefined;
+  const items = returnInlineOf(S, t), loss = inlineFlowLoss(items), rated = c.f.gph;
+  return { rated, loss, delivered: rated * (1 - loss), items, hoseIn: c.hoseIn };
+}
 /** One filter: `kind` a filter option id (sponge, internal, hob, canister, sump); a catalogue product of that kind, or a
  *  generic gear-models.json `model` (absent = sized for the tank). `kit` as for heaters. */
 export interface FilterUnit { kind: string; product?: string; model?: string; kit?: boolean; owned?: boolean; paidUsd?: number }
@@ -241,6 +273,9 @@ export function techOf(S: TankSetup): TechSetup {
   if (t.roomC === undefined && room.set) t.roomC = room.c;
   // a missing skimmer follows the saved filters, not the inferred one (lane SF)
   if (inf.rows.skimmer && S.tech.rows.skimmer === undefined) t.rows.skimmer = hasSump(t) ? 'sump' : 'hob';
+  // the return-path gear only stays while its canister and hose fit (lane IL1); a heater built into the filter or on the return is the tank's heater
+  if (t.returnInline) { const ids = returnInlineOf(S, t).map(p => p.id); if (ids.length) t.returnInline = ids; else delete t.returnInline; }
+  if (t.rows.heater === 'none' && specialHeaters(S, t).length) t.rows = { ...t.rows, heater: 'one' };
   return t;
 }
 export const choiceOf = (S: TankSetup, row: string) => techOf(S).rows[row] ?? 'none';
@@ -321,7 +356,7 @@ export function tempEvidence(S: TankSetup, heater?: boolean, us?: boolean): Temp
  *  (inferTech, techOf: a heater comes and goes with the room temperature, a filter with the first water animal). A preset's own rows count as set. */
 export function keepSet(S: TankSetup, next: TechSetup): TechSetup {
   const was = techOf(S), own = new Set(Object.keys(S.tech?.rows ?? {}));
-  const sig = (t: TechSetup, r: string) => JSON.stringify([t.rows[r], t.products?.[r], ...(r === 'heater' ? [t.heaters, t.heaterW, t.heaterProduct] : r === 'filter' ? [t.filters, t.filterModel, t.filterProduct, t.filterless] : [])]);
+  const sig = (t: TechSetup, r: string) => JSON.stringify([t.rows[r], t.products?.[r], ...(r === 'heater' ? [t.heaters, t.heaterW, t.heaterProduct] : r === 'filter' ? [t.filters, t.filterModel, t.filterProduct, t.filterless, t.returnInline] : [])]);
   const preset = next.preset && next.preset !== 'custom' ? PRESETS.find(p => p.id === next.preset) : undefined;
   const rows: Record<string, string> = {};
   for (const [r, o] of Object.entries(next.rows)) if (own.has(r) || preset?.rows[r] !== undefined || sig(next, r) !== sig(was, r)) rows[r] = o;
@@ -337,7 +372,7 @@ export function withChoice(S: TankSetup, row: string, opt: string): TechSetup {
   // an in-sump skimmer without a sump falls back to a hang-on one
   if (row === 'filter' && opt !== 'sump' && rows.skimmer === 'sump') rows.skimmer = 'hob';
   const next: TechSetup = { ...t, rows, preset: 'custom' };
-  if (row === 'filter') { delete next.filterModel; delete next.filterProduct; delete next.filters; if (opt !== 'none') delete next.filterless; } // as withUnits (S207 review)
+  if (row === 'filter') { delete next.filterModel; delete next.filterProduct; delete next.filters; delete next.returnInline; if (opt !== 'none') delete next.filterless; } // as withUnits (S207 review)
   if (row === 'heater') { delete next.heaterW; delete next.heaterProduct; delete next.heaters; }
   if (next.products?.[row]) { next.products = { ...next.products }; delete next.products[row]; if (!Object.keys(next.products).length) delete next.products; } // a product belongs to its option
   return next;
@@ -403,6 +438,7 @@ export const singleFilter = (t: TechSetup, u: FilterUnit): TechSetup => {
   delete x.filters; delete x.filterModel; delete x.filterProduct;
   if (u.model) x.filterModel = u.model;
   if (u.product) x.filterProduct = u.product;
+  if (u !== filterUnits(t).find(v => v.kind === 'canister')) delete x.returnInline; // the return path belongs to the first canister only
   return x;
 };
 /** The units of `row` not in the bundle, when any unit is the bundle's (else none: the whole row is the bundle's or none of it). */
@@ -495,7 +531,7 @@ export interface HeatLoss {
   /** the heater class (the first unit's), how many, and their duty cycle */
   heater: HeaterModel; n: number; duty: number;
   /** each heater: its watts, the class it is priced as, the catalogue product */
-  units: { watts: number; model: HeaterModel; product?: HeaterProduct; kit?: boolean; owned?: boolean; paidUsd?: number }[];
+  units: { watts: number; model: HeaterModel; product?: HeaterProduct; /** the filter it is built into, or the in-line product (lane IL1): not separate heaters to add or remove */ builtIn?: FilterProduct; inline?: InlineProduct; kit?: boolean; owned?: boolean; paidUsd?: number }[];
   /** all the heaters together, W */
   totalW: number;
   /** kWh per month the heaters use (what the tank loses) */
@@ -516,12 +552,14 @@ export function heatLoss(S: TankSetup, t: TechSetup = techOf(S)): HeatLoss {
   const wPerK = HEAT.wall * wallM2 + HEAT.bottom * floorM2 + surf * (surfaceM2 - zFloor) + HEAT.surface.open * zFloor;
   const targetC = t.targetC ?? climateOf(S).find(c => c.label === 'Water')?.at ?? (isSalt(S) ? 25.5 : 24), roomC = t.roomC ?? ROOM_C;
   const dT = targetC - roomC, lossW = Math.max(0, wPerK * dT), needW = Math.max(0, wPerK * (dT + HEAT.nightDropK) * HEAT.headroom);
-  const us = heaterUnits(t), n = us.length;
-  const units = us.map(u => {
+  // a heater built into a filter and the in-line heaters come first (lane IL1); explicit heaters the owner added follow. With none of them: the saved / sized heaters.
+  const sp = specialHeaters(S, t), us = sp.length ? t.heaters ?? [] : heaterUnits(t), n = us.length + sp.length;
+  const special = sp.map(x => ({ watts: x.w, model: matchHeater(x.w), ...(x.builtIn ? { builtIn: x.builtIn } : {}), ...(x.inline ? { inline: x.inline } : {}) }));
+  const units = [...special, ...us.map(u => {
     // a generic one not sized by hand: the smallest common size holding its share of the need (what is drawn and named)
     const product = heaterProduct(u.product), watts = product?.watts ?? u.w ?? genericHeaterW(needW / Math.max(n, 1)), model = matchHeater(watts);
     return { watts, model, ...(product ? { product } : {}), ...(u.kit ? { kit: true } : {}), ...ownKeep(u) };
-  });
+  })];
   const heater = units[0]?.model ?? matchHeater(Math.max(needW, 1)), totalW = units.reduce((a, u) => a + u.watts, 0);
   const duty = totalW ? Math.min(1, lossW / totalW) : 0;
   const coolW = Math.max(0, -wPerK * dT);
@@ -633,7 +671,7 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
     let minutes: Range3 = g.minutes ? s3(g.minutes, sizeK(g, gal, 'minutes')) : Z, monthly: Range3 = Z, kwhMo: number | undefined;
     if (g.sized === 'filter' && def?.kind) {
       const f = filterFor(S, def.kind, row === 'filter' ? t.filterModel : undefined, row === 'filter' ? t.filterProduct : undefined);
-      n = f.n; watts = f.product?.watts ?? f.model.watts; turnover = f.turnover;
+      n = f.n; watts = f.product?.watts ?? f.model.watts; turnover = f.turnover * (1 - (def.kind === 'canister' && row === 'filter' ? inlineFlowLoss(returnInlineOf(S, t)) : 0)); // in-line gear on the return takes flow (lane IL1)
       const lp = listedPrice(f.product), p = lp ? pricePoint(lp) : filterModelPrice(f.model); // a generic: the library's fitted price curve where it fits, else the row (lane GM6)
       setup = p && s3(p, g.modelPriceK?.[f.model.id] ?? 1); est = !p;
       minutes = s3(minutes, g.byKind?.[def.kind] ?? 1);
@@ -678,6 +716,8 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
     const kwh = kwhMo ?? watts * hours * 30 / 1000;
     parts.push({ gear: id, label: g.label, n, setup: setup && s3(setup, n), est, monthly: s3(monthly, 1), watts: watts * n, kwhMo: kwh * n, minutes: s3(minutes, n) });
   }
+  // an in-line diffuser or reactor on the canister return is the CO2 row's diffuser (lane IL1): the kit's in-tank one is replaced, so this is the only diffuser line; the regulator and cylinder still come from the kit
+  if (row === 'co2' && opt === 'pressurized') for (const ip of returnInlineOf(S, t).filter(x => x.kind !== 'heater').slice(0, 1)) parts.push({ gear: 'inlineco2', label: `In-line CO2 ${ip.kind === 'reactor' ? 'reactor' : 'diffuser'}: ${ip.brand} ${ip.model} (replaces the kit's in-tank diffuser)`, n: 1, setup: pricePoint(ip.priceUsd ?? 0), est: !!ip.est?.includes('priceUsd'), monthly: Z, watts: 0, kwhMo: 0, minutes: Z });
   const sum = (f: (p: PartCost) => Range3) => parts.reduce((s, p) => a3(s, f(p)), Z);
   const setup = sum(p => p.setup ?? Z), monthly = sum(p => p.monthly), minutes = sum(p => p.minutes), kwhMo = parts.reduce((s, p) => s + p.kwhMo, 0);
   const power = kwhMo * kwhUsd;
@@ -691,7 +731,7 @@ export function rowProduct(t: TechSetup, row: string, opt = t.rows[row] ?? 'none
   const p = reefProduct(row, t.products?.[row]);
   return p && reefOptionProducts(row, opt).includes(p) ? p : undefined;
 }
-const heaterPrice = (u: HeatLoss['units'][number]): Range3 | undefined => { if (u.owned) return Z; const lp = listedPrice(u.product); return lp ? pricePoint(lp) : rowPrice(u.model.priceKey); };
+const heaterPrice = (u: HeatLoss['units'][number]): Range3 | undefined => { if (u.owned) return Z; if (u.builtIn) return Z; /* in the filter's price */ if (u.inline) return pricePoint(u.inline.priceUsd ?? 0); const lp = listedPrice(u.product); return lp ? pricePoint(lp) : rowPrice(u.model.priceKey); };
 /** Several units' costs as one row's (setup, consumables, power, minutes and flow added). */
 function mergeCosts(row: string, option: string, cs: OptionCost[]): OptionCost {
   const sum = (f: (c: OptionCost) => Range3) => cs.reduce((a, c) => a3(a, f(c)), Z), turns = cs.filter(c => c.turnover !== undefined);
@@ -708,7 +748,7 @@ export function unitCosts(S: TankSetup, row: 'heater' | 'filter', o: { kwhUsd?: 
   const all = optionCost(S, 'heater', t.rows.heater ?? 'none', { ...o, tech: t }), h = heatLoss(S, t);
   return h.units.map(u => {
     const k = h.totalW ? u.watts / h.totalW : 0, p = heaterPrice(u), kwhMo = all.kwhMo * k, power = kwhMo * (o.kwhUsd ?? KWH_USD);
-    return { row, option: all.option, parts: [], setup: p ?? Z, monthly: s3(all.monthly, k), kwhMo, minutes: s3(all.minutes, k), monthlyUsd: { lo: all.monthly.lo * k + power, mode: all.monthly.mode * k + power, hi: all.monthly.hi * k + power }, est: !p };
+    return { row, option: all.option, parts: [], setup: p ?? Z, monthly: s3(all.monthly, k), kwhMo, minutes: s3(all.minutes, k), monthlyUsd: { lo: all.monthly.lo * k + power, mode: all.monthly.mode * k + power, hi: all.monthly.hi * k + power }, est: !p || !!u.inline?.est?.includes('priceUsd') };
   });
 }
 
@@ -767,6 +807,8 @@ export interface TechPiece {
   /** filters: the catalogue product picked (data/gear-catalog.json), drawn at its own size and colours */
   product?: string;
   place?: GearPlace;
+  /** a canister: the in-line products on its return hose, in flow order; the CO2 kit: an in-line diffuser stands in for its in-tank one (lane IL1) */
+  inline?: string[]; inlineCo2?: boolean;
 }
 /** The pieces of gear in this tank, for lane TG: one entry per part (units in n). Filters / heaters name their model. */
 export function techParts(S: TankSetup): TechPiece[] {
@@ -775,7 +817,7 @@ export function techParts(S: TankSetup): TechPiece[] {
     const opt = t.rows[row.id] ?? 'none', def = optionDef(row.id, opt);
     // heaters and filters: one piece per unit, each with its own place key ('heater', 'heater.1', ...)
     if (row.id === 'heater') {
-      heatLoss(S, t).units.forEach((u, i) => { const key = i ? `heater.${i}` : 'heater'; out.push({ row: key, option: opt, gear: 'heater', model: u.model.id, n: 1, watts: u.watts, ...(u.product ? { product: u.product.id } : {}), ...(t.place?.[key] ? { place: t.place[key] } : {}) }); });
+      heatLoss(S, t).units.filter(u => !u.builtIn && !u.inline).forEach((u, i) => { const key = i ? `heater.${i}` : 'heater'; out.push({ row: key, option: opt, gear: 'heater', model: u.model.id, n: 1, watts: u.watts, ...(u.product ? { product: u.product.id } : {}), ...(t.place?.[key] ? { place: t.place[key] } : {}) }); });
       continue;
     }
     if (row.id === 'filter' && t.filters) {
@@ -796,6 +838,8 @@ export function techParts(S: TankSetup): TechPiece[] {
       if (pump) Object.assign(piece, { product: pump.id, watts: pump.watts, ...(pump.gph ? { gph: pump.gph } : {}) });
       const rp = rowProduct(t, row.id, opt);
       if (rp && REEF_PARTS.has(gear)) { piece.product = rp.id; if (rp.watts !== undefined) piece.watts = rp.watts; }
+      if (g.sized === 'filter' && def?.kind === 'canister' && row.id === 'filter') { const ri = returnInlineOf(S, t); if (ri.length) piece.inline = ri.map(x => x.id); }
+      if (row.id === 'co2' && ['co2kit', 'co2cart', 'diyco2'].includes(gear) && returnInlineOf(S, t).some(x => x.kind !== 'heater')) piece.inlineCo2 = true;
       if (gear === 'returnpump') piece.gph = Math.round(galOf(S) * (g.gphPerGal ?? 6));
       out.push(piece);
     }
@@ -836,6 +880,7 @@ export function parseTech(raw: unknown): TechSetup | undefined {
     for (const [row, id] of Object.entries(r.products as Record<string, unknown>)) if (typeof id === 'string' && reefOptionProducts(row, rows[row] ?? '').some(p => p.id === id)) products[row] = id;
     if (Object.keys(products).length) t.products = products;
   }
+  if (Array.isArray(r.returnInline)) { const ids = (r.returnInline as unknown[]).filter((v): v is string => typeof v === 'string' && !!inlineProduct(v)).slice(0, 4); if (ids.length) t.returnInline = ids; }
   if (Array.isArray(r.heaters)) t.heaters = (r.heaters as unknown[]).slice(0, 8).flatMap(v => {
     const u = v as Partial<HeaterUnit> | null; if (!u || typeof u !== 'object') return [];
     return [{ ...(typeof u.product === 'string' && heaterProduct(u.product) ? { product: u.product } : {}), ...(typeof u.w === 'number' && isFinite(u.w) ? { w: Math.min(2000, Math.max(5, Math.round(u.w))) } : {}), ...(u.kit === true ? { kit: true } : {}), ...ownParse(u) }];
@@ -866,7 +911,7 @@ export function parseTech(raw: unknown): TechSetup | undefined {
     if (Object.keys(place).length) t.place = place;
   }
   // lane GV9: a Tech-menu edit saves only the rows set by hand (keepSet), so a tech of a room / tank temperature or gear places alone is kept too
-  return Object.keys(rows).length || t.preset || t.heaters || t.filters || t.filterless || t.sump || t.roomC !== undefined || t.targetC !== undefined || t.measuredC !== undefined || t.place ? t : undefined;
+  return Object.keys(rows).length || t.preset || t.heaters || t.filters || t.filterless || t.returnInline || t.sump || t.roomC !== undefined || t.targetC !== undefined || t.measuredC !== undefined || t.place ? t : undefined;
 }
 
 /** The filter option the budget assumes while the owner has chosen none (filterState 'unset'): what inferTech picks for a tank not started from its animals

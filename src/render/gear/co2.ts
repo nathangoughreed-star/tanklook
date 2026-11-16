@@ -5,11 +5,12 @@ import { cabinetGear } from '../../scene/cabinetGear';
 import { GearPick, V, along, hash, C, DROP_COLOURS, Frame, GearWall, Spot, lerp, sucker, line, overRim, behind, lineCutout, cutoutY } from './common';
 
 /** `f` is the wall the diffuser hangs on; `fr` gives the frame of any wall (the drop checker picks its own glass, far from the diffuser; the line and cylinder run from the back frame). */
-export function co2(f: Frame, sp: Spot, level: GearPick['co2'], fr: (w: GearWall) => Frame) {
+export function co2(f: Frame, sp: Spot, level: GearPick['co2'], fr: (w: GearWall) => Frame, inline = false) {
   const { kit, t } = f, bk = fr('back'), b = 26, g0 = f.ground(sp.u, b);
   // diffuser low under the filter's outlet: a glass cup round a white ceramic disc, on a glass stem with a suction cup
   const y = lerp(g0 + 40, f.wy - 60, sp.y ?? 0.15), u = f.slot(sp.u, 40, y - 40, y + 40, 0, 50, sp.fixed);
   const c = f.P(u, y, b);
+  if (!inline) { // an in-line diffuser or reactor on the canister's return stands in for this one (lane IL1): nothing in the tank but the filter's own outflow
   kit.rod('clear', c.clone().add(V(0, -8, 0)), c.clone().add(V(0, 10, 0)), 15, C.glass, { base: 0.1, seg: 24 });
   kit.rod('wet', c.clone().add(V(0, 6, 0)), c.clone().add(V(0, 8, 0)), 13, C.white, { seg: 24 });
   kit.tube('clear', [c.clone().add(V(0, -8, 0)), c.clone().add(V(0, -18, 0)), f.P(u, y - 18, 8), f.P(u, y + 30, 6)], 3, C.glass, 0.12, 8);
@@ -19,10 +20,11 @@ export function co2(f: Frame, sp: Spot, level: GearPick['co2'], fr: (w: GearWall
     const h = hash(i, 9, 1) ** 1.6 * (f.wy - y - 20), dr = 4 + h * 0.18;
     kit.ball('clear', c.clone().add(V((hash(i, 2, 3) - 0.5) * dr * 2, 12 + h, (hash(i, 4, 5) - 0.5) * dr)), 0.7 + 0.5 * hash(i, 6, 7), C.water, 0.1, 0);
   }
+  }
   const skipBox = (bk: 'clear' | 'wet', n: number) => kit.parts[bk].slice(-n).forEach(g => kit.lines.add(g)); // parts that are not the diffuser: the selection box leaves them out (lane GD1)
-  skipBox('clear', 60); // the mist
+  if (!inline) skipBox('clear', 60); // the mist
   // the line up out of the tank, the bubble counter outside the rim, down to the cylinder
-  const route = overRim(f, u, f.P(u, y + 30, 6), 6, f.H - 60, -t - 18);
+  const route = inline ? [f.P(u, f.H - 10, -t - 18), f.P(u, f.H - 60, -t - 18)] : overRim(f, u, f.P(u, y + 30, 6), 6, f.H - 60, -t - 18); // an in-line unit's CO2 line starts outside the glass, at the hose
   line(f, route, 0xc9d6d8);
   const bc = route[route.length - 1];
   kit.rod('clear', bc.clone().add(V(0, -60, 0)), bc.clone(), 10, C.glass, { base: 0.1, seg: 18 });

@@ -95,11 +95,45 @@ export interface FilterProduct {
    *  disc, the sponge (bodyMm.w across, `flutes` vertical grooves round it), a collar on top, and the lift tube at its real
    *  length (the bubbles leave its top, under water); absent = the old drawing (sponge bodyMm.h tall, tube to the surface) */
   spongeParts?: { baseMm: number; baseDiaMm: number; neckMm?: number; neckDiaMm?: number; spongeMm: number; flutes?: number; collarMm: number; collarDiaMm: number; tubeMm: number; tubeDiaMm: number };
+  /** a canister's hose, inside diameter in inches (the in-line gear must match it; est when the maker's size was not read) */
+  hoseIdIn?: number;
+  /** a heater built into the filter (Oase Thermo): its watts (`w`) and thermostat range in deg F; it counts as the tank's heater (scene/tech.ts builtInHeaters) */
+  heater?: { w: number; minF: number; maxF: number };
   names?: string[]; est?: string[];
   colors: FilterLook; colorsEst?: string[]; colorsNote?: string;
   popularity?: Popularity;
 }
 export const FILTER_PRODUCTS = ((data as unknown as { filters?: FilterProduct[] }).filters ?? []);
+// ---- in-line gear on a canister's return hose (lane IL1, Nathan 2026-11-16): heaters, CO2 diffusers (atomizers) and reactors
+export type InlineKind = 'heater' | 'diffuser' | 'reactor';
+export interface InlineProduct {
+  id: string; brand: string; model: string; kind: InlineKind;
+  /** the hose sizes it takes, inside diameter in inches (0.5, 0.625, 0.75, 1) */
+  hoseIdIn: number[];
+  priceUsd?: number; priceNote?: string; url: string; asOf: string;
+  /** outside the tank on the hose: diameter and length, mm */
+  bodyMm: { d: number; l: number };
+  /** heaters: watts, thermostat range deg F, the tank sizes it suits */
+  watts?: number; minF?: number; maxF?: number; galMin?: number; galMax?: number;
+  /** flow the unit takes off the canister, percent of its delivered GPH (est unless the maker gave it: `est` has 'flowLossPct') */
+  flowLossPct: number;
+  /** the least flow it needs, GPH (est) */
+  minFlowGph: number;
+  /** an atomizer's mist shows in the tank; a reactor's and a heater's output does not */
+  mistVisible: boolean; visibleInTank: boolean;
+  diffuserNote?: string;
+  colors: Record<string, { hex: string }>; colorsEst?: string[]; colorsNote?: string; est?: string[];
+}
+export const INLINE_PRODUCTS = ((data as unknown as { inline?: InlineProduct[] }).inline ?? []);
+export const inlineProduct = (id?: string) => (id ? INLINE_PRODUCTS.find(p => p.id === id) : undefined);
+export const HOSE_SIZES: Record<string, string> = { '0.5': '1/2 in', '0.625': '5/8 in', '0.75': '3/4 in', '1': '1 in' };
+export const hoseLabel = (n: number) => HOSE_SIZES[String(n)] ?? `${n} in`;
+/** A generic canister's hose by its flow (an estimate): the small ones 1/2 in, the mid ones 5/8 in, the big ones 1 in. */
+export const genericCanisterHoseIn = (gph: number) => gph < 250 ? 0.5 : gph < 500 ? 0.625 : 1;
+/** The in-line products that fit a canister hose of `hoseIn` inches. */
+export const inlineFor = (hoseIn: number) => INLINE_PRODUCTS.filter(p => p.hoseIdIn.includes(hoseIn));
+/** The products the in-line picker offers a canister of this hose size, by kind. */
+export const inlineKinds: Record<InlineKind, string> = { heater: 'In-line heater', diffuser: 'In-line CO2 diffuser (atomizer)', reactor: 'In-line CO2 reactor' };
 export const filterProduct = (id?: string) => (id ? FILTER_PRODUCTS.find(f => f.id === id) : undefined);
 
 /** Products of a kind worth offering for a tank of `gal` gallons: rated for it first, then the nearest ranges. */

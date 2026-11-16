@@ -42,10 +42,10 @@ export function gearPicks(S: TankSetup): GearPick[] {
   for (const p of parts) {
     const place = spotOf(S, p.place), pick = (id: string) => out.push({ id, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(p.product && p.gear !== 'airpump' ? { product: p.product } : {}), ...(place ? { place } : {}) });
     switch (p.gear) {
-      case 'filter': if (p.model && !(S.stockFirst && filterState(S) !== 'chosen')) out.push({ id: p.model, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(p.product ? { product: p.product } : {}), ...(place ? { place } : {}) }); break;
+      case 'filter': if (p.model && !(S.stockFirst && filterState(S) !== 'chosen')) out.push({ id: p.model, row: p.row, ...(p.n > 1 ? { n: p.n } : {}), ...(p.product ? { product: p.product } : {}), ...(p.inline ? { inline: p.inline } : {}), ...(place ? { place } : {}) }); break;
       case 'heater': if (p.model) out.push({ id: p.model, row: p.row, watts: p.watts ?? genericHeaterW(heatLoss(S, techOf(S)).needW), ...(p.product ? { product: p.product } : {}), ...(place ? { place } : {}) }); break; // one pick per heater (scene/tech techParts)
       case 'sump': pick('sump'); break;
-      case 'co2kit': case 'diyco2': case 'co2cart': pick('co2'); break;
+      case 'co2kit': case 'diyco2': case 'co2cart': pick('co2'); if (p.inlineCo2) out[out.length - 1].inlineCo2 = true; break;
       case 'surfaceskim': pick('surfskim'); break;
       case 'chillerfan': pick('chillerfan'); break;
       case 'airpump': pick('airstone'); break;
@@ -171,7 +171,7 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
       const fk = isFilter(fp.id); if (!fk || !go(fp)) return;
       const { f, sp } = spot(fp, k && !fp.place ? after() : cursor), n0 = f.taken.length;
       const prod = filterProduct(fp.product), pk = prod?.kind === fk.kind ? prod : undefined;
-      track(fp, () => { if (fk.kind === 'hob') hob(f, fk, sp, pk); else if (fk.kind === 'canister') canister(f, fk, sp, pk); else if (fk.kind === 'sponge') sponge(f, fk, sp, pk); else internal(f, fk, sp, pk); });
+      track(fp, () => { if (fk.kind === 'hob') hob(f, fk, sp, pk); else if (fk.kind === 'canister') canister(f, fk, sp, pk, fp.inline); else if (fk.kind === 'sponge') sponge(f, fk, sp, pk); else internal(f, fk, sp, pk); });
       const mine = f.taken.slice(n0);
       if (mine.length && !k) outlet = { f, u: fk.kind === 'canister' ? mine[mine.length - 1][0] + 35 : (mine[0][0] + mine[0][1]) / 2 };
     });
@@ -184,7 +184,7 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
     if (!has('sump')) one('ato', ato);
     // CO2 under the filter's outlet, on that wall, unless the owner moved it
     const cp = get('co2');
-    if (go(cp)) { const s0 = spot(cp!, outlet.u), f = cp!.place || bd3 ? s0.f : outlet.f; track(cp!, () => co2(f, s0.sp, cp!.co2, fr)); }
+    if (go(cp)) { const s0 = spot(cp!, outlet.u), f = cp!.place || bd3 ? s0.f : outlet.f; track(cp!, () => co2(f, s0.sp, cp!.co2, fr, cp!.inlineCo2)); }
     // powerheads on the side glass (default: the near one on the gear side, a second or the wavemaker on the other)
     const ph = get('powerhead'), wm = get('wavemaker'), Db = T.D - backdropDepth(S.backdrop, T);
     if (go(ph)) { const s0 = ph!.place ? spot(ph!, 0) : { f: fr(dflt), sp: { u: Db * 0.7, y: 0.7 } as Spot }; track(ph!, () => powerhead(s0.f, s0.sp, false, pumpProduct(ph!.product))); if ((ph!.n ?? 1) > 1) powerhead(fr(opp), { u: Db * 0.45, y: 0.55 }, false, pumpProduct(ph!.product)); }

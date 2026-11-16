@@ -1,7 +1,7 @@
 // Filter models: hang-on-back, sponge, internal and canister. (render/gear3d.ts split per type, lane GM1, 2026-10-29: moved as is, no behaviour change).
 import * as THREE from 'three';
 import { type FilterModel } from '../../demand/gear';
-import { type FilterProduct } from '../../data/gearCatalog';
+import { inlineProduct, type FilterProduct, type InlineProduct } from '../../data/gearCatalog';
 import { backdropDepth, clamp } from '../../scene/physics';
 import { standInside } from '../../scene/standspace';
 import { cabinetGear } from '../../scene/cabinetGear';
@@ -146,7 +146,7 @@ export function internal(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct)
   kit.tube('room', overRim(f, u + w * 0.3, f.P(u + w * 0.3, yT, b), b, f.top + 20), 2.6, C.black, 0, 6);
 }
 
-export function canister(f: Frame, m: FilterModel, sp: Spot, prod?: FilterProduct) {
+export function canister(f: Frame, m: FilterModel, sp: Spot, prod?: FilterProduct, inline: string[] = []) {
   const { kit, t } = f, s = flowScale(m, 265), pr = 7.5, gap = Math.min(clamp(f.T.L * 0.18, 110, 320), Math.max(60, f.len - 100)); // both pipes stay inside the glass on a short tank
   // a real product (lane TG step 3): its own pipe, hose and body colours (Fluval / Eheim pipes are opaque plastic, not glass)
   const L = prod?.colors, pipeL = L?.intake ?? L?.outlet, pipe = pipeL ? partOf(pipeL, C.grey) : { c: C.glass, bk: 'clear' as Bucket, base: 0.13 };
@@ -187,6 +187,28 @@ export function canister(f: Frame, m: FilterModel, sp: Spot, prod?: FilterProduc
       const low = behind(f, uu, f.floor + 30, -14 - k * 10);
       kit.tube('room', [s0, behind(f, uu, (standY + s0.y) / 2, -14), low, V(v.x, f.floor + 30, low.z), V(v.x, f.floor + 80, c0.z), v], 10, hoseC, 0, 10);
     } else kit.tube('room', [s0, f.P(uu, (standY + p.y) / 2, outB - 6), f.P(uu, standY + 30, outB - 10), f.P(uu, standY - 30, outB - 10 + (st.show ? 60 : -20))], 10, hoseC, 0, 10);
+  }
+  // gear on the return hose (lane IL1, Nathan 2026-11-16): each unit stands on the outlet hose's run behind the tank, stacked down from the rim in flow order,
+  // the hose going in at the top and out at the bottom; an atomizer's fine mist leaves the outlet in the tank (a reactor's and a heater's output is not seen)
+  const items = inline.flatMap(id => { const q = inlineProduct(id); return q ? [q] : []; }) as InlineProduct[];
+  const at = (y: number) => cab && !beside ? behind(f, uO, y, -14) : beside ? behind(f, uO, y, -24) : f.P(uO, y, outB - 6);
+  let yy = out[0].y - 90;
+  for (const ip of items) {
+    const col = hexOr(ip.colors.body?.hex, C.grey), barb = hexOr(ip.colors.barb?.hex ?? ip.colors.cap?.hex, col), top = yy, bot = yy - ip.bodyMm.l, rr = ip.bodyMm.d / 2;
+    kit.rod('room', at(bot), at(top), rr, col, { seg: 24 });
+    kit.rod('room', at(top), at(top + 16), 8, barb, { seg: 14 }); kit.rod('room', at(bot - 16), at(bot), 8, barb, { seg: 14 });
+    if (ip.colors.cap) { kit.rod('room', at(top - 14), at(top), rr + 1.5, hexOr(ip.colors.cap.hex, col), { seg: 24 }); kit.rod('room', at(bot), at(bot + 14), rr + 1.5, hexOr(ip.colors.cap.hex, col), { seg: 24 }); }
+    else for (const k of [0.25, 0.75]) kit.rod('room', at(bot + ip.bodyMm.l * k - 3), at(bot + ip.bodyMm.l * k + 3), rr + 1.2, barb, { seg: 24 }); // a collar at each end of a metal / plastic body
+    yy = bot - 40;
+  }
+  if (items.some(q => q.mistVisible)) {
+    const o0 = f.P(uO, oy, ib + 30), g = f.ground(uO, ib) + 10;
+    for (let i = 0; i < 260; i++) {
+      const d = 6 + hash(i, 11, 1) ** 1.3 * 240, sp2 = d * 0.3 + 3;
+      const pos = o0.clone().addScaledVector(f.inward, d).add(V((hash(i, 2, 3) - 0.5) * 2 * sp2 * (f.wall === 'back' ? 1 : 0.2), (hash(i, 4, 5) - 0.55) * sp2 * 1.3 - d * 0.06, (hash(i, 6, 7) - 0.5) * sp2 * (f.wall === 'back' ? 0.2 : 1)));
+      pos.y = clamp(pos.y, g, f.wy - 3);
+      kit.ball('clear', pos, 1.1 + 1.5 * hash(i, 8, 9), 0xf4fbfd, 0.55, 0);
+    }
   }
   if (st.show) {
     kit.rod('room', c0, c0.clone().add(V(0, ch * 0.78, 0)), r, bodyC, { seg: 32 });

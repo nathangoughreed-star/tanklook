@@ -17,11 +17,11 @@ import { defaultProfile, type UserProfile } from '../demand/types';
 import { FEED_NAMES, GROW_RATE } from '../scene/growtime';
 import type { Store } from '../scene/store';
 import {
-  ROOM_C, applyPreset, feedFor, feedOf, filterFor, filterUnits, heatLoss, offerChiller,
+  ROOM_C, applyPreset, canisterOf, deliveredFlow, feedFor, feedOf, filterFor, filterUnits, heatLoss, offerChiller,
   optionCost, optionDef, presetsFor, pumpFor, REEF_FLOW_X, reefFeedOf, rowsFor, singleFilter, stockCapacity, techOf, tempEvidence, unitCosts, walstadGaps, withChoice,
   reefChecks, rowProduct, sumpLitres, sumpName, sumpOf, SUMP_FILL, sumpDrainDown, sumpTooSmall, type FilterUnit, type SumpSize, type OptionCost, type TechSetup,
 } from '../scene/tech';
-import { FILTER_PRODUCTS, HEATER_PRODUCTS, reefOptionProducts, lightsFor, productName, pumpRatedFor, pumpsFor, type FilterProduct, type HeaterProduct, type LightProduct, type PumpProduct, type ReefProduct } from '../data/gearCatalog';
+import { FILTER_PRODUCTS, HEATER_PRODUCTS, hoseLabel, inlineFor, inlineKinds, reefOptionProducts, lightsFor, productName, pumpRatedFor, pumpsFor, type FilterProduct, type HeaterProduct, type LightProduct, type PumpProduct, type ReefProduct } from '../data/gearCatalog';
 import { lightProductNote, productOn } from '../scene/lightproduct';
 import { TECHS, fixtureOf, lightOutCached, wattsOf } from '../scene/lightout';
 import { integratedKit, lockNote, locksOf } from '../scene/integrated';
@@ -149,6 +149,8 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const [a, b, c] = act.split('|');
     if (a === 'del') return b === 'heater' ? TE.removeHeater(S, +c) : TE.removeFilter(S, +c);
     if (a === 'addh') return TE.addHeater(S, b || undefined);
+    if (a === 'addi') return TE.addReturnInline(S, b);
+    if (a === 'deli') return TE.removeReturnInline(S, b);
     if (a === 'addf') return TE.addFilter(S, b, c || undefined);
     if (a === 'sump' && b === 'add') return TE.addSump(S);
     if (a === 'sump' && b === 'del') return TE.removeSump(S);
@@ -261,9 +263,13 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     const h = heatLoss(S, t), costs = unitCosts(S, 'heater', { tech: t, kwhUsd: kwhUsd() }), kit = inBundle(S, t, 'heater');
     let html = '<div class="tunits">';
     if (!h.n) html += card('No heater', undefined, false, '', `<span class="tchips">${chips(S, 'heater', 'none', c)}</span>`);
+    const nSp = TE.heatSpecialCount(S, t);
     h.units.forEach((u, i) => {
-      const name = u.product ? esc(productName(u.product)) : 'Generic heater';
-      html += card(name, costs[i], kit[i], `del|heater|${i}`, gearCard(heaterSpec(i, u.watts, u.product?.id)));
+      // a heater built into the filter, or an in-line one on the canister's return (lane IL1): the tank's heater, not a separate one to add or remove here
+      if (u.builtIn) { html += card(`Built into ${esc(productName(u.builtIn))}`, undefined, false, '', `<span class="tchips"><span class="tchip good" title="The filter's own heater counts as the tank's heater: no separate heater is added and its price is in the filter's.">${u.watts} W, ${u.builtIn.heater!.minF}-${u.builtIn.heater!.maxF} °F thermostat</span><span class="tchip mute">no separate heater</span></span>`); return; }
+      if (u.inline) { html += card(esc(productName(u.inline)), costs[i], false, `deli|${u.inline.id}`, `<span class="tchips"><span class="tchip mute">In-line on the canister's return · ${hoseLabel(canisterOf(S, t)?.hoseIn ?? 0.5)} hose</span><span class="tchip">${u.watts} W</span></span>`); return; }
+      const name = u.product ? esc(productName(u.product)) : 'Generic heater', j = i - nSp;
+      html += card(name, costs[i], kit[i], `del|heater|${j}`, gearCard(heaterSpec(j, u.watts, u.product?.id)));
     });
     html += '</div>';
     if (h.n) {
@@ -281,6 +287,27 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     return html + '<button type="button" class="tcancel" data-act="adding">Cancel</button></div>';
   };
 
+  /** The canister's return hose (lane IL1): what sits on it in flow order, the flow it takes, and the Add picker (only what fits the hose). */
+  const inlineSection = (S: TankSetup, t: TechSetup): string => {
+    const d = deliveredFlow(S, t); if (!d) return '';
+    let html = `<div class="tinline"><div class="hint">On the return hose (${hoseLabel(d.hoseIn)}), in flow order: heater, CO2 diffuser or reactor.</div>`;
+    if (d.items.length) {
+      html += '<div class="tunits">' + d.items.map(p => `<div class="tunit"><div class="tuh"><span class="tun">${esc(productName(p))}</span><button type="button" class="tux" data-act="deli|${p.id}" title="Remove it" aria-label="Remove">×</button></div><div class="tuc">${p.priceUsd ? `$${Math.round(p.priceUsd)}${p.est?.includes('priceUsd') ? ' (est.)' : ''}` : ''}</div><span class="tchips"><span class="tchip mute">${inlineKinds[p.kind]}</span><span class="tchip" title="${esc(p.est?.includes('flowLossPct') ? 'An estimate: the maker gives no figure' : 'From the maker')}">−${p.flowLossPct}% flow${p.est?.includes('flowLossPct') ? ' (est.)' : ''}</span><span class="tchip ${p.mistVisible ? 'good' : 'mute'}">${p.kind === 'heater' ? 'out of sight' : p.mistVisible ? 'mist visible in the tank' : 'no bubbles in the tank'}</span>${p.minFlowGph > d.delivered ? `<span class="tchip warn">needs ${p.minFlowGph}+ gph; the canister gives ${Math.round(d.delivered)}</span>` : ''}</span></div>`).join('') + '</div>';
+      html += `<span class="tchips"><span class="tchip" title="The canister's rated flow less what the in-line gear takes">${Math.round(d.delivered)} of ${Math.round(d.rated)} gph delivered</span></span>`;
+    }
+    if (adding?.row === 'filter' && adding.kind === 'inline') {
+      const on = new Set(d.items.map(p => p.id)), list = inlineFor(d.hoseIn).filter(p => !on.has(p.id));
+      html += '<div class="tpick">';
+      for (const k of ['heater', 'diffuser', 'reactor'] as const) {
+        const ps = list.filter(p => p.kind === k); if (!ps.length) continue;
+        html += `<div class="hint">${inlineKinds[k]}${k === 'heater' ? ' (counts as the tank\'s heater)' : ' (replaces the CO2 kit\'s in-tank diffuser; the regulator and cylinder stay)'}</div><div class="tstep">${ps.map(p => prodBtn(`addi|${p.id}`, `${productName(p)}${p.watts ? ` · ${p.watts} W` : ''}`, p.priceUsd, `${hoseLabel(d.hoseIn)} hose · −${p.flowLossPct}% flow${p.mistVisible ? ' · visible mist' : ''}`)).join('')}</div>`;
+      }
+      if (!list.length) html += '<div class="hint">Nothing more fits this canister\'s hose.</div>';
+      return html + '<button type="button" class="tcancel" data-act="adding">Cancel</button></div></div>';
+    }
+    return html + `<button type="button" class="tadd" data-act="adding|filter|inline">+ Add in-line gear on the return</button></div>`;
+  };
+
   /** Filtration, opened: a card per filter, or "None (Walstad)", and the Add picker (type, then generic or a product). */
   const filterBody = (S: TankSetup, t: TechSetup, cur: string, c: OptionCost, rowDef: { options: { id: string; label: string }[] }): string => {
     const us = filterUnits(t), costs = unitCosts(S, 'filter', { tech: t, kwhUsd: kwhUsd() }), kit = inBundle(S, t, 'filter');
@@ -289,12 +316,13 @@ export function attachTechMenu(store: Store, mount: HTMLElement, o: { profile: (
     us.forEach((u, i) => {
       
       const turn = costs[i].turnover;
-      const body = `<span class="tchips"><span class="tchip mute">${esc(optionDef('filter', u.kind)?.label ?? u.kind)}</span>${turn !== undefined && us.length > 1 ? `<span class="tchip">${turn.toFixed(1)}× / hour</span>` : ''}</span>${u.kind !== 'sump' ? gearCard(filterSpec(S, i, u)) : ''}`;
+      const body = `<span class="tchips"><span class="tchip mute">${esc(optionDef('filter', u.kind)?.label ?? u.kind)}</span>${turn !== undefined && us.length > 1 ? `<span class="tchip">${turn.toFixed(1)}× / hour</span>` : ''}</span>${u.kind !== 'sump' ? gearCard(filterSpec(S, i, u)) : ''}${u === canisterOf(S, t)?.unit ? inlineSection(S, t) : ''}`;
       html += card(esc(filterLabel(S, u)), costs[i], kit[i], `del|filter|${i}`, body);
     });
     html += '</div>';
     if (us.length) html += `<span class="tchips">${chips(S, 'filter', cur, c)}</span>`;
     if (adding?.row !== 'filter') return html + `<button type="button" class="tadd" data-act="adding|filter">+ Add ${us.length ? 'more ' : ''}filtration</button>`;
+    if (adding.kind === 'inline') return html; // the in-line picker is in the canister's card (lane IL1)
     html += '<div class="tpick">';
     if (!adding.kind) {
       html += '<div class="hint">What kind?</div>';

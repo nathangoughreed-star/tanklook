@@ -7,9 +7,9 @@ import { GEAR_CLASS, GEAR_TYPES, filterRef, heaterRef, lightRef, productStats, s
 
 describe('gear catalogue split per type', () => {
   it('keeps the old key order and counts', () => {
-    expect(Object.keys(gearCatalog)).toEqual(['asOf', 'note', 'skimmers', 'uv', 'co2', 'ato', 'chillers', 'heaters', 'filters', 'lights', 'pumps']);
+    expect(Object.keys(gearCatalog)).toEqual(['asOf', 'note', 'skimmers', 'uv', 'co2', 'ato', 'chillers', 'heaters', 'filters', 'lights', 'pumps', 'inline']);
     expect([gearCatalog.skimmers, gearCatalog.uv, gearCatalog.co2, gearCatalog.ato, gearCatalog.chillers, gearCatalog.heaters, gearCatalog.filters, gearCatalog.lights, gearCatalog.pumps].map(a => a.length))
-      .toEqual([12, 13, 10, 6, 8, 55, 96, 55, 46]);
+      .toEqual([12, 13, 10, 6, 8, 55, 98, 55, 46]);
   });
   it('the wrappers expose the same arrays', () => {
     expect(HEATER_PRODUCTS).toBe(gearCatalog.heaters);

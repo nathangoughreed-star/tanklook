@@ -18,6 +18,7 @@ export interface GearPick {
   /** units (two heaters, two powerheads); absent = 1 */ n?: number;
   /** the tech row it comes from (what a drag writes to) */ row?: string;
   /** heaters: the watts drawn (a generic heater of the size the tank needs); heaters and filters: the real product picked, if any */ watts?: number; product?: string;
+  /** a canister: the in-line products on its return hose, in flow order (lane IL1); the CO2 kit: an in-line diffuser or reactor replaces its in-tank diffuser */ inline?: string[]; inlineCo2?: boolean;
   /** the owner's placement; absent = placed by TG (default corner, clear of the hardscape) */ place?: GearSpot;
 }
 /** Which back corner the gear sits in. */

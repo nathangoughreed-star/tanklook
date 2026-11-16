@@ -2,11 +2,11 @@
 // Per category two groups: "I own" (the owned list, $0, not necessarily in use) and "Buy" (catalogue products that fit this tank), the item
 // in use marked, and an independent "Use this one for sure" lock per item. Pure: no DOM. Engine calls go only through scene/techEdit.ts (P4),
 // scene/gearOwn.ts (P8) and src/units.ts; the catalogue lists are read from data/gearCatalog.ts and data/hoods.ts.
-import { commitTech, withTech, addHeater, pickHeaterProduct, tuneHeater, addFilter, pickFilterProduct, tuneFilter, setPump, setRowProduct, pickLightProduct, tuneLight, pickPreset, setHeaterWatts, setLightWatts } from '../../scene/techEdit';
+import { commitTech, withTech, addReturnInline, removeReturnInline, addHeater, pickHeaterProduct, tuneHeater, addFilter, pickFilterProduct, tuneFilter, setPump, setRowProduct, pickLightProduct, tuneLight, pickPreset, setHeaterWatts, setLightWatts } from '../../scene/techEdit';
 import { editGear, gearOfTank, GENERIC, isLockedItem, isOwned, lockItem, ownItem, ownedFor, setInUse, unlockItem, unownItem, type GearModel } from '../../scene/gearOwn';
-import { filterUnits, heatLoss, heaterUnits, presetsFor, roomOf, rowsFor, techOf, withChoice } from '../../scene/tech';
+import { deliveredFlow, filterUnits, heatLoss, heaterUnits, presetsFor, roomOf, rowsFor, specialHeaters, techOf, withChoice } from '../../scene/tech';
 import {
-  FILTER_PRODUCTS, HEATER_PRODUCTS, REEF_ROWS, filterProduct, heaterProduct, lightProduct, lightsFor, listedPrice, productName, pumpProduct, pumpRatedFor, pumpsFor,
+  FILTER_PRODUCTS, HEATER_PRODUCTS, REEF_ROWS, hoseLabel, inlineFor, inlineKinds, type InlineKind, filterProduct, heaterProduct, lightProduct, lightsFor, listedPrice, productName, pumpProduct, pumpRatedFor, pumpsFor,
   reefOptionProducts, reefProduct, skimmerSuitsGal, type SkimmerProduct, type ChillerProduct, type UvProduct,
 } from '../../data/gearCatalog';
 import { hoodProduct, hoodsFor, lightIsHoods, hoodOf } from '../../data/hoods';
@@ -199,7 +199,14 @@ export function categoryView(S: TankSetup, cat: CatId, units: Units, o: { showAl
   const buy = shown.map(e => row(e.item, e, false));
   if (cat === 'heater' || cat === 'filter' || cat === 'light' || !list.length) buy.push(row(GENERIC, undefined, false));
   let note = '';
-  if (cat === 'heater') {
+  const builtIn = specialHeaters(S, techOf(S));
+  if (cat === 'heater' && builtIn.length) { // lane IL1: a heater built into the filter, or in line on its return, is the tank's heater
+    const h = heatLoss(S);
+    note = `${builtIn.map(x => x.builtIn ? `Built into ${productName(x.builtIn)}: ${x.w} W` : `In line on the canister return: ${productName(x.inline!)}, ${x.w} W`).join('; ')}. That is the tank's heater (no separate one, no second price): ${Math.round(h.totalW)} W of the ${Math.round(h.needW)} W a cold night needs.`;
+  } else if (cat === 'co2' && deliveredFlow(S, techOf(S))?.items.some(p => p.kind !== 'heater')) {
+    const p = deliveredFlow(S, techOf(S))!.items.find(q => q.kind !== 'heater')!;
+    note = `The diffuser is the ${p.kind === 'reactor' ? 'reactor' : 'in-line diffuser'} on the canister return (${productName(p)}): a kit's own in-tank diffuser is replaced. The regulator and cylinder come from the kit.`;
+  } else if (cat === 'heater') {
     const h = heatLoss(S), r = roomOf(S);
     note = `${galText(galOf(S))} at ${fmtTempHalf(h.targetC, units)}, room ${fmtTempHalf(r.c, units)}${r.set ? '' : ' (assumed)'}: needs about ${Math.round(h.needW)} W.`;
   } else if (cat === 'light') note = S.lid === 'hood' ? 'The hood holds its own light: pick a hood to change it, or a light product to put the hood away.' : `${list.filter(e => !e.hood).length} lights fit a ${units === 'in' ? Math.round(S.tank.L / 25.4) + ' in' : Math.round(S.tank.L / 10) + ' cm'} tank.`;
@@ -316,3 +323,22 @@ export function marks(S: TankSetup): Record<string, { owned: number; locked: num
 }
 /** The group's one-line summary. */
 export const ownSum = (n: number) => (n ? `$0, the planner prefers these when they fit` : 'nothing yet');
+
+// ---------------------------------------------------------------- the canister's return hose (lane IL1)
+
+export interface ReturnItem { id: string; name: string; kind: string; price: string; flow: string; shows: string; warn?: string }
+export interface ReturnOption { kind: string; label: string; rows: { id: string; name: string; sub: string; price: string; shows: string }[] }
+export interface ReturnView { hose: string; items: ReturnItem[]; delivered: string; options: ReturnOption[] }
+/** What sits on the canister's return hose and what could be added (only what fits the hose). Undefined without a canister. */
+export function returnView(S: TankSetup): ReturnView | undefined {
+  const t = techOf(S), d = deliveredFlow(S, t); if (!d) return undefined;
+  const px = (p: { priceUsd?: number; est?: string[] }) => p.priceUsd ? `${p.est?.includes('priceUsd') ? '~' : ''}${usd(p.priceUsd)}` : '';
+  const shows = (p: { kind: InlineKind; mistVisible: boolean }) => p.kind === 'heater' ? 'out of sight' : p.mistVisible ? 'fine mist visible in the tank' : 'no bubbles in the tank';
+  const items = d.items.map((p): ReturnItem => ({ id: p.id, name: productName(p), kind: inlineKinds[p.kind], price: px(p), shows: shows(p), flow: `-${p.flowLossPct}% flow${p.est?.includes('flowLossPct') ? ' (est.)' : ''}`,
+    ...(p.minFlowGph > d.delivered ? { warn: `needs ${p.minFlowGph}+ gph, the canister gives ${Math.round(d.delivered)}` } : {}) }));
+  const on = new Set(d.items.map(p => p.id)), fit = inlineFor(d.hoseIn).filter(p => !on.has(p.id));
+  const options = (['heater', 'diffuser', 'reactor'] as const).map((k): ReturnOption => ({ kind: k, label: inlineKinds[k], rows: fit.filter(p => p.kind === k).map(p => ({ id: p.id, name: productName(p), sub: `${p.watts ? `${p.watts} W · ` : ''}-${p.flowLossPct}% flow`, price: px(p), shows: shows(p) })) })).filter(o => o.rows.length);
+  return { hose: hoseLabel(d.hoseIn), items, delivered: `${Math.round(d.delivered)} of ${Math.round(d.rated)} gph delivered`, options };
+}
+export const addInline = (S: TankSetup, id: string): void => commitTech(S, s => addReturnInline(s, id));
+export const removeInline = (S: TankSetup, id: string): void => commitTech(S, s => removeReturnInline(s, id));

@@ -3,10 +3,10 @@
 // scene/tech.ts optionCost; a tank without `tech` keeps the engine's inferred rows untouched (old files do not move).
 // Hooked from engine.ts with one line after the routine work rows, before the kit. Keys 'filter' and 'heater' stay, so a kit's price still covers them.
 import dd from '../data/demand-defaults.json';
-import { coldSpecies, extraUnits, heatLoss, inferTech, optionCost, optionDef, rowsFor, techOf, tempEvidence, unitCosts, type TechSetup } from '../scene/tech';
+import { coldSpecies, extraUnits, heatLoss, inferTech, optionCost, optionDef, returnInlineOf, rowsFor, techOf, tempEvidence, unitCosts, type TechSetup } from '../scene/tech';
 import { operatingCheck, sharedRange } from '../scene/temprange';
 import { getSpecies } from '../data/species';
-import { filterByName, genericHeaterW, heaterForBundle } from '../data/gearCatalog';
+import { filterByName, genericHeaterW, heaterForBundle, productName } from '../data/gearCatalog';
 import { matchFilter, matchHeater, type FilterSpec } from './gear';
 import { volume } from '../scene/physics';
 import type { TankSetup } from '../scene/types';
@@ -40,7 +40,10 @@ export function techDemand(S: TankSetup, rows: Contribution[], c: TechCtx) {
     const cold = ev ? coldSpecies(S, t).filter(x => x.fit === 'out' && operatingCheck(sharedRange([getSpecies(x.id)!]), { ...ev, target: undefined }).state === 'outside').length * dd.risk.animalWarnPts.compat : 0;
     const risk = ((def?.risk ?? 0) + cold) * c.riskMul;
     if (!cost.parts.length && !risk) continue;
-    const label = `${r.label}: ${def?.label ?? opt}`;
+    let label = `${r.label}: ${def?.label ?? opt}`;
+    // a heater built into the filter or in line on its return is the tank's heater: one line, no second price (lane IL1, Nathan 2026-11-16)
+    if (r.id === 'heater') { const sp = heatLoss(S, t).units.filter(u => u.builtIn || u.inline), b = sp.find(u => u.builtIn), n = heatLoss(S, t).units.length; if (sp.length) label = `Heater: ${b ? `built into ${productName(b.builtIn!)}` : `in line on the canister return (${productName(sp[0].inline!)})`}${n > 1 ? ` + ${n - 1} more` : ''}`; }
+    if (r.id === 'co2') { const ip = returnInlineOf(S, t).find(x => x.kind !== 'heater'); if (ip && opt === 'pressurized') label += `, in-line ${ip.kind === 'reactor' ? 'reactor' : 'diffuser'} (${productName(ip)})`; }
     const group: Group = CONSUMABLE.has(r.id) && cost.setup.mode === 0 ? 'consumable' : 'gear';
     // heaters / filters added on top of a bundle's own: their setup is a row of its own ('heater+'), which a bundle's price does not cover
     let setup = cost.setup;
