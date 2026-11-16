@@ -288,7 +288,13 @@ a.btn { text-decoration: none; }
 .diffs { position: relative; display: inline-flex; outline-offset: 2px; }
 .difflist { display: none; position: absolute; top: calc(100% + 6px); left: 0; z-index: var(--z-pop); min-width: 260px; padding: var(--s2) var(--s3); gap: var(--s1); font-size: var(--fs-sm); }
 .cmpside.s1 .difflist { left: auto; right: 0; }
-.diffs:hover .difflist, .diffs:focus .difflist, .diffs:focus-within .difflist { display: grid; }
+.diffs:hover .difflist, .diffs:focus .difflist, .diffs:focus-within .difflist, .diffs.open .difflist { display: grid; }
+.diffbtn { all: unset; cursor: pointer; display: inline-flex; border-radius: var(--r-pill, 999px); }
+.diffbtn:focus-visible { outline: 2px solid var(--accent, #5aa0ff); outline-offset: 2px; }
+.difflist .drow2 { align-items: center; }
+.difflist .matchbtns { display: inline-flex; gap: var(--s1); }
+.difflist .matchall { display: flex; gap: var(--s2); justify-content: flex-end; padding-top: var(--s2); border-top: 1px solid var(--line, rgba(255,255,255,.14)); }
+@media (max-width: 700px) { .difflist { min-width: 220px; } .difflist .drow2 { grid-template-columns: 1fr auto; } .difflist .drow2 > span:last-child { grid-column: 1 / -1; } }
 .difflist .drow2 { display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--s2); }
 .cmpside .ov.checkwrap.side { bottom: 14px; left: 50%; transform: translateX(-50%); max-width: calc(100% - var(--s4)); }
 .check.differs { position: relative; }

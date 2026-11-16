@@ -53,10 +53,10 @@ export const linkTitle = (linked: boolean) => linked
   : 'Views independent: each tank orbits on its own. Click to link them again.';
 
 // ---------- what differs ----------
-export interface DiffRow { a: string; b: string }
-/** The settings that differ between tank A and tank B, as plain rows (ui/diff.ts's list without its "match" actions). */
+export interface DiffRow { a: string; b: string; k: number }
+/** The settings that differ between tank A and tank B, as plain rows (ui/diff.ts's list; `k` is its index, so matchRow can find the match action). */
 export function diffRows(a: TankSetup, b: TankSetup, units: Units): DiffRow[] {
-  return tankDiff(a, b, units).map(([x, y]) => ({ a: x, b: y }));
+  return tankDiff(a, b, units).map(([x, y], k) => ({ a: x, b: y, k }));
 }
 export const diffWord = (n: number) => n === 0 ? 'same' : n === 1 ? '1 diff' : `${n} diffs`;
 
@@ -87,4 +87,22 @@ export interface CheckCompare { id: CheckId; title: string; a: string; b: string
 export function checkCompare(a: ChecksModel, b: ChecksModel): CheckCompare[] {
   const d = checkDiffs(a, b);
   return CHECKS.map(c => ({ id: c.id, title: c.title, a: checkFigure(a, c.id), b: checkFigure(b, c.id), differs: d[c.id] }));
+}
+
+// ---------- match (lane CP2, 2026-11-16): the old UI's "⇄" buttons, one row or the whole tank, either way, one undo step each ----------
+/** Make tank `to` take the other tank's value for difference row `k` (ui/diff.ts's match action). Returns the note to show. */
+export function matchRow(store: Pick<Store, 'scene' | 'update'>, k: number, to: Side): string {
+  if (!isSplit(store) || (to !== 0 && to !== 1)) return '';
+  const d = tankDiff(store.scene.tanks[0], store.scene.tanks[1], store.scene.units)[k];
+  if (!d) return '';
+  store.update(s => d[2](s.tanks[to], s.tanks[1 - to]));
+  return `Tank ${letterOf(to)} now matches Tank ${letterOf(1 - to)}: ${d[1 - to]}. Ctrl+Z undoes it.`;
+}
+/** "Make B like A" / "Make A like B": every difference at once (the list is ordered size first, so fish and scape scale to the new size), ONE undo step. */
+export function matchAll(store: Pick<Store, 'scene' | 'update'>, to: Side): string {
+  if (!isSplit(store) || (to !== 0 && to !== 1)) return '';
+  const ds = tankDiff(store.scene.tanks[0], store.scene.tanks[1], store.scene.units);
+  if (!ds.length) return '';
+  store.update(s => { for (const d of ds) d[2](s.tanks[to], s.tanks[1 - to]); });
+  return `Tank ${letterOf(to)} now matches Tank ${letterOf(1 - to)} in ${ds.length} setting${ds.length > 1 ? 's' : ''}. Ctrl+Z undoes it.`;
 }

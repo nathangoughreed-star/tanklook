@@ -99,3 +99,23 @@ describe('sideStore as is', () => {
     expect(s.scene.tanks[1].fish).toHaveLength(0); expect(s.scene.tanks[0].fish.length).toBeGreaterThan(0);
   });
 });
+
+describe('match buttons (CP2)', () => {
+  it('matchRow makes one side take the other value, one undo step', async () => {
+    const { matchRow, matchAll } = await import('../src/shell/logic/compare');
+    const s = split();
+    s.update(sc => { sc.tanks[1].lid = sc.tanks[0].lid === 'glass' ? 'open' : 'glass'; sc.tanks[1].render.rim = !sc.tanks[0].render.rim; });
+    const rows = diffRows(s.scene.tanks[0], s.scene.tanks[1], s.scene.units);
+    expect(rows.length).toBe(2);
+    const lidK = rows.find(r => /lid|top/i.test(r.a + r.b))!.k;
+    const lidA = s.scene.tanks[0].lid;
+    expect(matchRow(s, lidK, 1)).toMatch(/Tank B now matches Tank A/);
+    expect(s.scene.tanks[1].lid).toBe(lidA);
+    expect(diffRows(s.scene.tanks[0], s.scene.tanks[1], s.scene.units).length).toBe(1);
+    s.undo(); expect(diffRows(s.scene.tanks[0], s.scene.tanks[1], s.scene.units).length).toBe(2);
+    expect(matchAll(s, 0)).toMatch(/Tank A now matches Tank B in 2 settings/);
+    expect(diffRows(s.scene.tanks[0], s.scene.tanks[1], s.scene.units).length).toBe(0);
+    s.undo(); expect(diffRows(s.scene.tanks[0], s.scene.tanks[1], s.scene.units).length).toBe(2);
+    expect(matchAll(split(), 1)).toBe('');
+  });
+});

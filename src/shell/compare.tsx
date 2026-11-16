@@ -2,10 +2,11 @@
 // split (the viewer already draws two tanks side by side; ui/sideStore.ts is used as it is, see the test). Pieces: the cluster's buttons, one tab and one check
 // bar per half, the "Editing A / B / Both" strip over the panel, and a drawer that shows both tanks with the differences marked.
 import type { ComponentChildren } from 'preact';
+import { useState } from 'preact/hooks';
 import type { Store } from '../scene/store';
 import { CHECKS, type CheckId, type ChecksModel } from './logic/checks';
 import {
-  EDIT_MODES, editModeOf, setEditMode, startCompare, endCompare, useSide, setLinked, linkedOf, linkWord, linkTitle, diffRows, sideTab, checkDiffs, checkCompare, letterOf,
+  EDIT_MODES, editModeOf, setEditMode, startCompare, endCompare, useSide, setLinked, linkedOf, linkWord, linkTitle, diffRows, matchRow, matchAll, sideTab, checkDiffs, checkCompare, letterOf,
 } from './logic/compare';
 import { DrawerBody } from './drawers';
 import { Icon, Pill } from './ui';
@@ -55,6 +56,8 @@ function SideCheckBar({ m, other, side, on, onPick }: { m: ChecksModel; other: C
  *  Phone (< 700 px): the halves stay side by side in the short view; the tabs show only the letter, and the strip below picks which side's checks show. */
 export function CompareLayer({ store, models, drawer, onPick, phone, say }: { store: Store; models: ChecksModel[]; drawer: CheckId | null; onPick: (id: CheckId) => void; phone: boolean; say: (m: string) => void }) {
   const u = store.scene.units, rows = diffRows(store.scene.tanks[0], store.scene.tanks[1], u);
+  const [open, setOpen] = useState<number | null>(null); // the side whose difference list is pinned open (click / tap); hover and focus still show it
+  const act = (f: () => string) => { say(f()); setOpen(null); };
   return (
     <div class="cmplayer" aria-label="Compare">
       {[0, 1].map(i => {
@@ -65,8 +68,26 @@ export function CompareLayer({ store, models, drawer, onPick, phone, say }: { st
               <b class="letter">{t.letter}</b>
               {phone ? null : <span class="tsize">{t.size}</span>}
               {t.editing ? <span class="pill accent">editing</span> : phone ? null : <span class="dim tdes">as designed</span>}
-              <span class="diffs" tabindex={0}><Pill tone={rows.length ? 'warn' : 'neutral'}>{t.diffWord}</Pill>
-                {rows.length ? <div class="difflist glass" role="tooltip">{rows.map(r => <div class="drow2"><span>{r.a}</span><span class="dim">vs</span><span>{r.b}</span></div>)}</div> : null}
+              <span class={`diffs${open === i ? ' open' : ''}`} tabindex={0} onFocusOut={(e: FocusEvent) => { if (!(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node | null)) setOpen(null); }}>
+                <button type="button" class="diffbtn" aria-expanded={open === i} aria-label={`${t.diffWord}: show the list`} onClick={e => { if (open === i) { (e.currentTarget as HTMLElement).blur(); setOpen(null); } else setOpen(i); }}><Pill tone={rows.length ? 'warn' : 'neutral'}>{t.diffWord}</Pill></button>
+                {rows.length ? (
+                  <div class="difflist glass" role="group" aria-label="Differences">
+                    {rows.map(r => (
+                      <div class="drow2">
+                        <span>{r.a}</span>
+                        <span class="matchbtns">
+                          <button type="button" class="btn sm" title="Make B like A for this one" aria-label={`Make B like A: ${r.b} becomes ${r.a}`} onClick={() => act(() => matchRow(store, r.k, 1))}>A → B</button>
+                          <button type="button" class="btn sm" title="Make A like B for this one" aria-label={`Make A like B: ${r.a} becomes ${r.b}`} onClick={() => act(() => matchRow(store, r.k, 0))}>B → A</button>
+                        </span>
+                        <span>{r.b}</span>
+                      </div>
+                    ))}
+                    <div class="matchall">
+                      <button type="button" class="btn sm" title="Copy every difference from A into B (Ctrl+Z undoes it)" onClick={() => act(() => matchAll(store, 1))}>Make B like A</button>
+                      <button type="button" class="btn sm" title="Copy every difference from B into A (Ctrl+Z undoes it)" onClick={() => act(() => matchAll(store, 0))}>Make A like B</button>
+                    </div>
+                  </div>
+                ) : null}
               </span>
               <button type="button" class="btn sm useone" title={`Keep tank ${t.letter} and drop the other one (Ctrl+Z brings it back)`} onClick={() => say(useSide(store, i))}>{phone ? 'Use' : 'Use this one'}</button>
             </div>
