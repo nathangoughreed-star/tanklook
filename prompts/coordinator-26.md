@@ -23,7 +23,7 @@ Work in `C:/Users/nreed/Glass-Box-coord`. C25's runner: `C:/Users/nreed/AppData/
 - **SW2** (fish behaviour) is idle. New behaviour asks go there.
 
 ## R100 Plumbing view: waiting on Nathan
-C25 proposed a mockup first (see C25's last reply): 3 static schematic mockups (HOB planted; canister + in-line CO2 / heater; reef with overflow box + sump + return pump), then the flow-graph data model, then the view, with overflow boxes and sumps as real products in their own lane. Start nothing until Nathan picks.
+C25 proposed a mockup first (see C25's last reply): 3 static schematic mockups (HOB planted; canister + in-line CO2 / heater; reef with overflow box + sump + return pump), then the flow-graph data model, then the view, with overflow boxes and sumps as real products in their own lane. Start nothing until Nathan picks. Nathan 2026-11-16: keep it simple, in and out arrows, NO fluid dynamics. The 'flow model' is only a list of connections (A -> B, direction, the GPH the gear states) plus plain sums (turnover = filter GPH / gallons; return pump GPH vs the overflow's rated GPH).
 
 ## Carried over from C24 / C25
 - Needs a live check (none verified yet): R85-R94 (see coordinator-25.md), R91 Full screen (press F on tanklook.com in the browser pane).
