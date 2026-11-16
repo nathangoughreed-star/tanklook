@@ -179,8 +179,8 @@ export type LightMount = 'bar' | 'rim-legs' | 'gooseneck' | 'submersible' | 'han
  *  box per `coverageMm` of tank length (published coverage; absent = one fixture, and the light check says whether it carries). */
 /** The LEDs as seen from below: `rows` of white dots (front to back), one accent dot in `every` (0 = none; a row index in
  *  `accentRow` = that whole row in the accents), 'rings' = one row of ring clusters (NICREW C10), 'disc' = a round head. */
-export interface LightLeds { kind: 'dots' | 'rings' | 'disc'; rows: number; white: string; accents: string[]; every: number; accentRow?: number }
-export interface LightLook { body: string; endcaps: string; legs: string; lens: string; leds: LightLeds; ledLook?: string; photo?: string }
+export interface LightLeds { kind: 'dots' | 'rings' | 'disc' | 'ovals'; /** ovals: how many blue oval lens clusters (PM1) */ ovals?: number; rows: number; white: string; accents: string[]; every: number; accentRow?: number }
+export interface LightLook { /** PM1: where the look was read from (research/screens/PM1/ref) */ pm1?: string; /** PM1: a reef box on a clamp arm (not hanging cables): 'curve' = a bent round arm (HyperReef), 'bracket' = a flat L bracket (NavaReef); arm and clamp colour = legs */ arm?: 'curve' | 'bracket'; body: string; endcaps: string; legs: string; lens: string; leds: LightLeds; ledLook?: string; photo?: string }
 export interface LightProduct {
   id: string; brand: string; model: string; mount: LightMount;
   /** the tank lengths it fits, mm (a bar's brackets slide out from its body to this) */

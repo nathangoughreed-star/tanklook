@@ -75,15 +75,38 @@ export function addProductLight(sc: THREE.Scene, T: Tank, l: LightSettings, p: L
   if (p.mount === 'hanging') {
     // a compact reef box over the water: a slab (the listing's length x width x thickness) with a clear lens over the board, the
     // LEDs as rings of dots under it, two thin hanging cables up (the rim-arm kit is not drawn: its mount is a clamp on the glass)
-    const E = emitters(T, l), bl = p.lengthMm, bw = p.widthMm, th = p.heightMm;
+    const E = emitters(T, l), bl = p.lengthMm, bw = p.widthMm, th = p.heightMm, arm = c.arm, legC = basic(c.legs);
     for (const e of E) {
       add(new THREE.BoxGeometry(bl, th, bw), body, e[0], y + th / 2, e[2]);
       for (const s of [1, -1]) {
         add(new THREE.BoxGeometry(bl - 6, 1.2, 1.6), edge, e[0], y + th - 0.4, e[2] + s * (bw / 2 - 0.6));
-        add(new THREE.CylinderGeometry(1, 1, 160, 6), cap, e[0] + s * bl * 0.32, y + th + 80, e[2]);
+        if (!arm) add(new THREE.CylinderGeometry(1, 1, 160, 6), cap, e[0] + s * bl * 0.32, y + th + 80, e[2]);
       }
       add(new THREE.BoxGeometry(bl - 12, 0.6, bw - 12), board, e[0], y - 0.2, e[2]);
-      ledDots(sc, p, glow, bl - 24, bw - 24, (u, v) => mx.makeTranslation(e[0] + u, y - 0.7, e[2] + v).clone(), y);
+      if (c.leds.kind === 'ovals') {
+        // PM1: blue oval lens clusters under the box (HyperReef two, NavaReef one), white and violet dots among them
+        const n = c.leds.ovals ?? 1, rx = Math.min(bl * (n > 1 ? 0.19 : 0.3), bl / (2 * n) - 4), rz = bw * 0.3, blue = basic(c.leds.accents[0] ?? '#2f6bff'), deep = basic(new THREE.Color(c.leds.accents[0] ?? '#2f6bff').multiplyScalar(0.55).getHex());
+        for (let k = 0; k < n; k++) {
+          const cx = e[0] + (n > 1 ? (k - 0.5) * bl * 0.46 : 0), cz = e[2] + (n > 1 ? 0 : bw * 0.04);
+          for (const [m, f, dy] of [[deep, 1, -0.8], [blue, 0.78, -1.2]] as const) { const o = add(new THREE.CylinderGeometry(rx * f, rx * f, 0.6, 28), m, cx, y + dy, cz); o.scale.z = rz / rx; }
+          const pts = 14, acc = c.leds.accents[1] ?? '#8a5bff';
+          for (let i = 0; i < pts; i++) {
+            const a = i / pts * Math.PI * 2, o = add(new THREE.CylinderGeometry(1.9, 1.9, 0.8, 8), i % 3 === 2 ? basic(acc) : glow, cx + rx * 0.58 * Math.cos(a), y - 1.7, cz + rz * 0.58 * Math.sin(a));
+            o.userData.nolight = true; o.userData.overhead = y;
+          }
+        }
+      } else ledDots(sc, p, glow, bl - 24, bw - 24, (u, v) => mx.makeTranslation(e[0] + u, y - 0.7, e[2] + v).clone(), y);
+      if (arm) {
+        // the arm the box really hangs from: a clamp on the back rim, a post up behind the tank, then over to the box's back edge (a bent round tube or a flat bracket)
+        const xp = e[0] + bl * 0.27, zp = -(T.D + 10), yTop = y + th * 0.6, yRim = T.H, zb = e[2] - bw / 2;
+        add(new THREE.BoxGeometry(46, 54, 34), legC, xp, yRim - 8, zp + 6);                       // the clamp body, a thumbscrew each side
+        for (const s of [-1, 1]) add(new THREE.CylinderGeometry(3.2, 3.2, 16, 10), cap, xp + s * 16, yRim - 24, zp - 14).rotation.x = Math.PI / 2;
+        if (arm === 'bracket') { add(new THREE.BoxGeometry(22, yTop - yRim + 8, 3.5), legC, xp, (yTop + yRim) / 2 - 2, zp + 6); add(new THREE.BoxGeometry(22, 3.5, zp - zb < 0 ? zb - zp + 4 : 20), legC, xp, yTop, (zb + zp) / 2); }
+        else {
+          const pts = [[xp, yRim, zp + 6], [xp, yTop - 70, zp + 6], [xp, yTop - 14, zp + 24], [xp, yTop, zp + 70], [xp, yTop, zb + 2]].map(([a, b, d]) => new THREE.Vector3(a, b, d));
+          add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.5), 40, 8, 10), legC, 0, 0, 0);
+        }
+      }
     }
     return;
   }

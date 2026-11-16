@@ -5,6 +5,23 @@ import hoodData from './gear/hoods.json';
 import type { LightSettings, Tank, TankSetup } from '../scene/types';
 import { shapeOf } from '../scene/shape';
 
+/** What the hood looks like, read off its product photos (PM1, R98; research/screens/PM1/ref/<brand>-hood-N.jpg). All optional: the generic black dome without it. */
+export interface HoodLook {
+  /** sampled plastic colour (hex) and sheen */
+  color?: string; sheen?: 'matte' | 'satin' | 'gloss';
+  /** height at the back above the rim (mm): 38 = the classic dome, ~14 = a flat lid */
+  riseMm?: number;
+  /** a rounded barrel along the rear (height mm, starting at this fraction of the depth from the front) over a flat flap */
+  ridge?: { mm: number; from: number };
+  /** a stepped cut-out in the rear edge: centre (0..1 along the length), width (fraction of the length), depth (mm) */
+  notch?: { at: number; w: number; dMm: number };
+  /** two hinge clips on the rear edge (Tetra); small end tabs (Aqueon); a cable with an inline switch (Imagitarium) */
+  clips?: boolean; tabs?: boolean; cable?: boolean;
+  /** a light panel / window on the rear top (hex) */
+  label?: string;
+  /** where the photos are and what they show; est = fields not readable from them */
+  src?: string; facts?: string; est?: string[];
+}
 export interface HoodProduct {
   id: string; brand: string; model: string;
   /** the frame it sits on, inches: length x depth (front to back) */
@@ -14,6 +31,8 @@ export interface HoodProduct {
   /** the light built in: lamp type and watts feed the light model */
   light: { type: 'led' | 'tube'; tech: LightSettings['tech'] & string; watts: number; lamp: string; lumens?: number; par?: number; kelvin?: number };
   priceUsd: number; url: string; asOf: string; est: string[]; note?: string;
+  /** PM1: the look read off product photos */
+  look?: HoodLook;
 }
 export const HOOD_PRODUCTS = hoodData as unknown as HoodProduct[];
 export const hoodProduct = (id?: string) => (id ? HOOD_PRODUCTS.find(h => h.id === id) : undefined);

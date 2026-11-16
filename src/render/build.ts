@@ -17,7 +17,8 @@ import { LECA, SUBSTRATES, blendTile, blendZone, grain3D } from '../art/placehol
 import { litterMeshes, type GroundAt } from './scatter';
 import { patchHighlight, patchMeshes, patchSel } from './brushmesh';
 import { applyGrainUV, woodTexture, type Grain } from './woodGrain';
-import { addProductStand } from './standModel';
+import { addProductStand, sheenQuad } from './standModel';
+import { hoodOf } from '../data/hoods';
 import { standOf } from '../data/stands';
 import { bermRise, contactKey, contactObjects } from './contact';
 import { FX } from './fx';
@@ -733,34 +734,55 @@ export { HOOD_H };
  * rounded front, with a recessed feeding hatch. Side profile extruded along the tank length; shaded per vertex so the
  * curve reads without lights.
  */
-function addHood(sc: THREE.Scene, S: TankSetup, T: Tank) {
-  const { L, D } = T, t = glassThickness(T, S.render.glass), rim = S.render.rim;
+export function addHood(sc: THREE.Scene, S: TankSetup, T: Tank) {
+  const { L, D } = T, t = glassThickness(T, S.render.glass), rim = S.render.rim, look = hoodOf(S)?.look;
   const o = rim ? t + 8 : t, inset = 6, base = rim ? T.H + RIM_DROP : T.H, bev = 3;
   const x0 = -o + inset + bev, x1 = L + o - inset - bev;
-  // profile in (u, y): u = -z (front of the hood has the smallest u), y up from the rim top
-  const uf = -(o - inset - bev), ub = D + o - inset - bev, hf = 22, hb = HOOD_H - bev, um = (uf + ub) / 2;
+  // profile in (u, y): u = -z (front of the hood has the smallest u), y up from the rim top. PM1: `look.riseMm` sets the height at the back (38 = the classic dome, ~14 = a flat lid)
+  const uf = -(o - inset - bev), ub = D + o - inset - bev, hb = (look?.riseMm ?? HOOD_H) - bev, hf = Math.min(22, hb - 2), um = (uf + ub) / 2;
   const p0 = new THREE.Vector2(uf + hf, hf), c = new THREE.Vector2(um, hb), p1 = new THREE.Vector2(ub, hb);
-  const shape = new THREE.Shape();
-  shape.moveTo(uf, 0); shape.lineTo(uf, hf * 0.45);
-  shape.quadraticCurveTo(uf, hf, p0.x, p0.y);               // rounded front nose
-  shape.quadraticCurveTo(c.x, c.y, p1.x, p1.y);             // gently domed top rising to the back
-  shape.lineTo(ub, 0); shape.closePath();
   const bow = shapeOf(T) === 'bow';
-  const geo = new THREE.ExtrudeGeometry(shape, { depth: x1 - x0, steps: bow ? 32 : 1, bevelEnabled: true, bevelThickness: bev, bevelSize: bev, bevelSegments: 2, curveSegments: 14 });
-  geo.rotateY(Math.PI / 2); geo.translate(x0, base, 0);     // local (u, y, e) -> world (x0 + e, base + y, -u)
-  // bowfront: the profile's front follows the bow (stretched toward the back, which stays straight)
+  const rd = look?.ridge, ru0 = uf + (ub - uf) * (rd?.from ?? 0.5);   // PM1 ridge (Aqueon, Marineland): a flat flap over the front, then a rounded barrel along the back
+  const profile = (back: number) => {
+    const shape = new THREE.Shape();
+    if (rd) {
+      const fl = 12, hr = rd.mm - bev, w = ub - ru0;
+      shape.moveTo(uf, 0); shape.lineTo(uf, fl - 3); shape.quadraticCurveTo(uf, fl, uf + 6, fl); shape.lineTo(ru0, fl);
+      shape.quadraticCurveTo(ru0 + w * 0.04, hr * 0.9, ru0 + w * 0.2, hr); shape.quadraticCurveTo(ru0 + w * 0.6, hr * 1.04, back - 8, hr * 0.7);
+      shape.lineTo(back, 0); shape.closePath(); return shape;
+    }
+    shape.moveTo(uf, 0); shape.lineTo(uf, hf * 0.45);
+    shape.quadraticCurveTo(uf, hf, p0.x, p0.y);               // rounded front nose
+    shape.quadraticCurveTo(c.x, c.y, back, hb);               // gently domed top rising to the back
+    shape.lineTo(back, 0); shape.closePath();
+    return shape;
+  };
   const warp = (x: number, u: number) => { if (!bow) return u; const f = chord(T, 0, clamp(x, 0, L))?.[0] ?? 0; return ub - (ub - u) * (ub - (f + uf)) / (ub - uf); };
-  if (bow) { const p = geo.attributes.position; for (let i = 0; i < p.count; i++) p.setZ(i, -warp(p.getX(i), -p.getZ(i))); }
-  geo.computeVertexNormals();
-  const n = geo.attributes.normal, base3 = new THREE.Color(0x1b1d21), light = new THREE.Vector3(-0.35, 1, 0.6).normalize(), cols: number[] = [];
-  for (let i = 0; i < n.count; i++) {
-    const k = 0.62 + 0.75 * Math.max(0, n.getX(i) * light.x + n.getY(i) * light.y + n.getZ(i) * light.z);
-    cols.push(base3.r * k, base3.g * k, base3.b * k);
+  // PM1: a stepped cut-out in the rear edge (Top Fin, Imagitarium, Marineland) splits the hood into three runs along the length; the middle one is shallower
+  const nt = !bow ? look?.notch : undefined, span = x1 - x0;
+  const runs: [number, number, number][] = nt ? (() => {
+    const a0 = clamp(x0 + span * (nt.at - nt.w / 2), x0 + 20, x1 - 40), a1 = clamp(x0 + span * (nt.at + nt.w / 2), a0 + 20, x1 - 20);
+    return [[x0, a0, ub], [a0, a1, ub - nt.dMm], [a1, x1, ub]];
+  })() : [[x0, x1, ub]];
+  const shade = new THREE.Color(look?.color ?? '#1b1d21'), matte = look?.sheen === 'matte', gloss = look?.sheen === 'gloss';
+  const light = new THREE.Vector3(-0.35, 1, 0.6).normalize(), kLo = matte ? 0.75 : gloss ? 0.5 : 0.62, kHi = matte ? 0.6 : gloss ? 1.1 : 0.75;
+  for (const [ra, rb, back] of runs) {
+    const geo = new THREE.ExtrudeGeometry(profile(back), { depth: rb - ra, steps: bow ? 32 : 1, bevelEnabled: true, bevelThickness: bev, bevelSize: bev, bevelSegments: 2, curveSegments: 14 });
+    geo.rotateY(Math.PI / 2); geo.translate(ra, base, 0);     // local (u, y, e) -> world (ra + e, base + y, -u)
+    // bowfront: the profile's front follows the bow (stretched toward the back, which stays straight)
+    if (bow) { const p = geo.attributes.position; for (let i = 0; i < p.count; i++) p.setZ(i, -warp(p.getX(i), -p.getZ(i))); }
+    geo.computeVertexNormals();
+    const n = geo.attributes.normal, cols: number[] = [];
+    for (let i = 0; i < n.count; i++) {
+      const k = kLo + kHi * Math.max(0, n.getX(i) * light.x + n.getY(i) * light.y + n.getZ(i) * light.z);
+      cols.push(shade.r * k, shade.g * k, shade.b * k);
+    }
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+    const hood = new THREE.Mesh(geo, basic(0xffffff, { vertexColors: true })); hood.userData.room = true; sc.add(hood);
   }
-  geo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
-  const hood = new THREE.Mesh(geo, basic(0xffffff, { vertexColors: true })); hood.userData.room = true; sc.add(hood);
   // feeding hatch: a rectangle on the top, front-centre, following the dome
   const topY = (u: number) => {                             // height of the top curve at u (sampled Bezier)
+    if (rd) return base + (u < ru0 ? 12 : rd.mm - bev) + bev + 0.8;
     let best = hb, err = Infinity;
     for (let i = 0; i <= 64; i++) {
       const s = i / 64, x = (1 - s) ** 2 * p0.x + 2 * (1 - s) * s * c.x + s * s * p1.x;
@@ -773,7 +795,25 @@ function addHood(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const hp: number[] = [], seg = bow ? 12 : 1, W = (x: number, y: number, u: number) => [x, y, -warp(x, u)];
   for (let i = 0; i < seg; i++) { const xa = hx0 + (hx1 - hx0) * i / seg, xb = hx0 + (hx1 - hx0) * (i + 1) / seg; hp.push(...W(xa, ya, ua), ...W(xb, ya, ua), ...W(xa, yb, ubh), ...W(xb, yb, ubh)); }
   hp.push(...W(hx0, ya, ua), ...W(hx0, yb, ubh), ...W(hx1, ya, ua), ...W(hx1, yb, ubh));
-  sc.add(lines(hp, 0x45484e, 0.95));
+  sc.add(lines(hp, matte || !look ? 0x45484e : 0x5a5e66, 0.95));
+  if (look && !bow) {
+    // the soft highlight a satin or gloss lid shows (the same band the product stands use)
+    const sh = sheenQuad(look.sheen, span * 0.8, (ub - uf) * 0.5);
+    if (sh) { sh.rotation.x = -Math.PI / 2; sh.position.set(L / 2, topY(um) + 0.5, -(um + (ub - um) * 0.1)); sc.add(sh); }
+    if (look.label) {                                       // Tetra: the light panel at the rear
+      const lb = new THREE.Mesh(new THREE.PlaneGeometry(L * 0.16, (ub - uf) * 0.1), basic(look.label, { polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+      lb.rotation.x = -Math.PI / 2; lb.position.set(L / 2, topY(ub - (ub - uf) * 0.2) + 0.2, -(ub - (ub - uf) * 0.2)); lb.userData.room = true; sc.add(lb);
+    }
+    if (look.clips || look.tabs) for (const s of [-1, 1]) {   // Tetra: two hinge clips on the rear edge; Aqueon: small tabs at the ends
+      const cl = new THREE.Mesh(new THREE.BoxGeometry(look.clips ? 22 : 16, look.clips ? 14 : 8, look.clips ? 12 : 30), basic(new THREE.Color(look.color ?? '#222222').multiplyScalar(0.8)));
+      cl.position.set(L / 2 + s * (look.clips ? L * 0.38 : span / 2 + 2), look.clips ? base + hb + 6 : base + 8, look.clips ? -(ub - 6) : -(um + 20)); cl.userData.room = true; sc.add(cl);
+    }
+    if (look.cable) {                                       // Imagitarium: a thin cord from the rear-right corner out over the back, with a small inline switch
+      const cx = x1 - 30, cz = -(ub - 12), sw = new THREE.Mesh(new THREE.BoxGeometry(26, 10, 14), basic(0x111111));
+      sw.position.set(cx, topY(ub - 12) + 4, cz); sw.userData.room = true; sc.add(sw);
+      sc.add(lines([cx + 13, topY(ub - 12) + 4, cz, x1 + 40, base + 4, cz - 40, x1 + 40, base + 4, cz - 40, x1 + 80, base - 40, cz - 80], 0x0d0d0d, 1));
+    }
+  }
   addHoodLamps(sc, T, S.light, base - bev);                 // the lamps on the hood's underside (its bevel's lowest face)
 }
 

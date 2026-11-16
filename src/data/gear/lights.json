@@ -666,7 +666,8 @@
     "every": 0
    },
    "ledLook": "single column of ring-style white/blue clusters",
-   "photo": "https://m.media-amazon.com/images/I/71RQ-Zm-U6L._AC_SL1500_.jpg"
+   "photo": "https://m.media-amazon.com/images/I/71RQ-Zm-U6L._AC_SL1500_.jpg",
+   "pm1": "read off listing photos: research/screens/PM1/ref/nicrew-*.jpg"
   },
   "colorsEst": [
    "endcaps",
@@ -781,7 +782,8 @@
     "every": 2
    },
    "ledLook": "2 rows alternating white and blue",
-   "photo": "https://m.media-amazon.com/images/I/61LqPWXpScL._AC_SL1500_.jpg"
+   "photo": "https://m.media-amazon.com/images/I/61LqPWXpScL._AC_SL1500_.jpg",
+   "pm1": "read off listing photos: research/screens/PM1/ref/nicrew-*.jpg"
   },
   "colorsEst": [
    "endcaps",
@@ -951,7 +953,8 @@
     "every": 0
    },
    "ledLook": "single column of ring-style white/blue clusters",
-   "photo": "https://m.media-amazon.com/images/I/71RQ-Zm-U6L._AC_SL1500_.jpg"
+   "photo": "https://m.media-amazon.com/images/I/71RQ-Zm-U6L._AC_SL1500_.jpg",
+   "pm1": "read off listing photos: research/screens/PM1/ref/nicrew-*.jpg"
   },
   "colorsEst": [
    "endcaps",
@@ -1052,22 +1055,25 @@
    "colorsEst"
   ],
   "colors": {
-   "body": "#1c1c1e",
+   "body": "#2a2a2d",
    "endcaps": "#1c1c1e",
    "legs": "#26262a",
    "lens": "clear",
    "leds": {
     "white": "#cfe0ff",
-    "kind": "dots",
+    "kind": "ovals",
     "rows": 2,
     "accents": [
      "#2f6bff",
      "#8a5bff"
     ],
-    "every": 2
+    "every": 2,
+    "ovals": 2
    },
    "ledLook": "two round blue/violet LED clusters",
-   "photo": "https://m.media-amazon.com/images/I/61b5CoCZF0L._AC_SL1500_.jpg"
+   "photo": "https://m.media-amazon.com/images/I/61b5CoCZF0L._AC_SL1500_.jpg",
+   "arm": "curve",
+   "pm1": "read off listing photos: research/screens/PM1/ref/nicrew-*.jpg"
   },
   "colorsEst": [
    "endcaps",
@@ -1109,22 +1115,25 @@
    "heightMm"
   ],
   "colors": {
-   "body": "#1c1c1e",
+   "body": "#2a2a2d",
    "endcaps": "#1c1c1e",
    "legs": "#26262a",
    "lens": "clear",
    "leds": {
     "white": "#cfe0ff",
-    "kind": "dots",
+    "kind": "ovals",
     "rows": 2,
     "accents": [
      "#2f6bff",
      "#8a5bff"
     ],
-    "every": 2
+    "every": 2,
+    "ovals": 2
    },
    "ledLook": "two round blue/violet LED clusters",
-   "photo": "https://m.media-amazon.com/images/I/61SjUfoHPCL._AC_SL1500_.jpg"
+   "photo": "https://m.media-amazon.com/images/I/61SjUfoHPCL._AC_SL1500_.jpg",
+   "arm": "curve",
+   "pm1": "read off listing photos: research/screens/PM1/ref/nicrew-*.jpg"
   },
   "colorsEst": [
    "endcaps",
@@ -1166,22 +1175,25 @@
    "heightMm"
   ],
   "colors": {
-   "body": "#1c1c1e",
+   "body": "#2a2a2d",
    "endcaps": "#1c1c1e",
    "legs": "#26262a",
    "lens": "clear",
    "leds": {
     "white": "#cfe0ff",
-    "kind": "dots",
+    "kind": "ovals",
     "rows": 2,
     "accents": [
      "#2f6bff",
      "#8a5bff"
     ],
-    "every": 2
+    "every": 2,
+    "ovals": 2
    },
    "ledLook": "two round blue/violet LED clusters",
-   "photo": "https://m.media-amazon.com/images/I/61BPoGuSJJL._AC_SL1500_.jpg"
+   "photo": "https://m.media-amazon.com/images/I/61BPoGuSJJL._AC_SL1500_.jpg",
+   "arm": "curve",
+   "pm1": "read off listing photos: research/screens/PM1/ref/nicrew-*.jpg"
   },
   "colorsEst": [
    "endcaps",
@@ -1224,21 +1236,24 @@
    "heightMm"
   ],
   "colors": {
-   "body": "#1c1c1e",
+   "body": "#2a2a2d",
    "endcaps": "#1c1c1e",
-   "legs": "#26262a",
+   "legs": "#2a2a2c",
    "lens": "clear",
    "leds": {
     "white": "#cfe0ff",
-    "kind": "dots",
+    "kind": "ovals",
     "rows": 2,
     "accents": [
      "#2f6bff"
     ],
-    "every": 2
+    "every": 2,
+    "ovals": 1
    },
    "ledLook": "blue-focused oval of LEDs",
-   "photo": "https://m.media-amazon.com/images/I/61DNOLONN2L._AC_SL1500_.jpg"
+   "photo": "https://m.media-amazon.com/images/I/61DNOLONN2L._AC_SL1500_.jpg",
+   "arm": "bracket",
+   "pm1": "read off listing photos: research/screens/PM1/ref/nicrew-*.jpg"
   },
   "colorsEst": [
    "endcaps",
@@ -1281,21 +1296,24 @@
    "heightMm"
   ],
   "colors": {
-   "body": "#1c1c1e",
+   "body": "#2a2a2d",
    "endcaps": "#1c1c1e",
-   "legs": "#26262a",
+   "legs": "#2a2a2c",
    "lens": "clear",
    "leds": {
     "white": "#cfe0ff",
-    "kind": "dots",
+    "kind": "ovals",
     "rows": 2,
     "accents": [
      "#2f6bff"
     ],
-    "every": 2
+    "every": 2,
+    "ovals": 1
    },
    "ledLook": "blue-focused oval of LEDs",
-   "photo": "https://m.media-amazon.com/images/I/61FW82bW55L._AC_SL1500_.jpg"
+   "photo": "https://m.media-amazon.com/images/I/61FW82bW55L._AC_SL1500_.jpg",
+   "arm": "bracket",
+   "pm1": "read off listing photos: research/screens/PM1/ref/nicrew-*.jpg"
   },
   "colorsEst": [
    "endcaps",
@@ -1349,7 +1367,8 @@
     "every": 2
    },
    "ledLook": "2 rows alternating white and blue",
-   "photo": "https://m.media-amazon.com/images/I/61LqPWXpScL._AC_SL1500_.jpg"
+   "photo": "https://m.media-amazon.com/images/I/61LqPWXpScL._AC_SL1500_.jpg",
+   "pm1": "read off listing photos: research/screens/PM1/ref/nicrew-*.jpg"
   },
   "colorsEst": [
    "endcaps",

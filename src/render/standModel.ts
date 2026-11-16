@@ -26,6 +26,13 @@ function sheenMap() {
 }
 const SHEEN_ALPHA = { matte: 0, satin: 0.04, gloss: 0.14 } as const; // a soft band: product photos of laminate cabinets read near-matte, only lacquered wood (Winston) is glossy
 
+/** A flat quad carrying the soft highlight band for `sheen` (undefined for matte): reused by the PM1 hoods; the caller rotates and places it. */
+export function sheenQuad(sheen: 'matte' | 'satin' | 'gloss' | undefined, w: number, h: number): THREE.Mesh | undefined {
+  const a = SHEEN_ALPHA[sheen ?? 'matte']; if (!a) return;
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: sheenMap(), transparent: true, opacity: a, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+  m.userData.room = true; return m;
+}
+
 /** Where the stand is built: tank-local axes, x along the length, +z toward the viewer, y up; `top` = underside of the tank, `h` = stand height (mm). */
 export interface StandSpace { L: number; D: number; top: number; h: number }
 
