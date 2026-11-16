@@ -5611,7 +5611,8 @@
    "quietflow canister 200"
   ],
   "est": [
-   "intakeMm"
+   "intakeMm",
+   "hoseIdIn"
   ],
   "colors": {
    "body": {
@@ -5652,7 +5653,8 @@
   ],
   "colorsNote": "Read from the That Pet Place photo of the 200: black canister body, navy-blue head, four clamps, feet and taps. The 300 and 400 reuse it (same family). Hose colour not seen.",
   "priceUrl": "https://www.thatpetplace.com/aquarium-supplies/aquarium-filters",
-  "note": "200 GPH, up to 55 gal and the L x W x H inches from the Aqueon manual / retailer listings. Wattage not published: left blank, not guessed. Price and photo: That Pet Place product page."
+  "note": "200 GPH, up to 55 gal and the L x W x H inches from the Aqueon manual / retailer listings. Wattage not published: left blank, not guessed. Price and photo: That Pet Place product page.",
+  "hoseIdIn": 0.5
  },
  {
   "id": "aqueon-quietflow-canister-300",
@@ -5675,7 +5677,8 @@
    "quietflow canister 300"
   ],
   "est": [
-   "intakeMm"
+   "intakeMm",
+   "hoseIdIn"
   ],
   "colors": {
    "body": {
@@ -5716,7 +5719,8 @@
   ],
   "colorsNote": "Read from the That Pet Place photo of the 200: black canister body, navy-blue head, four clamps, feet and taps. The 300 and 400 reuse it (same family). Hose colour not seen.",
   "priceUrl": "https://www.thatpetplace.com/aquarium-supplies/aquarium-filters",
-  "note": "300 GPH, up to 75 gal and the L x W x H inches from the Aqueon manual / retailer listings. Wattage not published: left blank, not guessed. Price and photo: That Pet Place product page."
+  "note": "300 GPH, up to 75 gal and the L x W x H inches from the Aqueon manual / retailer listings. Wattage not published: left blank, not guessed. Price and photo: That Pet Place product page.",
+  "hoseIdIn": 0.625
  },
  {
   "id": "aqueon-quietflow-canister-400",
@@ -5739,7 +5743,8 @@
    "quietflow canister 400"
   ],
   "est": [
-   "intakeMm"
+   "intakeMm",
+   "hoseIdIn"
   ],
   "colors": {
    "body": {
@@ -5780,7 +5785,8 @@
   ],
   "colorsNote": "Read from the That Pet Place photo of the 200: black canister body, navy-blue head, four clamps, feet and taps. The 300 and 400 reuse it (same family). Hose colour not seen.",
   "priceUrl": "https://www.thatpetplace.com/aquarium-supplies/aquarium-filters",
-  "note": "400 GPH, up to 155 gal and the L x W x H inches from the Aqueon manual / retailer listings. Wattage not published: left blank, not guessed. Price and photo: That Pet Place product page."
+  "note": "400 GPH, up to 155 gal and the L x W x H inches from the Aqueon manual / retailer listings. Wattage not published: left blank, not guessed. Price and photo: That Pet Place product page.",
+  "hoseIdIn": 0.625
  },
  {
   "id": "oase-filtosmart-thermo-100",
