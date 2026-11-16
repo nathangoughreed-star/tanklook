@@ -35,6 +35,7 @@ export function addProductStand(sc: THREE.Scene, kind: 'cabinet' | 'frame', look
   if (kind === 'frame') frame(g, look, sp, mk); else cabinet(g, look, sp, mk);
   g.position.set(sp.L / 2, 0, -sp.D / 2); // the tank's footprint runs x 0..L, front at z = 0, back at z = -D: the model is built about its own centre
   sc.add(g);
+  for (const h of g.children.filter(o => o.userData.handle)) { g.remove(h); h.position.add(g.position); sc.add(h); } // door handles sit directly in the scene, where the click box looks for them
 }
 
 function put(g: THREE.Group, m: THREE.Mesh, x: number, y: number, z: number) { m.position.set(x, y, z); g.add(m); return m; }
@@ -113,8 +114,8 @@ function doorPanel(g: THREE.Group, look: StandLook, mk: Mk, color: number, grain
   }
   const hc = hex(look.handleHex, 0xb9bdc2), hs = look.handle ?? 'none';
   const hx = side === 0 ? x + w * 0.4 : x - side * (w / 2 - 22);
-  if (hs === 'bar') put(g, mk(10, Math.min(260, h * 0.32), 18, hc), hx, y + h * 0.04, z + 16);
-  else if (hs === 'knob') put(g, mk(26, 26, 22, hc), hx, y + h * 0.3, z + 16);
+  if (hs === 'bar') put(g, mk(10, Math.min(260, h * 0.32), 18, hc), hx, y + h * 0.04, z + 16).userData.handle = true; // handles are the click target that opens the doors (interact/doorBox.ts)
+  else if (hs === 'knob') put(g, mk(26, 26, 22, hc), hx, y + h * 0.3, z + 16).userData.handle = true;
 }
 
 function frame(g: THREE.Group, look: StandLook, sp: StandSpace, mk: Mk) {

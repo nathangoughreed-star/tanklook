@@ -19,21 +19,22 @@ const cap = (usd: number): Wants => ({ kinds: ['freshwater'], constraints: { sta
 const welfareOk = (p: Proposal) => !summaryOf(p.scene, 'cm').cats.some(c => c.level === 'problem' || c.level === 'caution');
 const within = (p: Proposal) => compliance(p.scene, { setupUsd: p.totals.startupUsd, upkeepUsdMo: p.totals.monthlyUsd, minPerWeek: p.totals.minPerWeek }, effectiveLimits(p.scene, P.limits), 'cm').overall === 'within';
 
-const r600 = compromiseFor({ style: 'iwagumi', animals: SCHOOL, tank: T('75 gal') }, cap(600), P, 'cm', NOW)!;
+// SP1: the cap is 650 (was 600): a 75 gal now carries a real $225-$340 stand, so the cheapest other style costs about $644, not under $600
+const r600 = compromiseFor({ style: 'iwagumi', animals: SCHOOL, tank: T('75 gal') }, cap(650), P, 'cm', NOW)!;
 
 describe('a compound compromise that keeps the look', () => {
-  it('an over-budget iwagumi 75 gal with a neon school: the look as chosen breaks the $600 ceiling, and a compound edit meets it in the same look', () => {
+  it('an over-budget iwagumi 75 gal with a neon school: the look as chosen breaks the $650 ceiling, and a compound edit meets it in the same look', () => {
     expect(r600.anchor.build.tank.name).toBe('75 gal');
-    expect(r600.anchor.totals.startupUsd).toBeGreaterThan(600);
+    expect(r600.anchor.totals.startupUsd).toBeGreaterThan(650);
     expect(r600.broken[0]).toMatchObject({ key: 'startup', side: 'above' });
     expect(r600.compromises.length).toBeGreaterThanOrEqual(1);
     expect(r600.compromises.length).toBeLessThanOrEqual(2);
     expect(r600.compromises.some(c => c.steps.length >= 2)).toBe(true); // compound: two or more edits in one
     for (const c of r600.compromises) {
       expect(c.proposal.build.finish?.style).toBe('iwagumi');
-      expect(c.proposal.totals.startupUsd).toBeLessThanOrEqual(600);
+      expect(c.proposal.totals.startupUsd).toBeLessThanOrEqual(650);
       expect(within(c.proposal)).toBe(true);
-      expect(c.text).toMatch(/^Keep this iwagumi within \$600: /);
+      expect(c.text).toMatch(/^Keep this iwagumi within \$650: /);
       expect(c.text).toContain(`$${c.proposal.totals.startupUsd.toLocaleString('en-US')} to set up`);
       expect(c.delta.startupUsd).toBe(c.proposal.totals.startupUsd - r600.anchor.totals.startupUsd);
     }
@@ -76,7 +77,7 @@ describe('the other style beside it', () => {
     expect(o.style).not.toBe('iwagumi');
     expect(o.proposal.build.finish?.style).toBe(o.style);
     expect([...o.proposal.build.animals].filter(a => a.n > 0).sort((a, b) => a.species.localeCompare(b.species))).toEqual([...SCHOOL].sort((a, b) => a.species.localeCompare(b.species)));
-    expect(o.proposal.totals.startupUsd).toBeLessThanOrEqual(600);
+    expect(o.proposal.totals.startupUsd).toBeLessThanOrEqual(650);
     expect(o.text).toMatch(/^Or keep all 10 neon tetras, 6 bronze cor\w+ and change the look: /);
   });
 });
@@ -95,8 +96,8 @@ describe('Compare: the two side by side, with the right differences first', () =
   });
   it('the tabs list the broken limit with its bound first, then set-up / a month / care where they differ', () => {
     const [A, B] = store.scene.tanks, d = tankDiff(A, B, 'in'), c = r600.compromises[0].proposal.totals, o = r600.other!.proposal.totals;
-    expect(d[0][0]).toBe(`Set-up $${c.startupUsd.toLocaleString('en-US')} (limit $600)`);
-    expect(d[0][1]).toBe(`Set-up $${o.startupUsd.toLocaleString('en-US')} (limit $600)`);
+    expect(d[0][0]).toBe(`Set-up $${c.startupUsd.toLocaleString('en-US')} (limit $650)`);
+    expect(d[0][1]).toBe(`Set-up $${o.startupUsd.toLocaleString('en-US')} (limit $650)`);
     const money = d.slice(1, 3).map(x => x[0]).join(' | ');
     if (c.monthlyUsd !== o.monthlyUsd) expect(money).toContain(`$${c.monthlyUsd} a month`);
     if (Math.round(c.minPerWeek) !== Math.round(o.minPerWeek)) expect(d.some(x => x[0] === `${Math.round(c.minPerWeek)} min a week`)).toBe(true);

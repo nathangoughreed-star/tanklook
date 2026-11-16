@@ -14,7 +14,7 @@ const canvas = () => ({ width: 1, height: 1, style: {}, getContext: () => noop, 
 (globalThis as any).document ??= { createElement: canvas };
 (globalThis as any).OffscreenCanvas ??= function () { return canvas(); };
 
-const setup = (): TankSetup => { const sc = parseScene(JSON.parse(SCENES['planted'])).scene; const S = sc.tanks[sc.active]; S.stand.show = true; S.stand.style = 'cabinet'; return S; };
+const setup = (): TankSetup => { const sc = parseScene(JSON.parse(SCENES['planted'])).scene; const S = sc.tanks[sc.active]; S.stand.show = true; S.stand.style = 'cabinet'; S.tank = { ...S.tank, L: S.tank.L + 70 }; return S; }; // SP1: 2.8 in longer than the 36 in size, so no catalogue stand fits and the generic cabinet (two handles) is drawn
 const build = (S: TankSetup) => buildTank({ ...S, units: 'cm' }, S.tank, null).scene;
 const scape = () => 'hardscape' as const;
 
@@ -55,5 +55,17 @@ describe('door handle box', () => {
     const o = build(setup()); tankView.standOpen = false;
     expect(o.children.filter(k => k.userData.handle).length).toBe(0);
     expect(o.children.filter(k => k.userData.openDoor).length).toBe(2);
+  });
+});
+
+describe('a catalogue cabinet with handles keeps the door click', () => {
+  it('the Seapora Empress (bar handles, two doors) puts a handle box on each door', async () => {
+    const { getTankModel, tankFromModel } = await import('../src/data/tanks');
+    const { setStandProduct } = await import('../src/scene/placement');
+    const { standProduct } = await import('../src/data/stands');
+    const S = setup(); S.tank = tankFromModel(getTankModel('g55')!); setStandProduct(S, standProduct('seapora-empress-48x12')!);
+    tankView.standOpen = false;
+    const sc2 = build(S), hs = sc2.children.filter(o => o.userData.handle);
+    expect(hs.length).toBe(2); expect(doorBoxes(sc2).length).toBe(2);
   });
 });
