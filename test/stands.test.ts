@@ -32,7 +32,8 @@ describe('the cost line shows the product', () => {
   it('20 long, cabinet: the cheapest fitting cabinet by default, priced as that product', () => {
     const S = setup('g20l'), p = standOf(S)!;
     expect(p.kind).toBe('cabinet');
-    expect(p.priceUsd).toBe(Math.min(...standsFor(S.tank).filter(x => x.kind === 'cabinet').map(x => x.priceUsd)));
+    expect(p.finish).toBe(S.stand.finish); // the finish the scene shows
+    expect(p.priceUsd).toBe(Math.min(...standsFor(S.tank).filter(x => x.kind === 'cabinet' && x.finish === S.stand.finish).map(x => x.priceUsd)));
     const row = D(S).items.find(i => i.key === 'stand')!;
     expect(row.label).toContain(`${p.brand} ${p.line}`); expect(row.setup!.mode).toBeCloseTo(p.priceUsd, 0);
   });

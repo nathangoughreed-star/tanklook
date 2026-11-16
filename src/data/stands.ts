@@ -29,12 +29,13 @@ export function standFits(p: StandProduct, T: Tank): boolean {
 }
 /** Every stand sold for this tank, cheapest first. */
 export const standsFor = (T: Tank): StandProduct[] => STAND_PRODUCTS.filter(p => standFits(p, T)).sort((a, b) => a.priceUsd - b.priceUsd);
-/** The stand a setup has: its picked product while it fits, else the cheapest fitting one of the drawn kind (cabinet, else frame). undefined = generic estimate. */
+/** The stand a setup has: its picked product while it fits, else the cheapest fitting one of the drawn kind (cabinet or frame) in the drawn finish. undefined = generic estimate. */
 export function standOf(S: Pick<TankSetup, 'tank' | 'stand'>): StandProduct | undefined {
   const st = S.stand; if (!st.show || st.style === 'table' || st.style === 'custom') return undefined;
   const p = standProduct(st.product);
   if (p && standFits(p, S.tank)) return p;
-  return standsFor(S.tank).find(x => x.kind === (st.style === 'frame' ? 'frame' : 'cabinet'));
+  const same = standsFor(S.tank).filter(x => x.kind === (st.style === 'frame' ? 'frame' : 'cabinet'));
+  return same.find(x => x.finish === st.finish) ?? same[0]; // the cheapest in the finish the scene shows, else the cheapest
 }
 /** "Aqueon Black cabinet stand 20 long / 29 / 37, black" */
 export const standLabel = (p: StandProduct) => `${p.brand} ${p.line}, ${p.color.split(',')[0].split(' (')[0]}`;
