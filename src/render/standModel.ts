@@ -1,0 +1,134 @@
+// Product stand models (lane R96, Nathan 2026-11-16: "accurate pictures/models of the stands for each product, especially
+// color/sheen/texture"). Each catalogue stand carries a `look` read off its product photos (src/data/gear/stands.json:
+// sampled colours, sheen, grain, door layout, handles, base, frame tubes). This file builds a simple model from it: boxes
+// in the sampled colours (no snapping to the three generic finishes), the real door / opening / leg layout, a grain
+// texture where the real stand has wood grain, and a soft highlight on the front for satin and gloss.
+// Pure three.js; `mk` (build.ts shadedBox) makes each piece so the stand keeps the drawn style of the other furniture.
+import * as THREE from 'three';
+import type { Grain } from './woodGrain';
+import type { StandLook } from '../data/stands';
+
+type Mk = (w: number, h: number, d: number, color: number, grain?: Grain) => THREE.Mesh;
+const hex = (s: string | undefined, d = 0x222222) => (s && /^#[0-9a-f]{6}$/i.test(s) ? parseInt(s.slice(1), 16) : d);
+const shade = (c: number, k: number) => new THREE.Color(c).multiplyScalar(k).getHex();
+
+let sheenTex: THREE.DataTexture | undefined;
+/** A soft diagonal highlight band (alpha) laid over a glossy or satin front. */
+function sheenMap() {
+  if (sheenTex) return sheenTex;
+  const W = 64, H = 64, d = new Uint8Array(W * H * 4);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const u = x / W, v = y / H, t = (u * 0.8 + v * 0.35 - 0.38) / 0.16, a = Math.exp(-t * t) * 255, o = (y * W + x) * 4;
+    d[o] = d[o + 1] = d[o + 2] = 255; d[o + 3] = Math.round(a);
+  }
+  sheenTex = new THREE.DataTexture(d, W, H, THREE.RGBAFormat); sheenTex.needsUpdate = true; sheenTex.colorSpace = THREE.SRGBColorSpace;
+  return sheenTex;
+}
+const SHEEN_ALPHA = { matte: 0, satin: 0.1, gloss: 0.3 } as const;
+
+/** Where the stand is built: tank-local axes, x along the length, +z toward the viewer, y up; `top` = underside of the tank, `h` = stand height (mm). */
+export interface StandSpace { L: number; D: number; top: number; h: number }
+
+/** Add the product's model to `sc`. `look` has been validated by the caller (kind and look present). */
+export function addProductStand(sc: THREE.Scene, kind: 'cabinet' | 'frame', look: StandLook, sp: StandSpace, mk: Mk): void {
+  const g = new THREE.Group(); g.name = 'standProduct';
+  if (kind === 'frame') frame(g, look, sp, mk); else cabinet(g, look, sp, mk);
+  sc.add(g);
+}
+
+function put(g: THREE.Group, m: THREE.Mesh, x: number, y: number, z: number) { m.position.set(x, y, z); g.add(m); return m; }
+
+function sheenPlane(g: THREE.Group, look: StandLook, w: number, h: number, x: number, y: number, z: number) {
+  const a = SHEEN_ALPHA[look.sheen ?? 'satin']; if (!a) return;
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: sheenMap(), transparent: true, opacity: a, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+  m.position.set(x, y, z); m.userData.room = true; g.add(m);
+}
+
+function cabinet(g: THREE.Group, look: StandLook, sp: StandSpace, mk: Mk) {
+  const front = hex(look.front), topC = hex(look.top, front), over = look.overhangMm ?? 12, grain: Grain | undefined = look.grain && look.grain !== 'none' ? { finish: 'oak', seed: 3 } : undefined;
+  const W = sp.L + 2 * over, D = sp.D + 2 * over, y1 = sp.top, y0 = sp.top - sp.h, topT = Math.min(28, sp.h * 0.06);
+  const base = look.base ?? 'plinth', baseH = base === 'plinth' ? Math.min(70, sp.h * 0.1) : base === 'feet' ? 32 : base === 'tapered' ? Math.min(150, sp.h * 0.22) : base === 'poles' ? 40 : base === 'block' ? 70 : 0;
+  const bodyY0 = y0 + baseH, bodyY1 = y1 - topT, bodyH = bodyY1 - bodyY0, cz = 0, front_z = D / 2 - over * 0.3;
+  const dark = shade(front, 0.45);
+  // top slab, with the overhang the product has
+  put(g, mk(W, topT, D, topC, grain && look.grain !== 'laminate' ? { ...grain, seed: 9 } : undefined), 0, y1 - topT / 2, cz);
+  // carcass: side and back panels so an open centre shows depth
+  const inset = 6;
+  if (look.open === 'arch' || look.open === 'center') {
+    const sideW = look.open === 'arch' ? Math.max(45, W * 0.1) : Math.max(60, W * 0.22);
+    const sides: [number, number][] = [[-(W / 2 - sideW / 2 - inset), sideW], [W / 2 - sideW / 2 - inset, sideW]];
+    for (const [x, w] of sides) put(g, mk(w, bodyH, D - 2 * inset, front, grain && { ...grain, seed: 4 }), x, bodyY0 + bodyH / 2, cz);
+    // the opening: dark back wall, a shelf
+    const openW = W - 2 * (sideW + inset);
+    put(g, mk(openW, bodyH, 8, dark), 0, bodyY0 + bodyH / 2, -(D / 2 - inset - 4));
+    put(g, mk(openW, 18, D - 2 * inset - 16, front, grain && { ...grain, seed: 5 }), 0, bodyY0 + bodyH * (look.open === 'arch' ? 0.12 : 0.5), cz);
+    if (look.open === 'center' && (look.doors ?? 2) >= 2) { // two doors on the sides of the opening
+      const dw = sideW + 4;
+      for (const s of [-1, 1]) doorPanel(g, look, mk, front, grain, dw, bodyH, s * (W / 2 - dw / 2 - inset + 2), bodyY0 + bodyH / 2, front_z, s);
+    }
+  } else {
+    put(g, mk(W - 2 * inset, bodyH, D - 2 * inset, front, grain && { ...grain, seed: 4 }), 0, bodyY0 + bodyH / 2, cz);
+    const n = Math.max(1, look.doors ?? 2), gap = 4, dw = (W - 2 * inset - gap * (n + 1)) / n;
+    for (let i = 0; i < n; i++) {
+      const x = -(W - 2 * inset) / 2 + gap + dw / 2 + i * (dw + gap);
+      doorPanel(g, look, mk, front, grain, dw, bodyH - 2 * gap, x, bodyY0 + bodyH / 2, front_z, n === 1 ? 0 : i < n / 2 ? -1 : 1, i);
+    }
+    sheenPlane(g, look, W - 2 * inset, bodyH, 0, bodyY0 + bodyH / 2, front_z + 8.5);
+  }
+  // base
+  const bc = hex(look.baseHex, shade(front, 0.9));
+  if (base === 'plinth') put(g, mk(W - 24, baseH, D - 24, shade(front, 0.55)), 0, y0 + baseH / 2, cz);
+  else if (base === 'feet' || base === 'block' || base === 'tapered') {
+    const fw = base === 'tapered' ? 46 : base === 'block' ? 62 : 36, xs = [-(W / 2 - fw / 2 - 14), W / 2 - fw / 2 - 14], zs = [-(D / 2 - fw / 2 - 14), D / 2 - fw / 2 - 14];
+    for (const x of xs) for (const z of zs) put(g, mk(base === 'tapered' ? fw * 0.75 : fw, baseH, base === 'tapered' ? fw * 0.75 : fw, bc), x, y0 + baseH / 2, z);
+  } else if (base === 'poles') {
+    const pc = hex(look.baseHex, 0xb9bdc2);
+    for (const x of [-(W / 2 - 30), W / 2 - 30]) put(g, mk(34, sp.h - topT, 34, pc), x, y0 + (sp.h - topT) / 2, D / 2 - 40);
+  }
+}
+
+function doorPanel(g: THREE.Group, look: StandLook, mk: Mk, color: number, grain: Grain | undefined, w: number, h: number, x: number, y: number, z: number, side: number, i = 0) {
+  const st = look.doorStyle ?? 'flat', tc = shade(color, 1.0), t = 14;
+  put(g, mk(w, h, t, tc, grain && { ...grain, vertical: true, seed: 20 + i }), x, y, z - t / 2 + 4);
+  const zf = z + 8;
+  if (st === 'louver') { // horizontal slats, each a little proud, with a dark gap between
+    const rows = Math.max(6, Math.round(h / 52)), sh = (h * 0.84) / rows;
+    for (let r = 0; r < rows; r++) put(g, mk(w * 0.84, sh * 0.8, 6, shade(color, 1.04), grain && { ...grain, seed: 40 + r }), x, y - h * 0.42 + sh * (r + 0.5), zf);
+  } else if (st === 'plank' || st === 'bead') { // vertical boards / beadboard grooves
+    const cols = Math.max(3, Math.round(w / (st === 'bead' ? 38 : 70))), cw = (w * 0.9) / cols;
+    for (let c = 0; c < cols; c++) put(g, mk(cw * 0.86, h * 0.88, 5, shade(color, 1 + (c % 2) * 0.05), grain && { ...grain, vertical: true, seed: 60 + c }), x - w * 0.45 + cw * (c + 0.5), y, zf);
+  } else if (st === 'raised') { // a raised panel inside the door frame
+    put(g, mk(w * 0.66, h * 0.66, 7, shade(color, 1.1), grain && { ...grain, vertical: true, seed: 80 }), x, y, zf);
+  }
+  const hc = hex(look.handleHex, 0xb9bdc2), hs = look.handle ?? 'none';
+  const hx = side === 0 ? x + w * 0.4 : x - side * (w / 2 - 22);
+  if (hs === 'bar') put(g, mk(10, Math.min(260, h * 0.32), 18, hc), hx, y + h * 0.04, z + 16);
+  else if (hs === 'knob') put(g, mk(26, 26, 22, hc), hx, y + h * 0.3, z + 16);
+}
+
+function frame(g: THREE.Group, look: StandLook, sp: StandSpace, mk: Mk) {
+  const c = hex(look.tube, 0x232323), s = look.tubeMm ?? 22, W = sp.L + 10, D = sp.D + 10, y1 = sp.top, y0 = sp.top - sp.h, foot = 10;
+  const sc2 = shade(c, 1.0), shelfC = hex(look.shelfHex, shade(c, 1.15));
+  const leg = (x: number, z: number) => put(g, mk(s, sp.h - foot, s, sc2), x, y0 + foot + (sp.h - foot) / 2, z);
+  const xs = [-(W / 2 - s / 2), W / 2 - s / 2], zs = [-(D / 2 - s / 2), D / 2 - s / 2];
+  for (const x of xs) for (const z of zs) leg(x, z);
+  if (W > 1000) leg(0, zs[0]), leg(0, zs[1]);
+  const rail = (len: number, x: number, y: number, z: number, alongX: boolean) => put(g, mk(alongX ? len : s, s, alongX ? s : len, sc2), x, y, z);
+  const yt = y1 - s / 2;
+  for (const z of zs) rail(W - 2 * s, 0, yt, z, true);                       // top rails, front and back
+  for (const x of xs) rail(D - 2 * s, x, yt, 0, false);                      // top rails, ends
+  const slats = Math.max(1, Math.round(W / 280) - 1);                        // support rails across the top
+  for (let i = 1; i <= slats; i++) rail(D - 2 * s, -W / 2 + (W * i) / (slats + 1), yt, 0, false);
+  const lowY = y0 + foot + (look.shelf && look.shelf !== 'none' ? sp.h * 0.3 : s / 2 + 2);
+  if (look.shelf === 'solid') put(g, mk(W - 2 * s, 8, D - 2 * s, shelfC), 0, lowY, 0);
+  else if (look.shelf === 'mesh') { put(g, mk(W - 2 * s, 5, D - 2 * s, shade(shelfC, 1.25)), 0, lowY, 0); for (const z of zs) rail(W - 2 * s, 0, lowY - 6, z, true); }
+  else { for (const z of zs) rail(W - 2 * s, 0, lowY, z, true); for (const x of xs) rail(D - 2 * s, x, lowY, 0, false); }
+  if (look.brace === 'x') { // thin diagonal braces on the back
+    const bl = Math.hypot(W - 2 * s, sp.h * 0.6), ang = Math.atan2(sp.h * 0.6, W - 2 * s);
+    for (const a of [ang, -ang]) { const b = mk(bl, 5, 5, sc2); b.rotation.z = a; put(g, b, 0, y0 + sp.h * 0.55, zs[0]); }
+  } else if (look.brace === 'window') { // small cross bars in the end frames
+    for (const x of xs) { rail(D - 2 * s, x, y0 + sp.h * 0.5, 0, false); put(g, mk(s * 0.7, sp.h * 0.6, s * 0.7, sc2), x, y0 + sp.h * 0.5, 0); }
+    for (const z of zs) rail(W - 2 * s, 0, y0 + sp.h * 0.5, z, true);
+  } else if (look.brace === 'rails') rail(W - 2 * s, 0, y0 + sp.h * 0.55, zs[0], true);
+  if (look.apron) put(g, mk(W - 2 * s, look.apron, 12, hex(look.front, c)), 0, y1 - s - look.apron / 2, D / 2 - s - 6); // a front apron panel (drawer-style)
+}

@@ -6,6 +6,24 @@ import standData from './gear/stands.json';
 import type { StandFinish, Tank, TankSetup } from '../scene/types';
 import { shapeOf } from '../scene/shape';
 
+/** What the stand looks like, read off its product photos (R96): sampled colours, sheen, grain, layout. All optional; the model falls back to the three generic finishes without it. */
+export interface StandLook {
+  /** sampled front face and top (hex) */
+  front?: string; top?: string;
+  sheen?: 'matte' | 'satin' | 'gloss';
+  /** 'oak' = visible wood grain (any wood colour), 'laminate' = plain printed finish, 'none' = paint / powder coat */
+  grain?: 'none' | 'oak' | 'laminate';
+  doors?: number; doorStyle?: 'flat' | 'louver' | 'plank' | 'raised' | 'bead';
+  /** 'center' = two end doors with an open middle shelf; 'arch' = open front between two side panels */
+  open?: 'none' | 'center' | 'arch';
+  handle?: 'none' | 'bar' | 'knob'; handleHex?: string;
+  base?: 'plinth' | 'feet' | 'tapered' | 'poles' | 'block'; baseHex?: string;
+  overhangMm?: number;
+  /** frames: tube colour and side (mm), lower shelf, bracing, a front apron panel height (mm) */
+  tube?: string; tubeMm?: number; shelf?: 'none' | 'solid' | 'mesh'; shelfHex?: string; brace?: 'none' | 'x' | 'window' | 'rails'; apron?: number;
+  /** which fields are estimates (no photo, or not readable from it) */
+  est?: string[];
+}
 export interface StandProduct {
   id: string; brand: string; line: string;
   /** 'cabinet' = a closed wood cabinet with doors; 'frame' = a metal (or open) frame */
@@ -17,6 +35,8 @@ export interface StandProduct {
   heightIn: number; priceUsd: number; seller: string; url: string; asOf: string;
   /** fields that are estimates or not confirmed from the page */
   est: string[]; note?: string;
+  /** R96: the look read off product photos (research/screens/SP1/ref/<id>-*.jpg) */
+  look?: StandLook;
 }
 export const STAND_PRODUCTS = standData as unknown as StandProduct[];
 export const standProduct = (id?: string) => (id ? STAND_PRODUCTS.find(p => p.id === id) : undefined);

@@ -21,7 +21,19 @@
    "priceUsd",
    "kind"
   ],
-  "note": "Search snapshots show $69.99 (was $139.99) and older $139.99-$181.99: the price swings; footprint 20.9 x 12.4 in. Style (cabinet) not confirmed from the page."
+  "note": "Search snapshots show $69.99 (was $139.99) and older $139.99-$181.99: the price swings; footprint 20.9 x 12.4 in. Style (cabinet) not confirmed from the page.",
+  "look": {
+   "front": "#2f2f2f",
+   "top": "#343434",
+   "sheen": "satin",
+   "grain": "oak",
+   "doors": 2,
+   "doorStyle": "flat",
+   "handle": "bar",
+   "handleHex": "#b9bdc2",
+   "base": "feet",
+   "overhangMm": 10
+  }
  },
  {
   "id": "af-10-metal",
@@ -42,7 +54,17 @@
   "url": "https://reach.dog/shop/pets-shop-plus/products/aquatic-fundamentals-10-gallon-metal-aquarium-stand-black",
   "asOf": "2026-11-16",
   "est": [],
-  "note": "20.9 x 11 in top, 100 lb rating."
+  "note": "20.9 x 11 in top, 100 lb rating.",
+  "look": {
+   "tube": "#222222",
+   "tubeMm": 20,
+   "shelf": "mesh",
+   "brace": "x",
+   "sheen": "satin",
+   "est": [
+    "all (no photo found)"
+   ]
+  }
  },
  {
   "id": "tongmo-10",
@@ -63,7 +85,15 @@
   "url": "https://woodartsupply.com/products/fish-tank-stand-the-perfect-10-gallon-metal-aquarium-stand-measuring-22-8-w-x-10-6-d-x-31-3-h-to-fit-your-aquatic-display-needs",
   "asOf": "2026-11-16",
   "est": [],
-  "note": "22.8 x 10.6 in top, 150 lb rating; sale price, list $59.98."
+  "note": "22.8 x 10.6 in top, 150 lb rating; sale price, list $59.98.",
+  "look": {
+   "tube": "#252626",
+   "tubeMm": 18,
+   "shelf": "mesh",
+   "shelfHex": "#2c2d30",
+   "brace": "x",
+   "sheen": "satin"
+  }
  },
  {
   "id": "aqueon-forge-30",
@@ -84,7 +114,16 @@
   "url": "https://woodartsupply.com/collections/fish-tank-stands/products/aqueon-metal-20-gallon-long-29-gallon-high-fish-tank-aquarium-stand-30-l-x-12-w-x-28-25-h",
   "asOf": "2026-11-16",
   "est": [],
-  "note": "Top shelf 30 x 12 in."
+  "note": "Top shelf 30 x 12 in.",
+  "look": {
+   "tube": "#262627",
+   "tubeMm": 22,
+   "shelf": "none",
+   "brace": "rails",
+   "apron": 110,
+   "front": "#2a2a2b",
+   "sheen": "satin"
+  }
  },
  {
   "id": "aqueon-cabinet-30",
@@ -105,15 +144,26 @@
   "url": "https://www.bluefishaquarium.com/collections/all/products/aqueon-20-long-29-37-gallon-aquarium-black-cabinet-stand-30-x-12-in",
   "asOf": "2026-11-16",
   "est": [],
-  "note": "31.9 x 13.9 x 30.4 in overall."
+  "note": "31.9 x 13.9 x 30.4 in overall.",
+  "look": {
+   "front": "#2b2b2b",
+   "top": "#303030",
+   "sheen": "satin",
+   "grain": "oak",
+   "doors": 1,
+   "doorStyle": "plank",
+   "handle": "none",
+   "base": "plinth",
+   "overhangMm": 22
+  }
  },
  {
   "id": "imagitarium-newport-29",
   "brand": "Imagitarium",
   "line": "Newport wood stand 29 gal",
-  "kind": "cabinet",
-  "finish": "oak",
-  "color": "wood finish",
+  "kind": "frame",
+  "finish": "black",
+  "color": "dark espresso metal frame with wood shelves",
   "fits": [
    [
     30,
@@ -126,10 +176,16 @@
   "url": "https://www.petco.com/product/imagitarium-29-gallon-newport-tank-stand",
   "asOf": "2026-11-16",
   "est": [
-   "heightIn",
-   "kind"
+   "heightIn"
   ],
-  "note": "Clearance in the snapshot (reg $99.99); style and height not confirmed."
+  "note": "Clearance in the snapshot (reg $99.99); style and height not confirmed. R96: photos show an open frame, not a cabinet (kind corrected).",
+  "look": {
+   "tube": "#3a2c26",
+   "tubeMm": 24,
+   "shelf": "none",
+   "brace": "window",
+   "sheen": "satin"
+  }
  },
  {
   "id": "imagitarium-modern-29",
@@ -152,7 +208,18 @@
   "est": [
    "heightIn"
   ],
-  "note": "Height not confirmed."
+  "note": "Height not confirmed.",
+  "look": {
+   "front": "#1f1b1a",
+   "top": "#24201d",
+   "sheen": "satin",
+   "grain": "laminate",
+   "doors": 2,
+   "doorStyle": "flat",
+   "handle": "none",
+   "base": "feet",
+   "overhangMm": 6
+  }
  },
  {
   "id": "topfin-20-37",
@@ -179,7 +246,19 @@
   "est": [
    "heightIn"
   ],
-  "note": "Range seen $149.99-$157.24 by finish (regular $184.99); height not confirmed."
+  "note": "Range seen $149.99-$157.24 by finish (regular $184.99); height not confirmed.",
+  "look": {
+   "front": "#c0894a",
+   "top": "#c99a58",
+   "sheen": "satin",
+   "grain": "oak",
+   "doors": 2,
+   "doorStyle": "louver",
+   "handle": "bar",
+   "handleHex": "#25252a",
+   "base": "feet",
+   "overhangMm": 14
+  }
  },
  {
   "id": "seapora-roman-36",
@@ -202,7 +281,19 @@
   "est": [
    "heightIn"
   ],
-  "note": "For 30 / 40 breeder; height not confirmed."
+  "note": "For 30 / 40 breeder; height not confirmed.",
+  "look": {
+   "front": "#292a30",
+   "top": "#25272b",
+   "sheen": "satin",
+   "grain": "laminate",
+   "open": "center",
+   "doors": 1,
+   "handle": "none",
+   "base": "poles",
+   "baseHex": "#b9bdc2",
+   "overhangMm": 6
+  }
  },
  {
   "id": "af-40b-cabinet",
@@ -223,7 +314,18 @@
   "url": "https://www.petco.com/product/aquatic-fundamentals-40b-cabinet-stand",
   "asOf": "2026-11-16",
   "est": [],
-  "note": "37.4 x 19.4 x 28.25 in; clearance (reg $244.99); reviewers question the 400 lb rating."
+  "note": "37.4 x 19.4 x 28.25 in; clearance (reg $244.99); reviewers question the 400 lb rating.",
+  "look": {
+   "front": "#303030",
+   "top": "#2e2e2e",
+   "sheen": "satin",
+   "grain": "laminate",
+   "doors": 3,
+   "doorStyle": "flat",
+   "handle": "none",
+   "base": "plinth",
+   "overhangMm": 14
+  }
  },
  {
   "id": "mewsden-40",
@@ -244,7 +346,15 @@
   "url": "https://woodartsupply.com/collections/fish-tank-stands/products/mewsden-fish-tank-stand-40-gallon-heavy-duty-metal-aquarium-stand-reptile-turtle-breeder-tank-combo-white-36-5x18-5x29-5",
   "asOf": "2026-11-16",
   "est": [],
-  "note": "36.5 x 18.5 x 29.5 in; sale price, list $75.99 (white version exists)."
+  "note": "36.5 x 18.5 x 29.5 in; sale price, list $75.99 (white version exists).",
+  "look": {
+   "tube": "#e6e6e2",
+   "tubeMm": 30,
+   "shelf": "solid",
+   "shelfHex": "#e9e9e5",
+   "brace": "rails",
+   "sheen": "satin"
+  }
  },
  {
   "id": "filko-40",
@@ -267,7 +377,17 @@
   "est": [
    "heightIn"
   ],
-  "note": "36.6 x 18.8 in, 660 lb rating; height not confirmed."
+  "note": "36.6 x 18.8 in, 660 lb rating; height not confirmed.",
+  "look": {
+   "tube": "#1d1d1d",
+   "tubeMm": 26,
+   "shelf": "solid",
+   "shelfHex": "#202020",
+   "brace": "x",
+   "apron": 240,
+   "front": "#202020",
+   "sheen": "satin"
+  }
  },
  {
   "id": "seapora-empress-48x12",
@@ -290,7 +410,20 @@
   "est": [
    "heightIn"
   ],
-  "note": "Height not confirmed."
+  "note": "Height not confirmed.",
+  "look": {
+   "front": "#33373a",
+   "top": "#2d3133",
+   "sheen": "satin",
+   "grain": "laminate",
+   "open": "center",
+   "doors": 2,
+   "handle": "bar",
+   "handleHex": "#b9bdc2",
+   "base": "feet",
+   "baseHex": "#161616",
+   "overhangMm": 8
+  }
  },
  {
   "id": "marineland-modern-48",
@@ -313,7 +446,22 @@
   "est": [
    "heightIn"
   ],
-  "note": "Title says grey, details say black: confirm."
+  "note": "Title says grey, details say black: confirm.",
+  "look": {
+   "front": "#2b2b2d",
+   "top": "#2b2b2d",
+   "sheen": "satin",
+   "grain": "laminate",
+   "doors": 2,
+   "doorStyle": "flat",
+   "handle": "bar",
+   "handleHex": "#b9bdc2",
+   "base": "plinth",
+   "overhangMm": 10,
+   "est": [
+    "all (no photo found; listing says black or grey)"
+   ]
+  }
  },
  {
   "id": "seapora-empress-48x18",
@@ -336,7 +484,20 @@
   "est": [
    "heightIn"
   ],
-  "note": "In-store pickup only; a reviewer calls it flimsy."
+  "note": "In-store pickup only; a reviewer calls it flimsy.",
+  "look": {
+   "front": "#252b2a",
+   "top": "#1f2423",
+   "sheen": "satin",
+   "grain": "laminate",
+   "open": "center",
+   "doors": 2,
+   "handle": "bar",
+   "handleHex": "#b9bdc2",
+   "base": "feet",
+   "baseHex": "#161616",
+   "overhangMm": 8
+  }
  },
  {
   "id": "seapora-monarch-48x18",
@@ -359,7 +520,23 @@
   "est": [
    "heightIn"
   ],
-  "note": "For 75 / 90 / 110."
+  "note": "For 75 / 90 / 110.",
+  "look": {
+   "front": "#252b2a",
+   "top": "#1f2423",
+   "sheen": "satin",
+   "grain": "laminate",
+   "open": "center",
+   "doors": 2,
+   "handle": "bar",
+   "handleHex": "#b9bdc2",
+   "base": "feet",
+   "baseHex": "#161616",
+   "overhangMm": 8,
+   "est": [
+    "all (no photo found; drawn like the Empress)"
+   ]
+  }
  },
  {
   "id": "topfin-55-75",
@@ -386,7 +563,20 @@
   "est": [
    "heightIn"
   ],
-  "note": "48.2 x 18.8 in footprint."
+  "note": "48.2 x 18.8 in footprint.",
+  "look": {
+   "front": "#37373d",
+   "top": "#3a3b40",
+   "sheen": "matte",
+   "grain": "oak",
+   "open": "center",
+   "doors": 2,
+   "doorStyle": "bead",
+   "handle": "bar",
+   "handleHex": "#2a2a2e",
+   "base": "block",
+   "overhangMm": 14
+  }
  },
  {
   "id": "snughome-10",
@@ -407,7 +597,15 @@
   "url": "https://www.amazon.com/dp/B0DCGBXJGC",
   "asOf": "2026-11-16",
   "est": [],
-  "note": "20.47 x 11.42 x 30.91 in per the Amazon title; 3 tiers. Read from the page 2026-11-16."
+  "note": "20.47 x 11.42 x 30.91 in per the Amazon title; 3 tiers. Read from the page 2026-11-16.",
+  "look": {
+   "tube": "#272826",
+   "tubeMm": 18,
+   "shelf": "mesh",
+   "shelfHex": "#2a2b2a",
+   "brace": "x",
+   "sheen": "satin"
+  }
  },
  {
   "id": "aqueon-metal-10",
@@ -428,7 +626,16 @@
   "url": "https://www.amazon.com/dp/B00SZ5EQN4",
   "asOf": "2026-11-16",
   "est": [],
-  "note": "20 x 10 x 28.25 in per the Amazon title; bottom shelf; panels reversible black or light brown."
+  "note": "20 x 10 x 28.25 in per the Amazon title; bottom shelf; panels reversible black or light brown.",
+  "look": {
+   "tube": "#312d2b",
+   "tubeMm": 20,
+   "shelf": "none",
+   "brace": "rails",
+   "apron": 90,
+   "front": "#322e2c",
+   "sheen": "satin"
+  }
  },
  {
   "id": "likeem-40",
@@ -449,7 +656,15 @@
   "url": "https://www.amazon.com/dp/B0BGL671TT",
   "asOf": "2026-11-16",
   "est": [],
-  "note": "36.5 x 18.5 x 29.5 in per the Amazon title."
+  "note": "36.5 x 18.5 x 29.5 in per the Amazon title.",
+  "look": {
+   "tube": "#232323",
+   "tubeMm": 38,
+   "shelf": "solid",
+   "shelfHex": "#262626",
+   "brace": "window",
+   "sheen": "satin"
+  }
  },
  {
   "id": "imagitarium-brooklyn-10",
@@ -473,7 +688,17 @@
    "heightIn",
    "color"
   ],
-  "note": "Price read from the Petco category list 2026-11-16 (165 reviews). Petco prints no dimensions: height and colour are estimates; footprint from the 10 gal size named."
+  "note": "Price read from the Petco category list 2026-11-16 (165 reviews). Petco prints no dimensions: height and colour are estimates; footprint from the 10 gal size named.",
+  "look": {
+   "tube": "#26221f",
+   "tubeMm": 28,
+   "shelf": "none",
+   "brace": "window",
+   "sheen": "satin",
+   "est": [
+    "photo: the 29 gal Brooklyn (same design)"
+   ]
+  }
  },
  {
   "id": "imagitarium-brooklyn-29",
@@ -497,7 +722,14 @@
    "heightIn",
    "color"
   ],
-  "note": "Price read from the Petco category list 2026-11-16 (516 reviews; Amazon lists the same stand at $174.99). Dimensions not printed: height and colour estimated; footprint from the 29 gal size named."
+  "note": "Price read from the Petco category list 2026-11-16 (516 reviews; Amazon lists the same stand at $174.99). Dimensions not printed: height and colour estimated; footprint from the 29 gal size named.",
+  "look": {
+   "tube": "#26221f",
+   "tubeMm": 28,
+   "shelf": "none",
+   "brace": "window",
+   "sheen": "satin"
+  }
  },
  {
   "id": "imagitarium-brooklyn-40",
@@ -521,7 +753,14 @@
    "heightIn",
    "color"
   ],
-  "note": "Petco product page 2026-11-16: 660 lb limit, 32.15 lb, 835 reviews; a reviewer says it fits a 40 breeder. Dimensions not printed: height and colour estimated."
+  "note": "Petco product page 2026-11-16: 660 lb limit, 32.15 lb, 835 reviews; a reviewer says it fits a 40 breeder. Dimensions not printed: height and colour estimated.",
+  "look": {
+   "tube": "#26221f",
+   "tubeMm": 28,
+   "shelf": "none",
+   "brace": "window",
+   "sheen": "satin"
+  }
  },
  {
   "id": "imagitarium-brooklyn-55",
@@ -545,7 +784,14 @@
    "heightIn",
    "color"
   ],
-  "note": "Price read from the Petco category list 2026-11-16 (454 reviews). Dimensions not printed: height and colour estimated; footprint from the 55 gal size named."
+  "note": "Price read from the Petco category list 2026-11-16 (454 reviews). Dimensions not printed: height and colour estimated; footprint from the 55 gal size named.",
+  "look": {
+   "tube": "#26221f",
+   "tubeMm": 28,
+   "shelf": "none",
+   "brace": "window",
+   "sheen": "satin"
+  }
  },
  {
   "id": "imagitarium-winston-29",
@@ -570,7 +816,19 @@
    "kind",
    "color"
   ],
-  "note": "Petco clearance $112.49 (was $149.99) 2026-11-16, 207 reviews. Style, colour and height not read from the page."
+  "note": "Petco clearance $112.49 (was $149.99) 2026-11-16, 207 reviews. Style, colour and height not read from the page.",
+  "look": {
+   "front": "#3a201a",
+   "top": "#40241d",
+   "sheen": "gloss",
+   "grain": "oak",
+   "doors": 2,
+   "doorStyle": "raised",
+   "handle": "knob",
+   "handleHex": "#c9a24a",
+   "base": "tapered",
+   "overhangMm": 16
+  }
  },
  {
   "id": "tetra-wood-5-10",
@@ -594,7 +852,17 @@
    "heightIn",
    "kind"
   ],
-  "note": "Chewy list price 2026-11-16; Chewy prints no dimensions. Footprint from the 10 gal size named."
+  "note": "Chewy list price 2026-11-16; Chewy prints no dimensions. Footprint from the 10 gal size named.",
+  "look": {
+   "front": "#e6e6e4",
+   "top": "#eeeeec",
+   "sheen": "satin",
+   "grain": "laminate",
+   "open": "arch",
+   "doors": 0,
+   "base": "plinth",
+   "overhangMm": 14
+  }
  },
  {
   "id": "caitec-titaneze-10",
@@ -618,7 +886,14 @@
    "heightIn",
    "kind"
   ],
-  "note": "Chewy $74.99 (list $106.99), 30 reviews, 2026-11-16; seven sizes sold, this is the 10 gal. No dimensions printed."
+  "note": "Chewy $74.99 (list $106.99), 30 reviews, 2026-11-16; seven sizes sold, this is the 10 gal. No dimensions printed.",
+  "look": {
+   "tube": "#191919",
+   "tubeMm": 24,
+   "shelf": "none",
+   "brace": "rails",
+   "sheen": "satin"
+  }
  },
  {
   "id": "helloreef-15",
@@ -643,6 +918,17 @@
    "kind",
    "fits"
   ],
-  "note": "Chewy 2026-11-16: black $176.14, white $13.27/gal; custom fit to the HelloReef 15 gal tank, whose footprint is not printed (24 x 12 assumed), with a cord cutout and compartments."
+  "note": "Chewy 2026-11-16: black $176.14, white $13.27/gal; custom fit to the HelloReef 15 gal tank, whose footprint is not printed (24 x 12 assumed), with a cord cutout and compartments.",
+  "look": {
+   "front": "#0d0a0a",
+   "top": "#120e0d",
+   "sheen": "matte",
+   "grain": "laminate",
+   "doors": 2,
+   "doorStyle": "flat",
+   "handle": "none",
+   "base": "plinth",
+   "overhangMm": 6
+  }
  }
 ]

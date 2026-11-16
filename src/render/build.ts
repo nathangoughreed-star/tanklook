@@ -13,6 +13,8 @@ import { LECA, SUBSTRATES, blendTile, blendZone, grain3D } from '../art/placehol
 import { litterMeshes, type GroundAt } from './scatter';
 import { patchHighlight, patchMeshes, patchSel } from './brushmesh';
 import { applyGrainUV, woodTexture, type Grain } from './woodGrain';
+import { addProductStand } from './standModel';
+import { standOf } from '../data/stands';
 import { bermRise, contactKey, contactObjects } from './contact';
 import { FX } from './fx';
 import { glassGrains, grainLook, grainMeshes, grainPatchy, grainTop, groundTint } from './grains';
@@ -542,6 +544,10 @@ function shadedSolid(geo: THREE.BufferGeometry, color: number, grain?: Grain) {
 function addStand(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.stand.show) return;
   const t = glassThickness(T, S.render.glass), top = tankUnderside(T, S.render), h = S.stand.height, fin = STAND_FINISHES[S.stand.finish], wf = S.stand.finish;
+  { // R96: a catalogue stand is drawn from its own look (sampled colours, sheen, grain, door / leg layout), not the three generic finishes
+    const prod = S.stand.style === 'cabinet' || S.stand.style === 'frame' ? standOf(S) : undefined;
+    if (prod?.look && shapeOf(T) === 'rect' && !tankView.standOpen) { addProductStand(sc, prod.kind, prod.look, { L: T.L, D: T.D, top, h }, shadedBox); return; }
+  }
   if (S.stand.style === 'frame') { addFrameStand(sc, T, t, top, h, fin.color); return; }
   if (S.stand.style === 'table') { addTableStand(sc, S, T, top, h, fin.color, wf); return; }
   // a peninsula is open on both long sides, so its cabinet has doors on the back too (Nathan 2026-10-08)
