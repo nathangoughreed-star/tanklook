@@ -608,3 +608,7 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .failsvg { width: 100%; height: auto; display: block; max-height: 300px; }
 .failcard.hot { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .failtag { pointer-events: none; transform: translate(-50%, -135%); white-space: nowrap; font-size: var(--fs-xs); padding: 2px 6px; }
+/* R104: where-from chips under the group chips, and the native-range line on the animal card */
+.origincap { margin-top: var(--s2); }
+.detail .origin { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s1); font-size: 13px; color: var(--text-2); }
+.detail .origin .tag { font-size: 11px; font-weight: 600; color: var(--accent); border: 1px solid var(--border, currentColor); border-radius: 999px; padding: 1px 8px; }

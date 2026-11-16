@@ -71,7 +71,7 @@ export function AnimalsSection({ store, getViewer, pending }: { store: Store; ge
   const sv = stockView(S, rules, units, fitter);
   // the exact fit reading is worked out a slice at a time after the first paint, then redraws the list
   const detSp = pvId ? getSpecies(pvId) : undefined, det = detSp ? speciesDetail(S, detSp, pending ? OK_FIT : fitter.exactNow(S, units, rules, detSp), units) : null;
-  const list = useMemo(() => findSpecies(S, query.q, query.role), [S, query.q, query.role]);
+  const list = useMemo(() => findSpecies(S, query.q, query.role, query.origin), [S, query.q, query.role, query.origin]);
   useEffect(() => { if (!pending) fitter.refineFits(S, units, rules, list, () => setN(n => n + 1)); });
 
   const set = (q: Partial<PickQuery>) => setQuery({ ...query, ...q });
@@ -140,6 +140,7 @@ export function AnimalsSection({ store, getViewer, pending }: { store: Store; ge
           <div class="dart"><FishArt id={det.id} look={det.look} big /></div>
           <div class="dname">{det.name}{det.tag ? <b class="tag">{det.tag}</b> : null}</div>
           <div class="m"><i>{det.sci}</i></div>
+          {det.origin ? <div class="origin" title={`Native range from ${det.origin.src}${det.origin.est ? '; we are less sure of this one' : ''}`}><b class="tag">{det.origin.place}</b><span>{det.origin.region}</span></div> : null}
           {det.note ? <div class="hint">{det.note}</div> : null}
           <div class="rundown">{det.rows.map(([k, v]) => <div class="drow"><span>{k}</span><b>{v}</b></div>)}</div>
           {pending ? null : <div class={`fitbox ${det.fit.level}`}><b>{det.fit.level === 'ok' ? 'Fits' : det.fit.level === 'problem' ? 'Held back' : 'Caution'}</b> {det.fit.text}{det.fit.more.length ? <ul>{det.fit.more.map(m => <li>{m}</li>)}</ul> : null}{det.fit.inTank ? <div class="hint">{det.fit.inTank} already in the tank.</div> : null}</div>}
@@ -153,6 +154,8 @@ export function AnimalsSection({ store, getViewer, pending }: { store: Store; ge
         <span class={`toggle${query.fitsOnly ? ' on' : ''}`} />Fits this tank{pv.hidden ? <span class="hint"> · {pv.hidden} held back</span> : null}
       </button>}
       <div class="chips">{pv.chips.map(c => <button type="button" class={`chip${(query.role ?? undefined) === c.role ? ' on' : ''}`} aria-pressed={(query.role ?? undefined) === c.role} onClick={() => set({ role: c.role })}>{c.label} <span class="n">{c.n}</span></button>)}</div>
+      {pv.origins.length > 1 ? <div class="cap origincap">Where from</div> : null}
+      {pv.origins.length > 1 ? <div class="chips origins" role="group" aria-label="Where from">{pv.origins.map(c => <button type="button" class={`chip${query.origin === c.c ? ' on' : ''}`} aria-pressed={query.origin === c.c} onClick={() => set({ origin: c.c })}>{c.label} <span class="n">{c.n}</span></button>)}</div> : null}
       {pv.none ? <div class="hint">{pv.none}</div> : null}
       {pv.groups.map(g => (
         <div class="pgroup">

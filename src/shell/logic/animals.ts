@@ -15,6 +15,7 @@ import { startGroup } from '../../ui/pickerStrict';
 import { sexFish } from '../../ui/stockPlanLogic';
 import { scopeSpecies } from '../../scope';
 import { CARE, EXPERTISE_NAME } from '../../data/care';
+import { CONTINENTS, continentText, inContinent, originOf, regionText, type Continent } from '../../data/origin';
 import { CHEM } from '../../data/waterchem';
 import { zoneOf, recommendedMin } from '../../scene/zone';
 import { fmtTemp, fmtVol } from '../../units';
@@ -37,6 +38,8 @@ export interface PickGroup { role: Role; label: string; rows: PickRow[] }
 export interface PickView {
   kind: SetupKind;
   chips: { role: Role | undefined; label: string; n: number }[];
+  /** R104: where-from chips (continent / ocean region); only places with an animal in the pool, counts follow the group chip */
+  origins: { c: Continent | undefined; label: string; n: number }[];
   groups: PickGroup[];
   /** rows listed now */
   shown: number;
@@ -47,25 +50,34 @@ export interface PickView {
   placeholder: string;
 }
 
-export interface PickQuery { q: string; role?: Role; fitsOnly: boolean }
+export interface PickQuery { q: string; role?: Role; origin?: Continent; fitsOnly: boolean }
 /** "Fits this tank" is ON by default (screen map §2a); the choice is remembered per browser by the component. */
 export const DEFAULT_QUERY: PickQuery = { q: '', role: undefined, fitsOnly: true };
 
 /** The species this kind of tank offers that match the search and the chosen group. */
-export const findSpecies = (S: TankSetup, q: string, role?: Role) => { const k = tankKind(S); return searchSpecies(q).filter(sp => offeredIn(sp, k) && (!role || roleOf(sp) === role)); };
+export const findSpecies = (S: TankSetup, q: string, role?: Role, origin?: Continent) => { const k = tankKind(S); return searchSpecies(q).filter(sp => offeredIn(sp, k) && (!role || roleOf(sp) === role) && (!origin || inContinent(sp.id, origin))); };
 
 /** AT1 (R54): the start door reuses the picker with no tank behind it: `held` = species already on its list (they leave the tiles, as in-tank species do), `free` = nothing is judged against a tank. */
 export interface PickOpts { held?: ReadonlySet<string>; free?: boolean; heldWord?: string }
 export function pickView(S: TankSetup, units: Units, rules: Rules, fitter: Fitter, query: PickQuery, opt: PickOpts = {}): PickView {
   const kind = tankKind(S), salt = kind === 'saltwater';
   const fitOf = opt.free ? () => OK_FIT : fitter.fitsFor(S, units, rules);
-  const counts = new Map<Role, number>();
+  const counts = new Map<Role, number>(), oCounts = new Map<Continent, number>();
   const inTank = new Set([...S.fish.map(f => f.species), ...(opt.held ?? [])]);   // AT1 (R51): a species already in the tank is in the stock rows, not in the tiles
-  for (const sp of scopeSpecies(SPECIES)) if (offeredIn(sp, kind) && !inTank.has(sp.id)) counts.set(roleOf(sp), (counts.get(roleOf(sp)) ?? 0) + 1);
+  const pool = scopeSpecies(SPECIES).filter(sp => offeredIn(sp, kind) && !inTank.has(sp.id));
+  const origin = query.origin && pool.some(sp => inContinent(sp.id, query.origin!)) ? query.origin : undefined;
+  const roleAll = new Map<Role, number>();
+  for (const sp of pool) roleAll.set(roleOf(sp), (roleAll.get(roleOf(sp)) ?? 0) + 1);
+  const role = query.role && roleAll.has(query.role) ? query.role : undefined;
+  // faceted counts: the group chips follow the chosen place, the place chips follow the chosen group
+  for (const sp of pool) {
+    if (!origin || inContinent(sp.id, origin)) counts.set(roleOf(sp), (counts.get(roleOf(sp)) ?? 0) + 1);
+    if (!role || roleOf(sp) === role) for (const c of originOf(sp.id)?.c ?? []) oCounts.set(c, (oCounts.get(c) ?? 0) + 1);
+  }
   const total = [...counts.values()].reduce((a, n) => a + n, 0);
-  const chips = [{ role: undefined as Role | undefined, label: 'All', n: total }, ...rolesFor(kind).filter(r => counts.has(r)).map(r => ({ role: r as Role | undefined, label: ROLES.find(x => x[0] === r)![1], n: counts.get(r)! }))];
-  const role = query.role && counts.has(query.role) ? query.role : undefined;
-  const found = findSpecies(S, query.q, role), all = found.filter(sp => !inTank.has(sp.id)), already = found.filter(sp => inTank.has(sp.id));
+  const chips = [{ role: undefined as Role | undefined, label: 'All', n: total }, ...rolesFor(kind).filter(r => counts.has(r) || r === role).map(r => ({ role: r as Role | undefined, label: ROLES.find(x => x[0] === r)![1], n: counts.get(r) ?? 0 }))];
+  const originChips = pool.some(sp => originOf(sp.id)) ? [{ c: undefined as Continent | undefined, label: 'Anywhere', n: pool.filter(sp => !role || roleOf(sp) === role).length }, ...CONTINENTS.filter(([c]) => oCounts.has(c) || c === origin).map(([c, l]) => ({ c: c as Continent | undefined, label: l, n: oCounts.get(c) ?? 0 }))] : [];
+  const found = findSpecies(S, query.q, role, origin), all = found.filter(sp => !inTank.has(sp.id)), already = found.filter(sp => inTank.has(sp.id));
   const list = query.fitsOnly && !opt.free ? fitsThisTank(all, fitOf) : all;
   const groups: PickGroup[] = groupPicker(list, kind, fitOf).map(g => ({
     role: g.role, label: g.label,
@@ -78,7 +90,7 @@ export function pickView(S: TankSetup, units: Units, rules: Rules, fitter: Fitte
     : already.length ? `${already.length > 2 ? `${already.length} matches are` : `${already.map(sp => sp.name).join(' and ')} ${already.length > 1 ? 'are' : 'is'}`} already in ${opt.heldWord ?? 'your tank'} (above).`
     : query.q.trim() ? `Nothing for a ${kind} setup matches${other ? ` (${other} in other kinds: change the kind in the Tank section)` : ''}.` : 'No animals for this kind of setup yet.';
   const rn = role ? ROLES.find(r => r[0] === role)![1].toLowerCase() : '';
-  return { kind, chips, groups, shown: list.length, hidden, none, placeholder: role ? `Search ${rn}` : `Search ${salt ? 'marine ' : ''}species (common or scientific name)` };
+  return { kind, chips, origins: originChips, groups, shown: list.length, hidden, none, placeholder: role ? `Search ${rn}` : `Search ${salt ? 'marine ' : ''}species (common or scientific name)` };
 }
 
 function pickRow(S: TankSetup, sp: Species, fit: Fit, units: Units): PickRow {
@@ -351,6 +363,8 @@ export interface SpeciesDetail {
   /** how it sits with this tank and its current stock */
   fit: { level: Fit['level']; text: string; more: string[]; inTank: number };
   startCount: number; start: string; dimorphic: boolean;
+  /** R104: where it lives in the wild: the continent / ocean label and the one-line region; absent when the catalogue has no range for it */
+  origin?: { place: string; region: string; src: string; est: boolean };
 }
 const TEMPER = ['Peaceful', 'Territorial or pushy: can harass slow, long-finned or shy tankmates', 'Aggressive: bullies most tankmates'];
 const SWIM: Record<string, string> = { top: 'Top of the tank', middle: 'Middle of the tank', bottom: 'Bottom of the tank', all: 'All through the tank' };
@@ -371,6 +385,7 @@ export function speciesDetail(S: TankSetup, sp: Species, fit: Fit, units: Units)
   return {
     id: sp.id, name: sp.name, sci: sp.sci, look: sp.look, tag: speciesTag(sp) ?? '', note: noteIn(sp.note ?? '', units), rows,
     fit: { level: fit.level, text: fit.level === 'ok' ? (S.fish.length ? 'Gets along with what is in the tank now, and suits this tank.' : 'Suits this tank.') : fit.text, more: fit.level === 'ok' ? [] : fit.more, inTank: S.fish.filter(f => f.species === sp.id).length },
+    origin: (() => { const o = originOf(sp.id); return o ? { place: continentText(o), region: regionText(o), src: o.s, est: !!o.est } : undefined; })(),
     startCount: g.total, start: g.f ? `${g.total} (${g.n} male${g.n === 1 ? '' : 's'}, ${g.f} female${g.f === 1 ? '' : 's'})` : String(g.total), dimorphic: !!sp.female,
   };
 }
