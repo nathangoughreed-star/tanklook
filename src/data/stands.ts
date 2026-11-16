@@ -35,6 +35,8 @@ export interface StandProduct {
   heightIn: number; priceUsd: number; seller: string; url: string; asOf: string;
   /** fields that are estimates or not confirmed from the page */
   est: string[]; note?: string;
+  /** R96: left out of the picker and the default (a stand whose tank footprint is not known) */
+  hidden?: boolean;
   /** R96: the look read off product photos (research/screens/SP1/ref/<id>-*.jpg) */
   look?: StandLook;
 }
@@ -48,7 +50,7 @@ export function standFits(p: StandProduct, T: Tank): boolean {
   return p.fits.some(([l, d]) => Math.abs(L - l) <= 1.5 && Math.abs(D - d) <= 1.3);
 }
 /** Every stand sold for this tank, cheapest first. */
-export const standsFor = (T: Tank): StandProduct[] => STAND_PRODUCTS.filter(p => standFits(p, T)).sort((a, b) => a.priceUsd - b.priceUsd);
+export const standsFor = (T: Tank): StandProduct[] => STAND_PRODUCTS.filter(p => !p.hidden && standFits(p, T)).sort((a, b) => a.priceUsd - b.priceUsd);
 /** The stand a setup has: its picked product while it fits, else the cheapest fitting one of the drawn kind (cabinet or frame) in the drawn finish. undefined = generic estimate. */
 export function standOf(S: Pick<TankSetup, 'tank' | 'stand'>): StandProduct | undefined {
   const st = S.stand; if (!st.show || st.style === 'table' || st.style === 'custom') return undefined;

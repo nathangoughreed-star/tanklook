@@ -330,6 +330,8 @@ function StandPicker({ S, store }: { S: TankSetup; store: Store }) {
 }
 /** A small drawing of the stand in its finish: a cabinet (box, doors) or an open frame (legs, a shelf). */
 function StandArt({ p }: { p: StandProduct }) {
+  const [bad, setBad] = useState(false); // R96: the baked still of the product's model (public/gallery/stands), the drawing below when it is missing
+  if (!bad) return <img class="stillart" src={`${import.meta.env.BASE_URL}gallery/stands/${p.id}.webp`} alt={`${p.brand} ${p.line}`} onError={() => setBad(true)} />;
   const c = '#' + STAND_FINISHES[p.finish].color.toString(16).padStart(6, '0');
   return p.kind === 'cabinet'
     ? <svg viewBox="0 0 80 50" aria-hidden="true"><rect x="4" y="6" width="72" height="5" fill={c} /><rect x="6" y="11" width="68" height="34" fill={c} opacity=".92" /><path d="M40 12v32M34 28h3M43 28h3" stroke="#0007" stroke-width="1.2" /></svg>

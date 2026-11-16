@@ -213,7 +213,7 @@
    "front": "#1f1b1a",
    "top": "#24201d",
    "sheen": "satin",
-   "grain": "laminate",
+   "grain": "none",
    "doors": 2,
    "doorStyle": "flat",
    "handle": "none",
@@ -286,7 +286,7 @@
    "front": "#292a30",
    "top": "#25272b",
    "sheen": "satin",
-   "grain": "laminate",
+   "grain": "none",
    "open": "center",
    "doors": 1,
    "handle": "none",
@@ -857,7 +857,7 @@
    "front": "#e6e6e4",
    "top": "#eeeeec",
    "sheen": "satin",
-   "grain": "laminate",
+   "grain": "none",
    "open": "arch",
    "doors": 0,
    "base": "plinth",
@@ -918,7 +918,7 @@
    "kind",
    "fits"
   ],
-  "note": "Chewy 2026-11-16: black $176.14, white $13.27/gal; custom fit to the HelloReef 15 gal tank, whose footprint is not printed (24 x 12 assumed), with a cord cutout and compartments.",
+  "note": "Chewy 2026-11-16: black $176.14, white $13.27/gal; custom fit to the HelloReef 15 gal tank, whose footprint is not printed (24 x 12 assumed), with a cord cutout and compartments. R96: the photos show a tall narrow pedestal for a cube nano tank, not a 24 x 12 cabinet; the 24 x 12 fit was an assumption, so this stand is hidden from the picker until its tank footprint is known.",
   "look": {
    "front": "#0d0a0a",
    "top": "#120e0d",
@@ -929,6 +929,7 @@
    "handle": "none",
    "base": "plinth",
    "overhangMm": 6
-  }
+  },
+  "hidden": true
  }
 ]

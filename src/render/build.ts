@@ -490,7 +490,7 @@ export const STAND_FINISHES: Record<TankSetup['stand']['finish'], { label: strin
 
 /** Box faces in BoxGeometry order (+x, -x, +y, -y, +z, -z), shaded so it reads as 3D; lit as a room surface. */
 function shadedBox(w: number, h: number, d: number, color: number, grain?: Grain) {
-  const tex = grain && woodTexture(grain.finish), geo = new THREE.BoxGeometry(w, h, d);
+  const tex = grain && woodTexture(grain.finish, grain.soft), geo = new THREE.BoxGeometry(w, h, d);
   const c = new THREE.Color(color).multiplyScalar(tex ? 1 / tex.userData.mean : 1), k = [0.78, 0.78, 1.08, 0.5, 0.95, 0.7];
   if (tex) applyGrainUV(geo, grain!);
   const mats = k.map(f => basic(c.clone().multiplyScalar(f), tex ? { map: tex } : {}));
@@ -529,7 +529,7 @@ function shadedPrism(ring: P[], y0: number, y1: number, color: number, grain?: G
 
 /** Any solid's geometry shaded per face as shadedPrism does; lit as a room surface. */
 function shadedSolid(geo: THREE.BufferGeometry, color: number, grain?: Grain) {
-  const tex = grain && woodTexture(grain.finish), n = geo.attributes.normal, c = new THREE.Color(color).multiplyScalar(tex ? 1 / tex.userData.mean : 1), cols: number[] = [];
+  const tex = grain && woodTexture(grain.finish, grain.soft), n = geo.attributes.normal, c = new THREE.Color(color).multiplyScalar(tex ? 1 / tex.userData.mean : 1), cols: number[] = [];
   if (tex) applyGrainUV(geo, grain!);
   for (let i = 0; i < n.count; i++) {
     const ny = n.getY(i), nz = n.getZ(i), k = ny > 0.5 ? 1.08 : ny < -0.5 ? 0.5 : 0.78 + nz * (nz > 0 ? 0.17 : 0.08);

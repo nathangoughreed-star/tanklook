@@ -58,3 +58,23 @@ describe('the pick drives the drawn stand', () => {
     expect(o.scene.tanks[0].stand.product).toBeUndefined();
   });
 });
+
+describe('R96: every stand has a look read off its photos', () => {
+  it('each stand has a look; colours are 6-digit hex; unphotographed looks are flagged as estimates', () => {
+    for (const p of STAND_PRODUCTS) {
+      expect(p.look, p.id).toBeTruthy();
+      for (const c of [p.look!.front, p.look!.top, p.look!.tube, p.look!.shelfHex, p.look!.handleHex, p.look!.baseHex]) if (c) expect(c, p.id).toMatch(/^#[0-9a-f]{6}$/i);
+      if (p.kind === 'frame') expect(p.look!.tube, p.id).toBeTruthy(); else expect(p.look!.front, p.id).toBeTruthy();
+    }
+    for (const id of ['af-10-metal', 'marineland-modern-48', 'seapora-monarch-48x18', 'imagitarium-brooklyn-10']) expect(standProduct(id)!.look!.est?.length, id).toBeGreaterThan(0);
+  });
+  it('a stand with an unknown tank footprint is hidden from the picker and the default', () => {
+    expect(standProduct('helloreef-15')!.hidden).toBe(true);
+    expect(standsFor(setup('g20h').tank).some(p => p.id === 'helloreef-15')).toBe(false);
+  });
+  it('every baked tile exists', async () => {
+    // @ts-expect-error node only (no node types in this project)
+    const { existsSync } = await import('node:fs');
+    for (const p of STAND_PRODUCTS) expect(existsSync(`public/gallery/stands/${p.id}.webp`), p.id).toBe(true);
+  });
+});

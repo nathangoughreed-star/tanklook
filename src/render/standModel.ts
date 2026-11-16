@@ -33,6 +33,7 @@ export interface StandSpace { L: number; D: number; top: number; h: number }
 export function addProductStand(sc: THREE.Scene, kind: 'cabinet' | 'frame', look: StandLook, sp: StandSpace, mk: Mk): void {
   const g = new THREE.Group(); g.name = 'standProduct';
   if (kind === 'frame') frame(g, look, sp, mk); else cabinet(g, look, sp, mk);
+  g.position.set(sp.L / 2, 0, -sp.D / 2); // the tank's footprint runs x 0..L, front at z = 0, back at z = -D: the model is built about its own centre
   sc.add(g);
 }
 
@@ -45,7 +46,7 @@ function sheenPlane(g: THREE.Group, look: StandLook, w: number, h: number, x: nu
 }
 
 function cabinet(g: THREE.Group, look: StandLook, sp: StandSpace, mk: Mk) {
-  const front = hex(look.front), topC = hex(look.top, front), over = look.overhangMm ?? 12, grain: Grain | undefined = look.grain && look.grain !== 'none' ? { finish: 'oak', seed: 3 } : undefined;
+  const front = hex(look.front), topC = hex(look.top, front), over = look.overhangMm ?? 12, grain: Grain | undefined = look.grain && look.grain !== 'none' ? { finish: 'oak', seed: 3, soft: true } : undefined;
   const W = sp.L + 2 * over, D = sp.D + 2 * over, y1 = sp.top, y0 = sp.top - sp.h, topT = Math.min(28, sp.h * 0.06);
   const base = look.base ?? 'plinth', baseH = base === 'plinth' ? Math.min(70, sp.h * 0.1) : base === 'feet' ? 32 : base === 'tapered' ? Math.min(150, sp.h * 0.22) : base === 'poles' ? 40 : base === 'block' ? 70 : 0;
   const bodyY0 = y0 + baseH, bodyY1 = y1 - topT, bodyH = bodyY1 - bodyY0, cz = 0, front_z = D / 2 - over * 0.3;
@@ -55,7 +56,7 @@ function cabinet(g: THREE.Group, look: StandLook, sp: StandSpace, mk: Mk) {
   // carcass: side and back panels so an open centre shows depth
   const inset = 6;
   if (look.open === 'arch' || look.open === 'center') {
-    const sideW = look.open === 'arch' ? Math.max(45, W * 0.1) : Math.max(60, W * 0.22);
+    const sideW = look.open === 'arch' ? Math.max(45, W * 0.1) : Math.max(60, W * 0.36);
     const sides: [number, number][] = [[-(W / 2 - sideW / 2 - inset), sideW], [W / 2 - sideW / 2 - inset, sideW]];
     for (const [x, w] of sides) put(g, mk(w, bodyH, D - 2 * inset, front, grain && { ...grain, seed: 4 }), x, bodyY0 + bodyH / 2, cz);
     // the opening: dark back wall, a shelf

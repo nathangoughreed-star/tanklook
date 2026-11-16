@@ -26,11 +26,13 @@ function noise(u: number, v: number, px: number, py: number, s: number) {
 }
 const smooth = (a: number, b: number, x: number) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
-const cache = new Map<Finish, THREE.DataTexture>();
+const cache = new Map<string, THREE.DataTexture>();
+/** R96: a fine, low-contrast grain for laminates and stained veneers (most box-store stands), next to the open oak above. */
+const SOFT_LOOK: WoodLook = { rings: 7, contrast: 0.12, pores: 0.22, warm: 0.6 };
 /** The finish's grain texture (shared), or null for a finish that is not wood. `userData.mean` = its mean linear brightness. */
-export function woodTexture(f: Finish): THREE.DataTexture | null {
-  const look = WOOD_LOOK[f]; if (!look || (import.meta.env?.DEV && (globalThis as { __gbNoGrain?: boolean }).__gbNoGrain)) return null; // __gbNoGrain: dev-only A/B switch (scripts/wg1-shots.js)
-  let t = cache.get(f); if (t) return t;
+export function woodTexture(f: Finish, soft = false): THREE.DataTexture | null {
+  const look = soft ? SOFT_LOOK : WOOD_LOOK[f]; if (!look || (import.meta.env?.DEV && (globalThis as { __gbNoGrain?: boolean }).__gbNoGrain)) return null; // __gbNoGrain: dev-only A/B switch (scripts/wg1-shots.js)
+  const ck = soft ? f + '-soft' : f; let t = cache.get(ck); if (t) return t;
   const data = new Uint8Array(W * H * 4), tones = new Float32Array(W * H);
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const u = (x + 0.5) / W, v = (y + 0.5) / H;
@@ -52,11 +54,11 @@ export function woodTexture(f: Finish): THREE.DataTexture | null {
   t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; t.magFilter = THREE.LinearFilter; t.anisotropy = 4; t.needsUpdate = true;
   let m = 0; for (let i = 0; i < tones.length; i++) m += Math.pow(tones[i] / top, 2.2);
   t.userData.mean = Math.max(0.3, m / tones.length); // red channel's linear mean (green / blue only darken the lines further)
-  cache.set(f, t); return t;
+  cache.set(ck, t); return t;
 }
 
 /** What a stand piece's grain looks like: its direction, and a per-piece offset (own grain, a visible seam to its neighbour). */
-export interface Grain { finish: Finish; vertical?: boolean; seed: number }
+export interface Grain { finish: Finish; vertical?: boolean; seed: number; /** R96: the fine low-contrast grain of laminates and stained veneers */ soft?: boolean }
 
 /** Per-vertex UVs for a solid, projected along the dominant normal axis (mm over the texture's size): the grain runs along
  *  the horizontal for a carcass, up the panel for a vertical piece; a top face runs along x. Non-indexed or box geometry. */
