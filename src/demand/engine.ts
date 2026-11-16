@@ -12,6 +12,7 @@ import { itemLights } from '../scene/lightcheck';
 import { NEEDS, isCoralNeed, isLand, parRange, type PlantNeed } from '../scene/lightneeds';
 import { wattsOf } from '../scene/lightout';
 import { lightProduct, listedPrice } from '../data/gearCatalog';
+import { standOf, standLabel } from '../data/stands';
 import { hoodOf, withHoodLight, NO_HOOD_NOTE } from '../data/hoods';
 import { growRate } from '../scene/growtime';
 import { LIBRARY } from '../scene/items';
@@ -121,7 +122,9 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   // only a stand the owner added counts (Nathan 2026-10-26: an undecided stand is not in the price)
   const tStand = !wet ? rowPrice(TERRARIUM_STAND_ROW) : undefined; // a terrarium: its own reptile-stand row, by footprint (S240b)
   // a table is furniture the user already owns (Nathan 2026-10-28): only a cabinet, frame or custom stand is priced
-  if (S.stand.show && S.stand.style !== 'table') add('stand', tStand ? 'Stand (terrarium)' : 'Stand', 'gear', { setup: price(tStand ? scale3(tStand, terrariumStandK(S.tank)) : stand ? scale3(stand, gal > 55 ? Math.pow(gal / 55, 0.8) : 1) : add3(pick(G.stand.base), scale3(pick(G.stand.perGal), gal))) });
+  const sProd = wet && S.stand.show ? standOf(S) : undefined; // SP1: a real product that fits this tank, else the generic by-gallons estimate below
+  if (sProd) add('stand', `Stand: ${standLabel(sProd)}`, 'gear', { setup: price({ lo: sProd.priceUsd * 0.9, mode: sProd.priceUsd, hi: sProd.priceUsd * 1.1 }) });
+  else if (S.stand.show && S.stand.style !== 'table') add('stand', tStand ? 'Stand (terrarium)' : 'Stand' + (wet && S.stand.style !== 'custom' ? ' (typical, estimate)' : ''), 'gear', { setup: price(tStand ? scale3(tStand, terrariumStandK(S.tank)) : stand ? scale3(stand, gal > 55 ? Math.pow(gal / 55, 0.8) : 1) : add3(pick(G.stand.base), scale3(pick(G.stand.perGal), gal))) });
   // HD1: a hood is one product with its light built in; no product for this tank = priced as the glass lid (the scene keeps its hood; the user is told)
   const noHood = S.lid === 'hood' && !hood, lidKind = noHood ? 'glass' : S.lid;
   if (noHood && !opts.kit) warnings.push(NO_HOOD_NOTE); // a kit's own hood is the kit's (its price replaces these rows), so no note for a bundle

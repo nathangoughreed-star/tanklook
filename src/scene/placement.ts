@@ -6,6 +6,7 @@ import { LIMITS } from './validate';
 import { fitTable, tableRange } from './table';
 import { IN, clamp } from './physics';
 import type { StandFinish, TankSetup } from './types';
+import type { StandProduct } from '../data/stands';
 
 export type Placement = 'floor' | 'stand' | 'furniture';
 export const PLACEMENTS: [Placement, string, string][] = [
@@ -28,6 +29,7 @@ export function putOnFloor(S: TankSetup): void { S.stand.show = false; S.stand.n
 /** The tank on a bought stand: a cabinet or an open frame (a custom-size cabinet stays what it is), in a finish. */
 export function putOnStand(S: TankSetup, o: { style?: 'cabinet' | 'frame'; finish?: StandFinish } = {}): void {
   S.stand.show = true; S.stand.need = 'added';
+  if (o.style || o.finish) delete S.stand.product; // a hand-picked style or colour leaves the product (SP1)
   if (o.style) S.stand.style = o.style; else if (S.stand.style === 'table') S.stand.style = 'cabinet';
   if (o.finish) S.stand.finish = o.finish;
 }
@@ -53,4 +55,11 @@ export function minTop(S: TankSetup, shape: 'rect' | 'round'): { L: number; D: n
 export function putOnMyFurniture(S: TankSetup) {
   const t = S.stand.table, was = placementOf(S) === 'furniture';
   return putOnFurniture(S, was ? { shape: t.shape, L: t.L, D: t.D, height: S.stand.height } : { shape: 'rect', L: Math.max(t.L, 36 * IN), D: Math.max(t.D, 18 * IN), height: 30 * IN });
+}
+
+/** SP1: put a real stand product under the tank: it sets the drawn style (cabinet / frame), the nearest finish and the product's height. */
+export function setStandProduct(S: TankSetup, p: StandProduct | undefined): void {
+  if (!p) { delete S.stand.product; return; }
+  putOnStand(S, { style: p.kind, finish: p.finish });
+  S.stand.product = p.id; S.stand.height = clamp(p.heightIn * IN, LIMITS.stand[0], LIMITS.stand[1]);
 }

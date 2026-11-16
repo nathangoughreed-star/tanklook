@@ -1,0 +1,391 @@
+[
+ {
+  "id": "topfin-10",
+  "brand": "Top Fin",
+  "line": "10 gal stand",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black / Raven oak (laminate)",
+  "fits": [
+   [
+    20,
+    10
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 69.99,
+  "seller": "PetSmart",
+  "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquarium-stands/top-fin-aquarium-stand---10-gallon-64309.html",
+  "asOf": "2026-11-16",
+  "est": [
+   "priceUsd",
+   "kind"
+  ],
+  "note": "Search snapshots show $69.99 (was $139.99) and older $139.99-$181.99: the price swings; footprint 20.9 x 12.4 in. Style (cabinet) not confirmed from the page."
+ },
+ {
+  "id": "af-10-metal",
+  "brand": "Aquatic Fundamentals",
+  "line": "10 gal metal stand",
+  "kind": "frame",
+  "finish": "black",
+  "color": "black steel",
+  "fits": [
+   [
+    20,
+    10
+   ]
+  ],
+  "heightIn": 27.8,
+  "priceUsd": 76.1,
+  "seller": "reach.dog (reseller)",
+  "url": "https://reach.dog/shop/pets-shop-plus/products/aquatic-fundamentals-10-gallon-metal-aquarium-stand-black",
+  "asOf": "2026-11-16",
+  "est": [],
+  "note": "20.9 x 11 in top, 100 lb rating."
+ },
+ {
+  "id": "tongmo-10",
+  "brand": "Tongmo",
+  "line": "10 gal metal stand",
+  "kind": "frame",
+  "finish": "black",
+  "color": "black steel",
+  "fits": [
+   [
+    20,
+    10
+   ]
+  ],
+  "heightIn": 31.3,
+  "priceUsd": 56.98,
+  "seller": "Amazon (via Woodart Supply listing)",
+  "url": "https://woodartsupply.com/products/fish-tank-stand-the-perfect-10-gallon-metal-aquarium-stand-measuring-22-8-w-x-10-6-d-x-31-3-h-to-fit-your-aquatic-display-needs",
+  "asOf": "2026-11-16",
+  "est": [],
+  "note": "22.8 x 10.6 in top, 150 lb rating; sale price, list $59.98."
+ },
+ {
+  "id": "aqueon-forge-30",
+  "brand": "Aqueon",
+  "line": "Forge metal stand 20 long / 29",
+  "kind": "frame",
+  "finish": "black",
+  "color": "black steel frame, reversible wood panels (black or light brown)",
+  "fits": [
+   [
+    30,
+    12
+   ]
+  ],
+  "heightIn": 28.25,
+  "priceUsd": 144.99,
+  "seller": "Woodart Supply",
+  "url": "https://woodartsupply.com/collections/fish-tank-stands/products/aqueon-metal-20-gallon-long-29-gallon-high-fish-tank-aquarium-stand-30-l-x-12-w-x-28-25-h",
+  "asOf": "2026-11-16",
+  "est": [],
+  "note": "Top shelf 30 x 12 in."
+ },
+ {
+  "id": "aqueon-cabinet-30",
+  "brand": "Aqueon",
+  "line": "Black cabinet stand 20 long / 29 / 37",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black, real wood, one door",
+  "fits": [
+   [
+    30,
+    12
+   ]
+  ],
+  "heightIn": 30.4,
+  "priceUsd": 209.99,
+  "seller": "Blue Fish Aquarium",
+  "url": "https://www.bluefishaquarium.com/collections/all/products/aqueon-20-long-29-37-gallon-aquarium-black-cabinet-stand-30-x-12-in",
+  "asOf": "2026-11-16",
+  "est": [],
+  "note": "31.9 x 13.9 x 30.4 in overall."
+ },
+ {
+  "id": "imagitarium-newport-29",
+  "brand": "Imagitarium",
+  "line": "Newport wood stand 29 gal",
+  "kind": "cabinet",
+  "finish": "oak",
+  "color": "wood finish",
+  "fits": [
+   [
+    30,
+    12
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 74.99,
+  "seller": "Petco",
+  "url": "https://www.petco.com/product/imagitarium-29-gallon-newport-tank-stand",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn",
+   "kind"
+  ],
+  "note": "Clearance in the snapshot (reg $99.99); style and height not confirmed."
+ },
+ {
+  "id": "imagitarium-modern-29",
+  "brand": "Imagitarium",
+  "line": "Modern cabinet stand 29 gal",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black modern cabinet",
+  "fits": [
+   [
+    30,
+    12
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 149.99,
+  "seller": "Petco",
+  "url": "https://www.petco.com/product/imagitarium-29-gallon-modern-cabinet-stand",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn"
+  ],
+  "note": "Height not confirmed."
+ },
+ {
+  "id": "topfin-20-37",
+  "brand": "Top Fin",
+  "line": "Aquarium stand 20 to 37 gal",
+  "kind": "cabinet",
+  "finish": "oak",
+  "color": "wood-look finishes (black, Raven oak)",
+  "fits": [
+   [
+    30,
+    12
+   ],
+   [
+    30,
+    13
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 152.99,
+  "seller": "PetSmart",
+  "url": "https://www.petsmart.com/5309119.html",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn"
+  ],
+  "note": "Range seen $149.99-$157.24 by finish (regular $184.99); height not confirmed."
+ },
+ {
+  "id": "seapora-roman-36",
+  "brand": "Seapora",
+  "line": "Roman cabinet stand 36 x 18",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black cabinet",
+  "fits": [
+   [
+    36,
+    18
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 180.0,
+  "seller": "Chewy",
+  "url": "https://www.chewy.com/seapora-roman-cabinet-aquarium-stand/dp/1722534",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn"
+  ],
+  "note": "For 30 / 40 breeder; height not confirmed."
+ },
+ {
+  "id": "af-40b-cabinet",
+  "brand": "Aquatic Fundamentals",
+  "line": "40B cabinet stand",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black cabinet",
+  "fits": [
+   [
+    36,
+    18
+   ]
+  ],
+  "heightIn": 28.25,
+  "priceUsd": 183.74,
+  "seller": "Petco",
+  "url": "https://www.petco.com/product/aquatic-fundamentals-40b-cabinet-stand",
+  "asOf": "2026-11-16",
+  "est": [],
+  "note": "37.4 x 19.4 x 28.25 in; clearance (reg $244.99); reviewers question the 400 lb rating."
+ },
+ {
+  "id": "mewsden-40",
+  "brand": "MEWSDEN",
+  "line": "40 gal metal stand",
+  "kind": "frame",
+  "finish": "black",
+  "color": "black steel",
+  "fits": [
+   [
+    36,
+    18
+   ]
+  ],
+  "heightIn": 29.5,
+  "priceUsd": 72.19,
+  "seller": "Amazon (via Woodart Supply listing)",
+  "url": "https://woodartsupply.com/collections/fish-tank-stands/products/mewsden-fish-tank-stand-40-gallon-heavy-duty-metal-aquarium-stand-reptile-turtle-breeder-tank-combo-white-36-5x18-5x29-5",
+  "asOf": "2026-11-16",
+  "est": [],
+  "note": "36.5 x 18.5 x 29.5 in; sale price, list $75.99 (white version exists)."
+ },
+ {
+  "id": "filko-40",
+  "brand": "FILKO",
+  "line": "40 gal metal stand",
+  "kind": "frame",
+  "finish": "black",
+  "color": "black steel",
+  "fits": [
+   [
+    36,
+    18
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 139.99,
+  "seller": "Amazon (via Woodart Supply listing)",
+  "url": "https://woodartsupply.com/products/filko-fish-tank-stand-40-gallon-sturdy-aquarium-stand-with-accessories-storage-metal-tank-stands-table-for-40-50-gallon-reptile-breeder-turtle-terrarium-36-6x18-8-weight-capacity-660-lbs",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn"
+  ],
+  "note": "36.6 x 18.8 in, 660 lb rating; height not confirmed."
+ },
+ {
+  "id": "seapora-empress-48x12",
+  "brand": "Seapora",
+  "line": "Empress cabinet stand 48 x 12",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black cabinet",
+  "fits": [
+   [
+    48,
+    13
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 169.99,
+  "seller": "That Pet Place",
+  "url": "https://www.thatpetplace.com/empress-cabinet-stand-black-48-in-x-12-in",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn"
+  ],
+  "note": "Height not confirmed."
+ },
+ {
+  "id": "marineland-modern-48",
+  "brand": "Marineland",
+  "line": "Modern stand 48 x 13",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black modern cabinet (listing title says grey)",
+  "fits": [
+   [
+    48,
+    13
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 263.99,
+  "seller": "Pet's Warehouse",
+  "url": "https://petswarehouse.com/products/marineland-modern-aquarium-stand-grey-48in-x-13-in",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn"
+  ],
+  "note": "Title says grey, details say black: confirm."
+ },
+ {
+  "id": "seapora-empress-48x18",
+  "brand": "Seapora",
+  "line": "Empress cabinet stand 48 x 18",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black cabinet",
+  "fits": [
+   [
+    48,
+    18
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 224.99,
+  "seller": "That Pet Place",
+  "url": "https://www.thatpetplace.com/empress-cabinet-stand-black-48-in-x-18-in",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn"
+  ],
+  "note": "In-store pickup only; a reviewer calls it flimsy."
+ },
+ {
+  "id": "seapora-monarch-48x18",
+  "brand": "Seapora",
+  "line": "Monarch cabinet stand 48 x 18",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black cabinet",
+  "fits": [
+   [
+    48,
+    18
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 319.99,
+  "seller": "Blue Fish Aquarium (reach.dog)",
+  "url": "https://reach.dog/shop/blue-fish-aquarium/products/monarch-cabinet-stand-black-48x18",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn"
+  ],
+  "note": "For 75 / 90 / 110."
+ },
+ {
+  "id": "topfin-55-75",
+  "brand": "Top Fin",
+  "line": "Aquarium stand 55 to 75 gal",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black (also Raven oak)",
+  "fits": [
+   [
+    48,
+    13
+   ],
+   [
+    48,
+    18
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 299.99,
+  "seller": "PetSmart",
+  "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquarium-stands/top-fin-aquarium-stand---55-to-75-gallon-66307.html",
+  "asOf": "2026-11-16",
+  "est": [
+   "heightIn"
+  ],
+  "note": "48.2 x 18.8 in footprint."
+ }
+]

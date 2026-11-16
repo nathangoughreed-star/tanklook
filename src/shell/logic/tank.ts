@@ -1,6 +1,7 @@
 // UI2 shell step 3 (lane S3, 2026-11-13): the Tank section's view-models and edits (screen map §2a "Section Tank", §3 rows "Tank shape,
 // size, glass, rim", "Which tank", "Custom tank price"). Pure: no DOM. The components in ../tank*.tsx only draw these and call the edits.
 // Engine calls go through scene/tankEdit.ts (P1), scene/customTanks.ts (P9) and the pure picker logic of ui/tankDockLogic.ts (ST1).
+import { standOf } from '../../data/stands';
 import { BACKGROUNDS, STAND_FINISHES } from '../../render/build';
 import { defaultSetup } from '../../scene/defaults';
 import { tankRowPrice } from '../../demand/prices';
@@ -110,6 +111,8 @@ export function sitsOnSummary(S: TankSetup, u: Units): string {
   const p = placementOf(S);
   if (p === 'floor') return S.stand.need === 'ask' ? 'Not chosen yet' : 'The floor';
   if (p === 'furniture') return `My own furniture, ${len(S.stand.height, u)}`;
+  const sp = standOf(S); // SP1: the real product when one fits
+  if (sp) return `${sp.brand} ${sp.line}, $${Math.round(sp.priceUsd)}`;
   return `${S.stand.style === 'frame' ? 'Open frame' : S.stand.style === 'custom' ? 'Custom stand' : 'Cabinet'}, ${STAND_FINISHES[S.stand.finish].label.toLowerCase()}`;
 }
 export const LIDS: [TankSetup['lid'], string][] = [['open', 'Open'], ['glass', 'Glass lid'], ['mesh', 'Mesh'], ['hood', 'Hood']];

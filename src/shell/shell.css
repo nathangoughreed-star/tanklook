@@ -575,3 +575,9 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .ui2app.tankonly .viewer .ov { display: none !important; }
 .fsexit { position: fixed; top: var(--s3); right: var(--s3); z-index: var(--z-toast); transition: opacity .4s; display: inline-flex; align-items: center; gap: var(--s1); }
 .fsexit.idle { opacity: 0; pointer-events: none; }
+
+/* SP1: stand picker tiles */
+.standpick { margin-top: var(--s2); }
+.stile { text-align: left; cursor: pointer; font: inherit; color: inherit; }
+.stile.on { border-color: var(--accent, #4a90e2); box-shadow: 0 0 0 1px var(--accent, #4a90e2) inset; }
+.stile .tart svg { width: 100%; height: 44px; display: block; }

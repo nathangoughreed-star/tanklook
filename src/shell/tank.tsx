@@ -12,7 +12,8 @@ import { CEILING_MAX, CEILING_MIN, ceilingH, fromUnit, toUnit, IN } from '../sce
 import { setLid, lidLocked, setDoors, doorLocked, type DoorKind } from '../scene/tankEdit';
 import { lockNote } from '../scene/integrated';
 import { lockObject, unlockObject, isLocked } from '../scene/locks';
-import { placementOf, putOnFloor, putOnStand, putOnMyFurniture, putOnFurniture, minTop, type Placement } from '../scene/placement';
+import { placementOf, putOnFloor, putOnStand, putOnMyFurniture, putOnFurniture, minTop, setStandProduct, type Placement } from '../scene/placement';
+import { standsFor, standOf, standProduct, GENERIC_STAND_NOTE, type StandProduct } from '../data/stands';
 import { tankKind, type SetupKind } from '../scene/pickerKind';
 import { keepInWater } from '../scene/water';
 import { clampItem } from '../scene/items';
@@ -155,6 +156,7 @@ function SitsOn({ store, S, u, open, onToggle }: { store: Store; S: TankSetup; u
             {(['cabinet', 'frame'] as const).flatMap(st => (Object.keys(STAND_FINISHES) as TankSetup['stand']['finish'][]).map(f => <option value={`${st}|${f}`}>{st === 'cabinet' ? 'Cabinet' : 'Open frame'}, {STAND_FINISHES[f].label.toLowerCase()}</option>))}
           </select><span /></div>
         <LenRow label="Height" mm={S.stand.height} min={LIMITS.stand[0]} max={LIMITS.stand[1]} u={u} onMm={(mm, done) => store.edit(s => { s.stand.height = mm; }, done ? {} : { coalesce: 'standH' })} />
+        <StandPicker S={S} store={store} />
       </> : null}
       {p === 'furniture' ? <>
         <LenRow label="Height" mm={S.stand.height} min={LIMITS.stand[0]} max={LIMITS.stand[1]} u={u} onMm={(mm, done) => furn({ height: mm }, done ? undefined : 'furnH')} />
@@ -301,4 +303,35 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
       {cur ? <div class="pickfoot"><button type="button" class="btn primary wide" onClick={() => choose(cur)}>{cur.inUse ? `Keep ${cur.name}` : `Choose ${cur.name}`}</button></div> : null}
     </section>
   );
+}
+
+/** SP1: real stands that fit this tank, as picture tiles (price, style, where sold); "Generic" is the fallback estimate. */
+function StandPicker({ S, store }: { S: TankSetup; store: Store }) {
+  const fit = standsFor(S.tank), cur = standOf(S), explicit = !!S.stand.product && !!standProduct(S.stand.product) && cur?.id === S.stand.product;
+  if (!fit.length) return <div class="hint" data-testid="stand-generic">No stand product is listed for this size, so the budget uses a generic estimate ({GENERIC_STAND_NOTE.split(': ')[1]}).</div>;
+  return (
+    <div class="standpick" role="group" aria-label="Stands that fit this tank">
+      <div class="cap">Stands that fit this tank <span class="n">{fit.length}</span></div>
+      <div class="pgrid">
+        {fit.map(p => (
+          <button type="button" class={`ptile stile${cur?.id === p.id ? ' on' : ''}`} aria-pressed={cur?.id === p.id} onClick={() => store.edit(s => setStandProduct(s, p))}>
+            <div class="tart"><StandArt p={p} /></div>
+            <div class="tname">{p.brand} {p.line}</div>
+            <div class="tmeta"><span>${Math.round(p.priceUsd)}</span><span>{p.kind === 'cabinet' ? 'Cabinet' : 'Open frame'}, {p.color.split(',')[0].split(' (')[0]}</span></div>
+            <small class="why">{p.seller}{p.est.includes('priceUsd') ? ' · price is a guess' : ''}</small>
+          </button>
+        ))}
+        <button type="button" class={`ptile stile${!explicit && !cur ? ' on' : ''}`} onClick={() => store.edit(s => { setStandProduct(s, undefined); })} title="Keeps the drawn style and prices a typical stand by tank size">
+          <div class="tname">Generic</div><div class="tmeta"><span>estimate</span></div><small class="why">Typical price by tank size, not a product</small>
+        </button>
+      </div>
+    </div>
+  );
+}
+/** A small drawing of the stand in its finish: a cabinet (box, doors) or an open frame (legs, a shelf). */
+function StandArt({ p }: { p: StandProduct }) {
+  const c = '#' + STAND_FINISHES[p.finish].color.toString(16).padStart(6, '0');
+  return p.kind === 'cabinet'
+    ? <svg viewBox="0 0 80 50" aria-hidden="true"><rect x="4" y="6" width="72" height="5" fill={c} /><rect x="6" y="11" width="68" height="34" fill={c} opacity=".92" /><path d="M40 12v32M34 28h3M43 28h3" stroke="#0007" stroke-width="1.2" /></svg>
+    : <svg viewBox="0 0 80 50" aria-hidden="true"><rect x="4" y="6" width="72" height="3" fill={c} /><rect x="8" y="9" width="3" height="37" fill={c} /><rect x="69" y="9" width="3" height="37" fill={c} /><rect x="8" y="34" width="64" height="2" fill={c} /></svg>;
 }

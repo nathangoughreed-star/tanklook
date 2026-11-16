@@ -7,6 +7,7 @@ import { CEILING_H, CEILING_MAX, CEILING_MIN, WALL_GAP, WALL_GAP_MAX, clamp, map
 import { MH_BULBS, TECH_IDS, fitFixture } from './lightout';
 import { clearTopGear } from './topgear';
 import { lightProduct } from '../data/gearCatalog';
+import { standProduct } from '../data/stands';
 import { normTank } from './shape';
 import { migrateCustomRef } from './customTankName';
 import { TABLE_MAX, fitTable } from './table';
@@ -352,6 +353,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     ...(typeof raw.hoodProduct === 'string' && raw.lid === 'hood' ? { hoodProduct: raw.hoodProduct } : {}),
     ...(raw.doors === 'hinged' || raw.doors === 'sliding' ? { doors: raw.doors } : {}),
     stand: { // no `show` = a file older than stands: off (new tanks start with one on, audit #29)
+      ...(typeof st.product === 'string' && standProduct(st.product) ? { product: st.product } : {}), // SP1 (no version bump): kept only while it is still in the catalogue
       show: bool(st.show, false), height: num(st.height, d.stand.height, ...LIMITS.stand),
       finish: pick(st.finish, ['black', 'white', 'oak'] as const, d.stand.finish),
       style: pick(st.style, ['cabinet', 'frame', 'table', 'custom'] as const, d.stand.style),
