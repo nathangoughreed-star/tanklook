@@ -17,6 +17,7 @@ Work in `C:/Users/nreed/Glass-Box-coord`. C25's runner: `C:/Users/nreed/AppData/
 5. Then build, run the full suite, push, and check the deploy. Tell Nathan the stands are live with one in-tank shot from tanklook.com.
 
 ## In flight
+- **SS1 READY** (R102, reported via C24): 4ecd4c53 on `claude/sweet-hypatia-800979`, the Start sheet (four doors: first visit + New). Touches files.tsx, App.tsx, boot.tsx, shell.css, plus new start.tsx, logic/start.ts and test/ss1-start.test.ts. The full vitest was NOT run. Shots should be in `research/screens/SS1/`; if they're missing, ask SS1 for them. Look at them at 1280 and 390 before merging. Independent of the stand stack: merge it with CP2.
 - **CP2 READY** (R101, reported via C24): 065762f1 on `claude/fervent-lewin-751f9e`. Compare gets per-row match buttons and Make B like A / A like B (undoable); the list opens on click. Files: `src/shell/compare.tsx`, `src/shell/logic/compare.ts`, shell.css, `test/s9-compare.test.ts`. The full vitest was NOT run: your suite covers it. Check the shots in `research/screens/CP2/` (n-* at 1280, m-* at 390). It's independent of the stand stack, so merge it first or alongside.
 - **IL1 READY** (local_4f7c1d7e-3e3d-4ee3-aa18-e2d0685b87f5): R99 is done, commit 2132c324 on branch `il1-inline-canister-gear`. Full vitest: only ab1 failed (timing). It adds the heated Oase Thermo 100/200/300 (they count as the heater), `src/data/gear/inline.json` with 11 in-line heaters / CO2 diffusers / reactors, `tech.returnInline`, an Equipment > Filter "On the return hose" group, units drawn on the hose, and atomizer mist. Flags: many prices / specs / colours are estimates (marked est); Thermo 100/300 tiles are copies of the 200's. Its "1280" shots in `research/screens/IL1/` are really 800 px wide: open them, and if the picker isn't readable, ask IL1 for true 1280 shots. Merge it AFTER the stand stack (both touch tech / demand; the canister price curve was refit) and re-pin once for both.
 - **PM1** (R98) is NOT started. It is the gear photo-model pilot: 7 hoods + 9 NICREW lights, measured per look. Nathan said yes, but to start after the 5-hour reset (12:20 pm EST 11-16). Start it then on Sonnet (brief `prompts/lane-PM1-gear-photo-models.md`). Its report must quote cost per look and an estimate for the rest; bring that to Nathan before any more PM lanes start.
@@ -28,8 +29,8 @@ C25 proposed a mockup first (see C25's last reply): 3 static schematic mockups (
 
 ## Carried over from C24 / C25
 - Needs a live check (none verified yet): R85-R94 (see coordinator-25.md), R91 Full screen (press F on tanklook.com in the browser pane).
-- Waiting on Nathan: DM1, SS1, DL1, CP2, BL1; R81 waits on his screenshot.
+- Waiting on Nathan: DM1, DL1, BL1 (SS1 and CP2 are now ready, above); R81 waits on his screenshot.
 - Known oddities: see coordinator-25.md.
-- Every "check": run `python scripts/request_audit.py` and compare with research/requests.md (next free id: R102).
+- Every "check": run `python scripts/request_audit.py` and compare with research/requests.md (next free id: R103).
 
 House rules: end every reply with "Build N"; US units; screen questions come with pictures; verify visually before "done"; no polling or waiting turns; hand off at ~12 % context or ~120 turns.
