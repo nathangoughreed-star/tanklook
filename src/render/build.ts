@@ -5,6 +5,8 @@ import * as THREE from 'three';
 import { tankView } from './tankView';
 import { crawlPace } from '../scene/crawlPace';
 import type { CrawlData } from './crawl';
+import { clingPace } from '../scene/clingPace';
+import type { ClingData } from './cling';
 import { STAND_PANEL } from '../scene/standspace';
 import { addLidClips, clipLid, LID_CLIP_DROP, LID_SHORT, LID_T } from './lidClips';
 import { LECA, SUBSTRATES, blendTile, blendZone, grain3D } from '../art/placeholder';
@@ -1681,6 +1683,16 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     }
     m.userData.crawl = { spec, world: { S, T, rise } } as CrawlData; m.userData.swimmer = true; void speciesId;
   };
+  // a clinger (otocinclus, bristlenose, hillstream): the sim keeps it stuck belly-down to the ground or a flat pane, from the spot it was placed at
+  const markCling = (m: THREE.Mesh, f: Fish, w: number, sp: Species, glass: boolean) => {
+    const cp = clingPace(sp.id); if (!cp) return;
+    const q = m.quaternion, n = new THREE.Vector3(0, 1, 0).applyQuaternion(q), hd = new THREE.Vector3(1, 0, 0).applyQuaternion(q);
+    const off = glass ? sp.rest * w + PANE_GAP : m.position.y - (groundHeight(S, T, m.position.x, -m.position.z) + rise(m.position.x, -m.position.z));
+    if (glass && Math.abs(n.y) > 0.05) return; // a bowl or tilted glass: stays where it was placed
+    const spec = { id: f.id, len: w, off, creep: cp.creepBL * w, dart: cp.dartBL * w, dartEvery: cp.dartEveryS, still: cp.still, rect: shapeOf(T) === 'rect',
+      home: { surf: glass ? 'pane' as const : 'floor' as const, x: m.position.x, y: m.position.y, z: m.position.z, n: [n.x, n.y, n.z] as [number, number, number], h: [hd.x, hd.y, hd.z] as [number, number, number] } };
+    m.userData.cling = { spec, world: { S, T, rise } } as ClingData; m.userData.swimmer = true;
+  };
   // one animal's meshes (`register`: picked, outlined when selected) and its contact shadow (`add`)
   const animal = (f: Fish, register0: (m: THREE.Mesh, w: number, h: number) => void, add: (o: THREE.Object3D | null) => void) => {
     const sp = speciesOf(f); if (!sp) return;
@@ -1705,7 +1717,8 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     const on = f.surface === 'hardscape' ? (isLizard(sp.art) ? A.restNear(f.x, f.depth, f.y, LIZARD_SNAP, LIZARD_SNAP_TOL, true, sitsOnLeaves(f)) : A.rest(f.x, f.depth, true, sitsOnLeaves(f))) : null, perch = on && PERCHES.has(on.kind) ? on : null;
     const snapped = on && isLizard(sp.art) && (on.p[0] !== f.x || on.p[2] !== f.depth);
     const p: Fish = snapped ? { ...f, x: on.p[0], depth: on.p[2] } : f; // where it stands: the spot, or the limb found beside it
-    const swim = !herp && !hang && f.surface !== 'glass' && swims(sp.art); // swims in place (swim.ts): not a bottom dweller, not clinging to glass or hanging under a leaf
+    const clinger = !herp && !hang && !!clingPace(sp.id); // sucker-mouth grazers stick to a surface (render/cling.ts) instead of swimming
+    const swim = !herp && !hang && !clinger && f.surface !== 'glass' && swims(sp.art); // swims in place (swim.ts): not a bottom dweller, not clinging to glass or hanging under a leaf
     const cardGeo = drapedCard(sp.art, w, h, f.bend, fin) || cardGeometry(w, h, isArachnid(sp.art) ? 0 : f.bend);
     if (!herp) cardGeo.setAttribute('aSwL', new THREE.Float32BufferAttribute(new Array(cardGeo.attributes.position.count).fill(swim ? w : 0), 1));
     const m = new THREE.Mesh(cardGeo, herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${fish3d.fade}`, fishTexture(sp, S.render.edge, true, fish3d.fade), S.render.edge));
@@ -1714,7 +1727,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     const snakeLimb = herp && isSnake(sp.art) && !!perch?.limb; // a snake on a limb follows its curve: built once the card is placed on it (below)
     if (snakeLimb) { /* added below */ } else if (herp) m.add(herpBody(sp.art, w, perch?.limb ? 'perch' : f.surface, perch?.limb?.r, isArachnid(sp.art) ? f.bend : isLizard(sp.art) && f.sex !== 'f' && f.id % 4 === 0 ? 1 : 0)); // a quarter of the male anoles display the dewlap (by id, so it survives save / load and Shuffle) // the card stays as the invisible picking target
     else m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass' || !!hang, fin, swim)); // solid body + paired fins; the card keeps the median fins
-    if (f.surface === 'glass') { onGlass(S, T, f, sp, m, w, A); register(m, w, h); return; }
+    if (f.surface === 'glass') { const gk = onGlass(S, T, f, sp, m, w, A); if (gk === 'glass') markCling(m, f, w, sp, true); register(m, w, h); return; }
     if (hang) { hangOn(f, m, sp.rest * w + PANE_GAP, hang); register(m, w, h); return; }
     // floating at the water surface (dwarf frog): the pose's `top` line just under the water line, wherever it is
     const ft = f.surface === 'top' ? herpFloatTop(sp.art) : undefined;
@@ -1742,6 +1755,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
       m.userData.roam = { spec: { id: f.id, len: w, zone: sp.zone === 'bottom' ? 'bottom' : 'water', pace: swimPace(sp.id), band: [...BANDS[sp.level ?? 'mid']] as [number, number], group: sp.group ? { key: sp.id, tight: sp.group === 'school' } : undefined,
         home: { x: m.position.x, y: m.position.y, z: m.position.z, yaw: e.y * R2D, pitch: e.z * R2D, roll: e.x * R2D } }, world: { S, T, rise } };
     }
+    if (clinger && f.surface !== 'hardscape') markCling(m, f, w, sp, false);
     const cp = rests && !herp && f.surface !== 'hardscape' && f.surface !== 'under' ? crawlPace(sp.id) : undefined; // shrimp, crabs, crayfish: crawl the ground (render/crawl.ts)
     if (cp) markCrawler(m, f, sp.id, w, cp, false);
     register(m, w, h);
@@ -1818,6 +1832,7 @@ function onGlass(S: TankSetup, T: Tank, f: Fish, sp: Species, m: THREE.Mesh, w: 
   const a = A.glass(f.x, f.depth, y, f.yaw, w), up = W(a.n), head = W(a.head), side = head.clone().cross(up);
   m.position.copy(W(a.p)).addScaledVector(up, off);
   m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(head, up, side));
+  return a.kind;
 }
 
 const WALL_RAY = new THREE.Raycaster(), wallMesh = new THREE.Mesh();

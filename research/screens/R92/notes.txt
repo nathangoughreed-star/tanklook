@@ -1,0 +1,3 @@
+R92 clingers: 5 oto (2 on the ground, 3 on glass panes), bristlenose, hillstream; 90 s simulated, 6 frames, top + front views, 600x300x300 mm tank.
+Darts (7 BL/s oto) move them between the ground and panes; between darts they sit still or creep (oto 0.2 BL/s, bristlenose 0.12, hillstream 0.3).
+Included: oto, bristlenose (the only pleco on the roster), hillstream loach (cling=any, fused-fin sucker). Not included: Siamese algae eater (rests/swims, not a sucker), corys (keep grazing the ground).
