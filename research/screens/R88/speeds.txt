@@ -1,0 +1,4 @@
+R88 gourami swim speed, 100 mm fish, 6 loners, open 36x18 in tank, 250 s sim (in/s)
+before (pace 1):  mean 1.72  p90 3.06
+after  (pace 0.4): mean 0.77  p90 1.47
+40 mm danio (ref):  mean 1.44  p90 2.25

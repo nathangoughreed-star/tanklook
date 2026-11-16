@@ -30,6 +30,8 @@ export interface SwimmerSpec {
   zone: 'bottom' | 'water';
   /** Preferred band of the water column as fractions of the free water height above the ground (0 floor .. 1 surface). */
   band: [number, number];
+  /** Cruise-speed multiplier (default 1); below 1 also means longer hovers and shorter, calmer trips (labyrinth fish, see swimPace.ts). */
+  pace?: number;
   /** Same school / shoal = same key (species id + split index); undefined = loner. `tight` = a school (aligned), else a shoal (loose). */
   group?: { key: string; tight: boolean };
   /** Where it was placed: its Reset pose. yaw/pitch/roll in degrees as in the scene's Fish. */

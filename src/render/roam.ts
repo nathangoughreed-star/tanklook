@@ -26,7 +26,7 @@ export class Roam {
     if (!on || !meshes.length) { this.home(); return; }
     const specs: SwimmerSpec[] = [], world = (meshes[0].userData.roam as RoamData).world;
     for (const m of meshes) specs.push((m.userData.roam as RoamData).spec);
-    const key = specs.map(s => `${s.id}|${s.len}|${s.zone}|${s.band}|${s.group?.key}|${s.home.x},${s.home.y},${s.home.z},${s.home.yaw},${s.home.pitch},${s.home.roll}`).join(';') + '#' +
+    const key = specs.map(s => `${s.id}|${s.len}|${s.zone}|${s.pace ?? 1}|${s.band}|${s.group?.key}|${s.home.x},${s.home.y},${s.home.z},${s.home.yaw},${s.home.pitch},${s.home.roll}`).join(';') + '#' +
       JSON.stringify([world.S.tank, world.S.items, world.S.terrain, world.S.water.level, world.S.substrate, world.S.layout]);
     if (key !== this.key || !this.sim) {
       const t0 = performance.now();

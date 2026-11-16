@@ -15,7 +15,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
   const n = fish.length, R = rng(seed ^ 0x5bd1e995);
   const F = () => new Float64Array(n);
   const px = F(), py = F(), pz = F(), hx = F(), hy = F(), hz = F(), spd = F();
-  const dsx = F(), dsy = F(), dsz = F(), gmarg = F(), rad = F(), len = F(), cruise = F(), turn = F(), band0 = F(), band1 = F(), marg = F();
+  const dsx = F(), dsy = F(), dsz = F(), gmarg = F(), pace = F(), rad = F(), len = F(), cruise = F(), turn = F(), band0 = F(), band1 = F(), marg = F();
   const gx = F(), gy = F(), gz = F(), goalT = F(), modeT = F(), burstT = F(), ownT = F();
   const ph1 = F(), ph2 = F(), ph3 = F(), w1 = F(), w2 = F(), side = F(), pitchS = F(), rollS = F(), yawRate = F(), vyB = F(), hopH = F();
   const avx = F(), avy = F(), avz = F(), avK = F(), c0 = F(), g0x = F(), g0y = F(), g0z = F(), indep = F();
@@ -73,7 +73,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
   function setMode(i: number, m: number) {
     mode[i] = m;
     if (bottom[i]) modeT[i] = m === REST ? 5 + R() * 20 : m === HOP ? 1.2 + R() * 0.5 : 3 + R() * 6;
-    else modeT[i] = m === REST ? 2 + R() * 4 : 15 + R() * 40;
+    else modeT[i] = pace[i] < 1 ? (m === REST ? 3 + R() * 7 : 6 + R() * 14) : m === REST ? 2 + R() * 4 : 15 + R() * 40;
   }
   function setGroupMode(g: number, m: number) {
     gMode[g] = m; gModeT[g] = m === REST ? 6 + R() * 20 : 3 + R() * 6;
@@ -96,7 +96,8 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
     poses.push({ x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 });
     len[i] = s.len; rad[i] = s.len * 0.12; bottom[i] = s.zone === 'bottom' ? 1 : 0; tight[i] = s.group?.tight ? 1 : 0;
     const bl = 1.2 * Math.pow(40 / Math.max(10, s.len), 0.25); // body lengths per second, cruising
-    cruise[i] = s.len * bl * (0.85 + R() * 0.3);
+    pace[i] = s.pace ?? 1;
+    cruise[i] = s.len * bl * (0.85 + R() * 0.3) * pace[i];
     turn[i] = clamp(75 * Math.pow(40 / Math.max(10, s.len), 0.4), 22, 100) * D2R * (0.85 + R() * 0.3);
     band0[i] = Math.min(s.band[0], s.band[1]); band1[i] = Math.max(s.band[0], s.band[1]);
     marg[i] = rad[i] * 3 + s.len * 0.2;
@@ -305,7 +306,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       else {
         target = cruise[i] * sv * boost;
         if (g >= 0 && tight[i]) target *= 1 + 0.12 * Math.sin(T * gSpeedW[g] + gPh[g]);
-        if (burstT[i] > 0) target *= 2.6;
+        if (burstT[i] > 0) target *= pace[i] < 1 ? 1.5 : 2.6;
       }
       target *= 1 - 0.5 * K;
       const ac = (target > spd[i] ? 2.5 : 3.5) * L * (1 + K) * dt;
