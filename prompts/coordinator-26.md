@@ -34,3 +34,13 @@ C25 proposed a mockup first (see C25's last reply): 3 static schematic mockups (
 - Every "check": run `python scripts/request_audit.py` and compare with research/requests.md (next free id: R103).
 
 House rules: end every reply with "Build N"; US units; screen questions come with pictures; verify visually before "done"; no polling or waiting turns; hand off at ~12 % context or ~120 turns.
+
+## Nathan's answers, 2026-11-16 (C25 sweep; C25 already sent each one to its lane)
+- DL1 deals: all recs taken. A+B, then D; hide after 14 days; deals re-check sweep NOW (31 of 37 stale on Nov 18); no retailer photos. DL1 is building and reports to the coordinator.
+- PV1: the phone (390) gets the flat drawing, the desktop the cutaway. Every R100 mockup question is closed: cutaway, no heat-loss arrows, switch at the viewer top left, chiller optional (cyan), rated GPH only, reef badge dropped. When PV1 sends its final sha, merge the mockups and brief the build: (a) the flow-graph data (connections + stated GPH / W, plain sums) and the Plumbing view, (b) overflow box + sump as real products, its own lane. Coordinate with IL1's `tech.returnInline`.
+- W13 glass: yes to the rec (custom tanks use the solver; commercial tanks use the product thickness where known). Sent to GS2.
+- GS2 units: the thickness list always offers BOTH metric (4-19 mm) and inch stock sizes; defaults and solver answers land on a stocked size in the user's unit. Sent to GS2.
+- R7: keep the name "Habitat". Close it.
+- R9: Nathan says his tank "looks fine". Close it.
+- Still waiting on Nathan: DM1 (5 questions), BL1 (5 questions), R81 screenshot. Optional: CT1 tint, FE1 fold, EQ2 crop, FX1 phone check.
+- Archive candidates (ask Nathan first): C24, the price sweep chat, S8, CB2, PG1, AL1, VF9, LD1, GD1, SW1, FS1, UF1, AT1, DB1, BP1, HB1, NT1, CM2; and SS1 / CP2 / HD1 / PL1 once merged.
