@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>WS1 mockups: full-screen workspaces</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../../design/ui2/tokens.css">
+<style>
+  /* WS1 mockup layer on top of the real UI2 tokens. Everything here is a MOCKUP: numbers and prices are placeholders. */
+  body { overflow: hidden; }
+  #root { height: 100vh; display: flex; flex-direction: column; }
+  .hd { height: var(--header-h); flex: none; display: flex; align-items: center; gap: var(--s3); padding: 0 var(--s3); background: var(--bg-panel); border-bottom: 1px solid var(--line); }
+  .hd .chips { display: flex; align-items: center; gap: var(--s3); margin: 0 auto; padding: 0 var(--s3); height: 34px; border-radius: var(--r-card); background: var(--bg-raised); border: 1px solid var(--line); font-size: var(--fs-sm); }
+  .hd .chips b { font-size: var(--fs-md); }
+  .body { flex: 1; display: flex; min-height: 0; }
+  .rail a.dim { opacity: .55; }
+  .ws { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--bg-app); }
+  .wbar { flex: none; height: 54px; display: flex; align-items: center; gap: var(--s3); padding: 0 var(--s4); background: var(--bg-panel); border-bottom: 1px solid var(--line); }
+  .wbar h2 { margin: 0; font-size: 18px; } .wbar .sub { color: var(--text-2); font-size: var(--fs-sm); }
+  .wbar .live { display: inline-flex; align-items: center; gap: 6px; color: var(--ok); font-size: var(--fs-sm); font-weight: 600; }
+  .wbar .live.draft { color: var(--warn); }
+  .wbar .live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .grow { flex: 1; }
+  /* frame A: preview left, catalogue right */
+  .fa { flex: 1; display: grid; grid-template-columns: minmax(380px, 40%) minmax(0, 1fr); min-height: 0; }
+  .col-l { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--line); }
+  .col-r { overflow: hidden; padding: var(--s4); display: grid; align-content: start; gap: var(--s3); }
+  .pv { position: relative; background: #e9e4da center / cover no-repeat; flex: none; overflow: hidden; }
+  .pv .ov { z-index: 2; } .pv .tl { position: absolute; top: 10px; left: 10px; } .pv .tr { position: absolute; top: 10px; right: 10px; display: flex; gap: 4px; } .pv .bl { position: absolute; bottom: 10px; left: 10px; }
+  .pv .tag { position: absolute; z-index: 2; padding: 3px 8px; border-radius: 6px; background: var(--glass); font-size: var(--fs-sm); border: 1px solid rgba(255,255,255,.1); }
+  .pv .hl { position: absolute; border: 2px solid var(--accent); border-radius: 8px; box-shadow: 0 0 0 3px #4f8cff33; }
+  .under { padding: var(--s3) var(--s4); display: grid; gap: var(--s3); overflow: hidden; align-content: start; }
+  .tray { display: flex; gap: var(--s2); flex-wrap: wrap; }
+  .tray .it { display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 6px 0 4px; border-radius: 8px; background: var(--bg-raised); border: 1px solid var(--line); font-size: var(--fs-sm); }
+  .tray .it .pic { width: 24px; height: 24px; border-radius: 5px; background: #d9dde3 center/contain no-repeat; }
+  .tray .it i { font-style: normal; color: var(--text-3); margin-left: 2px; }
+  /* tiles */
+  .grid { display: grid; gap: var(--s3); grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); }
+  .wt { position: relative; background: var(--bg-raised); border: 1px solid var(--line); border-radius: var(--r-card); overflow: hidden; display: flex; flex-direction: column; }
+  .wt .pic { height: var(--ph, 112px); background: #d9dde3 center / contain no-repeat; display: grid; place-items: center; }
+  .wt.cover .pic { background-size: cover; }
+  .wt .b { padding: 8px 10px 10px; display: grid; gap: 4px; }
+  .wt .t { font-weight: 600; } .wt .m { color: var(--text-2); font-size: var(--fs-sm); }
+  .wt .pl { display: flex; flex-wrap: wrap; gap: 4px; } .wt .pill { height: 20px; font-size: 11px; padding: 0 7px; }
+  .wt.in { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .wt .cnt { position: absolute; top: 8px; right: 8px; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 12px; background: var(--accent); color: #fff; font-weight: 700; font-size: 12px; display: grid; place-items: center; }
+  .wt .rib { position: absolute; top: 8px; left: -1px; padding: 2px 8px 2px 8px; background: var(--warn); color: #1a1405; font-size: 11px; font-weight: 700; border-radius: 0 6px 6px 0; }
+  .wt .add { display: flex; gap: 6px; margin-top: 2px; }
+  .stp { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; background: var(--bg-sunken); height: 24px; }
+  .stp span { min-width: 22px; text-align: center; font-weight: 700; font-size: 12px; } .stp i { font-style: normal; width: 22px; text-align: center; color: var(--text-2); }
+  .h3 { display: flex; align-items: baseline; gap: var(--s2); } .h3 b { font-size: var(--fs-lg); } .h3 span { color: var(--text-3); font-size: var(--fs-sm); } .h3 a { margin-left: auto; color: var(--accent); font-size: var(--fs-sm); }
+  .seg button { font-size: var(--fs-sm); }
+  .cats { display: flex; gap: var(--s2); align-items: center; flex-wrap: wrap; }
+  .chip.big { height: 30px; padding: 0 12px; font-size: var(--fs-md); }
+  .tab { height: 34px; padding: 0 14px; display: inline-flex; align-items: center; gap: 6px; border-bottom: 2px solid transparent; color: var(--text-2); font-weight: 600; }
+  .tab.on { color: var(--text); border-bottom-color: var(--accent); } .tab .n { color: var(--text-3); font-weight: 400; }
+  .tabs { display: flex; border-bottom: 1px solid var(--line); gap: 2px; }
+  .sw { width: 54px; height: 54px; border-radius: 10px; border: 2px solid var(--line); background-size: 7px 7px, 11px 11px; }
+  .sw.on { border-color: var(--accent); box-shadow: 0 0 0 2px #4f8cff44; }
+  .swl { display: grid; justify-items: center; gap: 3px; font-size: 11px; color: var(--text-2); }
+  .dot-c { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--line); display: inline-block; }
+  .dot-c.on { border-color: #fff; box-shadow: 0 0 0 2px var(--accent); }
+  .panelcard { border: 1px solid var(--line); border-radius: var(--r-card); background: var(--bg-panel); padding: var(--s3); display: grid; gap: var(--s2); }
+  .kv { display: flex; justify-content: space-between; color: var(--text-2); font-size: var(--fs-sm); } .kv b { color: var(--text); }
+  .nt { font-size: var(--fs-sm); color: var(--text-2); }
+  .fl { display: grid; gap: var(--s2); padding: var(--s4); align-content: start; background: var(--bg-panel); border-right: 1px solid var(--line); width: 210px; flex: none; overflow: hidden; }
+  .fl .chip { justify-self: start; }
+  .sec-slider { display: grid; grid-template-columns: 90px 1fr 70px; gap: 8px; align-items: center; font-size: var(--fs-sm); color: var(--text-2); }
+  .sec-slider .v { text-align: right; color: var(--text); font-variant-numeric: tabular-nums; }
+  .roles { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .role { border: 1px dashed var(--line); border-radius: 8px; padding: 6px 8px; font-size: 11px; color: var(--text-3); min-height: 48px; display: grid; gap: 2px; align-content: center; }
+  .role.f { border-style: solid; background: var(--bg-raised); color: var(--text-2); } .role.f b { color: var(--text); font-size: 12px; } .role.cur { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  /* frame B: strip on top */
+  .fb { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  .fb .pv { height: 250px; } .fb .cat { padding: var(--s4); overflow: hidden; display: grid; gap: var(--s3); align-content: start; }
+  /* frame C: full preview, drawer over it */
+  .fc { flex: 1; position: relative; min-height: 0; } .fc .pv { position: absolute; inset: 0; }
+  .fc .drawerb { position: absolute; left: 0; right: 0; bottom: 0; height: 52%; background: var(--glass); backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,.12); padding: var(--s3) var(--s4); overflow: hidden; display: grid; gap: var(--s2); align-content: start; border-radius: 14px 14px 0 0; }
+  .fc .grab { width: 44px; height: 4px; border-radius: 2px; background: var(--text-3); justify-self: center; }
+  /* phone */
+  body.phone #root { width: 390px; height: 844px; }
+  .ph-hd { height: 50px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: var(--bg-panel); border-bottom: 1px solid var(--line); }
+  .ph-hd h2 { margin: 0; font-size: 17px; flex: 1; }
+  .ph-sum { flex: none; height: 30px; display: flex; align-items: center; gap: 10px; padding: 0 12px; background: var(--bg-raised); border-bottom: 1px solid var(--line); font-size: 12px; color: var(--text-2); white-space: nowrap; }
+  .ph-sum b { color: var(--text); }
+  .ph-body { flex: 1; overflow: hidden; display: grid; align-content: start; gap: 10px; padding-bottom: 10px; }
+  .ph-body .pv { height: 190px; }
+  .ph-pad { padding: 0 12px; } .hs { display: flex; gap: 6px; overflow: hidden; padding: 0 12px; }
+  .ph-tabbar { height: 56px; flex: none; display: flex; background: var(--bg-panel); border-top: 1px solid var(--line); }
+  .ph-tabbar button { flex: 1; border: 0; background: none; color: var(--text-2); font-size: 10.5px; display: grid; justify-items: center; align-content: center; gap: 2px; }
+  .ph-tabbar button.on { color: var(--accent); }
+  .ph-bar { flex: none; padding: 10px 12px; background: var(--bg-panel); border-top: 1px solid var(--line); display: flex; gap: 8px; align-items: center; }
+  .btn.big { height: 40px; padding: 0 18px; } .btn.grow { flex: 1; justify-content: center; }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--bg-panel); border-top: 1px solid var(--line); border-radius: 16px 16px 0 0; padding: 12px 16px 16px; display: grid; gap: 10px; box-shadow: 0 -10px 30px rgba(0,0,0,.5); z-index: 30; }
+  .note-b { font-size: 12px; color: var(--text-2); }
+  .frame3 { display: flex; gap: 24px; align-items: flex-start; padding: 20px; height: 100vh; background: #0d1015; }
+  .frame3 .fr { display: grid; gap: 8px; justify-items: center; color: var(--text-2); font-size: 13px; } .frame3 .fr .box { overflow: hidden; border: 1px solid var(--line); border-radius: 10px; }
+  .frame3 iframe { border: 0; transform-origin: 0 0; }
+  .ann { position: absolute; width: 22px; height: 22px; border-radius: 50%; background: var(--warn); color: #111; font-weight: 800; font-size: 12px; display: grid; place-items: center; z-index: 50; box-shadow: 0 0 0 3px #0008; }
+  .lg { display: grid; gap: 10px; font-size: 13px; color: var(--text-2); line-height: 1.35; } .lg b { color: var(--text); } .lg .ln { display: flex; gap: 10px; align-items: flex-start; }
+  .lg .ln .ann { position: static; flex: none; }
+</style></head>
+<body>
+<script src="../../design/ui2/icons.js"></script><script src="../../design/ui2/shell.js"></script>
+<div id="root"></div>
+<script>
+const Q = new URLSearchParams(location.search), P = Q.get('p') || 'scape', F = Q.get('f') || 'A';
+const A = f => `assets/${f}`;
+const pic = (f, extra = '') => `background-image:url(${A(f)});${extra}`;
+const root = document.getElementById('root');
+const PH = P.startsWith('p-');
+if (PH) document.body.classList.add('phone');
+const pill = (t, k = '') => `<span class="pill ${k}">${t}</span>`;
+
+/* ---- illustrative stone / wood / decor art (no model renders exist for these yet: flagged in notes.md) ---- */
+function rockSvg(k) {
+  const M = {
+    seiryu: ['#76808e', '#48515c', 'M14 98 L36 44 L66 58 L92 18 L126 52 L160 40 L176 98Z', 'M52 58 L70 90 M96 30 L108 78 M128 54 L144 92'],
+    dragon: ['#b9a273', '#85703f', 'M16 98 C6 62 48 24 98 30 C148 34 178 66 168 98Z', ''],
+    texas: ['#d6cfbc', '#a69d86', 'M16 98 C8 60 50 28 98 30 C148 32 176 64 168 98Z', ''],
+    lace: ['#d9d3c3', '#a8a18f', 'M20 98 C10 70 44 30 90 24 C140 22 178 62 164 98Z', ''],
+    lava: ['#6a4439', '#3a241f', 'M18 98 L32 52 L58 62 L80 24 L110 58 L136 38 L172 96Z', ''],
+    iron: ['#5a5047', '#2f2a25', 'M14 98 L30 62 L70 36 L120 30 L168 56 L176 98Z', ''],
+    slate: ['#5f6770', '#3c424a', 'M14 96 L22 70 L100 46 L172 62 L176 96Z', 'M30 80 L160 70'],
+    ledge: ['#a39b8d', '#6f685b', 'M12 98 L18 58 L70 50 L72 34 L132 34 L136 52 L178 58 L180 98Z', 'M20 70 L176 70 M18 84 L178 84'],
+  }[k];
+  const [c1, c2, d, veins] = M;
+  const holes = (k === 'texas' || k === 'lace') ? [[70, 70, 9], [104, 56, 7], [128, 76, 10], [88, 88, 6], [50, 86, 6], [118, 44, 5]].map(([x, y, r]) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * .8}" fill="${c2}" opacity=".8"/>`).join('') : '';
+  const pits = k === 'dragon' ? [[60, 62, 5], [96, 48, 6], [130, 66, 5], [80, 84, 4], [114, 86, 5], [48, 84, 3]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c2}" opacity=".75"/>`).join('') : '';
+  const white = k === 'seiryu' ? `<path d="${veins}" stroke="#e9edf2" stroke-width="2.2" fill="none" opacity=".85"/>` : '';
+  return `<svg viewBox="0 0 190 120" width="100%" height="100%"><defs><linearGradient id="g${k}" x1="0" y1="0" x2=".7" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><ellipse cx="95" cy="104" rx="78" ry="7" fill="#0003"/><path d="${d}" fill="url(#g${k})" stroke="${c2}" stroke-width="1.5" stroke-linejoin="round"/>${holes}${pits}${white}</svg>`;
+}
+function woodSvg(k) {
+  const c = { drift: '#8a6a49', spider: '#4b3a2c', manz: '#a4533a', mopani: '#6b4a2b', cork: '#9c7a4d', tube: '#8c6a43' }[k];
+  const paths = {
+    drift: 'M20 98 C40 70 70 78 96 58 C118 42 140 54 172 30', spider: 'M24 96 C30 60 52 40 56 24 M56 24 C70 44 66 66 96 74 C120 80 136 62 170 66 M96 74 C104 52 118 40 128 26',
+    manz: 'M22 98 C36 60 60 54 78 30 M52 60 C80 66 100 52 128 34 M96 56 C124 74 146 70 172 52', mopani: 'M20 94 C46 58 82 74 108 56 C138 36 160 56 176 40',
+    cork: 'M26 92 L28 52 L120 40 L172 50 L170 92Z', tube: 'M30 96 L36 40 L150 34 L160 96Z',
+  }[k];
+  if (k === 'cork' || k === 'tube') return `<svg viewBox="0 0 190 120" width="100%" height="100%"><ellipse cx="98" cy="104" rx="76" ry="6" fill="#0003"/><path d="${paths}" fill="${c}" stroke="#5c4428" stroke-width="2"/><path d="M50 48 L52 88 M80 44 L84 90 M112 42 L118 90 M140 46 L146 90" stroke="#6e5230" stroke-width="2" opacity=".7"/>${k === 'tube' ? '<ellipse cx="40" cy="66" rx="10" ry="26" fill="#2a1f14"/>' : ''}</svg>`;
+  return `<svg viewBox="0 0 190 120" width="100%" height="100%"><ellipse cx="98" cy="106" rx="76" ry="6" fill="#0003"/><path d="${paths}" stroke="${c}" stroke-width="${k === 'spider' ? 7 : 12}" fill="none" stroke-linecap="round"/><path d="${paths}" stroke="#fff" stroke-opacity=".12" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+}
+function decorSvg(k) {
+  if (k === 'arch') return `<svg viewBox="0 0 190 120" width="100%" height="100%"><ellipse cx="95" cy="104" rx="76" ry="6" fill="#0003"/><path d="M20 100 L22 60 C30 24 160 24 168 60 L170 100 L138 100 L136 66 C128 48 62 48 54 66 L52 100Z" fill="#8f877a" stroke="#5b564c" stroke-width="2"/></svg>`;
+  if (k === 'clay') return `<svg viewBox="0 0 190 120" width="100%" height="100%"><ellipse cx="95" cy="104" rx="70" ry="6" fill="#0003"/><path d="M30 98 L34 50 C70 34 130 34 164 50 L164 98Z" fill="#b5663a" stroke="#7a3f21" stroke-width="2"/><ellipse cx="46" cy="74" rx="14" ry="24" fill="#3a1d10"/></svg>`;
+  if (k === 'coco') return `<svg viewBox="0 0 190 120" width="100%" height="100%"><ellipse cx="95" cy="104" rx="60" ry="6" fill="#0003"/><path d="M40 98 C30 40 160 40 150 98Z" fill="#6a4a2a" stroke="#40291a" stroke-width="2"/><ellipse cx="66" cy="84" rx="16" ry="16" fill="#1d130b"/></svg>`;
+  if (k === 'planter') return `<svg viewBox="0 0 190 120" width="100%" height="100%"><ellipse cx="95" cy="104" rx="70" ry="6" fill="#0003"/><path d="M28 98 C26 60 60 50 96 50 C132 50 166 60 162 98Z" fill="#8a8579" stroke="#5b564c" stroke-width="2"/><ellipse cx="96" cy="52" rx="38" ry="8" fill="#2c2a25"/></svg>`;
+  if (k === 'ship') return `<svg viewBox="0 0 190 120" width="100%" height="100%"><ellipse cx="95" cy="106" rx="76" ry="6" fill="#0003"/><path d="M26 76 L164 76 L146 100 L48 100Z" fill="#7b5632" stroke="#472f18" stroke-width="2"/><path d="M96 74 L96 18 M96 22 L142 62 L96 62Z M96 30 L58 62 L96 62" fill="#e9e2d0" stroke="#888" stroke-width="1.5"/></svg>`;
+  if (k === 'castle') return `<svg viewBox="0 0 190 120" width="100%" height="100%"><ellipse cx="95" cy="106" rx="70" ry="6" fill="#0003"/><path d="M36 100 L36 52 L50 52 L50 40 L62 40 L62 52 L78 52 L78 30 L92 30 L92 20 L104 20 L104 30 L118 30 L118 52 L134 52 L134 40 L146 40 L146 52 L158 52 L158 100Z" fill="#9aa0a8" stroke="#5e636b" stroke-width="2"/><path d="M84 100 L84 74 C84 62 112 62 112 74 L112 100Z" fill="#3e434a"/></svg>`;
+  return `<svg viewBox="0 0 190 120" width="100%" height="100%"><ellipse cx="95" cy="106" rx="66" ry="6" fill="#0003"/><rect x="42" y="56" width="106" height="44" rx="6" fill="#80522a" stroke="#4a2d14" stroke-width="2"/><path d="M42 62 C42 30 148 30 148 62Z" fill="#935d30" stroke="#4a2d14" stroke-width="2"/><rect x="88" y="58" width="14" height="16" rx="2" fill="#d6b24a"/></svg>`;
+}
+const stoneTile = (n, k, m, pls = [], on = 0, real = '') => `<div class="wt ${on ? 'in' : ''}"><div class="pic" style="${real ? pic(real, 'background-size:cover') : ''}">${real ? '' : (['seiryu', 'dragon', 'texas', 'lace', 'lava', 'iron', 'slate', 'ledge'].includes(k) ? rockSvg(k) : (['drift', 'spider', 'manz', 'mopani', 'cork', 'tube'].includes(k) ? woodSvg(k) : decorSvg(k)))}</div>${on ? `<span class="cnt">${on}</span>` : ''}<div class="b"><div class="t">${n}</div><div class="m">${m}</div>${pls.length ? `<div class="pl">${pls.join('')}</div>` : ''}</div></div>`;
+
+/* ---- shared chrome ---- */
+const sums = `<span class="pill warn">Habitat &middot; Caution</span><span><b>$1,264</b> <span style="color:var(--text-3)">&middot; $51/mo</span></span><span>${I('drop')} 75 &deg;F <span class="pill ok">fits</span></span>`;
+function header(extra = '') {
+  return `<header class="hd"><span class="brand">TankLook</span><span class="proj">&middot; Planted community <span class="dot"></span></span><div class="chips" id="chips">${sums}</div>
+  ${extra}<button class="btn icon ghost" title="Undo">${I('undo')}</button><button class="btn icon ghost">${I('redo')}</button><button class="btn sm">${I('save')} Save</button><button class="btn icon ghost">${I('more')}</button></header>`;
+}
+function railDim(active) {
+  return rail(active, { animals: '!' }).replace(/<a class="">/g, '<a class="dim">');
+}
+function wbar(title, sub, o = {}) {
+  const draft = o.draft;
+  return `<div class="wbar"><button class="btn icon ghost" title="Back to the main view (Esc)" style="font-size:18px">&#9664;</button><div><h2>${title}</h2><div class="sub">${sub}</div></div>
+  <span class="live ${draft ? 'draft' : ''}">${draft ? 'Draft: nothing applied yet' : 'Live: edits change your tank now'}</span><span class="grow"></span>
+  ${o.mid || ''}
+  ${draft ? `<button class="btn">Cancel</button><button class="btn primary">${o.apply || 'Use this tank'}</button>`
+    : `<button class="btn ghost" title="Undo everything since you opened ${title}">&#8630; Revert this visit</button><button class="btn primary">Done</button>`}</div>`;
+}
+const PV = (o = {}) => `<div class="pv" style="${pic(o.img || 'tank-render.jpg')}${o.h ? `height:${o.h}px;` : ''}${o.pos ? `background-position:${o.pos};` : ''}${o.fit ? 'background-size:contain;background-color:#ddd6c8;' : ''}">
+  <span class="tag" style="top:10px;left:10px">Live preview</span>
+  <div class="tr"><button class="btn sm glass" style="background:var(--glass)">${I('eye')} View &#9662;</button><button class="btn sm" style="background:var(--glass)">${I('shuffle')} Another moment</button></div>${o.in || ''}</div>`;
+const frame = (left, right) => `<div class="fa"><div class="col-l">${left}</div><div class="col-r">${right}</div></div>`;
+function page(inner, active, wb) {
+  root.innerHTML = header() + `<div class="body">${railDim(active)}<div class="ws">${wb}${inner}</div></div>`;
+}
+const search = ph => `<div class="input" style="display:flex;align-items:center;gap:6px;color:var(--text-3);width:100%;height:34px">${I('search')} ${ph}</div>`;
+const chipRow = (arr, on = 0, cls = 'big') => `<div class="cats">${arr.map((t, i) => `<span class="chip ${cls} ${i === on ? 'on' : ''}">${t}</span>`).join('')}</div>`;
+const trayItem = (n, f, c) => `<span class="it"><span class="pic" style="${pic(f)}"></span>${n}${c ? `<i>&times;${c}</i>` : ''}</span>`;
+const tankSvg = (L, W, H, shape = 'box') => {
+  const s = 118 / Math.max(L, H * 2.4), w = Math.max(36, L * s), h = Math.max(22, H * s * 1.6);
+  const x = (190 - w) / 2, y = 100 - h;
+  const body = shape === 'hex' ? `<path d="M${x + 14} ${y} L${x + w - 14} ${y} L${x + w} ${y + h / 2} L${x + w - 14} ${y + h} L${x + 14} ${y + h} L${x} ${y + h / 2}Z" />` : `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2"/>`;
+  const bow = shape === 'bow' ? `<path d="M${x} ${y + h} C${x + w * .25} ${y + h + 14} ${x + w * .75} ${y + h + 14} ${x + w} ${y + h}" fill="none" stroke="#9fd4cf" stroke-width="2"/>` : '';
+  return `<svg viewBox="0 0 190 120" width="100%" height="100%"><ellipse cx="95" cy="106" rx="${w / 2 + 6}" ry="5" fill="#0003"/><g fill="#cfe7ea" fill-opacity=".55" stroke="#2c3b3e" stroke-width="3">${body}</g><rect x="${x}" y="${y}" width="${w}" height="5" fill="#222"/><rect x="${x + 2}" y="${y + h * .35}" width="${w - 4}" height="${h * .65 - 2}" fill="#7fb7c4" fill-opacity=".35"/>${bow}</svg>`;
+};
+
+/* ======================= pages ======================= */
+const pages = {};
+
+/* Scape: hardscape */
+pages.scape = () => {
+  const stones = [
+    stoneTile('River stone', '', 'Round, smooth &middot; 4&ndash;12 in', [pill('Neutral', 'ok')], 2, 'rock-crop.png'),
+    stoneTile('Seiryu', 'seiryu', 'Angular, white veins', [pill('Raises hardness', 'warn')], 1),
+    stoneTile('Dragon stone', 'dragon', 'Pitted, ochre', [pill('Neutral', 'ok')]),
+    stoneTile('Texas holey limestone', 'texas', 'Holes and arches', [pill('Raises pH + hardness', 'warn')]),
+    stoneTile('Lace rock', 'lace', 'Lacy, pale', [pill('Raises pH + hardness', 'warn')]),
+    stoneTile('Lava rock', 'lava', 'Porous, dark red', [pill('Neutral', 'ok')]),
+    stoneTile('Iron-stained shale', 'iron', 'Flat, rusty', [pill('Neutral', 'ok')]),
+    stoneTile('Slate', 'slate', 'Flat plates', [pill('Neutral', 'ok')]),
+  ].join('');
+  const wood = ['Driftwood branch|drift|Long, ties into the layout|' + pill('Tannins', 'accent'), 'Spider wood|spider|Thin, twisty|' + pill('Tannins', 'accent'), 'Manzanita|manz|Red, branching|' + pill('Neutral', 'ok'), 'Mopani|mopani|Two-tone, heavy|' + pill('Tannins', 'accent')]
+    .map((s, i) => { const [n, k, m, p] = s.split('|'); return stoneTile(n, k, m, [p], i === 0 ? 1 : 0); }).join('');
+  const caves = [['Stone arch', 'arch', 'Hide for 1&ndash;2 fish'], ['Rim planter', 'planter', 'Plant on top'], ['Clay tube', 'clay', 'Hide, 4 in'], ['Coconut cave', 'coco', 'Hide for shrimp']].map(([n, k, m]) => stoneTile(n, k, m)).join('');
+  const left = PV({ h: 440, in: '<span class="hl" style="left:72px;top:226px;width:108px;height:66px"></span><span class="tag" style="left:72px;top:202px;background:var(--accent);color:#fff;border:0">River stone &times;2</span>' }) +
+    `<div class="under"><div class="h3"><b>In this tank</b><span>3 hardscape pieces</span></div><div class="tray">${trayItem('River stone', 'rock-crop.png', 2)}${trayItem('Seiryu', 'rock-crop.png', 1).replace(/background-image:url\(assets\/rock-crop.png\)/, 'background:#76808e')}${trayItem('Driftwood', 'rock-crop.png', 1).replace(/background-image:url\(assets\/rock-crop.png\)/, 'background:#8a6a49')}</div>
+    <div class="panelcard"><div class="kv"><span>Rock and wood <b>covers</b></span><b>14 % of the floor</b></div><div class="kv"><span>Water chemistry effect</span><b>+ hardness (Seiryu)</b></div><div class="nt">Your neon tetras like soft water: the Seiryu tile is flagged. This is the "learn" part: the tile says why.</div></div></div>`;
+  const right = `${search('Search stones, wood, caves, decor')}
+    <div class="cats">${['Stones', 'Wood', 'Caves', 'Decor'].map((t, i) => `<span class="chip big ${i === 0 ? 'on' : ''}">${t}</span>`).join('')}<span class="chip big" style="margin-left:auto;border-style:dashed">${I('plus')} Substrate &amp; ground &rarr;</span></div>
+    <div class="h3"><b>Stones</b><span>9 kinds</span><a>Show all 9</a></div><div class="grid" style="--cols:4">${stones}</div>
+    <div class="h3"><b>Wood</b><span>6 kinds</span></div><div class="grid" style="--cols:4">${wood}</div>
+    <div class="h3"><b>Caves</b><span>4 kinds</span></div><div class="grid" style="--cols:4">${caves}</div>`;
+  page(frame(left, right), 'scape', wbar('Scape', 'Stones, wood, caves, decor, substrate'));
+};
+
+/* Scape: substrate */
+pages['scape-substrate'] = () => {
+  const sw = (n, c, on) => `<div class="swl"><div class="sw ${on ? 'on' : ''}" style="background-color:${c[0]};background-image:radial-gradient(${c[1]} 1px,transparent 1.6px),radial-gradient(${c[2]} 1px,transparent 1.6px);background-position:0 0,3px 4px"></div>${n}</div>`;
+  const cross = `<svg viewBox="0 0 640 300" width="100%" style="display:block;background:#1a2a2e;border-radius:10px"><defs><linearGradient id="wt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fb7c4" stop-opacity=".18"/><stop offset="1" stop-color="#7fb7c4" stop-opacity=".34"/></linearGradient>
+    <pattern id="sand" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#c9b48a"/><circle cx="2" cy="2" r="1" fill="#a58f63"/><circle cx="6" cy="5" r="1" fill="#e3d2ad"/></pattern>
+    <pattern id="soil" width="9" height="9" patternUnits="userSpaceOnUse"><rect width="9" height="9" fill="#4a3426"/><circle cx="3" cy="3" r="1.6" fill="#2f2018"/><circle cx="7" cy="6" r="1.2" fill="#66493a"/></pattern></defs>
+    <rect x="50" y="20" width="540" height="240" fill="url(#wt)" stroke="#6fb2a8" stroke-width="3"/>
+    <!-- scale: 1 in = 20 px; back (right) 3.0 in, front (left) 1.0 in -->
+    <path d="M50 260 L50 240 L590 200 L590 260Z" fill="url(#sand)"/><path d="M50 260 L50 250 L590 230 L590 260Z" fill="url(#soil)"/>
+    <path d="M50 240 L590 200" stroke="#7a6a48" stroke-width="2" fill="none"/>
+    <g fill="#5a7a3a">${[110, 150, 190, 330, 372, 430, 470].map((x, i) => `<ellipse cx="${x}" cy="${238 - (x - 50) * .074 - 2}" rx="8" ry="3" fill="${i % 2 ? '#7d5a2c' : '#8a6a38'}"/>`).join('')}</g>
+    <g stroke="#2f6b3a" stroke-width="3" fill="none" stroke-linecap="round"><path d="M250 212 C246 170 262 140 252 100"/><path d="M256 212 C264 170 250 140 270 96"/><path d="M262 212 C270 180 280 160 292 128"/></g>
+    <g stroke="#cfe3c8" stroke-width="1.2" fill="none" opacity=".8"><path d="M256 213 L250 236 M258 213 L262 242 M260 213 L270 238"/></g>
+    <text x="300" y="190" fill="#cfe3c8" font-size="11">roots: 1.2 in deep, room to 2 in</text>
+    <g stroke="#ddd" stroke-width="1" fill="none"><path d="M30 200 L30 260 M26 200 L34 200 M26 260 L34 260"/><path d="M610 160 L610 260 M606 160 L614 160 M606 260 L614 260"/></g>
+    <rect x="12" y="214" width="36" height="20" rx="4" fill="#0008"/><text x="16" y="228" fill="#fff" font-size="12" font-weight="700">1.0 in</text>
+    <rect x="596" y="196" width="40" height="20" rx="4" fill="#0008"/><text x="600" y="210" fill="#fff" font-size="12" font-weight="700">3.0 in</text>
+    <text x="52" y="285" fill="#a4adbd" font-size="12">FRONT</text><text x="548" y="285" fill="#a4adbd" font-size="12">BACK</text>
+    <g font-size="11" fill="#e8ebf1"><rect x="200" y="272" width="10" height="10" fill="#c9b48a"/><text x="214" y="281">sand cap</text><rect x="290" y="272" width="10" height="10" fill="#4a3426"/><text x="304" y="281">aqua soil base, 1 in</text></g>
+    ${[1, 2, 3].map(i => `<path d="M50 ${260 - 20 * i} L590 ${260 - 20 * i}" stroke="#ffffff22" stroke-dasharray="3 5"/><text x="620" y="${264 - 20 * i}" fill="#6e7789" font-size="10">${i} in</text>`).join('')}
+  </svg>`;
+  const left = PV({ h: 330, pos: 'center 62%', in: '<span class="tag" style="left:10px;bottom:10px;background:var(--accent);color:#fff;border:0">Cross-section cut marked on the preview &rarr;</span>' }) +
+    `<div class="under"><div class="h3"><b>Cross-section</b><span>side view, front to back &middot; 1 square = 1 in</span></div>${cross}<div class="nt">Drag the front and back handles, or use the numbers on the right. Plants show how deep their roots want to go.</div></div>`;
+  const right = `${chipRow(['Stones', 'Wood', 'Caves', 'Decor'], -1)}
+    <div class="h3"><b>Substrate</b><span>what the floor is made of</span></div>
+    <div class="cats" style="gap:14px;align-items:flex-start">${sw('Bare bottom', ['#2b3238', '#222', '#333'])}${sw('Sand', ['#cdb98f', '#a58f63', '#e8d9b4'], 1)}${sw('Fine gravel', ['#8a8176', '#5a534a', '#b5aca0'])}${sw('Black gravel', ['#2a2a2c', '#111', '#4a4a4e'])}${sw('Aqua soil', ['#4a3426', '#2f2018', '#66493a'])}${sw('Pool sand', ['#e9e3d2', '#c8c0a8', '#fff'])}${sw('Coral sand', ['#ece6d8', '#c5bba3', '#fff'])}</div>
+    <div class="panelcard"><div class="kv"><span>Layers</span><b>Aqua soil 1 in + sand cap</b></div><div class="cats"><span class="chip">+ Add base layer</span><span class="chip on">Sand cap</span></div></div>
+    <div class="h3"><b>Depth and slope</b><span>numbers are typed or dragged</span></div>
+    <div class="cats">${['Level', 'Front to back', 'Left to right', 'Back-left corner'].map((t, i) => `<span class="chip big ${i === 1 ? 'on' : ''}">${t}</span>`).join('')}</div>
+    <div class="sec-slider"><span>Front depth</span><input class="slider" type="range" value="20" min="0" max="100"><span class="v">1.0 in</span></div>
+    <div class="sec-slider"><span>Back depth</span><input class="slider" type="range" value="60" min="0" max="100"><span class="v">3.0 in</span></div>
+    <div class="sec-slider"><span>Roughness</span><input class="slider" type="range" value="50" min="0" max="100"><span class="v">50 %</span></div>
+    <div class="panelcard"><div class="kv"><span>Substrate needed</span><b>38 lb sand + 18 qt soil</b></div><div class="kv"><span>Added weight</span><b>+ 61 lb (stand rating still ok)</b></div></div>
+    <div class="h3"><b>Leaf litter</b><span>for tannins, shrimp and blackwater setups</span></div>
+    <div class="cats"><span class="chip big">None</span><span class="chip big on">Mixed leaves</span><span class="chip big">Catappa</span><span class="chip big">Oak</span><span class="chip">Amount&nbsp;<b>Light</b></span></div>`;
+  page(frame(left, right), 'scape', wbar('Scape', 'Substrate &middot; the ground under everything'));
+};
+
+/* Plants */
+pages.plants = () => {
+  const ptile = (n, f, m, pls, on = 0) => `<div class="wt ${on ? 'in' : ''}"><div class="pic" style="${pic('plant-' + f + '.webp')}"></div>${on ? `<span class="cnt">${on}</span>` : ''}<div class="b"><div class="t">${n}</div><div class="m">${m}</div><div class="pl">${pls.join('')}</div></div></div>`;
+  const tiles = [
+    ptile('Anubias', 'anubias', '4&ndash;8 in &middot; attach to wood', [pill('Low light', 'ok'), pill('No CO2', 'ok'), pill('Fits', 'ok')], 2),
+    ptile('Hornwort', 'hornwort', '12&ndash;30 in &middot; floating or planted', [pill('Low light', 'ok'), pill('No CO2', 'ok')], 1),
+    ptile('Java moss', 'moss', '1&ndash;3 in &middot; carpet or attach', [pill('Low light', 'ok'), pill('No CO2', 'ok')]),
+    ptile('Cryptocoryne', 'crypt', '4&ndash;12 in &middot; root feeder', [pill('Low&ndash;medium', 'ok'), pill('Needs root tabs', 'accent')], 3),
+    ptile('Ludwigia', 'ludwigia', '12&ndash;24 in &middot; stem', [pill('High light', 'warn'), pill('CO2 helps', 'warn')]),
+    ptile('Dwarf hairgrass', 'hairgrass', '2&ndash;4 in &middot; carpet', [pill('High light', 'warn'), pill('CO2 helps', 'warn')]),
+    ptile('Vallisneria', 'grass', '12&ndash;30 in &middot; background', [pill('Low&ndash;medium', 'ok'), pill('No CO2', 'ok')]),
+    ptile('Amazon frogbit', 'frogbit', 'Floating &middot; shades below', [pill('Medium', 'ok'), pill('No CO2', 'ok')]),
+    ptile('Water lettuce', 'lettuce', 'Floating', [pill('Medium', 'ok'), pill('No CO2', 'ok')]),
+    ptile('Anacharis', 'anacharis', '12+ in &middot; fast stem', [pill('Medium', 'ok'), pill('No CO2', 'ok')]),
+    ptile('Creeping plant', 'creeper', 'Ground cover', [pill('Medium', 'ok'), pill('CO2 helps', 'warn')]),
+    ptile('Dwarf lotus', 'lotus', 'Leaves reach the surface', [pill('Medium', 'ok'), pill('No CO2', 'ok')]),
+  ].join('');
+  const plan = `<svg viewBox="0 0 400 150" width="100%" style="display:block;border-radius:8px;background:#111820"><rect x="10" y="10" width="380" height="130" fill="#14202a" stroke="#6fb2a8" stroke-width="2"/>
+    <rect x="10" y="10" width="380" height="36" fill="#4f8cff" fill-opacity=".13"/><rect x="10" y="46" width="380" height="50" fill="#3fb68b" fill-opacity=".10"/><rect x="10" y="96" width="380" height="44" fill="#e3a33a" fill-opacity=".10"/>
+    <text x="16" y="28" font-size="11" fill="#a4adbd">BACK</text><text x="16" y="70" font-size="11" fill="#a4adbd">MIDGROUND</text><text x="16" y="124" font-size="11" fill="#a4adbd">FRONT</text>
+    ${[[60, 26], [100, 30], [320, 28], [356, 24]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="9" fill="#3a8f4a"/>`).join('')}${[[150, 66], [200, 70], [250, 62], [300, 70]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="9" fill="#2f7a3f"/>`).join('')}${[[120, 118], [170, 122], [230, 118]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="8" fill="#7fc07a"/>`).join('')}
+    <ellipse cx="210" cy="104" rx="26" ry="9" fill="#8d857a"/><circle cx="330" cy="110" r="7" fill="#b9d27a" stroke="#e8ebf1" stroke-dasharray="2 2"/></svg>`;
+  const left = PV({ h: 400, in: '<span class="hl" style="left:380px;top:110px;width:84px;height:210px"></span>' }) +
+    `<div class="under"><div class="h3"><b>Placement</b><span>drag a tile onto the plan or the tank &middot; top view</span></div>${plan}
+    <div class="cats"><span class="pill">Back 4</span><span class="pill">Midground 4</span><span class="pill">Front 3</span><span class="pill">Floating 1</span><span class="nt" style="margin-left:auto">12 plants &middot; 11 % of volume</span></div></div>`;
+  const right = `${search('Search plants')}
+    <div class="panelcard" style="grid-template-columns:auto 1fr auto;align-items:center;gap:var(--s3)"><div><div class="cap">Your light</div><b>Medium</b> <span class="nt">0.4 W/gal &middot; 8 h</span></div><div><div class="cap">CO2</div><b>None</b> <span class="nt">no injection</span></div><button class="btn sm">Change in Equipment &rarr;</button></div>
+    <div class="cats"><span class="nt">Show:</span>${['Fits my setup', 'All plants'].map((t, i) => `<span class="chip big ${i === 0 ? 'on' : ''}">${t}</span>`).join('')}<span class="nt" style="margin-left:8px">Zone:</span>${['Any', 'Back', 'Mid', 'Front', 'Floating', 'On wood/rock'].map((t, i) => `<span class="chip ${i === 0 ? 'on' : ''}">${t}</span>`).join('')}</div>
+    <div class="grid" style="--cols:4">${tiles}</div>
+    <div class="nt">Green = grows well under the light and CO2 you have now. Amber = grows, but slowly or poorly unless you change the gear. One tap on a tile opens a size, light and care card.</div>`;
+  page(frame(left, right), 'plants', wbar('Plants', 'Pick plants that fit your light, then place them'));
+};
+
+/* Animals */
+pages.animals = () => {
+  const ft = (n, f, m, pls, c = 0, o = {}) => `<div class="wt ${c ? 'in' : ''}" style="${o.span ? `grid-column:span ${o.span}` : ''}"><div class="pic" style="${pic('fish-' + f + '.webp')}"></div>${c ? `<span class="cnt">&times;${c}</span>` : ''}<div class="b"><div class="t">${n}</div><div class="m">${m}</div><div class="pl">${pls.join('')}</div>${o.extra || ''}<div class="add"><span class="stp"><i>&minus;</i><span>${c}</span><i>+</i></span><button class="btn sm ${c ? '' : 'primary'}">${c ? 'Added' : 'Add'}</button></div></div></div>`;
+  const forms = `<div style="display:grid;gap:4px;margin-top:2px"><div class="cap">Colour form &middot; shown on the fish</div><div class="cats" style="gap:6px">${[['#2f6fb0', 'Blue'], ['#c8402f', 'Red'], ['#e0b13a', 'Gold'], ['#5a3a8c', 'Purple'], ['linear-gradient(90deg,#e0b13a,#2f6fb0)', 'Mosaic'], ['#e8e8e8', 'Albino']].map(([c, n], i) => `<span title="${n}" class="dot-c ${i === 0 ? 'on' : ''}" style="background:${c}"></span>`).join('')}</div></div>`;
+  const left = PV({ h: 400, img: 'tank-render.jpg', in: '<span class="tag" style="left:10px;bottom:10px">6 neon tetra &middot; 3 Corydoras &middot; 1 betta</span>' }) +
+    `<div class="under"><div class="h3"><b>Stocking</b><span>how full is this tank</span></div><div class="panelcard"><div class="kv"><span>Stocking level</span><b>62 % of a safe load</b></div><div class="bar"><i style="width:62%"></i><span class="lim" style="left:100%"></span></div><div class="kv"><span>Temperament</span><b>Peaceful community</b></div><div class="kv"><span>Warnings</span><b style="color:var(--warn)">Betta + cherry barb may nip</b></div></div>
+    <div class="tray">${trayItem('Neon tetra', 'fish-neon.webp', 6).replace(/url\(assets\/fish-neon.webp\)/, 'url(assets/fish-neon.webp)')}${trayItem('Panda cory', 'fish-pandacory.webp', 3)}${trayItem('Betta', 'fish-betta.webp', 1)}</div></div>`;
+  const right = `${search('Search species')}
+    <div class="cats"><span class="nt">Where from:</span>${['Anywhere', 'South America', 'Africa', 'Asia', 'Oceania', 'North America', 'Marine'].map((t, i) => `<span class="chip big ${i === 1 ? 'on' : ''}">${t}</span>`).join('')}</div>
+    <div class="cats"><span class="nt">Show:</span>${['Fits this tank', 'All'].map((t, i) => `<span class="chip ${i === 0 ? 'on' : ''}">${t}</span>`).join('')}${['Schooling', 'Bottom', 'Peaceful', 'Beginner'].map(t => `<span class="chip">${t}</span>`).join('')}<span class="nt" style="margin-left:auto">38 species</span></div>
+    <div class="grid" style="--cols:4">
+      ${ft('Neon tetra', 'neon', '1.5 in &middot; school of 6+', [pill('Fits', 'ok'), pill('Soft water', 'accent')], 6)}
+      ${ft('Guppy', 'guppy', '2 in &middot; live-bearer', [pill('Fits', 'ok'), pill('Breeds fast', 'warn')], 0, { span: 2, extra: forms })}
+      ${ft('Cardinal tetra', 'cardinal', '2 in &middot; school of 6+', [pill('Fits', 'ok'), pill('Warm', 'accent')])}
+      ${ft('Ember tetra', 'ember', '0.8 in &middot; school of 8+', [pill('Fits', 'ok'), pill('Small tank ok', 'ok')])}
+      ${ft('Harlequin rasbora', 'harlequin', '2 in &middot; Asia', [pill('Fits', 'ok')])}
+      ${ft('Panda cory', 'pandacory', '2 in &middot; bottom &middot; group of 4+', [pill('Fits', 'ok'), pill('Sand, not gravel', 'warn')], 3)}
+      ${ft('Kuhli loach', 'kuhli', '4 in &middot; hides by day', [pill('Fits', 'ok')])}
+      ${ft('Betta', 'betta', '2.5 in &middot; one male', [pill('Fits', 'ok'), pill('1 only', 'warn')], 1)}
+      ${ft('Cherry barb', 'cherrybarb', '2 in &middot; Asia', [pill('May nip betta', 'warn')])}
+      ${ft('Platy', 'platy', '2.5 in &middot; live-bearer', [pill('Fits', 'ok')])}
+      ${ft('Bristlenose pleco', 'bristlenose', '5 in &middot; algae eater', [pill('Fits', 'ok')])}
+    </div>`;
+  page(frame(left, right), 'animals', wbar('Animals', 'Species that fit this tank, from where you like'));
+};
+
+/* Equipment */
+pages.equipment = () => {
+  const gt = (n, f, spec, pls, o = {}) => `<div class="wt ${o.in ? 'in' : ''}" style="--ph:118px"><div class="pic" style="background-color:#bcd4e1;${pic('gear-' + f + '.png')};background-size:cover"></div>${o.deal ? `<span class="rib">DEAL ${o.deal}</span>` : ''}<div class="b"><div class="t">${n}</div><div class="m">${spec}</div><div class="pl">${pls.join('')}</div><div class="kv"><span>${o.price}</span><b style="color:var(--text)">${o.in ? 'In your tank' : ''}</b></div></div></div>`;
+  const roles = ['Filter|Canister M<br>265 gph|1', 'Heater|200 W|', 'Light|(choose)|0', 'Stand|Cabinet, black<br>rated 900 lb|', 'Lid|Glass tops|', 'CO2|none|0'];
+  const rs = roles.map(r => { const [a, b, c] = r.split('|'); return `<div class="role ${c === '0' ? '' : 'f'} ${a === 'Filter' ? 'cur' : ''}"><span style="font-size:10px;letter-spacing:.06em;text-transform:uppercase">${a}</span>${c === '0' ? `<span>${b}</span>` : `<b>${b}</b>`}</div>`; }).join('');
+  const left = PV({ h: 360, pos: 'center top', in: '<span class="hl" style="left:300px;top:24px;width:64px;height:120px"></span>' }) +
+    `<div class="under"><div class="h3"><b>Your setup</b><span>click a role to shop it</span></div><div class="roles">${rs}</div>
+    <div class="panelcard"><div class="kv"><span>This filter adds</span><b>$119</b></div><div class="kv"><span>Turnover</span><b>6.6&times; per hour <span class="pill ok" style="height:18px">good for 40 gal</span></b></div><div class="kv"><span>Stand: filled weight vs rating</span><b>640 lb of 900 lb <span class="pill ok" style="height:18px">ok</span></b></div></div></div>`;
+  const right = `<div class="tabs">${['Filter', 'Heater', 'Light', 'Stand', 'Lid', 'CO2', 'Skimmer', 'Pumps'].map((t, i) => `<span class="tab ${i === 0 ? 'on' : ''}">${t}${i === 0 ? ' <span class="n">9</span>' : ''}</span>`).join('')}</div>
+    <div class="cats">${search('Search filters').replace('width:100%', 'width:240px')}${['Fits 40 gal', 'All sizes'].map((t, i) => `<span class="chip big ${i === 0 ? 'on' : ''}">${t}</span>`).join('')}${['Canister', 'Hang-on-back', 'Internal', 'Sponge'].map(t => `<span class="chip">${t}</span>`).join('')}<span class="chip" style="margin-left:auto">${I('lock')} Owned</span></div>
+    <div class="grid" style="--cols:4">
+      ${gt('Canister filter (medium)', 'canister-m', '265 gph &middot; 20&ndash;60 gal', [pill('Fits 40 gal', 'ok'), pill('Quiet', 'ok')], { price: '$119', in: 1 })}
+      ${gt('Canister filter (large)', 'canister-l', '400 gph &middot; 50&ndash;120 gal', [pill('Oversized', 'warn')], { price: '$189', deal: '&minus;15 %' })}
+      ${gt('Hang-on-back (large)', 'hob-l', '350 gph &middot; 40&ndash;70 gal', [pill('Fits 40 gal', 'ok')], { price: '$54' })}
+      ${gt('Hang-on-back (small)', 'hob-s', '150 gph &middot; up to 20 gal', [pill('Too small', 'bad')], { price: '$29' })}
+      ${gt('Internal filter', 'internal-s', '120 gph &middot; up to 25 gal', [pill('Too small', 'bad')], { price: '$24' })}
+      ${gt('Sponge filter', 'sponge-s', 'air-driven &middot; up to 30 gal', [pill('Gentle flow', 'accent'), pill('Needs air pump', 'warn')], { price: '$12' })}
+    </div>
+    <div class="nt">Pictures are the real model renders in their true colours. A tile's pill says whether it fits THIS tank, so you do not have to read a spec sheet. Stand tiles show the PL1 rating (gallons and max load) the same way.</div>`;
+  page(frame(left, right), 'gear', wbar('Equipment', 'Filter, heater, light, stand and the rest, by role'));
+};
+
+/* Tank picker (the model) */
+pages.tank = () => {
+  const tt = (n, dims, g, price, L, W, H, shape, o = {}) => `<div class="wt ${o.in ? 'in' : ''}" style="--ph:104px"><div class="pic" style="background:#d9dde3">${tankSvg(L, W, H, shape)}</div>${o.deal ? `<span class="rib">${o.deal}</span>` : ''}<div class="b"><div class="t">${n}</div><div class="m">${dims}</div><div class="pl">${pill(g + ' gal', '')}${o.pills || ''}</div><div class="kv"><span>${price}</span><b style="color:var(--text)">${o.in ? 'In preview' : ''}</b></div></div></div>`;
+  const filt = `<div class="fl"><div class="cap">Search</div>${search('Tank name or brand').replace('height:34px', 'height:30px')}<div class="cap" style="margin-top:6px">Size</div>${['Under 20 gal', '20&ndash;40 gal', '40&ndash;75 gal', '75+ gal'].map((t, i) => `<span class="chip ${i === 1 ? 'on' : ''}">${t}</span>`).join('')}<div class="cap" style="margin-top:6px">Shape</div>${['Rectangle', 'Cube', 'Bow front', 'Hexagon', 'Corner'].map((t, i) => `<span class="chip ${i === 0 ? 'on' : ''}">${t}</span>`).join('')}<div class="cap" style="margin-top:6px">Brand</div>${['Aqueon', 'Marineland', 'Fluval', 'Seapora'].map(t => `<span class="chip">${t}</span>`).join('')}<div class="cap" style="margin-top:6px">Deals</div><span class="chip on">With stand &amp; deals</span></div>`;
+  const left = PV({ h: 400, img: 'empty-bow-tank.jpg', pos: 'center', fit: 1 }) +
+    `<div class="under"><div class="panelcard"><div class="h3"><b>Bow front 36</b><span>commercial</span></div><div class="kv"><span>Size</span><b>36 &times; 16 &times; 20 in &middot; 36 gal</b></div><div class="kv"><span>Glass</span><b>0.25 in <span class="pill ok" style="height:18px">solver ok</span></b></div><div class="kv"><span>Sits on</span><b>Stand (rated 900 lb)</b></div><div class="nt">Arrow keys flip tanks: the preview redraws. Nothing is applied until you press Use this tank.</div></div></div>`;
+  const right = `<div class="tabs"><span class="tab on">Commercial <span class="n">118</span></span><span class="tab">My tanks <span class="n">2</span></span><span class="tab">${I('plus')} Custom tank&hellip;</span></div>
+    <div class="grid" style="--cols:3">
+      ${tt('Aqueon 20 long', '30 &times; 12 &times; 12 in', 20, '$55 &middot; stand $89', 30, 12, 12, 'box', { deal: 'Tank + stand $134' })}
+      ${tt('Aqueon 40 breeder', '36 &times; 18 &times; 16.5 in', 40, '$130 &middot; stand $120', 36, 18, 16.5, 'box', { deal: 'Tank + stand $219' })}
+      ${tt('Marineland 29', '30 &times; 12 &times; 18 in', 29, '$80 &middot; stand $90', 30, 12, 18, 'box')}
+      ${tt('Cube 24', '24 &times; 24 &times; 24 in', 52, '$210', 24, 24, 24, 'box')}
+      ${tt('Bow front 36', '36 &times; 16 &times; 20 in', 36, '$340', 36, 16, 20, 'bow', { in: 1, pills: pill('Hood fits', 'ok') })}
+      ${tt('Hex 20', '17 &times; 17 &times; 22 in', 20, '$150', 17, 17, 22, 'hex')}
+    </div>`;
+  root.innerHTML = header() + `<div class="body">${railDim('tank')}<div class="ws">${wbar('Choose a tank', 'Try tanks on in the preview. Press Use this tank to apply.', { draft: 1 })}<div style="flex:1;display:flex;min-height:0">${filt}<div class="fa" style="flex:1;grid-template-columns:minmax(300px,36%) 1fr"><div class="col-l">${left}</div><div class="col-r" style="padding-top:var(--s2)">${right}</div></div></div></div></div>`;
+};
+
+/* Custom tank maker */
+pages['tank-custom'] = () => {
+  const shape = (n, s, on) => `<div class="wt ${on ? 'in' : ''}" style="--ph:76px"><div class="pic" style="background:#d9dde3">${tankSvg(...s)}</div><div class="b" style="padding:4px 10px 8px"><div class="t">${n}</div></div></div>`;
+  const row = (l, v, p, u) => `<div class="sec-slider" style="grid-template-columns:110px 1fr 80px"><span>${l}</span><input class="slider" type="range" value="${p}"><span class="v">${v} ${u}</span></div>`;
+  const left = PV({ h: 420, img: 'empty-bow-tank.jpg', fit: 1 }) + `<div class="under"><div class="panelcard"><div class="h3"><b>Living-room bow 60</b><span>custom &middot; not saved yet</span></div><div class="kv"><span>Volume</span><b>62 gal</b></div><div class="kv"><span>Filled weight</span><b>~ 690 lb</b></div></div></div>`;
+  const right = `<div class="tabs"><span class="tab">Commercial <span class="n">118</span></span><span class="tab">My tanks <span class="n">2</span></span><span class="tab on">${I('plus')} Custom tank</span></div>
+    <div class="h3"><b>Shape</b></div><div class="grid" style="--cols:6">${shape('Rectangle', [36, 18, 16, 'box'])}${shape('Cube', [24, 24, 24, 'box'])}${shape('Bow front', [36, 16, 20, 'bow'], 1)}${shape('Corner', [24, 24, 24, 'box'])}${shape('Hexagon', [17, 17, 22, 'hex'])}${shape('Cylinder', [18, 18, 24, 'hex'])}</div>
+    <div class="h3"><b>Size</b><span>drag or type</span></div>${row('Length', '48', 60, 'in')}${row('Front-to-back', '20', 40, 'in')}${row('Height', '24', 50, 'in')}${row('Bow depth', '4', 25, 'in')}
+    <div class="h3"><b>Glass</b></div><div class="panelcard"><div class="kv"><span>Thickness</span><b>0.38 in (suggested) <span class="pill ok" style="height:18px">solver ok</span></b></div><div class="nt">If the solver says the glass is too thin, the failing pane is outlined in the preview (GS2).</div></div>
+    <div class="cats"><button class="btn">Save to my tanks</button><button class="btn primary">Save and use</button></div>`;
+  root.innerHTML = header() + `<div class="body">${railDim('tank')}<div class="ws">${wbar('Custom tank', 'Build a tank to your own size. Saved tanks appear under My tanks.', { draft: 1, apply: 'Save and use' })}${frame(left, right)}</div></div>`;
+};
+
+/* Frames B and C reuse scape content */
+function scapeCat(cols, fewer) {
+  const t = [['River stone', '', 'Round, smooth', 'rock-crop.png', 2], ['Seiryu', 'seiryu', 'Angular, veined', '', 1], ['Dragon stone', 'dragon', 'Pitted, ochre', ''], ['Texas holey', 'texas', 'Holes and arches', ''], ['Lace rock', 'lace', 'Pale, lacy', ''], ['Lava rock', 'lava', 'Porous', ''], ['Slate', 'slate', 'Flat plates', ''], ['Rock ledge', 'ledge', 'Stacked layers', ''], ['Iron shale', 'iron', 'Rusty', '']];
+  return `<div class="cats">${['Stones', 'Wood', 'Caves', 'Decor', 'Substrate'].map((n, i) => `<span class="chip big ${i === 0 ? 'on' : ''}">${n}</span>`).join('')}<span style="margin-left:auto;width:240px">${search('Search')}</span></div><div class="grid" style="--cols:${cols}">${t.slice(0, fewer).map(([n, k, m, r, c]) => stoneTile(n, k, m, [], c, r)).join('')}</div>`;
+}
+pages.scapeB = () => root.innerHTML = header() + `<div class="body">${railDim('scape')}<div class="ws">${wbar('Scape', 'Option B: preview strip on top, catalogue below')}<div class="fb">${PV({ h: 260, pos: 'center 60%' })}<div class="cat">${scapeCat(6, 12)}</div></div></div></div>`;
+pages.scapeC = () => root.innerHTML = header() + `<div class="body">${railDim('scape')}<div class="ws">${wbar('Scape', 'Option C: full-bleed preview, catalogue drawer over it')}<div class="fc">${PV({ h: 0, pos: 'center 55%' }).replace('style="', 'style="height:100%;')}<div class="drawerb"><div class="grab"></div>${scapeCat(7, 7)}</div></div></div></div>`;
+
+/* Shell: how a tab opens */
+pages.main = () => {
+  const chips = ['River stone', 'Seiryu', 'Dragon stone', 'Texas holey limestone', 'Lace rock', 'Lava rock', 'Iron-stained shale', 'Slate', 'Rock ledge'];
+  root.innerHTML = header() + `<div class="body">${rail('scape', { animals: '!' })}<section class="panel" style="width:380px;flex:none"><div class="sec-head"><h2>Scape</h2><button class="btn sm">${I('ideas')} Ideas for Scape</button></div><div class="sec-body"><div class="cap">Placed</div><div class="hint">Nothing placed yet. Pick one below to add it.</div><div class="cap">Add hardscape and decor</div><div class="input">${I('search')} Search stones, wood, caves, decor</div><div class="cap">Stones 9</div><div class="cats">${chips.map(c => `<span class="chip">${c}</span>`).join('')}</div><div class="cap">Wood 6</div><div class="cats">${['Driftwood branch', 'Spider wood', 'Manzanita', 'Mopani', 'Cork bark flat'].map(c => `<span class="chip">${c}</span>`).join('')}</div><div class="group open"><div class="gh">Substrate <span class="sum">Bare bottom</span></div><div class="gb"><div class="row"><span class="lbl">Type</span><span class="select input">Bare bottom</span><span></span></div><div class="row"><span class="lbl">Roughness</span><input class="slider" type="range" value="50"><span class="val">50 %</span></div></div></div></div></section>
+  <div class="viewer" style="flex:1;${pic('tank-render.jpg', 'background-size:cover;background-position:center')}"></div></div>`;
+};
+pages.shell = () => {
+  const sc = .29;
+  const ifr = (p, w = 1280, h = 800) => `<div class="box" style="width:${w * sc}px;height:${h * sc}px"><iframe src="ws.html?p=${p}" width="${w}" height="${h}" style="transform:scale(${sc})"></iframe></div>`;
+  root.innerHTML = `<div class="frame3" style="flex-direction:column;gap:14px;height:100vh;padding:16px 22px"><style>.frame3 .fr b{font-size:13px!important}</style>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="fr"><b style="color:var(--text);font-size:15px">1 &middot; Main view (today)</b>${ifr('main')}<span>Narrow text panel beside the tank</span></div>
+      <div style="font-size:30px;color:var(--accent)">&rarr;</div>
+      <div class="fr"><b style="color:var(--text);font-size:15px">2 &middot; Click the rail: the tab opens its workspace</b>${ifr('scape')}<span>Same rail, same header, the whole canvas for the work</span></div>
+      <div style="font-size:30px;color:var(--accent)">&rarr;</div>
+      <div class="fr"><b style="color:var(--text);font-size:15px">3 &middot; Done: back to the main view</b>${ifr('main')}<span>Edits are already in the tank</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px;width:100%;font-size:13px;color:var(--text-2);line-height:1.4">
+      <div class="panelcard"><b style="color:var(--text)">What stays visible</b><div>Header never moves: tank name, Habitat / cost / water summary (it updates as you place things, so every tile choice shows its price and welfare effect), Undo, Redo, Save.<br>Rail stays: a click on another tab opens that workspace directly (no menu stack).</div></div>
+      <div class="panelcard"><b style="color:var(--text)">Live or draft?</b><div><b style="color:var(--ok)">Live</b> for Scape, Plants, Animals, Equipment: the preview <i>is</i> your tank, undo is one click, and <b>Revert this visit</b> rewinds to the moment you came in.<br><b style="color:var(--warn)">Draft</b> for Tank choose / custom builder: swapping the tank moves and clamps things, and browsing 118 tanks must not thrash the scene. Cancel / Use this tank.</div></div>
+      <div class="panelcard"><b style="color:var(--text)">Leaving</b><div><b>Done</b> or &#9664; or Esc: back to the main view, edits kept.<br><b>Revert this visit</b>: undo all of it, one click, stays in the workspace.<br>Draft workspaces: <b>Cancel</b> drops the try-on; <b>Use this tank</b> applies it as ONE undo step.</div></div>
+    </div></div>`;
+};
+
+/* Frames compare */
+pages.frames = () => {
+  const sc = .31, ifr = p => `<div class="box" style="width:${1280 * sc}px;height:${860 * sc}px"><iframe src="ws.html?p=${p}" width="1280" height="860" style="transform:scale(${sc})"></iframe></div>`;
+  root.innerHTML = `<div class="frame3" style="gap:22px;padding:18px">${[['A &middot; Preview left, catalogue right', 'scape', 'Recommended. Big tiles and a big tank, side by side. Placed tray and stats under the preview. On a phone it stacks (preview strip over grid).'], ['B &middot; Preview strip on top', 'scapeB', 'Widest grid (6 across), but the tank is a short wide strip: poor for judging height, plants, hides. Good when the catalogue is huge (all 118 tanks).'], ['C &middot; Full preview, drawer over it', 'scapeC', 'Best look at the tank (a game build-menu). Tiles are smaller (7 across, half height), the drawer hides the floor you are decorating.']].map(([t, p, d]) => `<div class="fr" style="width:${1280 * sc}px"><b style="color:var(--text);font-size:14px">${t}</b>${ifr(p)}<span style="text-align:left;line-height:1.4">${d}</span></div>`).join('')}</div>`;
+};
+
+/* Small panels that stay */
+pages.small = () => {
+  const mk = (t, body, note) => `<div style="display:grid;gap:8px;width:300px"><b style="color:var(--text);font-size:14px">${t}</b><section class="panel" style="border:1px solid var(--line);border-radius:10px;height:380px"><div class="sec-head"><h2>${t.split(' ')[0]}</h2></div><div class="sec-body">${body}</div></section><span style="color:var(--text-2);font-size:12.5px;line-height:1.4">${note}</span></div>`;
+  const seg = o => `<div class="seg full">${o.map((t, i) => `<button class="${i === 1 ? 'on' : ''}">${t}</button>`).join('')}</div>`;
+  root.innerHTML = `<div class="frame3" style="gap:22px;padding:18px;flex-wrap:wrap">
+    ${mk('Preferences stays a panel', `<div class="cap">Experience</div>${seg(['Beginner', 'Some', 'Expert'])}<div class="cap">Budget</div><div class="row"><span class="lbl">Up to</span><input class="slider" type="range" value="40"><span class="val">$1,500</span></div><div class="cap">I like</div><div class="cats">${['Planted', 'Community', 'Nano', 'Biotope'].map(c => `<span class="chip">${c}</span>`).join('')}</div>`, 'About eight choices, no catalogue. A narrow column is the right size. It is a setting, not something you look at.')}
+    ${mk('Constraints stays a panel', `<div class="row"><span class="lbl">Max size</span><input class="slider" type="range" value="60"><span class="val">48 in</span></div><div class="row"><span class="lbl">Floor load</span><input class="slider" type="range" value="30"><span class="val">900 lb</span></div><div class="row"><span class="lbl">Light cap</span><input class="slider" type="range" value="50"><span class="val">12 h</span></div><div class="hint">Numbers with typed values. Limits show on the Habitat check, not in a picture.</div>`, 'Sliders with typed numbers. Later it could grow a "budget breakdown" workspace, but that is a dashboard, not a catalogue.')}
+    ${mk('Settings stays a panel', `<div class="row"><span class="lbl">Units</span>${seg(['in / gal', 'cm / L'])}<span></span></div><div class="row"><span class="lbl">Theme</span>${seg(['Dark', 'Light'])}<span></span></div><div class="row"><span class="lbl">Reduce motion</span><span class="toggle"></span><span></span></div>`, 'App settings, rarely opened. Keep small.')}
+    <div style="display:grid;gap:8px;width:300px"><b style="color:var(--text);font-size:14px">Print becomes a paper view</b><div class="panel" style="border:1px solid var(--line);border-radius:10px;height:330px;padding:14px;background:#2a2f38"><div style="background:var(--paper);color:var(--paper-ink);height:100%;border-radius:2px;padding:12px;font-size:10px;display:grid;gap:6px;align-content:start"><b style="font-size:13px">Planted community</b><div style="height:90px;${pic('tank-render.jpg', 'background-size:cover;background-position:center')}"></div><div>Shopping list &middot; 14 items &middot; $1,264</div><div style="height:6px;background:#ddd"></div><div style="height:6px;background:#ddd;width:80%"></div><div style="height:6px;background:#ddd;width:70%"></div></div></div><span style="color:var(--text-2);font-size:12.5px;line-height:1.4">Print already shows a page; make it a full-screen paper preview with a Print button (Done and back like a workspace). Low priority: later lane.</span></div>
+    <div style="display:grid;gap:8px;width:300px"><b style="color:var(--text);font-size:14px">Discover becomes a workspace</b><div class="panel" style="border:1px solid var(--line);border-radius:10px;height:330px;padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start">${['tank-render.jpg', 'empty-bow-tank.jpg', 'tank-render.jpg', 'empty-bow-tank.jpg'].map((f, i) => `<div class="wt cover" style="--ph:110px"><div class="pic" style="${pic(f)}"></div><div class="b"><div class="t" style="font-size:12px">${['Planted community', 'Bow-front calm', 'Low-tech jungle', 'Quiet shrimp'][i]}</div></div></div>`).join('')}</div><span style="color:var(--text-2);font-size:12.5px;line-height:1.4">Ideas are pictures of finished tanks: the most visual tab of all. Workspace, yes, and I would build it right after the five catalogue ones.</span></div></div>`;
+};
+
+/* ============ phone ============ */
+const phHead = (t, o = {}) => `<div class="ph-hd"><button class="btn icon ghost" style="font-size:18px" title="Back">&#9664;</button><h2>${t}</h2>${o.draft ? '<span class="pill warn">Draft</span>' : '<span class="live" style="color:var(--ok);font-size:12px">&#9679; live</span>'}<button class="btn icon ghost">${I('undo')}</button>${o.draft ? '' : `<button class="btn sm primary">Done</button>`}</div><div class="ph-sum"><b>Planted community</b><span class="pill warn" style="height:20px;font-size:11px">Caution</span><b>$1,264</b><span>75 &deg;F</span></div>`;
+const phPrev = (h = 190, extra = '') => `<div class="pv" style="${pic('tank-render.jpg')}height:${h}px;background-position:center 65%"><span class="tag" style="top:8px;left:8px;font-size:11px">Live preview</span><div class="tr" style="top:8px;right:8px"><button class="btn sm" style="background:var(--glass)">&#8689; Bigger</button></div>${extra}</div>`;
+pages['p-scape'] = () => root.innerHTML = phHead('Scape') + `<div class="ph-body">${phPrev(190, '<span class="hl" style="left:78px;top:98px;width:64px;height:60px"></span>')}<div class="hs">${['Stones', 'Wood', 'Caves', 'Decor', 'Substrate'].map((n, i) => `<span class="chip big ${i === 0 ? 'on' : ''}">${n}</span>`).join('')}</div><div class="ph-pad">${search('Search')}</div><div class="ph-pad grid" style="--cols:2;--ph:92px">${[['River stone', '', 'Neutral', 'rock-crop.png', 2], ['Seiryu', 'seiryu', 'Raises hardness', '', 1], ['Dragon stone', 'dragon', 'Neutral', ''], ['Texas holey', 'texas', 'Raises pH', '']].map(([n, k, m, r, c]) => stoneTile(n, k, m, [], c, r)).join('')}</div></div><div class="ph-bar"><span class="note-b">3 placed</span><span style="flex:1"></span><button class="btn">&#8630; Revert</button><button class="btn primary">Done</button></div>`;
+pages['p-animals'] = () => {
+  const ft = (n, f, m, p, c) => `<div class="wt ${c ? 'in' : ''}"><div class="pic" style="${pic('fish-' + f + '.webp')}"></div>${c ? `<span class="cnt">&times;${c}</span>` : ''}<div class="b"><div class="t">${n}</div><div class="m">${m}</div><div class="pl">${p}</div></div></div>`;
+  root.innerHTML = phHead('Animals') + `<div class="ph-body">${phPrev(150)}<div class="hs"><span class="chip big on">South America &#9662;</span><span class="chip big">Fits &#9662;</span><span class="chip big">Type &#9662;</span></div><div class="ph-pad grid" style="--cols:2;--ph:84px">${ft('Neon tetra', 'neon', 'School of 6+', pill('Fits', 'ok'), 6)}${ft('Cardinal', 'cardinal', 'School of 6+', pill('Fits', 'ok'))}${ft('Panda cory', 'pandacory', 'Bottom, 4+', pill('Fits', 'ok'), 3)}${ft('Guppy', 'guppy', 'Live-bearer', pill('Fits', 'ok'))}</div></div>
+  <div class="sheet"><div style="display:flex;align-items:center;gap:8px"><b style="font-size:15px;flex:1">Guppy: choose a colour form</b><span class="pill">1 of 6</span></div><div style="display:flex;gap:10px;justify-content:space-between">${[['#2f6fb0', 'Blue'], ['#c8402f', 'Red'], ['#e0b13a', 'Gold'], ['#5a3a8c', 'Purple'], ['linear-gradient(90deg,#e0b13a,#2f6fb0)', 'Mosaic'], ['#e8e8e8', 'Albino']].map(([c, n], i) => `<div class="swl"><span class="dot-c ${i === 0 ? 'on' : ''}" style="background:${c};width:38px;height:38px"></span>${n}</div>`).join('')}</div><div class="note-b">The fish in the preview takes the colour you tap. (CM3)</div><button class="btn primary big grow">Add 1 guppy</button></div>`;
+};
+pages['p-equipment'] = () => {
+  const gt = (n, f, spec, p) => `<div class="wt"><div class="pic" style="background-color:#bcd4e1;${pic('gear-' + f + '.png')};background-size:cover"></div><div class="b"><div class="t">${n}</div><div class="m">${spec}</div><div class="pl">${p}</div></div></div>`;
+  root.innerHTML = phHead('Equipment') + `<div class="ph-body">${phPrev(150)}<div class="hs">${['Filter', 'Heater', 'Light', 'Stand', 'Lid', 'CO2'].map((n, i) => `<span class="chip big ${i === 0 ? 'on' : ''}">${n}</span>`).join('')}</div><div class="ph-pad grid" style="--cols:2;--ph:92px">${gt('Canister M', 'canister-m', '265 gph &middot; $119', pill('Fits 40 gal', 'ok'))}${gt('Canister L', 'canister-l', '400 gph &middot; $189', pill('Oversized', 'warn'))}${gt('HOB large', 'hob-l', '350 gph &middot; $54', pill('Fits', 'ok'))}${gt('HOB small', 'hob-s', '150 gph &middot; $29', pill('Too small', 'bad'))}</div></div><div class="ph-bar"><span class="note-b">Adds $119</span><span style="flex:1"></span><button class="btn primary">Done</button></div>`;
+};
+pages['p-tank'] = () => root.innerHTML = phHead('Choose a tank', { draft: 1 }) + `<div class="ph-body"><div class="pv" style="${pic('empty-bow-tank.jpg')}height:170px;background-size:contain;background-repeat:no-repeat;background-color:#e9e4da;background-position:center"><span class="tag" style="top:8px;left:8px;font-size:11px">Previewing &middot; not applied</span></div><div class="hs">${['20&ndash;40 gal', 'Rectangle', 'Brand', 'Deals'].map((n, i) => `<span class="chip big ${i < 2 ? 'on' : ''}">${n}</span>`).join('')}</div><div class="ph-pad grid" style="--cols:2;--ph:84px">${[['Aqueon 20 long', 30, 12, 12, 20, 'box', 'Tank + stand $134'], ['Aqueon 40 breeder', 36, 18, 16.5, 40, 'box', 'Tank + stand $219'], ['Marineland 29', 30, 12, 18, 29, 'box', ''], ['Bow front 36', 36, 16, 20, 36, 'bow', '']].map(([n, L, W, H, g, s, d], i) => `<div class="wt ${i === 3 ? 'in' : ''}"><div class="pic" style="background:#d9dde3">${tankSvg(L, W, H, s)}</div>${d ? `<span class="rib">${d}</span>` : ''}<div class="b"><div class="t">${n}</div><div class="m">${g} gal</div></div></div>`).join('')}</div></div><div class="ph-bar"><button class="btn">Cancel</button><button class="btn primary grow big">Use Bow front 36</button></div>`;
+pages['p-main'] = () => root.innerHTML = `<div class="ph-hd"><b style="padding-left:6px">TankLook</b><span style="color:var(--text-2);font-size:13px;flex:1">&middot; Planted community</span><button class="btn icon ghost">${I('undo')}</button><button class="btn icon ghost">${I('more')}</button></div><div class="ph-sum"><span class="pill warn" style="height:20px;font-size:11px">Caution</span><b>$1,264</b><span>75 &deg;F</span></div><div style="flex:1 1 0;height:0;min-height:0;overflow:hidden;${pic('tank-render.jpg', 'background-size:cover;background-position:30% center')};position:relative"><div style="position:absolute;left:10px;right:10px;bottom:10px;padding:10px 12px;border-radius:12px;background:var(--glass);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px"><div style="flex:1"><b>Scape</b><div style="font-size:12px;color:var(--text-2)">3 pieces placed</div></div><button class="btn primary">Open Scape</button></div></div><div class="ph-tabbar">${[['tank', 'Tank'], ['scape', 'Scape'], ['plants', 'Plants'], ['animals', 'Animals'], ['gear', 'Equip.'], ['more', 'More']].map(([i, t], k) => `<button class="${k === 1 ? 'on' : ''}">${I(i)}${t}</button>`).join('')}</div>`;
+pages['p-flow'] = () => {
+  const sc = .66, ifr = (p) => `<div class="box" style="width:${390 * sc}px;height:${844 * sc}px"><iframe src="ws.html?p=${p}" width="390" height="844" style="transform:scale(${sc})"></iframe></div>`;
+  root.innerHTML = `<div class="frame3" style="gap:16px;padding:16px;align-items:center;justify-content:flex-start;flex-wrap:nowrap">${[['1 &middot; Tap a tab', 'p-main', 'Tab bar as today; the tab opens its workspace'], ['2 &middot; Workspace', 'p-scape', 'Back arrow, preview strip, grid. Edits are live'], ['3 &middot; Animals filter sheet', 'p-animals', 'Colour forms and filters open as bottom sheets']].map(([t, p, d], i) => `${i ? '<div style="font-size:26px;color:var(--accent)">&rarr;</div>' : ''}<div class="fr"><b style="color:var(--text);font-size:14px">${t}</b>${ifr(p)}<span>${d}</span></div>`).join('')}</div>`;
+};
+
+(pages[P] || pages.scape)();
+</script>
+</body></html>
