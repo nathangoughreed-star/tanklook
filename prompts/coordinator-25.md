@@ -46,3 +46,6 @@ House rules: end every reply with "Build N"; US units; screen questions come wit
 
 ## Update at handoff: price sweep NOT pushed
 C24's suite on the price sweep (57b0b92b = cherry-pick of 6f414929) failed: test/demand.test.ts "expected value equals the old Monte Carlo mean" (planted/0 off by 5.1 %, limit 1 %), test/gearFilters.test.ts and test/tech.test.ts locked example numbers (planted setup moves, e.g. 1294.416 -> 1360.518), plus ab1 (timing). The new tank prices move the pinned example setups. C24 sent it back to the sweep chat (local_494fcc9b-fe5a-47cd-a856-45ad14a4d0a1) to re-pin with reasons and run the FULL vitest; merge its new sha when it reports. Note SP1 also re-pins planted / blackwater, so merge sweep first, then SP1 and re-pin once more if needed.
+
+## Update: R96 first pass (HD1 121f6428, branch claude/r96-stand-models, on SP1 528a017c + PL1 fcc64141; 28 stands, not 37)
+C24 spot-checked compare/imagitarium-modern-29.jpg: feet instead of the real full-width plinth, a strong gloss streak on a near-matte warm-brown finish, thicker top cap. Sent back to HD1 to review all 28 and fix; it sends you the new sha. Its branch contains SP1 + PL1, so merging it covers R95 + PL1 round 1 (PL1's round-2 stands, That Pet Place / Walmart, are on its own branch tip 53317900; reconcile). Look at several compare images yourself before merging.
