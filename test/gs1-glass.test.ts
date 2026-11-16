@@ -46,7 +46,11 @@ describe('GS1 tank solve', () => {
     expect(roundUpStock(6.4)).toBeCloseTo(5 / 16 * IN_MM);
     expect(roundUpStock(6.4, STOCK_METRIC)).toBe(8);
     expect(roundUpStock(30, STOCK_METRIC)).toBeNull();
-    expect(thicknessLabel(STOCK_US[2])).toBe('3/8"');
+    // R94 (2026-11-15): STOCK_US grew thinner (3/32, 1/8, 5/32, 3/16 before 1/4), so 3/8 moved from index 2 to 6; look sizes up by value, not slot
+    expect(thicknessLabel(3 / 8 * IN_MM)).toBe('3/8"');
+    expect(thicknessLabel(3 / 32 * IN_MM)).toBe('3/32"');
+    expect(thicknessLabel(5 / 32 * IN_MM)).toBe('5/32"');
+    expect(STOCK_US.length).toBe(11);
   });
   it('the hobby formula: 950 mm water, ratio 3 gives about 25 mm (published worked example)', () => {
     expect(hiscocksThickness(3 * 950, 950, { gamma: 1e-5, mor: 19.2 }).t).toBeCloseTo(25.07, 1);

@@ -66,9 +66,9 @@ describe('Optimize', () => {
   it('locked fields stay as given; an impossible lock says so', () => {
     const r = optimizeBraceCustom(spec, { safetyFactor: 3.8, locked: { width: 3 * IN_MM, cross: 1 } });
     expect(r.best!.brace).toMatchObject({ width: 3 * IN_MM, cross: 1 });
-    const bad = optimizeChoice({ ...spec }, defaultChoice(), 'in', { width: 2 * IN_MM, thickness: STOCK_US[0], cross: 0 });
+    const bad = optimizeChoice({ ...spec }, defaultChoice(), 'in', { width: 2 * IN_MM, thickness: 0.25 * IN_MM, cross: 0 });
     if (!bad.ok) expect(bad.line).toMatch(/No brace meets/);
-    else expect(bad.brace).toMatchObject({ width: 2 * IN_MM, thickness: STOCK_US[0] });
+    else expect(bad.brace).toMatchObject({ width: 2 * IN_MM, thickness: 0.25 * IN_MM });
   }, 120_000);
   it('the button\'s line names the brace and the saving', () => {
     const r = optimizeChoice({ ...spec }, defaultChoice(), 'in');

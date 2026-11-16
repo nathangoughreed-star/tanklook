@@ -26,10 +26,20 @@ export const DEFAULT_SF = 3.8;
 /** Unit weight of water, N/mm^3: fresh 1000 kg/m^3, salt 1025 kg/m^3, g = 9.81 m/s^2. */
 export const GAMMA_FRESH = 9.81e-6, GAMMA_SALT = 1.025 * 9.81e-6;
 
-/** Stock glass thicknesses (mm). */
-export const STOCK_METRIC = [4, 5, 6, 8, 10, 12, 15, 19, 25];
-export const STOCK_US = [1 / 4, 5 / 16, 3 / 8, 1 / 2, 5 / 8, 3 / 4, 1].map(t => t * IN_MM);
-const US_LABEL = ['1/4"', '5/16"', '3/8"', '1/2"', '5/8"', '3/4"', '1"'];
+/**
+ * Stock glass thicknesses (mm): what a local US glass shop cuts to size (R94, 2026-11-15; Nathan: "typical thicknesses available at a local place").
+ * US: 3/32 single strength (SSB), 1/8 double strength (DSB), 5/32, 3/16, 1/4 (plate / float), 3/8, 1/2, 3/4 (heavy float), plus 5/8 and 1 for big tanks.
+ * Sources: General Glass standard inventory list (clear float 3/32, 1/8, 3/16, 1/4, 3/8); Glaztech flat glass availability (3/32 = 2.5 mm, 1/8 = 3 mm,
+ * 5/32 = 4 mm, 3/16 = 5 mm, 1/4 = 6 mm; heavy float 3/8, 1/2, 3/4); Woodsmith "Choosing the right glass" (3/32 up to 1 in); Guardian retail SSB 3/32 / DSB 1/8.
+ * 5/16 (8 mm) is in NO distributor list found: it is a special order at most shops, so it stays selectable but is labelled "special order".
+ * 5/8 and 1 in are heavy plate usually quoted per job; kept as before. Metric: 2, 3, 4, 5, 6, 8, 10, 12, 15, 19, 25 mm (ISO / EN 572 float).
+ */
+export const STOCK_METRIC = [2, 3, 4, 5, 6, 8, 10, 12, 15, 19, 25];
+export const STOCK_US = [3 / 32, 1 / 8, 5 / 32, 3 / 16, 1 / 4, 5 / 16, 3 / 8, 1 / 2, 5 / 8, 3 / 4, 1].map(t => t * IN_MM);
+const US_LABEL = ['3/32"', '1/8"', '5/32"', '3/16"', '1/4"', '5/16"', '3/8"', '1/2"', '5/8"', '3/4"', '1"'];
+/** Shop names for the pickers (US inches, by 1/32 in; metric by whole mm). */
+export const SHOP_NAME_US: Record<number, string> = { 3: 'single strength', 4: 'double strength', 10: 'special order' };
+export const SHOP_NAME_METRIC: Record<number, string> = { 2: 'single strength', 3: 'double strength', 8: 'special order' };
 
 /** Display label of a stock thickness. */
 export function thicknessLabel(mm: number): string {

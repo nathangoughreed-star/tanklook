@@ -10,7 +10,7 @@ import { STOCK_US, STOCK_METRIC, IN_MM, type BraceLocks, type BraceSpec } from '
 import { LIMITS } from '../scene/validate';
 import { glassThickness, IN } from '../scene/physics';
 import { POLY_MAX, POLY_MIN, pieRadius, pieDepth, polySides, PIE_MIN, PIE_MAX, shapeOf } from '../scene/shape';
-import { makerSetup, makerFacts, dimAnchors, placeDims, applyDim, parseLen, setPieAngle, setPolySide, makeRegular, setPolyCount, roundAsPie, type PlacedDim, previewSpec, priceView, chooseCustom, glassText, galText, usd, SHAPE_WORD, SHAPE_MAIN, SHAPE_MORE, SIDE_RANGE, specChanged, type Units } from './logic/tank';
+import { makerSetup, makerFacts, dimAnchors, placeDims, applyDim, parseLen, setPieAngle, setPolySide, makeRegular, setPolyCount, roundAsPie, type PlacedDim, previewSpec, priceView, chooseCustom, glassText, glassOption, galText, usd, SHAPE_WORD, SHAPE_MAIN, SHAPE_MORE, SIDE_RANGE, specChanged, type Units } from './logic/tank';
 import { glassPanel, defaultChoice, optimizeChoice, startBrace, DISCLAIMER, type GlassChoice, type GlassPanel } from './logic/tankGlass';
 import { LenRow, Seg, Toggle } from './tank';
 import { Group, Icon, Pill } from './ui';
@@ -197,7 +197,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
           <div class="row"><span class="lbl">Thickness</span>
             <select class="select" aria-label="Glass thickness" value={spec.glass === 'auto' ? 'auto' : String(spec.glass)} onChange={e => edit(s => setGlass(s, (e.target as HTMLSelectElement).value))}>
               <option value="auto">Typical for the height ({glassText(glassThickness(T, 'auto'), u)})</option>
-              {[...new Set([...stock, ...(spec.glass === 'auto' ? [] : [spec.glass])])].sort((a, b) => a - b).map(t => <option value={String(t)}>{glassText(t, u)}</option>)}
+              {[...new Set([...stock, ...(spec.glass === 'auto' ? [] : [spec.glass])])].sort((a, b) => a - b).map(t => <option value={String(t)}>{glassOption(t, u)}</option>)}
             </select><span /></div>
           <div class="row"><span class="lbl">Rim</span><Seg label="Rim" value={spec.rim ? 'y' : 'n'} opts={[['y', 'Rimmed'], ['n', 'Rimless']]} onPick={v => edit(s => setRim(s, v === 'y'))} /><span /></div>
         </Group>
@@ -281,7 +281,7 @@ function BraceFields({ b, u, locks, setLocks, setBrace, onOptimize, busy, optLin
       {num('width', cur.width, 'Perimeter width')}
       <div class="row"><span class="lbl">Strip thickness</span>
         <select class="select" aria-label="Brace strip thickness" value={String(cur.thickness)} onChange={e => setBrace({ ...cur, thickness: +(e.target as HTMLSelectElement).value })}>
-          {[...new Set([...stock, cur.thickness])].sort((x, y) => x - y).map(t => <option value={String(t)}>{glassText(t, u)}</option>)}
+          {[...new Set([...stock, cur.thickness])].sort((x, y) => x - y).map(t => <option value={String(t)}>{glassOption(t, u)}</option>)}
         </select>{lock('thickness')}</div>
       <div class="row"><span class="lbl">Cross braces</span>
         <select class="select" aria-label="Number of cross braces" value={String(cross)} onChange={e => setBrace({ ...cur, cross: +(e.target as HTMLSelectElement).value })}>

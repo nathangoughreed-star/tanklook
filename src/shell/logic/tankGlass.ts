@@ -1,7 +1,7 @@
 // UI2 shell step 3 (lane S3, 2026-11-13; request R30): the custom tank maker's glass panel, a view-model over GS1's solver
 // (scene/glassSolver.ts, doc research/design/gs1-glass-solver.md). Pure: the panel only draws this.
 // Rimless = a free top edge (braces optional, the optimizer's table); rimmed = the trim holds the top edge (no brace table).
-import { DEFAULT_SF, IN_MM, STOCK_METRIC, STOCK_US, optimizeBrace, optimizeBraceCustom, solveGlass, toGlassBuild, type BraceLocks, type BraceSpec, type GlassBuild, type GlassOpts, type GlassSolution, type JointCheck, type PaneId } from '../../scene/glassSolver';
+import { DEFAULT_SF, IN_MM, optimizeBrace, optimizeBraceCustom, solveGlass, toGlassBuild, type BraceLocks, type BraceSpec, type GlassBuild, type GlassOpts, type GlassSolution, type JointCheck, type PaneId } from '../../scene/glassSolver';
 import { shapeOf } from '../../scene/shape';
 import type { Tank } from '../../scene/types';
 import { glassText, type Units } from './tank';
@@ -118,8 +118,8 @@ const openingOf = (T: { L: number; D: number }, b: BraceSpec) => ({ depth: T.D -
 /** A brace that leaves no room (the solver and the 3D model both need some clear glass). */
 export const braceTooBig = (T: { L: number; D: number }, b: BraceSpec) => { const o = openingOf(T, b); return o.depth < IN_MM || o.length < IN_MM || b.thickness <= 0; };
 
-/** Brace fields' defaults when a person starts typing one: 2.5 in strips, the thinnest stock thickness. */
-export const startBrace = (u: Units): BraceSpec => ({ width: 2.5 * IN_MM, thickness: (u === 'in' ? STOCK_US : STOCK_METRIC)[0], cross: 0 });
+/** Brace fields' defaults when a person starts typing one: 2.5 in strips of 1/4 in (6 mm) glass, the thinnest sensible strip. */
+export const startBrace = (u: Units): BraceSpec => ({ width: 2.5 * IN_MM, thickness: u === 'in' ? 0.25 * IN_MM : 6, cross: 0 });
 
 export interface OptimizeResult { brace: BraceSpec | null; line: string; ok: boolean }
 /**
