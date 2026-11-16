@@ -48,3 +48,10 @@ House rules: end every reply with "Build N"; US units; screen questions come wit
 ## DL1 READY (R-deals, 11-16)
 Commits 69166909 + b9d7b0d8 on `claude/dl1-deals`, cut from d7b82828: an OLD base, so check `git diff --name-status origin/main HEAD | grep ^D` after the pick. It adds the On sale now group in Equipment, an On sale chip in the tank picker, and the bundle box in the Cost drawer. The display hides deals older than 14 days; the engines keep their 30-day pricing rule (DL1 asks whether to unify them: ask Nathan). Full vitest: only timing tests failed. Shots: `C:/Users/nreed/AppData/Local/Claude-Data/claude_pzs8sxrjxfjjc/side-session-notes/local_020eecae-8a33-45aa-9462-3e0faa222a5e/dl1/shots`, taken with a faked Nov 2 clock.
 BLOCKER: the auto-mode classifier DENIED the deals re-check sweep session, so Nathan must start it himself (`prompts/deals-sweep.md`; it needs Chrome). Until it runs, the 14-day rule hides every current deal and the new surfaces stay empty. Don't start that sweep for him.
+
+## Deals sweep DONE (11-16, chat "Deals sweep refresh" local_9e3a7f82-64e7-4daa-a38d-43961439c9ba)
+- Branch `deals-sweep-2026-11-16` @ 59f46f41 (the branch is pushed, NOT main). It changes one file, src/data/deals.json (asOf 2026-11-16, 37 rows: new Top Fin 29 / 55 and Vibrant Life 20; 3 rows dropped; several sales end 11/19-11/29).
+- Not re-read: 3 Amazon rows (left at 10-19) and the reptile rows (Tractor Supply / Target / Josh's Frogs).
+- Only kits + demand were run: run the full suite (example pins may move).
+- Merge it WITH or before DL1 so the new deal screens show real deals.
+- The same deals.json edit also sits uncommitted in the shared folder `C:/Users/nreed/Glass Box`; once merged, tell that chat it's on main (don't revert by hand).
