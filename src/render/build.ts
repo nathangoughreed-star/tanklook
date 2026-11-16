@@ -3,6 +3,8 @@
 import { swimPace } from '../scene/swimPace';
 import * as THREE from 'three';
 import { tankView } from './tankView';
+import { crawlPace } from '../scene/crawlPace';
+import type { CrawlData } from './crawl';
 import { STAND_PANEL } from '../scene/standspace';
 import { addLidClips, clipLid, LID_CLIP_DROP, LID_SHORT, LID_T } from './lidClips';
 import { LECA, SUBSTRATES, blendTile, blendZone, grain3D } from '../art/placeholder';
@@ -1667,13 +1669,32 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
       if (!moved) return;
     }
   };
+  // a crawler: the sim (scene/crawlSim.ts) walks this mesh from the spot it was placed at, which is its Reset pose
+  const markCrawler = (m: THREE.Mesh, f: Fish, speciesId: string, w: number, cp: NonNullable<ReturnType<typeof crawlPace>>, glass: boolean) => {
+    const e = new THREE.Euler().setFromQuaternion(m.quaternion, 'YXZ'), R2D = 180 / Math.PI;
+    const spec: CrawlData['spec'] = { id: f.id, len: w, kind: cp.kind, speed: cp.inPerSec * 25.4, graze: cp.graze, hop: cp.hopPerMin,
+      rest: glass ? 0 : m.position.y - (groundHeight(S, T, m.position.x, -m.position.z) + rise(m.position.x, -m.position.z)),
+      home: { x: m.position.x, y: m.position.y, z: m.position.z, yaw: e.y * R2D, pitch: e.z * R2D, roll: e.x * R2D } };
+    if (glass) { // the pane's own axes at spin 0: the card without its roll about its normal
+      const q0 = new THREE.Quaternion().setFromEuler(new THREE.Euler(e.x, e.y, 0, 'YXZ')), u = new THREE.Vector3(1, 0, 0).applyQuaternion(q0), v = new THREE.Vector3(0, 1, 0).applyQuaternion(q0);
+      spec.plane = { u: [u.x, u.y, u.z], v: [v.x, v.y, v.z] }; spec.home.yaw = e.z * R2D; spec.home.pitch = 0; spec.home.roll = 0;
+    }
+    m.userData.crawl = { spec, world: { S, T, rise } } as CrawlData; m.userData.swimmer = true; void speciesId;
+  };
   // one animal's meshes (`register`: picked, outlined when selected) and its contact shadow (`add`)
   const animal = (f: Fish, register0: (m: THREE.Mesh, w: number, h: number) => void, add: (o: THREE.Object3D | null) => void) => {
     const sp = speciesOf(f); if (!sp) return;
     const register = (m: THREE.Mesh, w: number, h: number) => { if (isHerp3D(sp.art) && !isSnake(sp.art) && (f.surface ?? 'floor') === 'floor') pullIn(m); register0(m, w, h); };
     if (sp.kind === 'snail') {
-      for (const [m, w, h] of snailMeshes(S, T, f, sp, base(f), A)) register(m, w, h);
-      if ((f.surface ?? 'floor') === 'floor') { const w = fishTL(f, sp); add(contactShadow(S, T, f.x, f.depth, groundHeight(S, T, f.x, f.depth) + rise(f.x, f.depth), w, w * 0.45, f.yaw)); }
+      const cp = crawlPace(sp.id), snails = snailMeshes(S, T, f, sp, base(f), A);
+      for (const [m, w, h] of snails) {
+        if (cp && f.surface !== 'hardscape' && f.surface !== 'under') markCrawler(m, f, sp.id, w, cp, f.surface === 'glass');
+        register(m, w, h);
+      }
+      if ((f.surface ?? 'floor') === 'floor') {
+        const w = fishTL(f, sp), sh = contactShadow(S, T, f.x, f.depth, groundHeight(S, T, f.x, f.depth) + rise(f.x, f.depth), w, w * 0.45, f.yaw); add(sh);
+        if (sh && cp) for (const [m] of snails) m.userData.shadow = sh; // follows the snail as it crawls
+      }
       return;
     }
     if (!S.water.on && needsWater(sp)) return; // dry tank: fish stay in the scene data, hidden until the water is back
@@ -1721,10 +1742,12 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
       m.userData.roam = { spec: { id: f.id, len: w, zone: sp.zone === 'bottom' ? 'bottom' : 'water', pace: swimPace(sp.id), band: [...BANDS[sp.level ?? 'mid']] as [number, number], group: sp.group ? { key: sp.id, tight: sp.group === 'school' } : undefined,
         home: { x: m.position.x, y: m.position.y, z: m.position.z, yaw: e.y * R2D, pitch: e.z * R2D, roll: e.x * R2D } }, world: { S, T, rise } };
     }
+    const cp = rests && !herp && f.surface !== 'hardscape' && f.surface !== 'under' ? crawlPace(sp.id) : undefined; // shrimp, crabs, crayfish: crawl the ground (render/crawl.ts)
+    if (cp) markCrawler(m, f, sp.id, w, cp, false);
     register(m, w, h);
     if (f.surface === 'hardscape' || f.surface === 'under') return;
     const shadow = contactShadow(S, T, p.x, p.depth, y - h / 2, w, h, f.yaw); add(shadow);
-    if (shadow && swim) m.userData.shadow = shadow; // follows the fish as it roams
+    if (shadow && (swim || cp)) m.userData.shadow = shadow; // follows the animal as it roams
   };
   const fishPart = (f: Fish, key: string) => {
     const objs: THREE.Object3D[] = [], meshes: THREE.Mesh[] = [];

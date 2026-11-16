@@ -1,0 +1,4 @@
+R90 crawlers: 8 animals (2 cherry shrimp, amano, redclaw, nerite, mystery, ramshorn, nerite on the front glass), 60 s simulated, 6 frames, 600x300x300 mm tank with stone + plant.
+row 1 top view, row 2 front view. Distance walked, summed chords between frames (a lower bound), inches in 60 s:
+cherry 16.0 / 7.9, amano 7.2, redclaw 14.6, nerite 1.6, mystery 4.8, ramshorn 3.6, glass nerite 1.2
+Speeds pinned in test/crawlSim.test.ts (nerite mean <0.12 in/s, cherry shrimp 0.12-0.7, mystery <0.25).

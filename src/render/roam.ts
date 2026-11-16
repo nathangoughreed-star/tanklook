@@ -2,7 +2,7 @@
 // field (render/swimField.ts) and puts each fish's pose on its mesh every frame. The placed spot is the truth: it is
 // remembered per mesh and put back whenever the motion is off (exports, picking, the setting off, Reset). Nothing here is saved.
 import * as THREE from 'three';
-import { buildSwimField } from './swimField';
+import { swimFieldFor } from './swimWorld';
 import { makeSwimSim } from '../scene/swimSim';
 import type { SwimmerSpec, SwimSim } from '../scene/swimTypes';
 import type { Tank, TankSetup } from '../scene/types';
@@ -26,11 +26,11 @@ export class Roam {
     if (!on || !meshes.length) { this.home(); return; }
     const specs: SwimmerSpec[] = [], world = (meshes[0].userData.roam as RoamData).world;
     for (const m of meshes) specs.push((m.userData.roam as RoamData).spec);
-    const key = specs.map(s => `${s.id}|${s.len}|${s.zone}|${s.pace ?? 1}|${s.band}|${s.group?.key}|${s.home.x},${s.home.y},${s.home.z},${s.home.yaw},${s.home.pitch},${s.home.roll}`).join(';') + '#' +
-      JSON.stringify([world.S.tank, world.S.items, world.S.terrain, world.S.water.level, world.S.substrate, world.S.layout]);
+    const wf = swimFieldFor(world);
+    const key = specs.map(s => `${s.id}|${s.len}|${s.zone}|${s.pace ?? 1}|${s.band}|${s.group?.key}|${s.home.x},${s.home.y},${s.home.z},${s.home.yaw},${s.home.pitch},${s.home.roll}`).join(';') + '#' + wf.key;
     if (key !== this.key || !this.sim) {
       const t0 = performance.now();
-      this.sim = makeSwimSim(specs, buildSwimField(world.S, world.T, { rise: world.rise }), this.seed); this.key = key;
+      this.sim = makeSwimSim(specs, wf.field, this.seed); this.key = key;
       this.ms = performance.now() - t0;
     }
     if (!paused && dt > 0) this.sim.step(Math.min(dt, 0.2));

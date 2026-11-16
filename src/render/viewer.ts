@@ -23,6 +23,7 @@ import { OUTLINE } from './fish3d';
 import { SWAY } from './plant3d';
 import { SWIM } from './swim';
 import { Roam } from './roam';
+import { Crawl } from './crawl';
 import { capping, rimHeadroom } from './items';
 import { PERSON_BODY, PERSON_HEAD } from '../art/placeholder';
 import { inFocus, type FocusSec } from './menuFocus';
@@ -296,15 +297,17 @@ export class Viewer {
   private swayFrame = false;
   private drifters: THREE.Object3D[] = [];
   readonly roam = new Roam();
+  readonly crawl = new Crawl();
+  private crawlers: THREE.Object3D[] = [];
   private roamT = 0;
   /** Reset button: every roaming fish back at the spot it was placed at, and the roam starts afresh. */
-  resetRoam() { this.roam.reset(); this.roamT = this.swayT; this.dirty = true; }
+  resetRoam() { this.roam.reset(); this.crawl.reset(); this.roamT = this.swayT; this.dirty = true; }
   /** What can move: plants that sway, fish that swim (and the free swimmers among them that drift). Redone after every rebuild. */
   private scanMovers() {
     if (!this.swayScan) return;
-    this.swayScan = false; let pl = false, fi = false; const dr: THREE.Object3D[] = [];
-    for (const vp of this.vps) vp.scene?.traverse(o => { if (o.userData.sway) pl = true; if (o.userData.swimmer) fi = true; if (o.userData.roam) dr.push(o); });
-    this.swayAny = pl; this.swimAny = fi; this.drifters = dr;
+    this.swayScan = false; let pl = false, fi = false; const dr: THREE.Object3D[] = [], cr: THREE.Object3D[] = [];
+    for (const vp of this.vps) vp.scene?.traverse(o => { if (o.userData.sway) pl = true; if (o.userData.swimmer) fi = true; if (o.userData.roam) dr.push(o); if (o.userData.crawl) cr.push(o); });
+    this.swayAny = pl; this.swimAny = fi; this.drifters = dr; this.crawlers = cr;
   }
   private swayDue() {
     if (!(this.sway || this.swim) || this.reveal || this.needsBuild || perf.level > 0 || fxClock.frozen != null) { this.swayAt = 0; return false; }
@@ -795,7 +798,7 @@ export class Viewer {
     if (this.needsBuild) this.build();
     this.scanMovers();
     const swimOn = this.swim && !this.swimAuto && !this.exporting;
-    SWIM.uSwim.value.set(this.swayT / 1000, swimOn ? 1 : 0); { const dt = (this.swayT - this.roamT) / 1000; this.roamT = this.swayT; this.roam.update(this.drifters, dt, swimOn, !!this.sel.fish); }
+    SWIM.uSwim.value.set(this.swayT / 1000, swimOn ? 1 : 0); { const dt = (this.swayT - this.roamT) / 1000; this.roamT = this.swayT; this.roam.update(this.drifters, dt, swimOn, !!this.sel.fish); this.crawl.update(this.crawlers, dt, swimOn, !!this.sel.fish); }
     SWAY.uSway.value.set(this.swayT / 1000, this.sway && !this.exporting ? PLANT_SWAY_AMP : 0);
     const sc = this.store.scene, w = this.host.clientWidth, h = Math.max(60, this.host.clientHeight - this.reserve), r = this.renderer;
     this.canvas.style.height = this.reserve ? h + 'px' : ''; this.host.style.setProperty('--reserve', this.reserve + 'px');
