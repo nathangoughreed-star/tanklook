@@ -21,6 +21,7 @@ import { pickable } from './animals';
 import { pickItems } from './scape';
 import { scapeSec } from './logic/scape';
 import { openClicked } from './clickOpen';
+import { shouldWelcome } from './logic/start';
 
 export function bootShell() {
   // the old shell off: its markup removed (no old id stays in the page), its stylesheet disabled (kept in place so dev HMR has a node to update)
@@ -66,7 +67,9 @@ export function bootShell() {
     void files.openShared(h); return true;
   };
   addEventListener('hashchange', openLink);
-  if (!openLink() && start.message) files.say(start.message, true);
+  const linked = openLink();
+  if (!linked && start.message) files.say(start.message, true);
+  else if (!linked && shouldWelcome(restored, saveError)) files.openStart();   // SS1: a first visit asks how to start
   if (import.meta.env.DEV) Object.assign(window, { __gb: { store, viewer } });
   document.body.dataset.ui2 = 'ready';
 }

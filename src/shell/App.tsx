@@ -25,6 +25,7 @@ import { Icon, Pill } from './ui';
 import { ProjectName, FileMenu, FileLayer, type Files } from './files';
 import { DiscoverSection, IdeasButton, AnimalDoor } from './discover';
 import { GetStarted } from './checklist';
+import { ANIMAL_DOOR_EVENT } from './start';
 import { resetChecklist } from './logic/checklist';
 import { ConstraintsSection } from './constraints';
 import { PreferencesSection } from './prefs';
@@ -206,6 +207,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const [libN, setLibN] = useState(0);
   const [scope, setScope] = useState<Tab[] | undefined>(undefined);   // S10: "Ideas for Plants" scopes Discover
   const [door, setDoor] = useState(false);   // S10: the start door "From an animal I want"
+  useEffect(() => { const f = () => setDoor(true); addEventListener(ANIMAL_DOOR_EVENT, f); return () => removeEventListener(ANIMAL_DOOR_EVENT, f); }, []);   // SS1: the Start sheet's animal door
   const openMaker = (h: MakerHow) => {
     const lib = loadLibrary();
     if (h.how === 'lib') { const e = lib.find(x => x.id === h.id); if (e) setMaker({ spec: specOfEntry(e), libId: e.id }); }

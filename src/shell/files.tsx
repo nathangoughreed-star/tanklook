@@ -14,13 +14,18 @@ import { setProjectAsker, confirmStart, startProject } from '../ui/projectStart'
 import * as P7 from '../ui/logic/files';
 import { FILE_MENU, EMPTY_LIBRARY, newProject, libraryRows, savedLine, saveAsView, hashOf, type FileAction } from './logic/files';
 import { Icon } from './ui';
+import { StartSheet } from './start';
+import { openSection } from './open';
+import type { SetupKind } from '../scene/pickerKind';
 
 export interface Ask { title: string; text: string; actions: { label: string; value: string; primary?: boolean; danger?: boolean }[]; resolve: (v: string) => void }
-export interface FState { dlg: 'open' | 'saveas' | null; ask: Ask | null; toast: { text: string; bad: boolean } | null; n: number }
+export interface FState { dlg: 'open' | 'saveas' | 'start' | null; openTab?: 'saved' | 'examples' | 'file'; ask: Ask | null; toast: { text: string; bad: boolean } | null; n: number }
 export interface Files {
   get(): FState; sub(fn: () => void): () => void;
   say(text: string, bad?: boolean): void; close(): void; dismissToast(): void;
   run(a: FileAction): void; save(): void;
+  /** SS1: the Start sheet, its Blank door (a new empty tank of that water) and its Open doors (the Open window at a tab) */
+  openStart(): void; newTank(kind: SetupKind): void; openAt(tab: 'saved' | 'examples' | 'file'): void;
   rename(v: string): void;
   openSaved(id: string): Promise<void>; deleteSaved(id: string): void; openExample(id: string): Promise<void>;
   openFile(file: File): Promise<void>; openShared(hash: string): Promise<void>;
@@ -69,12 +74,18 @@ export function createFiles(store: Store, thumb: () => string, afterReplace: () 
     get: () => st, sub: fn => { subs.add(fn); return () => { subs.delete(fn); }; },
     say, close: () => set({ dlg: null }), dismissToast: () => set({ toast: null }),
     run(a) {
-      if (a === 'new') void (async () => { if (await startProject(store, newProject(store.scene.units, 'freshwater', store.tank.camera), P7.savedText())) { P7.setLibId(null); say('New project. Undo brings the previous one back.'); afterReplace(); } })();
+      if (a === 'new') set({ dlg: 'start' });   // SS1: New asks how to start; its Blank door makes the empty tank
       else if (a === 'open') set({ dlg: 'open' });
       else if (a === 'saveas') set({ dlg: 'saveas' });
       else if (a === 'share') void share();
       else download(store.scene);
     },
+    openStart: () => set({ dlg: 'start' }),
+    newTank(kind) {
+      set({ dlg: null });
+      void (async () => { if (await startProject(store, newProject(store.scene.units, kind, store.tank.camera), P7.savedText())) { P7.setLibId(null); say('New project. Undo brings the previous one back.'); afterReplace(); openSection('tank'); } })();
+    },
+    openAt(tab) { set({ dlg: 'open', openTab: tab }); },
     save: () => { void doSave(); },
     rename(v) { const n = P7.sceneNameOf(v); if (n !== store.scene.name) store.update(s => { s.name = n; }); },
     async openSaved(id) {
@@ -173,8 +184,8 @@ function Dialog({ title, onClose, children, wide }: { title: string; onClose: ()
 }
 
 type OpenTab = 'saved' | 'examples' | 'file';
-function OpenDialog({ files }: { files: Files }) {
-  const [tab, setTab] = useState<OpenTab>(() => listLib().length ? 'saved' : 'examples');
+function OpenDialog({ files, first }: { files: Files; first?: OpenTab }) {
+  const [tab, setTab] = useState<OpenTab>(() => first ?? (listLib().length ? 'saved' : 'examples'));
   const [link, setLink] = useState('');
   const [del, setDel] = useState<string | null>(null);
   const rows = libraryRows(), fileIn = useRef<HTMLInputElement>(null);
@@ -235,7 +246,8 @@ export function FileLayer({ store, files }: { store: Store; files: Files }) {
   }, [s.dlg, s.ask, files]);
   return (
     <>
-      {s.dlg === 'open' ? <OpenDialog files={files} /> : null}
+      {s.dlg === 'open' ? <OpenDialog files={files} first={s.openTab} /> : null}
+      {s.dlg === 'start' ? <StartSheet files={files} Dialog={Dialog} /> : null}
       {s.dlg === 'saveas' ? <SaveAsDialog store={store} files={files} /> : null}
       {s.ask ? <Dialog title={s.ask.title} onClose={() => s.ask!.resolve(s.ask!.actions[0].value)}>
         <p class="dlgtext">{s.ask.text}</p>
