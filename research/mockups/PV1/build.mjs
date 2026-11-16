@@ -138,7 +138,7 @@ const hob = `<svg class="diag" viewBox="0 90 860 450" role="img" aria-label="Plu
 
 // ============ 2a. Planted 40 breeder, side cutaway ============
 const RET = 'M420 440 L730 440 L730 85 L555 85 L555 118';
-const cut = `<svg class="diag" viewBox="0 40 820 520" role="img" aria-label="Plumbing: canister with in-line CO2 reactor and in-line heater on a planted 40 breeder">${defs}
+const cut = `<svg class="diag hasport" viewBox="0 40 820 520" role="img" aria-label="Plumbing: canister with in-line CO2 reactor and in-line heater on a planted 40 breeder">${defs}
  <rect x="70" y="300" width="670" height="250" rx="4" class="stand"/>${T(690, 322, 'stand', 't3')}
  <rect x="92" y="95" width="516" height="205" fill="url(#water)"/><rect x="92" y="270" width="516" height="30" class="sub"/>
  ${plants([250, 290, 330, 370, 410, 450, 490, 530, 570], 272, [62, 90, 54, 80, 66, 96, 58, 76, 64])}
@@ -234,7 +234,7 @@ mk('01-hob-20-long.html', {
 mk('02a-canister-40-cutaway.html', {
   title: 'PV1 mockup 2a: canister + in-line CO2 + in-line heater (side cutaway)', project: 'Planted 40 breeder',
   chips: [['Turnover', '303 GPH ÷ 38 gal = 8×/hr', 'ok', 'planted 4–12×'], ['Heater', '200 W ≈ 5 W/gal', 'ok', 'ok'], ['CO₂', 'on with the light', '', '']],
-  svgs: cut, legend: LEG_BASE + LEG_CO2 + LEG_HEAT });
+  svgs: cut + flatP, legend: LEG_BASE + LEG_CO2 + LEG_HEAT });
 mk('02b-canister-40-flat.html', {
   title: 'PV1 mockup 2b: canister + in-line CO2 + in-line heater (flat)', project: 'Planted 40 breeder',
   chips: [['Turnover', '303 GPH ÷ 38 gal = 8×/hr', 'ok', 'planted 4–12×'], ['Heater', '200 W', 'ok', 'ok'], ['CO₂', 'on with the light', '', '']],

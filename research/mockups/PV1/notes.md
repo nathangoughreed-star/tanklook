@@ -10,7 +10,7 @@ Open the `.html` files in a browser (self-contained). Mockups only; nothing in `
 5. **Flow numbers:** just "rated". No real-flow estimate.
 6. **Return-vs-overflow badge:** not needed. Dropped from mockup 3; the overflow box still states its rated GPH.
 
-Still open for the build, not asked: the cutaway is unreadable at 390 px (see the phone pair). Phone needs its own answer: the flat portrait drawing (`02b-canister-40-flat-390.png`) is available if wanted.
+**Phone (Nathan, via C25):** cutaway at desktop widths, the flat portrait drawing at 390 px. `02a-canister-40-cutaway.html` now switches to the flat portrait under 700 px; it carries the same in-line reactor, in-line heater, green CO2 and red heat. Shot: `02a-canister-40-cutaway-390.png`.
 
 ## Pictures
 **1 HOB planted 20 long**
@@ -25,9 +25,9 @@ Still open for the build, not asked: the cutaway is unreadable at 390 px (see th
 
 ![reef 75](../../screens/PV1/03-reef-75-1280.png)
 
-**Phone, 390 px: cutaway (left) vs flat (right)**
+**Phone, 390 px (flat portrait, used under 700 px)**
 
-![cutaway phone](../../screens/PV1/02a-canister-40-cutaway-390.png) ![flat phone](../../screens/PV1/02b-canister-40-flat-390.png)
+![phone](../../screens/PV1/02a-canister-40-cutaway-390.png)
 
 **2b Flat (reference)**
 
