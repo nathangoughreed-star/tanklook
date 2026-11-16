@@ -44,3 +44,7 @@ House rules: end every reply with "Build N"; US units; screen questions come wit
 - R9: Nathan says his tank "looks fine". Close it.
 - Still waiting on Nathan: DM1 (5 questions), BL1 (5 questions), R81 screenshot. Optional: CT1 tint, FE1 fold, EQ2 crop, FX1 phone check.
 - Archive candidates (ask Nathan first): C24, the price sweep chat, S8, CB2, PG1, AL1, VF9, LD1, GD1, SW1, FS1, UF1, AT1, DB1, BP1, HB1, NT1, CM2; and SS1 / CP2 / HD1 / PL1 once merged.
+
+## DL1 READY (R-deals, 11-16)
+Commits 69166909 + b9d7b0d8 on `claude/dl1-deals`, cut from d7b82828: an OLD base, so check `git diff --name-status origin/main HEAD | grep ^D` after the pick. It adds the On sale now group in Equipment, an On sale chip in the tank picker, and the bundle box in the Cost drawer. The display hides deals older than 14 days; the engines keep their 30-day pricing rule (DL1 asks whether to unify them: ask Nathan). Full vitest: only timing tests failed. Shots: `C:/Users/nreed/AppData/Local/Claude-Data/claude_pzs8sxrjxfjjc/side-session-notes/local_020eecae-8a33-45aa-9462-3e0faa222a5e/dl1/shots`, taken with a faked Nov 2 clock.
+BLOCKER: the auto-mode classifier DENIED the deals re-check sweep session, so Nathan must start it himself (`prompts/deals-sweep.md`; it needs Chrome). Until it runs, the 14-day rule hides every current deal and the new surfaces stay empty. Don't start that sweep for him.
