@@ -51,33 +51,35 @@ function cabinet(g: THREE.Group, look: StandLook, sp: StandSpace, mk: Mk) {
   const W = sp.L + 2 * over, D = sp.D + 2 * over, y1 = sp.top, y0 = sp.top - sp.h, topT = look.topMm ?? Math.min(28, sp.h * 0.06);
   const base = look.base ?? 'plinth', baseH = look.baseMm ?? (base === 'plinth' || base === 'recessed' ? Math.min(70, sp.h * 0.1) : base === 'feet' ? 32 : base === 'tapered' ? Math.min(150, sp.h * 0.22) : base === 'poles' ? 40 : base === 'block' ? 70 : 0);
   const bodyY0 = y0 + baseH, bodyY1 = y1 - topT, bodyH = bodyY1 - bodyY0, cz = 0, front_z = D / 2 - over * 0.3;
-  const dark = shade(front, new THREE.Color(front).getHSL({ h: 0, s: 0, l: 0 }).l > 0.5 ? 0.97 : 0.45);
+  const bodyC = hex(look.bodyHex, front), dark = shade(front, new THREE.Color(front).getHSL({ h: 0, s: 0, l: 0 }).l > 0.5 ? 0.97 : 0.45);
   // top slab, with the overhang the product has
   put(g, mk(W, topT, D, topC, grain && look.grain !== 'laminate' ? { ...grain, seed: 9 } : undefined), 0, y1 - topT / 2, cz);
   // carcass: side and back panels so an open centre shows depth
   const inset = 6;
   if (look.open === 'half') { // Seapora Roman: the left half open (back panel, chrome pole), the right half a solid panel
     const sw = W * 0.4;
-    put(g, mk(sw, bodyH, D - 2 * inset, front), W / 2 - sw / 2 - inset, bodyY0 + bodyH / 2, cz);
+    put(g, mk(sw, bodyH, D - 2 * inset, bodyC), W / 2 - sw / 2 - inset, bodyY0 + bodyH / 2, cz);
+    if (look.insetHex) put(g, mk(sw * 0.7, bodyH * 0.8, 8, hex(look.insetHex)), W / 2 - sw / 2 - inset, bodyY0 + bodyH / 2, D / 2 - inset + 1); // a cane / rattan door panel
+    put(g, mk(W - sw - 2 * inset, 14, D - 2 * inset, bodyC), -sw / 2, bodyY0 + bodyH * 0.5, cz); // the middle shelf of the open half
     put(g, mk(W - sw - 2 * inset, bodyH, 8, dark), -sw / 2, bodyY0 + bodyH / 2, -(D / 2 - inset - 4));
     put(g, mk(W - sw - 2 * inset, 18, D - 2 * inset, front), -sw / 2, bodyY0 + 16, cz);
   } else if (look.open === 'arch' || look.open === 'center') {
     const sideW = look.open === 'arch' ? Math.max(45, W * 0.1) : Math.max(60, W * 0.36);
     const sides: [number, number][] = [[-(W / 2 - sideW / 2 - inset), sideW], [W / 2 - sideW / 2 - inset, sideW]];
-    for (const [x, w] of sides) put(g, mk(w, bodyH, D - 2 * inset, front, grain && { ...grain, seed: 4 }), x, bodyY0 + bodyH / 2, cz);
+    for (const [x, w] of sides) put(g, mk(w, bodyH, D - 2 * inset, bodyC, grain && { ...grain, seed: 4 }), x, bodyY0 + bodyH / 2, cz);
     // the opening: dark back wall, a shelf
     const openW = W - 2 * (sideW + inset);
-    put(g, mk(openW, bodyH, 8, dark), 0, bodyY0 + bodyH / 2, -(D / 2 - inset - 4));
-    put(g, mk(openW, 18, D - 2 * inset - 16, front, grain && { ...grain, seed: 5 }), 0, bodyY0 + bodyH * (look.open === 'arch' ? 0.12 : 0.5), cz);
+    if (!look.noBack) put(g, mk(openW, bodyH, 8, dark), 0, bodyY0 + bodyH / 2, -(D / 2 - inset - 4));
+    put(g, mk(openW, 18, D - 2 * inset - 16, front, grain && { ...grain, seed: 5 }), 0, bodyY0 + bodyH * (look.openShelf ?? (look.open === 'arch' ? 0.12 : 0.5)), cz);
     if (look.open === 'center' && (look.doors ?? 2) >= 2) { // two doors on the sides of the opening
       const dw = sideW + 4;
       for (const s of [-1, 1]) doorPanel(g, look, mk, front, grain, dw, bodyH, s * (W / 2 - dw / 2 - inset + 2), bodyY0 + bodyH / 2, front_z, s);
     }
   } else {
-    put(g, mk(W - 2 * inset, bodyH, D - 2 * inset, front, grain && { ...grain, seed: 4 }), 0, bodyY0 + bodyH / 2, cz);
-    const n = Math.max(1, look.doors ?? 2), gap = 4, dw = (W - 2 * inset - gap * (n + 1)) / n;
+    put(g, mk(W - 2 * inset, bodyH, D - 2 * inset, bodyC, grain && { ...grain, seed: 4 }), 0, bodyY0 + bodyH / 2, cz);
+    const n = Math.max(1, look.doors ?? 2), gap = 4, dw = look.doorW && n === 1 ? (W - 2 * inset) * look.doorW : (W - 2 * inset - gap * (n + 1)) / n;
     for (let i = 0; i < n; i++) {
-      const x = -(W - 2 * inset) / 2 + gap + dw / 2 + i * (dw + gap);
+      const x = look.doorW && n === 1 ? (look.doorX ?? 0) * W : -(W - 2 * inset) / 2 + gap + dw / 2 + i * (dw + gap);
       doorPanel(g, look, mk, front, grain, dw, bodyH - 2 * gap, x, bodyY0 + bodyH / 2, front_z, n === 1 ? 0 : i < n / 2 ? -1 : 1, i);
     }
     sheenPlane(g, look, W - 2 * inset, bodyH, 0, bodyY0 + bodyH / 2, front_z + 8.5);
@@ -128,6 +130,7 @@ function frame(g: THREE.Group, look: StandLook, sp: StandSpace, mk: Mk) {
   if (W > 1000) leg(0, zs[0]), leg(0, zs[1]);
   const rail = (len: number, x: number, y: number, z: number, alongX: boolean) => put(g, mk(alongX ? len : s, s, alongX ? s : len, sc2), x, y, z);
   const yt = y1 - s / 2;
+  if (look.topPlate) put(g, mk(W, 20, D, hex(look.topPlate)), 0, y1 - 10, 0); // a wood panel on top of the frame
   for (const z of zs) rail(W - 2 * s, 0, yt, z, true);                       // top rails, front and back
   for (const x of xs) rail(D - 2 * s, x, yt, 0, false);                      // top rails, ends
   const slats = Math.max(1, Math.round(W / 280) - 1);                        // support rails across the top

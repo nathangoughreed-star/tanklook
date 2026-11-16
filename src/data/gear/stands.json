@@ -1026,7 +1026,24 @@
   "est": [
    "heightIn"
   ],
-  "note": "TPP list $142.99, sale $129.99. Height not printed (30 in assumed like the other Empress stands). Fills the 15 / 20 high gap."
+  "note": "TPP list $142.99, sale $129.99. Height not printed (30 in assumed like the other Empress stands). Fills the 15 / 20 high gap.",
+  "look": {
+   "front": "#1f1d1d",
+   "top": "#1b1b1b",
+   "sheen": "satin",
+   "grain": "laminate",
+   "doors": 2,
+   "doorStyle": "flat",
+   "handle": "bar",
+   "handleHex": "#b9bdc2",
+   "base": "feet",
+   "baseMm": 26,
+   "baseHex": "#111111",
+   "plate": 16,
+   "plateOver": 14,
+   "topMm": 24,
+   "overhangMm": 14
+  }
  },
  {
   "id": "seapora-empress-30x12",
@@ -1049,7 +1066,24 @@
   "est": [
    "heightIn"
   ],
-  "note": "TPP list $153.99, sale $139.99. Height not printed."
+  "note": "TPP list $153.99, sale $139.99. Height not printed.",
+  "look": {
+   "front": "#1d1c1c",
+   "top": "#191919",
+   "sheen": "satin",
+   "grain": "laminate",
+   "doors": 2,
+   "doorStyle": "flat",
+   "handle": "bar",
+   "handleHex": "#b9bdc2",
+   "base": "feet",
+   "baseMm": 26,
+   "baseHex": "#111111",
+   "plate": 16,
+   "plateOver": 14,
+   "topMm": 24,
+   "overhangMm": 14
+  }
  },
  {
   "id": "seapora-monarch-oak-30x12",
@@ -1072,7 +1106,23 @@
   "est": [
    "heightIn"
   ],
-  "note": "TPP list $204.59, sale $185.99. Height not printed."
+  "note": "TPP list $204.59, sale $185.99. Height not printed.",
+  "look": {
+   "front": "#c28a3c",
+   "top": "#c8923f",
+   "sheen": "satin",
+   "grain": "oak",
+   "doors": 1,
+   "doorStyle": "raised",
+   "handle": "knob",
+   "handleHex": "#222222",
+   "base": "plinth",
+   "baseMm": 55,
+   "topMm": 40,
+   "overhangMm": 18,
+   "doorW": 0.62,
+   "doorX": 0.03
+  }
  },
  {
   "id": "seapora-empress-36x18",
@@ -1095,7 +1145,24 @@
   "est": [
    "heightIn"
   ],
-  "note": "TPP list $226.59, sale $205.99. Height not printed."
+  "note": "TPP list $226.59, sale $205.99. Height not printed.",
+  "look": {
+   "front": "#1c1f26",
+   "top": "#17191f",
+   "sheen": "satin",
+   "grain": "laminate",
+   "doors": 2,
+   "doorStyle": "flat",
+   "handle": "bar",
+   "handleHex": "#b9bdc2",
+   "base": "feet",
+   "baseMm": 26,
+   "baseHex": "#111111",
+   "plate": 16,
+   "plateOver": 14,
+   "topMm": 24,
+   "overhangMm": 14
+  }
  },
  {
   "id": "aquatop-forza-21",
@@ -1118,7 +1185,22 @@
   "est": [
    "kind"
   ],
-  "note": "21 x 10 x 30 in per the TPP title (Chewy lists the Forza Premier as an open cabinet, out of stock there). Style from Chewy, not confirmed on TPP."
+  "note": "21 x 10 x 30 in per the TPP title (Chewy lists the Forza Premier as an open cabinet, out of stock there). Style from Chewy, not confirmed on TPP.",
+  "look": {
+   "front": "#15151a",
+   "top": "#15151a",
+   "sheen": "gloss",
+   "grain": "none",
+   "open": "arch",
+   "openShelf": 0.5,
+   "base": "feet",
+   "baseMm": 24,
+   "plate": 22,
+   "plateOver": 45,
+   "topMm": 26,
+   "overhangMm": 6,
+   "noBack": true
+  }
  },
  {
   "id": "aquatop-forza-30",
@@ -1141,7 +1223,20 @@
   "est": [
    "kind"
   ],
-  "note": "30 x 13 x 31 in per the TPP title. Style not confirmed."
+  "note": "30 x 13 x 31 in per the TPP title. Style not confirmed.",
+  "look": {
+   "front": "#101012",
+   "top": "#101012",
+   "sheen": "gloss",
+   "grain": "none",
+   "doors": 2,
+   "doorStyle": "flat",
+   "handle": "none",
+   "base": "plinth",
+   "baseMm": 60,
+   "topMm": 20,
+   "overhangMm": 6
+  }
  },
  {
   "id": "aquatlantis-platinum-36",
@@ -1167,14 +1262,29 @@
    "finish",
    "color"
   ],
-  "note": "TPP list $384.99, sale $349.99. Only the footprint is printed."
+  "note": "TPP list $384.99, sale $349.99. Only the footprint is printed.",
+  "look": {
+   "front": "#b98f58",
+   "bodyHex": "#4b4b4e",
+   "top": "#3d3e40",
+   "sheen": "matte",
+   "grain": "laminate",
+   "doors": 2,
+   "doorStyle": "plank",
+   "planks": 6,
+   "handle": "none",
+   "base": "feet",
+   "baseMm": 30,
+   "topMm": 24,
+   "overhangMm": 6
+  }
  },
  {
   "id": "vibrant-life-walnut-20",
   "brand": "Vibrant Life",
   "line": "Aquarium stand, warm walnut, up to 20 gal",
-  "kind": "cabinet",
-  "finish": "oak",
+  "kind": "frame",
+  "finish": "black",
   "color": "warm walnut finish",
   "fits": [
    [
@@ -1190,7 +1300,19 @@
   "est": [
    "kind"
   ],
-  "note": "25.75 x 14.76 x 28.03 in, \"for up to 20 gallon tanks\" (Walmart house brand); a 25.75 in top only carries the 24 x 12 (20 high). Open or closed style not read."
+  "note": "25.75 x 14.76 x 28.03 in, \"for up to 20 gallon tanks\" (Walmart house brand); a 25.75 in top only carries the 24 x 12 (20 high). Open or closed style not read. R96: the photo shows a black metal frame with walnut-finish shelves and top, not a cabinet (kind corrected).",
+  "look": {
+   "tube": "#202020",
+   "tubeMm": 22,
+   "shelf": "solid",
+   "shelfHex": "#6b4226",
+   "shelfAt": [
+    0.4
+   ],
+   "topPlate": "#6b4226",
+   "brace": "none",
+   "sheen": "satin"
+  }
  },
  {
   "id": "vibrant-life-black-29",
@@ -1213,6 +1335,19 @@
   "est": [
    "kind"
   ],
-  "note": "31 x 14.5 x 27.75 in, \"for up to 29 gallon tanks\" (Walmart house brand). Price from the Walmart search list. Style not read."
+  "note": "31 x 14.5 x 27.75 in, \"for up to 29 gallon tanks\" (Walmart house brand). Price from the Walmart search list. Style not read.",
+  "look": {
+   "front": "#2a221e",
+   "top": "#2b231f",
+   "sheen": "matte",
+   "grain": "oak",
+   "open": "half",
+   "insetHex": "#c8a06b",
+   "handle": "none",
+   "base": "block",
+   "baseMm": 55,
+   "topMm": 30,
+   "overhangMm": 12
+  }
  }
 ]

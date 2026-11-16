@@ -34,3 +34,19 @@
 Photo variants: PetSmart pages list a finish per SKU (Top Fin 20-37 photos are the Pale Oak SKU 5309117, 55-75 is Raven Oak 5309135, 10 gal is 5309115); the Brooklyn 10 gal has no photo of its own and is modelled from the 29 gal Brooklyn. No photo found: af-10-metal, marineland-modern-48, seapora-monarch-48x18 (their looks are estimates, flagged in stands.json `look.est`).
 
 Aqueon Forge (R96 fix): `aqueon-metal-10` (Amazon B00SZ5EQN4) and `aqueon-forge-30` (Woodart Supply) show the same Forge photos, and those photos are the 10 gal stand (a 20 x 10 tank on it). No separate 30 x 12 Forge photo was found (Blue Fish / Target / Chewy pages dead or absent), so `aqueon-forge-30` is the Forge design drawn at 30 x 12, flagged in `look.est`.
+
+## Round-2 stands (PL1 round 2), fetched 2026-11-16 through Claude in Chrome
+
+| stand | photos | product page |
+|---|---|---|
+| seapora-empress-24x12 | seapora-empress-24x12-1.jpg | https://www.thatpetplace.com/empress-cabinet-stand-black-24-x-12 |
+| seapora-empress-30x12 | seapora-empress-30x12-1.jpg | https://www.thatpetplace.com/empress-cabinet-stand-black-30-x-12 |
+| seapora-monarch-oak-30x12 | seapora-monarch-oak-30x12-1.jpg | https://www.thatpetplace.com/seapora-monarch-cabinet-stand-oak-30x12-in |
+| seapora-empress-36x18 | seapora-empress-36x18-1.jpg | https://www.thatpetplace.com/seapora-empress-cabinet-stand-black-36x18-in |
+| aquatop-forza-21 | aquatop-forza-21-1.jpg, aquatop-forza-21-2.jpg | https://www.thatpetplace.com/aquatop-forza-aquarium-stand-21x10x30-in |
+| aquatop-forza-30 | aquatop-forza-30-1.jpg, aquatop-forza-30-2.jpg | https://www.thatpetplace.com/aquatop-forza-aquarium-stand-30x13x31-in |
+| aquatlantis-platinum-36 | aquatlantis-platinum-36-1.jpg | https://www.thatpetplace.com/aquatlantis-platinum-stand-36x18-in |
+| vibrant-life-walnut-20 | vibrant-life-walnut-20-1.jpg | https://www.walmart.com/ip/Vibrant-Life-Aquarium-Stand-Warm-Walnut-Finish-25-75-L-x-14-76-W-x-28-03-H/15259816883 |
+| vibrant-life-black-29 | vibrant-life-black-29-1.jpg | https://www.walmart.com/ip/Vibrant-Life-Aquarium-Stand-Black-14-5-L-x-31-W-x-27-75-H/15394202241 |
+
+Photos are the retailer main image (thatpetplace.com /site/images/product/<id>_N.jpg; Walmart i5.walmartimages.com /seo/). The two Vibrant Life photos are room scenes with a tank on top. Corrected from the photos: vibrant-life-walnut-20 is a black metal frame with walnut shelves (kind frame), not a cabinet; the Empress 24 / 30 / 36 are closed two-door cabinets (the 48 in is the open-centre one); aquatop-forza-21 is an open stand with a middle shelf; aquatlantis-platinum-36 has an oak-slat front on a grey carcass.

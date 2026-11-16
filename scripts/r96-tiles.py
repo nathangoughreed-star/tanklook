@@ -2,7 +2,7 @@
 import json, os
 import numpy as np
 from PIL import Image
-Q = set('aqueon-cabinet-30 tongmo-10 imagitarium-brooklyn-29 imagitarium-brooklyn-40 imagitarium-brooklyn-55 imagitarium-brooklyn-10 likeem-40 imagitarium-newport-29 seapora-roman-36 mewsden-40 caitec-titaneze-10 tetra-wood-5-10 snughome-10 aqueon-metal-10'.split())
+Q = set('aqueon-cabinet-30 tongmo-10 imagitarium-brooklyn-29 imagitarium-brooklyn-40 imagitarium-brooklyn-55 imagitarium-brooklyn-10 likeem-40 imagitarium-newport-29 vibrant-life-walnut-20 seapora-roman-36 mewsden-40 caitec-titaneze-10 tetra-wood-5-10 snughome-10 aqueon-metal-10'.split())
 os.makedirs('public/gallery/stands', exist_ok=True); tot = 0
 for s in json.load(open('src/data/gear/stands.json')):
     i = s['id']; f = f'scratch/r96/{i}_q26.jpg' if i in Q else f'scratch/r96/{i}_0.jpg'

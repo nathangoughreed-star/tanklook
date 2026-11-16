@@ -2,7 +2,7 @@
 import glob, json, os, sys
 import numpy as np
 from PIL import Image, ImageDraw
-Q = set('aqueon-cabinet-30 tongmo-10 imagitarium-brooklyn-29 imagitarium-brooklyn-40 imagitarium-brooklyn-55 imagitarium-brooklyn-10 likeem-40 imagitarium-newport-29 seapora-roman-36 mewsden-40 caitec-titaneze-10 tetra-wood-5-10 snughome-10 aqueon-metal-10'.split())
+Q = set('aqueon-cabinet-30 tongmo-10 imagitarium-brooklyn-29 imagitarium-brooklyn-40 imagitarium-brooklyn-55 imagitarium-brooklyn-10 likeem-40 imagitarium-newport-29 vibrant-life-walnut-20 seapora-roman-36 mewsden-40 caitec-titaneze-10 tetra-wood-5-10 snughome-10 aqueon-metal-10'.split())
 PHOTO = json.load(open('scratch/photo_choice.json')) if os.path.exists('scratch/photo_choice.json') else {}
 os.makedirs('research/screens/SP1/compare', exist_ok=True)
 def crop(im, bg, thr):
