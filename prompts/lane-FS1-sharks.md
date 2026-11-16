@@ -25,3 +25,6 @@ Nathan 2026-11-15: "can we add pygmy corys and bala sharks, as well as redtail s
 
 ## Part 2 (Nathan 2026-11-15) - R79
 Also add the **rainbow shark** (*Epalzeorhynchos frenatum*): about 6 in, solitary and territorial (one per tank, and not with red-tail sharks), bottom-to-mid near cover. The body is grey-blue to olive with red-orange fins on all fins, and a dark eye stripe in some. It IS sold as albino (white-pink body with the same red fins), so give it the albino flag with a source and a matching recolour (lane AL1's `src/art/albino.ts` TUNE table). Compat: red-tail and rainbow exclude each other.
+
+## Part 3 (Nathan 2026-11-15) - R89
+Add sparkling gourami (Trichopsis pumila) and croaking gourami (Trichopsis vittata), same path as Part 2: species data with sources (provenance rules or groups-sources rows; sources ratchet must not rise), AqAdvisor id or standIn, care / groups / waterchem / soldSex entries, a 3D model that looks like the real fish (photos first; not cartoony), card picture, swim speed matching their slow, hovering labyrinth-fish style. Tests for both. Shots: each fish in a tank at 1280 and its card at 390. Commit on your branch, send C24 the sha.
