@@ -106,6 +106,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R88 | 11-15 | Gouramis swim too fast in the new fish animation; slow them down (all gourami ids: gourami, dwarfgourami, honeygourami) | SW2 | - | - | - | per-species swim speed |
 | R89 | 11-15 | Add sparkling gourami (Trichopsis pumila) and croaking gourami (Trichopsis vittata) to the roster | FS1 | - | - | - | same add-species path as R79 sharks |
 | R90 | 11-15 | Shrimp and snails crawl around: walk / glide over substrate, hardscape, plants and glass instead of sitting still or swimming like fish | SW2 | - | - | - | crawler mode in the swim sim |
+| R91 | 11-15 | Full screen mode: a View menu option (and F key / Esc out) that puts the app full screen; optionally hide the side panel for a clean tank view | S8 | - | - | - | none exists yet (no requestFullscreen in src) |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
