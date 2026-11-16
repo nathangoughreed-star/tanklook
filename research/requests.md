@@ -110,6 +110,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R92 | 11-15 | Otocinclus cling to surfaces (glass, rock, plant leaves) and rasp algae, short darts between surfaces; they currently graze the bottom like corys | SW2 | - | - | - | rides on R90 surface-crawler mode |
 | R93 | 11-15 | African dwarf frogs: mostly motionless on the bottom, occasional leg crawl, occasional kick-swim to the surface for air then dart back down | SW2 | - | - | - | rides on R90 crawler mode |
 | R94 | 11-15 | Custom tank editor glass thicknesses = what a local glass shop stocks, incl. the thinner ones (US: 3/32, 1/8, 5/32, 3/16 in added below 1/4; metric 2-5 mm) | GS2 | - | - | - | STOCK_US / STOCK_METRIC in src/scene/glassSolver.ts:30 |
+| R95 | 11-16 | Stands as real products (like tanks / hoods): catalogue of real stands with price, size fit, style; drawn stand matches the pick; today's $88 is a generic 20-55 gal interpolation (demand-items gear:stand-20/55) under a drawn wood cabinet that really costs $98-145 | HD1 | - | - | - | brief prompts/lane-SP1-stand-products.md |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
