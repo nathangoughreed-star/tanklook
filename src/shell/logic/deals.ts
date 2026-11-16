@@ -51,17 +51,17 @@ export function useGearSale(S: TankSetup, id: string, on: boolean, list: GearDea
 }
 
 // ---------- D: Cost and time ----------
-export interface BundleLine { id: string; name: string; retailer: string; price: string; was?: string; saving: string; asOfText: string; url: string; includes: string; text: string; guessed: boolean }
-/** The one bundle worth a line in Cost and time: same tank, saves more than MIN_SAVING_USD, read within 14 days. */
+export interface BundleLine { id: string; name: string; retailer: string; price: string; was?: string; saving: string; asOfText: string; url: string; includes: string; text: string; guessed: boolean; /** what the bundle's gear does worse for this build */ worse: string[] }
+/** The one bundle worth a line in Cost and time: same tank, saves more than MIN_SAVING_USD, read within 14 days; what it does worse is listed, not hidden. */
 export function bundleLine(S: TankSetup, P: UserProfile, now = Date.now(), deals: Deal[] = DEALS): BundleLine | undefined {
   const fresh = deals.filter(d => !d.est && showable(d.asOf, now));
   if (!fresh.length || !S.water.on) return undefined;
   let m;
-  try { m = dealSwaps(S, P, { units: 'in', now }, fresh).find(w => !w.tradeoffs.length && w.savingUsd > MIN_SAVING_USD); } catch { return undefined; }
+  try { m = dealSwaps(S, P, { units: 'in', now }, fresh).find(w => w.savingUsd > MIN_SAVING_USD); } catch { return undefined; }
   if (!m) return undefined;
   const d = m.deal, saving = usd(m.savingUsd), inc = d.includes.join(', ');
   return { id: d.id, name: d.name, retailer: d.retailer, price: usd(d.price.usd), ...(d.price.regularUsd ? { was: usd(d.price.regularUsd) } : {}), saving, asOfText: shortDate(d.asOf), url: d.url,
-    includes: inc, guessed: m.guesses.length > 0, text: `${d.retailer} ${d.name}, ${usd(d.price.usd)}: saves about ${saving} against buying the parts.` };
+    includes: inc, guessed: m.guesses.length > 0, worse: m.tradeoffs.slice(0, 3), text: `${d.retailer} ${d.name}, ${usd(d.price.usd)}: saves about ${saving} against buying the parts.` };
 }
 /** Sales for this build across every category, for the Cost drawer's one line ("2 sales fit this build"). */
 export function gearSaleCount(S: TankSetup, now = Date.now()): { n: number; first?: GearSale } {

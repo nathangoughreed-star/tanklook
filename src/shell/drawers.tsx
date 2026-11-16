@@ -56,6 +56,7 @@ function Cost({ v }: { v: CostView | null }) {
           <span class="t">A bundle close to your build</span>
           <span><a href={v.deal.url} target="_blank" rel="noopener" title="A plain retailer link, not sponsored">{v.deal.retailer} {v.deal.name} ↗</a></span>
           <span class="m"><b>{v.deal.price}</b>{v.deal.was ? <> <s>{v.deal.was}</s></> : null} · saves about {v.deal.saving} against buying the parts</span>
+          {v.deal.worse.length ? <span class="hint warn">Worse for this build: {v.deal.worse.join('; ')}.</span> : null}
           <span class="hint">Comes with: {v.deal.includes}. As of {v.deal.asOfText}{v.deal.guessed ? ' (some details guessed)' : ''}; {DEAL_NOTE}.</span>
         </div>
       ) : null}
