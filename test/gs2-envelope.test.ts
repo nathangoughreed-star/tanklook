@@ -96,3 +96,20 @@ describe('GS2 solve for glass and for SF', () => {
     expect(t[0][0].solved.value).toBe(0);
   });
 });
+
+describe('GS2: more bracing never lowers the answer (C24, the 17.8 / 17.7 in oddity)', () => {
+  it('on a 0.1 in grid, each level is >= the one before it and <= the rimmed limit, at every length and several glasses', () => {
+    for (const glass of [0.25, 0.375]) for (const D of [12, 18, 24]) for (const L of [24, 30, 36, 48, 60, 72]) {
+      const b = base({ glass: glass * IN_MM, strip: glass * IN_MM, D: D * IN_MM }), v = (lv: BraceLevel) => maxHeight(L * IN_MM, lv, b, { max: 48 * IN_MM });
+      const none = v('none').value, perS = v('perimeter'), per = perS.value, c1 = v('cross1'), lim = v('rimmed').value;
+      // a level that does not fit gives 0; compare only the ones that exist
+      // the plate's stress is sampled on a grid, so two top edges can differ by about 0.6 % in stress = one 0.1 in step in height (checked: D12 L30 3/8 in, perimeter 24.1 vs cross 24.0 vs rimmed 24.0). More than that would be a real effect.
+      const tol = 0.15 * IN_MM;
+      // a strip too weak for the span is a real effect, not noise: the strip, not the wall, sets the height (D12 L60 3/8 in: wall SF 10, strip SF 3.9)
+      if (perS.at?.governs !== 'brace') expect(per, `${glass} D${D} L${L} perimeter vs none`).toBeGreaterThanOrEqual(none - tol);
+      else expect(perS.at!.sf.front).toBeGreaterThan(perS.at!.sf.brace!);
+      if (c1.value > 0 && c1.at?.governs !== 'brace') expect(c1.value, `${glass} D${D} L${L} cross1 vs perimeter`).toBeGreaterThanOrEqual(per - tol);
+      for (const x of [none, per, c1.value]) if (x > 0) expect(lim, `${glass} D${D} L${L} limit`).toBeGreaterThanOrEqual(x - tol);
+    }
+  });
+});

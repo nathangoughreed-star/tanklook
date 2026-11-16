@@ -53,7 +53,7 @@ export function SizeMode({ T, rim, inp, setInp, sf, bottom, u, onPick, onChart }
         : <button type="button" class={`cellb${c.warn ? ' warnc' : ''}`} title={c.title} aria-label={c.title} onClick={() => onPick(c, tab.D)}>{c.text}{c.warn ? <span class="wmark" aria-hidden="true"> ⚠</span> : null}</button>}</td>)}</tr>)}</tbody>
     </table></div>}
     {tab && tab.rows.some(r => r.cells.some(c => c.warn)) ? <div class="dwarn warn">⚠ These sizes pass on glass strength, but a silicone joint is over its design stress there. Widen the bond or use more silicone; hover a number to see which joint.</div> : null}
-    <div class="hint">{u === 'in' ? 'Inches tall' : 'cm tall'}. A dash means the strips leave under 6 in clear. Glass thicker than the minimum can only raise these numbers.</div>
+    <div class="hint">{u === 'in' ? 'Inches tall' : 'cm tall'}. A dash means the strips leave under 6 in clear. Glass thicker than the minimum can only raise these numbers. Stress is sampled on a grid, so rows within 0.1 in are equal. A brace row can sit below the one above it when the strips themselves are the weak link (hover the number): widen them or use thicker strip glass.</div>
     <button type="button" class="btn sm" onClick={onChart}>Open the chart</button>
   </>;
 }

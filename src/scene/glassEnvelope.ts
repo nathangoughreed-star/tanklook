@@ -95,6 +95,13 @@ export interface Solved {
 
 const STEP = 0.1 * IN_MM;
 const floorStep = (v: number) => Math.floor(v / STEP + 1e-9) * STEP;
+/** The largest 0.1 in grid value that passes, given hi fails and lo passes with hi - lo <= STEP / 2: walk down from hi's grid value (at most 2 steps).
+ *  (Flooring lo instead could land one step low whenever the boundary falls within half a step of a grid line: the 17.8 vs 17.7 in oddity.) */
+function gridTop(ok: (v: number) => boolean, lo: number, hi: number, floor: number): number {
+  let g = floorStep(hi);
+  while (g > lo + 1e-9 && !ok(g)) g -= STEP;
+  return Math.max(floor, g > lo + 1e-9 ? g : ok(floorStep(lo)) ? floorStep(lo) : floor);
+}
 
 /** Largest height (mm) for a length: bisection over H, to 0.1 in. */
 export function maxHeight(L: number, level: BraceLevel, b: EnvelopeBase, opts: { min?: number; max?: number } = {}): Solved {
@@ -103,7 +110,7 @@ export function maxHeight(L: number, level: BraceLevel, b: EnvelopeBase, opts: {
   if (checkTank(L, hi0, level, b).ok) return { value: hi0, capped: true, at: checkTank(L, hi0, level, b) };
   let lo = lo0, hi = hi0;
   while (hi - lo > STEP / 2) { const m = (lo + hi) / 2; if (checkTank(L, m, level, b).ok) lo = m; else hi = m; }
-  const h = Math.max(lo0, floorStep(lo));
+  const h = gridTop(m => checkTank(L, m, level, b).ok, lo, hi, lo0);
   return { value: h, capped: false, at: checkTank(L, h, level, b) };
 }
 
@@ -114,7 +121,7 @@ export function maxLength(H: number, level: BraceLevel, b: EnvelopeBase, opts: {
   if (checkTank(hi0, H, level, b).ok) return { value: hi0, capped: true, at: checkTank(hi0, H, level, b) };
   let lo = lo0, hi = hi0;
   while (hi - lo > STEP / 2) { const m = (lo + hi) / 2; if (checkTank(m, H, level, b).ok) lo = m; else hi = m; }
-  const l = Math.max(lo0, floorStep(lo));
+  const l = gridTop(m => checkTank(m, H, level, b).ok, lo, hi, lo0);
   return { value: l, capped: false, at: checkTank(l, H, level, b) };
 }
 
