@@ -7,6 +7,7 @@ import type { Viewer } from '../render/viewer';
 import { setGearShown, gearShown } from '../render/gear3d';
 import { Icon } from './ui';
 import { Toggle } from './tank';
+import { chooseFs, useFsItems } from './fullscreen';
 import {
   CAM_PRESETS, CAM_SLIDERS, SHOWS, PNG_SIZES, camReadout, roomRead, roomByHand, roomAuto, ROOM_MAX, ROOM_HINT, presetNow, presetOf, loadHidden, saveHidden, loadMap, saveMap, pngName, pngTitle, anotherMoment, KEYS,
   type ShowId,
@@ -43,6 +44,7 @@ export function ViewCluster({ store, getViewer, phone, compare }: { store: Store
   const [note, setNote] = useState('');
   const [, bump] = useState(0);
   const wrap = useRef<HTMLDivElement>(null);
+  const fs = useFsItems();
   const v = getViewer(), cam = store.tank.camera, u = store.scene.units;
   useEffect(() => {
     if (!open) return;
@@ -100,6 +102,9 @@ export function ViewCluster({ store, getViewer, phone, compare }: { store: Store
           </div>
           <div class="vsec"><h3>Viewpoint map</h3>
             <Toggle on={mapOn()} label="Top view of where you stand" onFlip={setMap} />
+          </div>
+          <div class="vsec"><h3>Window</h3>
+            {fs.items.map(it => <button type="button" class="btn sm fsitem" title={it.hint} onClick={() => { setOpen(false); chooseFs(it.id); }}>{it.label}{it.id === 'full' ? <span class="kbd">F</span> : null}</button>)}
           </div>
           <div class="vsec"><h3>Export PNG</h3>
             <div class="chips">{PNG_SIZES.map(m => <button type="button" class="btn sm chip" title={px(m)} onClick={() => png(m)}>{m}×</button>)}</div>

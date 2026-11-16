@@ -1,0 +1,55 @@
+{
+ "facts": {
+  "menu": {
+   "fs": false,
+   "tank": false,
+   "labels": [
+    "Full screenF",
+    "Tank only"
+   ]
+  },
+  "afterFull": {
+   "fs": false,
+   "tank": false,
+   "labels": []
+  },
+  "afterF": {
+   "fs": false,
+   "tank": false,
+   "labels": []
+  },
+  "afterTank": {
+   "fs": false,
+   "tank": true,
+   "labels": []
+  },
+  "exitStyle": {
+   "cls": "btn sm fsexit glass",
+   "op": "1",
+   "disp": "flex",
+   "pos": "fixed",
+   "z": "50",
+   "rect": [
+    1159.40625,
+    12,
+    108.59375,
+    24
+   ]
+  },
+  "fadedClass": "btn sm fsexit glass idle",
+  "afterExit": {
+   "fs": false,
+   "tank": false,
+   "labels": []
+  },
+  "phoneMenu": {
+   "fs": false,
+   "tank": false,
+   "labels": [
+    "Full screenF",
+    "Tank only"
+   ]
+  }
+ },
+ "errors": []
+}

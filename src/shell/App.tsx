@@ -15,6 +15,7 @@ import { SECTIONS, PHONE_TABS, MORE, COMES_IN, sectionOf, railClick, escape, typ
 import type { Viewer } from '../render/viewer';
 import { Drawer } from './drawers';
 import { ViewCluster } from './view';
+import { FsExit, useFs } from './fullscreen';
 import { SettingsSection } from './settings';
 import { PrintSection, PrintPaper } from './print';
 import { AnimalsSection, SelectionDrawer, pickable } from './animals';
@@ -195,6 +196,7 @@ function CheckBar({ m, on, onPick, head }: { m: ChecksModel; on: CheckId | null;
 export function App({ store, viewHost, profile, preview, files, viewer }: AppProps) {
   const slow = useStore(store);
   const phone = usePhone();
+  const fs = useFs();
   const [section, setSection] = useState<SectionId | null>(phone ? null : 'tank');
   const [more, setMore] = useState(false);
   const [drawer, setDrawer] = useState<CheckId | 'selection' | null>(null);
@@ -250,7 +252,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const check = (id: CheckId) => { if (drawer === 'selection') store.select(null); setDrawer(drawer === id ? null : id); if (phone) { setSection(null); setMore(false); } };
   const panelOpen = !!section || more;
   const cmpDrawer = drawer === 'selection' ? null : drawer;
-  const cls = ['ui2app', panelOpen ? 'panel-on' : 'panel-off', drawer ? 'drawer-on' : '', phone ? 'phone' : '', split ? 'split' : ''].filter(Boolean).join(' ');
+  const cls = ['ui2app', panelOpen ? 'panel-on' : 'panel-off', drawer ? 'drawer-on' : '', phone ? 'phone' : '', split ? 'split' : '', fs.tankOnly ? 'tankonly' : ''].filter(Boolean).join(' ');
 
   return (
     <div class={cls}>
@@ -272,6 +274,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
       {phone ? <TabBar open={more ? 'more' : section} onPick={tab} /> : null}
       <FileLayer store={store} files={files} />
       {door ? <AnimalDoor store={store} say={files.say} onClose={() => setDoor(false)} /> : null}
+      {fs.tankOnly ? <FsExit /> : null}
       {maker ? <Maker store={store} init={maker} viewHost={viewHost} getViewer={viewer} preview={preview} onEnd={() => { setMaker(null); setLibN(n => n + 1); }} /> : null}
     </div>
   );

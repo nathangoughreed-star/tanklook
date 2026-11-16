@@ -219,7 +219,7 @@ a.btn { text-decoration: none; }
   body.ui2 #ui2print { display: block; } body.ui2 #ui2print .paper { box-shadow: none; max-width: none; padding: 0; font-size: 11pt; }
   body.ui2 { background: #fff; }
 }
-@media (max-width: 699px) { .presets { grid-template-columns: 1fr; } .viewpop { position: fixed; top: calc(var(--header-h) + 44px); left: var(--s2); right: var(--s2); width: auto; transform: none; } .vmap { width: 140px; height: 105px; } }
+@media (max-width: 699px) { .presets { grid-template-columns: 1fr; } .viewpop { width: min(320px, calc(100vw - 16px)); max-height: calc(100vh - 220px); } .vmap { width: 140px; height: 105px; } }
 .ov.cluster { z-index: calc(var(--z-overlay) + 3); }
 
 /* step 4 (lane S4): Animals section, Water look, Selection drawer */
@@ -567,3 +567,11 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .envhead { display: flex; justify-content: space-between; align-items: center; font-size: var(--fs-lg); }
 .envin { align-self: flex-start; flex-wrap: wrap; } .envsvg { width: 100%; height: auto; }
 .envkey { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: var(--fs-sm); color: var(--text-2); } .envkey span { display: inline-flex; align-items: center; gap: 5px; }
+/* ---- request R91: Full screen / Tank only ---- */
+.fsitem { justify-content: space-between; display: flex; width: 100%; } .fsitem .kbd { color: var(--text-3); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 11px; }
+.ui2app.tankonly { display: block; }
+.ui2app.tankonly > :not(.viewer):not(.fsexit) { display: none !important; }
+.ui2app.tankonly > .viewer { position: fixed; inset: 0; }
+.ui2app.tankonly .viewer .ov { display: none !important; }
+.fsexit { position: fixed; top: var(--s3); right: var(--s3); z-index: var(--z-toast); transition: opacity .4s; display: inline-flex; align-items: center; gap: var(--s1); }
+.fsexit.idle { opacity: 0; pointer-events: none; }
