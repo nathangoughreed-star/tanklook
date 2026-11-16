@@ -156,9 +156,6 @@ describe('demand rows from the tech (lane TM step 3)', () => {
     // Price sweep 2026-11-16: clock moved to 2026-11-16 (the planted tank's Petco sale was re-checked that day and read as not live at 2026-11-09); every number here moved by the clock only (price-age widening), not by the sweep's prices
     // Paludarium, terrarium, rainforest and arid re-blessed 2026-10-26 (starter tanks pass their animal checks: one gecko each, three toads with white clouds, a 30 in corner tank for three tree frogs)
     const LOCK: Record<string, number[]> = { planted: [1264.624,52.461,55.66,8.045], iwagumi: [1385.622,35.877,53.943,6.068], betta: [179.525,9.337,33.949,4.984], paludarium: [1216.275,41.353,55.999,5.614], terrarium: [1894.65,35.083,17.43,3.077], reef: [3586.756,178.631,89.573,6.451], rainforest: [1092.599,26.089,30.904,1.73], arid: [1195.52,24.757,13.569,2.842], python: [1465.166,25.461,21.769,1.813], blackwater: [1207.313,49.02,44.674,5.226], clownnano: [1632.498,96.645,74.453,6.326] };;
-=======
-    const LOCK: Record<string, number[]> = { planted: [1294.416,52.457,55.66,8.045], iwagumi: [1385.822,35.881,53.943,6.068], betta: [179.436,9.336,33.949,4.984], paludarium: [1216.018,41.353,55.999,5.614], terrarium: [1894.124,35.081,17.43,3.077], reef: [3585.17,178.591,89.573,6.451], rainforest: [1092.346,26.088,30.904,1.73], arid: [1195.167,24.756,13.569,2.842], python: [1464.707,25.459,21.769,1.813], blackwater: [1237.308,49.022,44.674,5.226], clownnano: [1631.47,96.623,74.453,6.326] };;
->>>>>>> 528a017c (SP1: stand row carries the product name; tests match /^Stand/, planted 1264.231 -> 1294.416 and blackwater 1207.123 -> 1237.308 re-pinned (real stand product))
     for (const [id, want] of Object.entries(LOCK)) {
       const t = D(tankOf(id)).totals;
       expect([t.setupUsd, t.upkeepUsdMo, t.minPerWeek, t.risk].map(v => Math.round(v * 1000) / 1000), id).toEqual(want);

@@ -1885,7 +1885,7 @@
   "spectrum": "blue-weighted reef spectrum",
   "controller": "Kessil Spectral Controller (sold separately), 0-10 V dimming",
   "water": "salt",
-  "priceUsd": 149.0,
+  "priceUsd": 149,
   "url": "https://www.amazon.com/dp/B01LW8U9QP",
   "asOf": "2026-10-28",
   "coverageMm": 457,
@@ -1944,7 +1944,7 @@
   "spectrum": "warm full spectrum for planted tanks",
   "controller": "Kessil Spectral Controller (sold separately), 0-10 V dimming",
   "water": "fresh",
-  "priceUsd": 149.0,
+  "priceUsd": 149,
   "url": "https://www.amazon.com/dp/B0749X5BP2",
   "asOf": "2026-10-28",
   "coverageMm": 457,
@@ -2255,7 +2255,7 @@
    "a160we tuna blue"
   ],
   "note": "Bulk Reef Supply page: 40 W, 5 x 2.5 x 2.5 in with knobs, 2.3 lb with PSU, coverage 12-24 in at 12-24 in height; no PAR published; body colour not stated",
-  "priceUsd": 289.0,
+  "priceUsd": 289,
   "priceSeen": "2026-10-29",
   "popularity": {
    "evidence": "Bulk Reef Supply product page 2026-10-29; maker spec 40 W",
@@ -2312,7 +2312,7 @@
    "a160we tuna sun"
   ],
   "note": "LiveAquaria page: 40 W, 2.48 x 4 in, coverage up to 24 in, listing shows $239.00 but was sold out when read; no PAR published",
-  "priceUsd": 239.0,
+  "priceUsd": 239,
   "priceSeen": "2026-10-29",
   "popularity": {
    "evidence": "LiveAquaria product page 2026-10-29 (sold out when read); 40 W",
@@ -2654,5 +2654,474 @@
    "seen": "2026-10-29"
   },
   "note": "Glass Aqua spec table (W x D x H in): Pro 120 is 47.24 x 5.51 x 0.71 in, 138 W; the page gives one price for all sizes ($251.99, not entered: which size it is not stated); no PAR published; body colour not stated"
+ },
+ {
+  "id": "finnex-hlc-20",
+  "brand": "Finnex",
+  "model": "HLC RGBW 24/7 Auto LED 20 in",
+  "mount": "bar",
+  "fitMinMm": 483,
+  "fitMaxMm": 558,
+  "lengthMm": 508,
+  "widthMm": 75,
+  "heightMm": 15,
+  "watts": 16.5,
+  "kelvin": 8000,
+  "tech": "led-planted",
+  "spectrum": "8000 K daylight + red, green, blue",
+  "controller": "24/7 automated colour program (saved presets)",
+  "water": "fresh",
+  "priceUsd": 65.99,
+  "url": "https://www.thatpetplace.com/finnex-hlc-24-7-rgbw-automated-led-light-20-in",
+  "asOf": "2026-11-16",
+  "est": [
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#bfc2c6",
+   "endcaps": "#6f7276",
+   "legs": "#d9dde0",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 1,
+    "white": "#f4f7ff",
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "one row of white LEDs with red, green and blue dots (the photo shows a violet wash)",
+   "photo": "https://www.thatpetplace.com/site/images/product/285162_1.jpg"
+  },
+  "colorsEst": [
+   "leds"
+  ],
+  "names": [
+   "finnex hlc 20",
+   "hlc rgbw 24/7 auto led 20in"
+  ],
+  "note": "Retailer spec table (saltwateraquarium.com): 16.5 W, 2.95 in wide, 0.59 in body; aluminium hood, silver. Fit range estimated (fixed legs). Price: That Pet Place 2026-11-16.",
+  "popularity": {
+   "evidence": "Finnex HLC is on the first page of That Pet Place lighting; no sales-rank figure read",
+   "url": "https://www.thatpetplace.com/aquarium-supplies/aquarium-lighting-supplies",
+   "seen": "2026-11-16"
+  },
+  "colorsNote": "Read from the That Pet Place photo: silver ribbed aluminium bar, grey end caps, clear acrylic legs, black cord, remote in the box."
+ },
+ {
+  "id": "finnex-hlc-24",
+  "brand": "Finnex",
+  "model": "HLC RGBW 24/7 Auto LED 24 in",
+  "mount": "bar",
+  "fitMinMm": 585,
+  "fitMaxMm": 660,
+  "lengthMm": 610,
+  "widthMm": 75,
+  "heightMm": 15,
+  "watts": 19,
+  "kelvin": 8000,
+  "tech": "led-planted",
+  "spectrum": "8000 K daylight + red, green, blue",
+  "controller": "24/7 automated colour program (saved presets)",
+  "water": "fresh",
+  "priceUsd": 72.99,
+  "url": "https://www.thatpetplace.com/finnex-hlc-24-7-rgbw-automated-led-light-24-in",
+  "asOf": "2026-11-16",
+  "est": [
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#bfc2c6",
+   "endcaps": "#6f7276",
+   "legs": "#d9dde0",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 1,
+    "white": "#f4f7ff",
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "one row of white LEDs with red, green and blue dots (the photo shows a violet wash)",
+   "photo": "https://www.thatpetplace.com/site/images/product/285163_1.jpg"
+  },
+  "colorsEst": [
+   "leds"
+  ],
+  "names": [
+   "finnex hlc 24",
+   "hlc rgbw 24/7 auto led 24in"
+  ],
+  "note": "Retailer spec table: 19 W, 2.95 x 0.59 in; silver aluminium. Fit range estimated. Price That Pet Place 2026-11-16.",
+  "popularity": {
+   "evidence": "Finnex HLC is on the first page of That Pet Place lighting; no sales-rank figure read",
+   "url": "https://www.thatpetplace.com/aquarium-supplies/aquarium-lighting-supplies",
+   "seen": "2026-11-16"
+  },
+  "colorsNote": "Read from the That Pet Place photo: silver ribbed aluminium bar, grey end caps, clear acrylic legs, black cord, remote in the box."
+ },
+ {
+  "id": "finnex-hlc-30",
+  "brand": "Finnex",
+  "model": "HLC RGBW 24/7 Auto LED 30 in",
+  "mount": "bar",
+  "fitMinMm": 737,
+  "fitMaxMm": 812,
+  "lengthMm": 762,
+  "widthMm": 75,
+  "heightMm": 15,
+  "watts": 26,
+  "kelvin": 8000,
+  "tech": "led-planted",
+  "spectrum": "8000 K daylight + red, green, blue",
+  "controller": "24/7 automated colour program (saved presets)",
+  "water": "fresh",
+  "priceUsd": 83.99,
+  "url": "https://www.thatpetplace.com/finnex-hlc-24-7-rgbw-automated-led-light-30-in",
+  "asOf": "2026-11-16",
+  "est": [
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#bfc2c6",
+   "endcaps": "#6f7276",
+   "legs": "#d9dde0",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 1,
+    "white": "#f4f7ff",
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "one row of white LEDs with red, green and blue dots (the photo shows a violet wash)",
+   "photo": "https://www.thatpetplace.com/site/images/product/285164_1.jpg"
+  },
+  "colorsEst": [
+   "leds"
+  ],
+  "names": [
+   "finnex hlc 30",
+   "hlc rgbw 24/7 auto led 30in"
+  ],
+  "note": "Retailer spec table: 26 W; silver aluminium. Fit range estimated. Price That Pet Place 2026-11-16.",
+  "popularity": {
+   "evidence": "Finnex HLC is on the first page of That Pet Place lighting; no sales-rank figure read",
+   "url": "https://www.thatpetplace.com/aquarium-supplies/aquarium-lighting-supplies",
+   "seen": "2026-11-16"
+  },
+  "colorsNote": "Read from the That Pet Place photo: silver ribbed aluminium bar, grey end caps, clear acrylic legs, black cord, remote in the box."
+ },
+ {
+  "id": "finnex-hlc-36",
+  "brand": "Finnex",
+  "model": "HLC RGBW 24/7 Auto LED 36 in",
+  "mount": "bar",
+  "fitMinMm": 889,
+  "fitMaxMm": 964,
+  "lengthMm": 914,
+  "widthMm": 75,
+  "heightMm": 15,
+  "watts": 32,
+  "kelvin": 8000,
+  "tech": "led-planted",
+  "spectrum": "8000 K daylight + red, green, blue",
+  "controller": "24/7 automated colour program (saved presets)",
+  "water": "fresh",
+  "priceUsd": 105.99,
+  "url": "https://www.thatpetplace.com/finnex-hlc-24-7-rgbw-automated-led-light-36-in",
+  "asOf": "2026-11-16",
+  "est": [
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#bfc2c6",
+   "endcaps": "#6f7276",
+   "legs": "#d9dde0",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 1,
+    "white": "#f4f7ff",
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "one row of white LEDs with red, green and blue dots (the photo shows a violet wash)",
+   "photo": "https://www.thatpetplace.com/site/images/product/285165_1.jpg"
+  },
+  "colorsEst": [
+   "leds"
+  ],
+  "names": [
+   "finnex hlc 36",
+   "hlc rgbw 24/7 auto led 36in"
+  ],
+  "note": "Retailer spec table: 32 W; silver aluminium. Fit range estimated. Price That Pet Place 2026-11-16.",
+  "popularity": {
+   "evidence": "Finnex HLC is on the first page of That Pet Place lighting; no sales-rank figure read",
+   "url": "https://www.thatpetplace.com/aquarium-supplies/aquarium-lighting-supplies",
+   "seen": "2026-11-16"
+  },
+  "colorsNote": "Read from the That Pet Place photo: silver ribbed aluminium bar, grey end caps, clear acrylic legs, black cord, remote in the box."
+ },
+ {
+  "id": "finnex-hlc-48",
+  "brand": "Finnex",
+  "model": "HLC RGBW 24/7 Auto LED 48 in",
+  "mount": "bar",
+  "fitMinMm": 1156,
+  "fitMaxMm": 1231,
+  "lengthMm": 1181,
+  "widthMm": 75,
+  "heightMm": 15,
+  "watts": 40,
+  "kelvin": 8000,
+  "tech": "led-planted",
+  "spectrum": "8000 K daylight + red, green, blue",
+  "controller": "24/7 automated colour program (saved presets)",
+  "water": "fresh",
+  "priceUsd": 129.99,
+  "url": "https://www.thatpetplace.com/finnex-hlc-24-7-rgbw-automated-led-light-48-in",
+  "asOf": "2026-11-16",
+  "est": [
+   "fitMinMm",
+   "fitMaxMm",
+   "watts"
+  ],
+  "colors": {
+   "body": "#bfc2c6",
+   "endcaps": "#6f7276",
+   "legs": "#d9dde0",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 1,
+    "white": "#f4f7ff",
+    "accents": [
+     "#ff3a2e",
+     "#2fd35a",
+     "#2f6bff"
+    ],
+    "every": 2
+   },
+   "ledLook": "one row of white LEDs with red, green and blue dots (the photo shows a violet wash)",
+   "photo": "https://www.thatpetplace.com/site/images/product/285166_1.jpg"
+  },
+  "colorsEst": [
+   "leds"
+  ],
+  "names": [
+   "finnex hlc 48",
+   "hlc rgbw 24/7 auto led 48in"
+  ],
+  "note": "One listing gives 46.5 x 3 x 0.45 in; no wattage published: about 40 W estimated by length from the 36 in (32 W). Price That Pet Place 2026-11-16.",
+  "popularity": {
+   "evidence": "Finnex HLC is on the first page of That Pet Place lighting; no sales-rank figure read",
+   "url": "https://www.thatpetplace.com/aquarium-supplies/aquarium-lighting-supplies",
+   "seen": "2026-11-16"
+  },
+  "colorsNote": "Read from the That Pet Place photo: silver ribbed aluminium bar, grey end caps, clear acrylic legs, black cord, remote in the box."
+ },
+ {
+  "id": "fluval-marine4-22w",
+  "brand": "Fluval",
+  "model": "Marine 4.0 Bluetooth LED 22 W (15-24 in)",
+  "mount": "bar",
+  "fitMinMm": 381,
+  "fitMaxMm": 610,
+  "lengthMm": 381,
+  "widthMm": 64,
+  "heightMm": 19,
+  "watts": 22,
+  "tech": "led-reef",
+  "spectrum": "25000 K reef spectrum, programmable (Fluval Connect Bluetooth mesh)",
+  "controller": "Bluetooth app (ramp, schedule)",
+  "water": "salt",
+  "priceUsd": 199.99,
+  "url": "https://www.thatpetplace.com/fluval-marine-4-0-bluetooth-led-22w-15-24in",
+  "asOf": "2026-11-16",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 2,
+    "white": "#f4f7ff",
+    "accents": [
+     "#2f6bff",
+     "#7a3cff"
+    ],
+    "every": 4
+   },
+   "ledLook": "2 rows white with colour dots",
+   "photo": "https://www.thatpetplace.com/site/images/product/302575_1.jpg"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs",
+   "leds"
+  ],
+  "names": [
+   "marine 4.0 bluetooth led 22 w (15-24 in)"
+  ],
+  "note": "22 W and the 15-24 in tank range from That Pet Place; the maker dimensions were not found, so the bar size is copied from the Fluval Plant 3.0 family (2.5 x 0.75 in) with an estimated length. Price That Pet Place 2026-11-16. The retail box calls this the Reef 4.0 LED: 25000 K, IP67.",
+  "popularity": {
+   "evidence": "On the first page of That Pet Place lighting; no sales-rank figure read",
+   "url": "https://www.thatpetplace.com/aquarium-supplies/aquarium-lighting-supplies",
+   "seen": "2026-11-16"
+  },
+  "colorsNote": "Pack photo only (retail box); the Fluval 4.0 bar body is assumed black like the 3.0 family (not seen unboxed).",
+  "kelvin": 25000
+ },
+ {
+  "id": "fluval-marine4-32w",
+  "brand": "Fluval",
+  "model": "Marine 4.0 Bluetooth LED 32 W (23-35 in)",
+  "mount": "bar",
+  "fitMinMm": 584,
+  "fitMaxMm": 889,
+  "lengthMm": 584,
+  "widthMm": 64,
+  "heightMm": 19,
+  "watts": 32,
+  "tech": "led-reef",
+  "spectrum": "25000 K reef spectrum, programmable (Fluval Connect Bluetooth mesh)",
+  "controller": "Bluetooth app (ramp, schedule)",
+  "water": "salt",
+  "priceUsd": 229.99,
+  "url": "https://www.thatpetplace.com/fluval-marine-4-0-bluetooth-led-32w-23-35in",
+  "asOf": "2026-11-16",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 2,
+    "white": "#f4f7ff",
+    "accents": [
+     "#2f6bff",
+     "#7a3cff"
+    ],
+    "every": 4
+   },
+   "ledLook": "2 rows white with colour dots",
+   "photo": "https://www.thatpetplace.com/site/images/product/303506_1.jpg"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs",
+   "leds"
+  ],
+  "names": [
+   "marine 4.0 bluetooth led 32 w (23-35 in)"
+  ],
+  "note": "32 W and the 23-35 in tank range from That Pet Place; dimensions as for the 22 W (estimated). Price That Pet Place 2026-11-16. The retail box calls this the Reef 4.0 LED: 25000 K, IP67.",
+  "popularity": {
+   "evidence": "On the first page of That Pet Place lighting; no sales-rank figure read",
+   "url": "https://www.thatpetplace.com/aquarium-supplies/aquarium-lighting-supplies",
+   "seen": "2026-11-16"
+  },
+  "colorsNote": "Pack photo only (retail box); the Fluval 4.0 bar body is assumed black like the 3.0 family (not seen unboxed).",
+  "kelvin": 25000
+ },
+ {
+  "id": "fluval-plant4-59w",
+  "brand": "Fluval",
+  "model": "Plant 4.0 Bluetooth LED 59 W (48-60 in)",
+  "mount": "bar",
+  "fitMinMm": 1175,
+  "fitMaxMm": 1549,
+  "lengthMm": 1175,
+  "widthMm": 64,
+  "heightMm": 19,
+  "watts": 59,
+  "tech": "led-planted",
+  "spectrum": "6500 K white + planted channels; 4700 lm",
+  "controller": "Bluetooth app (ramp, schedule)",
+  "water": "fresh",
+  "priceUsd": 259.99,
+  "url": "https://www.thatpetplace.com/fluval-bluetooth-led-light-plant-59w-48-60-in",
+  "asOf": "2026-11-16",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#1c1c1e",
+   "endcaps": "#1c1c1e",
+   "legs": "#26262a",
+   "lens": "clear",
+   "leds": {
+    "kind": "dots",
+    "rows": 2,
+    "white": "#f4f7ff",
+    "accents": [
+     "#ff7ab8",
+     "#2f6bff"
+    ],
+    "every": 4
+   },
+   "ledLook": "2 rows white with colour dots",
+   "photo": "https://www.thatpetplace.com/site/images/product/292688_1.jpg"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs",
+   "leds"
+  ],
+  "names": [
+   "plant 4.0 bluetooth led 59 w (48-60 in)"
+  ],
+  "note": "59 W, 4700 lm, 336 LEDs, 46.25-61 in coverage from a retailer line; 2.5 x 0.75 in cross-section per PetSmart for the Plant 4.0 family; bar length estimated. Price That Pet Place 2026-11-16.",
+  "popularity": {
+   "evidence": "On the first page of That Pet Place lighting; no sales-rank figure read",
+   "url": "https://www.thatpetplace.com/aquarium-supplies/aquarium-lighting-supplies",
+   "seen": "2026-11-16"
+  },
+  "colorsNote": "Pack photo only (retail box); the Fluval 4.0 bar body is assumed black like the 3.0 family (not seen unboxed).",
+  "kelvin": 6500
  }
 ]

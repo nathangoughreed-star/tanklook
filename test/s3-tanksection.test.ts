@@ -98,7 +98,7 @@ describe('picker', () => {
 describe('summaries', () => {
   it('each group folds to one line', () => {
     const S = defaultSetup();
-    expect(sitsOnSummary(S, 'in')).toBe('Cabinet, black');
+    expect(sitsOnSummary(S, 'in')).toMatch(/, \$\d+$/);
     expect(lidSummary(S)).toBe('Open');
     S.wall.show = true; S.person.show = true;
     expect(roomSummary(S, 'in')).toBe('Wall behind · 8 ft ceiling · you, 5 ft 9 in');

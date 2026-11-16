@@ -2477,5 +2477,268 @@
    "cups"
   ],
   "note": "Amazon page read 2026-10-29: 100 W, up to 30 gal, product dimensions 1.5 x 1.75 x 10.38 in (length 264 mm; diaMm uses the 1.5 in side). The page shows $62.48, which sits far above the line's other prices, so no price is entered. Colours are the Aqueon Pro line's, copied from the Pro 50 record."
+ },
+ {
+  "id": "fluval-m100",
+  "brand": "Fluval",
+  "model": "M100 Submersible Heater",
+  "watts": 100,
+  "lengthMm": 280,
+  "diaMm": 25,
+  "look": "glass",
+  "galMax": 30,
+  "priceUsd": 35.99,
+  "url": "https://www.thatpetplace.com/fluval-m100-submersible-heater-100w",
+  "est": [],
+  "asOf": "2026-11-16",
+  "colors": {
+   "cap": {
+    "hex": "#8b8e92",
+    "ribbed": true,
+    "dial": false
+   },
+   "tube": {
+    "kind": "metal",
+    "hex": "#c3c7cb"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#d8d8d8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "clear",
+   "photo": "https://www.thatpetplace.com/site/images/product/291359_1.jpg"
+  },
+  "colorsEst": [],
+  "colorsNote": "Read from the That Pet Place pack photo: silver-grey ribbed cap, mirrored glass tube (drawn silver), black cord, clear suction cups. The catalogued M50 row draws a dark cap with a blue LED; the photo shows a silver cap with no LED.",
+  "note": "Length 28 cm and 30 US gal rating from retailer spec lines (reach.dog / Western Pet Supply); price is the That Pet Place list price 2026-11-16. Price and photo: That Pet Place product page."
+ },
+ {
+  "id": "fluval-m150",
+  "brand": "Fluval",
+  "model": "M150 Submersible Heater",
+  "watts": 150,
+  "lengthMm": 330,
+  "diaMm": 25,
+  "look": "glass",
+  "galMax": 45,
+  "priceUsd": 36.99,
+  "url": "https://www.thatpetplace.com/fluval-m150-submersible-heater-150w",
+  "est": [],
+  "asOf": "2026-11-16",
+  "colors": {
+   "cap": {
+    "hex": "#8b8e92",
+    "ribbed": true,
+    "dial": false
+   },
+   "tube": {
+    "kind": "metal",
+    "hex": "#c3c7cb"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#d8d8d8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "clear",
+   "photo": "https://www.thatpetplace.com/site/images/product/291360_1.jpg"
+  },
+  "colorsEst": [],
+  "colorsNote": "Read from the That Pet Place pack photo: silver-grey ribbed cap, mirrored glass tube (drawn silver), black cord, clear suction cups. The catalogued M50 row draws a dark cap with a blue LED; the photo shows a silver cap with no LED.",
+  "note": "33 cm, 45 gal per retailer spec lines; price That Pet Place 2026-11-16. Price and photo: That Pet Place product page."
+ },
+ {
+  "id": "fluval-m300",
+  "brand": "Fluval",
+  "model": "M300 Submersible Heater",
+  "watts": 300,
+  "lengthMm": 350,
+  "diaMm": 25,
+  "look": "glass",
+  "galMax": 80,
+  "priceUsd": 42.99,
+  "url": "https://www.thatpetplace.com/fluval-m300-submersible-heater-300w",
+  "est": [
+   "lengthMm"
+  ],
+  "asOf": "2026-11-16",
+  "colors": {
+   "cap": {
+    "hex": "#8b8e92",
+    "ribbed": true,
+    "dial": false
+   },
+   "tube": {
+    "kind": "metal",
+    "hex": "#c3c7cb"
+   },
+   "element": {
+    "kind": "none",
+    "hex": "#d8d8d8"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "clear",
+   "photo": "https://www.thatpetplace.com/site/images/product/291362_1.jpg"
+  },
+  "colorsEst": [],
+  "colorsNote": "Read from the That Pet Place pack photo: silver-grey ribbed cap, mirrored glass tube (drawn silver), black cord, clear suction cups. The catalogued M50 row draws a dark cap with a blue LED; the photo shows a silver cap with no LED.",
+  "note": "80 gal rating from retailers; no length published, 350 mm estimated from the 200 W. Price That Pet Place 2026-11-16. Price and photo: That Pet Place product page."
+ },
+ {
+  "id": "fluval-t150",
+  "brand": "Fluval",
+  "model": "T150 Safety Heater",
+  "watts": 150,
+  "lengthMm": 318,
+  "diaMm": 36,
+  "look": "titanium",
+  "galMax": 45,
+  "priceUsd": 67.99,
+  "url": "https://www.thatpetplace.com/fluval-safety-heater-t150-150-watt",
+  "est": [
+   "diaMm"
+  ],
+  "asOf": "2026-11-16",
+  "colors": {
+   "cap": {
+    "hex": "#1b1c1e",
+    "ribbed": false,
+    "dial": false,
+    "led": "#e8402c"
+   },
+   "foot": {
+    "hex": "#1b1c1e"
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#1a1a1c"
+   },
+   "thermometer": false,
+   "element": {
+    "kind": "none",
+    "hex": "#1a1a1c"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://www.thatpetplace.com/site/images/product/296147_1.jpg"
+  },
+  "colorsEst": [
+   "foot",
+   "cups"
+  ],
+  "colorsNote": "Read from the That Pet Place pack photo (T200): all-matte-black cylinder with a glowing red ring under the top cap, no guard. Not the guarded look of the E-series.",
+  "note": "Length 31.8 cm and 45 gal rating from Fluval's T-series manual and retailers; price That Pet Place 2026-11-16. Price and photo: That Pet Place product page."
+ },
+ {
+  "id": "fluval-t200",
+  "brand": "Fluval",
+  "model": "T200 Safety Heater",
+  "watts": 200,
+  "lengthMm": 318,
+  "diaMm": 36,
+  "look": "titanium",
+  "galMax": 65,
+  "priceUsd": 69.99,
+  "url": "https://www.thatpetplace.com/fluval-safety-heater-t200-200-watt",
+  "est": [
+   "diaMm"
+  ],
+  "asOf": "2026-11-16",
+  "colors": {
+   "cap": {
+    "hex": "#1b1c1e",
+    "ribbed": false,
+    "dial": false,
+    "led": "#e8402c"
+   },
+   "foot": {
+    "hex": "#1b1c1e"
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#1a1a1c"
+   },
+   "thermometer": false,
+   "element": {
+    "kind": "none",
+    "hex": "#1a1a1c"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://www.thatpetplace.com/site/images/product/296148_1.jpg"
+  },
+  "colorsEst": [
+   "foot",
+   "cups"
+  ],
+  "colorsNote": "Read from the That Pet Place pack photo (T200): all-matte-black cylinder with a glowing red ring under the top cap, no guard. Not the guarded look of the E-series.",
+  "note": "31.8 cm, 65 gal per Fluval manual; price That Pet Place 2026-11-16 (listing prices the T200 above the T300). Price and photo: That Pet Place product page."
+ },
+ {
+  "id": "fluval-t300",
+  "brand": "Fluval",
+  "model": "T300 Safety Heater",
+  "watts": 300,
+  "lengthMm": 357,
+  "diaMm": 36,
+  "look": "titanium",
+  "galMax": 80,
+  "priceUsd": 62.99,
+  "url": "https://www.thatpetplace.com/fluval-safety-heater-t300-300-watt",
+  "est": [
+   "diaMm"
+  ],
+  "asOf": "2026-11-16",
+  "colors": {
+   "cap": {
+    "hex": "#1b1c1e",
+    "ribbed": false,
+    "dial": false,
+    "led": "#e8402c"
+   },
+   "foot": {
+    "hex": "#1b1c1e"
+   },
+   "tube": {
+    "kind": "opaque",
+    "hex": "#1a1a1c"
+   },
+   "thermometer": false,
+   "element": {
+    "kind": "none",
+    "hex": "#1a1a1c"
+   },
+   "guard": {
+    "has": false
+   },
+   "cord": "#111111",
+   "cups": "black",
+   "shape": "tube",
+   "photo": "https://www.thatpetplace.com/site/images/product/296149_1.jpg"
+  },
+  "colorsEst": [
+   "foot",
+   "cups"
+  ],
+  "colorsNote": "Read from the That Pet Place pack photo (T200): all-matte-black cylinder with a glowing red ring under the top cap, no guard. Not the guarded look of the E-series.",
+  "note": "35.7 cm, 80 gal per Fluval manual; price That Pet Place 2026-11-16. Price and photo: That Pet Place product page."
  }
 ]

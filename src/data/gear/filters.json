@@ -5261,5 +5261,479 @@
    "cups"
   ],
   "colorsNote": "Black fluted foam, clear lift tube, black base disc (box photo). Page states foam size 4 in H x 4.5 in D and up to 75 gal; bodyMm w/d = 4.5 in, h = 4 in foam only (overall height with tube/base not stated)."
+ },
+ {
+  "id": "marineland-penguin-pro-125",
+  "brand": "Marineland",
+  "model": "Penguin Pro 125 Power Filter",
+  "kind": "hob",
+  "gph": 125,
+  "galMax": 20,
+  "bodyMm": {
+   "w": 203,
+   "d": 152,
+   "h": 197
+  },
+  "intakeMm": 217,
+  "priceUsd": 33.92,
+  "url": "https://www.thatpetplace.com/marineland-penguin-pro-125-power-filter",
+  "asOf": "2026-11-16",
+  "names": [
+   "penguin pro 125",
+   "marineland penguin pro 125"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1b1b1d"
+   },
+   "lid": {
+    "hex": "#202022"
+   },
+   "motor": {
+    "hex": "#121213"
+   },
+   "intake": {
+    "hex": "#141415"
+   },
+   "strainer": {
+    "hex": "#141415"
+   },
+   "outlet": {
+    "hex": "#1b1b1d"
+   },
+   "cups": "black",
+   "photo": "https://www.thatpetplace.com/site/images/product/287218_1.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet",
+   "cups"
+  ],
+  "colorsNote": "Read from the That Pet Place product photo (Penguin Pro 125 / 375; the 175, 275 and 450 reuse the nearer sibling): all-matte-black shell and lid, black grille strainer and intake tube. No smoky window on the Pro line (unlike the Bio-Wheel Penguins).",
+  "priceUrl": "https://www.thatpetplace.com/aquarium-supplies/aquarium-filters",
+  "note": "125 GPH, up to 20 gal; 8 x 6 x 7.75 in per a retailer listing. Wattage not published: left blank, not guessed."
+ },
+ {
+  "id": "marineland-penguin-pro-175",
+  "brand": "Marineland",
+  "model": "Penguin Pro 175 Power Filter",
+  "kind": "hob",
+  "gph": 175,
+  "galMax": 30,
+  "bodyMm": {
+   "w": 203,
+   "d": 152,
+   "h": 203
+  },
+  "intakeMm": 223,
+  "priceUsd": 43.19,
+  "url": "https://www.thatpetplace.com/marineland-penguin-pro-175-power-filter",
+  "asOf": "2026-11-16",
+  "names": [
+   "penguin pro 175",
+   "marineland penguin pro 175"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1b1b1d"
+   },
+   "lid": {
+    "hex": "#202022"
+   },
+   "motor": {
+    "hex": "#121213"
+   },
+   "intake": {
+    "hex": "#141415"
+   },
+   "strainer": {
+    "hex": "#141415"
+   },
+   "outlet": {
+    "hex": "#1b1b1d"
+   },
+   "cups": "black",
+   "photo": "https://www.thatpetplace.com/site/images/product/287218_1.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet",
+   "cups"
+  ],
+  "colorsNote": "Read from the That Pet Place product photo (Penguin Pro 125 / 375; the 175, 275 and 450 reuse the nearer sibling): all-matte-black shell and lid, black grille strainer and intake tube. No smoky window on the Pro line (unlike the Bio-Wheel Penguins).",
+  "priceUrl": "https://www.thatpetplace.com/aquarium-supplies/aquarium-filters",
+  "note": "175 GPH, up to 30 gal; 8 x 6 x 8 in (single listing). Wattage not published: left blank, not guessed."
+ },
+ {
+  "id": "marineland-penguin-pro-275",
+  "brand": "Marineland",
+  "model": "Penguin Pro 275 Power Filter",
+  "kind": "hob",
+  "gph": 275,
+  "galMax": 50,
+  "bodyMm": {
+   "w": 300,
+   "d": 170,
+   "h": 240
+  },
+  "intakeMm": 260,
+  "priceUsd": 51.29,
+  "url": "https://www.thatpetplace.com/marineland-penguin-pro-275-power-filter",
+  "asOf": "2026-11-16",
+  "names": [
+   "penguin pro 275",
+   "marineland penguin pro 275"
+  ],
+  "est": [
+   "intakeMm",
+   "bodyMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1b1b1d"
+   },
+   "lid": {
+    "hex": "#202022"
+   },
+   "motor": {
+    "hex": "#121213"
+   },
+   "intake": {
+    "hex": "#141415"
+   },
+   "strainer": {
+    "hex": "#141415"
+   },
+   "outlet": {
+    "hex": "#1b1b1d"
+   },
+   "cups": "black",
+   "photo": "https://www.thatpetplace.com/site/images/product/287218_1.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet",
+   "cups"
+  ],
+  "colorsNote": "Read from the That Pet Place product photo (Penguin Pro 125 / 375; the 175, 275 and 450 reuse the nearer sibling): all-matte-black shell and lid, black grille strainer and intake tube. No smoky window on the Pro line (unlike the Bio-Wheel Penguins).",
+  "priceUrl": "https://www.thatpetplace.com/aquarium-supplies/aquarium-filters",
+  "note": "275 GPH, up to 50 gal. No dimensions found: body estimated between the 175 and the 375. Wattage not published: left blank, not guessed."
+ },
+ {
+  "id": "marineland-penguin-pro-375",
+  "brand": "Marineland",
+  "model": "Penguin Pro 375 Power Filter",
+  "kind": "hob",
+  "gph": 375,
+  "galMax": 75,
+  "bodyMm": {
+   "w": 397,
+   "d": 187,
+   "h": 276
+  },
+  "intakeMm": 296,
+  "priceUsd": 64.89,
+  "url": "https://www.thatpetplace.com/marineland-penguin-pro-375-power-filter",
+  "asOf": "2026-11-16",
+  "names": [
+   "penguin pro 375",
+   "marineland penguin pro 375"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1b1b1d"
+   },
+   "lid": {
+    "hex": "#202022"
+   },
+   "motor": {
+    "hex": "#121213"
+   },
+   "intake": {
+    "hex": "#141415"
+   },
+   "strainer": {
+    "hex": "#141415"
+   },
+   "outlet": {
+    "hex": "#1b1b1d"
+   },
+   "cups": "black",
+   "photo": "https://www.thatpetplace.com/site/images/product/287221_1.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet",
+   "cups"
+  ],
+  "colorsNote": "Read from the That Pet Place product photo (Penguin Pro 125 / 375; the 175, 275 and 450 reuse the nearer sibling): all-matte-black shell and lid, black grille strainer and intake tube. No smoky window on the Pro line (unlike the Bio-Wheel Penguins).",
+  "priceUrl": "https://www.thatpetplace.com/aquarium-supplies/aquarium-filters",
+  "note": "375 GPH, up to 75 gal; 15.625 x 7.375 x 10.875 in per a retailer listing. Wattage not published: left blank, not guessed."
+ },
+ {
+  "id": "marineland-penguin-pro-450",
+  "brand": "Marineland",
+  "model": "Penguin Pro 450 Power Filter",
+  "kind": "hob",
+  "gph": 450,
+  "galMax": 90,
+  "bodyMm": {
+   "w": 400,
+   "d": 190,
+   "h": 280
+  },
+  "intakeMm": 300,
+  "priceUsd": 94.72,
+  "url": "https://www.thatpetplace.com/marineland-penguin-pro-450-power-filter",
+  "asOf": "2026-11-16",
+  "names": [
+   "penguin pro 450",
+   "marineland penguin pro 450"
+  ],
+  "est": [
+   "intakeMm",
+   "bodyMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#1b1b1d"
+   },
+   "lid": {
+    "hex": "#202022"
+   },
+   "motor": {
+    "hex": "#121213"
+   },
+   "intake": {
+    "hex": "#141415"
+   },
+   "strainer": {
+    "hex": "#141415"
+   },
+   "outlet": {
+    "hex": "#1b1b1d"
+   },
+   "cups": "black",
+   "photo": "https://www.thatpetplace.com/site/images/product/287221_1.jpg"
+  },
+  "colorsEst": [
+   "motor",
+   "intake",
+   "strainer",
+   "outlet",
+   "cups"
+  ],
+  "colorsNote": "Read from the That Pet Place product photo (Penguin Pro 125 / 375; the 175, 275 and 450 reuse the nearer sibling): all-matte-black shell and lid, black grille strainer and intake tube. No smoky window on the Pro line (unlike the Bio-Wheel Penguins).",
+  "priceUrl": "https://www.thatpetplace.com/aquarium-supplies/aquarium-filters",
+  "note": "450 GPH, up to 90 gal (That Pet Place list). No dimensions found: body estimated like the 375. Wattage not published: left blank, not guessed."
+ },
+ {
+  "id": "aqueon-quietflow-canister-200",
+  "brand": "Aqueon",
+  "model": "QuietFlow 200 Canister Filter",
+  "kind": "canister",
+  "gph": 200,
+  "galMax": 55,
+  "bodyMm": {
+   "w": 230,
+   "d": 275,
+   "h": 565
+  },
+  "intakeMm": 545,
+  "priceUsd": 139.99,
+  "url": "https://www.thatpetplace.com/aqueon-quietflow-canister-filter-55-gal",
+  "asOf": "2026-11-16",
+  "names": [
+   "aqueon quietflow 200 canister",
+   "quietflow canister 200"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#18181a"
+   },
+   "lid": {
+    "hex": "#2c4a9a"
+   },
+   "motor": {
+    "hex": "#2c4a9a"
+   },
+   "clips": {
+    "hex": "#2c4a9a"
+   },
+   "foot": {
+    "hex": "#2c4a9a"
+   },
+   "intake": {
+    "hex": "#2c4a9a"
+   },
+   "strainer": {
+    "hex": "#2c4a9a"
+   },
+   "outlet": {
+    "hex": "#2c4a9a"
+   },
+   "hose": "#1f1f1f",
+   "accent": {
+    "hex": "#2c4a9a",
+    "where": "navy-blue head, clamps, feet and shut-off taps"
+   },
+   "cups": "black",
+   "photo": "https://www.thatpetplace.com/site/images/product/279831_1.jpg"
+  },
+  "colorsEst": [
+   "hose",
+   "cups"
+  ],
+  "colorsNote": "Read from the That Pet Place photo of the 200: black canister body, navy-blue head, four clamps, feet and taps. The 300 and 400 reuse it (same family). Hose colour not seen.",
+  "priceUrl": "https://www.thatpetplace.com/aquarium-supplies/aquarium-filters",
+  "note": "200 GPH, up to 55 gal and the L x W x H inches from the Aqueon manual / retailer listings. Wattage not published: left blank, not guessed. Price and photo: That Pet Place product page."
+ },
+ {
+  "id": "aqueon-quietflow-canister-300",
+  "brand": "Aqueon",
+  "model": "QuietFlow 300 Canister Filter",
+  "kind": "canister",
+  "gph": 300,
+  "galMax": 75,
+  "bodyMm": {
+   "w": 240,
+   "d": 348,
+   "h": 580
+  },
+  "intakeMm": 560,
+  "priceUsd": 209.99,
+  "url": "https://www.thatpetplace.com/aqueon-quietflow-canister-filter-55-100-gal",
+  "asOf": "2026-11-16",
+  "names": [
+   "aqueon quietflow 300 canister",
+   "quietflow canister 300"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#18181a"
+   },
+   "lid": {
+    "hex": "#2c4a9a"
+   },
+   "motor": {
+    "hex": "#2c4a9a"
+   },
+   "clips": {
+    "hex": "#2c4a9a"
+   },
+   "foot": {
+    "hex": "#2c4a9a"
+   },
+   "intake": {
+    "hex": "#2c4a9a"
+   },
+   "strainer": {
+    "hex": "#2c4a9a"
+   },
+   "outlet": {
+    "hex": "#2c4a9a"
+   },
+   "hose": "#1f1f1f",
+   "accent": {
+    "hex": "#2c4a9a",
+    "where": "navy-blue head, clamps, feet and shut-off taps"
+   },
+   "cups": "black",
+   "photo": "https://www.thatpetplace.com/site/images/product/279831_1.jpg"
+  },
+  "colorsEst": [
+   "hose",
+   "cups"
+  ],
+  "colorsNote": "Read from the That Pet Place photo of the 200: black canister body, navy-blue head, four clamps, feet and taps. The 300 and 400 reuse it (same family). Hose colour not seen.",
+  "priceUrl": "https://www.thatpetplace.com/aquarium-supplies/aquarium-filters",
+  "note": "300 GPH, up to 75 gal and the L x W x H inches from the Aqueon manual / retailer listings. Wattage not published: left blank, not guessed. Price and photo: That Pet Place product page."
+ },
+ {
+  "id": "aqueon-quietflow-canister-400",
+  "brand": "Aqueon",
+  "model": "QuietFlow 400 Canister Filter",
+  "kind": "canister",
+  "gph": 400,
+  "galMax": 155,
+  "bodyMm": {
+   "w": 365,
+   "d": 375,
+   "h": 520
+  },
+  "intakeMm": 500,
+  "priceUsd": 249.99,
+  "url": "https://www.thatpetplace.com/aqueon-quietflow-canister-filter-100-150-gal",
+  "asOf": "2026-11-16",
+  "names": [
+   "aqueon quietflow 400 canister",
+   "quietflow canister 400"
+  ],
+  "est": [
+   "intakeMm"
+  ],
+  "colors": {
+   "body": {
+    "hex": "#18181a"
+   },
+   "lid": {
+    "hex": "#2c4a9a"
+   },
+   "motor": {
+    "hex": "#2c4a9a"
+   },
+   "clips": {
+    "hex": "#2c4a9a"
+   },
+   "foot": {
+    "hex": "#2c4a9a"
+   },
+   "intake": {
+    "hex": "#2c4a9a"
+   },
+   "strainer": {
+    "hex": "#2c4a9a"
+   },
+   "outlet": {
+    "hex": "#2c4a9a"
+   },
+   "hose": "#1f1f1f",
+   "accent": {
+    "hex": "#2c4a9a",
+    "where": "navy-blue head, clamps, feet and shut-off taps"
+   },
+   "cups": "black",
+   "photo": "https://www.thatpetplace.com/site/images/product/279831_1.jpg"
+  },
+  "colorsEst": [
+   "hose",
+   "cups"
+  ],
+  "colorsNote": "Read from the That Pet Place photo of the 200: black canister body, navy-blue head, four clamps, feet and taps. The 300 and 400 reuse it (same family). Hose colour not seen.",
+  "priceUrl": "https://www.thatpetplace.com/aquarium-supplies/aquarium-filters",
+  "note": "400 GPH, up to 155 gal and the L x W x H inches from the Aqueon manual / retailer listings. Wattage not published: left blank, not guessed. Price and photo: That Pet Place product page."
  }
 ]

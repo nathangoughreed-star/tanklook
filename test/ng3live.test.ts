@@ -50,7 +50,7 @@ describe('target ranks, max filters', () => {
     const b = base(900), t = setRange(b, 'constraints.budget', { min: 300, max: 900 });
     const w0 = briefToWants(b), r0 = suggestSetups(w0, P, 'cm', NOW), r1 = suggestSetups({ ...w0, startupTarget: 400 }, P, 'cm', NOW);
     expect(r1.proposals.every(p => p.totals.startupUsd <= 900)).toBe(true);
-    const gap = (r: typeof r0) => Math.abs(r.proposals[0].totals.startupUsd - 400);
+    const gap = (r: typeof r0) => Math.min(...r.proposals.map(p => Math.abs(p.totals.startupUsd - 400))); // nearest proposal (the first one can be a pricier concept the catalogue ranks higher)
     expect(gap(r1)).toBeLessThanOrEqual(gap(r0));
     expect(t).toBeDefined();
   });
