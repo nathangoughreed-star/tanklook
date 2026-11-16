@@ -14,8 +14,7 @@ async function run(tag, w, h, mobile) {
   await ev("(() => { const s = document.querySelector('select[aria-label=\\"Glass thickness\\"]'); s.size = 18; s.style.height = 'auto'; s.scrollIntoView({ block: 'start' }); return true })()");
   await shot(tag + '-thickness-list', 800);
   await ev("(() => { const s = document.querySelector('select[aria-label=\\"Glass thickness\\"]'); s.size = 1; return true })()");
-  await click('.mform button', 'Set per pane').catch(() => {}); await sleep(400);
-  await ev("(() => { document.querySelector('.mform select[aria-label=\\"Ends edge finish\\"]').scrollIntoView({ block: 'center' }); return true })()");
+  await ev("(() => { document.querySelector('[aria-label=\\"Edge finish\\"]').scrollIntoView({ block: 'center' }); return true })()");
   await shot(tag + '-edge-finish', 800);
 }
 if (!process.env.ONLY || process.env.ONLY === '1280') await run('1280', 1280, 900, false);
