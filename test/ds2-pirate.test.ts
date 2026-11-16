@@ -96,5 +96,6 @@ describe('the six existing looks are unchanged', () => {
     }
     return out;
   };
+  // R94 (2026-11-15): test/fixtures/ds2-looks-main.json was regenerated once from this snap() because the auto glass thickness moved to stocked sizes (items sit on the glass)
   it('draws every other archetype exactly as origin/main did', () => { expect(snap()).toEqual(looksMain); });
 });

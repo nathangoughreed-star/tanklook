@@ -7,7 +7,9 @@ import { defaultSetup } from '../src/scene/defaults';
 describe('glass thickness', () => {
   const t = (hIn: number) => glassThickness({ L: 600, H: hIn * IN, D: 300 }, 'auto');
   it('follows the height table', () => {
-    expect([t(12), t(13), t(16), t(18), t(24), t(30), t(31)]).toEqual([5, 5, 6, 8, 10, 12, 15]);
+    // R94: every band is a size a US shop stocks (5/16 in = 8 mm is special order, so 17-25 in are 3/8 in); in mm: 3/16, 1/4, 3/8, 3/8, 1/2, 5/8 in
+    const IN25 = 25.4;
+    [t(12), t(13), t(16), t(18), t(24), t(30), t(31)].forEach((v, i) => expect(v).toBeCloseTo([3 / 16, 3 / 16, 1 / 4, 3 / 8, 3 / 8, 1 / 2, 5 / 8][i] * IN25, 6));
   });
   it('respects an explicit choice', () => expect(glassThickness({ L: 1, H: 1, D: 1 }, 19)).toBe(19));
 });
@@ -47,10 +49,11 @@ describe('tanks', () => {
 describe('stand and floor', () => {
   const T = { L: 24 * IN, H: 12 * IN, D: 12 * IN }, R = defaultSetup().render; // 12 in tall -> 5 mm glass, rimmed
   it('stand top is the tank underside; floor is a stand-height below it', () => {
-    expect(tankUnderside(T, R)).toBe(-7);
-    expect(tankUnderside(T, { ...R, rim: false })).toBe(-5);
-    expect(floorY(T, R, { show: true, height: 30 * IN, finish: 'black', style: 'cabinet', table: { shape: 'rect', L: 900, D: 450, x: 0, z: 0 } })).toBeCloseTo(-7 - 762, 6);
-    expect(floorY(T, R, { show: false, height: 30 * IN, finish: 'black', style: 'cabinet', table: { shape: 'rect', L: 900, D: 450, x: 0, z: 0 } })).toBe(-7);
+    // R94: the auto glass of this 13 in-ish tank is now 3/16 in (4.7625 mm) instead of 5 mm
+    expect(tankUnderside(T, R)).toBeCloseTo(-6.7625, 6);
+    expect(tankUnderside(T, { ...R, rim: false })).toBeCloseTo(-4.7625, 6);
+    expect(floorY(T, R, { show: true, height: 30 * IN, finish: 'black', style: 'cabinet', table: { shape: 'rect', L: 900, D: 450, x: 0, z: 0 } })).toBeCloseTo(-6.7625 - 762, 6);
+    expect(floorY(T, R, { show: false, height: 30 * IN, finish: 'black', style: 'cabinet', table: { shape: 'rect', L: 900, D: 450, x: 0, z: 0 } })).toBeCloseTo(-6.7625, 6);
   });
 });
 

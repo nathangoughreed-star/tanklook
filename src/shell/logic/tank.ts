@@ -8,7 +8,7 @@ import { getTankModel, modelOfVariant, outerOf, pickRimless, saleLive, soleProdu
 import { dockGroups, optKey, previewSetup, rangeText, isBundle, type DockOpt } from '../../ui/tankDockLogic';
 import { applyTankPick } from '../../ui/tankPick';
 import { applyTankEdit, flatEnds } from '../../scene/tankEdit';
-import { SHOP_NAME_US, SHOP_NAME_METRIC, type BraceSpec } from '../../scene/glassSolver';
+import { SHOP_NAME_US, SHOP_NAME_METRIC, STOCK_METRIC, type BraceSpec } from '../../scene/glassSolver';
 import { autoName, setRenderBrace, refOf, specOfSetup, newerVersion, libraryLost, type CustomTank, type CustomTankSpec } from '../../scene/customTanks';
 import { productOf, productName, locksOf as kitLocks } from '../../scene/integrated';
 import { isLocked } from '../../scene/locks';
@@ -39,7 +39,7 @@ const gal = (T: Tank) => volume(T).gallons;
 export const galText = (g: number) => `${g < 10 ? +g.toFixed(1) : Math.round(g)} gal`;
 /** Glass thickness as people say it: "3/8 in" (US stock) or "10 mm". */
 export function glassText(mm: number, u: Units): string {
-  if (u !== 'in') return `${Math.round(mm)} mm`;
+  if (u !== 'in') { const st = STOCK_METRIC.find(t => Math.abs(t - mm) <= 0.5); return st != null ? `${st} mm` : Math.abs(mm - Math.round(mm)) < 0.15 ? `${Math.round(mm)} mm` : `${+mm.toFixed(1)} mm`; }
   const e = mm / IN, n = Math.round(e * 32);
   if (Math.abs(e * 32 - n) > 0.16) return `${+e.toFixed(2)} in`;
   const g = (a: number, b: number): number => (b ? g(b, a % b) : a), d = g(n, 32);
