@@ -376,6 +376,12 @@ a.btn { text-decoration: none; }
 .equip .catnote { color: var(--text-2); font-size: var(--fs-sm); }
 .equip .linkbtn { color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; font: inherit; text-decoration: underline; }
 .erow { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: var(--s2); padding: var(--s2); border: 1px solid var(--line); border-radius: var(--r-ctl); background: var(--surface); }
+.erow.sale { grid-template-columns: minmax(0, 1fr); }
+.erow.sale .m b { color: var(--text); }
+.erow.sale s, .card.pick .sale s { color: var(--text-3); }
+.card.pick .m.sale { color: var(--ok, #5bbf8a); }
+.dealbox { display: grid; gap: var(--s1); padding: var(--s2); border: 1px solid var(--line); border-radius: var(--r-ctl); background: var(--surface); }
+.dealbox .t { font-weight: 600; }
 .erow.inuse { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
 .erow .thumb { width: 40px; height: 32px; display: grid; place-items: center; color: var(--text-3); }
 .erow .eb { display: grid; min-width: 0; gap: 2px; }

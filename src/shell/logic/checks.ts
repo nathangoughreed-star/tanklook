@@ -14,6 +14,7 @@ import { swapsFor, type Bar as DBar, type Delta, type Swap } from '../../demand/
 import { rhythmOf, rhythmNote } from '../../demand/rhythm';
 import { pinnedKit } from '../../demand/pinned';
 import { gearParts } from '../../demand/gearDeals';
+import { bundleLine, gearSaleCount, type BundleLine, type GearSale } from './deals';
 import { plantBundleOpt } from '../../demand/plantBundles';
 import { climateOf, climateText, type Climate, type Status } from '../../data/climate';
 import { verdictOf, type Issue, type Verdict } from '../../scene/verdict';
@@ -69,6 +70,8 @@ export function demandFor(S: TankSetup, active: number, P: UserProfile): Demand 
   return demandOf(S, P, { kit: pinnedKit(S, active, P), parts: gearParts(S), plantBundle: plantBundleOpt(S) });
 }
 export interface CostView {
+  /** DL1: the one bundle worth a line (same tank, saves money, read within 14 days) and how many gear sales fit */
+  deal?: BundleLine; gearSales?: { n: number; first?: GearSale };
   setup: string; monthly: string; minutes: string;
   /** 0-10, the old panel's "Relative difficulty" */
   risk: number; riskWord: string;
@@ -105,8 +108,9 @@ export function breakdownOf(D: Demand, S: TankSetup, P: UserProfile, bar: DBar):
 }
 export const riskWord = (r: number) => r < 3 ? 'Easy' : r < 6 ? 'Moderate' : 'Demanding';
 export function costView(D: Demand, k = 8, ctx?: { S: TankSetup; P: UserProfile }): CostView {
-  const t = D.totals;
+  const t = D.totals, deal = ctx ? bundleLine(ctx.S, ctx.P) : undefined, gs = ctx ? gearSaleCount(ctx.S) : undefined;
   return {
+    ...(deal ? { deal } : {}), ...(gs?.n ? { gearSales: gs } : {}),
     setup: usd(t.setupUsd), monthly: `${usd(t.upkeepUsdMo)}/mo`, minutes: `${Math.round(t.minPerWeek)} min/wk`,
     risk: Math.round(t.risk * 10) / 10, riskWord: riskWord(t.risk),
     rows: D.items.filter(i => (i.setup?.mode ?? 0) >= 0.5).sort((a, b) => b.setup!.mode - a.setup!.mode).slice(0, k)

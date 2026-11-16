@@ -2,6 +2,7 @@
 // editing (Set my space, feeding, limits) comes with the sections that own those settings (§3: one home per setting).
 import { useState } from 'preact/hooks';
 import { openLimit } from './constraints';
+import { DEAL_NOTE } from './logic/deals';
 import type { ChecksModel, CheckId, HabitatView, CostView, WaterView, NotesView } from './logic/checks';
 import { CHECKS } from './logic/checks';
 import { Icon, Meter, Pill } from './ui';
@@ -50,6 +51,15 @@ function Cost({ v }: { v: CostView | null }) {
       {fig('risk', 'Relative difficulty', `${v.risk} / 10 · ${v.riskWord}`)}
       <div class="hint">Difficulty uses your Experience constraint (off means an average keeper). <button type="button" class="spLink" onClick={() => openLimit('experience')}>Edit in Constraints</button></div>
       <div class="hint">Budget, monthly limit and time per week live in <button type="button" class="spLink" onClick={() => openLimit('money')}>Constraints</button>.</div>
+      {v.deal ? (
+        <div class="dealbox" data-deal={v.deal.id}>
+          <span class="t">A bundle close to your build</span>
+          <span><a href={v.deal.url} target="_blank" rel="noopener" title="A plain retailer link, not sponsored">{v.deal.retailer} {v.deal.name} ↗</a></span>
+          <span class="m"><b>{v.deal.price}</b>{v.deal.was ? <> <s>{v.deal.was}</s></> : null} · saves about {v.deal.saving} against buying the parts</span>
+          <span class="hint">Comes with: {v.deal.includes}. As of {v.deal.asOfText}{v.deal.guessed ? ' (some details guessed)' : ''}; {DEAL_NOTE}.</span>
+        </div>
+      ) : null}
+      {v.gearSales ? <div class="hint">{v.gearSales.n === 1 ? '1 gear sale fits' : `${v.gearSales.n} gear sales fit`} this tank{v.gearSales.first ? `, such as ${v.gearSales.first.title} (${v.gearSales.first.off}% off)` : ''}: see On sale now in Equipment.</div> : null}
       <div class="cap">{d ? d.title : 'Costs most to set up'}</div>
       {d ? (
         <>

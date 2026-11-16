@@ -23,6 +23,7 @@ import { tankWeight } from '../../scene/weight';
 import { adaptToTank } from '../../scene/reeval';
 import { bareTech } from '../../scene/tech';
 import { gearOfTank, isOwned } from '../../scene/gearOwn';
+import { tankSale, type TankSale } from './deals';
 import type { Scene, Tank, TankSetup, TankShape } from '../../scene/types';
 import type { Store } from '../../scene/store';
 
@@ -147,6 +148,10 @@ export interface PickRow {
   price?: string;
   /** a commercial tank's finished-tank range (lane FR1) */
   range?: string;
+  /** DL1: the live sale (display rule: read within 14 days), with the was-price, store and date */
+  sale?: TankSale;
+  /** DL1: "tank, stand, light" a kit or bundle comes with */
+  comes?: string;
   inUse: boolean;
   owned: boolean;
   locked: boolean;
@@ -179,15 +184,15 @@ export function productKey(S: TankSetup): string | undefined {
 
 export interface Commercial { rows: PickRow[]; total: number; /** no space set in Constraints: "Fits my space" cannot filter */ noSpace: boolean }
 /** Every catalogue choice for the setup's kind (bare tanks first, then kits and bundles), filtered by the search, size chips and "Fits my space". */
-export function commercialRows(S: TankSetup, _u: Units, o: { q?: string; chips?: ReadonlySet<SizeChip>; fits?: boolean; now?: number } = {}): Commercial {
+export function commercialRows(S: TankSetup, _u: Units, o: { q?: string; chips?: ReadonlySet<SizeChip>; fits?: boolean; sale?: boolean; now?: number } = {}): Commercial {
   const kind: SetupKind = tankKind(S), groups = dockGroups(kind, o.q ?? '', o.now), inUse = productKey(S), space = S.layout.space;
   const all = groups.flatMap(g => g.bands.flatMap(b => b.opts));
   const chips = o.chips ?? new Set<SizeChip>();
-  const rows = all.filter(x => (!chips.size || [...chips].some(c => inChip(x.gal, c))) && (!o.fits || !space || spaceFit(optTank(x), space).fits)).map(x => {
+  const rows = all.filter(x => (!o.sale || !!tankSale(x.v, o.now))).filter(x => (!chips.size || [...chips].some(c => inChip(x.gal, c))) && (!o.fits || !space || spaceFit(optTank(x), space).fits)).map(x => {
     const rim = pickRimless(x.m, x.v) ? 'rimless' : 'rimmed', kit = x.v && isBundle(x.v) ? ' · kit' : '';
-    const price = x.usd == null ? undefined : `${x.typical ? '~' : ''}${usd(x.usd)}${x.v && saleLive(x.v) ? ' sale' : ''}`;
+    const inc = x.v?.includes, comes = x.v && isBundle(x.v) && inc ? ['tank', inc.stand ? 'stand' : '', inc.lid && inc.lid !== 'none' ? 'lid' : '', inc.light ? 'light' : '', inc.filter ? 'filter' : '', inc.heater ? 'heater' : ''].filter(Boolean).join(', ') : '', sale = tankSale(x.v, o.now), price = x.usd == null ? undefined : `${x.typical ? '~' : ''}${usd(x.usd)}${sale ? ' sale' : ''}`;
     return { key: x.key, name: x.v ? x.name : `${x.m.name}${x.typical ? ' (any maker)' : ''}`, meta: `${x.dims.replace(/×/g, ' × ')} in · ${rim}${kit}`,
-      ...(price ? { price } : {}), ...(x.range ? { range: rangeText(x.range) } : {}),
+      ...(price ? { price } : {}), ...(sale ? { sale } : {}), ...(comes ? { comes } : {}), ...(x.range ? { range: rangeText(x.range) } : {}),
       inUse: x.key === inUse, owned: isOwned(gearOfTank(S), 'tank', x.m.id), locked: x.key === inUse && isLocked(S, 'tank'), opt: x };
   });
   return { rows, total: all.length, noSpace: !space };

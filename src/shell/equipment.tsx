@@ -12,6 +12,7 @@ import { LightingGroup, LightLayoutGroup } from './lighting';
 import { artOf } from './logic/gearArt';
 import { gearSel, onGearSel } from '../render/gearSel';
 import { orientOf, withOrient, hangOn, type Orient } from '../interact/gearDrag';
+import { gearSales, useGearSale, DEAL_NOTE, type GearSale } from './logic/deals';
 import { Group, Icon, Pill } from './ui';
 import { openSection, OPEN_EVENT } from './open';
 import { takeOpen } from './logic/sections';
@@ -65,6 +66,38 @@ function Row({ r, store, cat }: { r: GearRow; store: Store; cat: CatId }) {
         </span>
       </span>
     </div>
+  );
+}
+
+/** DL1: a specialist-store sale that suits this tank. "Use the sale" prices the row at the sale (undo-able); the link is a plain retailer link. */
+function SaleRow({ d, store }: { d: GearSale; store: Store }) {
+  return (
+    <div class={`erow sale${d.pinned ? ' inuse' : ''}`} data-sale={d.id}>
+      <span class="eb">
+        <span class="t" title={d.title}>{d.title}</span>
+        <span class="eline">
+          <span class="efacts">
+            <span class="m"><b>{d.price}</b> <s>{d.was}</s> · {d.off}% off · {d.ship}</span>
+            <span class="m">{d.store}, as of {d.asOfText}</span>
+            <span class="pills">{d.pinned ? <Pill tone="accent">Priced at this sale</Pill> : null}</span>
+          </span>
+          <span class="acts">
+            <button type="button" class="btn sm" onClick={() => store.edit(s => useGearSale(s, d.id, !d.pinned))}>{d.pinned ? 'Use list price' : 'Use the sale'}</button>
+            <a class="btn sm ghost" href={d.url} target="_blank" rel="noopener" title="Opens the store's page in a new tab (a plain link, not sponsored)">See it ↗</a>
+          </span>
+        </span>
+      </span>
+    </div>
+  );
+}
+function Sales({ store, cat }: { store: Store; cat: CatId }) {
+  const list = gearSales(store.tank, cat);
+  if (!list.length) return null;
+  return (
+    <Group title="On sale now" sum={`${list.length} · fits this tank`} open={true} onToggle={() => { /* always open: a short list */ }}>
+      {list.map(d => <SaleRow d={d} store={store} />)}
+      <div class="hint">Prices {DEAL_NOTE}. Nobody pays to be listed.</div>
+    </Group>
   );
 }
 
@@ -135,6 +168,7 @@ function KindBody({ store, units, cat }: { store: Store; units: 'in' | 'cm'; cat
         <AddOwn store={store} cat={cat} key={cat} />
         <div class="hint">Owning is not the same as using: the plan prefers what you own, at $0, when it fits.</div>
       </Group>
+      <Sales store={store} cat={cat} />
       <div class="buyhead"><span>Buy</span><span class="sum">{v.buyTotal} · fits this tank, price</span></div>
       {tree.map(t => (
         <div class="type" data-type={t.label}>

@@ -235,11 +235,11 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
   const [g, flip] = useGroups();
   const [q, setQ] = useState('');
   const [chips, setChips] = useState<Set<SizeChip>>(new Set());
-  const [fits, setFits] = useState(false);
+  const [fits, setFits] = useState(false), [sale, setSale] = useState(false);
   const [sel, setSel] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const searching = !!q.trim();
-  const custom = customRows(S, lib, u, q), comm = useMemo(() => commercialRows(S, u, { q, chips, fits }), [S, u, q, chips, fits]);
+  const custom = customRows(S, lib, u, q), comm = useMemo(() => commercialRows(S, u, { q, chips, fits, sale }), [S, u, q, chips, fits, sale]);
   const showCustom = g.custom || searching, showComm = g.commercial || searching;
   const visible: PickRow[] = [...(showCustom ? custom : []), ...(showComm ? comm.rows : [])];
   const cur = visible.find(r => r.key === sel) ?? [...custom, ...comm.rows].find(r => r.key === sel);
@@ -265,6 +265,8 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
     <div class={`card media pick${r.key === sel ? ' sel' : ''}${r.inUse ? ' inuse' : ''}`} role="option" aria-selected={r.key === sel} data-key={r.key} onClick={() => pick(r)} onDblClick={() => choose(r)}>
       <span class="thumb tthumb"><Icon name="tank" /></span>
       <span class="pbody"><div class="t">{r.name}</div><div class="m">{r.meta}{r.price ? ` · ${r.price}` : ''}</div>
+        {r.sale ? <div class="m sale" data-sale>{r.sale.text}</div> : null}
+        {r.comes ? <div class="m">comes with: {r.comes}</div> : null}
         {r.range ? <div class="m range" title="A rough finished tank at this size: lightly stocked with cheap decor at the low end, semi-professional at the high end">finished {r.range}</div> : null}
         {r.inUse || r.owned ? <div class="pills">{r.inUse ? <Pill tone="accent">In use</Pill> : null}{r.owned ? <Pill tone="ok">Owned</Pill> : null}</div> : null}</span>
       <span class="acts">
@@ -292,10 +294,11 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
             <div class="chips">
               {SIZE_CHIPS.map(([c, t]) => <button type="button" class={`chip${chips.has(c) ? ' on' : ''}`} aria-pressed={chips.has(c)} onClick={() => { const n = new Set(chips); if (n.has(c)) n.delete(c); else n.add(c); setChips(n); }}>{t}</button>)}
               <button type="button" class={`chip${fits ? ' on' : ''}`} aria-pressed={fits} disabled={comm.noSpace} title={comm.noSpace ? 'Set your space in Constraints first (comes in shell step 5)' : 'Only tanks that fit the space you set'} onClick={() => setFits(!fits)}>Fits my space</button>
+              <button type="button" class={`chip${sale ? ' on' : ''}`} aria-pressed={sale} title="Only tanks with a live sale price (read within the last 14 days)" onClick={() => setSale(!sale)}>On sale</button>
             </div>
             {comm.rows.length < comm.total ? <div class="hint">{comm.rows.length} of {comm.total} shown</div> : null}
             {comm.rows.map(row)}
-            {!comm.rows.length ? <div class="hint">No commercial tank matches.</div> : null}
+            {!comm.rows.length ? <div class="hint">{sale ? 'No tank sale has been checked in the last 14 days.' : 'No commercial tank matches.'}</div> : null}
           </div> : null}
         </div>
         {!showCustom && !showComm ? <div class="hint">Open a group to browse; the tank you flip to redraws in the room.</div> : null}
