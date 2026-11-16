@@ -126,6 +126,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R108 | 11-16 | Stands record the maker's rated tank size (gallons) and max load (lb) where stated; warn when the filled tank is heavier than the stand's rating | PL1 | - | - | - | sent to PL1 11-16 |
 | R109 | 11-16 | Tank picker: real filters (capacity range, length / width / height ranges, price, rimmed vs rimless, etc.); the generic tank icon is useless: show the product or drop it for name-only rows | TP1 | - | - | - | lane started by C26 11-16 |
 | R110 | 11-16 | Glass solver: show where the glass fails (the governing pane and the high-stress spot), plus an exaggerated deflection view labelled with the true deflection numbers | GS2 | - | - | - | sent to GS2 11-16 |
+| R111 | 11-16 | New-UI layout: the side-panel tab menus are too small and text-heavy; each tab (Tank, Scape, Plants, Animals, Equipment... where it fits) opens its own full-screen workspace with room for visuals, like the tank picker: build there, then apply and return to the main view | WS1 | - | - | - | mockups first (WS1), Nathan picks before any build |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
