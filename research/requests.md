@@ -124,6 +124,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R106 | 11-16 | Small darting fish (danios, neons, rasboras, tetras and similar) swim pulse-and-coast: a quick tail burst, a glide that slows, small heading changes at each pulse; not a constant forward speed | FB1 | - | - | - | sent to FB1 as Part 2 11-16 |
 | R107 | 11-16 | Colour forms for multi-coloured species (guppies, bettas and the like): once the species is chosen, a colour menu offers many real visual styles (morphs) | CM3 | - | - | - | lane started by C26 11-16 |
 | R108 | 11-16 | Stands record the maker's rated tank size (gallons) and max load (lb) where stated; warn when the filled tank is heavier than the stand's rating | PL1 | - | - | - | sent to PL1 11-16 |
+| R109 | 11-16 | Tank picker: real filters (capacity range, length / width / height ranges, price, rimmed vs rimless, etc.); the generic tank icon is useless: show the product or drop it for name-only rows | TP1 | - | - | - | lane started by C26 11-16 |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
