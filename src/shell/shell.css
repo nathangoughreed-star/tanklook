@@ -552,3 +552,18 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .lightlayout .row { display: grid; grid-template-columns: 90px 1fr auto; align-items: center; gap: var(--s2) }
 .lightlayout .row .val.wide { grid-column: 2 / 4 }
 .lightlayout .select { min-width: 0; width: 100% }
+
+/* GS2: Glass check "Solve for" modes and the What-can-I-build chart */
+.gscroll { overflow-x: auto; }
+.gsize th, .gsize td { text-align: right; white-space: nowrap; } .gsize th:first-child, .gsize td:first-child { text-align: left; white-space: normal; }
+.gsize th.own { color: var(--accent); }
+.gsize tr.ref td:first-child { color: var(--text-3); }
+.gsize .cellx { padding: 1px 2px; }
+.cellb { background: none; border: 1px solid transparent; border-radius: var(--r-ctl); color: var(--text); font: inherit; padding: 3px 5px; cursor: pointer; }
+.cellb:hover, .cellb:focus-visible { background: var(--bg-hover); border-color: var(--accent); }
+.cellb.warnc { color: var(--warn); } .wmark { font-size: var(--fs-xs); }
+.envov { position: fixed; inset: 0; z-index: 60; background: rgba(0, 0, 0, .55); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.envcard { background: var(--bg-panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); width: min(720px, 100%); max-height: 100%; overflow: auto; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.envhead { display: flex; justify-content: space-between; align-items: center; font-size: var(--fs-lg); }
+.envin { align-self: flex-start; flex-wrap: wrap; } .envsvg { width: 100%; height: auto; }
+.envkey { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: var(--fs-sm); color: var(--text-2); } .envkey span { display: inline-flex; align-items: center; gap: 5px; }

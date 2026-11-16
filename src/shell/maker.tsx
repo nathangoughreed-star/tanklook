@@ -7,6 +7,9 @@ import type { Tank, TankSetup, TankShape, CameraSettings } from '../scene/types'
 import { applyTankEdit, reshape, shapeMemory, setGlass, setRim } from '../scene/tankEdit';
 import { addCustomTank, dimName, editCustomTank, loadLibrary, saveLibrary, type CustomTankSpec } from '../scene/customTanks';
 import { STOCK_US, STOCK_METRIC, IN_MM, type BraceLocks, type BraceSpec } from '../scene/glassSolver';
+import { braceFor, type BraceLevel } from '../scene/glassEnvelope';
+import { SizeMode, SfMode, WideView, type SolveMode } from './glassSolve';
+import type { SizeCell, SolveInputs } from './logic/tankEnvelope';
 import { LIMITS } from '../scene/validate';
 import { glassThickness, IN } from '../scene/physics';
 import { POLY_MAX, POLY_MIN, pieRadius, pieDepth, polySides, PIE_MIN, PIE_MAX, shapeOf } from '../scene/shape';
@@ -74,6 +77,11 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
   const [locks, setLocks] = useState<Record<BraceField, boolean>>({ width: false, thickness: false, cross: false, crossWidth: false });
   const [opt, setOpt] = useState<{ text: string; key: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  // GS2: the Glass check's Solve for modes (Glass = the check below; Size = the largest tank for this glass; Safety factor = what this glass gives)
+  const [solve, setSolve] = useState<SolveMode>('glass');
+  const [sin, setSin] = useState<SolveInputs>(() => ({ glass: typeof init.spec.glass === 'number' ? init.spec.glass : 0.25 * IN_MM, strip: 0.25 * IN_MM, stripWidth: 3 * IN_MM, depth: null }));
+  const [level, setLevel] = useState<BraceLevel>('none');
+  const [wide, setWide] = useState(false);
   const mem = useRef(shapeMemory());
   const viewRef = useRef<HTMLElement>(null);
   const cam0 = useRef<CameraSettings>(structuredClone(store.tank.camera));
@@ -136,6 +144,12 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
     }, 30);
   };
   const setBrace = (b: BraceSpec) => setChoice({ ...choice, custom: b });
+  /** A number in the Size table was tapped: that tank (length, depth, height), that glass and that bracing go into the maker. */
+  const loadCell = (c: SizeCell, D: number) => {
+    edit(s => { setGlass(s, String(sin.glass)); if (c.level === 'rimmed') setRim(s, true); });
+    size(t => ({ ...t, L: c.L, D, H: c.H }));
+    if (c.level !== 'rimmed') { const br = braceFor(c.level, sin); setChoice({ ...choice, brace: c.level === 'none' ? 'none' : (br?.cross ?? 0) > 0 ? 'cross' : 'perimeter', custom: br ?? undefined }); }
+  };
 
   const save = (use: boolean) => {
     const lib = loadLibrary();
@@ -201,7 +215,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
             </select><span /></div>
           <div class="row"><span class="lbl">Rim</span><Seg label="Rim" value={spec.rim ? 'y' : 'n'} opts={[['y', 'Rimmed'], ['n', 'Rimless']]} onPick={v => edit(s => setRim(s, v === 'y'))} /><span /></div>
         </Group>
-        <GlassGroup panel={panel} choice={choice} setChoice={setChoice} locks={locks} setLocks={setLocks} onOptimize={optimize} busy={busy} optLine={opt && opt.key === key() ? opt.text : ''} setBrace={setBrace} rim={spec.rim} u={u} glassNow={gNow} build={!!spec.glassBuild} open={open.solver} onToggle={fold('solver')}
+        <GlassGroup solve={solve} setSolve={setSolve} sin={sin} setSin={setSin} level={level} setLevel={setLevel} T={T} loadCell={loadCell} openWide={() => setWide(true)} panel={panel} choice={choice} setChoice={setChoice} locks={locks} setLocks={setLocks} onOptimize={optimize} busy={busy} optLine={opt && opt.key === key() ? opt.text : ''} setBrace={setBrace} rim={spec.rim} u={u} glassNow={gNow} build={!!spec.glassBuild} open={open.solver} onToggle={fold('solver')}
           onUse={() => panel?.use && setSpec({ ...spec, glass: panel.use.glass, glassBuild: panel.use.build })} />
         <Group title="Price" sum={spec.priceUsd != null ? `${usd(spec.priceUsd)} yours` : price.estimate != null ? `about ${usd(price.estimate)}` : 'no estimate'} open={open.price} onToggle={fold('price')}>
           <div class="drow"><span>Our estimate</span><b>{price.estimate != null ? usd(price.estimate) : '-'}</b></div>
@@ -223,19 +237,25 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
           <span class="glass fchip"><b>{facts.footprint}</b> footprint</span>
         </div>
       </main>
+      {wide && T ? <WideView T={T} rim={spec.rim} inp={sin} setInp={setSin} sf={choice.sf} bottom={choice.bottom} u={u} onClose={() => setWide(false)} /> : null}
     </div>
   );
 }
 
-function GlassGroup({ panel, choice, setChoice, locks, setLocks, onOptimize, busy, optLine, setBrace, rim, u, glassNow, build, open, onToggle, onUse }: {
+function GlassGroup({ solve, setSolve, sin, setSin, level, setLevel, T, loadCell, openWide, panel, choice, setChoice, locks, setLocks, onOptimize, busy, optLine, setBrace, rim, u, glassNow, build, open, onToggle, onUse }: {
+  solve: SolveMode; setSolve: (m: SolveMode) => void; sin: SolveInputs; setSin: (i: SolveInputs) => void; level: BraceLevel; setLevel: (l: BraceLevel) => void; T: Tank; loadCell: (c: SizeCell, D: number) => void; openWide: () => void;
   panel: GlassPanel | null; choice: GlassChoice; setChoice: (c: GlassChoice) => void; locks: Record<BraceField, boolean>; setLocks: (l: Record<BraceField, boolean>) => void; onOptimize: () => void; busy: boolean; optLine: string; setBrace: (b: BraceSpec) => void; rim: boolean; u: Units; glassNow: number; build: boolean; open: boolean; onToggle: () => void; onUse: () => void;
 }) {
   const sum = !panel ? 'working it out…' : !panel.supported ? 'box tanks only' : `${panel.panes[0].thickness} front · SF ${panel.sfAchieved}`;
   return (
     <Group title="Glass check" sum={sum} open={open} onToggle={onToggle}>
       {panel && !panel.supported ? <div class="hint">{panel.reason}</div> : <>
-        <div class="row"><span class="lbl">Safety factor</span><input class="slider" type="range" min={2} max={6} step={0.1} value={choice.sf} aria-label="Safety factor" onInput={e => setChoice({ ...choice, sf: +(e.target as HTMLInputElement).value })} />
+        <Seg label="Solve for" value={solve} opts={[['glass', 'Glass'], ['size', 'Size'], ['sf', 'Safety factor']]} onPick={setSolve} />
+        <div class="row"><span class="lbl">{solve === 'glass' ? 'Safety factor' : 'Safety factor at least'}</span><input class="slider" type="range" min={2} max={6} step={0.1} value={choice.sf} aria-label="Safety factor" onInput={e => setChoice({ ...choice, sf: +(e.target as HTMLInputElement).value })} />
           <span class="val"><input class="input num" type="number" min={1.5} max={8} step={0.1} value={choice.sf} aria-label="Safety factor value" onChange={e => { const v = parseFloat((e.target as HTMLInputElement).value); if (Number.isFinite(v) && v >= 1.5 && v <= 8) setChoice({ ...choice, sf: v }); }} /></span></div>
+        {solve === 'size' ? <SizeMode T={T} rim={rim} inp={sin} setInp={setSin} sf={choice.sf} bottom={choice.bottom} u={u} onPick={loadCell} onChart={openWide} /> : null}
+        {solve === 'sf' ? <SfMode T={T} rim={rim} inp={sin} setInp={setSin} sf={choice.sf} bottom={choice.bottom} u={u} level={level} setLevel={setLevel} /> : null}
+        {solve !== 'glass' ? null : <>
         <Seg label="Thickness" value={choice.mode} opts={[['uniform', 'One thickness'], ['perPane', 'Per pane']]} onPick={m => setChoice({ ...choice, mode: m })} />
         {!rim ? <Seg label="Brace" value={panel ? (panel.braceNow ? ((panel.braceNow.cross ?? 0) > 0 ? 'cross' : 'perimeter') : 'none') : choice.brace} opts={[['none', 'No brace'], ['perimeter', 'Perimeter'], ['cross', 'Perimeter + cross']]} onPick={b => setChoice({ ...choice, brace: b, custom: undefined })} /> : null}
         {!rim && panel ? <BraceFields b={panel.braceNow} u={u} locks={locks} setLocks={setLocks} setBrace={setBrace} onOptimize={onOptimize} busy={busy} optLine={optLine} note={panel.braceNote} stock={u === 'in' ? STOCK_US : STOCK_METRIC} /> : null}
@@ -256,7 +276,7 @@ function GlassGroup({ panel, choice, setChoice, locks, setLocks, onOptimize, bus
           {panel.notes.map(n => <div class="dwarn warn">{n}</div>)}
           <div class="drow"><span class="hint">{panel.weight}</span>
             {panel.use ? <button type="button" class="btn sm" disabled={build && Math.abs(panel.use.glass - glassNow) < 0.01} onClick={onUse}>{build && Math.abs(panel.use.glass - glassNow) < 0.01 ? 'In use' : `Use this glass (${glassText(panel.use.glass, u)})`}</button> : null}</div>
-        </>}
+        </>}</>}
         <div class="hint disclaimer">{DISCLAIMER}</div>
       </>}
     </Group>
