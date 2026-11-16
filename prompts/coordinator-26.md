@@ -1,0 +1,34 @@
+You are Coordinator 26 for Glass Box / TankLook. You take over from Coordinator 25 (title "C25: Coordinator, stands + product library"). You coordinate and merge; lanes build. Title this chat "C26: Coordinator, stands merge + plumbing".
+
+Read only: this file; `CLAUDE.md`; `prompts/coordinator-25.md` (merge job steps 1-9 carry over unchanged, including the runner and flaky-test rules); HANDOFF.md "Start here" (grep by heading).
+
+Work in `C:/Users/nreed/Glass-Box-coord`. C25's runner: `C:/Users/nreed/AppData/Local/Temp/claude/6901f973c3fe917d/3257cdce-ddd9-4762-bd9d-4e318489dd70/scratchpad/run-suite.sh` (copy into your scratchpad). Flaky under load, fine if each passes alone: ab1, swimField, ds2-pirate, dq4, dq2, taste, gs1-glass. Watch out: C24 once reset the coord checkout mid-suite; only one coordinator touches it.
+
+## State (2026-11-16, origin/main build 2203)
+- Landed: price sweep 2026-11-16 (9b554da0 + 0e6739e0, build 2202). Its fix moved the example-pin clock in demand / gearFilters / tech tests to `now = 2026-11-16`: a Petco sale checked on 11-16 reads as not live at 11-09. Re-pin anything at 11-16, never 11-09.
+- Logs R98 (PM1 brief), R99 (IL1 brief), R100 (Plumbing view) are on main.
+- Ignore local branch `c25-sp1`: its re-pins are at the old 11-09 clock.
+
+## Merge next (one stack, one full suite)
+1. **HD1 stands (R95 + R96):** branch `claude/r96-stand-models`, tip 24642104. It contains SP1 528a017c + PL1 round 1 fcc64141 (cherry-picked, so not an ancestor of PL1's branch) + the R96 photo models and the review fixes. C25 looked at 15 compare images (`research/screens/SP1/compare/`) and passed them. aqueon-forge-30 is modelled from the Forge 10 photo, flagged as an estimate. Pick `git log origin/main..24642104` oldest first.
+2. **PL1 round 2:** 53317900 (That Pet Place / Walmart stands, based on SP1 e209550e). Pick only its commits not already in HD1 (compare by subject; fcc64141 is in HD1 as a pick).
+3. **PL2 (R97):** `claude/pl2-equipment-rows` 53317900..8c30c2a5. It adds 22 filters, heaters and lights, refits `gear-price-curves.json`, adds 22 webps, and changes the gearSpec / gearCatalog counts and the stand label tests.
+4. Conflicts are expected in `test/gearFilters.test.ts` and `test/tech.test.ts` LOCKs and `compromise.test.ts`. Keep the code from both sides. Regenerate the LOCK at the 11-16 clock after the whole stack (C25's trick: a temp copy of the test file that writes the computed numbers to a json, then diff; vitest swallows console.log). Say in the comment which moves come from the stands (SP1: planted / blackwater +$30.19, the real $180 Seapora Roman) and which from PL2.
+5. Then build, run the full suite, push, and check the deploy. Tell Nathan the stands are live with one in-tank shot from tanklook.com.
+
+## In flight
+- **IL1** (local_4f7c1d7e-3e3d-4ee3-aa18-e2d0685b87f5, Sonnet): R99, heated canisters count as the heater; in-line heaters / CO2 diffusers / reactors on the canister return. It reports to C25: SendMessage it once that you are its coordinator now.
+- **PM1** (R98) is NOT started. It is the gear photo-model pilot: 7 hoods + 9 NICREW lights, measured per look. Nathan said yes, but to start after the 5-hour reset (12:20 pm EST 11-16). Start it then on Sonnet (brief `prompts/lane-PM1-gear-photo-models.md`). Its report must quote cost per look and an estimate for the rest; bring that to Nathan before any more PM lanes start.
+- **HD1** (local_dfbb4235-...) and **PL1** (local_2642fce8-...) are done once merged; offer to archive them.
+- **SW2** (fish behaviour) is idle. New behaviour asks go there.
+
+## R100 Plumbing view: waiting on Nathan
+C25 proposed a mockup first (see C25's last reply): 3 static schematic mockups (HOB planted; canister + in-line CO2 / heater; reef with overflow box + sump + return pump), then the flow-graph data model, then the view, with overflow boxes and sumps as real products in their own lane. Start nothing until Nathan picks.
+
+## Carried over from C24 / C25
+- Needs a live check (none verified yet): R85-R94 (see coordinator-25.md), R91 Full screen (press F on tanklook.com in the browser pane).
+- Waiting on Nathan: DM1, SS1, DL1, CP2, BL1; R81 waits on his screenshot.
+- Known oddities: see coordinator-25.md.
+- Every "check": run `python scripts/request_audit.py` and compare with research/requests.md (next free id: R101).
+
+House rules: end every reply with "Build N"; US units; screen questions come with pictures; verify visually before "done"; no polling or waiting turns; hand off at ~12 % context or ~120 turns.
