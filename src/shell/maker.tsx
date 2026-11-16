@@ -10,6 +10,8 @@ import { IN_MM, type BraceLocks, type BraceSpec } from '../scene/glassSolver';
 import { customGlass } from '../scene/autoGlass';
 import { braceFor, type BraceLevel } from '../scene/glassEnvelope';
 import { GlassOptions } from './glassOptions';
+import { FailLabels } from './failView';
+import { failOverlay } from './failOverlay';
 import { EDGE_HELP, EDGE_OPTS, edgeSummary, edgeWarnings, edgeOf } from './logic/edges';
 import type { EdgeFinish } from '../scene/customTanks';
 import { SizeMode, SfMode, WideView, type SolveMode } from './glassSolve';
@@ -88,6 +90,8 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
   const [wide, setWide] = useState(false);
   const mem = useRef(shapeMemory());
   const viewRef = useRef<HTMLElement>(null);
+  // GS4: the 3D overlay of "Where it fails" is attached for as long as the maker is open (removed with it)
+  useEffect(() => { failOverlay.attach(() => getViewer?.(), store, viewHost); return () => failOverlay.detach(); }, []);
   const cam0 = useRef<CameraSettings>(structuredClone(store.tank.camera));
   const name = store.scene.name || 'Untitled';
 
@@ -234,6 +238,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
       <main class="mview" ref={viewRef}>
         {inSetup ? <div class="ov mbanner glass">Your setup with this tank. <button type="button" class="btn sm" onClick={() => setInSetup(false)}>Back now</button></div> : <>
           <EdgeLabels store={store} getViewer={getViewer} T={spec.tank} u={u} onCommit={commitDim} />
+          <FailLabels store={store} getViewer={getViewer} />
           <div class="ov dims glass" aria-label="Dimensions"><span><b>{facts.L}</b> {shape === 'round' || shape === 'bowl' ? 'across' : 'length'}</span><span><b>{facts.D}</b> {shape === 'bow' ? 'depth at centre' : 'depth'}</span><span><b>{facts.H}</b> height</span>{facts.bow ? <span><b>{facts.bow}</b> bow</span> : null}</div>
         </>}
         <div class="ov mfacts">

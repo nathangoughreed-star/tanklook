@@ -606,3 +606,5 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .failgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
 .failcard { background: var(--bg-raised); border: 1px solid var(--line); border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
 .failsvg { width: 100%; height: auto; display: block; max-height: 300px; }
+.failcard.hot { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.failtag { pointer-events: none; transform: translate(-50%, -135%); white-space: nowrap; font-size: var(--fs-xs); padding: 2px 6px; }

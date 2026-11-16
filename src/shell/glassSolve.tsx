@@ -75,7 +75,7 @@ export function SfMode({ T, rim, inp, setInp, sf, bottom, u, level, setLevel }: 
     <div class={`hint${p.ok ? '' : ' bad'}`} aria-live="polite">{p.verdict}</div>
     {p.joints.length ? <><div class="cap">Silicone joints</div>{p.joints.map(j => <div class="drow"><span>{j.label}</span><Pill tone={j.ok ? 'ok' : 'bad'}>{j.use}</Pill></div>)}</> : null}
     {p.joints.some(j => !j.ok) ? <div class="dwarn warn">⚠ A silicone joint is over its design stress: widen the bond or use more silicone.</div> : null}
-    {p.fits ? <FailView d={diag} u={u} /> : null}
+    {p.fits ? <FailView d={diag} u={u} dims={{ L: T.L, D: T.D, H: T.H }} /> : null}
   </>;
 }
 

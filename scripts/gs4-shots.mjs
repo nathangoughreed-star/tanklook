@@ -17,6 +17,14 @@ async function run(tag, w, h, mobile) {
     await pick('.failview .seg button', 'Deflection'); await sleep(500); await toFail(); await shot(tag + '-' + name + '-deflection', 700);
     await pick('.failview .seg button', 'Stress'); await sleep(300);
   }
+  // the 3D overlay (tank is the failing one): both modes; on a phone the view is at the top of the page, so scroll there
+  const top = () => ev("(() => { window.scrollTo(0, 0); [...document.querySelectorAll('*')].filter(e => e.scrollTop > 0).forEach(e => { e.scrollTop = 0; }); return true })()");
+  for (const [m, name] of [['Stress', 'stress'], ['Deflection', 'deflection']]) {
+    await pick('.failview .seg button', m); await sleep(1500);
+    if (mobile) await top(); else await toFail();
+    await shot(tag + '-fail-3d-' + name, 1200);
+  }
+  await pick('.failview .seg button', 'Stress');
 }
 if (!process.env.ONLY || process.env.ONLY === '1280') await run('1280', 1280, 900, false);
 if (!process.env.ONLY || process.env.ONLY === '390') await run('390', 390, 844, true);
