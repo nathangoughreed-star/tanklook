@@ -48,3 +48,41 @@ export async function strip({ frames = 6, span = 60, w = 560, set = 'crawl', nam
   const walked = Object.fromEntries(Object.entries(spots).map(([id, p]) => [id, +(p.slice(1).reduce((a, q, k) => a + Math.hypot(q[0] - p[k][0], q[1] - p[k][1]), 0) / 25.4).toFixed(1)]));
   return { size: [c.width, c.height], walkedInchesBetweenFrames: walked, n: Object.keys(spots).length };
 }
+
+/** R93: a frame strip of one African dwarf frog's breathing trip (rest on the substrate, kick up, pause at the top, dart down). `r.adf()` -> shots/r93_adf.png */
+const field_top = () => 0;
+export async function adf({ w = 300 } = {}) {
+  const g = await import('/scripts/ground-shots.js'); await g.ex('terrarium');
+  const { store, viewer } = window.__gb;
+  store.edit(t => {
+    t.tank = { L: 600, D: 300, H: 300 }; t.items = []; t.layout = { id: 'none', seed: 1 }; t.terrain.on = false; t.water.on = true; t.water.level = 250;
+    t.fish = [{ id: 1, species: 'adf', x: 300, y: 8, depth: 150, yaw: 0, pitch: 0, roll: 0, bend: 0 }];
+  });
+  await wait(900); await viewer.buildNow?.(); viewer.swim = true; viewer.swimAuto = false;
+  store.cam(c => { c.az = 0; c.el = 8; c.zoom = 1.6; }); store.select(null); await viewer.buildNow?.(); await wait(300);
+  viewer.swayScan = true; viewer.dirty = true; viewer.draw(); viewer.crawl.reset();
+  const tick = (dt = 0.1) => { viewer.swayT += dt * 1000; viewer.crawl.update(viewer.crawlers, dt, true, false); viewer.roamT = viewer.swayT; };
+  const m = viewer.crawlers[0], y0 = m.position.y, cv = viewer.renderer.domElement; let n = 0;
+  const frames = [], snap = async () => { viewer.dirty = true; viewer.draw(); frames.push([await createImageBitmap(cv), m.position.y]); };
+  await snap(); // at rest on the substrate
+  while (m.position.y < y0 + 15 && n++ < 20000) tick(0.1); // wait for the first trip
+  
+  let phase = 0, peak = y0, tTop = 0; n = 0;
+  while (phase < 7 && n++ < 4000) {
+    const y = m.position.y; peak = Math.max(peak, y);
+    if (phase === 0 && y > y0 + 50) { await snap(); phase = 1; }
+    else if (phase === 1 && y > y0 + 110) { await snap(); phase = 2; }
+    else if (phase === 2 && y > y0 + 170) { await snap(); phase = 3; tTop = 0; }
+    else if (phase === 3) { tTop += 0.05; if (tTop > 1.0) { await snap(); phase = 4; } }
+    else if (phase === 4 && y < peak - 40 && tTop > 0) { await snap(); phase = 5; }
+    else if (phase === 5 && y < peak - 120) { await snap(); phase = 6; }
+    else if (phase === 6 && y < y0 + 2) { await snap(); phase = 7; }
+    tick(0.05);
+  }
+  const W = frames[0][0].width, H = frames[0][0].height, cw = W * 0.22, sc = w / cw, h = Math.round(H * sc);
+  const { Vector3 } = await import('three'), vp = viewer.vps[0], q = new Vector3(m.position.x, 120, m.position.z).project(vp.cam), cx = (q.x + 1) / 2 * W;
+  const c = new OffscreenCanvas(w * frames.length, h), x = c.getContext('2d');
+  frames.forEach(([im], i) => x.drawImage(im, cx - cw / 2, 0, cw, H, i * w, 0, w, h));
+  await fetch('/__shot?name=r93_adf', { method: 'POST', body: await c.convertToBlob({ type: 'image/png' }) });
+  return { ys: frames.map(f => Math.round(f[1])), size: [c.width, c.height] };
+}

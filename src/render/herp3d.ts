@@ -494,6 +494,7 @@ export function herpBody(art: string, w: number, surface?: Surface | 'perch', li
       const g = K(':limb' + i, () => limbGeometry(l, h.ground, own || lcol, arth)), gf = l.farJs ? K(':limbf' + i, () => limbGeometry({ ...l, js: l.farJs! }, h.ground, own || lcol, arth)) : g;
       for (const side of [1, -1]) {
         const m = new THREE.Mesh(side < 0 ? gf : g, lm); m.scale.z = side;
+        m.userData.limb = { i, rx: l.js[0][0] - 0.5, ry: -l.js[0][1] }; // the root joint, so a limb can swing about it (a frog's kick, render/crawl.ts)
         // `far`: the far side's copy is scaled about the limb's root (a hermit crab's small right claw against the big left one)
         if (side < 0 && l.far && l.far !== 1) { const k = l.far, r = l.js[0]; m.scale.set(k, k, -k); m.position.set((r[0] - 0.5) * (1 - k), -r[1] * (1 - k), 0); }
         put(m);

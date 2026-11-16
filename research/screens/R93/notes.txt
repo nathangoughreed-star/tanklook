@@ -1,0 +1,3 @@
+R93 African dwarf frog: one breathing trip in a 600x300x300 mm tank (water 250 mm), 8 frames left to right: at rest on the substrate, kick up (3 frames, hind legs kicking, forelegs fluttering), pause at the surface (2 frames, nose at the water line, legs trailing), dive (levels out before landing), settled.
+Rest of the time: still (about 85% of it), leg-walks 1-3 inches at 0.5 in/s, a trip every ~150 s on average (90-240). Climb about 1.5 body lengths/s with the kick pulsing it; dive peaks near 5.5.
+The model has no skeleton: the two limbs per side are separate meshes, so the kick swings them about their root joints.

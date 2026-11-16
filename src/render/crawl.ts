@@ -10,6 +10,14 @@ import type { SwimField, V3 } from '../scene/swimTypes';
 export interface CrawlData { spec: Omit<CrawlSpec, 'plane'> & { plane?: { u: V3; v: V3 } }; world: SwimWorld }
 interface Home { p: THREE.Vector3; q: THREE.Quaternion; sp?: THREE.Vector3; ex: number; ey: number }
 const D2R = Math.PI / 180, _e = new THREE.Euler();
+interface Limb { m: THREE.Object3D; i: number; rx: number; ry: number }
+const limbsOf = new WeakMap<THREE.Object3D, Limb[]>();
+/** Swing a frog's limbs about their root joints: limb 0 (hind) by `hind`, limb 1 (fore) by `fore` radians, about the body's side axis. */
+function poseLimbs(root: THREE.Object3D, hind: number, fore: number) {
+  let ls = limbsOf.get(root);
+  if (!ls) { ls = []; root.traverse(o => { const l = o.userData.limb; if (l) ls!.push({ m: o, i: l.i, rx: l.rx, ry: l.ry }); }); limbsOf.set(root, ls); }
+  for (const l of ls) { const a = l.i === 0 ? hind : fore, c = Math.cos(a), sn = Math.sin(a); l.m.rotation.z = a; l.m.position.set(l.rx - (l.rx * c - l.ry * sn), l.ry - (l.rx * sn + l.ry * c), 0); }
+}
 
 /** Bounds of a flat vertical pane for a body of `size`, and which way is into the water; null if the pane is not flat (bowl, relief wall). */
 function paneOf(field: SwimField, home: { x: number; y: number; z: number }, u: V3, v: V3, size: number): CrawlPlane | null {
@@ -52,6 +60,7 @@ export class Crawl {
       m.position.set(p.x, p.y, p.z);
       if (d.spec.plane) m.quaternion.setFromEuler(_e.set(h.ex, h.ey, p.yaw * D2R, 'YXZ')); // spin about the pane normal
       else m.quaternion.setFromEuler(_e.set(p.roll * D2R, p.yaw * D2R, p.pitch * D2R, 'YXZ'));
+      if (d.spec.kind === 'frog') poseLimbs(m, p.hind, p.fore);
       m.updateMatrix(); m.updateMatrixWorld(true);
       const sh = m.userData.shadow as THREE.Object3D | undefined;
       if (sh && h.sp) { sh.position.set(h.sp.x + p.x - h.p.x, h.sp.y, h.sp.z + p.z - h.p.z); sh.rotation.y = p.yaw * D2R; sh.updateMatrixWorld(true); }
@@ -61,6 +70,7 @@ export class Crawl {
   private home() {
     for (const m of this.moved) {
       const h = this.homes.get(m); if (!h) continue;
+      if ((m.userData.crawl as CrawlData).spec.kind === 'frog') poseLimbs(m, 0, 0);
       m.position.copy(h.p); m.quaternion.copy(h.q); m.updateMatrix(); m.updateMatrixWorld(true);
       const sh = m.userData.shadow as THREE.Object3D | undefined; if (sh && h.sp) { sh.position.copy(h.sp); sh.updateMatrixWorld(true); }
     }

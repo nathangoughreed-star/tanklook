@@ -59,6 +59,6 @@ describe('crawlSim', () => {
     for (let s = 0; s < 900; s++) { a.step(1 / 30); b.step(1 / 30); }
     for (const sp of specs) expect(a.pose(sp.id)).toEqual(b.pose(sp.id));
     a.reset();
-    for (const sp of specs) expect(a.pose(sp.id)).toEqual(sp.home);
+    for (const sp of specs) expect(a.pose(sp.id)).toMatchObject(sp.home);
   });
 });

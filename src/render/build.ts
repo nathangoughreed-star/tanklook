@@ -1674,7 +1674,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
   // a crawler: the sim (scene/crawlSim.ts) walks this mesh from the spot it was placed at, which is its Reset pose
   const markCrawler = (m: THREE.Mesh, f: Fish, speciesId: string, w: number, cp: NonNullable<ReturnType<typeof crawlPace>>, glass: boolean) => {
     const e = new THREE.Euler().setFromQuaternion(m.quaternion, 'YXZ'), R2D = 180 / Math.PI;
-    const spec: CrawlData['spec'] = { id: f.id, len: w, kind: cp.kind, speed: cp.inPerSec * 25.4, graze: cp.graze, hop: cp.hopPerMin,
+    const spec: CrawlData['spec'] = { id: f.id, len: w, kind: cp.kind, speed: cp.inPerSec * 25.4, graze: cp.graze, hop: cp.hopPerMin, trip: cp.tripS,
       rest: glass ? 0 : m.position.y - (groundHeight(S, T, m.position.x, -m.position.z) + rise(m.position.x, -m.position.z)),
       home: { x: m.position.x, y: m.position.y, z: m.position.z, yaw: e.y * R2D, pitch: e.z * R2D, roll: e.x * R2D } };
     if (glass) { // the pane's own axes at spin 0: the card without its roll about its normal
@@ -1756,7 +1756,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
         home: { x: m.position.x, y: m.position.y, z: m.position.z, yaw: e.y * R2D, pitch: e.z * R2D, roll: e.x * R2D } }, world: { S, T, rise } };
     }
     if (clinger && f.surface !== 'hardscape') markCling(m, f, w, sp, false);
-    const cp = rests && !herp && f.surface !== 'hardscape' && f.surface !== 'under' ? crawlPace(sp.id) : undefined; // shrimp, crabs, crayfish: crawl the ground (render/crawl.ts)
+    const cp = rests && (!herp || sp.id === 'adf') && f.surface !== 'hardscape' && f.surface !== 'under' ? crawlPace(sp.id) : undefined; // shrimp, crabs, crayfish: crawl the ground (render/crawl.ts)
     if (cp) markCrawler(m, f, sp.id, w, cp, false);
     register(m, w, h);
     if (f.surface === 'hardscape' || f.surface === 'under') return;

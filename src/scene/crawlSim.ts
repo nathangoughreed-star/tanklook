@@ -21,7 +21,7 @@ export interface CrawlSpec {
   /** body length (mm) */
   len: number;
   /** 'shrimp' hops now and then, 'snail' never leaves its surface; crabs and crayfish just walk */
-  kind: 'shrimp' | 'snail' | 'crab';
+  kind: 'shrimp' | 'snail' | 'crab' | 'frog';
   /** walking speed (mm/s) */
   speed: number;
   /** share of the time stopped to graze, 0..1 */
@@ -32,23 +32,27 @@ export interface CrawlSpec {
   rest: number;
   plane?: CrawlPlane;
   home: SwimPose;
+  /** frog: mean seconds between breathing trips to the surface */
+  trip?: number;
 }
+/** Pose plus the leg angles (rad, about the body's side axis) a frog's limbs are drawn at: `hind` kick (0 at rest, negative = swept back), `fore`. 0 for everything else. */
+export interface CrawlPose extends SwimPose { hind: number; fore: number }
 export interface CrawlSim {
   step(dt: number): void;
-  pose(id: number): SwimPose | null;
+  pose(id: number): CrawlPose | null;
   reset(ids?: number[]): void;
 }
 
 const D2R = Math.PI / 180, R2D = 180 / Math.PI;
-const WALK = 0, GRAZE = 1, HOP = 2;
+const WALK = 0, GRAZE = 1, HOP = 2, ASC = 3, TOP = 4, DIVE = 5;
 const FAN = [0, 0.5, -0.5, 1.0, -1.0, 1.6, -1.6, 2.4, -2.4];
 
 export function makeCrawlSim(specs: CrawlSpec[], field: SwimField, seed: number): CrawlSim {
   const n = specs.length, R = rng(seed ^ 0x2545f491);
   const F = () => new Float64Array(n);
   const px = F(), pz = F(), pu = F(), pv = F(), th = F(), spd = F(), modeT = F(), hopT = F(), hopY = F(), hopVx = F();
-  const w1 = F(), p1 = F(), w2 = F(), p2 = F(), pitchS = F(), rollS = F(), turnS = F(), nod = F();
-  const mode = new Uint8Array(n), poses: SwimPose[] = [], idx = new Map<number, number>();
+  const tripT = F(), kph = F(), w1 = F(), p1 = F(), w2 = F(), p2 = F(), pitchS = F(), rollS = F(), turnS = F(), nod = F();
+  const mode = new Uint8Array(n), poses: CrawlPose[] = [], idx = new Map<number, number>();
   const grad: V3 = [0, 0, 0];
   const body = (i: number) => Math.max(2, specs[i].len * 0.22); // half-footprint kept clear (mm)
   const hh = (i: number) => Math.max(5, specs[i].len * 0.25); // probe height above the ground (mm)
@@ -79,11 +83,11 @@ export function makeCrawlSim(specs: CrawlSpec[], field: SwimField, seed: number)
     if (P) { hu[i] = h.x * P.u[0] + h.y * P.u[1] + h.z * P.u[2]; hv[i] = h.x * P.v[0] + h.y * P.v[1] + h.z * P.v[2]; pu[i] = hu[i]; pv[i] = hv[i]; th[i] = h.yaw * D2R; }
     else { px[i] = h.x; pz[i] = h.z; th[i] = h.yaw * D2R; }
     spd[i] = 0; hopT[i] = 0; hopY[i] = 0; pitchS[i] = h.pitch; rollS[i] = h.roll; turnS[i] = 0; nod[i] = 0;
-    mode[i] = GRAZE; modeT[i] = R() * 3;
-    const o = poses[i]; o.x = h.x; o.y = h.y; o.z = h.z; o.yaw = h.yaw; o.pitch = h.pitch; o.roll = h.roll;
+    mode[i] = GRAZE; modeT[i] = R() * 3; tripT[i] = s.trip ? s.trip * (0.2 + R() * 0.6) : 1e9; kph[i] = 0;
+    const o = poses[i]; o.hind = 0; o.fore = 0; o.x = h.x; o.y = h.y; o.z = h.z; o.yaw = h.yaw; o.pitch = h.pitch; o.roll = h.roll;
   }
   for (let i = 0; i < n; i++) {
-    idx.set(specs[i].id, i); poses.push({ x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 });
+    idx.set(specs[i].id, i); poses.push({ x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0, hind: 0, fore: 0 });
     w1[i] = 0.2 + R() * 0.3; p1[i] = R() * 6.28; w2[i] = 0.6 + R() * 0.5; p2[i] = R() * 6.28;
     init(i);
   }
@@ -95,9 +99,40 @@ export function makeCrawlSim(specs: CrawlSpec[], field: SwimField, seed: number)
     else modeT[i] = Math.max(1, walk * s.graze / Math.max(0.05, 1 - s.graze) * (0.6 + R() * 0.8));
   }
 
+  /** A frog's breathing trip: kick straight up, a pause at the top, a quick dart back down. Returns false if the column above is not clear. */
+  function startTrip(i: number): boolean {
+    const s = specs[i], f0 = field.floorAt(px[i], pz[i]) + s.rest, top = field.waterTop - s.len * 0.3, thr = s.len * 0.3;
+    if (top - f0 < s.len * 2) return false;
+    for (let k = 1; k <= 8; k++) if (field.clearance(px[i], f0 + (top - f0) * k / 8, pz[i], undefined, thr) < thr * 0.9) return false;
+    mode[i] = ASC; spd[i] = 0; kph[i] = 0; return true;
+  }
+  function trip(i: number, dt: number, T: number) {
+    const s = specs[i], o = poses[i], f0 = field.floorAt(px[i], pz[i]) + s.rest, lift = field.waterTop - s.len * 0.3 - f0;
+    let ph = 0, hind = 0, fore = 0, pit = 0;
+    if (mode[i] === ASC) {
+      kph[i] += dt * 2.2 * 2 * Math.PI; ph = Math.sin(kph[i]);
+      hopY[i] += s.len * 1.5 * (1 + 0.7 * ph) * dt; // the kick pulses the climb
+      hind = -0.45 + 0.75 * ph; fore = 0.2 * Math.sin(kph[i] + 1); pit = 60;
+      if (hopY[i] >= lift) { hopY[i] = lift; mode[i] = TOP; modeT[i] = 1.5 + R() * 2.5; }
+    } else if (mode[i] === TOP) {
+      modeT[i] -= dt; hopY[i] = lift + s.len * 0.1 * Math.sin(T * 2.5 + p1[i]);
+      hind = -0.25 + 0.15 * Math.sin(T * 3); fore = 0.1 * Math.sin(T * 2); pit = 35;
+      if (modeT[i] <= 0) mode[i] = DIVE;
+    } else {
+      const v = Math.max(s.len * 0.6, Math.min(s.len * 5.5, hopY[i] * 4)); // quick, easing off near the bottom
+      hopY[i] -= v * dt; hind = -0.7; fore = 0.3; pit = -60 * Math.min(1, hopY[i] / (s.len * 3)); // levels out before it lands
+      if (hopY[i] <= 0) { hopY[i] = 0; setMode(i, GRAZE); modeT[i] = 4 + R() * 8; tripT[i] = s.trip! * (0.5 + R()); }
+    }
+    pitchS[i] += (pit - pitchS[i]) * Math.min(1, dt * 6); rollS[i] += (0 - rollS[i]) * Math.min(1, dt * 4);
+    o.hind += (hind - o.hind) * Math.min(1, dt * 10); o.fore += (fore - o.fore) * Math.min(1, dt * 10);
+    o.x = px[i]; o.z = pz[i]; o.y = f0 + hopY[i]; o.yaw = th[i] * R2D; o.pitch = pitchS[i]; o.roll = rollS[i];
+  }
+
   function inner(dt: number, T: number) {
     for (let i = 0; i < n; i++) {
       const s = specs[i], isP = !!s.plane, b = body(i);
+      if (mode[i] >= ASC) { trip(i, dt, T); continue; }
+      if (s.trip && (mode[i] === GRAZE || mode[i] === WALK) && (tripT[i] -= dt) <= 0) { if (startTrip(i)) { trip(i, dt, T); continue; } tripT[i] = 20; }
       modeT[i] -= dt;
       if (mode[i] === HOP) {
         hopT[i] -= dt;
@@ -180,6 +215,7 @@ export function makeCrawlSim(specs: CrawlSpec[], field: SwimField, seed: number)
       if (mode[i] === HOP) nd = 14 * Math.cos(Math.PI * Math.max(0, Math.min(1, 1 - hopT[i] / 0.85)));
       pitchS[i] += (pitch + nd - pitchS[i]) * Math.min(1, dt * 8); rollS[i] += (roll - rollS[i]) * Math.min(1, dt * 8);
       o.x = px[i]; o.z = pz[i]; o.y = f0 + s.rest + hopY[i]; o.yaw = th[i] * R2D; o.pitch = pitchS[i]; o.roll = rollS[i];
+      if (s.kind === 'frog') { const wk = mode[i] === WALK && spd[i] > s.speed * 0.2, sw = Math.sin(T * 2 * Math.PI * 0.9 + p1[i]); o.hind += ((wk ? 0.4 * sw : 0) - o.hind) * Math.min(1, dt * 8); o.fore += ((wk ? -0.3 * sw : 0) - o.fore) * Math.min(1, dt * 8); } // leg-walk: legs swing alternately; at rest the splayed pose
     }
   }
 
