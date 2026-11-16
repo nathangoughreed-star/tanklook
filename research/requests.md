@@ -105,6 +105,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R87 | 11-15 | Old-UI light layout controls missing in the new UI: number of lights (pucks / pendants), rows, spacing, hanging height, beam angle, brightness, kelvin, watts / PAR, front-to-back position and its Optimize (even coverage). Missed by the 11-15 old-vs-new audit | PG1 | - | - | - | port from ui/panels.ts lKeys + light Optimize |
 | R88 | 11-15 | Gouramis swim too fast in the new fish animation; slow them down (all gourami ids: gourami, dwarfgourami, honeygourami) | SW2 | - | - | - | per-species swim speed |
 | R89 | 11-15 | Add sparkling gourami (Trichopsis pumila) and croaking gourami (Trichopsis vittata) to the roster | FS1 | - | - | - | same add-species path as R79 sharks |
+| R90 | 11-15 | Shrimp and snails crawl around: walk / glide over substrate, hardscape, plants and glass instead of sitting still or swimming like fish | SW2 | - | - | - | crawler mode in the swim sim |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
