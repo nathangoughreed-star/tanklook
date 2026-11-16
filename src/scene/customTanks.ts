@@ -2,6 +2,7 @@
 // owned flag) kept in a per-browser library (localStorage `tanklook.customTanks`) shared by every setup. A setup holds its OWN copy (its tank + render
 // glass / rim, plus `TankSetup.customTank` = name, library id, version, own price, owned), so a library edit or delete never changes a saved setup.
 // Pure data layer: no UI. Storage is injected (node tests), and defaults to localStorage when there is one.
+import { customGlass } from './autoGlass';
 import { defaultSetup } from './defaults';
 import { parseTank, parseCustomRef } from './validate';
 import { newUid } from './uid';
@@ -134,7 +135,7 @@ export const refOf = (e: CustomTank): CustomTankRef =>
 /** Put a library tank on a setup as the setup's own copy (tank, glass, rim, ref); a commercial product or kit is released. The caller regrids terrain / refits the scene as it does for any tank change. */
 export function useCustomTank(S: TankSetup, e: CustomTank): void {
   S.tank = structuredClone(e.tank);
-  S.render.glass = e.glass; S.render.glassType = e.glassType; S.render.rim = e.rim; setRenderBrace(S.render, e);
+  S.render.glass = customGlass(e.glass, e.tank, e.rim); S.render.glassType = e.glassType; S.render.rim = e.rim; setRenderBrace(S.render, e);
   S.customTank = refOf(e);
   delete S.product; delete S.integrated;
 }

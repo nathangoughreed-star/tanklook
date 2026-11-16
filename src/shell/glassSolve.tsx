@@ -2,11 +2,11 @@
 // different levels of bracing?"): the Glass check's "Solve for" modes. Glass = the existing check (the thinnest glass for this tank). Size = the
 // largest tank for the glass and safety factor given. Safety factor = what this glass gives on this tank. Engine: scene/glassEnvelope.ts.
 import { useEffect, useMemo, useState } from 'preact/hooks';
-import { IN_MM, STOCK_METRIC, STOCK_US } from '../scene/glassSolver';
+import { IN_MM, stockAll } from '../scene/glassSolver';
 import { BRACE_LEVELS, heightTable, type BraceLevel } from '../scene/glassEnvelope';
 import { Pill } from './ui';
 import { H_MAX, baseOf, lenText, sfPanel, sizeTable, type SizeCell, type SolveInputs } from './logic/tankEnvelope';
-import { glassText, type Units } from './logic/tank';
+import { glassOption, glassText, type Units } from './logic/tank';
 
 export type SolveMode = 'glass' | 'size' | 'sf';
 type Tk = { L: number; D: number; H: number };
@@ -16,7 +16,7 @@ const fromU = (v: number, u: Units) => u === 'in' ? v * IN_MM : v * 10;
 
 /** Shared inputs: glass, strips, depth. */
 function Inputs({ inp, setInp, T, u, strips, depth }: { inp: SolveInputs; setInp: (i: SolveInputs) => void; T: Tk; u: Units; strips: boolean; depth: boolean }) {
-  const stock = u === 'in' ? STOCK_US : STOCK_METRIC, unit = u === 'in' ? 'in' : 'cm';
+  const stock = stockAll(u), unit = u === 'in' ? 'in' : 'cm';
   const opts = (cur: number) => [...new Set([...stock, cur])].sort((a, b) => a - b);
   const num = (label: string, mm: number, set: (mm: number) => void, min: number, max: number, aria: string) => (
     <div class="row"><span class="lbl">{label}</span><span class="val"><input class="input num" type="number" min={toU(min, u)} max={toU(max, u)} step={u === 'in' ? 0.25 : 0.5} value={toU(mm, u)} aria-label={aria}
@@ -24,14 +24,14 @@ function Inputs({ inp, setInp, T, u, strips, depth }: { inp: SolveInputs; setInp
   return <>
     <div class="row"><span class="lbl">Glass</span>
       <select class="select" aria-label="Glass thickness for every wall and the bottom" value={String(inp.glass)} onChange={e => setInp({ ...inp, glass: +(e.target as HTMLSelectElement).value })}>
-        {opts(inp.glass).map(t => <option value={String(t)}>{glassText(t, u)} everywhere</option>)}
+        {opts(inp.glass).map(t => <option value={String(t)}>{glassOption(t, u)} everywhere</option>)}
       </select><span /></div>
     {depth ? num('Depth', inp.depth ?? T.D, mm => setInp({ ...inp, depth: mm }), 6 * IN_MM, 48 * IN_MM, 'Tank depth, front to back') : null}
     {strips ? <>
       {num('Strip width', inp.stripWidth, mm => setInp({ ...inp, stripWidth: mm }), 2 * IN_MM, 4 * IN_MM, 'Brace strip width')}
       <div class="row"><span class="lbl">Strip glass</span>
         <select class="select" aria-label="Smallest brace strip thickness" value={String(inp.strip)} onChange={e => setInp({ ...inp, strip: +(e.target as HTMLSelectElement).value })}>
-          {opts(inp.strip).map(t => <option value={String(t)}>{glassText(t, u)} or thicker</option>)}
+          {opts(inp.strip).map(t => <option value={String(t)}>{glassOption(t, u)} or thicker</option>)}
         </select><span /></div>
     </> : null}
   </>;
@@ -96,7 +96,7 @@ export function WideView({ T, rim, inp, setInp, sf, bottom, u, onClose }: { T: T
       <div class="envcard">
         <div class="envhead"><b>What can I build?</b><button type="button" class="btn sm" onClick={onClose}>Close</button></div>
         <div class="hint">Largest height for each length at {glassText(inp.glass, u)} glass, safety factor {sf.toFixed(1)}, {lenText(inp.depth ?? T.D, u)} deep, filled to the brim. Set the glass, strips and depth in Glass check.</div>
-        <div class="seg envin" role="group" aria-label="Glass">{(u === 'in' ? STOCK_US : STOCK_METRIC).filter(t => t >= (u === 'in' ? 0.1875 * IN_MM : 5) && t <= (u === 'in' ? 0.75 * IN_MM : 19)).map(t => <button type="button" class={Math.abs(inp.glass - t) < 0.01 ? 'on' : ''} aria-pressed={Math.abs(inp.glass - t) < 0.01} onClick={() => setInp({ ...inp, glass: t })}>{glassText(t, u)}</button>)}</div>
+        <div class="seg envin" role="group" aria-label="Glass">{stockAll(u).filter(t => t >= 4.7 && t <= 19.1).map(t => <button type="button" class={Math.abs(inp.glass - t) < 0.01 ? 'on' : ''} aria-pressed={Math.abs(inp.glass - t) < 0.01} onClick={() => setInp({ ...inp, glass: t })}>{glassText(t, u)}</button>)}</div>
         {!data ? <div class="hint" aria-live="polite">Working it out…</div> : <svg class="envsvg" viewBox={`0 0 ${W} ${Ht}`} role="img" aria-label="Largest height against length for each bracing level">
           {ticks.map(h => <g><line x1={x0} x2={x1} y1={Y(h)} y2={Y(h)} stroke="var(--line)" /><text x={x0 - 6} y={Y(h) + 4} text-anchor="end" font-size="11" fill="var(--text-3)">{Math.round(h / unitMm)}</text></g>)}
           {lens.map(L => <text x={X(L)} y={y0 + 16} text-anchor="middle" font-size="11" fill="var(--text-3)">{Math.round(L / unitMm)}</text>)}

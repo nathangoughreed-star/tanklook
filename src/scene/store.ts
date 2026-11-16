@@ -4,6 +4,7 @@ import { emptyScene } from './defaults';
 import { parseScene } from './validate';
 import { clearCams, eyeClear, limitOrbit } from './orbit';
 import { fitTable } from './table';
+import { setGlassUnits } from './physics';
 import { sameGrid, sampleTerrain } from './terrain';
 import { keepInWater } from './water';
 import { clearTopGear } from './topgear';
@@ -233,6 +234,7 @@ export class Store {
     if (this.selId != null && !this.tank.fish.some(f => f.id === this.selId)) this.selId = null;
     if (this.selItem != null && !this.tank.items.some(it => it.id === this.selItem)) this.selItem = null;
     this.pruneExtras();
+    setGlassUnits(this.scene.units);
     this.emit(kind);
   }
 
@@ -364,7 +366,7 @@ export class Store {
     this.scene = scene; this.rev++; for (const t of scene.tanks) ensureUids(t);
     this.editOn = [0, 1].map(k => k === scene.active);
     this.selId = null; this.selItem = null; this.extraFish = []; this.extraItems = []; this.selPatches = [];
-    this.loadedBy = 'replace'; this.emit('load');
+    this.loadedBy = 'replace'; setGlassUnits(this.scene.units); this.emit('load');
   }
 
   // ---------- Persistence ----------

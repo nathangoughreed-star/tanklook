@@ -8,13 +8,21 @@ export { IN, unitMM, toUnit, fromUnit, fmtLen };
 export const D2R = Math.PI / 180;
 export const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 
-/** Glass thickness (mm): explicit choice, or typical commercial thickness by interior height. */
+/** The scene's unit setting, kept here so the one 'auto' glass table lands on a stocked size in the person's units (the store sets it on every
+ *  scene change; Nathan 2026-11-16: defaults follow the unit setting, every stock size stays selectable). */
+let glassUnits: Units = 'in';
+export const setGlassUnits = (u: Units) => { glassUnits = u; };
+export const getGlassUnits = (): Units => glassUnits;
+/** Typical glass by interior height band (to 13, 17, 25, 30 in, over): US 3/16, 1/4, 3/8, 1/2, 5/8 in; metric 5, 6, 10, 12, 15 mm. 5/16 in (8 mm) is
+ *  special order in the US, so 17-25 in share 3/8 in (R94). */
+const AUTO_US = [3 / 16, 1 / 4, 3 / 8, 1 / 2, 5 / 8].map(t => t * 25.4), AUTO_METRIC = [5, 6, 10, 12, 15];
+
+/** Glass thickness (mm): explicit choice, or typical commercial thickness by interior height, a stocked size in the scene's units. A CUSTOM tank's
+ *  'auto' is solved instead (scene/autoGlass.ts customGlass, applied when the tank goes on a setup). */
 export function glassThickness(T: Tank, glass: RenderSettings['glass']): number {
   if (glass !== 'auto') return glass;
-  const h = T.H / IN;
-  // R94: every band is a size a US shop stocks (3/16, 1/4, 3/8, 1/2, 5/8 in; 5/16 is special order, so 8 mm is gone and 17-25 in share 3/8 in).
-  // In mm the 3/8 in value (9.525) reads as 10 mm, 1/4 in as 6 mm, 3/16 in as 5 mm: stocked metric sizes too. 1/2 and 5/8 read 12.7 / 15.9 mm in metric.
-  return h <= 13 ? 3 / 16 * 25.4 : h <= 17 ? 0.25 * 25.4 : h <= 25 ? 3 / 8 * 25.4 : h <= 30 ? 0.5 * 25.4 : 5 / 8 * 25.4;
+  const h = T.H / IN, i = h <= 13 ? 0 : h <= 17 ? 1 : h <= 25 ? 2 : h <= 30 ? 3 : 4;
+  return (glassUnits === 'in' ? AUTO_US : AUTO_METRIC)[i];
 }
 
 /** Rim strip height and how far the bottom rim drops below the bottom glass (mm). */

@@ -9,6 +9,7 @@ import { getTankModel, modelOfVariant, outerOf, pickRimless, saleLive, soleProdu
 import { dockGroups, optKey, previewSetup, rangeText, isBundle, type DockOpt } from '../../ui/tankDockLogic';
 import { applyTankPick } from '../../ui/tankPick';
 import { applyTankEdit, flatEnds } from '../../scene/tankEdit';
+import { customGlass } from '../../scene/autoGlass';
 import { SHOP_NAME_US, SHOP_NAME_METRIC, STOCK_METRIC, type BraceSpec } from '../../scene/glassSolver';
 import { autoName, setRenderBrace, refOf, specOfSetup, newerVersion, libraryLost, type CustomTank, type CustomTankSpec } from '../../scene/customTanks';
 import { productOf, productName, locksOf as kitLocks } from '../../scene/integrated';
@@ -39,18 +40,22 @@ export const dims = (T: Pick<Tank, 'L' | 'D' | 'H'>, u: Units) => u === 'in'
 export const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
 const gal = (T: Tank) => volume(T).gallons;
 export const galText = (g: number) => `${g < 10 ? +g.toFixed(1) : Math.round(g)} gal`;
-/** Glass thickness as people say it: "3/8 in" (US stock) or "10 mm". */
+/** Glass thickness as people say it: "3/8 in" or "10 mm", a stocked size of either system in either unit setting (both are on sale); other
+ *  values in the person's units. */
 export function glassText(mm: number, u: Units): string {
-  if (u !== 'in') { const st = STOCK_METRIC.find(t => Math.abs(t - mm) <= 0.5); return st != null ? `${st} mm` : Math.abs(mm - Math.round(mm)) < 0.15 ? `${Math.round(mm)} mm` : `${+mm.toFixed(1)} mm`; }
-  const e = mm / IN, n = Math.round(e * 32);
-  if (Math.abs(e * 32 - n) > 0.16) return `${+e.toFixed(2)} in`;
-  const g = (a: number, b: number): number => (b ? g(b, a % b) : a), d = g(n, 32);
-  return n === 32 ? '1 in' : `${n / d}/${32 / d} in`;
+  const frac = () => { const e = mm / IN, n = Math.round(e * 32); if (Math.abs(e * 32 - n) > 0.16) return null; const g = (x: number, y: number): number => (y ? g(y, x % y) : x), d = g(n, 32); return n === 32 ? '1 in' : `${n / d}/${32 / d} in`; };
+  const exactMm = STOCK_METRIC.find(t => Math.abs(t - mm) < 0.01);
+  if (exactMm != null) return `${exactMm} mm`;
+  const f = frac(); if (f) return f;
+  if (u === 'in') return `${+(mm / IN).toFixed(2)} in`;
+  const near = STOCK_METRIC.find(t => Math.abs(t - mm) <= 0.5);
+  return near != null ? `${near} mm` : Math.abs(mm - Math.round(mm)) < 0.15 ? `${Math.round(mm)} mm` : `${+mm.toFixed(1)} mm`;
 }
 
 /** Picker label: the size plus the shop's name for it where there is one ("1/8 in (double strength)"). */
 export function glassOption(mm: number, u: Units): string {
-  const name = u === 'in' ? SHOP_NAME_US[Math.round(mm / IN * 32)] : SHOP_NAME_METRIC[Math.round(mm)];
+  const us = Math.abs(mm / IN * 32 - Math.round(mm / IN * 32)) < 0.16 && !STOCK_METRIC.some(t => Math.abs(t - mm) < 0.01);
+  const name = us ? SHOP_NAME_US[Math.round(mm / IN * 32)] : SHOP_NAME_METRIC[Math.round(mm)];
   return name ? `${glassText(mm, u)} (${name})` : glassText(mm, u);
 }
 
@@ -212,7 +217,7 @@ export function previewRow(base: TankSetup, r: PickRow): TankSetup {
 export function previewSpec(base: TankSetup, e: CustomTankSpec, brace: BraceSpec | null = e.glassBuild?.brace ?? null): TankSetup {
   const p = structuredClone(base);
   if (p.fish.length || p.items.length) adaptToTank(p, structuredClone(e.tank), { thin: false }); else p.tank = structuredClone(e.tank);
-  p.render.glass = e.glass; p.render.glassType = e.glassType; p.render.rim = e.rim; setRenderBrace(p.render, e, brace); delete p.product; delete p.integrated;
+  p.render.glass = customGlass(e.glass, e.tank, e.rim); p.render.glassType = e.glassType; p.render.rim = e.rim; setRenderBrace(p.render, e, brace); delete p.product; delete p.integrated;
   return p;
 }
 
@@ -233,7 +238,7 @@ export function chooseCommercial(s: TankSetup, o: DockOpt): void {
 export function chooseCustom(s: TankSetup, e: CustomTank): void {
   applyTankEdit(s, () => structuredClone(e.tank), {
     // useCustomTank's fields, without the tank itself: applyTankEdit moves the fish and pieces from the old tank to the new one
-    also: t => { t.render.glass = e.glass; t.render.glassType = e.glassType; t.render.rim = e.rim; setRenderBrace(t.render, e); t.customTank = refOf(e); delete t.product; delete t.integrated; },
+    also: t => { t.render.glass = customGlass(e.glass, e.tank, e.rim); t.render.glassType = e.glassType; t.render.rim = e.rim; setRenderBrace(t.render, e); t.customTank = refOf(e); delete t.product; delete t.integrated; },
     thin: true,
   });
   if (!flatEnds(s.tank) && s.lid === 'hood') s.lid = 'glass';
@@ -250,7 +255,7 @@ export function lidHeld(S: TankSetup): { lid: boolean; doors: boolean } {
 export interface MakerFacts { gross: number; water: number; lb: number; footprint: string; L: string; D: string; H: string; bow?: string }
 /** The chips under the maker's view: gallons (gross, and water to the line), filled pounds, outer footprint. */
 export function makerFacts(spec: CustomTankSpec, u: Units): MakerFacts {
-  const T = spec.tank, t = glassThickness(T, spec.glass), o = outerOf(T, t);
+  const T = spec.tank, t = customGlass(spec.glass, T, spec.rim), o = outerOf(T, t);
   const S = makerSetup(spec);
   const water = volumeBetween(T, 0, waterY(T, 1)) / 1e6 / 3.785411784;
   return { gross: gal(T), water, lb: filledLb(S), footprint: u === 'in' ? `${+(o.L / IN).toFixed(1)} × ${+(o.D / IN).toFixed(1)} in` : `${+(o.L / 10).toFixed(1)} × ${+(o.D / 10).toFixed(1)} cm`,
@@ -262,7 +267,7 @@ export function makerFacts(spec: CustomTankSpec, u: Units): MakerFacts {
 export function makerSetup(spec: CustomTankSpec, base?: TankSetup, brace: BraceSpec | null = spec.glassBuild?.brace ?? null): TankSetup {
   const S = structuredClone(base ?? defaultSetup());
   S.tank = structuredClone(spec.tank);
-  S.render = { ...S.render, glass: spec.glass, glassType: spec.glassType, rim: spec.rim, bg: 'none', bgSides: [], bgImages: [] };
+  S.render = { ...S.render, glass: customGlass(spec.glass, spec.tank, spec.rim), glassType: spec.glassType, rim: spec.rim, bg: 'none', bgSides: [], bgImages: [] };
   setRenderBrace(S.render, spec, brace);
   S.fish = []; S.items = []; delete S.patches; S.terrain = { ...S.terrain, on: false, h: [], pools: [] };
   S.substrate = { ...S.substrate, show: false };

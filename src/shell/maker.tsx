@@ -6,12 +6,13 @@ import type { Store } from '../scene/store';
 import type { Tank, TankSetup, TankShape, CameraSettings } from '../scene/types';
 import { applyTankEdit, reshape, shapeMemory, setGlass, setRim } from '../scene/tankEdit';
 import { addCustomTank, dimName, editCustomTank, loadLibrary, saveLibrary, type CustomTankSpec } from '../scene/customTanks';
-import { STOCK_US, STOCK_METRIC, IN_MM, type BraceLocks, type BraceSpec } from '../scene/glassSolver';
+import { stockAll, IN_MM, type BraceLocks, type BraceSpec } from '../scene/glassSolver';
+import { customGlass } from '../scene/autoGlass';
 import { braceFor, type BraceLevel } from '../scene/glassEnvelope';
 import { SizeMode, SfMode, WideView, type SolveMode } from './glassSolve';
 import type { SizeCell, SolveInputs } from './logic/tankEnvelope';
 import { LIMITS } from '../scene/validate';
-import { glassThickness, IN } from '../scene/physics';
+import { IN } from '../scene/physics';
 import { POLY_MAX, POLY_MIN, pieRadius, pieDepth, polySides, PIE_MIN, PIE_MAX, shapeOf } from '../scene/shape';
 import { makerSetup, makerFacts, dimAnchors, placeDims, applyDim, parseLen, setPieAngle, setPolySide, makeRegular, setPolyCount, roundAsPie, type PlacedDim, previewSpec, priceView, chooseCustom, glassText, glassOption, galText, usd, SHAPE_WORD, SHAPE_MAIN, SHAPE_MORE, SIDE_RANGE, specChanged, type Units } from './logic/tank';
 import { glassPanel, defaultChoice, optimizeChoice, startBrace, DISCLAIMER, type GlassChoice, type GlassPanel } from './logic/tankGlass';
@@ -125,7 +126,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
     size(r.edit); setRefuse(r.note ?? ''); return null;
   };
   const T = spec.tank, shape = shapeOf(T), facts = useMemo(() => makerFacts(spec, u), [spec, u]), price = priceView(spec);
-  const stock = u === 'in' ? STOCK_US : STOCK_METRIC, gNow = glassThickness(T, spec.glass);
+  const stock = stockAll(u), gNow = customGlass(spec.glass, T, spec.rim);
   const changed = specChanged(spec, init.spec);
 
   const key = () => JSON.stringify([spec.tank, choice]);
@@ -210,7 +211,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
           <div class="row"><span class="lbl">Glass</span><Seg label="Glass" value={spec.glassType} opts={[['standard', 'Float'], ['lowiron', 'Low-iron']]} onPick={v => edit(s => { s.render.glassType = v; }, true)} /><span /></div>
           <div class="row"><span class="lbl">Thickness</span>
             <select class="select" aria-label="Glass thickness" value={spec.glass === 'auto' ? 'auto' : String(spec.glass)} onChange={e => edit(s => setGlass(s, (e.target as HTMLSelectElement).value))}>
-              <option value="auto">Typical for the height ({glassText(glassThickness(T, 'auto'), u)})</option>
+              <option value="auto">Typical for the height ({glassText(customGlass('auto', T, spec.rim), u)})</option>
               {[...new Set([...stock, ...(spec.glass === 'auto' ? [] : [spec.glass])])].sort((a, b) => a - b).map(t => <option value={String(t)}>{glassOption(t, u)}</option>)}
             </select><span /></div>
           <div class="row"><span class="lbl">Rim</span><Seg label="Rim" value={spec.rim ? 'y' : 'n'} opts={[['y', 'Rimmed'], ['n', 'Rimless']]} onPick={v => edit(s => setRim(s, v === 'y'))} /><span /></div>
@@ -258,7 +259,7 @@ function GlassGroup({ solve, setSolve, sin, setSin, level, setLevel, T, loadCell
         {solve !== 'glass' ? null : <>
         <Seg label="Thickness" value={choice.mode} opts={[['uniform', 'One thickness'], ['perPane', 'Per pane']]} onPick={m => setChoice({ ...choice, mode: m })} />
         {!rim ? <Seg label="Brace" value={panel ? (panel.braceNow ? ((panel.braceNow.cross ?? 0) > 0 ? 'cross' : 'perimeter') : 'none') : choice.brace} opts={[['none', 'No brace'], ['perimeter', 'Perimeter'], ['cross', 'Perimeter + cross']]} onPick={b => setChoice({ ...choice, brace: b, custom: undefined })} /> : null}
-        {!rim && panel ? <BraceFields b={panel.braceNow} u={u} locks={locks} setLocks={setLocks} setBrace={setBrace} onOptimize={onOptimize} busy={busy} optLine={optLine} note={panel.braceNote} stock={u === 'in' ? STOCK_US : STOCK_METRIC} /> : null}
+        {!rim && panel ? <BraceFields b={panel.braceNow} u={u} locks={locks} setLocks={setLocks} setBrace={setBrace} onOptimize={onOptimize} busy={busy} optLine={optLine} note={panel.braceNote} stock={stockAll(u)} /> : null}
         {!panel ? <div class="hint">Working out the glass…</div> : <>
           <div class="hint">{panel.topLine}</div>
           {!rim && panel.braces.length ? <table class="gtable" aria-label="Brace options">

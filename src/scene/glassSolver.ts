@@ -40,6 +40,12 @@ export const STOCK_US = [3 / 32, 1 / 8, 5 / 32, 3 / 16, 1 / 4, 5 / 16, 3 / 8, 1 
  *  (C24, R94). Every metric size is a standard EN 572 float thickness, so STOCK_METRIC is used whole. */
 export const SPECIAL_ORDER_US = [5 / 16 * IN_MM];
 export const STOCK_US_PICK = STOCK_US.filter(t => !SPECIAL_ORDER_US.some(o => Math.abs(o - t) < 0.01));
+/** Every size a person may pick by hand, whatever the unit setting (Nathan 2026-11-16: a US buyer can get 4 mm glass at the hardware store): the US and
+ *  the metric stock together, thinnest first; both labels stay even where two sizes nearly coincide (5/32 in is 3.97 mm, 4 mm is what the hardware store sells). */
+export function stockAll(u: 'in' | 'cm'): number[] {
+  const own = u === 'in' ? STOCK_US : STOCK_METRIC, other = u === 'in' ? STOCK_METRIC : STOCK_US;
+  return [...own, ...other.filter(o => !own.some(t => Math.abs(t - o) < 0.01))].sort((a, b) => a - b);
+}
 const US_LABEL = ['3/32"', '1/8"', '5/32"', '3/16"', '1/4"', '5/16"', '3/8"', '1/2"', '5/8"', '3/4"', '1"'];
 /** Shop names for the pickers (US inches, by 1/32 in; metric by whole mm). */
 export const SHOP_NAME_US: Record<number, string> = { 3: 'single strength', 4: 'double strength', 10: 'special order' };
