@@ -119,6 +119,8 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R101 | 11-16 | Compare: per-row match buttons (A -> B / B -> A), 'Make B like A' / 'Make A like B', each one undo step; the list opens on click as well as hover (Nathan's compare-match discussion in CP2) | CP2 | - | - | - | 065762f1 on claude/fervent-lewin-751f9e, full vitest not run yet |
 | R102 | 11-16 | Start sheet for the new UI: Blank tank (fresh / salt), Starters and kits, From an animal I want, Open saved (when any exist); shown on first visit and from New; Esc / X / Just look around keep the empty tank (SS1 discussion) | SS1 | - | - | - | 4ecd4c53 on claude/sweet-hypatia-800979, full vitest not run; Deals tab left to DL1 |
 | R103 | 11-16 | Glass thickness list offers both metric (4-19 mm) and inch stock sizes in either unit setting; defaults / solver answers land on a stocked size in the user's unit (Nathan: 'I in the US can go to home depot and get 4mm glass'). Also W13 answered: yes to the rec | GS2 | - | - | - | sent to GS2 11-16 |
+| R104 | 11-16 | Fish info screen shows where each fish is from (native range); continent is a selectable filter in the animal picker | OR1 | - | - | - | lane started by C26 11-16 |
+| R105 | 11-16 | Better fish animation and behaviour: kuhli loaches dig / burrow in the substrate; fish that hold still in place and fan their fins | FB1 | - | - | - | lane started by C26 11-16 |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
