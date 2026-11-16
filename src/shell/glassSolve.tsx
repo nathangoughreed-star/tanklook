@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from 'preact/hooks';
 import { IN_MM, glassChoices } from '../scene/glassSolver';
 import { BRACE_LEVELS, heightTable, type BraceLevel } from '../scene/glassEnvelope';
 import { Pill } from './ui';
+import { FailView } from './failView';
+import { diagnose } from '../scene/glassDiagnose';
 import { H_MAX, baseOf, lenText, sfPanel, sizeTable, type SizeCell, type SolveInputs } from './logic/tankEnvelope';
 import { GlassOptions } from './glassOptions';
 import { glassText, type Units } from './logic/tank';
@@ -62,6 +64,7 @@ export function SizeMode({ T, rim, inp, setInp, sf, bottom, u, onPick, onChart }
 export function SfMode({ T, rim, inp, setInp, sf, bottom, u, level, setLevel }: { T: Tk; rim: boolean; inp: SolveInputs; setInp: (i: SolveInputs) => void; sf: number; bottom: 'full' | 'perimeter'; u: Units; level: BraceLevel; setLevel: (l: BraceLevel) => void }) {
   const lv: BraceLevel = rim ? 'rimmed' : level === 'rimmed' ? 'none' : level;
   const p = useMemo(() => sfPanel(T, lv, inp, sf, bottom, u), [T.L, T.D, T.H, lv, JSON.stringify(inp), sf, bottom, u]);
+  const diag = useMemo(() => diagnose(T.L, T.H, lv, { ...baseOf(inp, sf, T.D, bottom), D: T.D }), [T.L, T.D, T.H, lv, JSON.stringify(inp), sf, bottom]);
   return <>
     <Inputs inp={inp} setInp={setInp} T={T} u={u} strips={!rim && lv !== 'none'} depth={false} />
     {!rim ? <div class="seg full" role="group" aria-label="Bracing">{BRACE_LEVELS.filter(l => l.id !== 'rimmed').map(l => <button type="button" class={lv === l.id ? 'on' : ''} aria-pressed={lv === l.id} onClick={() => setLevel(l.id)}>{l.label.replace('Perimeter + ', '+ ').replace(' cross', 'x')}</button>)}</div> : null}
@@ -72,6 +75,7 @@ export function SfMode({ T, rim, inp, setInp, sf, bottom, u, level, setLevel }: 
     <div class={`hint${p.ok ? '' : ' bad'}`} aria-live="polite">{p.verdict}</div>
     {p.joints.length ? <><div class="cap">Silicone joints</div>{p.joints.map(j => <div class="drow"><span>{j.label}</span><Pill tone={j.ok ? 'ok' : 'bad'}>{j.use}</Pill></div>)}</> : null}
     {p.joints.some(j => !j.ok) ? <div class="dwarn warn">⚠ A silicone joint is over its design stress: widen the bond or use more silicone.</div> : null}
+    {p.fits ? <FailView d={diag} u={u} /> : null}
   </>;
 }
 

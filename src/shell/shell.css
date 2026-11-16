@@ -601,3 +601,8 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .card.door:hover, .card.door:focus-visible { border-color: var(--accent); }
 .card.door .t { font-size: 1.05em; }
 .dlgbody > .acts { margin-top: var(--s3); }
+/* GS4: where the glass fails / deflection view */
+.failview { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.failgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.failcard { background: var(--bg-raised); border: 1px solid var(--line); border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+.failsvg { width: 100%; height: auto; display: block; max-height: 300px; }

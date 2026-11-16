@@ -94,6 +94,8 @@ export interface PlateInput {
   E?: number; nu?: number;
   terms?: number; // Levy terms m = 1..terms
   grid?: [number, number]; // evaluation grid nx, ny
+  /** GS4: also return the deflection and stress on the nx x ny grid (the same series, nothing new computed). */
+  field?: boolean;
 }
 
 export interface PlateResult {
@@ -113,6 +115,9 @@ export interface PlateResult {
    * The concentrated Kirchhoff corner forces are not included.
    */
   edge: { bottom: number; side: number; top: number };
+  /** GS4 (only with `field`): the solution on the regular nx x ny grid, row j = height index (0 = bottom edge), column i = x index (0 = left edge):
+   *  w = signed deflection (mm), sigma = largest principal bending stress (MPa). */
+  grid?: { nx: number; ny: number; w: number[][]; sigma: number[][] };
 }
 
 interface Seg { y0: number; len: number; c0: number; c1: number } // q = c0 + c1 * u, u = y - y0
@@ -272,9 +277,12 @@ export function plate(p: PlateInput): PlateResult {
   for (let i = 0; i < nx; i++) xs.push(p.a * i / (nx - 1));
   for (const ti of ties) xs.push(ti.x);
   let sigma = 0, wMax = 0, at = { x: 0, y: 0 }, beam = 0;
+  const gw: number[][] | undefined = p.field ? Array.from({ length: ny }, () => new Array(nx).fill(0)) : undefined, gs: number[][] | undefined = p.field ? Array.from({ length: ny }, () => new Array(nx).fill(0)) : undefined;
+  let xi = -1;
   const EI = p.top.kind === 'edge' ? p.top.EI : 0;
   const Y = ys.map(y => { const rows: number[][] = []; for (let m = 1; m <= terms; m++) { evalY(S, m, y, B, o); rows.push([o[0], o[1], o[2], o[3]]); } return rows; });
   for (const x of xs) {
+    xi++;
     const sn: number[] = [], cs: number[] = [];
     for (let m = 1; m <= terms; m++) { const al = m * Math.PI / p.a; sn.push(Math.sin(al * x)); cs.push(Math.cos(al * x)); }
     ys.forEach((y, j) => {
@@ -287,6 +295,7 @@ export function plate(p: PlateInput): PlateResult {
       const Mp = Math.abs((Mx + My) / 2) + Math.hypot((Mx - My) / 2, Mxy);
       const s = 6 * Mp / (p.t * p.t);
       if (s > sigma) { sigma = s; at = { x, y }; }
+      if (gw && gs && j < ny && xi < nx) { gw[j][xi] = w; gs[j][xi] = s; }
       wMax = Math.max(wMax, Math.abs(w));
       if (EI && j === ny - 1) beam = Math.max(beam, Math.abs(EI * wxx));
     });
@@ -309,7 +318,7 @@ export function plate(p: PlateInput): PlateResult {
     for (let m = 1; m <= terms; m++) { const al = m * Math.PI / p.a, [y0, , y2] = Y[j][m - 1]; v += -(al ** 3) * y0 + (2 - nu) * al * y2; }
     vSide = Math.max(vSide, Math.abs(Dp * v));
   });
-  return { sigma, w: wMax, at, beamMoment: beam, ties: R.map(f => -f), edge: { bottom: vBot, side: vSide, top: vTop } };
+  return { sigma, w: wMax, at, beamMoment: beam, ties: R.map(f => -f), edge: { bottom: vBot, side: vSide, top: vTop }, ...(gw && gs ? { grid: { nx, ny, w: gw, sigma: gs } } : {}) };
 }
 
 // ---------------------------------------------------------------- tank solve
@@ -354,6 +363,8 @@ export interface GlassOpts {
   /** Also find the smallest continuous thickness per pane (default true; the optimizer turns it off for speed). */
   continuous?: boolean;
   silicone?: SiliconeOpts;
+  /** GS4: ask the plate solver for its deflection / stress grid (PlateResult.grid). */
+  field?: boolean;
 }
 
 /**
@@ -420,14 +431,14 @@ export interface GlassSolution {
   notes: string[];
 }
 
-interface Resolved { sf: number; mor: number; E: number; nu: number; gamma: number; stock: number[]; mode: 'uniform' | 'perPane'; defl: number; bottom: 'full' | 'perimeter'; brace: BraceSpec | null; top: 'free' | 'held'; terms: number; grid: [number, number] }
+interface Resolved { sf: number; mor: number; E: number; nu: number; gamma: number; stock: number[]; mode: 'uniform' | 'perPane'; defl: number; bottom: 'full' | 'perimeter'; brace: BraceSpec | null; top: 'free' | 'held'; terms: number; grid: [number, number]; field: boolean }
 
 function resolve(o: GlassOpts): Resolved {
   return {
     sf: o.safetyFactor ?? DEFAULT_SF, mor: o.mor ?? GLASS_MOR, E: o.E ?? GLASS_E, nu: o.nu ?? GLASS_NU, gamma: o.gamma ?? GAMMA_FRESH,
     stock: [...(o.stock ?? (o.units === 'metric' ? STOCK_METRIC : STOCK_US_PICK))].sort((x, y) => x - y),
     mode: o.mode ?? 'uniform', defl: o.deflection?.thicknessRatio ?? 1, bottom: o.bottomSupport ?? 'full', brace: o.brace ?? null, top: o.topEdge ?? 'free',
-    terms: o.terms ?? 61, grid: o.grid ?? [33, 25],
+    terms: o.terms ?? 61, grid: o.grid ?? [33, 25], field: !!o.field,
   };
 }
 
@@ -444,11 +455,11 @@ function wallAt(kind: 'long' | 'end', spec: GlassTankSpec, t: number, r: Resolve
   const a = kind === 'long' ? spec.L : spec.D;
   const br = r.brace;
   const top: TopEdge = br ? { kind: 'edge', EI: r.E * br.thickness * br.width ** 3 / 12, ties: kind === 'long' ? crossTies(a, br) : [] } : r.top === 'held' ? { kind: 'ss' } : { kind: 'edge', EI: 0 };
-  return plate({ a, b: spec.H, t, load: { kind: 'hydro', gamma: r.gamma, h: waterDepth(spec) }, top, E: r.E, nu: r.nu, terms: r.terms, grid: r.grid });
+  return plate({ a, b: spec.H, t, load: { kind: 'hydro', gamma: r.gamma, h: waterDepth(spec) }, top, E: r.E, nu: r.nu, terms: r.terms, grid: r.grid, field: r.field });
 }
 
 function bottomAt(spec: GlassTankSpec, t: number, r: Resolved) {
-  return plate({ a: spec.L, b: spec.D, t, load: { kind: 'uniform', q: r.gamma * waterDepth(spec) }, top: { kind: 'ss' }, E: r.E, nu: r.nu, terms: r.terms, grid: r.grid });
+  return plate({ a: spec.L, b: spec.D, t, load: { kind: 'uniform', q: r.gamma * waterDepth(spec) }, top: { kind: 'ss' }, E: r.E, nu: r.nu, terms: r.terms, grid: r.grid, field: r.field });
 }
 
 const passes = (res: PlateResult, t: number, r: Resolved) => res.sigma * r.sf <= r.mor && res.w <= r.defl * t;
@@ -718,4 +729,11 @@ export function toGlassBuild(sol: GlassSolution, brace: BraceSpec | null, safety
   if (!sol.ok) return null;
   const panes = Object.fromEntries(PANES.map(p => [p, sol.panes[p].thickness as number])) as Record<PaneId, number>;
   return { panes, brace, safetyFactor };
+}
+
+/** GS4: the three plates of a tank at ONE thickness, each with its deflection / stress grid, for the "where it fails" drawing. The same wall and bottom
+ *  models as solveGlass (front = the long walls, left = the ends, bottom = a plate simply supported on four edges), nothing else computed. */
+export function platesAt(spec: GlassTankSpec, t: number, opts: GlassOpts = {}): { front: PlateResult; left: PlateResult; bottom: PlateResult; r: { sf: number; mor: number; defl: number } } {
+  const r = resolve({ ...opts, field: true });
+  return { front: wallAt('long', spec, t, r), left: wallAt('end', spec, t, r), bottom: bottomAt(spec, t, r), r: { sf: r.sf, mor: r.mor, defl: r.defl } };
 }
