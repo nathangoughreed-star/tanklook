@@ -36,6 +36,10 @@ export const GAMMA_FRESH = 9.81e-6, GAMMA_SALT = 1.025 * 9.81e-6;
  */
 export const STOCK_METRIC = [2, 3, 4, 5, 6, 8, 10, 12, 15, 19, 25];
 export const STOCK_US = [3 / 32, 1 / 8, 5 / 32, 3 / 16, 1 / 4, 5 / 16, 3 / 8, 1 / 2, 5 / 8, 3 / 4, 1].map(t => t * IN_MM);
+/** What the solver, Optimize and the strips choose from: stocked sizes only. 5/16 stays in STOCK_US (selectable by hand, "special order") but is never picked
+ *  (C24, R94). Every metric size is a standard EN 572 float thickness, so STOCK_METRIC is used whole. */
+export const SPECIAL_ORDER_US = [5 / 16 * IN_MM];
+export const STOCK_US_PICK = STOCK_US.filter(t => !SPECIAL_ORDER_US.some(o => Math.abs(o - t) < 0.01));
 const US_LABEL = ['3/32"', '1/8"', '5/32"', '3/16"', '1/4"', '5/16"', '3/8"', '1/2"', '5/8"', '3/4"', '1"'];
 /** Shop names for the pickers (US inches, by 1/32 in; metric by whole mm). */
 export const SHOP_NAME_US: Record<number, string> = { 3: 'single strength', 4: 'double strength', 10: 'special order' };
@@ -397,7 +401,7 @@ interface Resolved { sf: number; mor: number; E: number; nu: number; gamma: numb
 function resolve(o: GlassOpts): Resolved {
   return {
     sf: o.safetyFactor ?? DEFAULT_SF, mor: o.mor ?? GLASS_MOR, E: o.E ?? GLASS_E, nu: o.nu ?? GLASS_NU, gamma: o.gamma ?? GAMMA_FRESH,
-    stock: [...(o.stock ?? (o.units === 'metric' ? STOCK_METRIC : STOCK_US))].sort((x, y) => x - y),
+    stock: [...(o.stock ?? (o.units === 'metric' ? STOCK_METRIC : STOCK_US_PICK))].sort((x, y) => x - y),
     mode: o.mode ?? 'uniform', defl: o.deflection?.thicknessRatio ?? 1, bottom: o.bottomSupport ?? 'full', brace: o.brace ?? null, top: o.topEdge ?? 'free',
     terms: o.terms ?? 61, grid: o.grid ?? [33, 25],
   };
@@ -557,7 +561,7 @@ export interface OptimizeOpts extends GlassOpts {
 export function optimizeBrace(spec: GlassTankSpec, opts: OptimizeOpts = {}): { options: BraceOption[]; best: BraceOption; tried: number } {
   const widths = opts.widths ?? [2, 2.5, 3, 3.5, 4].map(v => v * IN_MM);
   const maxCross = opts.maxCross ?? 2, minOpen = opts.minOpening ?? 6 * IN_MM;
-  const stock = [...(opts.stock ?? (opts.units === 'metric' ? STOCK_METRIC : STOCK_US))].sort((x, y) => x - y);
+  const stock = [...(opts.stock ?? (opts.units === 'metric' ? STOCK_METRIC : STOCK_US_PICK))].sort((x, y) => x - y);
   const none = solveGlass(spec, { ...opts, brace: null });
   const base = none.volumeIn3 || 1;
   const row = (label: string, brace: BraceSpec | null, s: GlassSolution): BraceOption => ({
@@ -618,7 +622,7 @@ export const customWidths = (step = IN_MM / 4): number[] => { const out: number[
 export function optimizeBraceCustom(spec: GlassTankSpec, opts: CustomOptimizeOpts = {}): { best: BraceOption | null; none: BraceOption; tried: number } {
   const lk = opts.locked ?? {}, minOpen = opts.minOpening ?? 6 * IN_MM;
   const widths = lk.width != null ? [lk.width] : opts.widths ?? customWidths(opts.widthStep);
-  const stock = [...(opts.stock ?? (opts.units === 'metric' ? STOCK_METRIC : STOCK_US))].sort((x, y) => x - y);
+  const stock = [...(opts.stock ?? (opts.units === 'metric' ? STOCK_METRIC : STOCK_US_PICK))].sort((x, y) => x - y);
   const none = solveGlass(spec, { ...opts, brace: null });
   const base = none.volumeIn3 || 1;
   const row = (brace: BraceSpec | null, s: GlassSolution): BraceOption => ({
@@ -672,7 +676,7 @@ export function hiscocksThickness(L: number, H: number, opts: { sf?: number; mor
 }
 
 /** Round a continuous thickness up to the stock list (null if above it). */
-export function roundUpStock(t: number, stock: number[] = STOCK_US): number | null {
+export function roundUpStock(t: number, stock: number[] = STOCK_US_PICK): number | null {
   for (const s of [...stock].sort((a, b) => a - b)) if (s + 1e-9 >= t) return s;
   return null;
 }

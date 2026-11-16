@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { GAMMA_FRESH, HISCOCKS_TABLE, IN_MM, STOCK_METRIC, STOCK_US, hiscocksThickness, optimizeBrace, plate, rigidity, roundUpStock, solveGlass, thicknessLabel, toGlassBuild } from '../src/scene/glassSolver';
+import { GAMMA_FRESH, HISCOCKS_TABLE, IN_MM, STOCK_METRIC, STOCK_US, STOCK_US_PICK, hiscocksThickness, optimizeBrace, plate, rigidity, roundUpStock, solveGlass, thicknessLabel, toGlassBuild } from '../src/scene/glassSolver';
 
 const tank = (l: number, d: number, h: number) => ({ L: l * IN_MM, D: d * IN_MM, H: h * IN_MM });
 const fast = { terms: 41, grid: [25, 17] as [number, number] };
@@ -41,9 +41,25 @@ describe('GS1 Levy plate solver against published coefficients', () => {
   });
 });
 
+describe('R94: the solver never picks the special-order size', () => {
+  const sp = 5 / 16 * IN_MM, has = (t: number | null) => t != null && Math.abs(t - sp) < 0.01;
+  it('5/16 stays selectable by hand but no solve, brace search or round-up returns it', () => {
+    expect(STOCK_US.some(t => Math.abs(t - sp) < 0.01)).toBe(true);
+    expect(STOCK_US_PICK.some(t => Math.abs(t - sp) < 0.01)).toBe(false);
+    for (const [L, D, H] of [[30, 12, 18], [24, 12, 16], [36, 14, 18], [20, 10, 12], [48, 18, 21], [60, 20, 24]]) for (const topEdge of ['free', 'held'] as const) for (const mode of ['uniform', 'perPane'] as const) {
+      const s = solveGlass({ L: L * IN_MM, D: D * IN_MM, H: H * IN_MM }, { topEdge, mode });
+      for (const p of ['front', 'left', 'bottom'] as const) expect(has(s.panes[p].thickness), `${L}x${D}x${H} ${topEdge} ${mode} ${p}`).toBe(false);
+      const o = optimizeBrace({ L: L * IN_MM, D: D * IN_MM, H: H * IN_MM }, { continuous: false });
+      for (const r of o.options) { expect(has(r.brace?.thickness ?? null)).toBe(false); expect(has(r.solution.panes.front.thickness)).toBe(false); }
+    }
+    expect(solveGlass({ L: 30 * IN_MM, D: 12 * IN_MM, H: 18 * IN_MM }, { topEdge: 'held' }).panes.front.label).toBe('3/8"');
+  });
+});
+
 describe('GS1 tank solve', () => {
   it('rounds up to stock and labels US sizes', () => {
-    expect(roundUpStock(6.4)).toBeCloseTo(5 / 16 * IN_MM);
+    // R94: 5/16 is special order, so rounding up skips it (6.4 mm goes to 3/8, not 5/16)
+    expect(roundUpStock(6.4)).toBeCloseTo(3 / 8 * IN_MM);
     expect(roundUpStock(6.4, STOCK_METRIC)).toBe(8);
     expect(roundUpStock(30, STOCK_METRIC)).toBeNull();
     // R94 (2026-11-15): STOCK_US grew thinner (3/32, 1/8, 5/32, 3/16 before 1/4), so 3/8 moved from index 2 to 6; look sizes up by value, not slot
