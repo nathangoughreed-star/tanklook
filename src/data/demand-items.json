@@ -520,6 +520,21 @@
    "unit": "each; Aquatics Unlimited $8.99-19.99 (albino and normal); lo/hi judgement",
    "url": "https://aquaticsunlimited.com/product/shark-rainbow-epalzeorhynchos-frenatum/"
   },
+  "animal:sparklinggourami": {
+   "lo": 3,
+   "mode": 5,
+   "hi": 8,
+   "unit": "each; retailer listings $2.59-7.00 (Aquatic Arts, Dan's Fish, Aquahuna, Tropical Treasures)",
+   "url": "https://aquaticarts.com/products/sparkling-dwarf-gourami"
+  },
+  "animal:croakinggourami": {
+   "lo": 6,
+   "mode": 9,
+   "hi": 15,
+   "unit": "each; no US listing found, judgement (rarer than the sparkling gourami)",
+   "url": "",
+   "est": true
+  },
   "animal:redtailshark": {
    "lo": 7,
    "mode": 8,

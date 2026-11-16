@@ -139,6 +139,15 @@
   "aq": "200909300177",
   "name": "Rainbow Shark (Epalzeorhynchos frenatum)"
  },
+ "sparklinggourami": {
+  "aq": "200909300059",
+  "name": "Dwarf Croaking Gourami (Trichopsis pumila)"
+ },
+ "croakinggourami": {
+  "aq": "200909300098",
+  "name": "Honey Gourami (Trichogaster chuna)",
+  "standIn": true
+ },
  "redtailshark": {
   "aq": "200909300186",
   "name": "Red Tailed Black Shark (Epalzeorhynchos bicolor)"

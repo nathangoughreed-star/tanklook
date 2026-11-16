@@ -28,6 +28,8 @@ const REQUIRED: Record<string, SpeciesLid> = {
   kuhli: req('kuhli loaches find and squeeze through any gap in the top'),
   hillstream: req('hillstream loaches climb the glass and flow out of the water'),
   balashark: req('bala sharks are known to jump and have a powerful leap; Seriously Fish advises a heavy, tight lid'),
+  croakinggourami: req('croaking gouramis are excellent jumpers, and as labyrinth fish they also need warm humid air above the water; Seriously Fish advises a well-covered tank'),
+  sparklinggourami: req('sparkling gouramis breathe air at the surface: Seriously Fish advises a well-covered tank, not filled to the top, so the air above the water stays humid and warm'),
   sae: req('Siamese algae eaters leap when startled'),
   firefish: req('firefish are famous jumpers; an open top loses them overnight'),
   royalgramma: req('royal grammas jump out of open tanks'),

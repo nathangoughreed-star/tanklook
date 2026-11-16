@@ -330,6 +330,18 @@
    "src": "fishbase-bayes",
    "model": 0.88
   },
+  "sparklinggourami": {
+   "a": 0.00977,
+   "b": 2.97,
+   "src": "fishbase-bayes",
+   "model": 0.7
+  },
+  "croakinggourami": {
+   "a": 0.00977,
+   "b": 2.97,
+   "src": "fishbase-bayes",
+   "model": 0.68
+  },
   "redtailshark": {
    "a": 0.00871,
    "b": 3.09,

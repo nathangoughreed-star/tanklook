@@ -44,6 +44,7 @@ NAMES = {
     'clownloach': 'Clown Loach (Chromobotia macracanthus)',
     'balashark': 'Bala Shark (Balantiocheilos melanopterus)',  # added 2026-11-15 (FS1)
     'rainbowshark': 'Rainbow Shark (Epalzeorhynchos frenatum)',  # added 2026-11-15 (FS1 part 2)
+    'sparklinggourami': 'Dwarf Croaking Gourami (Trichopsis pumila)',  # added 2026-11-15 (FS1 part 3): AqAdvisor's name for the sparkling gourami
     'redtailshark': 'Red Tailed Black Shark (Epalzeorhynchos bicolor)',  # added 2026-11-15 (FS1)
     'sae': 'Siamese Algae Eater (Crossocheilus siamensis)',
     'peapuffer': 'Dwarf Puffer (Carinotetraodon travancoricus)',
@@ -77,6 +78,7 @@ NAMES = {
 # Not in AqAdvisor: counted as a similar animal in size and type (Nathan 2026-10-09), flagged standIn in the json.
 # Land-only animals (dart frog, White's tree frog) add nothing to the water and stay uncounted.
 STAND_INS = {
+    'croakinggourami': 'Honey Gourami (Trichogaster chuna)',  # T. vittata is not listed (checked 2026-11-15); 6 cm, same family and habit
     'axolotl': 'Dojo Loach (Misgurnus anguillicaudatus)',  # 23 cm, bottom, cold water
     'firenewt': 'Zebra Loach (Botia striata)',  # 9 cm, bottom
     'firetoad': 'White Cloud Mountain Minnow (Tanichthys albonubes)',  # 4.5 cm, semi-aquatic, cool water

@@ -21,6 +21,8 @@ export const SOLD_BY: Record<string, SoldBy> = {
   swordtail: S('sexed', false, 'no male / female split listing found in the 2026-11-06 search; kept as sexed because shops sort livebearers by sex and Nathan kept the livebearer ratio amber (DA3)'),
   // gouramis
   gourami: S('unsexed', false, 'pearl gourami listings are often marked "unsexed" (BioAcuatica) and shops say they cannot guarantee sex; males are the showy ones, so some shops sell males'),
+  sparklinggourami: S('unsexed', false, 'retailer listings (Aquatic Arts, Dans Fish, Aquahuna, Tropical Treasures) sell it by the single fish or the group with no male / female choice; the sexes are hard to tell when young'),
+  croakinggourami: S('unsexed', false, 'no US listing found; sold, where it is, as a group of unsexed fish (the sexes are hard to tell when young)'),
   dwarfgourami: S('sexed', false, 'shops sell mostly males (the colourful ones); no male / female choice found, the existing males rule stays'),
   // cichlids
   kribensis: S('sexed', true, 'sold as 1 male + 1 female pairs (Dan\'s Fish, Light.fish, Imperial Tropicals)'),

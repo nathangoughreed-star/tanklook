@@ -829,6 +829,23 @@ export const PLANS: Record<string, Plan> = {
     pelvic: { u: 0.6, len: 0.11, w: 1.3, tint: '#16150f' }, pec: { s: 1.1, tint: '#9a9a86' },
     finMarks: [{ k: 'poly', pts: [[0.235, -0.01, 'c'], [0.055, -0.15, 'c'], [0.075, -0.11], [0.2, 0.0, 'c']], c: '#d9d3b0', a: 0.95 }, { k: 'poly', pts: [[0.235, 0.01, 'c'], [0.055, 0.15, 'c'], [0.075, 0.11], [0.2, 0.0, 'c']], c: '#d9d3b0', a: 0.95 }],
     eye: { r: 0.036, u: 0.9, iris: ['#9a8650', '#2a2418'], pupil: '#050505' } },
+  // ---------- lane FS1 part 3 (2026-11-15): the two Trichopsis gouramis, from Commons photos ----------
+  // sparkling gourami: slim with a pointed snout and a deeper belly, thin tail root; tan-olive, a red-brown lateral stripe broken into dashes, bright blue ring round the eye, fluorescent blue-green speckling over body and fins, small swept dorsal set far back over the anal, round fan tail, thread pelvics
+  sparklinggourami: { shimmer: 0.6, shimmerRgb: '110,235,255', gillLine: 0.25, finFade: 0.05, gape: 0.016, gapeDrop: 0.004, thick: 0.46, depth: 0.215, pedU: 0.21, ped: 0.026, peak: 0.7, back: 0.44, snout: 0.25, mouth: -0.012, scale: 0.022, shade: ['#5a5240', '#a29a86', '#dcd2bc'], tail: { type: 'round', h: 0.145, tint: '#3c5a4c', a: 0.95, edge: '#c0503a' }, fin: '#3c5a4c',
+    dorsal: { at: 0.52, len: 0.15, h: 0.095, rake: 0.8, lead: 0.1, tip: 'point', trail: 0.08, drop: 0.0, tint: '#3c5a4c', a: 0.95, edge: '#c0503a' }, anal: { at: 0.62, len: 0.4, h: 0.085, rake: 0.2, lead: 0.5, tip: 'point', trail: 0.03, drop: 0.2, taper: 0.35, tint: '#3c5a4c', a: 0.95, edge: '#c0503a' },
+    pelvic: { u: 0.68, len: 0.2, thread: true, tint: '#c8d0b0' }, pec: { s: 0.9 },
+    marks: [{ k: 'band', u0: 0.2, u1: 0.94, v0: -0.01, v1: 0.016, c: '#7a3a30', a: 0.4, f: 0.012 }, { k: 'spots', n: 34, u0: 0.26, u1: 0.9, v0: -0.03, v1: 0.03, r: 0.008, c: '#6a2a24', a: 0.8 },
+      { k: 'spots', n: 170, u0: 0.24, u1: 0.9, v0: -0.075, v1: 0.07, r: 0.003, c: '#38f0ff', a: 1 }, { k: 'spots', n: 90, u0: 0.3, u1: 0.88, v0: -0.07, v1: 0.07, r: 0.002, c: '#d8ffff', a: 0.95 }],
+    finMarks: [{ k: 'spots', n: 520, u0: 0.0, u1: 0.72, v0: -0.2, v1: 0.14, r: 0.0036, c: '#2ef0ff', a: 1 }, { k: 'spots', n: 110, u0: 0.0, u1: 0.72, v0: -0.2, v1: 0.14, r: 0.003, c: '#d04a3a', a: 0.85 }],
+    eye: { r: 0.03, iris: ['#58c6f0', '#1c6ea4'], pupil: '#06141c' } },
+  // croaking gourami: slender, pointed snout, deeper belly, thin tail root; tan-bronze with two faint dark stripes, pale belly, silver-blue sheen speckle, olive translucent fins with a small swept dorsal far back and a long anal, silver-blue ringed eye
+  croakinggourami: { shimmer: 0.5, shimmerRgb: '150,225,245', gillLine: 0.25, finFade: 0.1, gape: 0.018, gapeDrop: 0.004, thick: 0.56, depth: 0.19, pedU: 0.21, ped: 0.026, peak: 0.7, back: 0.44, snout: 0.25, mouth: -0.012, scale: 0.024, shade: ['#6a644a', '#a89e76', '#d8ccae'], tail: { type: 'round', h: 0.135, tint: '#7d8468', a: 0.9, edge: '#7a8a8c' }, fin: '#7d8468',
+    dorsal: { at: 0.52, len: 0.14, h: 0.085, rake: 0.8, lead: 0.1, tip: 'point', trail: 0.08, drop: 0.0, tint: '#7d8468', a: 0.9 }, anal: { at: 0.64, len: 0.42, h: 0.095, rake: 0.2, lead: 0.5, tip: 'point', trail: 0.1, drop: 0.2, taper: 0.35, tint: '#7d8468', a: 0.9, edge: '#7a8a8c' },
+    pelvic: { u: 0.7, len: 0.2, thread: true, tint: '#c8c4a4' }, pec: { s: 0.9 },
+    marks: [{ k: 'band', u0: 0.24, u1: 0.92, v0: -0.008, v1: 0.014, c: '#5a4630', a: 0.32, f: 0.014 }, { k: 'band', u0: 0.3, u1: 0.9, v0: 0.04, v1: 0.054, c: '#6a5238', a: 0.25, f: 0.014 },
+      { k: 'spots', n: 120, u0: 0.26, u1: 0.9, v0: -0.07, v1: 0.07, r: 0.0028, c: '#46e8ff', a: 1 }],
+    finMarks: [{ k: 'spots', n: 160, u0: 0.0, u1: 0.74, v0: -0.2, v1: 0.14, r: 0.0034, c: '#5ae8ff', a: 0.95 }],
+    eye: { r: 0.03, iris: ['#b8d4e0', '#2a3a48'], pupil: '#06101a' } },
   // rainbow shark: slate grey-blue body, red-orange fins all round (dorsal, tail, paired and anal), a dark blotch at the tail root, small barbels
   rainbowshark: { gape: 0.02, gapeDrop: 0.012, thick: 0.52, belly: 0.3, depth: 0.2, pedU: 0.22, ped: 0.04, peak: 0.6, back: 0.54, snout: 0.5, mouth: 0.02, barbels: 0.014, scale: 0.02, shimmer: 0.25, shimmerRgb: '190,205,225', shade: ['#3f4a53', '#5a666f', '#7d868b'], tail: { type: 'fork', h: 0.15, tint: '#d8461c', a: 0.97, edge: '#a82810' }, fin: '#d9501f',
     dorsal: { at: 0.7, len: 0.18, h: 0.115, rake: 0.7, lead: 0.05, tip: 'point', trail: 0.11, drop: 0.0, tint: '#d8461c', a: 0.97 }, anal: { at: 0.4, len: 0.09, h: 0.08, rake: 0.2, tip: 'point', trail: 0.03, drop: 0.3, tint: '#dc4a1e', a: 0.97 },
@@ -1110,7 +1127,7 @@ const FIN_RANGE: Record<string, FinRange> = {
   bristlenose: { lo: 0.1, hi: 0.9, def: 0.35 }, betta: { lo: 0.7, hi: 1, def: 1 }, angel: { lo: 0.85, hi: 1, def: 1 },
   yellowtang: FIN_TANG, bluetang: FIN_TANG,
   cardinal: FIN_TETRA, tetra: FIN_TETRA, ember: FIN_TETRA, rummynose: FIN_TETRA, dwarfpencil: FIN_TETRA, harlequin: FIN_TETRA, chili: FIN_TETRA,
-  balashark: { lo: 0.8, hi: 1, def: 1 }, redtailshark: { lo: 0.6, hi: 1, def: 1 }, rainbowshark: { lo: 0.6, hi: 1, def: 1 },
+  balashark: { lo: 0.8, hi: 1, def: 1 }, redtailshark: { lo: 0.6, hi: 1, def: 1 }, sparklinggourami: { lo: 0.7, hi: 1, def: 1 }, croakinggourami: { lo: 0.7, hi: 1, def: 1 }, rainbowshark: { lo: 0.6, hi: 1, def: 1 },
   kribensis: FIN_CICHLID, discus: FIN_CICHLID, oscar: FIN_CICHLID, bolivianram: FIN_CICHLID, cockatoo: FIN_CICHLID, peacock: FIN_CICHLID,
   demasoni: FIN_CICHLID, kadango: FIN_CICHLID, livingstonii: FIN_CICHLID, afra: FIN_CICHLID, auratus: FIN_CICHLID,
 };

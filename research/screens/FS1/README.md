@@ -12,3 +12,7 @@ Files: `fs1_*_views.jpg` (model from five angles), `fs1_*_tank.png` (in-tank at 
 ## Part 2 (R79): rainbow shark
 Reference: Commons "Epalzeorhynchos frenatum.jpg" (slate grey body, orange-red dorsal, tail and paired fins, black blotch at the tail root, dark eye) and
 "Albino rainbow shark .JPG" (cream-peach body, pink eye, same red-orange fins). Files: `fs1_rainbow_views.jpg`, `fs1_rainbow_tank.png` (normal and albino in a 4 ft tank), `card-still-rainbowshark.png`.
+
+## Part 3 (R89): sparkling and croaking gourami
+References: Commons "Trichopsis pumila.jpg" and "Sparkling Gourami.jpg" (slim tan-olive body, red-brown dashed lateral stripe, bright blue eye ring, small swept dorsal set far back, long anal, round tail; fins and body dotted fluorescent turquoise with red edges) and "Trichopsis vittata.jpg" / "Trichopsis vittata 2.jpg" (slender tan-bronze, faint dark stripes, pointed snout, olive translucent fins, long pointed anal, silver-blue ringed eye, blue sheen).
+Files: `fs1_gouramis_views.jpg`, `fs1_sparkling_tank.png`, `fs1_croaking_tank.png` (1280), `gouramis-card-390.jpg` (picker at 390 wide), `card-still-*.png`.

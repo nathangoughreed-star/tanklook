@@ -1159,6 +1159,30 @@
    },
    "why": "one geometry page: the smallest Seriously Fish considers, for a single fish"
   },
+  "sparklinggourami": {
+   "red": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/trichopsis-pumila/",
+    "states": "45 × 30 cm base (about 41 litres), large enough to house a pair or small group",
+    "from": "footprint"
+   },
+   "why": "one geometry page: the base Seriously Fish gives for a pair or small group"
+  },
+  "croakinggourami": {
+   "red": {
+    "L": 600,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/trichopsis-vittata/",
+    "states": "60 × 30 cm (24 × 12 in), suitable for a single pair; a group would need more space",
+    "from": "footprint"
+   },
+   "why": "one geometry page: the base Seriously Fish gives for a single pair"
+  },
   "redtailshark": {
    "red": {
     "L": 1200,

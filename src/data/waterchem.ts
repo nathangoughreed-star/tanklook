@@ -30,7 +30,7 @@ export const CHEM: Record<string, { ph: R; gh?: R; phOk?: R; ghOk?: R }> = {
   // Pond Informer: Asellus aquaticus is "averse to low pH conditions" and tolerates organic pollution; no number is given, so 6.5-8.0 is our reading
   asellus: { ph: [6.5, 8.0] },
   // bala shark: Seriously Fish pH 6.0-8.0, 2-15 dGH (FishBase 5-12 dH); red-tail shark: SF pH 6.0-8.0, 2-15 dGH (FishBase pH 6.5-7.5)
-  balashark: { ph: [6.0, 8.0], gh: [2, 15] }, redtailshark: { ph: [6.0, 8.0], gh: [2, 15] }, rainbowshark: { ph: [6.5, 8.0], gh: [2, 15] },
+  balashark: { ph: [6.0, 8.0], gh: [2, 15] }, redtailshark: { ph: [6.0, 8.0], gh: [2, 15] }, sparklinggourami: { ph: [5.0, 7.5], gh: [1, 12] }, croakinggourami: { ph: [5.0, 7.5], gh: [1, 15] }, rainbowshark: { ph: [6.5, 8.0], gh: [2, 15] },
   rummynose: { ph: [5.5, 7.0], gh: [1, 10], phOk: [5.5, 7.5] }, harlequin: { ph: [5.0, 7.0], gh: [1, 12], phOk: [5.0, 7.5] }, chili: { ph: [5.0, 7.0], gh: [1, 8] },
   danio: { ph: [6.0, 8.0], gh: [5, 20] }, whitecloud: { ph: [6, 8.3], gh: [5, 20] }, cpd: { ph: [6.5, 7.5], gh: [5, 15] }, hatchet: { ph: [5, 7], gh: [1, 10], phOk: [5, 8] },
   cherrybarb: { ph: [6, 8], gh: [2, 20] }, tigerbarb: { ph: [6, 8], gh: [1, 20] }, boesemani: { ph: [7.0, 8.0], gh: [9, 19] },
