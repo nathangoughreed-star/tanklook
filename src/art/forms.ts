@@ -68,7 +68,7 @@ function fins(o: { tail?: { type: NonNullable<Plan['tail']['type']>; h: number; 
 
 // ---------- betta
 const bettaC: Record<string, Patch> = {
-  red: look({ fm: 0.85, shade: ['#4a0a16', '#a8142a', '#c83440'], fin: '#b61a2e', ray: '#5a0a14', marks: [spots('#e8586a', 50, 0.38, 0.85, -0.08, 0.08, 0.009, 0.25)], finMarks: [], iris: ['#6a2a2a', '#1a0808'] }),
+  red: look({ fm: 0.85, shade: ['#5a1008', '#c4280f', '#e8683c'], fin: '#cc3a18', ray: '#6a1608', marks: [spots('#e8586a', 50, 0.38, 0.85, -0.08, 0.08, 0.009, 0.25)], finMarks: [], iris: ['#6a2a2a', '#1a0808'] }),
   blue: look({ fm: 0.85, shade: ['#0c1646', '#1a3a98', '#3560c8'], fin: '#1e3c9e', ray: '#0c1640', marks: [spots('#78b0f0', 70, 0.38, 0.85, -0.09, 0.09, 0.01, 0.38)], finMarks: [spots('#6a98e0', 50, 0, 0.6, -0.4, 0.4, 0.013, 0.2)], shimmerRgb: '150,190,255', iris: ['#3a4a6a', '#0a0a18'] }),
   turquoise: look({ fm: 0.85, shade: ['#08343a', '#14787a', '#38b0a6'], fin: '#1c8a86', ray: '#0a3a3a', marks: [spots('#7ae0d0', 70, 0.38, 0.85, -0.09, 0.09, 0.01, 0.4)], finMarks: [spots('#5ad0c0', 50, 0, 0.6, -0.4, 0.4, 0.013, 0.2)], shimmerRgb: '150,255,235', iris: ['#3a5a5a', '#081414'] }),
   'black-orchid': look({ fm: 0.85, shade: ['#08080e', '#171722', '#2a2a3a'], fin: '#12121c', ray: '#33335a', marks: [spots('#4a5ab0', 60, 0.38, 0.85, -0.08, 0.08, 0.01, 0.3)], finMarks: [spots('#4650a0', 50, 0, 0.6, -0.4, 0.4, 0.012, 0.18)], shimmerRgb: '120,140,230', iris: ['#4a4a5a', '#0a0a10'] }),
