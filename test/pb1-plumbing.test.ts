@@ -51,4 +51,13 @@ describe('PB1 plumbing graph', () => {
     expect(p.nodes.some(n => n.id === 'skimmer') === p.edges.some(e => e.flow === 'waste')).toBe(true);
     expect(p.sums.turnover).toBeGreaterThanOrEqual(0);
   });
+  it('the chosen overflow box rates the warning and the sums (PB2 data); no choice = no check', () => {
+    const S = structuredClone(load('planted')); Object.assign(S.tank, { L: 1219, D: 457, H: 508 });
+    S.tech = { rows: { ...techOf(S).rows, filter: 'sump' }, filters: [{ kind: 'sump' }], preset: 'custom' };
+    expect(plumbingOf(S).warnings).toEqual([]);
+    S.tech.products = { overflow: 'eshopps-pf-300' };
+    const p = plumbingOf(S); expect(p.sums.overflowGph).toBe(300); expect(p.sums.returnGph).toBeGreaterThan(300);
+    expect(p.warnings.length).toBe(1); expect(p.warnings[0]).toContain('300 GPH');
+    S.tech.products = { overflow: 'eshopps-pf-800' }; expect(plumbingOf(S).warnings).toEqual([]);
+  });
 });

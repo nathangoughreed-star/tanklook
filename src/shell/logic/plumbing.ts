@@ -4,7 +4,7 @@
 import type { TankSetup } from '../../scene/types';
 import { rowsFor, techOf, techParts, type TechPiece } from '../../scene/tech';
 import { volume } from '../../scene/physics';
-import { filterProduct, heaterProduct, inlineProduct, productName, pumpProduct, reefProduct } from '../../data/gearCatalog';
+import { OVERFLOW_PRODUCTS, filterProduct, heaterProduct, inlineProduct, productName, pumpProduct, reefProduct } from '../../data/gearCatalog';
 import { FILTER_MODELS } from '../../demand/gear';
 
 /** What rides a connection: clean water, dirty water to the filter, CO2 (green), heat (red), cooling (cyan), skimmate. */
@@ -45,6 +45,8 @@ const round = (n: number, d = 0) => { const k = 10 ** d; return Math.round(n * k
 
 export function plumbingOf(S: TankSetup, opts: PlumbOpts = {}): Plumb {
   const gal = volume(S.tank).gallons, t = techOf(S), parts = techParts(S);
+  // the overflow box the tank chose (PB2, data/gear/overflows.json): the maker's rated GPH; an explicit opts.overflowGph wins
+  const ovf = OVERFLOW_PRODUCTS.find(o => o.id === t.products?.overflow), overflowGph = opts.overflowGph ?? ovf?.ratedGph;
   const nodes: PNode[] = [{ id: 'tank', kind: 'tank', name: 'Tank', lines: [] }], edges: PEdge[] = [];
   const filters: PNode[] = [], chain: PNode[] = [], inTank: PNode[] = [];
   const add = (n: PNode) => { nodes.push(n); return n; };
@@ -143,7 +145,7 @@ export function plumbingOf(S: TankSetup, opts: PlumbOpts = {}): Plumb {
   }
 
   // ---- sums
-  const sums: Plumb['sums'] = { filterGph: round(filterGph), turnover: gal > 0 ? round(filterGph / gal, 1) : 0, circGph: round(circGph), heaterW: round(heaterW), wPerGal: gal > 0 ? round(heaterW / gal, 1) : 0, returnGph, overflowGph: opts.overflowGph };
-  if (loop === 'sump' && returnGph !== undefined && opts.overflowGph !== undefined && returnGph > opts.overflowGph) warnings.push(`The return pump (${round(returnGph)} GPH rated) out-runs the overflow (${round(opts.overflowGph)} GPH rated): the display would flood.`);
+  const sums: Plumb['sums'] = { filterGph: round(filterGph), turnover: gal > 0 ? round(filterGph / gal, 1) : 0, circGph: round(circGph), heaterW: round(heaterW), wPerGal: gal > 0 ? round(heaterW / gal, 1) : 0, returnGph, overflowGph };
+  if (loop === 'sump' && returnGph !== undefined && overflowGph !== undefined && returnGph > overflowGph) warnings.push(`The return pump (${round(returnGph)} GPH rated) out-runs the overflow${ovf ? ` (${productName(ovf)}, ` : ' ('}${round(overflowGph)} GPH rated): the display would flood.`);
   return { gal, loop, nodes, edges, filters, chain, inTank, sums, warnings, empty: nodes.length === 1 };
 }
