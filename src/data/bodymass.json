@@ -28,6 +28,12 @@
    "model": 0.44,
    "flag": true
   },
+  "blackskirt": {
+   "a": 0.0149,
+   "b": 3,
+   "src": "estimate",
+   "model": 1
+  },
   "rummynose": {
    "a": 0.00389,
    "b": 3.12,

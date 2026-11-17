@@ -28,6 +28,7 @@ export const WATER: Record<string, { ok: R; tol: R; est?: true }> = {
   cardinal: { ok: [23,29], tol: [22,30] },
   ember: { ok: [23,27], tol: [20,29] },
   rummynose: { ok: [24,27], tol: [22,29] },
+  blackskirt: { ok: [22,26], tol: [20,29] },
   harlequin: { ok: [22,26], tol: [20,28] },
   chili: { ok: [23,27], tol: [20,29] },
   danio: { ok: [20,26], tol: [15,32] },

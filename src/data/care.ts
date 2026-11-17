@@ -64,7 +64,7 @@ export const SHRIMP: ReadonlySet<string> = new Set(['cherryshrimp', 'amano', 'cl
 const A = (care: Expertise, minL: number, temper: 0 | 1 | 2, temp?: [number, number], x: Partial<AnimalCare> = {}): AnimalCare => ({ care, minL, temper, ...(temp ? { temp } : {}), ...x });
 export const CARE: Record<string, AnimalCare> = {
   neon: A(1, 54, 0, [21, 25], { tol: [20, 26] }), cardinal: A(1, 54, 0, [24, 28]), ember: A(1, 41, 0, [23, 28]), dwarfpencil: A(2, 41, 0, [24, 28]), rummynose: A(1, 76, 0, [24, 28]),
-  harlequin: A(1, 54, 0, [22, 27]), chili: A(2, 20, 0, [22, 28]), danio: A(1, 40, 0, [18, 25], { nip: true }), whitecloud: A(1, 54, 0, [16, 22]),
+  blackskirt: A(1, 61, 1, [22, 26], { tol: [20, 28], nip: true }), harlequin: A(1, 54, 0, [22, 27]), chili: A(2, 20, 0, [22, 28]), danio: A(1, 40, 0, [18, 25], { nip: true }), whitecloud: A(1, 54, 0, [16, 22]),
   cpd: A(1, 40, 0, [22, 26]), hatchet: A(2, 68, 0, [23, 27]), cherrybarb: A(1, 54, 0, [22, 27]), tigerbarb: A(1, 72, 2, [20, 26], { nip: true }),
   boesemani: A(2, 110, 0, [24, 27]), guppy: A(1, 19, 0, [22, 28], { slow: true }), platy: A(1, 38, 0, [18, 26]), molly: A(1, 80, 0, [22, 28]),
   swordtail: A(2, 57, 1, [18, 26]), betta: A(2, 20, 1, [24, 28], { solo: true, slow: true }), dwarfgourami: A(1, 56, 1, [24, 28], { feelers: true }), // not solo since S196 / lane CW: males are limited by groups.ts `males`

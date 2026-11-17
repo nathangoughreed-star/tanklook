@@ -31,7 +31,7 @@ export const CHEM: Record<string, { ph: R; gh?: R; phOk?: R; ghOk?: R }> = {
   asellus: { ph: [6.5, 8.0] },
   // bala shark: Seriously Fish pH 6.0-8.0, 2-15 dGH (FishBase 5-12 dH); red-tail shark: SF pH 6.0-8.0, 2-15 dGH (FishBase pH 6.5-7.5)
   balashark: { ph: [6.0, 8.0], gh: [2, 15] }, redtailshark: { ph: [6.0, 8.0], gh: [2, 15] }, sparklinggourami: { ph: [5.0, 7.5], gh: [1, 12] }, croakinggourami: { ph: [5.0, 7.5], gh: [1, 15] }, rainbowshark: { ph: [6.5, 8.0], gh: [2, 15] },
-  rummynose: { ph: [5.5, 7.0], gh: [1, 10], phOk: [5.5, 7.5] }, harlequin: { ph: [5.0, 7.0], gh: [1, 12], phOk: [5.0, 7.5] }, chili: { ph: [5.0, 7.0], gh: [1, 8] },
+  blackskirt: { ph: [6.0, 7.5], gh: [4, 18] }, rummynose: { ph: [5.5, 7.0], gh: [1, 10], phOk: [5.5, 7.5] }, harlequin: { ph: [5.0, 7.0], gh: [1, 12], phOk: [5.0, 7.5] }, chili: { ph: [5.0, 7.0], gh: [1, 8] },
   danio: { ph: [6.0, 8.0], gh: [5, 20] }, whitecloud: { ph: [6, 8.3], gh: [5, 20] }, cpd: { ph: [6.5, 7.5], gh: [5, 15] }, hatchet: { ph: [5, 7], gh: [1, 10], phOk: [5, 8] },
   cherrybarb: { ph: [6, 8], gh: [2, 20] }, tigerbarb: { ph: [6, 8], gh: [1, 20] }, boesemani: { ph: [7.0, 8.0], gh: [9, 19] },
   guppy: { ph: [7, 8.3], gh: [8, 25] }, platy: { ph: [7.0, 8.2], gh: [9, 25] }, molly: { ph: [7.5, 8.5], gh: [10, 25] },
@@ -61,7 +61,7 @@ export const MARINE_PH: R = [8.0, 8.4];
 
 /** The smallest group a shoaling or schooling species is kept in (fewer = stressed, shy or nippy). Advice only. */
 export const GROUP: Record<string, number> = {
-  neon: 8, cardinal: 8, ember: 8, rummynose: 10, harlequin: 8, chili: 8, danio: 8, whitecloud: 6, cpd: 6, hatchet: 6,
+  blackskirt: 6, neon: 8, cardinal: 8, ember: 8, rummynose: 10, harlequin: 8, chili: 8, danio: 8, whitecloud: 6, cpd: 6, hatchet: 6,
   greenneon: 8, merah: 8, exclamation: 8, dwarfrasbora: 8, asellus: 10, thaicrab: 5, cherrybarb: 6, tigerbarb: 8, boesemani: 6, bronzecory: 4, sterbai: 6, dwarfpencil: 8, balashark: 5, pandacory: 6, pepperedcory: 6, pygmycory: 6, oto: 6, kuhli: 5,
   clownloach: 5, cherryshrimp: 10, amano: 6, chromis: 6,
 };

@@ -119,3 +119,32 @@ export const SHRIMP3D: Record<string, Shrimp3D> = {
     fan: (x, W, H) => blade(x, W, H, '#3e6e62', 0.95, 0.6),
   },
 };
+
+// CM3: Neocaridina colour forms (cherry shrimp is the red one): the same body, repainted. Key = formArt('cherryshrimp', id)
+// in SHRIMP3D (here) and in the card table (fishgen); NEO_BODY is the card's two body colours.
+const NEO: Record<string, { stops: [string, string, string, string]; mot: string[]; fan: string; glass?: number; patches?: string }> = {
+  'fire-red': { stops: ['#6e080e', '#92121a', '#b02228', '#c43a3c'], mot: ['#5a060c', '#c8403e'], fan: '#a01a20' },
+  orange: { stops: ['#c4560a', '#e47a16', '#f09a3a', '#f8b868'], mot: ['#b04a08', '#f8b058'], fan: '#e47818' },
+  yellow: { stops: ['#c8a014', '#e8c42c', '#f4dc5c', '#f8e890'], mot: ['#b88e10', '#fcee9a'], fan: '#ecc830' },
+  green: { stops: ['#34561c', '#58882a', '#7ca646', '#a0c070'], mot: ['#2a4814', '#b4d088'], fan: '#5a8a2c' },
+  blue: { stops: ['#08266a', '#14469e', '#2664c0', '#4e86d8'], mot: ['#061c52', '#6a98e0'], fan: '#1a4ca4' },
+  chocolate: { stops: ['#36200e', '#58341a', '#7a4e2a', '#a07848'], mot: ['#2a1608', '#b08a58'], fan: '#5a361c' },
+  snowball: { stops: ['#d4d4cf', '#e8e8e3', '#f4f4ef', '#f9f9f6'], mot: ['#c4c4be', '#ffffff'], fan: '#ecece6' },
+  rili: { stops: ['#d4c4bc', '#e2d4ce', '#eadfd9', '#f0e8e3'], mot: ['#c8b8b0', '#f4ece8'], fan: '#e6d8d2', glass: 0.7, patches: '#b8242a' },
+};
+export const NEO_BODY: Record<string, [string, string]> = Object.fromEntries(Object.entries(NEO).map(([k, v]) => [k, [v.stops[1], v.stops[2]]]));
+/** Register the Neocaridina forms of a shrimp art under their form keys. */
+export function registerNeo(art: string, key: (id: string) => string) {
+  const base = SHRIMP3D[art]; if (!base) return;
+  for (const [id, v] of Object.entries(NEO)) {
+    SHRIMP3D[key(id)] = {
+      ...base, leg: v.stops[1], antC: v.stops[1], glass: v.glass,
+      skin: (x, W, H) => {
+        bands(x, W, H, [[0, v.stops[0]], [0.35, v.stops[1]], [0.75, v.stops[2]], [1, v.stops[3]]]);
+        mottle(x, W, H, 31, 260, 5, v.mot, 0.25);
+        if (v.patches) mottle(x, W, H, 77, 16, 22, [v.patches], 0.92);
+      },
+      fan: (x, W, H) => blade(x, W, H, v.fan, 0.95, 0.55),
+    };
+  }
+}

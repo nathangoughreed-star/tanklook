@@ -97,6 +97,9 @@ export interface Fish {
   gender?: 'm' | 'f';
   /** AL1: drawn in the albino (amelanistic) form; only species sold in one (`Species.albino`). Absent = normal colour. */
   albino?: true;
+  /** CM3: colour / pattern form of the species (id in src/data/forms.json, `colour` axis) and fin form (`fin` axis; not `fin`, the fin posture). Absent = the species' own look. */
+  form?: string;
+  finForm?: string;
   /** Clinging animals only (species `surfaces`): the surface it clings to. On glass, (x, depth) is a point on the glass and
    * yaw its heading there; on hardscape it sits on top of the solid piece under (x, depth) (the floor if none is). */
   surface?: Surface;

@@ -682,3 +682,10 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 /* R108: the rating line and over-rating warning on a stand tile */
 .stile .why.rating { color: var(--text-1, inherit); font-weight: 600; }
 .stile .why.bad, .stile .why.warn { margin-top: 2px; }
+/* CM3: the Colour / form menu in the Selection drawer */
+.forms .faxis { margin-top: var(--s2); }
+.swgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 6px; margin-top: var(--s1); max-height: 280px; overflow-y: auto; }
+.swatch { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px; border: 1px solid var(--border, rgba(127,127,127,.35)); border-radius: 6px; background: transparent; color: var(--text); font: inherit; font-size: 11px; line-height: 1.15; text-align: center; cursor: pointer; }
+.swatch.on { border-color: var(--accent, #4aa3ff); box-shadow: 0 0 0 1px var(--accent, #4aa3ff) inset; }
+.swatch-img { width: 100%; height: 44px; object-fit: contain; background: #2c4a52; border-radius: 4px; }
+.swatch span { overflow-wrap: anywhere; }

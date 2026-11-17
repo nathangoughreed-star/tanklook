@@ -3,10 +3,12 @@
 // hand-drawn art: u = 0 (tail tip) .. 1 (nose tip) across the card width W (== adult TL), v = offset in widths
 // from the card's centre line, + down. Tail and nose tips are sharp corners at u = 0 and u = 1 exactly.
 import { albinoPlan } from './albino';
+import { FORMS, formArt, formPlan } from './forms';
+import { NEO_BODY, registerNeo } from './shrimps';
 import albinoSpecies from '../data/species.json';
 import { type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, scales, shimmer, shape, soft, style, wavyBand } from './paint';
 
-type Tail = 'fork' | 'notch' | 'round' | 'veil' | 'lyre' | 'double' | 'sword';
+type Tail = 'fork' | 'notch' | 'round' | 'veil' | 'lyre' | 'double' | 'sword' | 'half' | 'delta' | 'spade' | 'crown' | 'pin';
 type FinShape = 'tri' | 'round' | 'sail' | 'long' | 'swept';
 /** A fin along the back (dorsal) or belly (anal) from u0 (rear) to u1 (front), h tall (widths). */
 export interface FinSpec { u0: number; u1: number; h: number; shape?: FinShape; tint?: string; a?: number; edge?: string }
@@ -221,6 +223,16 @@ function tailPts(t: Tail, pu: number, c: number, pd: number, th: number, cut = 0
     case 'notch': return [[e, c - pd], [pu * 0.4, c - th * 0.85], [0, c - th, 'c'], [pu * 0.12, c], [0, c + th, 'c'], [pu * 0.4, c + th * 0.85], [e, c + pd]];
     case 'round': return [[e, c - pd], [pu * 0.65, c - th * 0.95], [pu * 0.18, c - th * 0.85], [0, c - th * 0.35], [0, c, 'c'], [0, c + th * 0.35], [pu * 0.18, c + th * 0.85], [pu * 0.65, c + th * 0.95], [e, c + pd]];
     case 'veil': return [[e, c - pd], [pu * 0.7, c - th * 0.9], [pu * 0.25, c - th * 0.95], [0.02, c - th * 0.4], [0, c + th * 0.1, 'c'], [0.03, c + th * 0.6], [pu * 0.3, c + th], [pu * 0.75, c + th * 0.8], [e, c + pd]];
+    // CM3 fin forms: halfmoon (a full 180 degree D with square corners), delta (a wide triangle), spade (a pointed fan), crown (spiked rear edge, rays running past the membrane), pin (a narrow pointed tail)
+    case 'half': return [[e, c - pd], [pu * 0.55, c - th * 0.78], [pu * 0.12, c - th * 0.97], [0, c - th * 0.9, 'c'], [0, c - th * 0.45], [0, c, 'c'], [0, c + th * 0.45], [0, c + th * 0.9, 'c'], [pu * 0.12, c + th * 0.97], [pu * 0.55, c + th * 0.78], [e, c + pd]];
+    case 'delta': return [[e, c - pd], [pu * 0.6, c - th * 0.8], [pu * 0.12, c - th * 0.95], [0, c - th * 0.6, 'c'], [0, c, 'c'], [0, c + th * 0.6, 'c'], [pu * 0.12, c + th * 0.95], [pu * 0.6, c + th * 0.8], [e, c + pd]];
+    case 'spade': return [[e, c - pd], [pu * 0.65, c - th * 0.8], [pu * 0.3, c - th * 0.7], [pu * 0.08, c - th * 0.35], [0, c, 'c'], [pu * 0.08, c + th * 0.35], [pu * 0.3, c + th * 0.7], [pu * 0.65, c + th * 0.8], [e, c + pd]];
+    case 'pin': return [[e, c - pd], [pu * 0.6, c - th * 0.5], [pu * 0.2, c - th * 0.22], [0, c, 'c'], [pu * 0.2, c + th * 0.22], [pu * 0.6, c + th * 0.5], [e, c + pd]];
+    case 'crown': {
+      const pts: Pt[] = [[e, c - pd], [pu * 0.6, c - th * 0.85]], n = 9;
+      for (let i = 0; i < n; i++) { const a = (i / (n - 1)) * 2 - 1, r = th * (0.97 - 0.35 * a * a); pts.push([0, c + a * r, 'c'], [pu * 0.17, c + (a + 1 / (n - 1)) * r * 0.97]); }
+      pts.pop(); pts.push([pu * 0.6, c + th * 0.85], [e, c + pd]); return pts;
+    }
     case 'double': return [[e, c - pd], [pu * 0.5, c - th * 0.7], [0, c - th * 0.55, 'c'], [pu * 0.35, c + th * 0.05], [0, c + th * 0.95, 'c'], [pu * 0.55, c + th * 0.7], [e, c + pd]];
     case 'sword': if (sword) {
       // fan from the peduncle to u = sword (truncate rear edge), then the sword: root 0.035 deep, tapering to an upturned point
@@ -1109,6 +1121,28 @@ for (const r of albinoSpecies.species as { albino?: string; art: string; female?
   for (const a of [r.art, r.female?.art]) if (a && PLANS[a]) PLANS[a + '~albino'] = albinoPlan(PLANS[a], a);
 }
 
+// CM3: black skirt tetra (Gymnocorymbus ternetzi): a deep silvery-grey body, two dark bars behind the gill, tall dark dorsal and the long black anal "skirt"
+Object.assign(PLANS, {
+  blackskirt: { shimmer: 0.6, shimmerRgb: '215,225,235', gillLine: 0.28, noseCap: 0.03, gape: 0.022, gapeDrop: 0.005, thick: 0.4, depth: 0.31, pedU: 0.2, ped: 0.04, peak: 0.55, snout: 0.55, shade: ['#6c706a', '#aeb1ab', '#d7d8d2'], tail: { type: 'fork', h: 0.15, tint: '#8a8e8c', a: 0.55 }, fin: '#3a3c3e',
+    dorsal: { at: 0.62, len: 0.13, h: 0.16, rake: 0.3, lead: 0.6, tip: 'point', trail: 0.06, drop: 0.3, tint: '#26272a', a: 0.88 }, anal: { at: 0.74, len: 0.52, h: 0.2, rake: 0.5, lead: 0.7, tip: 'point', trail: 0.05, drop: 0.5, tint: '#1c1d20', a: 0.9 }, adipose: true, pelvic: { u: 0.62, len: 0.07, tint: '#3a3c3e' },
+    marks: [{ k: 'band', u0: 0.22, u1: 0.92, v0: 0.07, v1: 0.18, c: '#e6e8e4', a: 0.4, f: 0.03 }, { k: 'bars', us: [0.865, 0.78], w: 0.035, c: '#16171a', a: 0.82 }],
+    eye: { r: 0.03, iris: ['#cfd4d6', '#4a4e52'] } },
+});
+
+// CM3: colour / fin forms: every combination of a species' forms is its own plan under `<art>~f:<colour>:<fin>` (a female's too)
+for (const r of albinoSpecies.species as { id: string; art: string; female?: { art: string } }[]) {
+  const F = FORMS[r.id]; if (!F) continue;
+  if (SHRIMP[r.art]) {
+    registerNeo(r.art, id => formArt(r.art, id));
+    for (const c of F.colour) if (NEO_BODY[c.id]) { const k = formArt(r.art, c.id); SHRIMP[k] = { ...SHRIMP[r.art], body: NEO_BODY[c.id] }; SHRIMP_PLANS[k] = shrimpPlan(SHRIMP[k]); }
+    continue;
+  }
+  for (const [art, female] of [[r.art, false], [r.female?.art, true]] as [string | undefined, boolean][]) {
+    if (!art || !PLANS[art]) continue;
+    for (const c of [undefined, ...F.colour.map(f => f.id)]) for (const t of [undefined, ...F.fin.map(f => f.id)]) if (c || t) PLANS[formArt(art, c, t)] = formPlan(r.id, PLANS[art], female, c, t);
+  }
+}
+
 export const bodyPlan = (art: string): Plan | undefined => PLANS[art] ?? SHRIMP_PLANS[art];
 /**
  * Fin posture (lane FE1): 0 = median fins folded flat along the back and belly .. 1 = held fully erect (the drawn card).
@@ -1134,7 +1168,7 @@ const FIN_RANGE: Record<string, FinRange> = {
 /** The fin range of a drawing, or undefined when it has no median fin to fold (shrimp, herps, plans without dorsal or anal). */
 export function finRange(art: string): FinRange | undefined {
   const p = PLANS[art]; if (!p || !(p.dorsal || p.dorsal2 || p.anal)) return undefined;
-  return FIN_RANGE[art] ?? FIN_FAMILY;
+  return FIN_RANGE[art] ?? FIN_RANGE[art.split('~')[0]] ?? FIN_FAMILY;   // a form (`<art>~f:..`, `<art>~albino`) folds like its base
 }
 /** Card aspect / resting offset for the shrimp drawing. */
 export const SHRIMP_META = { aspect: 0.4, rest: 0.16 };

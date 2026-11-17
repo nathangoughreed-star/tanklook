@@ -47,9 +47,10 @@ export function offeredIn(sp: Species, k: SetupKind): boolean {
   return sp.habitat === 'water' || sp.kind === 'snail';
 }
 
-export type Role = 'school' | 'centre' | 'community' | 'algae' | 'bottom' | 'invert' | 'herp' | 'arthropod';
+export type Role = 'school' | 'glo' | 'centre' | 'community' | 'algae' | 'bottom' | 'invert' | 'herp' | 'arthropod';
 export const ROLES: [Role, string, string][] = [
   ['school', 'Schooling fish', 'Fish kept in a group of five or more'],
+  ['glo', 'GloFish', 'Fluorescent GloFish colours of the zebra danio, tiger barb and black skirt tetra: the same species and care'],
   ['centre', 'Centerpiece fish', 'The showpiece, large or solitary fish a tank is built around'],
   ['community', 'Community fish', 'Small and peaceful fish that do not need a big group'],
   ['algae', 'Algae eaters', 'Animals that graze algae'],
@@ -74,7 +75,7 @@ export function roleOf(sp: Species): Role {
   return tags.includes('showpiece') || c?.solo || sp.tl >= 120 ? 'centre' : 'community';
 }
 /** The role groups a kind of setup lists, in menu order. */
-export const rolesFor = (k: SetupKind): Role[] => ROLES.map(r => r[0]).filter(r => k === 'terrarium' ? r === 'herp' || r === 'arthropod' : k === 'vivarium' || r !== 'arthropod');
+export const rolesFor = (k: SetupKind): Role[] => ROLES.map(r => r[0]).filter(r => r === 'glo' ? k === 'freshwater' : k === 'terrarium' ? r === 'herp' || r === 'arthropod' : k === 'vivarium' || r !== 'arthropod');
 
 /** How a species sits in this tank: the strict reading (a caution grays it as a problem does; only the Suggest rule's own wording differs). */
 export interface Fit { level: 'ok' | 'caution' | 'problem'; text: string; more: string[] }

@@ -1,5 +1,5 @@
 // Load-time validation and migration. Untrusted JSON in, a complete valid Scene out (plus warnings), or an error.
-import { fishTL, getSpecies, hasSpecies } from '../data/species';
+import { fishTL, getSpecies, hasForm, hasSpecies } from '../data/species';
 import { defaultSetup } from './defaults';
 import { parsePatches } from './brush';
 import { ANIMAL_RANGE, DENS_RANGE, LIBRARY, MAX_ITEMS, clampItem, legacyDens, starterItems } from './items';
@@ -253,6 +253,8 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       ...(sex ? { sex } : {}),
       ...(f.gender === 'm' || f.gender === 'f' ? { gender: f.gender } : {}),
       ...(f.albino === true && base.albino ? { albino: true as const } : {}),
+      ...(typeof f.form === 'string' && hasForm(base.id, 'colour', f.form) ? { form: f.form } : {}),
+      ...(typeof f.finForm === 'string' && hasForm(base.id, 'fin', f.finForm) ? { finForm: f.finForm } : {}),
     });
   }
   if (unknown) warn(`${unknown} fish of unknown species were skipped.`);

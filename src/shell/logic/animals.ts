@@ -1,7 +1,7 @@
 // UI2 shell step 4 (lane S4, 2026-11-14): the Animals section, Water look and the Selection drawer as pure view-models + edits
 // (screen map §2a rows "Section Animals", inventory rows 28-29). No DOM. Engine calls go ONLY through P2's scene/stockEdit.ts and
 // ui/logic/animalPicker.ts; the selected-animal edits are the old panel's, moved here unchanged in behaviour.
-import { SPECIES, fishTL, getSpecies, searchSpecies, speciesTag, type Sex, type Species } from '../../data/species';
+import { SPECIES, fishTL, getSpecies, searchSpecies, gloForm, speciesOf, speciesTag, type Sex, type Species } from '../../data/species';
 import { HERP } from '../../data/herpstock';
 import { pairRule } from '../../data/groups';
 import { pairingIn, setPairing } from '../../scene/pairs';
@@ -33,7 +33,7 @@ export type Fitter = ReturnType<typeof createFitter>;
 /** The kind names the picker says: "freshwater" / "saltwater" / ... */
 export const KIND_WORD: Record<SetupKind, string> = { freshwater: 'freshwater', saltwater: 'saltwater', terrarium: 'terrarium', vivarium: 'vivarium' };
 
-export interface PickRow { id: string; name: string; sci: string; size: string; tag: string; level: Fit['level']; /** one line why it is greyed ('' when it fits) */ reason: string; more: string[]; /** every row of this species already in the tank, summed */ inTank: number; dimorphic: boolean; startCount: number; /** care level badge: 'Beginner' / 'Intermediate' / 'Expert' ('' = no care data) */ care: string; /** which look the picture is baked under */ look: string }
+export interface PickRow { /** CM3: a GloFish row: Add puts the species in with this colour form; `art` draws it */ glo?: string; art?: string; id: string; name: string; sci: string; size: string; tag: string; level: Fit['level']; /** one line why it is greyed ('' when it fits) */ reason: string; more: string[]; /** every row of this species already in the tank, summed */ inTank: number; dimorphic: boolean; startCount: number; /** care level badge: 'Beginner' / 'Intermediate' / 'Expert' ('' = no care data) */ care: string; /** which look the picture is baked under */ look: string }
 export interface PickGroup { role: Role; label: string; rows: PickRow[] }
 export interface PickView {
   kind: SetupKind;
@@ -55,7 +55,7 @@ export interface PickQuery { q: string; role?: Role; origin?: Continent; fitsOnl
 export const DEFAULT_QUERY: PickQuery = { q: '', role: undefined, fitsOnly: true };
 
 /** The species this kind of tank offers that match the search and the chosen group. */
-export const findSpecies = (S: TankSetup, q: string, role?: Role, origin?: Continent) => { const k = tankKind(S); return searchSpecies(q).filter(sp => offeredIn(sp, k) && (!role || roleOf(sp) === role) && (!origin || inContinent(sp.id, origin))); };
+export const findSpecies = (S: TankSetup, q: string, role?: Role, origin?: Continent) => { const k = tankKind(S); return searchSpecies(q).filter(sp => offeredIn(sp, k) && (!role || (role === 'glo' ? !!gloForm(sp) : roleOf(sp) === role)) && (!origin || inContinent(sp.id, origin))); };
 
 /** AT1 (R54): the start door reuses the picker with no tank behind it: `held` = species already on its list (they leave the tiles, as in-tank species do), `free` = nothing is judged against a tank. */
 export interface PickOpts { held?: ReadonlySet<string>; free?: boolean; heldWord?: string }
@@ -68,21 +68,30 @@ export function pickView(S: TankSetup, units: Units, rules: Rules, fitter: Fitte
   const origin = query.origin && pool.some(sp => inContinent(sp.id, query.origin!)) ? query.origin : undefined;
   const roleAll = new Map<Role, number>();
   for (const sp of pool) roleAll.set(roleOf(sp), (roleAll.get(roleOf(sp)) ?? 0) + 1);
+  const gloOn = !opt.free && !opt.held && kind === 'freshwater';   // CM3: the GloFish group needs a tank behind it (forms are set on animals in the tank)
+  const isGlo = (sp: (typeof pool)[number]) => gloOn && !!gloForm(sp);
+  if (gloOn) { const n = pool.filter(isGlo).length; if (n) roleAll.set('glo', n); }
+  const inRole = (sp: (typeof pool)[number]) => !role || (role === 'glo' ? isGlo(sp) : roleOf(sp) === role);
   const role = query.role && roleAll.has(query.role) ? query.role : undefined;
   // faceted counts: the group chips follow the chosen place, the place chips follow the chosen group
   for (const sp of pool) {
     if (!origin || inContinent(sp.id, origin)) counts.set(roleOf(sp), (counts.get(roleOf(sp)) ?? 0) + 1);
-    if (!role || roleOf(sp) === role) for (const c of originOf(sp.id)?.c ?? []) oCounts.set(c, (oCounts.get(c) ?? 0) + 1);
+    if (isGlo(sp) && (!origin || inContinent(sp.id, origin))) counts.set('glo', (counts.get('glo') ?? 0) + 1);
+    if (inRole(sp)) for (const c of originOf(sp.id)?.c ?? []) oCounts.set(c, (oCounts.get(c) ?? 0) + 1);
   }
-  const total = [...counts.values()].reduce((a, n) => a + n, 0);
+  const total = [...counts].reduce((a, [r, n]) => r === 'glo' ? a : a + n, 0);   // GloFish species are already counted in their own groups
   const chips = [{ role: undefined as Role | undefined, label: 'All', n: total }, ...rolesFor(kind).filter(r => counts.has(r) || r === role).map(r => ({ role: r as Role | undefined, label: ROLES.find(x => x[0] === r)![1], n: counts.get(r) ?? 0 }))];
-  const originChips = pool.some(sp => originOf(sp.id)) ? [{ c: undefined as Continent | undefined, label: 'Anywhere', n: pool.filter(sp => !role || roleOf(sp) === role).length }, ...CONTINENTS.filter(([c]) => oCounts.has(c) || c === origin).map(([c, l]) => ({ c: c as Continent | undefined, label: l, n: oCounts.get(c) ?? 0 }))] : [];
+  const originChips = pool.some(sp => originOf(sp.id)) ? [{ c: undefined as Continent | undefined, label: 'Anywhere', n: pool.filter(inRole).length }, ...CONTINENTS.filter(([c]) => oCounts.has(c) || c === origin).map(([c, l]) => ({ c: c as Continent | undefined, label: l, n: oCounts.get(c) ?? 0 }))] : [];
   const found = findSpecies(S, query.q, role, origin), all = found.filter(sp => !inTank.has(sp.id)), already = found.filter(sp => inTank.has(sp.id));
   const list = query.fitsOnly && !opt.free ? fitsThisTank(all, fitOf) : all;
-  const groups: PickGroup[] = groupPicker(list, kind, fitOf).map(g => ({
+  let groups: PickGroup[] = role === 'glo' ? [] : groupPicker(list, kind, fitOf).map(g => ({
     role: g.role, label: g.label,
     rows: g.rows.map(({ sp, fit }) => pickRow(S, sp, fit, units)),
   }));
+  if (gloOn && (!role || role === 'glo')) {   // CM3: GloFish as its own group (after the schooling fish): the same species, added in a GloFish colour; change it in the Selection drawer
+    const rows = list.filter(sp => gloForm(sp)).sort((a, b) => a.name.localeCompare(b.name)).map(sp => { const f = gloForm(sp)!, g = speciesOf({ species: sp.id, form: f })!; return { ...pickRow(S, sp, fitOf(sp), units), name: `GloFish ${sp.name.toLowerCase()}`, glo: f, art: g.art, look: g.look }; });
+    if (rows.length) { const i = groups.findIndex(g => g.role === 'school'), at = i < 0 ? 0 : i + 1; groups = [...groups.slice(0, at), { role: 'glo', label: ROLES.find(r => r[0] === 'glo')![1], rows }, ...groups.slice(at)]; }
+  }
   const other = query.q.trim() ? searchSpecies(query.q).filter(sp => !inTank.has(sp.id)).length : 0;
   const hidden = all.length - list.length;
   const none = list.length ? ''
@@ -154,16 +163,23 @@ export function setCount(store: StockStore, sp: Species, to: (n: number) => numb
 }
 
 /** Add a species at its start count (a group for schooling fish, else one). Already listed: say so, change nothing. */
-export function addSpecies(store: StockStore, sp: Species, sex?: Sex, pct = 100, albino = false): EditResult {
+export function addSpecies(store: StockStore, sp: Species, sex?: Sex, pct = 100, albino = false, form?: string): EditResult {
   const sx = sp.female ? sex : undefined;
   if (store.tank.fish.some(f => stockEdit.inRow(f, sp, sx))) return { ok: false, why: `${stockEdit.rowName(sp, sx)} is already in the stocking list: use + or type a number.` };
   const g = startGroup(sp), before = new Set(store.tank.fish.map(f => f.id));
   const r = setCount(store, sp, () => g.total, sx, pct);
   if (r.ok) sexNew(store, sp, g, before, sx);
   if (r.ok && albino) albinoNew(store, sp, before);
+  if (r.ok && form) formNew(store, sp, before, form);
   return r.ok ? { ok: true, note: `${g.total} ${sp.name} added${g.f ? ` (${g.n} male${g.n === 1 ? '' : 's'}, ${g.f} female${g.f === 1 ? '' : 's'})` : ''}.` } : r;
 }
 
+/** CM3: the animals just added from the GloFish group come in with that colour form. */
+function formNew(store: StockStore, sp: Species, before: Set<number>, form: string) {
+  if (!sp.forms?.colour.some(c => c.id === form)) return;
+  const ids = new Set(store.tank.fish.filter(f => !before.has(f.id) && f.species === sp.id).map(f => f.id));
+  if (ids.size) store.edit(s => { for (const f of s.fish) if (ids.has(f.id)) f.form = form; });
+}
 /** AL1: the animals just added from an albino search come in with the albino form on (species sold in it only). */
 function albinoNew(store: StockStore, sp: Species, before: Set<number>) {
   if (!sp.albino) return;
@@ -224,6 +240,8 @@ export interface SelectionView {
   pair: { on: Pairing; choices: [Pairing, string][] } | null;
   /** AL1: the albino switch, for a species sold in that form; n = how many of the species it turns */
   albino: { on: boolean; src: string; n: number } | null;
+  /** CM3: colour / pattern and fin forms of the species (the drawn look of the same animal); `on` = this animal's form id ('' = the species' own look), n = animals of the species */
+  forms: { n: number; src: string; note: string[]; axes: { axis: 'colour' | 'fin'; title: string; on: string; list: { id: string; name: string; est: boolean; art: string; aspect: number }[] }[] } | null;
   /** the tracked sex of a reptile / amphibian */
   gender: { on: '' | 'm' | 'f'; how: string } | null;
   /** this animal's size as a share of its adult length (the length itself is in `lines`) */
@@ -248,10 +266,23 @@ export function selectionView(S: TankSetup, id: number | null | undefined, units
     sex: sp.female ? { on: f.sex === 'f' ? 'f' : 'm' } : null,
     pair: two ? { on: pairingIn(S, f.species), choices: PAIR_CHOICES } : null,
     albino: sp.albino ? { on: !!f.albino, src: sp.albino, n: S.fish.filter(x => x.species === f.species).length } : null,
+    forms: formsView(S, f, sp),
     gender: hr ? { on: f.gender ?? '', how: hr.sexing.how } : null,
     size: (() => { const adult = fishTL({ sex: f.sex }, sp), pct = clampN(Math.round(fishTL(f, sp) / adult * 100), 15, 130); return { pct, text: `${pct}% of adult · ${fmt(fishTL(f, sp))}`, stages: stagesOf(sp, units, pct) }; })(),
     extra,
   };
+}
+
+/** CM3: the forms menu of one animal: each axis lists the species' own look first, then every form with the art that draws it (the swatch). */
+function formsView(S: TankSetup, f: Fish, sp: Species): SelectionView['forms'] {
+  const F = sp.forms; if (!F) return null;
+  const base = speciesOf({ species: f.species, sex: f.sex })!;
+  const list = (axis: 'colour' | 'fin', own: string) => [{ id: '', name: own, est: false, art: speciesOf({ species: f.species, sex: f.sex, ...(axis === 'colour' ? { finForm: f.finForm } : { form: f.form }) })!.art, aspect: base.aspect },
+    ...F[axis].map(x => { const s = speciesOf({ species: f.species, sex: f.sex, form: f.form, finForm: f.finForm, [axis === 'colour' ? 'form' : 'finForm']: x.id })!; return { id: x.id, name: x.name, est: !!x.est, art: s.art, aspect: s.aspect }; })];
+  const axes: NonNullable<SelectionView['forms']>['axes'] = [];
+  if (F.colour.length) axes.push({ axis: 'colour', title: sp.id === 'cherryshrimp' ? 'Colour' : 'Colour / pattern', on: f.form ?? '', list: list('colour', 'Standard') });
+  if (F.fin.length) axes.push({ axis: 'fin', title: 'Fins', on: f.finForm ?? '', list: list('fin', 'Standard') });
+  return { n: S.fish.filter(x => x.species === f.species).length, src: F.src, note: [F.finNote, F.colourNote].filter((x): x is string => !!x), axes };
 }
 
 type SelStore = Pick<Store, 'edit' | 'nextId' | 'select' | 'selId' | 'tank'>;
@@ -292,7 +323,17 @@ export const setGender = (store: SelStore, g?: 'm' | 'f') => editSel(store, f =>
 export const setAlbino = (store: SelStore, on: boolean) => {
   const id = store.selId, sel = id == null ? undefined : store.tank.fish.find(q => q.id === id), sp = sel && getSpecies(sel.species);
   if (!sel || !sp?.albino) return;
-  store.edit(s => { for (const f of s.fish) if (f.species === sel.species) { if (on) f.albino = true; else delete f.albino; } });
+  store.edit(s => { for (const f of s.fish) if (f.species === sel.species) { if (on) { f.albino = true; delete f.form; } else delete f.albino; } });
+};
+
+/** CM3: a colour / pattern form or fin form (`id` '' = the species' own look). `all`: every animal of the species (a group looks alike), else only the selected one. Forms and albino exclude each other. */
+export const setForm = (store: SelStore, axis: 'colour' | 'fin', id: string, all = true) => {
+  const sid = store.selId, sel = sid == null ? undefined : store.tank.fish.find(q => q.id === sid), sp = sel && getSpecies(sel.species);
+  if (!sel || !sp?.forms || (id && !sp.forms[axis].some(x => x.id === id))) return;
+  store.edit(s => { for (const f of s.fish) if (f.species === sel.species && (all || f.id === sel.id)) {
+    const k = axis === 'colour' ? 'form' : 'finForm';
+    if (id) { f[k] = id; if (axis === 'colour') delete f.albino; } else delete f[k];
+  } });
 };
 
 /** AT1 (R42): the selected animal's size as % of its adult length (100 = adult, stored as no override). */
@@ -320,10 +361,10 @@ export function stagesOf(sp: Species | undefined, units: Units, cur: number): { 
 }
 
 /** A species dropped into the tank: its start count gathered round the drop point, or one more there if it is already listed. */
-export function dropSpecies(store: StockStore & Pick<Store, 'seal'>, sp: Species, sex: Sex | undefined, at: Parameters<typeof stockEdit.applyCount>[4]['at'], pct = 100, albino = false): EditResult {
+export function dropSpecies(store: StockStore & Pick<Store, 'seal'>, sp: Species, sex: Sex | undefined, at: Parameters<typeof stockEdit.applyCount>[4]['at'], pct = 100, albino = false, form?: string): EditResult {
   const g = startGroup(sp), before = new Set(store.tank.fish.map(f => f.id));
   const r = setCount(store, sp, k => stockEdit.dropTarget(k, g.total), sex, pct, at);
-  if (r.ok) { if (!store.tank.fish.some(f => f.species === sp.id && before.has(f.id))) sexNew(store, sp, g, before, sex); if (albino) albinoNew(store, sp, before); store.seal(); }
+  if (r.ok) { if (!store.tank.fish.some(f => f.species === sp.id && before.has(f.id))) sexNew(store, sp, g, before, sex); if (albino) albinoNew(store, sp, before); if (form) formNew(store, sp, before, form); store.seal(); }
   return r;
 }
 

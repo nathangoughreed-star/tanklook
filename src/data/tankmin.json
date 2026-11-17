@@ -198,6 +198,26 @@
    },
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
+  "blackskirt": {
+   "red": {
+    "L": 600,
+    "W": 300,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "The Aquarium Guide",
+    "url": "https://theaquariumguide.com/articles/black-skirt-tetra",
+    "states": "15 gal minimum, 20 gal more comfortable",
+    "from": "volume",
+    "ref": "g15"
+   },
+   "vol": {
+    "gal": 15,
+    "mark": "sourced",
+    "site": "The Aquarium Guide",
+    "url": "https://theaquariumguide.com/articles/black-skirt-tetra"
+   },
+   "why": "guides' gallon figure (search results; page not opened); the footprint follows from it"
+  },
   "pepperedcory": {
    "red": {
     "L": 600,

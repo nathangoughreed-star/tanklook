@@ -9,12 +9,14 @@ import { LIMITS } from '../scene/validate';
 import { createFitter } from '../ui/logic/animalPicker';
 import { OK_FIT } from '../scene/pickerKind';
 import { drawFishCard } from '../art/placeholder';
+import { artMeta } from '../art/fishgen';
 import { drawSnailCard } from '../art/snails';
 import {
   DEFAULT_QUERY, pickView, stockView, selectionView, addSpecies, setCount, removeMisfits,
   flip, del, dup, setSex, setSize, setAlbino, dropSpecies, copySelection, COPY_START, COPY_RANGE, type CopyOpt, setPair, setGender, findSpecies, rowKeyOf, speciesDetail, noteIn, type PickQuery, type PickRow,
 } from './logic/animals';
 import { wantsAlbino } from '../data/species';
+import { setForm } from './logic/animals';
 import { Icon } from './ui';
 import { dragOut } from './drag';
 import { aqView, aqCheck, onAq } from './logic/aq';
@@ -34,16 +36,50 @@ const tone = (l: PickRow['level']) => (l === 'problem' ? 'bad' : 'warn');
 
 /** The species picture: the baked still (public/gallery/<look>.webp), else the painted card, else nothing. */
 const paint = new Map<string, string>();
-function FishArt({ id, look, big }: { id: string; look: string; big?: boolean }) {
+const speciesAspectOf = (art: string, dflt: number) => artMeta(art)?.aspect ?? dflt;
+function FishArt({ id, look, big, art }: { id: string; look: string; big?: boolean; art?: string }) {
   const baked = `${import.meta.env.BASE_URL}gallery/${encodeURIComponent(look)}.webp`;
   const [src, setSrc] = useState(baked);
   useEffect(() => { setSrc(baked); }, [baked]);
   const fallback = () => {
     let u = paint.get(look);
-    if (u === undefined) { try { const sp = getSpecies(id)!; u = (sp.kind === 'snail' ? drawSnailCard(sp.art, 'side', 480) : drawFishCard(sp.art, sp.aspect, 480)).toDataURL(); } catch { u = ''; } paint.set(look, u); }
+    if (u === undefined) { try { const sp = getSpecies(id)!; u = (sp.kind === 'snail' ? drawSnailCard(sp.art, 'side', 480) : drawFishCard(art ?? sp.art, art ? speciesAspectOf(art, sp.aspect) : sp.aspect, 480)).toDataURL(); } catch { u = ''; } paint.set(look, u); }
     if (u && u !== src) setSrc(u);
   };
   return <img class={`fishart${big ? ' big' : ''}`} src={src} alt="" loading={big ? 'eager' : 'lazy'} draggable={false} onError={fallback} />;
+}
+
+/** CM3: one swatch: a small render of the fish in that form (same card art as the tank, no baked file: forms are not in the gallery). */
+const swatches = new Map<string, string>();
+function Swatch({ art, aspect }: { art: string; aspect: number }) {
+  let u = swatches.get(art);
+  if (u === undefined) { try { u = drawFishCard(art, aspect, 200).toDataURL(); } catch { u = ''; } swatches.set(art, u); }
+  return <img class="swatch-img" src={u} alt="" draggable={false} />;
+}
+type FormsView = NonNullable<ReturnType<typeof import('./logic/animals').selectionView>>['forms'];
+/** CM3: the Colour / form menu of the Selection drawer: a swatch per form, searchable when the list is long, for the whole species or just this one. */
+function FormsMenu({ store, f }: { store: Store; f: NonNullable<FormsView> }) {
+  const [q, setQ] = useState(''), [all, setAll] = useState(true);
+  return (
+    <div class="field forms">
+      {f.n > 1 ? <div class="seg full" role="group" aria-label="Apply the form to"><button type="button" class={all ? 'on' : ''} aria-pressed={all} onClick={() => setAll(true)}>All {f.n}</button><button type="button" class={!all ? 'on' : ''} aria-pressed={!all} onClick={() => setAll(false)}>Just this one</button></div> : null}
+      {f.axes.map(a => {
+        const term = q.trim().toLowerCase(), shown = a.list.filter(x => !term || !x.id || x.name.toLowerCase().includes(term));
+        return (
+          <div class="faxis">
+            <div class="cap">{a.title}</div>
+            {a.list.length > 9 ? <input class="input" type="search" placeholder={`Search ${a.list.length - 1} forms`} aria-label={`Search ${a.title}`} value={q} onInput={e => setQ((e.target as HTMLInputElement).value)} /> : null}
+            <div class="swgrid" role="listbox" aria-label={a.title}>
+              {shown.map(x => <button type="button" role="option" class={`swatch${a.on === x.id ? ' on' : ''}`} aria-selected={a.on === x.id} title={x.est ? `${x.name} (est: listed by breeders and retailers)` : x.name} onClick={() => setForm(store, a.axis, x.id, all)}><Swatch art={x.art} aspect={x.aspect} /><span>{x.name}{x.est ? ' *' : ''}</span></button>)}
+              {!shown.length ? <div class="hint">No match.</div> : null}
+            </div>
+          </div>
+        );
+      })}
+      {f.note.map(t => <div class="hint">{t}</div>)}
+      <div class="hint">Looks only: care and sizing stay the species'. <a href={f.src} target="_blank" rel="noreferrer">Source</a>; * = est.</div>
+    </div>
+  );
 }
 
 /** AT1 (R54): the start door's mode of this section: a pending list (nothing written to the design), no tank to judge against. */
@@ -77,7 +113,7 @@ export function AnimalsSection({ store, getViewer, pending }: { store: Store; ge
   const set = (q: Partial<PickQuery>) => setQuery({ ...query, ...q });
   const flipFits = () => { saveFits(!query.fitsOnly); set({ fitsOnly: !query.fitsOnly }); };
   const report = (r: ReturnType<typeof addSpecies>) => { if (!r.ok) say(r.why, true); else if (r.note) say(r.note); };
-  const add = (sp: NonNullable<ReturnType<typeof getSpecies>>) => { if (pending) { pending.set(addPick(pending.picks, sp.id, albinoSearch && !!sp.albino)); setPvId(null); } else report(addSpecies(store, sp, undefined, pct, albinoSearch && !!sp.albino)); };
+  const add = (sp: NonNullable<ReturnType<typeof getSpecies>>, glo?: string) => { if (pending) { pending.set(addPick(pending.picks, sp.id, albinoSearch && !!sp.albino)); setPvId(null); } else report(addSpecies(store, sp, undefined, pct, albinoSearch && !!sp.albino && !glo, glo)); };
   const pick = (id: string) => { const f = store.tank.fish.find(x => rowKeyOf(x) === id); if (f) store.select(f.id); };
 
   return (
@@ -165,13 +201,13 @@ export function AnimalsSection({ store, getViewer, pending }: { store: Store; ge
             const sp = getSpecies(r.id)!;
             return (
               <div class={`ptile${r.level !== 'ok' ? ' gated' : ''}`}
-                onPointerDown={e => { if (!getViewer || (e.target as HTMLElement).closest('button')) return; dragOut(e, sp.name, getViewer, store, (at, overView) => { if (at || overView) report(dropSpecies(store, sp, undefined, at ?? undefined, pct, albinoSearch && !!sp.albino)); }); }} title={r.level !== 'ok' ? [r.reason, ...r.more, 'Still addable: Add anyway.'].join('; ') : noteIn(sp.note ?? '', units)}>
-                <div class="tart"><FishArt id={r.id} look={r.look} /><button type="button" class="info" aria-label={`${r.name}: details`} title="Details" onClick={() => setPvId(r.id)}>i</button></div>
+                onPointerDown={e => { if (!getViewer || (e.target as HTMLElement).closest('button')) return; dragOut(e, sp.name, getViewer, store, (at, overView) => { if (at || overView) report(dropSpecies(store, sp, undefined, at ?? undefined, pct, albinoSearch && !!sp.albino && !r.glo, r.glo)); }); }} title={r.level !== 'ok' ? [r.reason, ...r.more, 'Still addable: Add anyway.'].join('; ') : noteIn(sp.note ?? '', units)}>
+                <div class="tart"><FishArt id={r.id} look={r.look} art={r.art} /><button type="button" class="info" aria-label={`${r.name}: details`} title="Details" onClick={() => setPvId(r.id)}>i</button></div>
                 <div class="tname">{r.name}{r.tag ? <b class="tag">{r.tag}</b> : null}{albinoSearch && sp.albino ? <b class="tag albino" title="Add puts it in with the albino form on">Albino</b> : null}</div>
                 <div class="tmeta"><span>{r.size}</span>{r.care ? <span class="care">{r.care}</span> : null}</div>
                 {r.reason ? <small class={`why ${tone(r.level)}`}>{r.reason}{r.more.length ? ` (+${r.more.length} more)` : ''}</small> : null}
                 <button type="button" class={`btn sm${r.level === 'ok' ? '' : ' ghost'}`} title={sp.female ? 'Adds the males and females in the proportion the species is kept' : `Add ${r.startCount > 1 ? r.startCount : 'one'}`}
-                  onClick={() => add(sp)}>{r.level === 'ok' ? `Add${r.startCount > 1 ? ' ' + r.startCount : ''}` : 'Add anyway'}</button>
+                  onClick={() => add(sp, r.glo)}>{r.level === 'ok' ? `Add${r.startCount > 1 ? ' ' + r.startCount : ''}` : 'Add anyway'}</button>
               </div>
             );
           })}
@@ -216,6 +252,7 @@ export function SelectionDrawer({ store, getViewer, onClose }: { store: Store; g
           <div class="row"><input class="slider" type="range" min={15} max={130} step={1} value={v.size.pct} aria-label="Size, percent of adult size" onInput={e => setSize(store, +(e.target as HTMLInputElement).value)} /><span class="val">{v.size.text}</span></div>
           {v.size.stages ? <div class="seg" role="group" aria-label="Life stage">{v.size.stages.map(b => <button type="button" class={b.on ? 'on' : ''} aria-pressed={b.on} title={b.text} onClick={() => setSize(store, b.pct)}>{b.name}</button>)}</div> : null}</div>
         {v.albino ? <div class="field"><button type="button" class="tglrow" role="switch" aria-checked={v.albino.on} title={`Albino form (no melanin: pale body, pink eyes). Applies to all ${v.albino.n} of this species. Source: ${v.albino.src}`} onClick={() => setAlbino(store, !v.albino!.on)}><span class={`toggle${v.albino.on ? ' on' : ''}`} />Albino{v.albino.n > 1 ? <span class="hint"> · all {v.albino.n}</span> : null}</button></div> : null}
+        {v.forms ? <FormsMenu store={store} f={v.forms} /> : null}
         {v.sex ? <div class="field"><div class="cap">Sex</div>{seg(v.sex.on, [['m', '♂ Male'], ['f', '♀ Female']] as ['m' | 'f', string][], k => setSex(store, k === 'f' ? ('f' as Sex) : undefined), 'Sex')}</div> : null}
         {v.pair ? <div class="field"><div class="cap" title="Two of a pair-forming species are judged as a pair only once you say they are one">Pair</div>{seg(v.pair.on, v.pair.choices, k => setPair(store, k), 'Pair')}</div> : null}
         {v.gender ? <div class="field"><div class="cap" title="Tracked for the stocking check; the drawing does not change">Sex (tracked)</div>

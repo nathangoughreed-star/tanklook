@@ -32,6 +32,8 @@ export function carryAnimals(from: CarryTank, to: CarryTank): void {
     if (o.sex) n.sex = o.sex; else delete n.sex;
     if (o.gender) n.gender = o.gender; else delete n.gender;
     if (o.albino) n.albino = true; else delete n.albino;
+    if (o.form) n.form = o.form; else delete n.form;
+    if (o.finForm) n.finForm = o.finForm; else delete n.finForm;
   }
   const pairs: NonNullable<TankSetup['pairs']> = {};
   for (const id of Object.keys(from.pairs ?? {})) {

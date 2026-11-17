@@ -1,4 +1,5 @@
 import { artMeta } from '../art/fishgen';
+import { FORMS, formArt, type SpeciesForms } from '../art/forms';
 import { scopeSpecies, speciesInScope } from '../scope';
 import { herpMeta } from '../art/herps';
 import { snailAspect, snailRest } from '../art/snails';
@@ -54,6 +55,8 @@ export interface Species {
   albino?: string;
   /** AL1: the albino look of this same model (art `<art>~albino`, look `<look>~a`). Set only where `albino` is. */
   albinoForm?: Species;
+  /** CM3: colour / pattern and fin forms sold within this species (src/data/forms.json). Care stays the species'. */
+  forms?: SpeciesForms;
 }
 /** 'f' = female; absent = male (or a species drawn the same either way). */
 export type Sex = 'f';
@@ -75,6 +78,7 @@ function resolve(r: RawSpecies): Species {
     const m = (artMeta(r.female.art) ?? herpMeta(r.female.art))!;
     sp.female = { ...sp, art: r.female.art, tl: r.female.tl, aspect: m.aspect, rest: m.rest, look: r.id + '~f', sex: 'f', female: undefined };
   }
+  if (FORMS[r.id]) { sp.forms = FORMS[r.id]; if (sp.female) sp.female.forms = FORMS[r.id]; }
   if (typeof r.albino === 'string' && !kind) {
     const al = (s: Species): Species => ({ ...s, art: s.art + '~albino', look: s.look + '~a', albinoForm: undefined, female: undefined });
     sp.albino = r.albino;
@@ -90,10 +94,25 @@ const byId = new Map(SPECIES.map(s => [s.id, s]));
 export const getSpecies = (id: string) => byId.get(id);
 export const hasSpecies = (id: string) => byId.has(id);
 /** The look a fish is drawn and sized with: the species, or its female for a female of a dimorphic species. */
-export const speciesOf = (f: { species: string; sex?: Sex; albino?: boolean }) => {
+export const speciesOf = (f: { species: string; sex?: Sex; albino?: boolean; form?: string; finForm?: string }) => {
   const sp = byId.get(f.species), s = sp && f.sex === 'f' && sp.female ? sp.female : sp;
-  return s && f.albino && s.albinoForm ? s.albinoForm : s;   // AL1: the albino look of the same model
+  if (s && f.albino && s.albinoForm) return s.albinoForm;   // AL1: the albino look of the same model
+  return s && (f.form || f.finForm) ? formSpecies(s, f.form, f.finForm) : s;
 };
+/** CM3: the GloFish colour a species is added in from the GloFish group (electric green, else its first glo- colour); undefined = not sold as a GloFish. */
+export const gloForm = (sp: Species) => { const c = sp.forms?.colour.filter(x => x.id.startsWith('glo-')); return c?.length ? (c.find(x => x.id === 'glo-green') ?? c[0]).id : undefined; };
+/** CM3: is this a colour (`axis` 'colour') or fin form of the species? */
+export const hasForm = (species: string, axis: 'colour' | 'fin', id: string) => !!FORMS[species]?.[axis].some(x => x.id === id);
+const formCache = new Map<string, Species>();
+/** CM3: the species drawn in a colour and / or fin form: the same model repainted (art `<art>~f:<colour>:<fin>`), sized by the new outline. */
+function formSpecies(s: Species, form?: string, fin?: string): Species {
+  const c = form && hasForm(s.id, 'colour', form) ? form : undefined, t = fin && hasForm(s.id, 'fin', fin) ? fin : undefined;
+  if (!c && !t) return s;
+  const art = formArt(s.art, c, t), k = s.look + '|' + art;
+  let r = formCache.get(k);
+  if (!r) { const m = artMeta(art); r = { ...s, art, look: formArt(s.look, c, t), aspect: s.aspect === artMeta(s.art)?.aspect ? m?.aspect ?? s.aspect : s.aspect, rest: m?.rest ?? s.rest, albinoForm: undefined, female: undefined }; formCache.set(k, r); }
+  return r;
+}
 /** This fish's total length (mm): its custom size if set, else the adult length of its sex. */
 export const fishTL = (f: { tl?: number; sex?: Sex }, sp: Species) => f.tl ?? (f.sex === 'f' && sp.female ? sp.female.tl : sp.tl);
 /** Always rests on the ground or hardscape (bottom dwellers, land animals and snails not on glass); 'both' animals depend on the water at their spot. */

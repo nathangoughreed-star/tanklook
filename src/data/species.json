@@ -11,6 +11,7 @@
   {"id": "exclamation", "name": "Exclamation point rasbora", "sci": "Boraras urophthalmoides", "tl": 19, "group": "school", "art": "exclamation", "note": "The smallest of the nano rasboras; keeps to cover in a group of 8-10 or more (Seriously Fish)."},
   {"id": "dwarfrasbora", "name": "Dwarf spotted rasbora", "sci": "Boraras maculatus", "tl": 30, "group": "school", "art": "dwarfrasbora", "note": "Timid nano schooler, 8-10 or more; not an ideal community fish at this size (Seriously Fish)."},
   {"id": "rummynose", "name": "Rummy-nose tetra", "sci": "Hemigrammus rhodostomus", "tl": 50, "group": "school", "art": "rummynose"},
+  {"id": "blackskirt", "name": "Black skirt tetra", "sci": "Gymnocorymbus ternetzi", "tl": 70, "group": "school", "art": "blackskirt", "note": "Hardy, but may nip the long fins of bettas, angelfish and fancy guppies. Keep six or more."},
   {"id": "harlequin", "name": "Harlequin rasbora", "sci": "Trigonostigma heteromorpha", "tl": 50, "group": "school", "art": "harlequin"},
   {"id": "chili", "name": "Chili rasbora", "sci": "Boraras brigittae", "tl": 23, "group": "school", "art": "chili"},
   {"id": "danio", "name": "Zebra danio", "sci": "Danio rerio", "tl": 50, "group": "school", "art": "danio"},

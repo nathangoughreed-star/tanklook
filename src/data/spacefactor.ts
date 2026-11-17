@@ -9,6 +9,7 @@ export const SPACE_FACTOR: Record<string, [number, string]> = {
   neon: [1.18, 'tiny body; one-species tank: AqAdvisor 37% vs ours 32% with 20'],
   cardinal: [1.09, 'tiny body; one-species tank: AqAdvisor 48% vs ours 44% with 20'],
   ember: [1.66, 'tiny body; one-species tank: AqAdvisor 27% vs ours 16% with 20'],
+  blackskirt: [0.9, 'deep body, tetra size class; no AqAdvisor row to calibrate against yet'],
   rummynose: [1.47, 'tiny body; one-species tank: AqAdvisor 48% vs ours 33% with 20'],
   harlequin: [0.44, 'mid body; one-species tank: AqAdvisor 39% vs ours 89% with 20'],
   chili: [2.13, 'tiny body; one-species tank: AqAdvisor 37% vs ours 17% with 20'],

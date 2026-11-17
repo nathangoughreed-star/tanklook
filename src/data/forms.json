@@ -1,0 +1,636 @@
+{
+ "_doc": "CM3: colour / pattern forms (axis 'colour') and fin forms (axis 'fin') sold within one species. Ids are saved in files (Fish.form, Fish.finForm): never rename. est = listed by breeders / retailers but not pinned to one source. Paint lives in src/art/forms.ts (same ids).",
+ "species": {
+  "betta": {
+   "src": "https://joshsfrogs.com/blog/a-guide-to-fancy-betta-varieties",
+   "colour": [
+    {
+     "id": "red",
+     "name": "Red",
+     "est": true
+    },
+    {
+     "id": "blue",
+     "name": "Royal blue",
+     "est": true
+    },
+    {
+     "id": "turquoise",
+     "name": "Turquoise / green",
+     "est": true
+    },
+    {
+     "id": "black-orchid",
+     "name": "Black orchid"
+    },
+    {
+     "id": "koi",
+     "name": "Koi"
+    },
+    {
+     "id": "marble",
+     "name": "Marble",
+     "est": true
+    },
+    {
+     "id": "mustard-gas",
+     "name": "Mustard gas"
+    },
+    {
+     "id": "white-platinum",
+     "name": "White platinum",
+     "est": true
+    },
+    {
+     "id": "yellow",
+     "name": "Opaque yellow",
+     "est": true
+    },
+    {
+     "id": "cambodian",
+     "name": "Cambodian (pale body, red fins)",
+     "est": true
+    },
+    {
+     "id": "cellophane",
+     "name": "Cellophane",
+     "est": true
+    },
+    {
+     "id": "dragon",
+     "name": "Dragon scale",
+     "est": true
+    },
+    {
+     "id": "butterfly",
+     "name": "Butterfly",
+     "est": true
+    },
+    {
+     "id": "copper",
+     "name": "Copper / gold",
+     "est": true
+    }
+   ],
+   "fin": [
+    {
+     "id": "halfmoon",
+     "name": "Halfmoon"
+    },
+    {
+     "id": "hmpk",
+     "name": "Halfmoon plakat (HMPK)"
+    },
+    {
+     "id": "plakat",
+     "name": "Plakat (short fins)"
+    },
+    {
+     "id": "crowntail",
+     "name": "Crowntail"
+    },
+    {
+     "id": "delta",
+     "name": "Delta",
+     "est": true
+    },
+    {
+     "id": "spade",
+     "name": "Spade tail"
+    },
+    {
+     "id": "doubletail",
+     "name": "Double tail",
+     "est": true
+    },
+    {
+     "id": "dumbo",
+     "name": "Dumbo ear (big pectorals)",
+     "est": true
+    }
+   ],
+   "finNote": "Long-finned forms (halfmoon, delta, crowntail, double tail, dumbo ear) tire in strong flow and tear on sharp decor: keep the flow gentle. Plakats are the hardier, short-finned form. Care data stays the species'."
+  },
+  "guppy": {
+   "src": "https://aquifarm.com/types-of-fancy-guppies",
+   "colour": [
+    {
+     "id": "full-red",
+     "name": "Full red"
+    },
+    {
+     "id": "japan-blue",
+     "name": "Japan blue"
+    },
+    {
+     "id": "moscow-blue",
+     "name": "Moscow blue"
+    },
+    {
+     "id": "moscow-green",
+     "name": "Moscow green"
+    },
+    {
+     "id": "moscow-purple",
+     "name": "Moscow purple",
+     "est": true
+    },
+    {
+     "id": "black-moscow",
+     "name": "Black Moscow"
+    },
+    {
+     "id": "tuxedo",
+     "name": "Tuxedo (half black)"
+    },
+    {
+     "id": "cobra",
+     "name": "Cobra (snakeskin)"
+    },
+    {
+     "id": "gold",
+     "name": "Gold / blond",
+     "est": true
+    },
+    {
+     "id": "white",
+     "name": "Full white (platinum)",
+     "est": true
+    },
+    {
+     "id": "blue-grass",
+     "name": "Blue grass",
+     "est": true
+    },
+    {
+     "id": "leopard",
+     "name": "Leopard (spotted tail)",
+     "est": true
+    }
+   ],
+   "fin": [
+    {
+     "id": "delta",
+     "name": "Delta"
+    },
+    {
+     "id": "fan",
+     "name": "Fantail",
+     "est": true
+    },
+    {
+     "id": "veil",
+     "name": "Veiltail",
+     "est": true
+    },
+    {
+     "id": "lyre",
+     "name": "Lyretail",
+     "est": true
+    },
+    {
+     "id": "spade",
+     "name": "Spade tail",
+     "est": true
+    },
+    {
+     "id": "round",
+     "name": "Round tail",
+     "est": true
+    },
+    {
+     "id": "pin",
+     "name": "Pintail",
+     "est": true
+    },
+    {
+     "id": "doublesword",
+     "name": "Double sword",
+     "est": true
+    },
+    {
+     "id": "dumbo",
+     "name": "Dumbo ear (big pectorals)"
+    }
+   ],
+   "finNote": "Big-tailed fancy guppies (delta, veil, double sword) swim slower and are nipped by fast fish; keep them with calm tank-mates. Care data stays the species'."
+  },
+  "platy": {
+   "src": "https://modestfish.com/types-of-platy-fish/",
+   "colour": [
+    {
+     "id": "red",
+     "name": "Red",
+     "est": true
+    },
+    {
+     "id": "sunburst",
+     "name": "Sunburst (red front, yellow rear)",
+     "est": true
+    },
+    {
+     "id": "gold",
+     "name": "Gold / yellow"
+    },
+    {
+     "id": "mickey",
+     "name": "Mickey Mouse (black tail spots)"
+    },
+    {
+     "id": "tuxedo",
+     "name": "Tuxedo (black belly and rear)"
+    },
+    {
+     "id": "blue",
+     "name": "Blue (blue-green)",
+     "est": true
+    },
+    {
+     "id": "calico",
+     "name": "Calico (red, black and white)"
+    },
+    {
+     "id": "salt-pepper",
+     "name": "Salt and pepper (wild type)",
+     "est": true
+    }
+   ],
+   "fin": [
+    {
+     "id": "hifin",
+     "name": "Hi-fin (tall dorsal)"
+    }
+   ]
+  },
+  "molly": {
+   "src": "https://creatures.com/species/sailfin-molly/mixed-variety",
+   "colour": [
+    {
+     "id": "dalmatian",
+     "name": "Dalmatian (white, black spots)"
+    },
+    {
+     "id": "gold",
+     "name": "Gold / gold dust",
+     "est": true
+    },
+    {
+     "id": "silver",
+     "name": "Silver / platinum",
+     "est": true
+    },
+    {
+     "id": "orange",
+     "name": "Orange / sunset",
+     "est": true
+    },
+    {
+     "id": "chocolate",
+     "name": "Chocolate",
+     "est": true
+    }
+   ],
+   "fin": [
+    {
+     "id": "sailfin",
+     "name": "Sailfin (tall dorsal)"
+    },
+    {
+     "id": "lyre",
+     "name": "Lyretail",
+     "est": true
+    }
+   ],
+   "finNote": "Sailfin mollies are the larger form (adult males to about 5 in) and want more room and warmer water. Care data stays the species'."
+  },
+  "swordtail": {
+   "src": "https://www.furrycritter.com/pages/articles/fish/swordtail_varieties.htm",
+   "colour": [
+    {
+     "id": "green",
+     "name": "Green (wild type)"
+    },
+    {
+     "id": "wag",
+     "name": "Red wag (black fins)",
+     "est": true
+    },
+    {
+     "id": "tuxedo",
+     "name": "Tuxedo",
+     "est": true
+    },
+    {
+     "id": "pineapple",
+     "name": "Pineapple (yellow, dark fins)",
+     "est": true
+    },
+    {
+     "id": "lemon",
+     "name": "Lemon yellow",
+     "est": true
+    },
+    {
+     "id": "black",
+     "name": "Black / velvet",
+     "est": true
+    }
+   ],
+   "fin": [
+    {
+     "id": "hifin",
+     "name": "Hi-fin (tall dorsal)",
+     "est": true
+    },
+    {
+     "id": "lyre",
+     "name": "Lyretail",
+     "est": true
+    }
+   ]
+  },
+  "angel": {
+   "src": "https://animal-world.com/angelfish",
+   "colour": [
+    {
+     "id": "zebra",
+     "name": "Zebra (extra stripes)"
+    },
+    {
+     "id": "marble",
+     "name": "Marble"
+    },
+    {
+     "id": "gold",
+     "name": "Gold"
+    },
+    {
+     "id": "koi",
+     "name": "Koi"
+    },
+    {
+     "id": "black",
+     "name": "Black / black lace"
+    },
+    {
+     "id": "platinum",
+     "name": "Platinum (white)"
+    },
+    {
+     "id": "smokey",
+     "name": "Smokey",
+     "est": true
+    },
+    {
+     "id": "blushing",
+     "name": "Blushing",
+     "est": true
+    }
+   ],
+   "fin": [
+    {
+     "id": "veil",
+     "name": "Veiltail (long fins)"
+    }
+   ],
+   "finNote": "Veil angelfish have long trailing fins that tear on rough decor and are nipped by fin-nippers: calm tank-mates only. Care data stays the species'."
+  },
+  "discus": {
+   "src": "https://modestfish.com/types-of-discus-fish",
+   "colour": [
+    {
+     "id": "red-turquoise",
+     "name": "Red turquoise"
+    },
+    {
+     "id": "pigeon-blood",
+     "name": "Pigeon blood"
+    },
+    {
+     "id": "snakeskin",
+     "name": "Snakeskin"
+    },
+    {
+     "id": "cobalt",
+     "name": "Cobalt blue"
+    },
+    {
+     "id": "red",
+     "name": "Solid red / red melon",
+     "est": true
+    },
+    {
+     "id": "golden",
+     "name": "Golden / yellow",
+     "est": true
+    },
+    {
+     "id": "white",
+     "name": "White (leopard)",
+     "est": true
+    },
+    {
+     "id": "brown",
+     "name": "Wild brown"
+    }
+   ]
+  },
+  "danio": {
+   "src": "https://shop.glofish.com/products/danio-single-color-collection",
+   "colour": [
+    {
+     "id": "glo-red",
+     "name": "GloFish Starfire red"
+    },
+    {
+     "id": "glo-green",
+     "name": "GloFish Electric green"
+    },
+    {
+     "id": "glo-orange",
+     "name": "GloFish Sunburst orange"
+    },
+    {
+     "id": "glo-blue",
+     "name": "GloFish Cosmic blue"
+    },
+    {
+     "id": "glo-purple",
+     "name": "GloFish Galactic purple"
+    },
+    {
+     "id": "leopard",
+     "name": "Leopard (spotted)"
+    },
+    {
+     "id": "gold",
+     "name": "Golden",
+     "est": true
+    }
+   ],
+   "fin": [
+    {
+     "id": "longfin",
+     "name": "Long-fin"
+    }
+   ],
+   "colourNote": "GloFish are a patented, genetically modified fluorescent strain: a colour, not a different care need."
+  },
+  "tigerbarb": {
+   "src": "https://shop.glofish.com/products/glofish-striking-collection-8ct-copy",
+   "colour": [
+    {
+     "id": "green",
+     "name": "Green (moss)"
+    },
+    {
+     "id": "glo-red",
+     "name": "GloFish Starfire red"
+    },
+    {
+     "id": "glo-green",
+     "name": "GloFish Electric green"
+    },
+    {
+     "id": "glo-orange",
+     "name": "GloFish Sunburst orange"
+    },
+    {
+     "id": "glo-purple",
+     "name": "GloFish Galactic purple"
+    }
+   ],
+   "colourNote": "GloFish are a patented, genetically modified fluorescent strain: a colour, not a different care need."
+  },
+  "goldfish": {
+   "src": "https://en.wikipedia.org/wiki/List_of_goldfish_varieties",
+   "colour": [
+    {
+     "id": "red",
+     "name": "Solid red / orange",
+     "est": true
+    },
+    {
+     "id": "sarasa",
+     "name": "Red and white (sarasa)",
+     "est": true
+    },
+    {
+     "id": "calico",
+     "name": "Calico",
+     "est": true
+    },
+    {
+     "id": "white",
+     "name": "White / pearl",
+     "est": true
+    },
+    {
+     "id": "black",
+     "name": "Black (moor)",
+     "est": true
+    },
+    {
+     "id": "lemon",
+     "name": "Lemon / yellow",
+     "est": true
+    }
+   ]
+  },
+  "cherryshrimp": {
+   "src": "https://gensou.sg/cherry-shrimp-grading-guide/",
+   "colour": [
+    {
+     "id": "fire-red",
+     "name": "Fire red (full opaque)"
+    },
+    {
+     "id": "orange",
+     "name": "Orange sakura"
+    },
+    {
+     "id": "yellow",
+     "name": "Yellow (golden back)"
+    },
+    {
+     "id": "green",
+     "name": "Green jade",
+     "est": true
+    },
+    {
+     "id": "blue",
+     "name": "Blue dream"
+    },
+    {
+     "id": "chocolate",
+     "name": "Chocolate"
+    },
+    {
+     "id": "snowball",
+     "name": "Snowball (white)",
+     "est": true
+    },
+    {
+     "id": "rili",
+     "name": "Red rili (clear and red)",
+     "est": true
+    }
+   ],
+   "colourNote": "All the Neocaridina colours are one species (Neocaridina davidi) and share the care; wild-colour, selectively bred shrimp that interbreed revert toward brown."
+  },
+  "blackskirt": {
+   "src": "https://shop.glofish.com/products/glofish-striking-collection-8ct-copy",
+   "colour": [
+    {
+     "id": "glo-red",
+     "name": "GloFish Starfire red",
+     "est": true
+    },
+    {
+     "id": "glo-green",
+     "name": "GloFish Electric green",
+     "est": true
+    },
+    {
+     "id": "glo-orange",
+     "name": "GloFish Sunburst orange",
+     "est": true
+    },
+    {
+     "id": "glo-blue",
+     "name": "GloFish Cosmic blue",
+     "est": true
+    },
+    {
+     "id": "glo-purple",
+     "name": "GloFish Galactic purple",
+     "est": true
+    },
+    {
+     "id": "glo-pink",
+     "name": "GloFish Moonrise pink",
+     "est": true
+    },
+    {
+     "id": "white",
+     "name": "White / albino skirt",
+     "est": true
+    },
+    {
+     "id": "gold",
+     "name": "Gold skirt",
+     "est": true
+    }
+   ],
+   "fin": [
+    {
+     "id": "longfin",
+     "name": "Long-fin (veil)",
+     "est": true
+    }
+   ],
+   "finNote": "Long-fin black skirts have drooping fins that other nippers (including normal black skirts) will bite.",
+   "colourNote": "GloFish are a patented, genetically modified fluorescent strain: a colour, not a different care need."
+  }
+ }
+}
