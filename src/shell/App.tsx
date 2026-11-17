@@ -19,7 +19,9 @@ import { FsExit, useFs } from './fullscreen';
 import { SettingsSection } from './settings';
 import { PrintSection, PrintPaper } from './print';
 import { AnimalsSection, SelectionDrawer, pickable } from './animals';
-import { ScapeSection, ScapeBars, pickItems } from './scape';
+import { ScapeBars, pickItems } from './scape';
+import { ScapeWorkspace } from './scapeWs';
+import { isWorkspace } from './logic/workspace';
 import { PlantsSection } from './plants';
 import { Icon, Pill } from './ui';
 import { ProjectName, FileMenu, FileLayer, type Files } from './files';
@@ -126,7 +128,7 @@ function Panel({ id, more, onPick, onClose, tank, s8, disc, s5 }: { id: SectionI
       <div class="sec-body">{MORE.map(m => { const s = sectionOf(m); return <button type="button" class="card media morerow" onClick={() => onPick(m)}><span class="ic"><Icon name={s.icon} /></span><span class="t">{s.title}</span><Icon name="chev" /></button>; })}</div>
     </section>
   );
-  if (!id) return null;
+  if (!id || isWorkspace(id)) return null;   // WS2: a workspace section draws itself next to the viewer (see App), not as a side panel
   const s = sectionOf(id);
   if (id === 'tank' && tank.picker) return <TankPicker store={tank.store} preview={tank.preview} onClose={() => tank.setPicker(false)} onMaker={tank.maker} libN={tank.libN} />;
   if (id === 'tank') return (
@@ -141,10 +143,10 @@ function Panel({ id, more, onPick, onClose, tank, s8, disc, s5 }: { id: SectionI
       <div class="sec-body"><AnimalsSection store={s8.store} getViewer={s8.getViewer} /></div>
     </section>
   );
-  if (id === 'scape' || id === 'plants') return (
+  if (id === 'plants') return (
     <section class="panel" aria-label={s.title}>
       <div class="sec-head"><h2>{s.title}</h2><button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
-      <div class="sec-body">{id === 'scape' ? <ScapeSection store={s8.store} getViewer={s8.getViewer} /> : <PlantsSection store={s8.store} getViewer={s8.getViewer} />}</div>
+      <div class="sec-body"><PlantsSection store={s8.store} getViewer={s8.getViewer} /></div>
     </section>
   );
   if (id === 'equipment') return (
@@ -252,9 +254,10 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const ideas = (id: SectionId) => { setScope(scopeOf(id)); setMore(false); setPicker(false); setSection('discover'); if (phone) setDrawer(null); };
   const tab = (id: SectionId | 'more') => { if (id === 'more') { setSection(null); setMore(!more); setDrawer(null); } else pick(id); };
   const check = (id: CheckId) => { if (drawer === 'selection') store.select(null); setDrawer(drawer === id ? null : id); if (phone) { setSection(null); setMore(false); } };
-  const panelOpen = !!section || more;
+  const ws = isWorkspace(section) && !more;   // WS2: the open section is a full-screen workspace
+  const panelOpen = (!!section && !ws) || more;
   const cmpDrawer = drawer === 'selection' ? null : drawer;
-  const cls = ['ui2app', panelOpen ? 'panel-on' : 'panel-off', drawer ? 'drawer-on' : '', phone ? 'phone' : '', split ? 'split' : '', fs.tankOnly ? 'tankonly' : ''].filter(Boolean).join(' ');
+  const cls = ['ui2app', ws ? 'ws-on' : panelOpen ? 'panel-on' : 'panel-off', drawer ? 'drawer-on' : '', phone ? 'phone' : '', split ? 'split' : '', fs.tankOnly ? 'tankonly' : ''].filter(Boolean).join(' ');
 
   return (
     <div class={cls}>
@@ -263,7 +266,8 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
         view={<ViewCluster store={store} getViewer={viewer} phone={phone} compare={<CompareButtons store={store} phone={phone} say={files.say} />} />} />
       {phone ? null : <Rail open={section} onPick={pick} />}
       <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); setPicker(false); }} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} disc={{ scope, onScope: setScope, say: files.say }} s5={{ onSurprise: () => { setScope(undefined); setSection('discover'); } }} />
-      <IdeasButton section={more ? null : section} onIdeas={ideas} />
+      {ws && section === 'scape' ? <ScapeWorkspace store={store} getViewer={viewer} phone={phone} onDone={() => setSection(null)} onIdeas={() => ideas('scape')} /> : null}
+      <IdeasButton section={more || ws ? null : section} onIdeas={ideas} />
       {split && panelOpen && !phone ? <EditingBar store={store} /> : null}
       <main class="viewer" ref={viewRef}>
         {section === 'print' && !phone ? <PrintPaper store={store} profile={profile} getViewer={viewer} /> : null}
@@ -271,9 +275,9 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
         <GetStarted tank={store.tank} open={section} onOpen={pick} onAnimal={() => setDoor(true)} phone={phone} />
         <ScapeBars store={store} getViewer={viewer} />
       </main>
-      {phone ? <div class="checkstrip">{split ? <CompareStrip store={store} models={models} side={cmpSide} setSide={setCmpSide} drawer={cmpDrawer} onPick={check} /> : <CheckBar m={model} on={drawer === 'selection' ? null : drawer} onPick={check} />}</div> : null}
+      {phone && !ws ? <div class="checkstrip">{split ? <CompareStrip store={store} models={models} side={cmpSide} setSide={setCmpSide} drawer={cmpDrawer} onPick={check} /> : <CheckBar m={model} on={drawer === 'selection' ? null : drawer} onPick={check} />}</div> : null}
       {drawer === 'selection' ? <SelectionDrawer store={store} getViewer={viewer} onClose={() => setDrawer(d => (d === 'selection' ? null : d))} /> : drawer && split ? <CompareDrawer id={drawer} models={models} onClose={() => setDrawer(null)} /> : drawer ? <Drawer id={drawer} model={model} onClose={() => setDrawer(null)} /> : null}
-      {phone ? <TabBar open={more ? 'more' : section} onPick={tab} /> : null}
+      {phone && !ws ? <TabBar open={more ? 'more' : section} onPick={tab} /> : null}
       <FileLayer store={store} files={files} />
       {door ? <AnimalDoor store={store} say={files.say} onClose={() => setDoor(false)} /> : null}
       {fs.tankOnly ? <FsExit /> : null}

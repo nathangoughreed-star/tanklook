@@ -1,4 +1,4 @@
-// UI2 shell step 7 (lane S7, 2026-11-14): the Scape section (Substrate, Terrain, Hardscape and Decor library, placed pieces, the piece
+// UI2 shell step 7 (lane S7, 2026-11-14): the Scape section's parts (WS2 2026-11-16: the section itself is now the Scape workspace, shell/scapeWs.tsx; this file keeps its shared pieces) (Substrate, Terrain, Hardscape and Decor library, placed pieces, the piece
 // editor with Keep) and the brush / group bars over the view. Components only draw logic/scape.ts and call its edits.
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { ComponentChildren } from 'preact';
@@ -6,13 +6,12 @@ import type { Store } from '../scene/store';
 import type { Viewer } from '../render/viewer';
 import { supportLift } from '../interact/pointer';
 import {
-  substrateView, terrainView, libraryView, placedView, pieceView, brushView, groupBarView, scapeSec, type ScapeSec, type LibraryView, type PlacedView,
-  setSubstrateType, setRough, slopePreset, setBlend, setLitterLeaf, setLitterDensity, shuffleLitter, setTerrainOn, setTerrainCols, flattenTerrain,
-  addPool, removePool, setPoolField, addPiece, removePiece, duplicatePiece, clearPieces, toggleKeep, reshapePiece, dropPiece, nudgePiece, setField,
-  brushOn, pickBrush, groupTurn, groupSizeBy, groupDelete, groupDuplicate, GRAINS, LEAVES, KEEP_PROPS,
+  terrainView, placedView, pieceView, brushView, groupBarView, scapeSec, type ScapeSec, type LibraryView, type PlacedView,
+  setBlend, setTerrainOn, setTerrainCols, flattenTerrain,
+  addPool, removePool, setPoolField, removePiece, duplicatePiece, clearPieces, toggleKeep, reshapePiece, dropPiece, nudgePiece, setField,
+  brushOn, pickBrush, groupTurn, groupSizeBy, groupDelete, groupDuplicate, GRAINS, KEEP_PROPS,
 } from './logic/scape';
-import { Group, Icon } from './ui';
-import { dragPiece } from './drag';
+import { Icon } from './ui';
 
 /** Pieces can be picked and dragged in the view only while their section is open (as the old shell: its menu open). Boot's attachPointer reads this. */
 export const pickItems: { sec: ScapeSec | null } = { sec: null };
@@ -123,85 +122,57 @@ export function Search({ q, onQ, placeholder }: { q: string; onQ: (q: string) =>
   return <label class="search"><Icon name="search" /><input class="input" type="search" placeholder={placeholder} value={q} aria-label={placeholder} onInput={e => onQ(val(e))} /></label>;
 }
 
-const Select = ({ value, onChange, children, label, disabled }: { value: string; onChange: (v: string) => void; children: ComponentChildren; label: string; disabled?: boolean }) => (
+export const Select = ({ value, onChange, children, label, disabled }: { value: string; onChange: (v: string) => void; children: ComponentChildren; label: string; disabled?: boolean }) => (
   <select class="select" value={value} aria-label={label} disabled={disabled} onChange={e => onChange(val(e))}>{children}</select>
 );
 
-export function ScapeSection({ store, getViewer }: { store: Store; getViewer: () => Viewer | undefined }) {
-  sealer.store = store;
-  const S = store.tank, units = store.scene.units, sv = substrateView(S, units);
-  const [open, setOpen] = useState({ sub: true, terrain: false, brush: false });
-  const [q, setQ] = useState('');
+/** Custom terrain: the grid of heights, point editing in the tank, pools. Moved from the old Scape panel unchanged in behaviour (WS2). */
+export function TerrainBlock({ store, getViewer }: { store: Store; getViewer: () => Viewer | undefined }) {
+  const S = store.tank;
   const [pool, setPool] = useState(0);
   const [, setN] = useState(0);
   const tv = terrainView(S, pool), edit = !!getViewer()?.terrainEdit.on;
-  const lib = libraryView(S, 'hardscape', q);
-  const flip = (k: keyof typeof open) => setOpen({ ...open, [k]: !open[k] });
   const terrainEdit = (on: boolean, k = pool) => { const v = getViewer(); if (!v) return; v.terrainEdit.on = on; v.terrainEdit.pool = k; v.rebuild(); setN(n => n + 1); };
-  // leaving the section ends the point editing, as closing the old menu does
+  // leaving ends the point editing, as closing the old menu does
   useEffect(() => () => { const v = getViewer(); if (v?.terrainEdit.on) { v.terrainEdit.on = false; v.rebuild(); } }, []);
-  const bv = brushView(store, units);
-
   return (
-    <div class="scape">
-      <PieceEditor store={store} sec="hardscape" />
-      <Placed store={store} sec="hardscape" pv={placedView(S, 'hardscape', null, new Set())} onPick={id => store.selectItem(id)} />
-
-      <div class="cap">Add hardscape and decor</div>
-      <Search q={q} onQ={setQ} placeholder="Search stones, wood, caves, decor" />
-      <Library lib={lib} onAdd={id => addPiece(store, id)} onDrag={(e, id) => dragPiece(e, id, getViewer, store)} />
-
-      <Group title="Substrate" sum={sv.summary} open={open.sub} onToggle={() => flip('sub')}>
-        <div class="row"><span class="lbl">Type</span>
-          <Select label="Substrate type" value={sv.type} onChange={v => { setSubstrateType(store, v); if (v === 'bare' && getViewer()?.terrainEdit.on) terrainEdit(false); }}>
-            <option value="bare">Bare bottom (no substrate)</option>
-            {sv.groups.map(g => <optgroup label={g.label}>{g.options.map(o => <option value={o.id}>{o.label}</option>)}</optgroup>)}
-            <option value="custom">Custom grain and colour</option>
-          </Select><span /></div>
-        {sv.custom ? <Blend store={store} /> : null}
-        <SliderRow label="Roughness" title="Lumps and ripples on the ground's skin only" min={0} max={100} value={sv.rough} text={sv.roughText} onInput={v => setRough(store, v)} />
-        <div class="cap">Slope</div>
-        <div class="chips">{sv.slopes.map(s => <button type="button" class={`chip${s.active ? ' on' : ''}`} aria-pressed={s.active} onClick={() => slopePreset(store, s.id)}>{s.label}</button>)}</div>
-        <div class="hint">Depth at the corners: {sv.corners.map(c => `${c.label.toLowerCase()} ${c.text}`).join(', ')}. {tv.on ? 'Custom terrain is on: it replaces these slopes.' : ''}</div>
-        <div class="cap">Leaf litter</div>
-        <div class="row"><span class="lbl">Leaves</span>
-          <Select label="Leaf look" value={sv.litter.leaf} onChange={v => setLitterLeaf(store, v)}>{LEAVES.map(([k, l]) => <option value={k}>{l}</option>)}</Select><span /></div>
-        <SliderRow label="Amount" min={0} max={100} value={sv.litter.density} text={sv.litter.on ? `${sv.litter.density}%` : 'none'} onInput={v => setLitterDensity(store, v)} />
-        <button type="button" class="btn sm" disabled={!sv.litter.on} onClick={() => shuffleLitter(store)}>Shuffle the leaves</button>
-      </Group>
-
-      <Group title="Terrain" sum={tv.summary} open={open.terrain} onToggle={() => flip('terrain')}>
-        <button type="button" class="tglrow" role="switch" aria-checked={tv.on} onClick={() => { const on = !tv.on; const v = getViewer(); if (v) { v.terrainEdit.on = on; } setTerrainOn(store, on); v?.rebuild(); setN(n => n + 1); }}>
-          <span class={`toggle${tv.on ? ' on' : ''}`} />Custom terrain</button>
-        <div class="hint">Off: the ground follows the slopes above. On: a grid of heights you shape by dragging its points in the tank.</div>
-        {tv.on ? (<>
-          <SliderRow label="Grid" title="More points shape finer detail" min={3} max={25} value={tv.cols} text={tv.colsText} onInput={v => setTerrainCols(store, v)} />
-          <div class="btns">
-            <button type="button" class={`btn sm${edit ? ' on' : ''}`} aria-pressed={edit} onClick={() => terrainEdit(!edit)}>{edit ? 'Done editing' : 'Edit points'}</button>
-            <button type="button" class="btn sm" title="Level the ground at its average height" onClick={() => flattenTerrain(store)}>Flatten</button>
-          </div>
-          <div class="cap">Pools {tv.pools ? <span class="n">{tv.pools}</span> : null}</div>
-          {tv.pools ? <div class="row"><span class="lbl">Pool</span>
-            <Select label="Pool" value={String(tv.pool)} onChange={v => { setPool(+v); if (edit) terrainEdit(true, +v); }}>{Array.from({ length: tv.pools }, (_, i) => <option value={String(i)}>{`Pool ${i + 1}`}</option>)}</Select><span /></div> : null}
-          {tv.poolFields.map(f => <SliderRow label={f.label} min={f.min} max={f.max} value={f.value} text={f.text} onInput={v => setPoolField(store, tv.pool, f.key, v)} />)}
-          <div class="btns">
-            <button type="button" class="btn sm" onClick={() => { addPool(store); const k = (store.tank.terrain.pools?.length ?? 1) - 1; setPool(k); terrainEdit(true, k); }}>Add a pool</button>
-            {tv.pools ? <button type="button" class="btn sm danger" onClick={() => { removePool(store, tv.pool); setPool(Math.max(0, tv.pool - 1)); }}>Remove pool</button> : null}
-          </div>
-        </>) : null}
-      </Group>
-
-      <Group title="Scatter brush" sum={bv.on ? bv.label : 'off'} open={open.brush} onToggle={() => flip('brush')}>
-        <div class="hint">Paint litter, pebbles, moss, twigs and carpet plants onto the ground or a piece. The strip over the tank has the size and density.</div>
-        <div class="row"><span class="lbl">Brush</span>
-          <Select label="Brush" value={bv.id} onChange={v => { pickBrush(store, v); }}>{bv.groups.map(g => <optgroup label={g.label}>{g.options.map(o => <option value={o.id}>{o.label}</option>)}</optgroup>)}</Select><span /></div>
-        <button type="button" class={`btn sm${bv.on ? ' on' : ''}`} aria-pressed={bv.on} onClick={() => brushOn(store, !bv.on)}>{bv.on ? 'Brush on: Done' : 'Paint with it'}</button>
-      </Group>
-    </div>
+    <>
+      <button type="button" class="tglrow" role="switch" aria-checked={tv.on} onClick={() => { const on = !tv.on; const v = getViewer(); if (v) { v.terrainEdit.on = on; } setTerrainOn(store, on); v?.rebuild(); setN(n => n + 1); }}>
+        <span class={`toggle${tv.on ? ' on' : ''}`} />Custom terrain</button>
+      <div class="hint">Off: the ground follows the slopes above. On: a grid of heights you shape by dragging its points in the tank.</div>
+      {tv.on ? (<>
+        <SliderRow label="Grid" title="More points shape finer detail" min={3} max={25} value={tv.cols} text={tv.colsText} onInput={v => setTerrainCols(store, v)} />
+        <div class="btns">
+          <button type="button" class={`btn sm${edit ? ' on' : ''}`} aria-pressed={edit} onClick={() => terrainEdit(!edit)}>{edit ? 'Done editing' : 'Edit points'}</button>
+          <button type="button" class="btn sm" title="Level the ground at its average height" onClick={() => flattenTerrain(store)}>Flatten</button>
+        </div>
+        <div class="cap">Pools {tv.pools ? <span class="n">{tv.pools}</span> : null}</div>
+        {tv.pools ? <div class="row"><span class="lbl">Pool</span>
+          <Select label="Pool" value={String(tv.pool)} onChange={v => { setPool(+v); if (edit) terrainEdit(true, +v); }}>{Array.from({ length: tv.pools }, (_, i) => <option value={String(i)}>{`Pool ${i + 1}`}</option>)}</Select><span /></div> : null}
+        {tv.poolFields.map(f => <SliderRow label={f.label} min={f.min} max={f.max} value={f.value} text={f.text} onInput={v => setPoolField(store, tv.pool, f.key, v)} />)}
+        <div class="btns">
+          <button type="button" class="btn sm" onClick={() => { addPool(store); const k = (store.tank.terrain.pools?.length ?? 1) - 1; setPool(k); terrainEdit(true, k); }}>Add a pool</button>
+          {tv.pools ? <button type="button" class="btn sm danger" onClick={() => { removePool(store, tv.pool); setPool(Math.max(0, tv.pool - 1)); }}>Remove pool</button> : null}
+        </div>
+      </>) : null}
+    </>
   );
 }
 
-function Blend({ store }: { store: Store }) {
+/** The scatter brush picker (the strip over the tank has size and density). */
+export function BrushBlock({ store }: { store: Store }) {
+  const bv = brushView(store, store.scene.units);
+  return (
+    <>
+      <div class="hint">Paint litter, pebbles, moss, twigs and carpet plants onto the ground or a piece. The strip over the tank has the size and density.</div>
+      <div class="row"><span class="lbl">Brush</span>
+        <Select label="Brush" value={bv.id} onChange={v => { pickBrush(store, v); }}>{bv.groups.map(g => <optgroup label={g.label}>{g.options.map(o => <option value={o.id}>{o.label}</option>)}</optgroup>)}</Select><span /></div>
+      <button type="button" class={`btn sm${bv.on ? ' on' : ''}`} aria-pressed={bv.on} onClick={() => brushOn(store, !bv.on)}>{bv.on ? 'Brush on: Done' : 'Paint with it'}</button>
+    </>
+  );
+}
+
+export function Blend({ store }: { store: Store }) {
   const c = store.tank.substrate.custom;
   return (
     <div class="blend">

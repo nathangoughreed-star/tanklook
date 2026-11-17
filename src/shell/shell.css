@@ -612,3 +612,70 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .origincap { margin-top: var(--s2); }
 .detail .origin { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s1); font-size: 13px; color: var(--text-2); }
 .detail .origin .tag { font-size: 11px; font-weight: 600; color: var(--accent); border: 1px solid var(--border, currentColor); border-radius: 999px; padding: 1px 8px; }
+
+/* ---------- WS2 (R111): full-screen workspaces, frame A. The REAL viewer is the live view (left ~40 %), the catalogue is right; a phone stacks them ---------- */
+.ui2app.ws-on { position: relative; }
+.ui2app.ws-on:not(.phone), .ui2app.ws-on.drawer-on:not(.phone) {
+  grid-template-columns: var(--rail-w) minmax(300px, 40%) minmax(0, 1fr);
+  grid-template-rows: var(--header-h) 54px minmax(240px, 52%) minmax(0, 1fr);
+  grid-template-areas: "head head head" "rail wsbar wsbar" "rail view wscat" "rail wsside wscat"; }
+.ui2app.ws-on > .drawer { position: absolute; top: var(--header-h); bottom: 0; right: 0; width: min(var(--drawer-w), 100%); box-shadow: var(--shadow); z-index: var(--z-pop); }
+.ui2app > .wsbar { grid-area: wsbar; display: flex; align-items: center; gap: var(--s3); padding: 0 var(--s4) 0 var(--s2); background: var(--bg-panel); border-bottom: 1px solid var(--line); min-width: 0; }
+.wstitle h2 { margin: 0; font-size: var(--fs-lg); line-height: 1.1; } .wstitle .hint { margin: 0; line-height: 1.1; }
+.wsmode { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-sm); color: var(--text-2); white-space: nowrap; }
+.wsmode.live { color: var(--ok); } .wsmode .ldot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); display: inline-block; }
+.wsbar .btn.primary { min-width: 72px; }
+.ui2app > .wsside { grid-area: wsside; overflow-y: auto; padding: var(--s3) var(--s4); background: var(--bg-panel); border-right: 1px solid var(--line); border-top: 1px solid var(--line); min-height: 0; }
+.ui2app > .wscat { grid-area: wscat; overflow-y: auto; padding: var(--s4); background: var(--bg-app); display: flex; flex-direction: column; gap: var(--s3); min-width: 0; min-height: 0; z-index: var(--z-panel); }
+.wsside-in { display: grid; gap: var(--s3); }
+.wstray { display: grid; gap: var(--s2); } .wstrayh { display: flex; align-items: baseline; gap: var(--s2); } .wstrayh .hint { margin: 0; }
+.wsfacts { gap: 4px; } .wsfacts .drow { display: flex; justify-content: space-between; gap: var(--s3); } .wsfacts .drow b { text-align: right; font-weight: 600; }
+.hint.warnline { color: var(--warn); }
+.wstabs { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
+.chip.big { height: 32px; padding: 0 var(--s4); font-size: var(--fs-md); font-weight: 600; background: var(--bg-raised); cursor: pointer; }
+.chip.big.dashed { border-style: dashed; margin-left: auto; } .chip.big.on { border-color: var(--accent); background: var(--accent-weak); }
+.wsgroup h3, .wsground h3 { margin: var(--s3) 0 var(--s2); font-size: var(--fs-lg); display: flex; align-items: baseline; gap: var(--s2); } .wsgroup h3 .n { color: var(--text-3); font-weight: 400; font-size: var(--fs-sm); } .wsground h3 .hint { font-weight: 400; margin: 0; }
+.wsgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: var(--s3); }
+.wstile { position: relative; min-width: 0; display: flex; }
+.wsface { all: unset; box-sizing: border-box; flex: 1; display: grid; grid-template-rows: auto auto auto auto 1fr; align-content: start; gap: 2px; cursor: pointer; border: 1px solid var(--line); border-radius: var(--r-card); background: var(--bg-raised); overflow: hidden; padding-bottom: var(--s2); min-width: 0; }
+.wsface:hover { background: var(--bg-hover); } .wsface:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.wstile.sel .wsface { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.wspic { position: relative; display: block; aspect-ratio: 4 / 3; background: #d9dce2; margin-bottom: var(--s2); } .wspic.none { background: linear-gradient(160deg, #2b323e, #20262f); }
+.wspic img { width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; -webkit-user-drag: none; }
+.wsph { position: absolute; inset: 22% 18%; border-radius: 40% 40% 12% 12%; border: 1px dashed var(--text-3); opacity: .5; }
+.wscnt { position: absolute; top: 8px; right: 8px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--accent); color: #fff; font-size: 12px; display: grid; place-items: center; }
+.wsname, .wsface .wsfacts, .wspills, .wswhy { padding: 0 var(--s3); }
+.wsname { font-weight: 600; } .wsface .wsfacts { color: var(--text-2); font-size: var(--fs-sm); display: block; margin: 0; }
+.wspills { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.wswhy { color: var(--warn); font-size: var(--fs-xs); line-height: 1.3; margin-top: 4px; }
+.wstile.flagged .wsface { border-color: color-mix(in srgb, var(--warn) 55%, var(--line)); }
+.wscorner { position: absolute; top: 6px; left: 6px; }
+.trayc { cursor: pointer; background: var(--bg-raised); }
+.wsswatches { display: flex; flex-wrap: wrap; gap: var(--s3); }
+.wssw { all: unset; box-sizing: border-box; width: 84px; display: grid; justify-items: center; gap: 4px; cursor: pointer; font-size: var(--fs-xs); text-align: center; color: var(--text-2); } .wssw.on { color: var(--text); }
+.wssw:focus-visible .wsswatch { outline: 2px solid var(--accent); }
+.wsswatch { width: 64px; height: 64px; border-radius: 10px; border: 2px solid var(--line); background: #111; } .wssw.on .wsswatch { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-weak); }
+.wsfield { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; } .wsfield[disabled] { opacity: .5; }
+.wsground { display: grid; gap: var(--s2); align-content: start; }
+.wsxsec { display: grid; gap: var(--s2); padding: var(--s3); background: var(--bg-panel); border: 1px solid var(--line); border-radius: var(--r-card); }
+.xsec { width: 100%; height: auto; display: block; }
+.xsglass { fill: #0f1c24; } .xswater { fill: rgba(70,150,190,.22); } .xsgrid { stroke: rgba(255,255,255,.09); stroke-width: 1; } .xsframe { fill: none; stroke: rgba(150,220,215,.7); stroke-width: 1.5; }
+.xsline { fill: none; stroke: rgba(255,255,255,.55); stroke-width: 1.2; } .xsground { opacity: .95; } .xslab { fill: var(--text); font-size: 12px; font-weight: 600; }
+.wsfoot, .wssheet, .wsstrip { display: none; }
+
+/* Phone: the app header, the workspace bar, a view strip, the catalogue as a sheet, a footer with the count and Revert / Done */
+.ui2app.phone.ws-on { grid-template-columns: minmax(0, 1fr); grid-template-rows: var(--header-h) 46px 190px minmax(0, 1fr) 56px;
+  grid-template-areas: "head" "wsbar" "view" "wscat" "wsfoot"; }
+.ui2app.phone.ws-on.wsbigview { grid-template-rows: var(--header-h) 46px 46dvh minmax(0, 1fr) 56px; }
+.ui2app.phone > .wsbar { padding: 0 var(--s2); gap: var(--s2); }
+.ui2app.phone .wsbar .wstitle h2 { font-size: 17px; } .ui2app.phone .wsbar .btn.ideas { display: none; }
+.ui2app.phone > .wsstrip { display: block; grid-area: view; align-self: start; justify-self: end; z-index: var(--z-overlay); padding: var(--s2); }
+.ui2app.phone > .wscat.sheet { grid-area: wscat; border-radius: 14px 14px 0 0; margin-top: -10px; box-shadow: 0 -6px 20px rgba(0,0,0,.4); padding: var(--s3); border-top: 1px solid var(--line); background: var(--bg-app); }
+.ui2app.phone .wsgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s2); }
+.ui2app.phone .wstabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; } .ui2app.phone .chip.big { flex: none; padding: 0 var(--s3); } .ui2app.phone .chip.big.dashed { margin-left: 0; }
+.ui2app.phone > .wsfoot { display: flex; grid-area: wsfoot; align-items: center; gap: var(--s2); padding: 0 var(--s3); background: var(--bg-panel); border-top: 1px solid var(--line); }
+.ui2app.phone > .wssheet { display: block; position: fixed; left: 0; right: 0; bottom: 56px; max-height: 70dvh; overflow-y: auto; z-index: var(--z-dialog); background: var(--bg-panel); border-top: 1px solid var(--line); border-radius: 14px 14px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,.5); padding: var(--s3); }
+.wssheethead { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--s2); }
+.ui2app.phone .wsswatches { gap: var(--s2); } .ui2app.phone .wssw { width: 72px; }
+.wsback { display: inline-flex; transform: rotate(180deg); }
+.ui2app.ws-on .ov.getstarted { display: none; }
