@@ -708,3 +708,29 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
   .tfhead { position: sticky; top: calc(-1 * var(--s3)); background: var(--bg-raised); padding: var(--s1) 0; } .tfdone { display: inline-flex; }
   .frow { grid-template-columns: minmax(0, 1fr); gap: var(--s1); }
 }
+
+/* ---------- PB1 (R100): the Plumbing view. Colours as the PV1 mockups: blue clean, grey-blue dirty, green CO2, red heat, cyan cooling, amber skimmate ---------- */
+.ov.pbswitch { top: var(--s3); left: var(--s3); padding: 3px; z-index: calc(var(--z-overlay) + 3); }
+.pbview { position: absolute; inset: 0; z-index: calc(var(--z-overlay) + 1); background: radial-gradient(1200px 700px at 50% 40%, #1a2029 0, #12161c 100%); overflow: hidden; }
+.pbdiag { position: absolute; inset: 0; width: 100%; height: 100%; padding: 56px 8px 64px; }
+.pbview.ph { overflow-y: auto; } .pbdiag.port { position: static; inset: auto; height: auto; padding: 124px 4px 8px; } .pbview.ph .pbbot { position: static; padding: var(--s2) var(--s2) var(--s3); }
+.pbbox { fill: var(--bg-raised); stroke: var(--line); stroke-width: 1.2; } .pbbox.dash { fill: none; stroke-dasharray: 5 4; stroke: var(--text-3); }
+.pbt1 { font: 600 13px var(--font); fill: var(--text); } .pbt1.big { font-size: 15px; }
+.pbt2 { font: 11.5px var(--font); fill: var(--text-2); } .pbt3 { font: 11px var(--font); fill: var(--text-3); }
+.pbtg { font: 600 11.5px var(--font); fill: #34d57f; } .pbth { font: 600 11.5px var(--font); fill: #ff5b52; } .pbtc { font: 600 11.5px var(--font); fill: #47a3ff; }
+.pbtd { font: 600 11.5px var(--font); fill: #8aa3c3; } .pbtk { font: 600 11.5px var(--font); fill: #6fe0e8; } .pbtw { font: 600 11.5px var(--font); fill: #b8935f; } .s { font-size: 11px; }
+.pbglass { fill: none; stroke: #3fb68b; stroke-opacity: .75; stroke-width: 2.5; } .pbplant { fill: none; stroke: #5f8a52; stroke-width: 3; stroke-linecap: round; }
+.pbsub { fill: #8e7b58; opacity: .8; } .pbstand { fill: #1c212b; stroke: var(--line); }
+.pbtrk { fill: none; opacity: .2; stroke-linecap: round; stroke-linejoin: round; }
+.pbflow { fill: none; stroke-dasharray: 7 7; stroke-linejoin: round; animation: pbdash 1.2s linear infinite; } .pbflow.dots { stroke-dasharray: .1 14; stroke-linecap: round; }
+@keyframes pbdash { from { stroke-dashoffset: var(--o, 0px); } to { stroke-dashoffset: calc(var(--o, 0px) - 14px); } }
+.pbfaint { opacity: .5; } .pbview.paused .pbflow { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .pbflow { animation: none; } }
+.pbchips { position: absolute; top: var(--s3); left: 190px; right: var(--s3); display: flex; gap: var(--s2); flex-wrap: wrap; justify-content: flex-end; pointer-events: none; z-index: 2; }
+.pbchip { padding: 4px 10px; font-size: var(--fs-sm); color: var(--text-2); pointer-events: auto; } .pbchip b { color: var(--text); font-weight: 600; }
+.pbchip.pbwarn { color: var(--warn); background: var(--warn-weak); }
+.pbbot { position: absolute; left: var(--s3); right: var(--s3); bottom: var(--s3); display: flex; justify-content: space-between; align-items: flex-end; gap: var(--s2); flex-wrap: wrap; z-index: 2; }
+.pblegend { display: flex; gap: 6px 14px; flex-wrap: wrap; padding: 6px 10px; font-size: var(--fs-sm); color: var(--text-2); max-width: 780px; }
+.pblegend span { display: inline-flex; align-items: center; gap: 6px; } .pblegend u { display: inline-block; width: 22px; border-top: 3px dashed; text-decoration: none; } .pblegend u.dot { border-top-style: dotted; border-top-width: 4px; }
+.pbempty { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; text-align: center; gap: var(--s2); padding: var(--s4); color: var(--text-2); } .pbempty h3 { margin: 0; color: var(--text); } .pbempty p { margin: 0; max-width: 420px; }
+@media (max-width: 699px) { .ov.pbswitch { top: var(--s2); left: var(--s2); } .pbchips { top: 72px; left: var(--s2); right: var(--s2); justify-content: flex-start; } .pbchip { font-size: 11px; padding: 3px 8px; } .pbbot { left: var(--s2); right: var(--s2); bottom: var(--s2); } .pblegend { font-size: 11px; gap: 4px 10px; padding: 5px 8px; } }

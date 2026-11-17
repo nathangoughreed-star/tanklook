@@ -15,6 +15,7 @@ import { SECTIONS, PHONE_TABS, MORE, COMES_IN, sectionOf, railClick, escape, typ
 import type { Viewer } from '../render/viewer';
 import { Drawer } from './drawers';
 import { ViewCluster } from './view';
+import { PlumbSwitch, PlumbingView } from './plumbing';
 import { FsExit, useFs } from './fullscreen';
 import { SettingsSection } from './settings';
 import { PrintSection, PrintPaper } from './print';
@@ -208,6 +209,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const [maker, setMaker] = useState<MakerInit | null>(null);
   const [libN, setLibN] = useState(0);
   const [scope, setScope] = useState<Tab[] | undefined>(undefined);   // S10: "Ideas for Plants" scopes Discover
+  const [plumb, setPlumb] = useState(false);   // PB1: the Plumbing view over the viewer
   const [door, setDoor] = useState(false);   // S10: the start door "From an animal I want"
   useEffect(() => { const f = () => setDoor(true); addEventListener(ANIMAL_DOOR_EVENT, f); return () => removeEventListener(ANIMAL_DOOR_EVENT, f); }, []);   // SS1: the Start sheet's animal door
   const openMaker = (h: MakerHow) => {
@@ -272,6 +274,8 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
       <main class="viewer" ref={viewRef}>
         {section === 'print' && !phone ? <PrintPaper store={store} profile={profile} getViewer={viewer} /> : null}
         {split ? <CompareLayer store={store} models={models} drawer={cmpDrawer} onPick={check} phone={phone} say={files.say} /> : null}
+        {plumb ? <PlumbingView store={store} phone={phone} /> : null}
+        {split || ws ? null : <PlumbSwitch on={plumb} onChange={setPlumb} />}
         <GetStarted tank={store.tank} open={section} onOpen={pick} onAnimal={() => setDoor(true)} phone={phone} />
         <ScapeBars store={store} getViewer={viewer} />
       </main>
