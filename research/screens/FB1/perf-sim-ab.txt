@@ -1,0 +1,1 @@
+sim step, 30 fish (8 kuhli dig, 12 hatchet hover + burst-coast, 10 gourami hover), alternating frames, 3000 steps: with behaviours 2.9941 ms, without 2.7561 ms

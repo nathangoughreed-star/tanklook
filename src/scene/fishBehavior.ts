@@ -66,3 +66,19 @@ export const DIG: Record<string, DigSpec> = {
 const GRAIN_IX: Record<Grain, number> = { mud: 0, sand: 1, gravel: 2, pebble: 3 };
 /** How well this bed suits a digger, 0 when there is no bed. */
 export const digGrainK = (d: DigSpec, grain: Grain | undefined) => (grain ? d.grain[GRAIN_IX[grain]] : 0);
+
+/**
+ * Swim style (R106, Nathan 2026-11-16): small darting fish swim in pulses: a short tail-beat burst, then a glide in which the speed
+ * decays and the tail is nearly still, then the next pulse, each with a small new heading. The mean speed stays the species' cruise
+ * speed; the peak is worked out from it. A species not listed swims steadily (cruisers: gouramis, angels, discus, big barbs and
+ * cichlids, rummynose and other station-holders, and every bottom dweller).
+ * rate = pulses per second, tau = how fast the glide slows (s; the speed falls to 1/e in this time), turn = most heading change per pulse (+- degrees).
+ */
+export interface StyleSpec { rate: number; tau: number; turn: number }
+const QUICK: StyleSpec = { rate: 1.7, tau: 0.32, turn: 20 };   // danios, small rasboras, tetras: quick, short pulses
+const SLOWER: StyleSpec = { rate: 1.1, tau: 0.45, turn: 14 };   // livebearers, pencilfish, barbs, pea puffer: longer glides
+export const STYLE: Record<string, StyleSpec> = {
+  danio: { rate: 2.0, tau: 0.3, turn: 22 }, cpd: QUICK, whitecloud: QUICK, neon: QUICK, cardinal: QUICK, greenneon: QUICK, ember: QUICK,
+  merah: QUICK, exclamation: QUICK, dwarfrasbora: QUICK, chili: QUICK, harlequin: SLOWER,
+  dwarfpencil: { rate: 0.9, tau: 0.5, turn: 12 }, guppy: SLOWER, cherrybarb: SLOWER, peapuffer: { rate: 1.0, tau: 0.4, turn: 25 },
+};

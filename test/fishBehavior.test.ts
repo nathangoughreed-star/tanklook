@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { makeSwimSim } from '../src/scene/swimSim';
 import type { SwimPose, SwimmerSpec } from '../src/scene/swimTypes';
-import { DIG, HOVER, digGrainK } from '../src/scene/fishBehavior';
+import { DIG, HOVER, STYLE, digGrainK } from '../src/scene/fishBehavior';
 import { SPECIES } from '../src/data/species';
 import { boxTank } from './swimFieldDouble';
 import { OBS } from './swimCast';
@@ -126,7 +126,7 @@ describe('FB1 cost', () => {
     const mk = (flags: boolean): SwimmerSpec[] => {
       const out: SwimmerSpec[] = []; let id = 1;
       for (let k = 0; k < 8; k++) out.push({ id: id++, len: 100, zone: 'bottom', band: [0, 0.05], group: { key: 'kuhli', tight: false }, home: home(150 + k * 40, 80, -380), dig: flags ? { ...DIG.kuhli, k: 1, dark: 0.5, rest: 5 } : undefined });
-      for (let k = 0; k < 12; k++) out.push({ id: id++, len: 40, zone: 'water', band: [0.4, 0.8], group: { key: 'hatchet', tight: true }, hover: flags ? HOVER.hatchet : undefined, home: home(520 + (k % 4) * 25, 250 + Math.floor(k / 4) * 25, -100 - (k % 3) * 20, 20) });
+      for (let k = 0; k < 12; k++) out.push({ id: id++, len: 40, zone: 'water', band: [0.4, 0.8], group: { key: 'hatchet', tight: true }, hover: flags ? HOVER.hatchet : undefined, style: flags ? STYLE.danio : undefined, home: home(520 + (k % 4) * 25, 250 + Math.floor(k / 4) * 25, -100 - (k % 3) * 20, 20) });
       for (let k = 0; k < 10; k++) out.push({ id: id++, len: 100 + k * 8, zone: 'water', band: [0.2, 0.8], pace: 0.4, hover: flags ? HOVER.gourami : undefined, home: home(100 + k * 60, 150 + k * 20, -60 - (k % 6) * 60, k * 40) });
       return out;
     };
@@ -137,6 +137,56 @@ describe('FB1 cost', () => {
       if (s & 1) { tb += d1; ta += d2; } else { ta += d1; tb += d2; }
     }
     console.log(`FB1 sim step, 30 fish, alternating: with behaviours ${(ta / 3000).toFixed(4)} ms, without ${(tb / 3000).toFixed(4)} ms`);
-    expect(ta).toBeLessThan(tb * 1.3);   // the new states cost no more than a few percent; the absolute ms depends on the machine
+    expect(ta).toBeLessThan(tb * 1.3);   // the new states cost a few percent at most; the absolute ms depends on the machine
+  });
+});
+
+describe('FB1 part 2: burst and coast', () => {
+  const school = (style: SwimmerSpec['style'], n = 10): SwimmerSpec[] => Array.from({ length: n }, (_, k) => ({ id: k + 1, len: 40, zone: 'water' as const, band: [0.3, 0.8] as [number, number], style, group: { key: 'danio', tight: true }, home: home(400 + (k % 4) * 25, 250 + Math.floor(k / 4) * 25, -150 - (k % 3) * 20, 20) }));
+  const trace = (specs: SwimmerSpec[], secs: number, seed: number) => {
+    const sim = makeSwimSim(specs, bed(30), seed), dt = 1 / 30, v: number[][] = specs.map(() => []), calm: number[][] = specs.map(() => []); let bad = 0, spread = 0, ns = 0;
+    const prev = specs.map(sp => ({ ...sim.pose(sp.id)! }));
+    for (let s = 0; s < secs / dt; s++) {
+      sim.step(dt); let cx = 0, cy = 0, cz = 0;
+      specs.forEach((sp, i) => { const p = sim.pose(sp.id)!; if (!finite(p)) bad++; v[i].push(Math.hypot(p.x - prev[i].x, p.y - prev[i].y, p.z - prev[i].z) / dt / sp.len); calm[i].push(p.calm ?? 1); prev[i] = { ...p }; cx += p.x; cy += p.y; cz += p.z; });
+      cx /= specs.length; cy /= specs.length; cz /= specs.length;
+      if (s > 10 / dt && s % 15 === 0) { spread += specs.reduce((a, _sp, i) => a + Math.hypot(prev[i].x - cx, prev[i].y - cy, prev[i].z - cz), 0) / specs.length; ns++; }
+    }
+    return { v, calm, bad, spread: spread / ns };
+  };
+  const cv = (a: number[]) => { const m = a.reduce((x, y) => x + y, 0) / a.length; return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / a.length) / m; };
+  it('the table names real small fish with sane numbers', () => {
+    const ids = new Set(SPECIES.map(s => s.id));
+    for (const [id, st] of Object.entries(STYLE)) { expect(ids.has(id), id).toBe(true); expect(st.rate).toBeGreaterThan(0.5); expect(st.rate).toBeLessThan(4); expect(st.tau).toBeGreaterThan(0.1); expect(st.turn).toBeLessThanOrEqual(30); expect(SPECIES.find(s => s.id === id)!.tl, id).toBeLessThan(120); }
+    for (const id of ['danio', 'neon', 'cardinal', 'whitecloud', 'guppy']) expect(STYLE[id], id).toBeTruthy();
+    for (const id of ['gourami', 'angel', 'discus', 'oscar', 'betta']) expect(STYLE[id], id).toBeUndefined();
+  });
+  it('a danio school swims in pulses: speed swings between burst and glide, a gourami stays even', () => {
+    const d = trace(school(STYLE.danio), 120, 4), g = trace(school(undefined), 120, 4);
+    expect(d.bad).toBe(0);
+    const dv = d.v.flat().slice(300), gv = g.v.flat().slice(300);
+    expect(cv(dv)).toBeGreaterThan(cv(gv) * 1.5);
+    expect(Math.max(...d.v.flat())).toBeLessThan(8);          // body lengths per second, bounded
+    const mean = dv.reduce((a, b) => a + b, 0) / dv.length; expect(mean).toBeGreaterThan(0.4); expect(mean).toBeLessThan(4);
+  });
+  it('after a burst the speed decays (the glide) and the tail is nearly still; in the burst it beats', () => {
+    const t = trace(school(STYLE.danio, 1), 120, 6), v = t.v[0], c = t.calm[0]; let glides = 0, decays = 0, quiet = 0, loud = 0;
+    for (let i = 5; i < v.length - 6; i++) if (v[i] > v[i - 1] && v[i] >= v[i + 1] && v[i] > 1.5) { // a peak
+      glides++; if (v[i + 6] < v[i] * 0.75) decays++; if (c[i + 9] < 0.6) quiet++; if (c[i] > 0.7) loud++;
+    }
+    expect(glides).toBeGreaterThan(40);
+    expect(decays / glides).toBeGreaterThan(0.85);
+    expect(quiet / glides).toBeGreaterThan(0.7);
+    expect(loud / glides).toBeGreaterThan(0.7);
+  });
+  it('the school stays together: not looser than a steady school by more than a body length or two', () => {
+    const p = trace(school(STYLE.danio), 180, 9), s = trace(school(undefined), 180, 9);
+    expect(p.spread).toBeLessThan(s.spread + 80); expect(p.bad).toBe(0);
+  });
+  it('each pulse nudges the heading by a few degrees, not a swing', () => {
+    const sim = makeSwimSim(school(STYLE.danio, 1), bed(30), 2), dt = 1 / 30; let prev = sim.pose(1)!.yaw; const ds: number[] = [];
+    for (let s = 0; s < 3600; s++) { sim.step(dt); const y = sim.pose(1)!.yaw; let d = Math.abs(y - prev); if (d > 180) d = 360 - d; ds.push(d); prev = y; }
+    ds.sort((a, b) => a - b);
+    expect(ds[Math.floor(ds.length * 0.99)]).toBeLessThan(8);   // degrees in one 1/30 s step: a smooth turn (the odd wall bounce aside)
   });
 });
