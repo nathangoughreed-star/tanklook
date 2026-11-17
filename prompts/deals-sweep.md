@@ -42,3 +42,10 @@ the as-of date; expired `saleEnds` rows are hidden automatically.
 Each featured deal needs `src/data/deal-pics/<deal id>.jpg` (400 px wide, like the examples' pictures; without one the card falls back to a
 drawn sketch). Make it: run the dev server, clear localStorage, click the deal's card on the start dialog, close the eye inset, scroll the
 wheel 3 ticks out so the tank and stand fill the frame, crop the canvas to roughly 400x345, save as that jpg. It shows the real starting point.
+
+## Product photo `img` (SK2, 2026-11-17)
+Keep each row's `img` (the retailer's own product photo, hotlinked, never copied into the repo) when you re-read a row; do not drop it. A new row
+gets one if the page has it: the product page's og:image or JSON-LD `image` (PetSmart: `https://s7d2.scene7.com/is/image/PetSmart/<id>`, Walmart
+`i5.walmartimages.com`, Petco `assets.petco.com`, Chewy `image.chewy.com`, Amazon `m.media-amazon.com`). Add it only after a fetch returns HTTP 200,
+`image/*`, and at least 300 px wide; otherwise leave it out (the card then shows the drawn tank). Rows whose page blocks bots (Petco breeder,
+Tractor Supply) have none. The shell card (`src/shell/kits.tsx`) shows `img` with `referrerpolicy="no-referrer"` and falls back to the sketch on error.

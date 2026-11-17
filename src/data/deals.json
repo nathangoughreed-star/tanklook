@@ -407,6 +407,7 @@
     "usd": 139.99
    },
    "url": "https://www.petsmart.com/fish/starter-kits/fluval-plant-fish-tank-aquarium-starter-kit---9-gallons--34-liters-100587.html",
+   "img": "https://s7d2.scene7.com/is/image/PetSmart/5386296",
    "asOf": "2026-11-16",
    "note": "Page read live. Tank 14x13x12 in, 7000K plant LED, clear glass cover, AquaClear 20 filter. No heater.",
    "look": {
@@ -1059,6 +1060,7 @@
     "regularUsd": 259.99
    },
    "url": "https://www.petsmart.com/reptile/habitats-and-decor/terrariums/thrive-andtrade-desert-essentials-kit---40g-87137.html",
+   "img": "https://s7d2.scene7.com/is/image/PetSmart/5360732",
    "asOf": "2026-11-16",
    "note": "Page read 2026-10-27 (fetched through a page summarizer, not a browser): $129.99, struck-through $259.99, banner 'Save 50% on select Thrive reptile terrariums, price displayed', no end date shown (a report that this sale ended 2026-09-27 is contradicted by the page, but other PetSmart listings of the kit showed $124.99-$249.99, so re-check). Contents: 40 gal glass terrarium 36x18x18 in with front doors, screen lid with feeding door, 100 W Arcadia basking spot, 23 W desert UVB bulb, two 8.5 in dome lamps, two thermometer/hygrometers, one food/water dish. NOT included: thermostat, hides, substrate, supplements. The build's own thermostat, UVB (a 23 W compact is not a linear T5; the kit's is left unused and not credited) and hides stay priced. Credited against the kit: tank, lid, dome lamp, basking bulb, gauge.",
    "saleEnds": "2026-11-19"
@@ -1086,6 +1088,7 @@
     "regularUsd": 219.99
    },
    "url": "https://www.petsmart.com/reptile/habitats-and-decor/terrariums/zoo-med-20-gallon-leopard-gecko-reptihabitat-5351767.html",
+   "img": "https://s7d2.scene7.com/is/image/PetSmart/5351767",
    "asOf": "2026-11-16",
    "note": "Page read 2026-10-27 (page summarizer): $199.99, struck-through $219.99, no end date; other PetSmart listings of the same kit showed $99.99 and $125.99 (both out of stock or an ended promotion). Contents: 20 gal glass terrarium with sliding screen top, 20 lb ReptiSand, Mini Combo Deep Dome fixture, 75 W basking spot, 75 W red infrared heat lamp, medium dish, Habba hut, digital thermometer (no hygrometer), calcium and vitamin samples. NOT included: thermostat, UVB, hygrometer. Credited: tank, lid, dome, basking bulb; the sand, hut and dish are worth under $30 and are not credited. Out of stock online when read 2026-11-16.",
    "est": true
@@ -1157,6 +1160,7 @@
     "regularUsd": 249.99
    },
    "url": "https://www.target.com/p/-/A-88867032",
+   "img": "https://target.scene7.com/is/image/Target/GUEST_e6b62798-4b3d-4a5f-bea3-78a68203451e",
    "asOf": "2026-10-27",
    "note": "Search snippet only: $205.99 against $249.99 (a second Target listing $249.99, was $299.99). Bare terrarium with screen top; dearer than the Thrive kit."
   },
@@ -1183,6 +1187,7 @@
     "usd": 341.06
    },
    "url": "https://joshsfrogs.com/kp/bearded-dragon-complete-kit-24x18x18-kit0016",
+   "img": "https://joshsfrogs.com/media/image/bearded_dragon_complete_kit-91c8abd3.png",
    "asOf": "2026-10-28",
    "note": "Page read 2026-10-28 by the deals sweep (agentC/sweep-terrarium.json): Exo Terra Pro glass terrarium 24x18x18 in, two 5.5 in reflector dome fixtures, 75 W basking bulb, 13 W desert UVB bulb, digital thermometer, liner, dish, manzanita wood. In stock. No regular price shown. NOT listed: thermostat, substrate. Rated gallons not stated (about 33 from the size). Shipping on dry goods is quoted in the cart, so none is added here."
   },

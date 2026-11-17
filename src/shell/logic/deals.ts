@@ -2,6 +2,7 @@
 // demand/dealmatch.ts, data/tanks.ts saleLive) pick and price, this file only decides what the shell SHOWS.
 // Nathan (via C25, 2026-11-16): a deal older than 14 days is hidden; no retailer photos; links are plain (no affiliate codes).
 // The engines keep their own 30-day rule for pricing (changing it would move every cost figure); only the display is stricter.
+import { boxList } from './boxList';
 import { DEAL_NOTE, DEALS, type Deal } from '../../data/deals';
 import { GEAR_DEALS, gearPctOff, gearShip, gearTotalUsd, type GearDeal, type GearSlot } from '../../data/gearDeals';
 import { saleLive, type TankVariant } from '../../data/tanks';
@@ -59,7 +60,7 @@ export function bundleLine(S: TankSetup, P: UserProfile, now = Date.now(), deals
   let m;
   try { m = dealSwaps(S, P, { units: 'in', now }, fresh).find(w => w.savingUsd > MIN_SAVING_USD); } catch { return undefined; }
   if (!m) return undefined;
-  const d = m.deal, saving = usd(m.savingUsd), inc = d.includes.join(', ');
+  const d = m.deal, saving = usd(m.savingUsd), inc = boxList(d.includes).have.join(', ').toLowerCase();
   return { id: d.id, name: d.name, retailer: d.retailer, price: usd(d.price.usd), ...(d.price.regularUsd ? { was: usd(d.price.regularUsd) } : {}), saving, asOfText: shortDate(d.asOf), url: d.url,
     includes: inc, guessed: m.guesses.length > 0, worse: m.tradeoffs.slice(0, 3), text: `${d.retailer} ${d.name}, ${usd(d.price.usd)}: saves about ${saving} against buying the parts.` };
 }

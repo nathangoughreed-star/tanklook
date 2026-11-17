@@ -5,7 +5,7 @@ import { useState } from 'preact/hooks';
 import type { Files } from './files';
 import { examplesInScope } from '../examples';
 import { pic, picUrl } from '../ui/featuredDeals';
-import { KIT_TAB_LABEL, SORTS, SORT_LABEL, cardOf, defaultSort, entriesFor, kitsModel, type KitTab, type KitsModel } from './logic/kits';
+import { KIT_TAB_LABEL, photoSrc, SORTS, SORT_LABEL, cardOf, defaultSort, entriesFor, kitsModel, type KitTab, type KitsModel } from './logic/kits';
 import type { DealSort, DealEntry } from '../ui/startEntries';
 
 /** The Tank picker asks for this screen with this event (Back then returns to the picker underneath). */
@@ -18,16 +18,32 @@ export function ExampleGrid({ files }: { files: Files }) {
       <img src={x.thumb} alt="" loading="lazy" /><b class="t">{x.name}</b><span class="m">{x.hint}</span></button></div>))}</div>;
 }
 
+/** The listing's own product photo, hotlinked from the retailer (never copied into the repo); the generic tile shows if it will not load. */
+function DealPic({ e, url }: { e: DealEntry; url?: string }) {
+  const tile = url ? <img src={url} alt="" loading="lazy" /> : <span dangerouslySetInnerHTML={{ __html: pic(e.deal, e.scene) }} />;
+  if (!e.deal.img) return <div class="dealpic">{tile}</div>;
+  // a photo that will not load is removed and the tile (hidden until then) shows instead
+  const fail = (ev: Event) => { const im = ev.currentTarget as HTMLElement, box = im.parentElement as HTMLElement; box.classList.remove('photo'); im.hidden = true; box.querySelector('.dealfb')?.removeAttribute('hidden'); };
+  return <div class="dealpic photo"><img class="dealphoto" src={photoSrc(e.deal.img)} alt={e.deal.name} width={400} height={250} loading="lazy" referrerpolicy="no-referrer" onError={fail} />
+    <span class="dealfb" hidden>{tile}</span></div>;
+}
+
+/** What is in the box as a bulleted list in the fixed order, then the missing light / filter / heater. Shared by every deal surface. */
+export function BoxList({ comes, no }: { comes: string[]; no: string[] }) {
+  return <div class="dealbox"><ul class="boxlist" aria-label="Comes with">{comes.map(x => <li>{x}</li>)}</ul>
+    {no.length ? <><span class="boxno">Not included</span><ul class="boxlist boxmiss">{no.map(x => <li>{x}</li>)}</ul></> : null}</div>;
+}
+
 function DealCardView({ e, files }: { e: DealEntry; files: Files }) {
   const c = cardOf(e), url = picUrl(c.id);
   return (
     <div class="card libcard dealcard" data-deal={c.id}>
-      <div class="dealpic">{url ? <img src={url} alt="" loading="lazy" /> : <span dangerouslySetInnerHTML={{ __html: pic(e.deal, e.scene) }} />}</div>
+      <DealPic e={e} url={url} />
       <b class="t">{c.title}</b>
       <span class="m dealstore">{c.store} · {c.gal} gal · checked {c.checked}{c.ends ? ` · sale ends ${c.ends}` : ''}</span>
       <span class="dealprice"><b>{c.price}</b>{c.was ? <> <s>{c.was}</s></> : null}{c.off ? <> <b class="off">{c.off}% off</b></> : null}</span>
       {c.saved ? <span class="dealsave">Saves {c.saved}{c.savedPct ? ` (${c.savedPct})` : ''} vs the parts</span> : <span class="m">{c.savingLine}</span>}
-      <span class="m dealbox">Comes with: {c.comes.join(', ')}{c.notIncluded.length ? `. Not included: ${c.notIncluded.join(', ')}` : ''}</span>
+      <BoxList comes={c.comes} no={c.notIncluded} />
       {c.guessed.length ? <span class="m"><i>Guessed: {c.guessed.join('; ')}</i></span> : null}
       <span class="acts"><button type="button" class="btn primary sm" onClick={() => void files.startDeal(e.deal, e.scene)}>Start from this</button>
         <a class="btn ghost sm" href={c.url} target="_blank" rel="noopener" title="Opens the retailer's page in a new tab (not a sponsored link)">See it at {c.store} ↗</a></span>

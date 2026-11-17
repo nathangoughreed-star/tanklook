@@ -380,7 +380,9 @@ a.btn { text-decoration: none; }
 .erow.sale .m b { color: var(--text); }
 .erow.sale s, .card.pick .sale s { color: var(--text-3); }
 .card.pick .m.sale { color: var(--ok, #5bbf8a); }
-.dealbox { display: grid; gap: var(--s1); padding: var(--s2); border: 1px solid var(--line); border-radius: var(--r-ctl); background: var(--surface); }
+.dealbox { display: grid; gap: var(--s1); padding: var(--s2); border: 1px solid var(--line); border-radius: var(--r-ctl); background: var(--surface); font-size: var(--fs-sm, 13px); }
+.boxlist { margin: 0; padding-left: 1.1em; columns: 2; column-gap: var(--s3, 16px); } .boxlist li { break-inside: avoid; }
+.boxno { color: var(--muted, #9aa); font-size: .92em; } .boxmiss { color: var(--muted, #9aa); }
 .dealbox .t { font-weight: 600; }
 .erow.inuse { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
 .erow .thumb { width: 40px; height: 32px; display: grid; place-items: center; color: var(--text-3); }
@@ -831,3 +833,7 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .vtlbl { font-weight: 600; line-height: 1.2; font-size: 12px; overflow-wrap: anywhere; }
 .vttile small { font-size: 11px; line-height: 1.15; opacity: .75; }
 @media (max-width: 699px) { .vtgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.dealcard .dealpic.photo { background: #fff; }
+.dealcard .dealfb { display: block; width: 62%; } .dealcard .dealfb[hidden] { display: none; } .dealcard .dealfb > span, .dealcard .dealfb svg { display: block; width: 100%; } .dealcard .dealfb > img { width: 100%; height: 100%; object-fit: contain; }
+.dealcard .dealpic img[hidden] { display: none; }

@@ -43,3 +43,22 @@ describe('SK1 render', () => {
     expect(t).toContain('Price, lowest first'); expect(t).toContain('% saved, most first'); expect(t).toContain('checked');
   });
 });
+
+describe('SK2 box list (fixed order)', () => {
+  it('orders any includes the same way and puts unknown keys in Other, last, in source order', async () => {
+    const { boxList } = await import('../src/shell/logic/boxList');
+    expect(boxList(['heater', 'stand', 'light', 'lid', 'tank']).have).toEqual(['Tank', 'Lid / hood', 'Light', 'Heater', 'Stand']);
+    expect(boxList(['tank', 'gravel', 'zzz', 'dome', 'ornament', 'zzz']).have).toEqual(['Tank', 'Substrate', 'Decor / ornaments', 'Zzz', 'Heat lamp dome']);
+    expect(boxList(['tank', 'lid']).missing).toEqual(['Light', 'Filter', 'Heater']);
+    expect(boxList(['tank', 'light', 'filter', 'heater']).missing).toEqual([]);
+  });
+  it('all current deals give a deterministic list regardless of includes order', async () => {
+    const { boxList } = await import('../src/shell/logic/boxList');
+    expect(DEALS.length).toBeGreaterThan(30);
+    for (const d of DEALS) { const a = boxList(d.includes), b = boxList([...d.includes].reverse()); expect(a.have.slice(0, a.have.length)).toBeTruthy(); expect([...a.have].sort()).toEqual([...b.have].sort()); expect(a.missing).toEqual(b.missing); }
+  });
+  it('the card carries the photo and the list; the card renders bullets', () => {
+    const e = entriesFor(kitsModel(now), 'bundles', 'cost')[0], c = cardOf(e);
+    expect(c.img).toBe(e.deal.img); expect(c.comes[0]).toBe('Tank');
+  });
+});

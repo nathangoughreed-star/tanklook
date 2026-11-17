@@ -2,9 +2,11 @@
 // chooser's (lane SD, ui/startEntries.ts, reused as is): which bundles exist (real catalog tank, listing checked in the last
 // 30 days by the ENGINE rule, not estimate-only), the sale / bundle split, the sort keys and the empty-tab hiding.
 // DL1's open question (14-day display vs 30-day engine) is untouched: this screen shows what startDeals() returns, i.e. 30 days.
-import { DEAL_NOTE, dealShip, pctOff, savingLine, type Deal, type DealPart } from '../../data/deals';
+import { DEAL_NOTE, dealShip, pctOff, savingLine, type Deal } from '../../data/deals';
 import { startDeals, sortDeals, pctSaved, DEFAULT_SORT, type DealEntry, type DealSort } from '../../ui/startEntries';
 import { shortDate } from './deals';
+import { boxList } from './boxList';
+export { boxList, BOX_ORDER, BOX_NEEDS } from './boxList';
 
 export type KitTab = 'starters' | 'bundles' | 'sale';
 export const KIT_TAB_LABEL: Record<KitTab, string> = { starters: 'Starters', bundles: 'Bundles', sale: 'On sale' };
@@ -14,11 +16,13 @@ export const SORTS: DealSort[] = ['usd', 'pct', 'cost', 'size'];
 export const defaultSort = (tab: 'sale' | 'bundles'): DealSort => DEFAULT_SORT[tab];
 
 const usd = (v: number) => '$' + Math.round(v).toLocaleString('en-US');
-const PART_NAME: Record<DealPart, string> = { tank: 'tank', stand: 'stand', lid: 'lid', light: 'light', filter: 'filter', heater: 'heater', dome: 'heat lamp dome', bulb: 'heat bulb', uvb: 'UVB lamp', gauge: 'gauge' };
+
+/** The card shows the photo at card size: PetSmart / Target's scene7 server resizes on request (2000 px / 240 KB down to 500 px / 47 KB); other hosts as listed. */
+export const photoSrc = (u: string): string => /^https:\/\/(s7d2|target)\.scene7\.com\/is\/image\//.test(u) && !u.includes('?') ? `${u}?wid=500&hei=500&fmt=jpeg&qlt=80` : u;
 
 export interface DealCard {
   id: string; title: string; store: string; gal: number; price: string; was?: string; off?: number; saved?: string; savedPct?: string;
-  savingLine: string; ship: string; checked: string; ends?: string; comes: string[]; notIncluded: string[]; guessed: string[]; url: string; estimate: boolean;
+  savingLine: string; ship: string; checked: string; ends?: string; comes: string[]; notIncluded: string[]; img?: string; guessed: string[]; url: string; estimate: boolean;
 }
 export const cardOf = (e: DealEntry): DealCard => {
   const d: Deal = e.deal, off = pctOff(d), p = Math.round(pctSaved(e) * 100);
@@ -26,7 +30,7 @@ export const cardOf = (e: DealEntry): DealCard => {
     id: d.id, title: d.name, store: d.retailer, gal: d.gal, price: usd(d.price.usd), ...(d.price.regularUsd && off ? { was: usd(d.price.regularUsd) } : {}), ...(off ? { off } : {}),
     ...(e.savingUsd > 0 ? { saved: usd(e.savingUsd) } : {}), ...(p > 0 ? { savedPct: `${p}%` } : {}),
     savingLine: savingLine(d, e.savingUsd), ship: dealShip(d).text, checked: shortDate(d.asOf), ...(d.saleEnds ? { ends: shortDate(d.saleEnds) } : {}),
-    comes: d.includes.map(x => PART_NAME[x] ?? x), notIncluded: (['filter', 'heater'] as const).filter(x => !d.includes.includes(x)), guessed: d.look?.guessed ?? [], url: d.url, estimate: !!d.est,
+    comes: boxList(d.includes).have, notIncluded: boxList(d.includes).missing, ...(d.img ? { img: d.img } : {}), guessed: d.look?.guessed ?? [], url: d.url, estimate: !!d.est,
   };
 };
 
