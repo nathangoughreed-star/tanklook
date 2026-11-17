@@ -48,7 +48,7 @@ export function gearStill(spec: StillSpec, w = 480, h = 300, view?: { yaw?: numb
   if (fit.isEmpty()) return null;
   const c = fit.getCenter(new THREE.Vector3()), sph = fit.getBoundingSphere(new THREE.Sphere());
   const cam = new THREE.PerspectiveCamera(FOV, w / h, sph.radius / 50, sph.radius * 20), d = sph.radius / Math.sin(FOV / 2 * THREE.MathUtils.DEG2RAD) * 0.85;
-  const PITCH = view?.pitch ?? (spec.kind === 'light' && spec.view ? spec.view.pitch : spec.kind === 'light' ? 0.55 : spec.kind === 'hood' ? 0.5 : 0.22), YAWV = view?.yaw ?? (spec.kind === 'light' && spec.view ? spec.view.yaw : YAW);
+  const PITCH = view?.pitch ?? (spec.kind === 'light' && spec.view ? spec.view.pitch : spec.kind === 'light' ? 0.55 : spec.kind === 'hood' ? 0.3 : 0.22), YAWV = view?.yaw ?? (spec.kind === 'light' && spec.view ? spec.view.yaw : YAW);
   cam.position.set(Math.sin(YAWV) * Math.cos(PITCH), Math.sin(PITCH), Math.cos(YAWV) * Math.cos(PITCH)).multiplyScalar(d).add(c); cam.lookAt(c);
   rig.r.setSize(w, h, false);
   const mode = LU.uMode.value, water = LU.uWater.value.w; LU.uMode.value = 0; LU.uWater.value.w = 0;
