@@ -1,4 +1,4 @@
-// R111 / WS2 (2026-11-16): the Scape workspace (frame A). Stones / Wood / Caves / Decor as big tiles with search, the "In this tank" tray with the facts box,
+// R111 / WS2 (2026-11-16): the Hardscape workspace (frame A; was Scape until 2026-11-17). Stones / Wood / Caves / Decor as big tiles with search, the "In this tank" tray with the facts box,
 // and the substrate & ground section (swatches, typed depths, slope presets, custom terrain as an either/or switch). SC1 (2026-11-17): leaf litter and the scatter brush moved to the piece tabs; the cross-section drawing and the Add-a-pool button are gone.
 // Every edit is the old panel's own (logic/scape.ts through store.edit), so undo works as it did.
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
@@ -99,26 +99,29 @@ export function ScapeWorkspace({ store, getViewer, phone, onDone, onIdeas }: { s
   const visit = useRef<Visit>();
   if (!visit.current) visit.current = enterVisit(store);
   const S = store.tank;
-  const [tab, setTab] = useState<ScapeTab | 'ground'>('stone');
+  const [tab, setTab] = useState<ScapeTab>('stone');
+  const [menu, setMenu] = useState<'substrate' | 'objects'>('objects');
   const [q, setQ] = useState('');
   const dirty = useMemo(() => visitDirty(store, visit.current!), [store.rev, store.mark]);
   const searching = !!q.trim();
-  const { groups, shown, none } = scapeTiles(S, tab === 'ground' ? 'stone' : tab, q);
+  const { groups, shown, none } = scapeTiles(S, tab, q);
   const facts = scapeFacts(S);
   // pieces can be picked in the view while the workspace is open (App sets this from the open section as well; this keeps tests and the first frame right)
   useEffect(() => { pickItems.sec = 'hardscape'; const f = tankFraming(store.tank.camera); if (f) store.cam(c => { Object.assign(c, f); }); }, []);   // WS3: opens framed on the tank, not the room
   const add = (id: string) => { addPiece(store, id); };
   const ideas = ideasLabel('scape');
   return (
-    <WorkspaceFrame title="Scape" sub="Stones, wood, caves, decor, substrate" mode="live" phone={phone} dirty={dirty} onDone={onDone} onUndoAll={() => revertVisit(store, visit.current!)}
+    <WorkspaceFrame title="Hardscape" sub="Substrate, stones, wood, caves, decor" mode="live" phone={phone} dirty={dirty} onDone={onDone} onUndoAll={() => revertVisit(store, visit.current!)}
       count={`${facts.total} placed`} side={<ScapeSide store={store} />}
-      extra={ideas && onIdeas ? <button type="button" class="btn sm ideas" title="Ideas that change only the Scape" onClick={onIdeas}><Icon name="ideas" /> {ideas}</button> : null}>
-      <div class="wstabs" role="tablist" aria-label="Scape">
-        {SCAPE_TABS.map(t => <button type="button" role="tab" class={`chip big${tab === t.id ? ' on' : ''}`} aria-selected={tab === t.id} onClick={() => { setTab(t.id); }}>{t.label}</button>)}
-        <button type="button" role="tab" class={`chip big dashed${tab === 'ground' ? ' on' : ''}`} aria-selected={tab === 'ground'} onClick={() => setTab('ground')}>Substrate &amp; ground{phone ? '' : ' →'}</button>
+      extra={ideas && onIdeas ? <button type="button" class="btn sm ideas" title="Ideas that change only the Hardscape" onClick={onIdeas}><Icon name="ideas" /> {ideas}</button> : null}>
+      <div class="wstabs wsmenus" role="tablist" aria-label="Hardscape">
+        {([['substrate', 'Substrate'], ['objects', 'Objects']] as const).map(([id, label]) => <button type="button" role="tab" class={`chip big${menu === id ? ' on' : ''}`} aria-selected={menu === id} onClick={() => setMenu(id)}>{label}</button>)}
       </div>
-      {tab === 'ground' ? <GroundSection store={store} getViewer={getViewer} /> : (
+      {menu === 'substrate' ? <GroundSection store={store} getViewer={getViewer} /> : (
         <>
+          <div class="wstabs" role="tablist" aria-label="Objects">
+            {SCAPE_TABS.map(t => <button type="button" role="tab" class={`chip${tab === t.id ? ' on' : ''}`} aria-selected={tab === t.id} onClick={() => { setTab(t.id); }}>{t.label}</button>)}
+          </div>
           <Search q={q} onQ={setQ} placeholder="Search stones, wood, caves, decor" />
           {none ? <div class="hint">{none}</div> : null}
           {groups.map(g => (

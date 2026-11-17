@@ -35,13 +35,13 @@ export const presetOfMode = (m: ModeId): Preset | null => m === 'explore' || m =
 /** The section whose header carries an "Ideas for ..." button, and the engine tabs that button scopes Discover to. Equipment has no tab in the engine (plan decision 2): no button. */
 const SCOPE: Partial<Record<SectionId, { label: string; tabs: Tab[] }>> = {
   tank: { label: 'Tank', tabs: ['tank'] },
-  scape: { label: 'Scape', tabs: ['hardscape', 'substrate'] },
+  scape: { label: 'Hardscape', tabs: ['hardscape', 'substrate'] },
   plants: { label: 'Plants', tabs: ['plants'] },
   animals: { label: 'Animals', tabs: ['animals'] },
 };
 export const ideasLabel = (s: SectionId | null): string | undefined => s && SCOPE[s] ? `Ideas for ${SCOPE[s]!.label}` : undefined;
 export const scopeOf = (s: SectionId | null): Tab[] | undefined => s ? SCOPE[s]?.tabs : undefined;
-export const scopeName = (tabs: readonly Tab[] | undefined): string => !tabs || tabs.length === TABS.length ? 'Everything' : tabs.includes('hardscape') ? 'Scape' : tabs[0] === 'tank' ? 'Tank' : tabs[0] === 'plants' ? 'Plants' : 'Animals';
+export const scopeName = (tabs: readonly Tab[] | undefined): string => !tabs || tabs.length === TABS.length ? 'Everything' : tabs.includes('hardscape') ? 'Hardscape' : tabs[0] === 'tank' ? 'Tank' : tabs[0] === 'plants' ? 'Plants' : 'Animals';
 /** The empty categories of the tank within the scope (what Fill only the gaps can fill). */
 export const gapsIn = (tank: TankSetup, scope: readonly Tab[] = TABS): Category[] => gapsOf(tank, scope);
 

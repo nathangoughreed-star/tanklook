@@ -7,7 +7,7 @@ export interface Section { id: SectionId; title: string; icon: IconName; /** the
 /** 9 sections + Settings, in rail order. */
 export const SECTIONS: Section[] = [
   { id: 'tank', title: 'Tank', icon: 'tank' },
-  { id: 'scape', title: 'Scape', icon: 'scape' },
+  { id: 'scape', title: 'Hardscape', icon: 'scape' },
   { id: 'plants', title: 'Plants', icon: 'plants' },
   { id: 'animals', title: 'Animals', icon: 'animals' },
   { id: 'equipment', title: 'Equipment', icon: 'gear' },

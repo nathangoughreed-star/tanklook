@@ -38,7 +38,7 @@ describe('S10 modes', () => {
 describe('S10 Ideas for ... scope', () => {
   it('has a button for Tank, Scape, Plants and Animals only', () => {
     expect((['tank', 'scape', 'plants', 'animals', 'equipment', 'print', 'settings', 'discover'] as const).map(s => ideasLabel(s)))
-      .toEqual(['Ideas for Tank', 'Ideas for Scape', 'Ideas for Plants', 'Ideas for Animals', undefined, undefined, undefined, undefined]);
+      .toEqual(['Ideas for Tank', 'Ideas for Hardscape', 'Ideas for Plants', 'Ideas for Animals', undefined, undefined, undefined, undefined]);
     expect(scopeOf('scape')).toEqual(['hardscape', 'substrate']);
     expect(scopeName(scopeOf('plants'))).toBe('Plants');
     expect(scopeName(undefined)).toBe('Everything');

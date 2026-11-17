@@ -16,7 +16,7 @@ export interface FrameProps {
   /** live: revert this visit; draft: cancel */
   onUndoAll: () => void;
   doneLabel?: string;
-  /** extra buttons in the bar, before Revert (e.g. "Ideas for Scape") */
+  /** extra buttons in the bar, before Revert (e.g. "Ideas for Hardscape") */
   extra?: ComponentChildren;
   /** under the view on a wide screen; on a phone it opens from the footer */
   side?: ComponentChildren;

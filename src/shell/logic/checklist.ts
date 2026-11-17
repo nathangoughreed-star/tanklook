@@ -17,7 +17,7 @@ export function checklistOf(T: TankSetup): Checklist {
   const missing = [light ? '' : 'a light', filter ? '' : 'a filter'].filter(Boolean);
   const steps: Step[] = [
     { id: 'tank', label: 'Pick a tank', hint: 'A real model or your own size', section: 'tank', done: !!T.product || !sameBox(T.tank, bareSetup().tank) },
-    { id: 'scape', label: 'Shape the scape', hint: 'Rocks, wood and substrate', section: 'scape', done: hard },
+    { id: 'scape', label: 'Shape the hardscape', hint: 'Rocks, wood and substrate', section: 'scape', done: hard },
     { id: 'plants', label: 'Add plants', hint: 'Or skip them for a bare look', section: 'plants', done: plants },
     { id: 'animals', label: 'Choose animals', hint: 'Who lives here', section: 'animals', done: T.fish.length > 0 },
     { id: 'equipment', label: 'Check the equipment', hint: missing.length ? `Needs ${missing.join(' and ')}` : 'Light and filter chosen', section: 'equipment', done: missing.length === 0 },
