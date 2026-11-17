@@ -1,7 +1,7 @@
 // DG1: every modal / dialog CSS rule must stay inside the visible viewport (dvh, not vh), centred, with its own scroll.
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
-const css = ['src/shell/shell.css', 'src/style.css'].map(f => readFileSync(f, 'utf8')).join('\n');
+const fs = await import('node:fs');
+const css = ['src/shell/shell.css', 'src/style.css'].map(f => fs.readFileSync(f, 'utf8')).join('\n');
 const rule = (sel: string) => {
   const i = css.split(/\r?\n/).join('\n');
   const esc = sel.replace(/[.*+?^${}()|[\]\\:]/g, '\\$&');
