@@ -156,8 +156,8 @@ a.btn { text-decoration: none; }
 .pnamebtn { border: 0; background: transparent; color: inherit; font: inherit; cursor: text; padding: 0 var(--s1); border-radius: 4px; min-width: 0; }
 .pnamebtn:hover { background: var(--bg-hover); }
 .pnameedit { height: var(--ctl-h-sm); width: 200px; max-width: 40vw; }
-.scrim { position: fixed; inset: 0; z-index: var(--z-dialog); background: rgba(0,0,0,.55); display: grid; place-items: center; padding: var(--s3); }
-.dlg { background: var(--bg-panel); border: 1px solid var(--line); border-radius: var(--r-card); box-shadow: var(--shadow); width: min(480px, 100%); max-height: min(720px, 100%); display: grid; grid-template-rows: auto minmax(0, 1fr); }
+.scrim { position: fixed; inset: 0; height: 100dvh; box-sizing: border-box; z-index: var(--z-dialog); background: rgba(0,0,0,.55); display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); place-items: center; padding: var(--s3); overflow: hidden; }
+.dlg { background: var(--bg-panel); border: 1px solid var(--line); border-radius: var(--r-card); box-shadow: var(--shadow); width: min(480px, 100%); max-height: min(720px, calc(100dvh - 2 * var(--s3))); min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); }
 .dlg.wide { width: min(760px, 100%); }
 .dlg .sec-head { border-bottom: 1px solid var(--line); }
 .dlgbody { overflow: auto; padding: var(--s3) var(--s4); display: grid; gap: var(--s3); align-content: start; }
@@ -517,7 +517,7 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 @media (max-width: 480px) { .dnums .big { font-size: var(--fs-md, 16px); } }
 .dfig .big { line-height: 1.25; }
 /* AT1 (R54): the start door is the Animals picker on a pending list */
-.dlg.tall { grid-template-rows: auto minmax(0, 1fr) auto; height: min(760px, calc(100dvh - 2 * var(--s3))); max-height: none; }
+.dlg.tall { grid-template-rows: auto minmax(0, 1fr) auto; height: min(760px, calc(100dvh - 2 * var(--s3))); max-height: calc(100dvh - 2 * var(--s3)); }
 .dlgfoot.sticky { display: grid; gap: var(--s2); padding: var(--s3) var(--s4); border-top: 1px solid var(--line); background: var(--bg-panel); }
 .dlgfoot.sticky .acts { display: flex; justify-content: flex-end; gap: var(--s2); }
 .dlgfoot .doorplan { display: grid; gap: 2px; } .dlgfoot .doorplan .m { color: var(--text-3); font-size: 12px; } .dlgfoot .doorplan.bad .t { color: var(--bad, #c0392b); }
@@ -574,8 +574,8 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .cellb { background: none; border: 1px solid transparent; border-radius: var(--r-ctl); color: var(--text); font: inherit; padding: 3px 5px; cursor: pointer; }
 .cellb:hover, .cellb:focus-visible { background: var(--bg-hover); border-color: var(--accent); }
 .cellb.warnc { color: var(--warn); } .wmark { font-size: var(--fs-xs); }
-.envov { position: fixed; inset: 0; z-index: 60; background: rgba(0, 0, 0, .55); display: flex; align-items: center; justify-content: center; padding: 16px; }
-.envcard { background: var(--bg-panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); width: min(720px, 100%); max-height: 100%; overflow: auto; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.envov { position: fixed; inset: 0; height: 100dvh; box-sizing: border-box; z-index: 60; background: rgba(0, 0, 0, .55); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.envcard { background: var(--bg-panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); width: min(720px, 100%); max-height: calc(100dvh - 32px); overflow: auto; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
 .envhead { display: flex; justify-content: space-between; align-items: center; font-size: var(--fs-lg); }
 .envin { align-self: flex-start; flex-wrap: wrap; } .envsvg { width: 100%; height: auto; }
 .envkey { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: var(--fs-sm); color: var(--text-2); } .envkey span { display: inline-flex; align-items: center; gap: 5px; }
@@ -700,7 +700,7 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .tfpanel .seg { flex-wrap: wrap; } .chips.brands { max-height: 120px; overflow: auto; } .tfscrim { display: none; }
 @media (max-width: 699px) {
   .tfscrim { display: block; position: fixed; inset: 0; background: #0008; z-index: 40; }
-  .tfpanel { position: fixed; left: 0; right: 0; bottom: 0; max-height: 82vh; overflow: auto; z-index: 41; border-radius: 14px 14px 0 0; padding-bottom: calc(var(--s4) + env(safe-area-inset-bottom, 0px)); }
+  .tfpanel { position: fixed; left: 0; right: 0; bottom: 0; max-height: 82dvh; overflow: auto; z-index: 41; border-radius: 14px 14px 0 0; padding-bottom: calc(var(--s4) + env(safe-area-inset-bottom, 0px)); }
   .tfhead { position: sticky; top: calc(-1 * var(--s3)); background: var(--bg-raised); padding: var(--s1) 0; } .tfdone { display: inline-flex; }
   .frow { grid-template-columns: minmax(0, 1fr); gap: var(--s1); }
 }
