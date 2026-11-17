@@ -8,7 +8,7 @@ import { hasWork } from '../ui/newTank';
 import { takeOpen } from './logic/sections';
 import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
-import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
+import { STAND_FINISHES } from '../render/build';
 import { LIMITS } from '../scene/validate';
 import { fromUnit, toUnit, volume, IN } from '../scene/physics';
 import { setLid, lidLocked, setDoors, doorLocked, type DoorKind } from '../scene/tankEdit';
@@ -32,6 +32,7 @@ import { getImage, putImage, readPicture } from '../scene/images';
 import { Group, Icon, Pill } from './ui';
 import { lidView, lidFix, lidFreeView, setNoLid } from './logic/lidTemp';
 import { demandFor } from './logic/checks';
+import { SITS_TILES, BG_TILES, sitsTileOn, tileSrc } from './logic/tankTiles';
 import { defaultProfile } from '../demand/types';
 import { TankFilters } from './tankFilters';
 import { freshFilter, loadFilter, saveFilter, type TankFilter } from './logic/tankFilter';
@@ -163,7 +164,7 @@ function SitsOn({ store, S, u, open, onToggle }: { store: Store; S: TankSetup; u
   const min = p === 'furniture' ? minTop(S, tb.shape) : null;
   return (
     <Group id="sits" title="Sits on" sum={sitsOnSummary(S, u)} open={open} onToggle={onToggle}>
-      <Seg label="Sits on" value={(S.stand.need === 'ask' && !S.stand.show ? '' : p) as Placement} opts={[['floor', 'Floor'], ['stand', 'Stand'], ['furniture', 'My own furniture']]} onPick={place} />
+      <PicTiles label="Sits on" tiles={SITS_TILES} on={sitsTileOn(S)} onPick={place} />
       {S.stand.need === 'ask' && !S.stand.show ? <div class="hint">Not chosen yet: the budget counts a typical stand until you pick.</div> : null}
       {p === 'stand' ? <>
         <div class="row"><span class="lbl">Style</span>
@@ -186,6 +187,19 @@ function SitsOn({ store, S, u, open, onToggle }: { store: Store; S: TankSetup; u
         <div class="hint">This tank needs a top at least {tb.shape === 'round' ? `${len(min!.L, u)} across` : `${len(min!.L, u)} × ${len(min!.D, u)}`}.</div>
       </> : null}
     </Group>
+  );
+}
+
+/** VT1: a grid of picture tiles (baked still + label), one chosen; reflows from 4+ columns to 2 on a phone. The picture is optional: a missing file leaves the label. */
+function PicTiles<T extends string>({ label, tiles, on, onPick }: { label: string; tiles: { id: T; label: string; sub?: string; img: string }[]; on: T | ''; onPick: (v: T) => void }) {
+  const [bad, setBad] = useState<Record<string, boolean>>({});
+  return (
+    <div class="vtgrid" role="group" aria-label={label} data-testid={`tiles-${label.toLowerCase().replace(/\W+/g, '-')}`}>
+      {tiles.map(t => <button type="button" class={`vttile${on === t.id ? ' on' : ''}`} aria-pressed={on === t.id} data-tile={t.id} title={t.sub ? `${t.label}: ${t.sub}` : t.label} onClick={() => onPick(t.id)}>
+        <span class="vtpic">{bad[t.img] ? null : <img src={tileSrc(import.meta.env.BASE_URL, t.img)} alt="" loading="lazy" decoding="async" draggable={false} onError={() => setBad(b => ({ ...b, [t.img]: true }))} />}</span>
+        <span class="vtlbl">{t.label}</span>{t.sub ? <small>{t.sub}</small> : null}
+      </button>)}
+    </div>
   );
 }
 
@@ -255,12 +269,8 @@ const wallFit = (s: TankSetup) => { keepInWater(s); for (const it of s.items) cl
 function Background({ store, S, u, open, onToggle }: { store: Store; S: TankSetup; u: Units; open: boolean; onToggle: () => void }) {
   return (
     <Group title="Background" sum={bgSummary(S)} open={open} onToggle={onToggle}>
-      <div class="row"><span class="lbl">Background</span>
-        <select class="select" aria-label="Background" value={S.render.bg} onChange={e => store.edit(s => { s.render.bg = (e.target as HTMLSelectElement).value as TankSetup['render']['bg']; })}>
-          {Object.entries(BACKGROUNDS).map(([k, b]) => <option value={k}>{b.label}</option>)}
-        </select>
-        {S.render.bg === 'custom' ? <input type="color" aria-label="Background colour" value={S.render.bgColor ?? '#2f4a36'} onInput={e => store.edit(s => { s.render.bgColor = (e.target as HTMLInputElement).value; }, { coalesce: 'bgColor' })} /> : <span />}
-      </div>
+      <PicTiles label="Background" tiles={BG_TILES} on={S.render.bg} onPick={v => store.edit(s => { s.render.bg = v; })} />
+      {S.render.bg === 'custom' ? <div class="row"><span class="lbl">Colour</span><input type="color" aria-label="Background colour" value={S.render.bgColor ?? '#2f4a36'} onInput={e => store.edit(s => { s.render.bgColor = (e.target as HTMLInputElement).value; }, { coalesce: 'bgColor' })} /><span /></div> : null}
       {S.render.bg !== 'none' ? <div class="row"><span class="lbl">On sides</span><div class="chips">
         {SIDES.map(([v, t]) => { const on = S.render.bgSides.includes(v); return <button type="button" class={`chip${on ? ' on' : ''}`} aria-pressed={on}
           onClick={() => store.edit(s => { const b = s.render.bgSides; s.render.bgSides = b.includes(v) ? b.filter(x => x !== v) : [...b, v]; wallFit(s); })}>{t}</button>; })}

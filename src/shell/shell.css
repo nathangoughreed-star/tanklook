@@ -820,3 +820,14 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .opentop .lidwarn { font-size: var(--fs-sm); }
 @media (max-width: 640px) { .opentop .lidpc { grid-template-columns: 1fr; } }
 .equip .catwarn { color: var(--warn); font-size: var(--fs-sm); display: grid; gap: 4px; }
+
+/* VT1: picture tiles of the Tank workspace (Sits on, Background); baked stills in public/gallery/tank-ui */
+.vtgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: var(--s2); margin: var(--s1) 0; }
+.vttile { display: flex; flex-direction: column; gap: 2px; padding: 4px; text-align: left; font: inherit; color: inherit; cursor: pointer; border: 1px solid var(--line); border-radius: var(--r-card); background: var(--bg-raised); min-width: 0; }
+.vttile:hover { border-color: var(--text-2, var(--line)); }
+.vttile.on { border-color: var(--accent, #4a90e2); box-shadow: 0 0 0 1px var(--accent, #4a90e2) inset; background: var(--accent-weak); }
+.vtpic { display: block; aspect-ratio: 4 / 3; border-radius: var(--r-ctl); background: color-mix(in srgb, var(--accent) 7%, transparent); overflow: hidden; }
+.vtpic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.vtlbl { font-weight: 600; line-height: 1.2; font-size: 12px; overflow-wrap: anywhere; }
+.vttile small { font-size: 11px; line-height: 1.15; opacity: .75; }
+@media (max-width: 699px) { .vtgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
