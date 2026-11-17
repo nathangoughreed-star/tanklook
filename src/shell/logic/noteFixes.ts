@@ -7,15 +7,19 @@
 //   time     limit:time                                    raise the time limit to the figure the note names
 //   budget   limit:startup                                 likewise for the set-up budget
 //   monthly  limit:monthly                                 likewise for the monthly limit
+//   lid      lid:open (LW1)                                 the engine's own lid for these animals, with its price
+//   heater   temp:hold:noheater, temp:hold:weak (LW1)       the smallest generic heater that holds the target (or one to add)
+//   chiller  temp:hold:cool, temp:chiller (LW1)             add a chiller; every other temperature note is warning only
 import { MM_IN, PLANT_DEPTH, DWELLER } from '../../data/substrateTraits';
 import { bedOf, bedDepths, substrateCheck } from '../../scene/substrateCheck';
 import { groundHeight, sampleTerrain, terrainPoints } from '../../scene/terrain';
 import { tankWeight } from '../../scene/weight';
 import type { Issue } from '../../scene/verdict';
 import type { TankSetup } from '../../scene/types';
+import { lidFix, tempFixes, type PriceOf } from './lidTemp';
 import { emptyBrief, setBudget, setCareTime, setMonthly, syncCaps } from '../../ui/setupBrief';
 
-export type FixKindId = 'deepen' | 'time' | 'budget' | 'monthly';
+export type FixKindId = 'deepen' | 'time' | 'budget' | 'monthly' | 'lid' | 'heater' | 'chiller';
 export interface FixPlan {
   kind: FixKindId;
   /** the button's headline: "Fix these (6)" / "Fix this" */
@@ -152,10 +156,14 @@ function limitPlan(i: Issue): FixPlan | undefined {
 }
 
 /** The buttons to show under the notes: one per fix kind that applies, in a fixed order. */
-export function fixPlans(S: TankSetup, issues: Issue[]): FixPlan[] {
+export function fixPlans(S: TankSetup, issues: Issue[], ctx: { price?: PriceOf; units?: 'cm' | 'in' } = {}): FixPlan[] {
   const out: FixPlan[] = [];
   const sub = issues.filter(i => i.id.startsWith('substrate:plant:') || i.id.startsWith('substrate:needs:depth:')).map(i => i.id);
   if (sub.length) { const p = deepenPlan(S, sub); if (p) out.push(p); }
   for (const id of ['time', 'startup', 'monthly']) { const i = issues.find(x => x.id === `limit:${id}`); const p = i && limitPlan(i); if (p) out.push(p); }
+  // LW1: the lid, the heater, the chiller
+  if (issues.some(i => i.id === 'lid:open')) { const f = lidFix(S, ctx.price); if (f) out.push({ kind: 'lid', label: 'Fix', what: f.what, count: 1, ids: ['lid:open'], describe: f.describe, apply: f.apply }); }
+  const tids = issues.filter(i => i.id.startsWith('temp:')).map(i => i.id);
+  if (tids.length) for (const f of tempFixes(S, tids, ctx.price, ctx.units)) out.push({ kind: f.kind, label: 'Fix', what: f.what, count: f.ids.length, ids: f.ids, describe: f.describe, apply: f.apply });
   return out.map(p => ({ ...p, label: p.count === 1 ? 'Fix this' : `Fix these (${p.count})` }));
 }

@@ -2,6 +2,7 @@
 // Per category two groups: "I own" (the owned list, $0, not necessarily in use) and "Buy" (catalogue products that fit this tank), the item
 // in use marked, and an independent "Use this one for sure" lock per item. Pure: no DOM. Engine calls go only through scene/techEdit.ts (P4),
 // scene/gearOwn.ts (P8) and src/units.ts; the catalogue lists are read from data/gearCatalog.ts and data/hoods.ts.
+import { tempIssues } from './lidTemp';
 import { commitTech, withTech, addReturnInline, removeReturnInline, addHeater, pickHeaterProduct, tuneHeater, addFilter, pickFilterProduct, tuneFilter, setPump, setRowProduct, pickLightProduct, tuneLight, pickPreset, setHeaterWatts, setLightWatts } from '../../scene/techEdit';
 import { editGear, gearOfTank, GENERIC, isLockedItem, isOwned, lockItem, ownItem, ownedFor, setInUse, unlockItem, unownItem, type GearModel } from '../../scene/gearOwn';
 import { deliveredFlow, filterUnits, heatLoss, heaterUnits, presetsFor, roomOf, rowsFor, specialHeaters, techOf, withChoice, rowProduct, GEAR } from '../../scene/tech';
@@ -183,6 +184,8 @@ export interface CategoryView {
   /** the heater row shows the room temperature read-only, with a link to Constraints > Your home */
   roomLink: boolean;
   inUse: string | undefined;
+  /** LW1: the old Tech menu's hold-the-temperature warnings (heater cannot hold the target, room warmer than the tank, measured temp out of range), on the Heater row and the Chiller row */
+  warnings: string[];
 }
 const priceText = (e: Pick<Entry, 'usd' | 'est'> | undefined) => !e || e.usd === undefined ? '' : `${e.est ? '~' : ''}${usd(e.usd)}`;
 
@@ -216,7 +219,7 @@ export function categoryView(S: TankSetup, cat: CatId, units: Units, o: { showAl
     const h = heatLoss(S), r = roomOf(S);
     note = `${galText(galOf(S))} at ${fmtTempHalf(h.targetC, units)}, room ${fmtTempHalf(r.c, units)}${r.set ? '' : ' (assumed)'}: needs about ${Math.round(h.needW)} W.`;
   } else if (cat === 'light') note = S.lid === 'hood' ? 'The hood holds its own light: pick a hood to change it, or a light product to put the hood away.' : `${list.filter(e => !e.hood).length} lights fit a ${units === 'in' ? Math.round(S.tank.L / 25.4) + ' in' : Math.round(S.tank.L / 10) + ' cm'} tank.`;
-  return { id: cat, label: LABEL[cat], singular: SINGULAR[cat], note, owned: ownedRows, buy, buyTotal: sorted.length + (cat === 'heater' || cat === 'filter' || cat === 'light' || !list.length ? 1 : 0), roomLink: cat === 'heater', inUse };
+  return { id: cat, label: LABEL[cat], singular: SINGULAR[cat], note, owned: ownedRows, buy, buyTotal: sorted.length + (cat === 'heater' || cat === 'filter' || cat === 'light' || !list.length ? 1 : 0), roomLink: cat === 'heater', inUse, warnings: cat === 'heater' ? tempIssues(S, units).map(i => i.text) : cat === 'chiller' ? tempIssues(S, units).filter(i => i.id === 'temp:chiller' || i.id === 'temp:hold:cool').map(i => i.text) : [] };
 }
 
 // ---------------------------------------------------------------- EQ2: kinds in five categories, then type, then size band

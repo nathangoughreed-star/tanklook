@@ -197,6 +197,7 @@ function KindBody({ store, units, cat }: { store: Store; units: 'in' | 'cm'; cat
   const S = store.tank, v = categoryView(S, cat, units, { showAll: true }), tree = buyTree(S, cat, units), multiType = tree.length > 1;
   return (
     <div class="kb">
+      {v.warnings.length ? <div class="catwarn" role="status" data-temp-warn>{v.warnings.map(w => <div>{w}</div>)}</div> : null}
       {v.note ? <div class="catnote">{v.note}{v.roomLink ? <> <button type="button" class="linkbtn" onClick={() => gotoSection('constraints', 'home')}>Edit the room in Constraints</button></> : null}</div> : null}
       <Group title="I own" sum={v.owned.length ? `${v.owned.length} · ${ownSum(v.owned.length)}` : ownSum(0)} open={own} onToggle={() => setOwn(!own)}>
         {v.owned.map(r => <Row r={r} store={store} cat={cat} />)}

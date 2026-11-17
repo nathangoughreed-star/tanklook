@@ -1,0 +1,48 @@
+{
+ "d1280-opentop": "Problem: Malaysian trumpet snail can get out of an open top, so the tank needs a lid. A glass top keeps it in and the water warm. Add a glass top (about $23)\nNo lid: what you get\nNothing between you and the water: the open-top look, no glass strip or hood in the picture\nThe whole surface is open to the air: the best gas exchange, no film trapped under the lid, and easy feeding and hand access\nLigh",
+ "d1280-notes": [
+  "Notes\nADVICE\nNeon tetra: group of 1: Neons are usually kept in schools of 8 or more; fewer may stress and hide\nMalaysian trumpet snail can get out of an open top, so the tank needs a lid. A glass top keeps it in and the water warm.\nFix this\nAdd a glass top (about $23)\nEach button makes one change and is one undo step. A note with no button has no exact fix: change it in its own section.",
+  [
+   "Fix this\nAdd a glass top (about $23)"
+  ],
+  "Changes the lid from Open to a glass top (about $23). It keeps the animals in and the heat and water in. Nothing else changes."
+ ],
+ "d1280-afterfix": [
+  "glass",
+  "Notes\nADVICE\nNeon tetra: group of 1: Neons are usually kept in schools of 8 or more; fewer may stress and hide\nThese notes have no exact one-click fix: change each in its own section."
+ ],
+ "d1280-undone": "open",
+ "d1280-heat-notes": [
+  "Notes\nADVICE\nNeon tetra: group of 2: Neons are usually kept in schools of 8 or more; fewer may stress and hide\nHolding 77 °F: the heater is not expected to hold it in the 50 °F room: a stronger heater. Smallest change: a stronger heater.\nFix this\nUse a 200 W heater (about $30)\nEach button makes one change and is one undo step. A note with no button has no exact fix: change it in its own section.",
+  [
+   "Fix this\nUse a 200 W heater (about $30)"
+  ]
+ ],
+ "d1280-closebtns": "Close|Fix thisUse ",
+ "d1280-more": "My tank|Habitat Caution|$149 · $9/mo · 30 min/wk|73 °F fits|Notes 2|View ▾|Compare|Another moment|Save|Tank|Hardscape|Plants|Animals|Equipment|Preferences|Constraints|Discover|Print|Settings|×|×|Tank|Plumbing|Get started · 1 of 5",
+ "d1280-ghs": "Placementclick a piece in the |Filtration & Water Clarity|Temperature Control|I ownnothing yet|LightingLight: Generic light|Aeration & CO₂Air: none · CO2:|Maintenance & Water CareTop-of",
+ "d1280-equip": "Holding 77 °F: the heater is not expected to hold it in the 50 °F room: a stronger heater.",
+ "p390-opentop": "Problem: Malaysian trumpet snail can get out of an open top, so the tank needs a lid. A glass top keeps it in and the water warm. Add a glass top (about $23)\nNo lid: what you get\nNothing between you and the water: the open-top look, no glass strip or hood in the picture\nThe whole surface is open to the air: the best gas exchange, no film trapped under the lid, and easy feeding and hand access\nLigh",
+ "p390-notes": [
+  "Notes\nADVICE\nNeon tetra: group of 1: Neons are usually kept in schools of 8 or more; fewer may stress and hide\nMalaysian trumpet snail can get out of an open top, so the tank needs a lid. A glass top keeps it in and the water warm.\nFix this\nAdd a glass top (about $23)\nChanges the lid from Open to a glass top (about $23). It keeps the animals in and the heat and water in. Nothing else changes.\nEach button makes one change and is one undo step. A note with no button has no exact fix: change it in ",
+  [
+   "Fix this\nAdd a glass top (about $23)"
+  ],
+  "Changes the lid from Open to a glass top (about $23). It keeps the animals in and the heat and water in. Nothing else changes."
+ ],
+ "p390-afterfix": [
+  "glass",
+  "Notes\nADVICE\nNeon tetra: group of 1: Neons are usually kept in schools of 8 or more; fewer may stress and hide\nThese notes have no exact one-click fix: change each in its own section."
+ ],
+ "p390-undone": "open",
+ "p390-heat-notes": [
+  "Notes\nADVICE\nNeon tetra: group of 2: Neons are usually kept in schools of 8 or more; fewer may stress and hide\nHolding 77 °F: the heater is not expected to hold it in the 50 °F room: a stronger heater. Smallest change: a stronger heater.\nFix this\nUse a 200 W heater (about $30)\nReplaces the 25 W heater with one 200 W (a generic heater of the size the tank needs) (about $30). The tank loses about 75 W to the 50 °F room at 77 °F, and the night need is about 117 W; 200 W covers it. Nothing else changes.\nEach button makes one change and is one undo step. A note with no button has no exact fix: change it in its own section.",
+  [
+   "Fix this\nUse a 200 W heater (about $30)"
+  ]
+ ],
+ "p390-closebtns": "Close|Fix thisUse ",
+ "p390-more": "My tank|View|Equipment|Preferences|Constraints|Discover|Print|Settings|×|×|Tank|Plumbing|Get started · 1 of 5|Habitat Caution|$149 · $9/mo · 30 min/wk|73 °F fits|Notes 2|Tank|Hardscape|Plants|Animals|More",
+ "p390-ghs": "Placementclick a piece in the |Filtration & Water Clarity|Temperature Control|I ownnothing yet|LightingLight: Generic light|Aeration & CO₂Air: none · CO2:|Maintenance & Water CareTop-of",
+ "p390-equip": "Holding 77 °F: the heater is not expected to hold it in the 50 °F room: a stronger heater."
+}

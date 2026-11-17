@@ -812,3 +812,11 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .tablepos { display: grid; gap: var(--s1); }
 .bgpics { display: grid; gap: var(--s1); } .bgpic { display: flex; gap: var(--s2); align-items: flex-start; padding: var(--s1); } .bgthumb { width: 64px; height: 48px; object-fit: cover; border-radius: 4px; flex: none; background: #111; display: grid; place-items: center; font-size: 11px; color: var(--text-3); }
 .bgctl { display: grid; gap: var(--s1); flex: 1; min-width: 0; }
+/* LW1: open-top warning and lid-free pros / cons (Tank > Lid and top); temperature warnings under the Heater row */
+.opentop { display: grid; gap: var(--s2); }
+.opentop .lidpc { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s3); font-size: var(--fs-sm); color: var(--text-2); }
+.opentop .lidpc ul { margin: 4px 0 0; padding-left: 18px; }
+.opentop .lidpc li { margin-bottom: 3px; }
+.opentop .lidwarn { font-size: var(--fs-sm); }
+@media (max-width: 640px) { .opentop .lidpc { grid-template-columns: 1fr; } }
+.equip .catwarn { color: var(--warn); font-size: var(--fs-sm); display: grid; gap: 4px; }

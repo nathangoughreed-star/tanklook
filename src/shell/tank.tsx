@@ -30,6 +30,9 @@ import {
 } from './logic/tank';
 import { getImage, putImage, readPicture } from '../scene/images';
 import { Group, Icon, Pill } from './ui';
+import { lidView, lidFix, lidFreeView, setNoLid } from './logic/lidTemp';
+import { demandFor } from './logic/checks';
+import { defaultProfile } from '../demand/types';
 import { TankFilters } from './tankFilters';
 import { freshFilter, loadFilter, saveFilter, type TankFilter } from './logic/tankFilter';
 import { waterLook, setLevel, setTint, setColor, applyPreset } from './logic/animals';
@@ -214,13 +217,30 @@ function TablePos({ store, S, u }: { store: Store; S: TankSetup; u: Units }) {
   );
 }
 
+/** LW1: the open top's warning (who needs a lid), the one-click fix with its price, the pros and cons of going without, and the "lid-free anyway" choice. */
+function OpenTop({ store, S }: { store: Store; S: TankSetup }) {
+  const v = lidView(S), pc = lidFreeView(S);
+  const fix = lidFix(S, T => demandFor(T, store.scene.active, defaultProfile()).totals.setupUsd);
+  return (
+    <div class="opentop" data-open-top>
+      {v.warn ? <div class="why warn lidwarn" role="status"><b>Problem:</b> {v.warn.text}{fix ? <> <button type="button" class="linkbtn" title={fix.describe} onClick={() => store.edit(s => { fix.apply(s); })}>{fix.what}</button></> : null}</div> : null}
+      <div class="lidpc">
+        <div><b>No lid: what you get</b><ul>{pc.pros.map(x => <li>{x}</li>)}</ul></div>
+        <div><b>What it costs</b><ul>{pc.cons.map(x => <li>{x}</li>)}</ul></div>
+      </div>
+      <div class="row"><button type="button" class={`btn${v.lidFree ? ' on' : ''}`} aria-pressed={v.lidFree} onClick={() => store.edit(s => setNoLid(s, !v.lidFree))}>{v.lidFree ? 'Lid-free: your choice (tap to undo)' : 'Go lid-free anyway'}</button></div>
+    </div>
+  );
+}
+
 function LidTop({ store, S, open, onToggle }: { store: Store; S: TankSetup; open: boolean; onToggle: () => void }) {
   const held = lidHeld(S), k = tankKind(S), dry = k === 'terrarium' || k === 'vivarium';
   const lidWhy = (l: TankSetup['lid']) => lidLocked(S.tank, held.lid, l) && l !== S.lid ? (held.lid ? lockNote(S, 'lid') : 'A hood fits box, bow and curved-front tanks only') : false;
   return (
     <Group id="lid" title="Lid and top" sum={lidSummary(S)} open={open} onToggle={onToggle}>
-      <Seg label="Lid" value={S.lid} opts={LIDS} disabled={lidWhy} onPick={l => store.edit(s => setLid(s, l))} />
+      <Seg label="Lid" value={S.lid} opts={LIDS} disabled={lidWhy} onPick={l => store.edit(s => { setLid(s, l); setNoLid(s, l === 'open'); })} />
       {held.lid ? <div class="hint">{lockNote(S, 'lid')}</div> : null}
+      {S.lid === 'open' && !held.lid ? <OpenTop store={store} S={S} /> : null}
       {dry ? <div class="row"><span class="lbl">Front doors</span>
         <Seg<DoorKind> label="Front doors" value={S.doors ?? 'none'} opts={[['none', 'None'], ['hinged', 'Hinged'], ['sliding', 'Sliding']]}
           disabled={d => doorLocked(S, d, held.doors) ? (held.doors ? lockNote(S, 'doors') : 'Doors fit box tanks only') : false} onPick={d => store.edit(s => setDoors(s, d))} /><span /></div> : null}
