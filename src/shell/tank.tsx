@@ -21,7 +21,7 @@ import { loadLibrary, type CustomTank } from '../scene/customTanks';
 import { pinPreset } from '../demand/pinned';
 import { soleProduct } from '../data/tanks';
 import {
-  modelCard, sitsOnSummary, lidSummary, bgSummary, len, LIDS, lidHeld, customRows, customLine, commercialRows, commercialLine,
+  modelCard, sitsOnSummary, lidSummary, bgSummary, bdShown, bdDepthShown, BD_KINDS, BD_TITLE, BD_DEPTH_MM, len, LIDS, lidHeld, customRows, customLine, commercialRows, commercialLine,
   previewRow, chooseCommercial, chooseCustom, saleOf, filledLb, SIZE_CHIPS, loadGroups, saveGroups, GROUP_DEFAULT, type PickRow, type SizeChip, type TankGroup, type Units, kindView, setKind,
 } from './logic/tank';
 import { Group, Icon, Pill } from './ui';
@@ -114,7 +114,7 @@ export function TankSection({ store, onPicker, onMaker, libN }: { store: Store; 
       <WaterLook store={store} open={g.water} onToggle={() => flip('water')} />
       <SitsOn store={store} S={S} u={u} open={g.sits} onToggle={() => flip('sits')} />
       <LidTop store={store} S={S} open={g.lid} onToggle={() => flip('lid')} />
-      <Background store={store} S={S} open={g.bg} onToggle={() => flip('bg')} />
+      <Background store={store} S={S} u={u} open={g.bg} onToggle={() => flip('bg')} />
     </>
   );
 }
@@ -188,7 +188,7 @@ const SIDES = [['back', 'Back'], ['left', 'Left'], ['right', 'Right'], ['front',
 /** After the background's sides change the 3D wall follows them: animals and pieces are kept in front of it (the old shell's wallFit). */
 const wallFit = (s: TankSetup) => { keepInWater(s); for (const it of s.items) clampItem(it, s.tank, s); };
 
-function Background({ store, S, open, onToggle }: { store: Store; S: TankSetup; open: boolean; onToggle: () => void }) {
+function Background({ store, S, u, open, onToggle }: { store: Store; S: TankSetup; u: Units; open: boolean; onToggle: () => void }) {
   return (
     <Group title="Background" sum={bgSummary(S)} open={open} onToggle={onToggle}>
       <div class="row"><span class="lbl">Background</span>
@@ -201,6 +201,17 @@ function Background({ store, S, open, onToggle }: { store: Store; S: TankSetup; 
         {SIDES.map(([v, t]) => { const on = S.render.bgSides.includes(v); return <button type="button" class={`chip${on ? ' on' : ''}`} aria-pressed={on}
           onClick={() => store.edit(s => { const b = s.render.bgSides; s.render.bgSides = b.includes(v) ? b.filter(x => x !== v) : [...b, v]; wallFit(s); })}>{t}</button>; })}
       </div><span /></div> : null}
+      {bdShown(S) ? <>
+        <div class="row" title={BD_TITLE}><span class="lbl">3D background</span>
+          <select class="select" aria-label="3D background" title={BD_TITLE} value={S.backdrop.kind} onChange={e => store.edit(s => { s.backdrop.kind = (e.target as HTMLSelectElement).value as TankSetup['backdrop']['kind']; wallFit(s); })}>
+            {BD_KINDS.map(([k, l]) => <option value={k}>{l}</option>)}
+          </select>
+          {S.backdrop.kind !== 'none' ? <button type="button" class="chip" title="Another arrangement of the same wall" onClick={() => store.edit(s => { s.backdrop.seed = 1 + Math.floor(Math.random() * 1e6); })}>Shuffle</button> : <span />}
+        </div>
+        {bdDepthShown(S) ? <LenRow label="Depth" mm={S.backdrop.depth} min={BD_DEPTH_MM[0]} max={BD_DEPTH_MM[1]} u={u} step={u === 'in' ? 0.25 : 5}
+          onMm={(mm, done) => store.edit(s => { s.backdrop.depth = mm; wallFit(s); }, done ? {} : { coalesce: 'bdDepth' })} /> : null}
+        {bdDepthShown(S) ? <div class="hint">It takes up depth: animals and plants stay in front of it.</div> : null}
+      </> : null}
     </Group>
   );
 }

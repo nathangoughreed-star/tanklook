@@ -3,6 +3,8 @@
 // Engine calls go through scene/tankEdit.ts (P1), scene/customTanks.ts (P9) and the pure picker logic of ui/tankDockLogic.ts (ST1).
 import { standOf } from '../../data/stands';
 import { BACKGROUNDS, STAND_FINISHES } from '../../render/build';
+import { BACKDROPS } from '../../render/backdrop';
+import { LIMITS as VLIMITS } from '../../scene/validate';
 import { defaultSetup } from '../../scene/defaults';
 import { tankRowPrice } from '../../demand/prices';
 import { getTankModel, modelOfVariant, outerOf, pickRimless, saleLive, soleProduct, tankFromModel, tankSaleFor, variantByKey, variantName, type TankModel, type TankVariant } from '../../data/tanks';
@@ -129,9 +131,17 @@ export function lidSummary(S: TankSetup): string {
 }
 export function bgSummary(S: TankSetup): string {
   const b = S.render.bg, n = S.render.bgSides.length;
-  if (b === 'none') return 'None';
-  return `${BACKGROUNDS[b].label}, ${n === 1 ? S.render.bgSides[0] : `${n} sides`}`;
+  const flat = b === 'none' ? 'None' : `${BACKGROUNDS[b].label}, ${n === 1 ? S.render.bgSides[0] : `${n} sides`}`;
+  return bdShown(S) && S.backdrop.kind !== 'none' ? `${flat} · ${BACKDROPS[S.backdrop.kind].toLowerCase()}` : flat;
 }
+// BG1 (2026-11-17): the 3D background (TankSetup.backdrop) the old panel had (bdSel / bdDepth); same rules as the old one.
+export const BD_TITLE = 'A 3D background inside the tank against the back glass, like the rock, cork and moss panels sold for tanks. It takes up depth: animals and plants stay in front of it.';
+export const BD_KINDS = Object.entries(BACKDROPS) as [TankSetup['backdrop']['kind'], string][];
+/** The 3D background control is hidden on bowls (round glass has no back wall). */
+export const bdShown = (S: TankSetup) => shapeOf(S.tank) !== 'bowl';
+/** The depth slider shows only with a kind chosen. */
+export const bdDepthShown = (S: TankSetup) => bdShown(S) && S.backdrop.kind !== 'none';
+export const BD_DEPTH_MM = VLIMITS.backdrop;
 export function roomSummary(S: TankSetup, u: Units): string {
   const wall = S.wall.show ? `Wall ${S.wall.side === 'back' ? 'behind' : S.wall.side === 'corner' ? 'in a corner' : `at the ${S.wall.side}`}` : 'No wall';
   const ceil = S.wall.show ? ` · ${u === 'in' ? `${Math.round(ceilingH(S.wall) / 304.8 * 10) / 10} ft` : `${(ceilingH(S.wall) / 1000).toFixed(1)} m`} ceiling` : '';
