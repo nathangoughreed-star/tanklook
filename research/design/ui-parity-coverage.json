@@ -1,0 +1,1463 @@
+[
+ {
+  "sec": "header",
+  "name": "Undo/Redo",
+  "re": "undo",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/App.tsx",
+   "src/shell/compare.tsx",
+   "src/shell/constraints.tsx"
+  ],
+  "n": 29
+ },
+ {
+  "sec": "header",
+  "name": "Guided/Sandbox rules toggle",
+  "re": "sandbox",
+  "hits": [
+   "src/shell/logic/settings.ts"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "header",
+  "name": "US/Metric",
+  "re": "metric",
+  "hits": [
+   "src/shell/discover.tsx",
+   "src/shell/logic/settings.ts",
+   "src/shell/logic/tank.ts",
+   "src/shell/logic/tankGlass.ts"
+  ],
+  "n": 6
+ },
+ {
+  "sec": "header",
+  "name": "Save as / download / share link",
+  "re": "share link|shareLink|downloadScene",
+  "hits": [
+   "src/shell/boot.tsx",
+   "src/shell/files.tsx",
+   "src/shell/logic/files.ts"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "header",
+  "name": "Scene name rename",
+  "re": "rename|sceneName",
+  "hits": [
+   "src/shell/files.tsx",
+   "src/shell/logic/files.ts",
+   "src/shell/logic/print.ts",
+   "src/shell/logic/view.ts"
+  ],
+  "n": 4
+ },
+ {
+  "sec": "header",
+  "name": "Autosaved indicator",
+  "re": "autosaved|saved dot",
+  "hits": [
+   "src/shell/App.tsx",
+   "src/shell/files.tsx",
+   "src/shell/logic/files.ts",
+   "src/shell/logic/start.ts"
+  ],
+  "n": 4
+ },
+ {
+  "sec": "header",
+  "name": "How to use / help",
+  "re": "how to use",
+  "hits": [
+   "src/shell/logic/settings.ts"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "header",
+  "name": "Scene data JSON",
+  "re": "scene data",
+  "hits": [
+   "src/shell/logic/settings.ts",
+   "src/shell/settings.tsx"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "header",
+  "name": "Discover button",
+  "re": "discover",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/App.tsx",
+   "src/shell/constraints.tsx",
+   "src/shell/discover.tsx"
+  ],
+  "n": 17
+ },
+ {
+  "sec": "start",
+  "name": "Habitat New Setup fresh/salt",
+  "re": "saltwater",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/logic/animals.ts",
+   "src/shell/logic/aq.ts",
+   "src/shell/logic/constraints.ts"
+  ],
+  "n": 7
+ },
+ {
+  "sec": "start",
+  "name": "Starter examples",
+  "re": "exampleScenes",
+  "hits": [
+   "src/shell/files.tsx"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "start",
+  "name": "Deals and bundles tabs",
+  "re": "bundles",
+  "hits": [
+   "src/shell/logic/checks.ts",
+   "src/shell/logic/deals.ts",
+   "src/shell/logic/tank.ts"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "start",
+  "name": "Animal I want (animal first)",
+  "re": "animal I want|stockPlanLogic",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/App.tsx",
+   "src/shell/checklist.tsx",
+   "src/shell/discover.tsx"
+  ],
+  "n": 8
+ },
+ {
+  "sec": "start",
+  "name": "Open file from computer",
+  "re": "type=.file|Open a file",
+  "hits": [
+   "src/shell/files.tsx"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "start",
+  "name": "Saved library list",
+  "re": "libList|loadLibrary|listLibrary",
+  "hits": [
+   "src/shell/App.tsx",
+   "src/shell/maker.tsx",
+   "src/shell/tank.tsx"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "start",
+  "name": "Quick preferences dialog (size slider, looks, limits, dont want)",
+  "re": "quickPrefs",
+  "hits": [
+   "src/shell/logic/prefs.ts"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "start",
+  "name": "Replace project warning",
+  "re": "Replace this project|Start a new project",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "tank",
+  "name": "Kind freshwater/saltwater (Tank section)",
+  "re": "setKind",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/logic/tank.ts",
+   "src/shell/tank.tsx"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "tank",
+  "name": "Choose a tank picker",
+  "re": "Choose this tank",
+  "hits": [
+   "src/shell/tank.tsx"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "tank",
+  "name": "Tank search / terrarium filter",
+  "re": "terrari",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/logic/animals.ts",
+   "src/shell/logic/constraints.ts",
+   "src/shell/logic/plantcards.ts"
+  ],
+  "n": 9
+ },
+ {
+  "sec": "tank",
+  "name": "Product line / included gear note",
+  "re": "prodIncl|includes",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/App.tsx",
+   "src/shell/discover.tsx",
+   "src/shell/drawers.tsx"
+  ],
+  "n": 20
+ },
+ {
+  "sec": "tank",
+  "name": "Sits on floor/stand/furniture",
+  "re": "furniture",
+  "hits": [
+   "src/shell/logic/tank.ts",
+   "src/shell/tank.tsx"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "tank",
+  "name": "Stand style / finish / height",
+  "re": "standFinish|stand finish",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "tank",
+  "name": "Table top rect/round, length, depth, position",
+  "re": "tableRound|table top|tableL",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "tank",
+  "name": "Room wall (behind/left/right/corner, colour, gap)",
+  "re": "wallCorner|wallGap|wall colour",
+  "hits": [
+   "src/shell/view.tsx"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "tank",
+  "name": "Ceiling height",
+  "re": "ceil",
+  "hits": [
+   "src/shell/glassSolve.tsx",
+   "src/shell/lighting.tsx",
+   "src/shell/logic/noteFixes.ts",
+   "src/shell/logic/tank.ts"
+  ],
+  "n": 5
+ },
+ {
+  "sec": "tank",
+  "name": "Person for scale",
+  "re": "person",
+  "hits": [
+   "src/shell/failView.tsx",
+   "src/shell/logic/checklist.ts",
+   "src/shell/logic/equipment.ts",
+   "src/shell/logic/files.ts"
+  ],
+  "n": 11
+ },
+ {
+  "sec": "tank",
+  "name": "Shape + sides 3/5/6",
+  "re": "sides",
+  "hits": [
+   "src/shell/compare.tsx",
+   "src/shell/logic/animals.ts",
+   "src/shell/logic/compare.ts",
+   "src/shell/logic/tank.ts"
+  ],
+  "n": 10
+ },
+ {
+  "sec": "tank",
+  "name": "Bow end depth / pie angle / bowl floor+opening",
+  "re": "bowMin|pieDeg|bowlTop|bowlFloor",
+  "hits": [
+   "src/shell/logic/tank.ts",
+   "src/shell/maker.tsx"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "tank",
+  "name": "Rimmed/Rimless",
+  "re": "rimless",
+  "hits": [
+   "src/shell/logic/edges.ts",
+   "src/shell/logic/tank.ts",
+   "src/shell/logic/tankFilter.ts",
+   "src/shell/logic/tankGlass.ts"
+  ],
+  "n": 6
+ },
+ {
+  "sec": "tank",
+  "name": "Glass edge outlines shown/hidden",
+  "re": "render\\.edges|edgesY|glass outlines",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "tank",
+  "name": "Lid open/glass/mesh/hood",
+  "re": "hood",
+  "hits": [
+   "src/shell/lighting.tsx",
+   "src/shell/logic/equipment.ts",
+   "src/shell/logic/gearArt.ts",
+   "src/shell/logic/lighting.ts"
+  ],
+  "n": 6
+ },
+ {
+  "sec": "tank",
+  "name": "Front doors none/hinged/sliding",
+  "re": "sliding",
+  "hits": [
+   "src/shell/tank.tsx"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "tank",
+  "name": "Background colour/sides",
+  "re": "bgColor|backdrop",
+  "hits": [
+   "src/shell/logic/animals.ts",
+   "src/shell/logic/tank.ts",
+   "src/shell/shell.css",
+   "src/shell/tank.tsx"
+  ],
+  "n": 5
+ },
+ {
+  "sec": "tank",
+  "name": "Background arc (round tanks)",
+  "re": "bgArc",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "tank",
+  "name": "Background pictures upload",
+  "re": "bgPic|bgImages",
+  "hits": [
+   "src/shell/logic/tank.ts"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "tank",
+  "name": "3D backdrop kind/shuffle/depth",
+  "re": "backdropDepth|3D background",
+  "hits": [
+   "src/shell/logic/animals.ts",
+   "src/shell/logic/tank.ts",
+   "src/shell/tank.tsx"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "tank",
+  "name": "Glass thickness/type",
+  "re": "glassType|glassSolve",
+  "hits": [
+   "src/shell/failOverlay.ts",
+   "src/shell/failView.tsx",
+   "src/shell/glassOptions.tsx",
+   "src/shell/glassSolve.tsx"
+  ],
+  "n": 8
+ },
+ {
+  "sec": "scape",
+  "name": "Substrate type",
+  "re": "substrate",
+  "hits": [
+   "src/shell/discover.tsx",
+   "src/shell/equipment.tsx",
+   "src/shell/lighting.tsx",
+   "src/shell/logic/checklist.ts"
+  ],
+  "n": 14
+ },
+ {
+  "sec": "scape",
+  "name": "Custom grain/second grain/share/mixing",
+  "re": "mixing|grain",
+  "hits": [
+   "src/shell/logic/noteFixes.ts",
+   "src/shell/logic/scape.ts",
+   "src/shell/scape.tsx",
+   "src/shell/scapeWs.tsx"
+  ],
+  "n": 4
+ },
+ {
+  "sec": "scape",
+  "name": "Corner rise / level / slope presets",
+  "re": "slope to|corner height|rise",
+  "hits": [
+   "src/shell/App.tsx",
+   "src/shell/logic/noteFixes.ts",
+   "src/shell/prefs.tsx",
+   "src/shell/shell.css"
+  ],
+  "n": 4
+ },
+ {
+  "sec": "scape",
+  "name": "Custom terrain edit/flatten/grid",
+  "re": "flatten",
+  "hits": [
+   "src/shell/logic/scape.ts",
+   "src/shell/scape.tsx"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "scape",
+  "name": "Pools (add/del/across/width/length/bank)",
+  "re": "pool",
+  "hits": [
+   "src/shell/logic/animals.ts",
+   "src/shell/logic/discover.ts",
+   "src/shell/logic/prefs.ts",
+   "src/shell/logic/scape.ts"
+  ],
+  "n": 7
+ },
+ {
+  "sec": "scape",
+  "name": "Roughness",
+  "re": "roughness",
+  "hits": [
+   "src/shell/logic/scape.ts",
+   "src/shell/scapeWs.tsx"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "scape",
+  "name": "Leaf litter kind/density/shuffle",
+  "re": "litter",
+  "hits": [
+   "src/shell/logic/scape.ts",
+   "src/shell/scape.tsx",
+   "src/shell/scapeWs.tsx"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "scape",
+  "name": "Scatter brush toggle",
+  "re": "brush",
+  "hits": [
+   "src/shell/App.tsx",
+   "src/shell/logic/scape.ts",
+   "src/shell/scape.tsx",
+   "src/shell/scapeWs.tsx"
+  ],
+  "n": 5
+ },
+ {
+  "sec": "scape",
+  "name": "Hardscape library",
+  "re": "hardscape",
+  "hits": [
+   "src/shell/App.tsx",
+   "src/shell/clickOpen.ts",
+   "src/shell/discover.tsx",
+   "src/shell/drag.ts"
+  ],
+  "n": 15
+ },
+ {
+  "sec": "scape",
+  "name": "Multi-select toggle",
+  "re": "multi-?select|multiSelect",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "scape",
+  "name": "Remove all hardscape",
+  "re": "remove all|clear all|itemsClear",
+  "hits": [
+   "src/shell/logic/scape.ts",
+   "src/shell/scape.tsx"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "scape",
+  "name": "Selected piece: yaw/pitch/roll/lift/x/depth",
+  "re": "yaw|pitch",
+  "hits": [
+   "src/shell/drag.ts",
+   "src/shell/logic/animals.ts",
+   "src/shell/logic/gearArt.ts",
+   "src/shell/logic/scape.ts"
+  ],
+  "n": 4
+ },
+ {
+  "sec": "scape",
+  "name": "Selected piece: growth/spread/stems/density",
+  "re": "spread|stems",
+  "hits": [
+   "src/shell/drag.ts",
+   "src/shell/glassOptions.tsx",
+   "src/shell/logic/plantcards.ts",
+   "src/shell/logic/print.ts"
+  ],
+  "n": 7
+ },
+ {
+  "sec": "scape",
+  "name": "Selected piece: new shape / drop",
+  "re": "new shape|reshape",
+  "hits": [
+   "src/shell/logic/animals.ts",
+   "src/shell/logic/scape.ts",
+   "src/shell/maker.tsx",
+   "src/shell/scape.tsx"
+  ],
+  "n": 4
+ },
+ {
+  "sec": "plants",
+  "name": "Plant gate show only suitable",
+  "re": "gatePlants|tank-appropriate|fits this tank",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/equipment.tsx",
+   "src/shell/logic/animals.ts"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "plants",
+  "name": "Growth time slider keep/undo",
+  "re": "growKeep|growTime|grow from",
+  "hits": [
+   "src/shell/logic/plantcards.ts",
+   "src/shell/logic/plants.ts",
+   "src/shell/plants.tsx"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "plants",
+  "name": "Feeding select (growFeed)",
+  "re": "growFeed|feeding",
+  "hits": [
+   "src/shell/drawers.tsx",
+   "src/shell/logic/plants.ts",
+   "src/shell/plants.tsx"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "plants",
+  "name": "Per-plant light verdicts",
+  "re": "whyNot|plantfit",
+  "hits": [
+   "src/shell/lighting.tsx",
+   "src/shell/logic/lighting.ts",
+   "src/shell/logic/plants.ts"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "animals",
+  "name": "Species preview card + sex",
+  "re": "spPreview|previewSex",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "animals",
+  "name": "Drag species into tank",
+  "re": "dragOut|drag",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/drag.ts",
+   "src/shell/equipment.tsx",
+   "src/shell/logic/plants.ts"
+  ],
+  "n": 11
+ },
+ {
+  "sec": "animals",
+  "name": "Another moment",
+  "re": "anotherMoment|another moment",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/logic/view.ts",
+   "src/shell/view.tsx"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "animals",
+  "name": "Delete all animals",
+  "re": "delAll|delete all",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "animals",
+  "name": "New animal size slider",
+  "re": "addSize|new animal size",
+  "hits": [
+   "src/shell/logic/animals.ts"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "animals",
+  "name": "Life stage buttons",
+  "re": "lifeStages|life stage",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/logic/animals.ts"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "animals",
+  "name": "Stocking list with counts",
+  "re": "setCount",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/logic/animals.ts"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "animals",
+  "name": "AqAdvisor check",
+  "re": "aqadvisor|aqCheck",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/logic/aq.ts",
+   "src/shell/shell.css"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "animals",
+  "name": "Selected animal: sex",
+  "re": "sexM|setSex",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/logic/animals.ts"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "animals",
+  "name": "Selected animal: pair status",
+  "re": "setPair|established",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/logic/animals.ts",
+   "src/shell/logic/scape.ts"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "animals",
+  "name": "Selected animal: flip",
+  "re": "flip",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/constraints.tsx",
+   "src/shell/failView.tsx",
+   "src/shell/logic/animals.ts"
+  ],
+  "n": 9
+ },
+ {
+  "sec": "animals",
+  "name": "Selected animal readout numbers",
+  "re": "readout",
+  "hits": [
+   "src/shell/logic/checks.ts",
+   "src/shell/logic/view.ts",
+   "src/shell/scape.tsx",
+   "src/shell/view.tsx"
+  ],
+  "n": 4
+ },
+ {
+  "sec": "animals",
+  "name": "Grayed by fit + why",
+  "re": "whysAnimal|whyAnimal|animalGate",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "animals",
+  "name": "Care level text",
+  "re": "CARE_LEVEL|care level",
+  "hits": [
+   "src/shell/logic/animals.ts",
+   "src/shell/logic/plants.ts"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "water",
+  "name": "Water tint/colour presets",
+  "re": "blackwater|reef blue",
+  "hits": [
+   "src/shell/logic/animals.ts",
+   "src/shell/scapeWs.tsx"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "water",
+  "name": "Misfit remove on kind change",
+  "re": "misfit|removeMisfits",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/logic/animals.ts",
+   "src/shell/logic/tank.ts"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "water",
+  "name": "Water per-species range bars",
+  "re": "rangeBar|range bar|comfortable",
+  "hits": [
+   "src/shell/shell.css"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "water",
+  "name": "Condition slider",
+  "re": "condition",
+  "hits": [
+   "src/shell/logic/equipment.ts"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "constraints",
+  "name": "Setup brief card",
+  "re": "briefBar|brief card",
+  "hits": [
+   "src/shell/logic/prefs.ts"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "constraints",
+  "name": "Limits: upfront/monthly/min per week",
+  "re": "upfront|monthly",
+  "hits": [
+   "src/shell/App.tsx",
+   "src/shell/compare.tsx",
+   "src/shell/constraints.tsx",
+   "src/shell/drawers.tsx"
+  ],
+  "n": 11
+ },
+ {
+  "sec": "constraints",
+  "name": "Limits: space",
+  "re": "space",
+  "hits": [
+   "src/shell/App.tsx",
+   "src/shell/constraints.tsx",
+   "src/shell/drawers.tsx",
+   "src/shell/logic/checks.ts"
+  ],
+  "n": 17
+ },
+ {
+  "sec": "constraints",
+  "name": "Limits: room temp/water/hardness/pH",
+  "re": "roomC|hardness",
+  "hits": [
+   "src/shell/logic/animals.ts",
+   "src/shell/logic/workspace.ts"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "constraints",
+  "name": "If it does not all fit (policy)",
+  "re": "does not all fit|onOverflow",
+  "hits": [
+   "src/shell/constraints.tsx",
+   "src/shell/logic/fit.ts"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "constraints",
+  "name": "Set-up time limit",
+  "re": "setupTime|set-up time",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "constraints",
+  "name": "No new equipment",
+  "re": "noNew|no new equipment",
+  "hits": [
+   "src/shell/constraints.tsx",
+   "src/shell/logic/animals.ts",
+   "src/shell/logic/constraints.ts",
+   "src/shell/logic/fit.ts"
+  ],
+  "n": 4
+ },
+ {
+  "sec": "constraints",
+  "name": "Experience",
+  "re": "experience",
+  "hits": [
+   "src/shell/constraints.tsx",
+   "src/shell/drawers.tsx",
+   "src/shell/logic/animals.ts",
+   "src/shell/logic/constraints.ts"
+  ],
+  "n": 6
+ },
+ {
+  "sec": "constraints",
+  "name": "Guardrails per-limit on/off",
+  "re": "setOff|guardrail",
+  "hits": [
+   "src/shell/logic/constraints.ts"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "constraints",
+  "name": "Suggest a setup + cards",
+  "re": "suggest",
+  "hits": [
+   "src/shell/constraints.tsx",
+   "src/shell/equipment.tsx",
+   "src/shell/logic/fit.ts",
+   "src/shell/prefs.tsx"
+  ],
+  "n": 6
+ },
+ {
+  "sec": "constraints",
+  "name": "Why-not card (infeasible)",
+  "re": "infeasible",
+  "hits": [
+   "src/shell/discover.tsx"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "prefs",
+  "name": "Looks cards/Browse looks",
+  "re": "browse looks",
+  "hits": [
+   "src/shell/logic/prefs.ts",
+   "src/shell/prefs.tsx"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "prefs",
+  "name": "Don't want list",
+  "re": "don.t want|exclude",
+  "hits": [
+   "src/shell/logic/animals.ts",
+   "src/shell/logic/compare.ts",
+   "src/shell/logic/tankFilter.ts"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "prefs",
+  "name": "Style select / Shuffle layout",
+  "re": "layoutShuffle|archetype",
+  "hits": [
+   "src/shell/constraints.tsx",
+   "src/shell/logic/fit.ts",
+   "src/shell/logic/prefs.ts"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "prefs",
+  "name": "Densities (hardscape/plants/animals)",
+  "re": "densHard|densPlant",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "prefs",
+  "name": "Plant care tier / composition",
+  "re": "plantTier|composition",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "equip",
+  "name": "Equipment preset ladder",
+  "re": "walstad",
+  "hits": [
+   "src/shell/logic/equipment.ts"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "equip",
+  "name": "Gear I-own / buy",
+  "re": "owned",
+  "hits": [
+   "src/shell/equipment.tsx",
+   "src/shell/icons.ts",
+   "src/shell/logic/checklist.ts",
+   "src/shell/logic/equipment.ts"
+  ],
+  "n": 10
+ },
+ {
+  "sec": "equip",
+  "name": "Use this one for sure lock",
+  "re": "use this one for sure",
+  "hits": [
+   "src/shell/equipment.tsx",
+   "src/shell/logic/equipment.ts",
+   "src/shell/tank.tsx"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "equip",
+  "name": "Sump picker",
+  "re": "sump",
+  "hits": [
+   "src/shell/logic/equipment.ts",
+   "src/shell/logic/gearArt.ts",
+   "src/shell/logic/plumbing.ts",
+   "src/shell/plumbing.tsx"
+  ],
+  "n": 4
+ },
+ {
+  "sec": "equip",
+  "name": "Room temp in equipment",
+  "re": "tRoom|room temp",
+  "hits": [
+   "src/shell/constraints.tsx",
+   "src/shell/logic/constraints.ts",
+   "src/shell/logic/equipment.ts",
+   "src/shell/logic/view.ts"
+  ],
+  "n": 4
+ },
+ {
+  "sec": "equip",
+  "name": "CO2 / ferts / air / UV / RO-DI / ATO",
+  "re": "co2",
+  "hits": [
+   "src/shell/equipment.tsx",
+   "src/shell/logic/deals.ts",
+   "src/shell/logic/equipment.ts",
+   "src/shell/logic/gearArt.ts"
+  ],
+  "n": 10
+ },
+ {
+  "sec": "equip",
+  "name": "Saltwater gear rows",
+  "re": "skimmer",
+  "hits": [
+   "src/shell/logic/deals.ts",
+   "src/shell/logic/equipment.ts",
+   "src/shell/logic/gearArt.ts",
+   "src/shell/logic/plumbing.ts"
+  ],
+  "n": 5
+ },
+ {
+  "sec": "equip",
+  "name": "Equipment warning toast",
+  "re": "equipmentWarn|no longer fit",
+  "hits": [
+   "src/shell/maker.tsx"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "equip",
+  "name": "Price notice toast",
+  "re": "priceNotice|sale price",
+  "hits": [
+   "src/shell/logic/tank.ts",
+   "src/shell/tank.tsx"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "light",
+  "name": "Light count/rows/pattern/spacing/beam",
+  "re": "lCone|beam",
+  "hits": [
+   "src/shell/lighting.tsx",
+   "src/shell/logic/lighting.ts"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "light",
+  "name": "Light height/mount/front-back/optimize",
+  "re": "mount",
+  "hits": [
+   "src/shell/equipment.tsx",
+   "src/shell/failOverlay.ts",
+   "src/shell/files.tsx",
+   "src/shell/lighting.tsx"
+  ],
+  "n": 11
+ },
+ {
+  "sec": "light",
+  "name": "Bulb / PAR measured",
+  "re": "par measured|lPar|measuredPar",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "light",
+  "name": "Brightness/colour temp",
+  "re": "colour temp|kelvin|lK",
+  "hits": [
+   "src/shell/App.tsx",
+   "src/shell/lighting.tsx",
+   "src/shell/logic/fullscreen.ts",
+   "src/shell/logic/plantcards.ts"
+  ],
+  "n": 8
+ },
+ {
+  "sec": "light",
+  "name": "Look from above/Straight on",
+  "re": "look from above",
+  "hits": [
+   "src/shell/logic/view.ts"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "light",
+  "name": "Light map contour/units/slice/shade/shells",
+  "re": "contour",
+  "hits": [
+   "src/shell/boot.tsx",
+   "src/shell/lighting.tsx"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "light",
+  "name": "Expected plant outcomes toggle",
+  "re": "outcomes",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "light",
+  "name": "PAR guide chart",
+  "re": "parGuide|par guide",
+  "hits": [
+   "src/shell/lighting.tsx",
+   "src/shell/shell.css"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "light",
+  "name": "Light hover readout",
+  "re": "lightHover",
+  "hits": [
+   "src/shell/boot.tsx"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "report",
+  "name": "Print parts + Generate",
+  "re": "print",
+  "hits": [
+   "src/shell/App.tsx",
+   "src/shell/constraints.tsx",
+   "src/shell/icons.ts",
+   "src/shell/logic/print.ts"
+  ],
+  "n": 11
+ },
+ {
+  "sec": "report",
+  "name": "Setup sheet",
+  "re": "setup sheet",
+  "hits": [
+   "src/shell/logic/print.ts"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "report",
+  "name": ".txt/.csv",
+  "re": "\\.csv|csv",
+  "hits": [
+   "src/shell/logic/print.ts",
+   "src/shell/print.tsx"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "view",
+  "name": "Camera sliders",
+  "re": "zoom",
+  "hits": [
+   "src/shell/logic/compare.ts",
+   "src/shell/logic/settings.ts",
+   "src/shell/logic/view.ts",
+   "src/shell/logic/workspace.ts"
+  ],
+  "n": 5
+ },
+ {
+  "sec": "view",
+  "name": "Room light auto",
+  "re": "room light|roomLight",
+  "hits": [
+   "src/shell/lighting.tsx",
+   "src/shell/logic/plantcards.ts",
+   "src/shell/logic/view.ts",
+   "src/shell/view.tsx"
+  ],
+  "n": 4
+ },
+ {
+  "sec": "view",
+  "name": "Show animals/plants/hardscape/equipment toggles",
+  "re": "showFish|show animals",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "view",
+  "name": "Fish edges / stand out",
+  "re": "fish edges|stand out",
+  "hits": [
+   "src/shell/settings.tsx"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "view",
+  "name": "Graphics settings",
+  "re": "graphics",
+  "hits": [
+   "src/shell/logic/settings.ts",
+   "src/shell/settings.tsx"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "view",
+  "name": "Viewpoint map",
+  "re": "viewmap|viewpoint map",
+  "hits": [
+   "src/shell/logic/view.ts",
+   "src/shell/shell.css",
+   "src/shell/view.tsx"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "view",
+  "name": "Plants sway / fish swim / reset fish",
+  "re": "sway|swim",
+  "hits": [
+   "src/shell/logic/animals.ts",
+   "src/shell/settings.tsx"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "view",
+  "name": "Hide light fixture / grid",
+  "re": "hidelight|hide the light|grid",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/failOverlay.ts",
+   "src/shell/failView.tsx",
+   "src/shell/files.tsx"
+  ],
+  "n": 25
+ },
+ {
+  "sec": "view",
+  "name": "Export PNG",
+  "re": "png",
+  "hits": [
+   "src/shell/logic/view.ts",
+   "src/shell/view.tsx"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "view",
+  "name": "AR button",
+  "re": "attachAR|\\bAR\\b",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "view",
+  "name": "Panel resize grip",
+  "re": "sideW|grip",
+  "hits": [
+   "src/shell/logic/scape.ts",
+   "src/shell/shell.css"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "overlay",
+  "name": "Habitat check",
+  "re": "habitat",
+  "hits": [
+   "src/shell/App.tsx",
+   "src/shell/compare.tsx",
+   "src/shell/drawers.tsx",
+   "src/shell/logic/checks.ts"
+  ],
+  "n": 8
+ },
+ {
+  "sec": "overlay",
+  "name": "Set my space editor",
+  "re": "set my space",
+  "hits": [
+   "src/shell/drawers.tsx"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "overlay",
+  "name": "Cost: three builds / swap-for-kit",
+  "re": "tierPair|rosterTiers|swap",
+  "hits": [
+   "src/shell/drawers.tsx",
+   "src/shell/logic/checks.ts",
+   "src/shell/logic/deals.ts",
+   "src/shell/logic/lighting.ts"
+  ],
+  "n": 6
+ },
+ {
+  "sec": "overlay",
+  "name": "Cost: Your situation skill",
+  "re": "skill",
+  "hits": [],
+  "n": 0
+ },
+ {
+  "sec": "overlay",
+  "name": "Cost: owned-heater deal match",
+  "re": "dealMatch",
+  "hits": [
+   "src/shell/logic/deals.ts"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "overlay",
+  "name": "Notes",
+  "re": "notes",
+  "hits": [
+   "src/shell/App.tsx",
+   "src/shell/compare.tsx",
+   "src/shell/drawers.tsx",
+   "src/shell/logic/checks.ts"
+  ],
+  "n": 11
+ },
+ {
+  "sec": "overlay",
+  "name": "Group bar",
+  "re": "addToGroup|group bar|groupBar",
+  "hits": [
+   "src/shell/logic/scape.ts",
+   "src/shell/scape.tsx",
+   "src/shell/shell.css"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "overlay",
+  "name": "Brush bar (paint/single/erase)",
+  "re": "erase",
+  "hits": [
+   "src/shell/logic/scape.ts",
+   "src/shell/logic/view.ts",
+   "src/shell/logic/workspace.ts",
+   "src/shell/maker.tsx"
+  ],
+  "n": 5
+ },
+ {
+  "sec": "overlay",
+  "name": "Patch bar",
+  "re": "patch",
+  "hits": [
+   "src/shell/boot.tsx",
+   "src/shell/drag.ts",
+   "src/shell/files.tsx",
+   "src/shell/fullscreen.tsx"
+  ],
+  "n": 11
+ },
+ {
+  "sec": "overlay",
+  "name": "Split: Views linked / Fit Both / diffs",
+  "re": "linked|fitBoth|fit both",
+  "hits": [
+   "src/shell/boot.tsx",
+   "src/shell/compare.tsx",
+   "src/shell/logic/compare.ts",
+   "src/shell/view.tsx"
+  ],
+  "n": 4
+ },
+ {
+  "sec": "overlay",
+  "name": "Editing A/B/Both",
+  "re": "editing",
+  "hits": [
+   "src/shell/App.tsx",
+   "src/shell/clickOpen.ts",
+   "src/shell/compare.tsx",
+   "src/shell/drawers.tsx"
+  ],
+  "n": 8
+ },
+ {
+  "sec": "overlay",
+  "name": "Discover remix/refine",
+  "re": "remix|refine",
+  "hits": [
+   "src/shell/animals.tsx",
+   "src/shell/discover.tsx",
+   "src/shell/logic/discover.ts"
+  ],
+  "n": 3
+ },
+ {
+  "sec": "overlay",
+  "name": "Discover Keep / Like / Dislike",
+  "re": "dislike",
+  "hits": [
+   "src/shell/logic/workspace.ts"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "overlay",
+  "name": "A/B this or that",
+  "re": "this or that",
+  "hits": [
+   "src/shell/discover.tsx",
+   "src/shell/logic/discover.ts"
+  ],
+  "n": 2
+ },
+ {
+  "sec": "overlay",
+  "name": "Explore complete setups / whole tank",
+  "re": "whole tank",
+  "hits": [
+   "src/shell/discover.tsx",
+   "src/shell/logic/compare.ts",
+   "src/shell/logic/discover.ts",
+   "src/shell/logic/edges.ts"
+  ],
+  "n": 6
+ },
+ {
+  "sec": "overlay",
+  "name": "Get started checklist",
+  "re": "checklist",
+  "hits": [
+   "src/shell/App.tsx",
+   "src/shell/checklist.tsx",
+   "src/shell/files.tsx",
+   "src/shell/logic/checklist.ts"
+  ],
+  "n": 4
+ },
+ {
+  "sec": "overlay",
+  "name": "Keyboard shortcuts",
+  "re": "keydown",
+  "hits": [
+   "src/shell/App.tsx",
+   "src/shell/discover.tsx",
+   "src/shell/files.tsx",
+   "src/shell/fullscreen.tsx"
+  ],
+  "n": 8
+ },
+ {
+  "sec": "overlay",
+  "name": "Context menu",
+  "re": "contextmenu",
+  "hits": [
+   "src/shell/drag.ts"
+  ],
+  "n": 1
+ },
+ {
+  "sec": "overlay",
+  "name": "Phone layout @media",
+  "re": "@media",
+  "hits": [
+   "src/shell/shell.css"
+  ],
+  "n": 1
+ }
+]

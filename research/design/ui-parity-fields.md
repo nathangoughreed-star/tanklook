@@ -1,0 +1,23 @@
+# PA1: old-UI written scene fields not found by leaf name in the shell (machine output; leaf-name test, review by hand)
+
+Paths written by old UI: 99; leaf found in shell: 80; leaf NOT found: 19
+
+- `arch]` (quickPrefs.ts)
+- `chipOpen` (sideOverlays.ts)
+- `chipSig` (sideOverlays.ts)
+- `condition` (panels.ts)
+- `id]` (stockPlanLogic.ts)
+- `layout.careSet` (panels.ts)
+- `layout.comp` (panels.ts)
+- `layout.gateAnimals` (panels.ts)
+- `layout.gatePlants` (plantGate.ts)
+- `layout.gateStock` (panels.ts)
+- `light.bulbW` (lightLayout.ts)
+- `light.mapDark` (panels.ts)
+- `light.mapShade` (panels.ts)
+- `light.mapShells` (panels.ts)
+- `light.outcomes` (panels.ts)
+- `light.paidUsd` (ownedGear.ts)
+- `render.bgArc` (panels.ts)
+- `water.opacity]` (panels.ts)
+- `water.tapNitrate` (fullnessTile.ts)

@@ -1,0 +1,169 @@
+Header and files|Undo / Redo (`#undo`,`#redo`)|header Undo / Redo, Ctrl+Z|PRESENT|V|
+Header and files|Guided / Sandbox rules switch (`rulesSwitch.ts`)|Settings > Rules|MOVED|V|UI2 §2b row 22
+Header and files|US / Metric (`#uIn`,`#uCm`)|Settings|MOVED|V|
+Header and files|New / Open / Save / Save as / Download / Share link|header Save + File menu, `files.tsx`|PRESENT|i|read in source
+Header and files|Scene name rename (`#sceneName`)|header project name|PRESENT|V|
+Header and files|Autosaved indicator (`#saveState`)|saved dot in header|PRESENT|i|
+Header and files|How to use (button)|Settings > Help|MOVED|V|
+Header and files|Scene data JSON (`#jsonCopy`)|Settings > Scene data (Download, Copy)|PRESENT|V|
+Header and files|Discover header button|rail Discover + "Ideas for X" in each header|MOVED|V|
+Header and files|Build tag on screen|not shown|MISSING|i|tag is in the old header only; low
+Header and files|Hide / Edit panel (3 controls) + resize grip|click open rail icon to fold; panel width drag|CHANGED|V|UI2 §2b row 38 (3 into 1); grip not looked for
+Start|Welcome home (New / Starters / Open)|`start.tsx`|PRESENT|i|
+Start|New Setup Freshwater / Saltwater|Start > Blank tank|PRESENT|i|
+Start|Starter / example setups (6 cards)|Start > Starters|PRESENT|i|
+Start|Deals and bundles (On sale / Bundles tabs)|Start tab|PRESENT|i|
+Start|Animal I want (animal-first)|Start door|PRESENT|i|`stockPlanLogic` reused
+Start|Open file from computer / saved library|`files.tsx`|PRESENT|i|
+Start|Quick preferences dialog (size slider, looks, limits, don't want)|Preferences section; Start step|CHANGED|V|size slider and Avoid state missing, see section 2 rank 7
+Start|Replace this project? (Cancel / Save copy / Replace)|`files.tsx`|PRESENT|i|`projectStart` reused
+Start|"This replaces your current scape" confirm|Discover Apply / "Revert this visit"|MOVED|V|
+Tank|Kind Freshwater / Saltwater|Tank > Water group|PRESENT|V|
+Tank|Choose a tank picker (search, bands, live preview, Choose)|Tank model > Change…, `tank.tsx`|PRESENT|V|plus Custom / Commercial groups
+Tank|Product line, included-gear note (`#prodIncl`)|Tank model card|PRESENT|V|
+Tank|Presets… button|Tank model > Change…|MOVED|V|
+Tank|Sits on Floor / Stand / My own furniture|Tank > Sits on|PRESENT|V|
+Tank|Stand style + height|Tank > Sits on (Stand)|PRESENT|V|
+Tank|Stand Finish select (`#standFinish`)|not shown|MISSING|V|`panels.ts:703`
+Tank|"No stand yet" prompt (`standAsk`)|not shown|MISSING|i|low
+Tank|Table: Rectangular / Round, length, depth, height|Tank > Sits on (Furniture)|PRESENT|V|
+Tank|Table: tank left/right, front/back, Centre / Back / Front|not shown|MISSING|V|`panels.ts:724`
+Tank|Shape select + sides 3/5/6, L/H/D, bow / pie / bowl dims|Tank maker workspace|MOVED|i|UI2 decision 13; not opened live
+Tank|Rimmed / Rimless|Tank maker|MOVED|i|
+Tank|Glass thickness / type|Tank maker + `glassSolve.tsx`|CHANGED|i|better (solver)
+Tank|Glass edge outlines Shown / Hidden (`render.edges`)|not shown (GS3 has edge finish raw/polish/bevel)|MISSING|V|`panels.ts:600`
+Tank|Volume and weight lines|Tank model card, maker labels|PRESENT|V|
+Tank|Lid Open / Glass / Mesh / Hood|Tank > Lid and top|PRESENT|V|
+Tank|Lid-free pros/cons, no-hood note, open-top warning + Add a glass top|not shown|MISSING|V|section 2 rank 3
+Tank|Front doors None / Hinged / Sliding|Tank > Lid and top (terrarium only)|PRESENT|V|`tank.tsx:180`
+Tank|Background kind (select), colour, sides Back / Left / Right / Front|Tank > Background|PRESENT|V|
+Tank|Background pictures (Add picture, per side, fit)|not shown|MISSING|V|BG1 list; `panels.ts:627`
+Tank|Background arc (round tanks)|not shown|MISSING|V|BG1 list; `panels.ts:612`
+Tank|3D background kind / Shuffle / depth|Tank > Background|PRESENT|V|BG1 restored
+Tank|Room: wall (behind/left/right/corner, colour, distance), ceiling, person|View menu > Room|MOVED|V|VM1
+Tank|Sump picker (`#tankDlg`)|Equipment > Sump|MOVED|V|
+Tank|Equipment warning popup (owned gear stops fitting)|toast (`maker.tsx` hit)|MOVED|i|
+Tank|Price notice (edit loses a sale price, Undo)|not found in shell|MISSING|i|grep: no `priceNotice` in `src/shell`
+Water|Water level, tint, colour, presets|Tank > Water|PRESENT|V|
+Water|Condition slider (algae look)|not shown|MISSING|V|`panels.ts:1082`
+Water|Misfit remove on kind change (`#wMisfitDel`)|kind change handled in `logic/tank.ts`|PRESENT|i|
+Water|Water chip: temperature, pH, agreement|check bar > Water drawer|PRESENT|V|
+Water|Per-species range bars (temperature, pH; tolerable + comfortable)|Water drawer|PRESENT|V|WR1 restored; humidity bars terrarium only
+Scape|Substrate type list, Custom blend, Roughness|Scape > Substrate tab|PRESENT|V|
+Scape|Custom grain / second grain / share / mixing|Substrate > Custom blend|PRESENT|i|not opened
+Scape|Corner rise (4), Level / slope presets|Substrate tab|PRESENT|V|
+Scape|Custom terrain Edit / Flatten / Grid|Substrate tab (Custom terrain)|PRESENT|i|
+Scape|Pools (add, remove, across, width, length, bank)|`scape.tsx` pools|PRESENT|i|
+Scape|Leaf litter kind / density / Shuffle|Scape > Objects tab|PRESENT|V|
+Scape|Scatter brush toggle + brush bar|Scape > Objects, viewer float|PRESENT|V|
+Scape|Hardscape library (stones, wood, caves, decor), search|Scape > Objects|PRESENT|V|
+Scape|Multi-select toggle|Scape tray|PRESENT|i|`multi-select` found in source
+Scape|Placed-piece list, Remove all|Scape tray (`scape.tsx:76`)|PRESENT|V|
+Scape|Selected piece: size / yaw / pitch / roll / lift / x / depth / duplicate / copies / delete|Selection drawer + Scape tray|PRESENT|i|
+Scape|Selected piece: new shape, drop to ground|Selection drawer|PRESENT|i|
+Scape|Hardscape / Plants "Discover" + Keep|"Ideas for X", lock on item|MOVED|V|
+Plants|Plant library, search, categories, per-plant cards|Plants section|PRESENT|V|
+Plants|Show only plants that suit the tank (gate)|Plants (toggle)|PRESENT|V|
+Plants|Per-plant light verdict caption|Plants card `c.light`, grey with reason|PRESENT|V|
+Plants|Growth over time: Time slider, Feeding, Keep / Undo|Plants > Growth over time, "Now"|CHANGED|V|Keep/Undo become one undo step (S7)
+Plants|Remove all plants|not seen in the Plants dump|MISSING|i|Scape tray has it for pieces
+Animals|Search, category tabs, species list greyed by fit|Animals section|PRESENT|V|
+Animals|Species preview card + sex pick|details + Add|CHANGED|V|preview card is "details"
+Animals|Add / drag species into the tank|Add button, drag|PRESENT|V|
+Animals|Another moment (toolbar + Animals copy)|view bar|PRESENT|V|UI2: Animals copy CUT
+Animals|Delete all animals|not shown|MISSING|V|`panels.ts:924`
+Animals|New animal size + life stage buttons|Selection drawer "Size, % of adult" + Life stage|PRESENT|V|
+Animals|Stocking list with counts|Animals section|PRESENT|V|
+Animals|AqAdvisor check + link|Animals (aqrow)|PRESENT|V|
+Animals|Selected animal: sex / pair / flip / duplicate / copies / delete|Selection drawer|PRESENT|V|
+Animals|Selected animal readout numbers|Selection drawer|PRESENT|i|
+Animals|Young-fish growth line (`growthCheck`) and herp check|not found|MISSING|i|`panels.ts:1898`; herp is terrarium
+Animals|Care level text under species|reason lines|CHANGED|i|
+Constraints|Setup brief card (what is set / open, Clear the brief)|group summaries in Preferences / Constraints|MOVED|V|UI2 §2b 21
+Constraints|Upfront, monthly, time-per-week caps|Constraints > Money and time (with On switches)|CHANGED|V|one cap each; ranges and Target/Firm gone
+Constraints|Space (footprint W x D x H)|Constraints > Space (Width, Depth)|CHANGED|V|height missing
+Constraints|Tank size range in gal|not shown|MISSING|V|`welcomeGuard.ts`
+Constraints|Set-up time hours (min / max)|not shown|MISSING|V|`limitsPanel.ts:21`
+Constraints|Room temperature|Constraints > Your home|PRESENT|V|
+Constraints|Water source Tap / Well / RO|Your home|PRESENT|V|
+Constraints|Hardness (dGH), pH of tap water|not shown|MISSING|V|`welcomeGuard.ts:32`
+Constraints|Electricity $/kWh|Your home|MOVED|V|from cost panel
+Constraints|"What I want from it" (7 wishes)|not shown|MISSING|V|`setupBrief.ts:71`
+Constraints|"If it does not all fit" policy|only "Fill in what I left open" button|CHANGED|V|policy choice gone
+Constraints|Experience (optional) + per-area levels|Constraints > Experience|PRESENT|V|P10
+Constraints|Difficulty / care effort guardrails|"How much risk is fine" select|CHANGED|V|care-effort advice select not seen
+Constraints|Guardrails per-limit on / off|On switch on each limit|MOVED|V|
+Constraints|No new equipment|Constraints > Money and time|MOVED|V|
+Constraints|Owned tank / gear in limits|Equipment "I own" groups|MOVED|V|
+Constraints|Sales tax, buy in phases|not shown|MISSING|i|brief items `taxPct`, `phased`
+Constraints|Suggest a setup + cards|Constraints > "Fill in what I left open"|PRESENT|V|
+Constraints|Why-not card (four paths)|inside Suggest results (`discover.tsx`)|PRESENT|i|
+Preferences|Looks cards, Browse looks|Preferences > Looks, Browse looks|PRESENT|V|
+Preferences|Looks Avoid state|Preferences (`avoid` in code)|PRESENT|i|not driven
+Preferences|Size preference slider|not shown|MISSING|V|`quickPrefs.ts:9`
+Preferences|Practical limits Target / Firm|not shown|MISSING|V|`quickPrefs.ts:18`
+Preferences|Don't-want list (Snails, Shrimp, CO2 system, Large fish, No live plants)|Do not want (3 shown: Snails, Shrimp, Large fish)|CHANGED|V|CO2 and no-plants chips missing
+Preferences|Quick Setup: Style select, Shuffle, densities, plant care, composition, care gates|Discover Remix|CUT|V|UI2 §2b row 35
+Equipment|Equipment preset ladder (Walstad ... high-tech)|Equipment top row (saltwater: FOWLR / Soft coral / LPS / SPS)|PRESENT|V|
+Equipment|Gear rows per category (filter, heater, CO2, air, UV, RO/DI, ATO, ...)|Equipment groups|PRESENT|V|
+Equipment|Gear card: price, upkeep, time, fit|equipment rows with fit pills|PRESENT|V|
+Equipment|I own one tab / My equipment dialog (7 doors)|"I own" group per category|MOVED|V|
+Equipment|Use this one for sure (lock)|per item|PRESENT|V|
+Equipment|Sump, overflow, skimmer, flow, dosing, salinity, salt mix|Equipment "More equipment"|PRESENT|V|
+Equipment|Room temp in Equipment (`#tRoom`)|Constraints > Your home|MOVED|V|
+Equipment|Heater / chiller hold-the-range warnings, "room warmer than tank"|not found|MISSING|V|section 2 rank 4
+Equipment|Swap per gear row (`gearSwapsFor`)|Cost drawer swaps (`logic/checks.ts`)|MOVED|i|
+Equipment|Filterless toggle, generic gear limits|not found|MISSING|i|
+Equipment|Integrated kit "includes" note|Tank model card|PRESENT|i|
+Lighting|Fixture, type, count, rows, pattern, spacing, beam, height, mount, hood LED, front-back, Optimize|Equipment > Light (`lighting.tsx`)|PRESENT|V|
+Lighting|Bulb, Total power, PAR measured, brightness, colour temp|Light group|PRESENT|V|
+Lighting|Look from above / Straight on|View menu presets (Straight on / From above / left / right)|MOVED|V|
+Lighting|Light map units, layer height, contour step|Light map group|PRESENT|V|
+Lighting|Map: aquascape shading, dark spots + threshold|not shown|MISSING|V|`panels.ts:1126-1128`
+Lighting|Show expected plant outcomes|not shown|MISSING|V|`panels.ts:1127`
+Lighting|PAR guide chart|reused `parGuide.ts`|PRESENT|i|
+Lighting|Light hover readout / contours|reused `lightHover`, `lightContours`|PRESENT|V|`boot.tsx`
+Lighting|Second "Total Power" slider|dropped|CUT|V|UI2 §2b row 32
+Print|Report parts + Generate|Print > Full report|MOVED|V|
+Print|Setup sheet|Print > Setup sheet|MOVED|V|
+Print|Plan sheet / Build plan sheet|Print > Shopping list|CUT|V|UI2 decision 1 (care guidance out of scope)
+Print|Print / .txt / .csv|Print buttons|PRESENT|V|
+Print|Shopping list "Already owned" group|Print|PRESENT|i|new
+View|Camera: distance, left/right, from above, zoom, Re-centre|View menu|PRESENT|V|
+View|Room light slider + Auto|View menu "Room light"|PRESENT|V|Auto button not seen
+View|Show animals / plants / hardscape / equipment|View menu|PRESENT|V|
+View|Split tank|Compare button|MOVED|V|
+View|Fish edges, Fish stand out|Settings|MOVED|V|
+View|Graphics settings (performance + effect toggles)|Settings > Graphics|MOVED|V|
+View|Viewpoint map|View menu "Top view of where you stand"|MOVED|V|
+View|Plants sway, fish swim and roam, Reset fish|Settings|MOVED|V|
+View|Hide light fixture, grid|Settings|MOVED|V|
+View|Export PNG 1x / 2x / 4x|View menu|PRESENT|V|
+View|AR button|not found|MISSING|V|`panels.ts:1266`
+Drawers|Habitat check: five category rows, water column / floor bars, tank minimum, verdict|Habitat drawer|PRESENT|V|
+Drawers|Habitat: "What counts" load table|not shown|MISSING|V|section 2 rank 1
+Drawers|Habitat: ammonia / nitrogen budget, feeding select, tap nitrate, nitrate water-change|not shown|MISSING|V|section 2 rank 1
+Drawers|Habitat: crowd warnings, cover advice|not shown (topic "Compatible" rows only)|MISSING|i|
+Drawers|Habitat: "1 check had no data for this species"|water chip "no data"|CHANGED|V|
+Drawers|Set my space editor|Constraints > Space|MOVED|V|
+Drawers|Cost: set-up / upkeep / time, difficulty bar, rhythm, can be left N days|Cost drawer|PRESENT|V|rhythm shown when data exists
+Drawers|Cost: costs most, swaps that lower it, bundle line|Cost drawer|PRESENT|V|
+Drawers|Cost: three builds Budget / As designed / Luxury + compare|not shown|MISSING|V|section 2 rank 2
+Drawers|Cost: kit "Show as Tank B"|bundle line, no Tank B button|CHANGED|V|worse
+Drawers|Cost: owned-heater sale deal "Price it"|not shown|MISSING|V|
+Drawers|Cost: "With N animals; without them" line|not shown|MISSING|V|
+Drawers|Cost: Guardrails and Your situation|Constraints|MOVED|V|
+Drawers|Notes strip (advice + more notes)|Notes drawer|PRESENT|V|
+Drawers|Equipment / price toasts, busy hints, status line|`say()` toasts|CHANGED|i|
+Selection|Group bar (duplicate, copies, turn, size, delete, clear)|viewer float|PRESENT|i|
+Selection|Brush bar and patch bar|viewer float|PRESENT|i|
+Compare|Split tank, A/B tabs, diff list, Views linked, Fit Both, per-side tiles|Compare strip, `compare.tsx`|PRESENT|i|not driven
+Compare|Per-side Edit tick|Editing A / B / Both|CHANGED|i|UI2 decision 8
+Discover|Discover card (finish, fill, remix, refine, explore)|Discover section|PRESENT|V|
+Discover|Keep / Like / Dislike|lock on item; feedback in `logic/workspace.ts`|PRESENT|i|
+Discover|A/B this or that|Discover > This or that|PRESENT|V|
+Discover|Explore complete setups|Discover > Whole tank|MOVED|V|
+Discover|Guided setup / Visual Discovery|Get started checklist, Browse looks|CHANGED|V|UI2 decision 4
+Other|Keyboard shortcuts (F flip, Delete, arrows)|`App.tsx`, `drag.ts`, shared `pointer.ts`|PRESENT|i|
+Other|Right-click / double-click camera|`drag.ts`, shared pointer|PRESENT|i|
+Other|Phone layout|`shell.css`|PRESENT|i|S11
