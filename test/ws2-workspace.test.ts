@@ -105,14 +105,10 @@ describe('facts box', () => {
   });
 });
 
-describe('cross-section', () => {
-  it('follows the corner depths front to back, and bare bottom is flat', () => {
-    const st = mk(); SC.setSubstrateType(st, 'pea');
-    SC.setCorner(st, 'fl', 25.4); SC.setCorner(st, 'fr', 25.4); SC.setCorner(st, 'bl', 76.2); SC.setCorner(st, 'br', 76.2);
-    const cs = WS.crossSection(st.tank, 'in');
-    expect(cs.front).toBeCloseTo(25.4, 0); expect(cs.back).toBeCloseTo(76.2, 0);
-    expect(cs.frontText).toMatch(/^1.0/); expect(cs.ground.length).toBe(33); expect(cs.gridText).toBe('1 square = 1 in');
-    SC.setSubstrateType(st, 'bare'); expect(WS.crossSection(st.tank, 'in').ground.every(g => g === 0)).toBe(true);
+describe('terrain either/or', () => {
+  it('shows slopes with custom terrain off and the grid with it on, never both', () => {
+    expect(WS.terrainMode(false)).toEqual({ slopes: true, grid: false });
+    expect(WS.terrainMode(true)).toEqual({ slopes: false, grid: true });
   });
 });
 

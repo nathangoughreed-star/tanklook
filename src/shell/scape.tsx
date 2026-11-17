@@ -8,7 +8,7 @@ import { supportLift } from '../interact/pointer';
 import {
   terrainView, placedView, pieceView, brushView, groupBarView, scapeSec, type ScapeSec, type LibraryView, type PlacedView,
   setBlend, setTerrainOn, setTerrainCols, flattenTerrain,
-  addPool, removePool, setPoolField, removePiece, duplicatePiece, clearPieces, toggleKeep, reshapePiece, dropPiece, nudgePiece, setField,
+  removePool, setPoolField, removePiece, duplicatePiece, clearPieces, toggleKeep, reshapePiece, dropPiece, nudgePiece, setField,
   brushOn, pickBrush, groupTurn, groupSizeBy, groupDelete, groupDuplicate, GRAINS, KEEP_PROPS,
 } from './logic/scape';
 import { Icon } from './ui';
@@ -126,8 +126,9 @@ export const Select = ({ value, onChange, children, label, disabled }: { value: 
   <select class="select" value={value} aria-label={label} disabled={disabled} onChange={e => onChange(val(e))}>{children}</select>
 );
 
-/** Custom terrain: the grid of heights, point editing in the tank, pools. Moved from the old Scape panel unchanged in behaviour (WS2). */
-export function TerrainBlock({ store, getViewer }: { store: Store; getViewer: () => Viewer | undefined }) {
+/** Custom terrain: an either/or switch. Off: the slopes / typed depths (passed in as `slopes`). On: the grid of heights and point editing, and nothing else.
+ *  Pools are no longer added here (sculpt the ground and lower the water instead); pools already saved still draw, and can be tuned or removed below. */
+export function TerrainBlock({ store, getViewer, slopes }: { store: Store; getViewer: () => Viewer | undefined; slopes?: ComponentChildren }) {
   const S = store.tank;
   const [pool, setPool] = useState(0);
   const [, setN] = useState(0);
@@ -139,22 +140,20 @@ export function TerrainBlock({ store, getViewer }: { store: Store; getViewer: ()
     <>
       <button type="button" class="tglrow" role="switch" aria-checked={tv.on} onClick={() => { const on = !tv.on; const v = getViewer(); if (v) { v.terrainEdit.on = on; } setTerrainOn(store, on); v?.rebuild(); setN(n => n + 1); }}>
         <span class={`toggle${tv.on ? ' on' : ''}`} />Custom terrain</button>
-      <div class="hint">Off: the ground follows the slopes above. On: a grid of heights you shape by dragging its points in the tank.</div>
-      {tv.on ? (<>
+      <div class="hint">{tv.on ? 'A grid of heights you shape by dragging its points in the tank. Lower the water to make pools.' : 'Off: set the depth at each corner or pick a slope. Turn on for a grid of heights you shape in the tank.'}</div>
+      {!tv.on ? slopes : (<>
         <SliderRow label="Grid" title="More points shape finer detail" min={3} max={25} value={tv.cols} text={tv.colsText} onInput={v => setTerrainCols(store, v)} />
         <div class="btns">
           <button type="button" class={`btn sm${edit ? ' on' : ''}`} aria-pressed={edit} onClick={() => terrainEdit(!edit)}>{edit ? 'Done editing' : 'Edit points'}</button>
           <button type="button" class="btn sm" title="Level the ground at its average height" onClick={() => flattenTerrain(store)}>Flatten</button>
         </div>
-        <div class="cap">Pools {tv.pools ? <span class="n">{tv.pools}</span> : null}</div>
-        {tv.pools ? <div class="row"><span class="lbl">Pool</span>
-          <Select label="Pool" value={String(tv.pool)} onChange={v => { setPool(+v); if (edit) terrainEdit(true, +v); }}>{Array.from({ length: tv.pools }, (_, i) => <option value={String(i)}>{`Pool ${i + 1}`}</option>)}</Select><span /></div> : null}
-        {tv.poolFields.map(f => <SliderRow label={f.label} min={f.min} max={f.max} value={f.value} text={f.text} onInput={v => setPoolField(store, tv.pool, f.key, v)} />)}
-        <div class="btns">
-          <button type="button" class="btn sm" onClick={() => { addPool(store); const k = (store.tank.terrain.pools?.length ?? 1) - 1; setPool(k); terrainEdit(true, k); }}>Add a pool</button>
-          {tv.pools ? <button type="button" class="btn sm danger" onClick={() => { removePool(store, tv.pool); setPool(Math.max(0, tv.pool - 1)); }}>Remove pool</button> : null}
-        </div>
-      </>) : null}
+        {tv.pools ? <>
+          <div class="row"><span class="lbl">Pool</span>
+            <Select label="Pool" value={String(tv.pool)} onChange={v => { setPool(+v); if (edit) terrainEdit(true, +v); }}>{Array.from({ length: tv.pools }, (_, i) => <option value={String(i)}>{`Pool ${i + 1}`}</option>)}</Select><span /></div>
+          {tv.poolFields.map(f => <SliderRow label={f.label} min={f.min} max={f.max} value={f.value} text={f.text} onInput={v => setPoolField(store, tv.pool, f.key, v)} />)}
+          <div class="btns"><button type="button" class="btn sm danger" onClick={() => { removePool(store, tv.pool); setPool(Math.max(0, tv.pool - 1)); }}>Remove pool</button></div>
+        </> : null}
+      </>)}
     </>
   );
 }

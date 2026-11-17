@@ -2,23 +2,19 @@
 //  - the visit: what a live workspace remembers from the moment you came in, so "Revert this visit" can undo everything since in one click;
 //  - which rail sections open a workspace instead of a side panel (only Scape so far; later lanes add theirs);
 //  - the layout switch (side by side, or stacked on a phone);
-//  - the Scape workspace's tiles, facts box and the substrate cross-section.
+//  - the Scape workspace's tiles, facts box.
 import { CHEM } from '../../data/waterchem';
 import { KINDS, LIBRARY, isLimbWood, itemDims, variantInScope } from '../../scene/items';
-import { groundHeight } from '../../scene/terrain';
 import { footprint } from '../../scene/shape';
 import { isSalt } from '../../scene/stockEdit';
 import { getSpecies } from '../../data/species';
 import { scapeSec } from '../../scene/itemEdit';
-import { waterY } from '../../scene/physics';
-import { IN } from '../../scene/physics';
-import { fmtLen } from '../../scene/physics';
 import { SUBSTRATES } from '../../art/placeholder';
 import { aquariumOnly } from '../../scope';
 import { volume } from '../../scene/physics';
 import { categories, inUseItem, itemName } from './equipment';
 import { galText, sitsOnSummary } from './tank';
-import type { CameraSettings, ItemKind, TankSetup, Units } from '../../scene/types';
+import type { CameraSettings, ItemKind, TankSetup } from '../../scene/types';
 import type { Store } from '../../scene/store';
 import type { SectionId } from './sections';
 import type { Tone } from './checks';
@@ -150,21 +146,8 @@ export function substrateSwatches(): { id: string; label: string; terra: boolean
   return Object.entries(SUBSTRATES).filter(([, t]) => !aquariumOnly() || !t.terra).map(([id, t]) => ({ id, label: t.label, terra: !!t.terra }));
 }
 
-export interface CrossSection {
-  /** side view, front (x = 0) to back, in mm: tank depth and height, the water line, and the ground's height at 33 points */
-  D: number; H: number; water: number; ground: number[];
-  front: number; back: number;
-  /** grid line spacing in mm (1 in, or 2 cm) and the label for it */
-  grid: number; gridText: string;
-  frontText: string; backText: string;
-}
-/** The ground's profile through the middle of the tank, front to back: the cross-section drawing of depth and slope. */
-export function crossSection(S: TankSetup, units: Units): CrossSection {
-  const T = S.tank, n = 32, mid = T.L / 2;
-  const ground = S.substrate.show ? Array.from({ length: n + 1 }, (_, i) => Math.max(0, groundHeight(S, T, mid, T.D * i / n))) : new Array(n + 1).fill(0);
-  const front = ground[0], back = ground[n];
-  return { D: T.D, H: T.H, water: S.water.on ? waterY(T, S.water.level) : T.H, ground, front, back, grid: units === 'in' ? IN : 20, gridText: units === 'in' ? '1 square = 1 in' : '1 square = 2 cm', frontText: fmtLen(front, units), backText: fmtLen(back, units) };
-}
+/** Custom terrain is an either/or: the corner depths and slopes show when it is off, the grid controls when it is on, never both. */
+export function terrainMode(on: boolean): { slopes: boolean; grid: boolean } { return { slopes: !on, grid: on }; }
 
 // ---------------------------------------------------------------------------------------------------------------- WS3: Tank, Plants, Animals, Equipment
 /** What a workspace's title bar says, by section. */

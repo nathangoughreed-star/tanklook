@@ -1,14 +1,14 @@
 // R111 / WS2 (2026-11-16): the Scape workspace (frame A). Stones / Wood / Caves / Decor as big tiles with search, the "In this tank" tray with the facts box,
-// and the substrate & ground section (swatches, typed depths, slope presets, leaf litter, a cross-section drawing, custom terrain, scatter brush).
+// and the substrate & ground section (swatches, typed depths, slope presets, custom terrain as an either/or switch). SC1 (2026-11-17): leaf litter and the scatter brush moved to the piece tabs; the cross-section drawing and the Add-a-pool button are gone.
 // Every edit is the old panel's own (logic/scape.ts through store.edit), so undo works as it did.
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { Store } from '../scene/store';
 import type { Viewer } from '../render/viewer';
-import { drawSubstrate, drawBlendTile, SUBSTRATES, type PresetSubstrate } from '../art/placeholder';
+import { drawSubstrate, drawBlendTile, type PresetSubstrate } from '../art/placeholder';
 import { groundVolume } from '../scene/setupsheet';
 import { ideasLabel } from './logic/discover';
 import { substrateView, terrainView, brushView, placedView, setSubstrateType, setRough, slopePreset, setLitterLeaf, setLitterDensity, shuffleLitter, setCorner, addPiece, LEAVES } from './logic/scape';
-import { tankFraming, SCAPE_TABS, scapeTiles, scapeFacts, crossSection, substrateSwatches, enterVisit, revertVisit, visitDirty, type ScapeTab, type Visit, type CrossSection } from './logic/workspace';
+import { tankFraming, SCAPE_TABS, scapeTiles, scapeFacts, substrateSwatches, terrainMode, enterVisit, revertVisit, visitDirty, type ScapeTab, type Visit } from './logic/workspace';
 import { Group, Icon } from './ui';
 import { LenRow } from './tank';
 import { dragPiece } from './drag';
@@ -24,31 +24,6 @@ function Swatch({ type, blend }: { type: string; blend?: Store['tank']['substrat
     try { if (type === 'custom' && blend) drawBlendTile(x, c.width, blend, 'm'); else drawSubstrate(x, c.width, type as PresetSubstrate); } catch { x.fillStyle = '#555'; x.fillRect(0, 0, c.width, c.height); }
   }, [type, blend?.grain, blend?.grain2, blend?.color, blend?.color2, blend?.mix, blend?.share]);
   return <canvas ref={ref} class="wsswatch" width={72} height={72} aria-hidden="true" />;
-}
-
-/** The side view of the ground: tank depth across, height up, 1 in squares, the front and back depths marked. */
-export function CrossSectionView({ cs, base }: { cs: CrossSection; base: string }) {
-  const pad = 36, W = 520, k = (W - pad * 2) / cs.D, H = cs.H * k, h = H + 34;
-  const X = (d: number) => pad + d * k, Y = (v: number) => 10 + H - v * k;
-  const pts = cs.ground.map((g, i) => `${X(cs.D * i / (cs.ground.length - 1)).toFixed(1)},${Y(g).toFixed(1)}`);
-  const vlines: number[] = [], hlines: number[] = [];
-  for (let d = 0; d <= cs.D + 0.1; d += cs.grid) vlines.push(d);
-  for (let v = 0; v <= cs.H + 0.1; v += cs.grid) hlines.push(v);
-  const label = (x: number, y: number, t: string, anchor: 'start' | 'end' | 'middle' = 'middle') => <text x={x} y={y} text-anchor={anchor} class="xslab">{t}</text>;
-  return (
-    <svg class="xsec" viewBox={`0 0 ${W} ${h}`} role="img" aria-label={`Cross-section, front to back. Front depth ${cs.frontText}, back depth ${cs.backText}. ${cs.gridText}.`}>
-      <rect x={X(0)} y={Y(cs.H)} width={cs.D * k} height={H} class="xsglass" />
-      <rect x={X(0)} y={Y(cs.water)} width={cs.D * k} height={Math.max(0, cs.water * k)} class="xswater" />
-      {vlines.map(d => <line x1={X(d)} x2={X(d)} y1={Y(cs.H)} y2={Y(0)} class="xsgrid" />)}
-      {hlines.map(v => <line x1={X(0)} x2={X(cs.D)} y1={Y(v)} y2={Y(v)} class="xsgrid" />)}
-      <polygon points={`${X(0)},${Y(0)} ${pts.join(' ')} ${X(cs.D)},${Y(0)}`} fill={base} class="xsground" />
-      <polyline points={pts.join(' ')} class="xsline" />
-      <rect x={X(0)} y={Y(cs.H)} width={cs.D * k} height={H} class="xsframe" />
-      {label(X(0) - 4, Y(cs.front / 2) + 4, cs.frontText, 'end')}
-      {label(X(cs.D) + 4, Y(cs.back / 2) + 4, cs.backText, 'start')}
-      {label(X(0), Y(0) + 16, 'FRONT', 'start')}{label(X(cs.D), Y(0) + 16, 'BACK', 'end')}
-    </svg>
-  );
 }
 
 /** "In this tank": the tray, the facts box (floor cover, water effect, flags), the selected piece's settings and the full piece list. */
@@ -69,13 +44,10 @@ function ScapeSide({ store }: { store: Store }) {
   );
 }
 
-/** Substrate & ground: everything the old Substrate / Terrain / Scatter brush groups had, with swatches, typed depths and the cross-section. */
+/** Substrate & ground: swatches, an either/or terrain switch (slopes and typed depths OR the custom grid), typed depths. */
 function GroundSection({ store, getViewer }: { store: Store; getViewer: () => Viewer | undefined }) {
-  const S = store.tank, units = store.scene.units, sv = substrateView(S, units), tv = terrainView(S, 0), bv = brushView(store, units);
-  const cs = crossSection(S, units), swatches = substrateSwatches();
-  const [open, setOpen] = useState({ terrain: false, brush: false });
-  const kind = (t: string) => t === 'custom' ? S.substrate.custom.color : (SUBSTRATES[t as PresetSubstrate]?.base ?? '#444');
-  const base = sv.type === 'bare' ? 'transparent' : kind(sv.type === 'custom' ? 'custom' : sv.type);
+  const S = store.tank, units = store.scene.units, sv = substrateView(S, units), tv = terrainView(S, 0);
+  const swatches = substrateSwatches(), tm = terrainMode(tv.on);
   const gv = S.substrate.show ? groundVolume(S) : null;
   const pick = (t: string) => { setSubstrateType(store, t); if (t === 'bare') { const v = getViewer(); if (v?.terrainEdit.on) { v.terrainEdit.on = false; v.rebuild(); } } };
   const sw = (id: string, label: string) => (
@@ -94,27 +66,31 @@ function GroundSection({ store, getViewer }: { store: Store; getViewer: () => Vi
       {sv.custom ? <div class="card"><Blend store={store} /></div> : null}
       <SliderRow label="Roughness" title="Lumps and ripples on the ground's skin only" min={0} max={100} value={sv.rough} text={sv.roughText} onInput={v => setRough(store, v)} />
 
-      <h3>Depth and slope <span class="hint">numbers are typed or dragged</span></h3>
+      <h3>Terrain <span class="hint">slopes and depths, or a custom grid of heights</span></h3>
+      <TerrainBlock store={store} getViewer={getViewer} slopes={tm.slopes ? (<>
       <div class="chips">{sv.slopes.map(s => <button type="button" class={`chip${s.active ? ' on' : ''}`} aria-pressed={s.active} onClick={() => slopePreset(store, s.id)}>{s.label}</button>)}</div>
-      <fieldset class="wsfield" disabled={!S.substrate.show || tv.on}>
+      <fieldset class="wsfield" disabled={!S.substrate.show}>
         {corner('fl', 'Front left')}{corner('fr', 'Front right')}{corner('bl', 'Back left')}{corner('br', 'Back right')}
       </fieldset>
-      <div class="hint">{!S.substrate.show ? 'Bare bottom: pick a substrate to set its depth.' : tv.on ? 'Custom terrain is on: it replaces these depths.' : `Depth at the four corners, up to ${units === 'in' ? `${(max / 25.4).toFixed(1)} in` : `${Math.round(max / 10)} cm`} (half the tank's height).`}</div>
+      <div class="hint">{!S.substrate.show ? 'Bare bottom: pick a substrate to set its depth.' : `Depth at the four corners, up to ${units === 'in' ? `${(max / 25.4).toFixed(1)} in` : `${Math.round(max / 10)} cm`} (half the tank's height).`}</div>
+      </>) : null} />
       {gv ? <div class="card wsfacts"><div class="drow"><span>Substrate needed</span><b>{units === 'in' ? `about ${gal < 10 ? gal.toFixed(1) : Math.round(gal)} gal (${Math.round(gal * 4)} qt)` : `about ${Math.round(gv.litres)} L`}</b></div></div> : null}
+    </div>
+  );
+}
 
+/** Leaf litter and the scatter brush: they sit on the ground between the pieces, so they live on the stones / wood / caves / decor tabs. */
+function LitterBrush({ store }: { store: Store }) {
+  const sv = substrateView(store.tank, store.scene.units), bv = brushView(store, store.scene.units);
+  const [open, setOpen] = useState(false);
+  return (
+    <div class="wsground" onChange={() => store.seal()}>
       <h3>Leaf litter <span class="hint">for tannins, shrimp and blackwater setups</span></h3>
       <div class="chips"><button type="button" class={`chip${!sv.litter.on ? ' on' : ''}`} onClick={() => setLitterDensity(store, 0)}>None</button>
         {LEAVES.map(([k, l]) => <button type="button" class={`chip${sv.litter.on && sv.litter.leaf === k ? ' on' : ''}`} onClick={() => setLitterLeaf(store, k)}>{l}</button>)}</div>
       <SliderRow label="Amount" min={0} max={100} value={sv.litter.density} text={sv.litter.on ? `${sv.litter.density}%` : 'none'} onInput={v => setLitterDensity(store, v)} />
       <button type="button" class="btn sm" disabled={!sv.litter.on} onClick={() => shuffleLitter(store)}>Shuffle the leaves</button>
-
-      <Group title="Terrain" sum={tv.summary} open={open.terrain} onToggle={() => setOpen({ ...open, terrain: !open.terrain })}><TerrainBlock store={store} getViewer={getViewer} /></Group>
-      <Group title="Scatter brush" sum={bv.on ? bv.label : 'off'} open={open.brush} onToggle={() => setOpen({ ...open, brush: !open.brush })}><BrushBlock store={store} /></Group>
-
-      <aside class="wsxsec" aria-label="Cross-section">
-        <div class="wstrayh"><b>Cross-section</b><span class="hint">side view, front to back · {cs.gridText}</span></div>
-        <CrossSectionView cs={cs} base={base} />
-      </aside>
+      <Group title="Scatter brush" sum={bv.on ? bv.label : 'off'} open={open} onToggle={() => setOpen(!open)}><BrushBlock store={store} /></Group>
     </div>
   );
 }
@@ -155,6 +131,7 @@ export function ScapeWorkspace({ store, getViewer, phone, onDone, onIdeas }: { s
             </section>
           ))}
           {searching ? <div class="hint">{shown} match{shown === 1 ? '' : 'es'} across stones, wood, caves and decor.</div> : null}
+          <LitterBrush store={store} />
         </>
       )}
     </WorkspaceFrame>

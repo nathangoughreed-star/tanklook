@@ -657,10 +657,6 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .wsswatch { width: 64px; height: 64px; border-radius: 10px; border: 2px solid var(--line); background: #111; } .wssw.on .wsswatch { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-weak); }
 .wsfield { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; } .wsfield[disabled] { opacity: .5; }
 .wsground { display: grid; gap: var(--s2); align-content: start; }
-.wsxsec { display: grid; gap: var(--s2); padding: var(--s3); background: var(--bg-panel); border: 1px solid var(--line); border-radius: var(--r-card); }
-.xsec { width: 100%; height: auto; display: block; }
-.xsglass { fill: #0f1c24; } .xswater { fill: rgba(70,150,190,.22); } .xsgrid { stroke: rgba(255,255,255,.09); stroke-width: 1; } .xsframe { fill: none; stroke: rgba(150,220,215,.7); stroke-width: 1.5; }
-.xsline { fill: none; stroke: rgba(255,255,255,.55); stroke-width: 1.2; } .xsground { opacity: .95; } .xslab { fill: var(--text); font-size: 12px; font-weight: 600; }
 .wsfoot, .wssheet, .wsstrip { display: none; }
 
 /* Phone: the app header, the workspace bar, a view strip, the catalogue as a sheet, a footer with the count and Revert / Done */
