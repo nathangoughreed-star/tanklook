@@ -1,6 +1,7 @@
 {
  "neon": {"c": ["samerica"], "r": "Upper Amazon basin: Peru, Colombia and Brazil", "s": "FishBase"},
  "cardinal": {"c": ["samerica"], "r": "Rio Negro and Orinoco basins: Brazil, Colombia and Venezuela", "s": "FishBase"},
+ "blackskirt": {"c": ["samerica"], "r": "Parana, Paraguay and Guapore basins: Brazil, Bolivia, Paraguay and Argentina", "s": "FishBase"},
  "ember": {"c": ["samerica"], "r": "Rio Araguaia basin, central Brazil", "s": "FishBase"},
  "dwarfpencil": {"c": ["samerica"], "r": "Amazon and Orinoco basins, northern South America", "s": "FishBase", "est": 1},
  "greenneon": {"c": ["samerica"], "r": "Orinoco and upper Rio Negro: Colombia, Venezuela and Brazil", "s": "FishBase"},
