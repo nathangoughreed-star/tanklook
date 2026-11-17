@@ -25,6 +25,8 @@ import {
   previewRow, chooseCommercial, chooseCustom, saleOf, filledLb, SIZE_CHIPS, loadGroups, saveGroups, GROUP_DEFAULT, type PickRow, type SizeChip, type TankGroup, type Units, kindView, setKind,
 } from './logic/tank';
 import { Group, Icon, Pill } from './ui';
+import { TankFilters } from './tankFilters';
+import { freshFilter, loadFilter, saveFilter, type TankFilter } from './logic/tankFilter';
 import { waterLook, setLevel, setTint, setColor, applyPreset } from './logic/animals';
 
 export type MakerHow = { how: 'new' | 'copy' | 'edit' } | { how: 'lib'; id: string };
@@ -236,10 +238,13 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
   const [q, setQ] = useState('');
   const [chips, setChips] = useState<Set<SizeChip>>(new Set());
   const [fits, setFits] = useState(false), [sale, setSale] = useState(false);
+  const [tf, setTf] = useState<TankFilter>(() => loadFilter()); // TP1: remembered per browser
+  const setFilter = (n: TankFilter) => { setTf(n); saveFilter(n); };
+  const clearAll = () => { setFilter({ ...freshFilter(), sort: tf.sort }); setChips(new Set()); setFits(false); setSale(false); };
   const [sel, setSel] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const searching = !!q.trim();
-  const custom = customRows(S, lib, u, q), comm = useMemo(() => commercialRows(S, u, { q, chips, fits, sale }), [S, u, q, chips, fits, sale]);
+  const custom = customRows(S, lib, u, q), comm = useMemo(() => commercialRows(S, u, { q, chips, fits, sale, f: tf }), [S, u, q, chips, fits, sale, tf]);
   const showCustom = g.custom || searching, showComm = g.commercial || searching;
   const visible: PickRow[] = [...(showCustom ? custom : []), ...(showComm ? comm.rows : [])];
   const cur = visible.find(r => r.key === sel) ?? [...custom, ...comm.rows].find(r => r.key === sel);
@@ -263,7 +268,7 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
   };
   const row = (r: PickRow) => (
     <div class={`card media pick${r.key === sel ? ' sel' : ''}${r.inUse ? ' inuse' : ''}`} role="option" aria-selected={r.key === sel} data-key={r.key} onClick={() => pick(r)} onDblClick={() => choose(r)}>
-      <span class="thumb tthumb"><Icon name="tank" /></span>
+      <TankTile r={r} />
       <span class="pbody"><div class="t">{r.name}</div><div class="m">{r.meta}{r.price ? ` · ${r.price}` : ''}</div>
         {r.sale ? <div class="m sale" data-sale>{r.sale.text}</div> : null}
         {r.comes ? <div class="m">comes with: {r.comes}</div> : null}
@@ -296,7 +301,8 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
               <button type="button" class={`chip${fits ? ' on' : ''}`} aria-pressed={fits} disabled={comm.noSpace} title={comm.noSpace ? 'Set your space in Constraints first (comes in shell step 5)' : 'Only tanks that fit the space you set'} onClick={() => setFits(!fits)}>Fits my space</button>
               <button type="button" class={`chip${sale ? ' on' : ''}`} aria-pressed={sale} title="Only tanks with a live sale price (read within the last 14 days)" onClick={() => setSale(!sale)}>On sale</button>
             </div>
-            {comm.rows.length < comm.total ? <div class="hint">{comm.rows.length} of {comm.total} shown</div> : null}
+            <TankFilters f={tf} set={setFilter} shown={comm.rows.length} total={comm.total} brands={comm.brands} u={u} extra={chips.size + (fits ? 1 : 0) + (sale ? 1 : 0)} onClear={clearAll} />
+            <div class="hint" data-testid="tank-count">{comm.rows.length} of {comm.total} shown</div>
             {comm.rows.map(row)}
             {!comm.rows.length ? <div class="hint">{sale ? 'No tank sale has been checked in the last 14 days.' : 'No commercial tank matches.'}</div> : null}
           </div> : null}
@@ -306,6 +312,13 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
       {cur ? <div class="pickfoot"><button type="button" class="btn primary wide" onClick={() => choose(cur)}>{cur.inUse ? `Keep ${cur.name}` : `Choose ${cur.name}`}</button></div> : null}
     </section>
   );
+}
+
+/** TP1: the row's picture, a baked still of our own 3D model of that tank (public/gallery/tanks, shared by tanks that look alike); the generic icon when there is none. */
+function TankTile({ r }: { r: PickRow }) {
+  const [bad, setBad] = useState(false);
+  if (!r.tile || bad) return <span class="thumb tthumb"><Icon name="tank" /></span>;
+  return <span class="thumb tthumb tpic"><img src={`${import.meta.env.BASE_URL}gallery/tanks/${r.tile}.webp`} alt="" loading="lazy" onError={() => setBad(true)} /></span>;
 }
 
 /** SP1: real stands that fit this tank, as picture tiles (price, style, where sold); "Generic" is the fallback estimate. */

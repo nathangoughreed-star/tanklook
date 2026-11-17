@@ -690,3 +690,21 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .swatch-img { width: 100%; height: 44px; object-fit: contain; background: #2c4a52; border-radius: 4px; }
 .swatch span { overflow-wrap: anywhere; }
 .forms .input[type=search] { width: 100%; box-sizing: border-box; }
+
+/* TP1: picker filters, sort, and the tank tile */
+.tthumb.tpic { background: #d9dce1; padding: 0; } .tthumb.tpic img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.card.media.pick { grid-template-columns: 64px minmax(0, 1fr) auto; } .card.pick .tthumb { width: 64px; height: 48px; }
+.tfilters { display: grid; gap: var(--s2); }
+.tfbar { display: flex; align-items: center; gap: var(--s2); } .tfsort { display: flex; align-items: center; gap: var(--s1); flex: 1; min-width: 0; } .tfsort .select { flex: 1; min-width: 0; height: var(--ctl-h-sm); }
+.tfbtn.on { border-color: var(--accent); background: var(--accent-weak); }
+.tfpanel { max-height: 46vh; overflow: auto; display: grid; gap: var(--s2); border: 1px solid var(--line); border-radius: var(--r-card); padding: var(--s3); background: var(--bg-raised); }
+.tfhead { display: flex; align-items: center; gap: var(--s2); } .tfhead .hint { margin-left: auto; } .tfdone { display: none; }
+.frow { display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: center; gap: var(--s2); } .frow.col { grid-template-columns: minmax(0, 1fr); } .frow > .lbl { color: var(--text-2); font-size: var(--fs-sm); }
+.frange { display: flex; align-items: center; gap: var(--s1); min-width: 0; } .frange .input.num { width: 64px; min-width: 0; flex: 0 1 64px; }
+.tfpanel .seg { flex-wrap: wrap; } .chips.brands { max-height: 120px; overflow: auto; } .tfscrim { display: none; }
+@media (max-width: 699px) {
+  .tfscrim { display: block; position: fixed; inset: 0; background: #0008; z-index: 40; }
+  .tfpanel { position: fixed; left: 0; right: 0; bottom: 0; max-height: 82vh; overflow: auto; z-index: 41; border-radius: 14px 14px 0 0; padding-bottom: calc(var(--s4) + env(safe-area-inset-bottom, 0px)); }
+  .tfhead { position: sticky; top: calc(-1 * var(--s3)); background: var(--bg-raised); padding: var(--s1) 0; } .tfdone { display: inline-flex; }
+  .frow { grid-template-columns: minmax(0, 1fr); gap: var(--s1); }
+}
