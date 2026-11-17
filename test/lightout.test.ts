@@ -42,7 +42,7 @@ describe('light output model', () => {
     const re = (f: (s: LightScene) => LightScene) => lightEnvCached(f(structuredClone(S)))!;
     // the cached env is copied out per call; its emitters array is the cached one, so identity = same run
     expect(re(s => ({ ...s, water: { ...s.water, color: '#224466', salt: true } })).E).toBe(env0.E);
-    expect(re(s => ({ ...s, substrate: { ...s.substrate, custom: { ...s.substrate.custom, color2: '#123456', share: 70, mix: 0.9 } } })).E).toBe(env0.E);
+    expect(re(s => ({ ...s, substrate: { ...s.substrate, custom: { ...s.substrate.custom, grains: [{ ...s.substrate.custom.grains[0], share: 30 }, { grain: 'gravel' as const, color: '#123456', share: 70 }], mix: 0.9 } } })).E).toBe(env0.E);
     expect(re(s => ({ ...s, light: { ...s.light, watts: 90, kelvin: 4000 } })).E).toBe(env0.E);
     expect(re(s => ({ ...s, water: { ...s.water, opacity: 0.4 } })).E).not.toBe(env0.E);
     expect(re(s => ({ ...s, substrate: { ...s.substrate, type: s.substrate.type === 'white' ? 'onyx' : 'white' } })).E).not.toBe(env0.E);

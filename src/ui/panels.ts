@@ -4,6 +4,7 @@ import { adoptLegacy, experienceOn, getExperience, onExperience, setAllLevels } 
 import { aquariumOnly, kindInScope, PAUSED_NOTE, scopeSpecies } from '../scope';
 import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
 import { projectExtras, rulesOf } from '../scene/brief';
+import { setShare } from '../scene/blend';
 import { setNoNewEquipment, setDirection } from '../scene/project';
 import { hoodExists, hoodOf, hoodsFor, NO_HOOD_NOTE } from '../data/hoods';
 import { attachDemandPanel, loadProfile } from './demandPanel';
@@ -1011,11 +1012,16 @@ export function attachPanels(store: Store, viewer: Viewer) {
   $<HTMLSelectElement>('subG2').innerHTML = '<option value="none">Nothing (one grain)</option>' + grainOpts;
   const cust = (f: (c: TankSetup['substrate']['custom'], v: string) => void, coalesce?: string) => (e: Event) =>
     store.edit(s => f(s.substrate.custom, (e.target as HTMLInputElement).value), coalesce ? { coalesce } : undefined);
-  $('subG1').onchange = cust((c, v) => { c.grain = v as typeof c.grain; });
-  $('subG2').onchange = cust((c, v) => { c.grain2 = v as typeof c.grain2; });
-  $('subC1').oninput = cust((c, v) => { c.color = v; }, 'subC1');
-  $('subC2').oninput = cust((c, v) => { c.color2 = v; }, 'subC2');
-  $('subShare').oninput = cust((c, v) => { c.share = +v; }, 'subShare');
+  // this older panel edits the first two grains of the list (the Hardscape workspace's Custom blend edits all of them)
+  $('subG1').onchange = cust((c, v) => { c.grains[0].grain = v as typeof c.grains[0]['grain']; });
+  $('subG2').onchange = cust((c, v) => {
+    if (v === 'none') c.grains = [{ ...c.grains[0], share: 100 }];
+    else if (c.grains[1]) c.grains[1].grain = v as typeof c.grains[0]['grain'];
+    else c.grains = setShare([...c.grains, { grain: v as typeof c.grains[0]['grain'], color: '#6f6556', share: 0 }], 1, 30);
+  });
+  $('subC1').oninput = cust((c, v) => { c.grains[0].color = v; }, 'subC1');
+  $('subC2').oninput = cust((c, v) => { if (c.grains[1]) c.grains[1].color = v; }, 'subC2');
+  $('subShare').oninput = cust((c, v) => { if (c.grains.length > 1) c.grains = setShare(c.grains, 1, +v); }, 'subShare');
   $('subMix').oninput = cust((c, v) => { c.mix = +v / 100; }, 'subMix');
   $<HTMLSelectElement>('subType').onchange = e => {
     const v = (e.target as HTMLSelectElement).value, bare = v === 'bare';
@@ -2075,12 +2081,12 @@ export function attachPanels(store: Store, viewer: Viewer) {
     if (env || fishSet) {
     const sub = s.substrate, smax = Math.round(A.H * 0.5);
     setVal('subType', sub.show ? sub.type : 'bare');
-    const cu = sub.custom, two = cu.grain2 !== 'none';
+    const cu = sub.custom, g1 = cu.grains[0], g2 = cu.grains[1], two = !!g2;
     $('subCustom').hidden = !sub.show || sub.type !== 'custom';
-    setVal('subG1', cu.grain); setVal('subC1', cu.color); setVal('subG2', cu.grain2); setVal('subC2', cu.color2);
+    setVal('subG1', g1.grain); setVal('subC1', g1.color); setVal('subG2', g2 ? g2.grain : 'none'); setVal('subC2', g2 ? g2.color : '#6f6556');
     $('subC2').hidden = $('subShareRow').hidden = $('subMixRow').hidden = $('subMixHint').hidden = !two;
-    $('subShareL').textContent = !two ? 'Share' : cu.grain2 === cu.grain ? 'Colour 2' : GRAIN_LOOK[cu.grain2 as keyof typeof GRAIN_LOOK].label;
-    setVal('subShare', cu.share); setOut('oSubShare', `${cu.share} %`);
+    $('subShareL').textContent = !two ? 'Share' : g2.grain === g1.grain ? 'Colour 2' : GRAIN_LOOK[g2.grain].label;
+    setVal('subShare', g2 ? g2.share : 0); setOut('oSubShare', `${g2 ? g2.share : 0} %`);
     setVal('subMix', Math.round(cu.mix * 100)); setOut('oSubMix', cu.mix <= 0 ? 'None' : cu.mix >= 1 ? 'Full' : `${Math.round(cu.mix * 100)} %`);
     for (const [id, k] of Object.entries(SUBK)) { $(id).max = String(smax); setVal(id, sub[k]); setOut('o' + id[0].toUpperCase() + id.slice(1), fmt(sub[k])); }
 

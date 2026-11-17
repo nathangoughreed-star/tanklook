@@ -190,8 +190,8 @@ function footLook(S: TankSetup): GrainLook | null {
   if (!sub.show) return null;
   let base: string;
   if (sub.type === 'custom') {
-    if (sub.custom.grain !== 'sand' && sub.custom.grain !== 'mud') return null;
-    base = sub.custom.color;
+    if (sub.custom.grains[0].grain !== 'sand' && sub.custom.grains[0].grain !== 'mud') return null;
+    base = sub.custom.grains[0].color;
   } else {
     if (grainLooks(sub).length) return null;
     const t = SUBSTRATES[sub.type]; if (t.kind === 'bark') return null;
@@ -330,7 +330,7 @@ function spillGrains(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt, scal
   let look: GrainLook | null = grainLooks(sub)[0] ?? null;
   if (!look) {
     let base: string;
-    if (sub.type === 'custom') base = sub.custom.color; else { const t = SUBSTRATES[sub.type]; if (t.kind === 'bark') return []; base = t.shades[1] ?? t.base; }
+    if (sub.type === 'custom') base = sub.custom.grains[0].color; else { const t = SUBSTRATES[sub.type]; if (t.kind === 'bark') return []; base = t.shades[1] ?? t.base; }
     look = { shape: 'stone', size: [2, 4.5], round: 0.7, colors: shadesOf(base, 8, rng(73), 1.5), speckle: false, wet: false };
   }
   const r = rng(151 + (S.layout.seed ?? 1)), at: [number, number][] = [];
@@ -358,7 +358,7 @@ function coarseFeet(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt): THRE
   if (g3) look = g3.shape === 'chip' ? g3 : { ...g3, size: [g3.size[1], g3.size[1] * 1.35] };
   else {
     let base: string;
-    if (sub.type === 'custom') base = sub.custom.color; else { const t = SUBSTRATES[sub.type]; if (t.kind === 'bark') return []; base = t.shades[1] ?? t.base; }
+    if (sub.type === 'custom') base = sub.custom.grains[0].color; else { const t = SUBSTRATES[sub.type]; if (t.kind === 'bark') return []; base = t.shades[1] ?? t.base; }
     look = { shape: 'stone', size: [3, 7], round: 0.7, colors: shadesOf(base, 8, rng(79), 1.5), speckle: true, wet: false };
   }
   const r = rng(171 + (S.layout.seed ?? 1)), at: [number, number][] = [];

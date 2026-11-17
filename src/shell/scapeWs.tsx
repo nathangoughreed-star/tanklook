@@ -22,7 +22,7 @@ function Swatch({ type, blend }: { type: string; blend?: Store['tank']['substrat
     const c = ref.current, x = c?.getContext('2d'); if (!c || !x) return;
     if (type === 'bare') { x.fillStyle = '#0d1116'; x.fillRect(0, 0, c.width, c.height); const g = x.createLinearGradient(0, 0, c.width, c.height); g.addColorStop(0, 'rgba(120,170,200,.28)'); g.addColorStop(1, 'rgba(120,170,200,0)'); x.fillStyle = g; x.fillRect(0, 0, c.width, c.height); return; }
     try { if (type === 'custom' && blend) drawBlendTile(x, c.width, blend, 'm'); else drawSubstrate(x, c.width, type as PresetSubstrate); } catch { x.fillStyle = '#555'; x.fillRect(0, 0, c.width, c.height); }
-  }, [type, blend?.grain, blend?.grain2, blend?.color, blend?.color2, blend?.mix, blend?.share]);
+  }, [type, JSON.stringify(blend)]);
   return <canvas ref={ref} class="wsswatch" width={72} height={72} aria-hidden="true" />;
 }
 

@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { blendRatio, blendZone, substrateFine } from '../src/art/placeholder';
-import type { SubstrateBlend } from '../src/scene/types';
+import { blendFrom } from '../src/scene/blend';
+import type { Grain, SubstrateBlend } from '../src/scene/types';
 
-const mk = (share: number, mix: number, grain: SubstrateBlend['grain'] = 'sand', grain2: SubstrateBlend['grain'] = 'gravel'): SubstrateBlend =>
-  ({ grain, color: '#c9b48a', grain2, color2: '#3a342c', share, mix } as SubstrateBlend);
+const mk = (share: number, mix: number, grain: Grain = 'sand', grain2: Grain = 'gravel'): SubstrateBlend => blendFrom(grain, '#c9b48a', grain2, '#3a342c', share, mix);
 /** r over a 2 m x 2 m floor, a grid every `step` mm. */
 function field(b: SubstrateBlend, step = 10, size = 2000) {
   const z = blendZone(b), n = size / step, g: number[][] = [];

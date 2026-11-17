@@ -33,8 +33,13 @@ describe('Substrate', () => {
     const st = mk();
     SC.setSubstrateType(st, 'custom');
     expect(SC.substrateView(st.tank, 'in').custom).toBe(true);
-    SC.setBlend(st, 'grain2', 'sand'); SC.setBlend(st, 'mix', 40); SC.setBlend(st, 'color', '#112233');
-    expect(st.tank.substrate.custom).toMatchObject({ grain2: 'sand', mix: 0.4, color: '#112233' });
+    SC.addBlendGrain(st); SC.setBlendGrain(st, 1, 'sand'); SC.setBlendMix(st, 40); SC.setBlendColor(st, 0, '#112233');
+    expect(st.tank.substrate.custom).toMatchObject({ mix: 0.4, grains: [{ color: '#112233' }, { grain: 'sand' }] });
+    SC.setBlendShare(st, 1, 30); expect(st.tank.substrate.custom.grains.map(g => g.share)).toEqual([70, 30]);
+    SC.addBlendGrain(st); SC.addBlendGrain(st); SC.addBlendGrain(st); SC.addBlendGrain(st); // 5 at most
+    expect(st.tank.substrate.custom.grains.length).toBe(5); expect(st.tank.substrate.custom.grains.reduce((a, g) => a + g.share, 0)).toBe(100);
+    SC.removeBlendGrain(st, 4); SC.removeBlendGrain(st, 3); SC.removeBlendGrain(st, 2); SC.removeBlendGrain(st, 1); SC.removeBlendGrain(st, 0);
+    expect(st.tank.substrate.custom.grains).toHaveLength(1); expect(st.tank.substrate.custom.grains[0].share).toBe(100); // never fewer than one
     SC.setRough(st, 20); expect(SC.substrateView(st.tank, 'in').roughText).toBe('20 %');
     expect(SC.substrateView(st.tank, 'in').litter.on).toBe(false);
     SC.setLitterLeaf(st, 'oak'); expect(st.tank.substrate.litter).toMatchObject({ leaf: 'oak', density: 40 });

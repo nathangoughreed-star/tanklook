@@ -89,12 +89,13 @@ export const GROUND_USD_PER_L = { engine: 1.2, poolsand: 0.9, aquasoil: 5 } as c
 export type GroundKind = keyof typeof GROUND_USD_PER_L;
 const SOIL = '#2f2620', POOL = '#cbb894';
 const PLANTED_LOOKS = new Set(['planted', 'iwagumi', 'nature', 'dutch', 'forest']);
-const blend = (color: string): SubstrateBlend => ({ grain: color === POOL ? 'sand' : 'gravel', color, grain2: 'none', color2: '#6f6556', share: 30, mix: 0.5 });
+const blend = (color: string): SubstrateBlend => ({ grains: [{ grain: color === POOL ? 'sand' : 'gravel', color, share: 100 }], mix: 0.5 });
 const dark = (hex: string) => { const v = parseInt(hex.slice(1), 16); return ((v >> 16) & 255) + ((v >> 8) & 255) + (v & 255) < 200; };
 export function groundKind(S: TankSetup): GroundKind {
   const s = S.substrate; if (!s.show || s.type !== 'custom') return 'engine';
-  if (s.custom.grain === 'sand' && s.custom.grain2 === 'none' && s.custom.color.toLowerCase() === POOL) return 'poolsand';
-  if (PLANTED_LOOKS.has(S.layout.id) && s.custom.grain !== 'sand' && dark(s.custom.color)) return 'aquasoil';
+  const g0 = s.custom.grains[0], one = s.custom.grains.length === 1;
+  if (g0.grain === 'sand' && one && g0.color.toLowerCase() === POOL) return 'poolsand';
+  if (PLANTED_LOOKS.has(S.layout.id) && g0.grain !== 'sand' && dark(g0.color)) return 'aquasoil';
   return 'engine';
 }
 /** The dollars the ground's own price adds to the engine's flat one (the engine buys about 1.1 x the litres, for settling). */

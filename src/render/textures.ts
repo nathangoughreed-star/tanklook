@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { LECA, drawBlendTile, drawFishCard, drawLook, drawPerson, drawSubstrate, substrateField, substrateFine, type PresetSubstrate } from '../art/placeholder';
+import { BLEND_TILE_IDS, LECA, blendTile, drawBlendTile, drawFishCard, drawLook, drawPerson, drawSubstrate, substrateField, substrateFine, type BlendTileId, type PresetSubstrate } from '../art/placeholder';
 import { drawPairedFin, type PairedFin } from '../art/fishgen';
 import { drawScene, type BgScene } from '../art/bgscenes';
 import { FX } from './fx';
@@ -7,6 +7,7 @@ import { SUBSTRATES } from '../art/placeholder';
 import { rng } from '../art/paint';
 import { FIN_A, FIN_A2C, style } from '../art/paint';
 import type { Species } from '../data/species';
+import { blendOrder } from '../scene/blend';
 import type { BgFit, EdgeMode, SubstrateBlend } from '../scene/types';
 
 let anisotropy = 1;
@@ -107,9 +108,10 @@ export const meshTexture = () => cached('sub:mesh', () => {
  * are in its key; kept in a small cache of their own (dragging a colour makes a new tile per step), the oldest disposed.
  */
 const blendTex = new Map<string, THREE.Texture>();
-export function blendTexture(b: SubstrateBlend, which: 'a' | 'b' | 'm') {
-  const key = which === 'a' ? `a:${b.grain}:${b.color}:${b.grain2}` : which === 'b' ? `b:${b.grain2}:${b.color2}:${b.grain}`
-    : `m:${b.grain}:${b.color}:${b.grain2}:${b.color2}:${b.share}`;
+export function blendTexture(b: SubstrateBlend, which: BlendTileId) {
+  // a grain's tile depends on the grain, its colour and the tile span (the coarsest grain's); 'm' on every grain and share
+  const ord = blendOrder(b), g = ord[Math.max(0, BLEND_TILE_IDS.indexOf(which))] ?? ord[0], tile = blendTile(b);
+  const key = which === 'm' ? `m:${b.grains.map(x => `${x.grain}:${x.color}:${x.share}`).join(':')}` : `${which === 'a' || which === 'b' ? which : 'g'}:${g.grain}:${g.color}:${tile}`;
   let t = blendTex.get(key);
   if (t) { blendTex.delete(key); blendTex.set(key, t); return t; } // most recent last
   const c = document.createElement('canvas'); c.width = c.height = 1024;

@@ -20,8 +20,9 @@ export function bedOf(S: TankSetup): { grain: Grain; sharp: boolean; name: strin
   const sub = S.substrate;
   if (!sub.show) return undefined;
   if (sub.type === 'custom') {
-    const c = sub.custom, two = c.grain2 !== 'none' && c.share >= 25 && grainRank(c.grain2 as Grain) > grainRank(c.grain);
-    const grain = two ? c.grain2 as Grain : c.grain;
+    // the coarsest grain that is at least a quarter of the floor (with one or two grains: as before GB1); else the first grain
+    const c = sub.custom, big = c.grains.filter(g => g.share >= 25 && grainRank(g.grain) > grainRank(c.grains[0].grain));
+    const grain = big.length ? big.reduce((a, g) => (grainRank(g.grain) > grainRank(a.grain) ? g : a)).grain : c.grains[0].grain;
     return { grain, sharp: false, name: GRAIN_WORD[grain] };
   }
   return SUBSTRATE_TRAITS[sub.type];

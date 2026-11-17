@@ -58,7 +58,7 @@ const LAND: Trio = t([2, 0.5], [2, 2], [3, 3.5]);
 const WATER: Trio = t([0.5, 0.5], [2, 2], [3.5, 3.5]);
 
 /** Fine tan sand (a custom substrate) for the clean tanks that are not white. */
-const SAND: SubstrateBlend = { grain: 'sand', color: '#cdb994', grain2: 'none', color2: '#000000', share: 0, mix: 0 };
+const SAND: SubstrateBlend = { grains: [{ grain: 'sand', color: '#cdb994', share: 100 }], mix: 0 };
 
 /** Per-archetype choices on top of the look: the composition that tells siblings sharing one look apart (fixed across
  *  the trio), and archetypes whose recipe is not the look's own plants. */
@@ -222,7 +222,7 @@ function clean(a: Archetype, d: Density, S: TankSetup): void {
   const tw = TWEAKS[a.id]; if (!tw) return;
   const sub = S.substrate;
   if (tw.ground === 'bare') { sub.show = false; S.terrain = { ...S.terrain, on: false }; } // terrain is drawn in the substrate, so bare glass needs it off too
-  else if (tw.ground) { sub.type = tw.ground.type; if (tw.ground.custom) sub.custom = { ...tw.ground.custom }; delete sub.litter; }
+  else if (tw.ground) { sub.type = tw.ground.type; if (tw.ground.custom) sub.custom = { ...tw.ground.custom, grains: tw.ground.custom.grains.map(g => ({ ...g })) }; delete sub.litter; }
   if (tw.flat) { sub.fl = sub.fr = sub.bl = sub.br = Math.round(Math.min(40, S.tank.H * 0.06)); S.terrain = { ...S.terrain, on: false }; }
   if (tw.plantsOnly) S.items = S.items.filter(it => it.kind !== 'plant' || tw.plantsOnly!.includes(it.variant));
   if (tw.rocks || tw.wood) {

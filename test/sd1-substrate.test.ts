@@ -1,6 +1,7 @@
 // SD1: substrate depth checks, the substrate table, bottom-dweller substrate flags, Discover's Guided gate.
 import { describe, expect, it } from 'vitest';
 import { bareSetup } from '../src/scene/defaults';
+import { blendFrom } from '../src/scene/blend';
 import { IN } from '../src/scene/physics';
 import { bedOf, substrateCheck } from '../src/scene/substrateCheck';
 import { DEEP_MM, DWELLER, PLANT_DEPTH, SUBSTRATE_TRAITS } from '../src/data/substrateTraits';
@@ -26,9 +27,9 @@ describe('substrate table', () => {
     expect(Object.entries(SUBSTRATE_TRAITS).filter(([, v]) => v!.sharp).map(([k]) => k)).toEqual(['coral']);
     expect(SUBSTRATE_TRAITS.aragonite!.grain).toBe('sand');
     expect(SUBSTRATE_TRAITS.pea!.grain).toBe('pebble');
-    const s = tank('custom', 2); s.substrate.custom = { ...s.substrate.custom, grain: 'sand', grain2: 'pebble', share: 40 };
+    const s = tank('custom', 2); s.substrate.custom = blendFrom('sand', '#cbb894', 'pebble', '#8d8173', 40, 0.5);
     expect(bedOf(s)!.grain).toBe('pebble');
-    s.substrate.custom.share = 10; expect(bedOf(s)!.grain).toBe('sand');
+    s.substrate.custom = blendFrom('sand', '#cbb894', 'pebble', '#8d8173', 10, 0.5); expect(bedOf(s)!.grain).toBe('sand');
     for (const t of ['soil', 'tsand', 'clay', 'bark', 'layered'] as const) expect(bedOf(tank(t, 2))).toBeUndefined();
     expect(bedOf({ ...tank('gravel', 2), substrate: { ...tank('gravel', 2).substrate, show: false } })).toBeUndefined();
   });

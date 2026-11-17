@@ -4,6 +4,7 @@
 // at most), countershading (dark back, light belly) with a soft inner rim that rounds the body, soft-edged
 // markings, small realistic eyes, fins as tinted membranes with fine rays. The silhouette stays crisp (cards use
 // alpha-test cutout), so every opaque or fin pixel keeps alpha >= FIN_A, above the 0.5 cutoff with a mipmap margin.
+import { blendOrder } from '../scene/blend';
 import type { Grain, SubstrateBlend, SubstrateType } from '../scene/types';
 
 import { FIN_A, type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, rng, soft, style } from './paint';
@@ -355,10 +356,11 @@ export const GRAIN_LOOK: Record<Grain, { label: string; size: [number, number]; 
 };
 export const GRAIN_ORDER: Grain[] = ['mud', 'sand', 'gravel', 'pebble'];
 /** Repeat length (mm) of a custom substrate's mixed tile: the coarser grain's. */
-export const blendTile = (b: SubstrateBlend) => Math.max(GRAIN_LOOK[b.grain].tile, b.grain2 === 'none' ? 0 : GRAIN_LOOK[b.grain2].tile);
+export const blendTile = (b: SubstrateBlend) => Math.max(...b.grains.map(g => GRAIN_LOOK[g.grain].tile));
+/** 'Sand 60 % + gravel 25 % + pebbles 15 %' (one grain: 'Sand'). */
 export function blendLabel(b: SubstrateBlend) {
-  const a = GRAIN_LOOK[b.grain].label;
-  return b.grain2 === 'none' ? a : `${a} ${100 - b.share} % + ${GRAIN_LOOK[b.grain2].label.toLowerCase()} ${b.share} %`;
+  const [g0, ...rest] = b.grains, a = GRAIN_LOOK[g0.grain].label;
+  return rest.length ? `${a} ${g0.share} % + ${rest.map(g => `${GRAIN_LOOK[g.grain].label.toLowerCase()} ${g.share} %`).join(' + ')}` : a;
 }
 
 function hexToHsl(hex: string): [number, number, number] {
@@ -440,28 +442,40 @@ function drawGrain(ctx: Ctx, W: number, g: Grain, color: string, mmPx: number, r
   // a partial cover over-counts by the stones' real area: flattened (aspect ~0.8) and skewed small (~0.8 of the mid size)
   if (t.kind === 'pebble') drawPebbles(ctx, W, t, r, cover >= 1 ? 2.6 / 0.8 : dens / 0.64); else drawSand(ctx, W, t, r, cover >= 1 ? 2.2 : dens / 0.8);
 }
+/** Which tile of a blend: 'a'..'e' = the grain at that place of `blendOrder` alone, 'm' = all mixed grain by grain. */
+export type BlendTileId = 'a' | 'b' | 'c' | 'd' | 'e' | 'm';
+export const BLEND_TILE_IDS: BlendTileId[] = ['a', 'b', 'c', 'd', 'e'];
 /**
- * A custom substrate tile, `which`: 'a' the first grain alone, 'b' the second alone, 'm' the two mixed grain by grain
- * (the finer one as the bed, the coarser covering its share of it; the same grain in two colours = each grain one or
- * the other). All three span `blendTile(b)` mm.
+ * A custom substrate tile, `which`: 'a'-'e' each grain alone (in `blendOrder`), 'm' all mixed grain by grain (the finest
+ * as the bed, each coarser one covering its share of what lies under it; the same grain in several colours = each grain
+ * one or the other). All span `blendTile(b)` mm.
  */
-export function drawBlendTile(ctx: Ctx, W: number, b: SubstrateBlend, which: 'a' | 'b' | 'm') {
-  const mmPx = blendTile(b) / W, r = rng(11);
-  if (which === 'a' || b.grain2 === 'none') return drawGrain(ctx, W, b.grain, b.color, mmPx, r, 1);
-  if (which === 'b') return drawGrain(ctx, W, b.grain2, b.color2, mmPx, r, 1);
-  const p2 = b.share / 100;
-  if (b.grain === b.grain2) {
-    const g = b.grain;
-    if (g === 'mud') { drawMud(ctx, W, b.color, r); return drawMud(ctx, W, b.color2, r, p2); }
-    const t1 = grainLook(g, b.color, mmPx, r), t2 = grainLook(g, b.color2, mmPx, r), either = () => (r() < p2 ? t2 : t1);
-    ctx.fillStyle = p2 > 0.5 ? t2.base : t1.base; ctx.fillRect(0, 0, W, W);
-    if (g === 'sand') return drawSand(ctx, W, { ...t1, shades: Array.from({ length: 48 }, () => either().shades[Math.floor(r() * 12)]) }, r, 2.2);
-    return drawPebbles(ctx, W, t1, r, 2.6 / 0.8, either);
+export function drawBlendTile(ctx: Ctx, W: number, b: SubstrateBlend, which: BlendTileId) {
+  const mmPx = blendTile(b) / W, r = rng(11), gs = b.grains;
+  if (which !== 'm' || gs.length === 1) { const g = blendOrder(b)[Math.max(0, BLEND_TILE_IDS.indexOf(which))] ?? gs[0]; return drawGrain(ctx, W, g.grain, g.color, mmPx, r, 1); }
+  const p = gs.map(g => g.share / 100);
+  if (gs.every(g => g.grain === gs[0].grain)) {
+    const g = gs[0].grain;
+    if (g === 'mud') {
+      drawMud(ctx, W, gs[0].color, r); let cum = gs[0].share;
+      for (let k = 1; k < gs.length; k++) { cum += gs[k].share; drawMud(ctx, W, gs[k].color, r, cum > 0 ? gs[k].share / cum : 0); }
+      return;
+    }
+    const ts = gs.map(x => grainLook(g, x.color, mmPx, r));
+    const either = () => { const u = r(); let acc = 0; for (let k = gs.length - 1; k > 0; k--) { acc += p[k]; if (u < acc) return ts[k]; } return ts[0]; };
+    let big = 0; p.forEach((v, k) => { if (v > p[big]) big = k; });
+    ctx.fillStyle = ts[big].base; ctx.fillRect(0, 0, W, W);
+    if (g === 'sand') return drawSand(ctx, W, { ...ts[0], shades: Array.from({ length: 48 }, () => either().shades[Math.floor(r() * 12)]) }, r, 2.2);
+    return drawPebbles(ctx, W, ts[0], r, 2.6 / 0.8, either);
   }
-  const second = GRAIN_ORDER.indexOf(b.grain2) > GRAIN_ORDER.indexOf(b.grain); // the second grain is the coarser
-  const [fine, fc, coarse, cc, cov] = second ? [b.grain, b.color, b.grain2, b.color2, p2] : [b.grain2, b.color2, b.grain, b.color, 1 - p2];
-  drawGrain(ctx, W, fine, fc, mmPx, r, 1);
-  if (!grain3D(coarse)) drawGrain(ctx, W, coarse, cc, mmPx, r, cov); // gravel and pebbles lie on the bed in 3D
+  // fine to coarse: the finest is the bed, each coarser grain covers its share of what is under it (3D stones lie on the bed in 3D)
+  const order = gs.map((g, i) => ({ g, i })).sort((a, c) => GRAIN_ORDER.indexOf(a.g.grain) - GRAIN_ORDER.indexOf(c.g.grain) || a.i - c.i);
+  let cum = 0;
+  order.forEach(({ g }, k) => {
+    cum += g.share;
+    if (k === 0) drawGrain(ctx, W, g.grain, g.color, mmPx, r, 1);
+    else if (!grain3D(g.grain)) drawGrain(ctx, W, g.grain, g.color, mmPx, r, cum > 0 ? Math.min(1, g.share / cum) : 0);
+  });
 }
 
 /**
@@ -520,8 +534,10 @@ export const grain3D = (g: Grain | 'none') => g === 'gravel' || g === 'pebble';
 const ZD = 0.8, ZP = 0.6; // drift and pocket weights (sd 1 together)
 const sig = (x: number) => 1 / (1 + Math.exp(-x));
 const biasCache = new Map<string, number>();
-export function blendZone(b: SubstrateBlend) {
-  const p2 = Math.min(1, Math.max(0, b.share / 100)), amp = 0.2 + 3.6 * (1 - b.mix), key = `${p2}:${amp}`;
+/** GB1: where each further grain's own ratio field starts, as a fraction of a repeat (blendOrder places 2-4; place 1 has none, as before). */
+export const GRAIN_FIELD_OFF: [number, number][] = [[0, 0], [0, 0], [0.31, 0.57], [0.67, 0.13], [0.83, 0.41]];
+function biasFor(p2: number, amp: number) {
+  const key = `${p2}:${amp}`;
   let bias = biasCache.get(key);
   if (bias === undefined) {
     if (p2 <= 0.002) bias = -14; else if (p2 >= 0.998) bias = 14;
@@ -533,17 +549,35 @@ export function blendZone(b: SubstrateBlend) {
     }
     biasCache.set(key, bias);
   }
-  const cell = Math.max(0.5, Math.max(...[b.grain, b.grain2].filter(g => g !== 'none').map(g => GRAIN_LOOK[g as Grain].size[0] + GRAIN_LOOK[g as Grain].size[1])) * 0.9); // mm: mean diameter ~ r0 + r1
-  let h = 2166136261; for (const c of `${b.color}${b.color2}${b.share}${b.mix}`) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
-  const t = blendTile(b), off = [((h >>> 0) % 1000) / 1000, ((h >>> 10) % 1000) / 1000, ((h >>> 5) % 1000) / 1000, ((h >>> 15) % 1000) / 1000];
-  return { bias, amp, scale: t / 1000, fine: t / (64 * cell), off };
+  return bias;
 }
-/** The blend's ratio of the second grain, 0-1, at floor point (x, depth) mm, as the ground shader finds it (the field
- *  sampled bilinearly with wrap, like the GPU's linear filter). */
-export function blendRatio(b: SubstrateBlend, x: number, d: number, z = blendZone(b)): number {
-  const N = FIELD_N, M = substrateField(), t = blendTile(b);
-  const u = ((x / t) * z.scale + z.off[0]) * N - 0.5, v = ((d / t) * z.scale + z.off[1]) * N - 0.5, i = Math.floor(u), j = Math.floor(v), fu = u - i, fv = v - j;
+export function blendZone(b: SubstrateBlend) {
+  const ord = blendOrder(b), amp = 0.2 + 3.6 * (1 - b.mix);
+  // `biases[k]`: grain k of `blendOrder` (k >= 1) has its mean ratio at its share; [0] is the remainder. `bias` = grain 1's (two grains: the second's, as before)
+  const biases = ord.map((g, k) => (k ? biasFor(Math.min(1, Math.max(0, g.share / 100)), amp) : 0));
+  const bias = ord.length > 1 ? biases[1] : -14;
+  const cell = Math.max(0.5, Math.max(...b.grains.map(g => GRAIN_LOOK[g.grain].size[0] + GRAIN_LOOK[g.grain].size[1])) * 0.9); // mm: mean diameter ~ r0 + r1
+  let h = 2166136261; for (const c of `${b.grains.map(g => g.color).join('')}${b.grains.slice(1).map(g => g.share).join('')}${b.mix}`) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+  const t = blendTile(b), off = [((h >>> 0) % 1000) / 1000, ((h >>> 10) % 1000) / 1000, ((h >>> 5) % 1000) / 1000, ((h >>> 15) % 1000) / 1000];
+  return { bias, biases, amp, scale: t / 1000, fine: t / (64 * cell), off };
+}
+/** The local ratio of grain `k` of `blendOrder` (k >= 1) at floor point (x, depth) mm, as the ground shader finds it (the
+ *  field sampled bilinearly with wrap, like the GPU's linear filter), before the ratios are made to fit in 1. */
+function rawRatio(b: SubstrateBlend, k: number, x: number, d: number, z: ReturnType<typeof blendZone>): number {
+  const N = FIELD_N, M = substrateField(), t = blendTile(b), [ex, ey] = GRAIN_FIELD_OFF[k];
+  const u = ((x / t) * z.scale + z.off[0] + ex) * N - 0.5, v = ((d / t) * z.scale + z.off[1] + ey) * N - 0.5, i = Math.floor(u), j = Math.floor(v), fu = u - i, fv = v - j;
   const at = (a: number, c: number, ch: number) => M[((((c % N) + N) % N) * N + (((a % N) + N) % N)) * 4 + ch];
   const smp = (ch: number) => (at(i, j, ch) * (1 - fu) + at(i + 1, j, ch) * fu) * (1 - fv) + (at(i, j + 1, ch) * (1 - fu) + at(i + 1, j + 1, ch) * fu) * fv;
-  return sig(z.bias + z.amp * (((smp(0) - 128) * ZD + (smp(1) - 128) * ZP) / 40));
+  return sig(z.biases[k] + z.amp * (((smp(0) - 128) * ZD + (smp(1) - 128) * ZP) / 40));
+}
+/** The blend's local ratio of every grain (0-1, summing to 1) at floor point (x, depth) mm, in `blendOrder`: [0] the
+ *  remainder; the others' own drifts and pockets, scaled down together where they would add past 1 (as the ground shader does). */
+export function blendWeights(b: SubstrateBlend, x: number, d: number, z = blendZone(b)): number[] {
+  const n = b.grains.length; if (n === 1) return [1];
+  const w = Array.from({ length: n - 1 }, (_, k) => rawRatio(b, k + 1, x, d, z)), tot = w.reduce((a, v) => a + v, 0), k = tot > 1 ? tot : 1;
+  return [1 - tot / k, ...w.map(v => v / k)];
+}
+/** The blend's ratio of the second grain, 0-1, at floor point (x, depth) mm (two grains; with more, `blendWeights`). */
+export function blendRatio(b: SubstrateBlend, x: number, d: number, z = blendZone(b)): number {
+  return blendWeights(b, x, d, z)[1] ?? 0;
 }

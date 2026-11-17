@@ -8,11 +8,12 @@ import { defaultSetup } from './defaults';
 import { isSwampy, styleFoci } from './items';
 import { clamp } from './physics';
 import { sampleTerrain, swampTerrain, terrainPoints } from './terrain';
+import { blendFrom } from './blend';
 import type { Grain, LayoutId, LeafKind, SubstrateBlend, SubstrateType, TankSetup } from './types';
 
 type Sub = { type: SubstrateType; custom?: SubstrateBlend; litter?: { leaf: LeafKind; density: number } };
 const blend = (grain: Grain, color: string, grain2: Grain | 'none' = 'none', color2 = '#6f6556', share = 30, mix = 0.5): Sub =>
-  ({ type: 'custom', custom: { grain, color, grain2, color2, share, mix } });
+  ({ type: 'custom', custom: blendFrom(grain, color, grain2, color2, share, mix) });
 // aquasoil (dark brown granules), sand, leaf-litter brown; mix near 0 = sand in patches, near 1 = mixed grain by grain
 const SOIL = '#2f2620', SAND = '#cbb894', PALE = '#e2d8c4', LEAF = '#4a3626';
 type StyleId = Exclude<LayoutId, 'none'>;
@@ -50,12 +51,12 @@ const nudge = (hex: string, rt: () => number, l: number, c: number): string => {
 };
 /** A style's blend, varied inside the style's gate: the grains stay the style's own, but the colours, the second grain's
  *  share and how far the two mix (patches to grain by grain) are drawn fresh, so a shuffle never repeats a ground. */
-const varyBlend = (b: SubstrateBlend, rt: () => number): SubstrateBlend => ({
-  ...b, color: nudge(b.color, rt, 0.12, 0.05),
-  color2: b.grain2 === 'none' ? b.color2 : nudge(b.color2, rt, 0.16, 0.06),
-  share: b.grain2 === 'none' ? b.share : Math.round(clamp(b.share + (rt() - 0.5) * 40, 8, 65)),
-  mix: b.grain2 === 'none' ? b.mix : +rt().toFixed(2),
-});
+const varyBlend = (b: SubstrateBlend, rt: () => number): SubstrateBlend => {
+  const [g1, g2] = b.grains, color = nudge(g1.color, rt, 0.12, 0.05);
+  if (!g2) return { grains: [{ ...g1, color }], mix: b.mix };
+  const color2 = nudge(g2.color, rt, 0.16, 0.06), share = Math.round(clamp(g2.share + (rt() - 0.5) * 40, 8, 65)), mix = +rt().toFixed(2);
+  return { grains: [{ ...g1, color, share: 100 - share }, { ...g2, color: color2, share }], mix };
+};
 /** Slope and relief per style: back depth as [lo, hi] times the front's, hills under the groups (times the front
  *  depth), and roughness (soft waves over the floor). A swamp's land and pools are drawn by swampTerrain. */
 const SHAPE: Record<StyleId, { back: [number, number]; hill: number; rough: number }> = {
@@ -113,7 +114,7 @@ const groundKey = (s: Pick<TankSetup, 'substrate' | 'terrain'>) => JSON.stringif
  *  (older tanks, examples, the user's own): anything but the default substrate on a flat floor. */
 export function groundEdited(s: TankSetup): boolean {
   if (!s.layout.ground) { const d = defaultSetup(); return groundKey(s) !== groundKey({ substrate: d.substrate, terrain: { ...d.terrain, on: false } }); }
-  const t: TankSetup = { ...s, substrate: { ...s.substrate, custom: { ...s.substrate.custom } }, terrain: { ...s.terrain }, layout: { ...s.layout } };
+  const t: TankSetup = { ...s, substrate: { ...s.substrate, custom: { ...s.substrate.custom, grains: s.substrate.custom.grains.map(g => ({ ...g })) } }, terrain: { ...s.terrain }, layout: { ...s.layout } };
   styleGround(t);
   return groundKey(t) !== groundKey(s);
 }

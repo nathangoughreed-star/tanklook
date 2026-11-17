@@ -7,11 +7,12 @@ import type { Viewer } from '../render/viewer';
 import { supportLift } from '../interact/pointer';
 import {
   terrainView, placedView, pieceView, brushView, groupBarView, scapeSec, type ScapeSec, type LibraryView, type PlacedView,
-  setBlend, setTerrainOn, setTerrainCols, flattenTerrain,
+  setBlendGrain, setBlendColor, setBlendShare, setBlendMix, addBlendGrain, removeBlendGrain, setTerrainOn, setTerrainCols, flattenTerrain,
   removePool, setPoolField, removePiece, duplicatePiece, clearPieces, toggleKeep, reshapePiece, dropPiece, nudgePiece, setField,
   brushOn, pickBrush, groupTurn, groupSizeBy, groupDelete, groupDuplicate, GRAINS, KEEP_PROPS,
 } from './logic/scape';
 import { Icon } from './ui';
+import { MAX_GRAINS } from '../scene/blend';
 
 /** Pieces can be picked and dragged in the view only while their section is open (as the old shell: its menu open). Boot's attachPointer reads this. */
 export const pickItems: { sec: ScapeSec | null } = { sec: null };
@@ -172,17 +173,22 @@ export function BrushBlock({ store }: { store: Store }) {
 }
 
 export function Blend({ store }: { store: Store }) {
-  const c = store.tank.substrate.custom;
+  const c = store.tank.substrate.custom, n = c.grains.length;
   return (
     <div class="blend">
-      <div class="row"><span class="lbl">Grain</span><Select label="Grain" value={c.grain} onChange={v => setBlend(store, 'grain', v)}>{GRAINS.map(g => <option value={g.id}>{g.label}</option>)}</Select>
-        <input type="color" class="colorbox" value={c.color} aria-label="Grain colour" onInput={e => setBlend(store, 'color', val(e))} /></div>
-      <div class="row"><span class="lbl">Second grain</span><Select label="Second grain" value={c.grain2} onChange={v => setBlend(store, 'grain2', v)}><option value="none">Nothing (one grain)</option>{GRAINS.map(g => <option value={g.id}>{g.label}</option>)}</Select>
-        <input type="color" class="colorbox" value={c.color2} aria-label="Second grain colour" disabled={c.grain2 === 'none'} onInput={e => setBlend(store, 'color2', val(e))} /></div>
-      {c.grain2 !== 'none' ? (<>
-        <SliderRow label="Share" min={0} max={100} value={c.share} text={`${Math.round(c.share)}%`} onInput={v => setBlend(store, 'share', v)} />
-        <SliderRow label="Mixed" min={0} max={100} value={Math.round(c.mix * 100)} text={`${Math.round(c.mix * 100)}%`} onInput={v => setBlend(store, 'mix', v)} />
-      </>) : null}
+      {c.grains.map((g, i) => (
+        <div class="blendgrain" key={i}>
+          <div class="row"><span class="lbl">{n === 1 ? 'Grain' : `Grain ${i + 1}`}</span>
+            <Select label={`Grain ${i + 1}`} value={g.grain} onChange={v => setBlendGrain(store, i, v)}>{GRAINS.map(o => <option value={o.id}>{o.label}</option>)}</Select>
+            <input type="color" class="colorbox" value={g.color} aria-label={`Grain ${i + 1} colour`} onInput={e => setBlendColor(store, i, val(e))} /></div>
+          {n > 1 ? <>
+            <SliderRow label="Share" title={`Grain ${i + 1}: the others adjust to fill 100 %`} min={0} max={100} value={g.share} text={`${g.share}%`} onInput={v => setBlendShare(store, i, v)} />
+            <button type="button" class="btn sm" aria-label={`Remove grain ${i + 1}`} title="Remove this grain" onClick={() => removeBlendGrain(store, i)}>Remove</button>
+          </> : null}
+        </div>
+      ))}
+      {n < MAX_GRAINS ? <button type="button" class="btn sm" onClick={() => addBlendGrain(store)}>Add grain</button> : <div class="hint">Five grains is the most.</div>}
+      {n > 1 ? <SliderRow label="Mixed" min={0} max={100} value={Math.round(c.mix * 100)} text={`${Math.round(c.mix * 100)}%`} onInput={v => setBlendMix(store, v)} /> : null}
     </div>
   );
 }

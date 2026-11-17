@@ -99,8 +99,9 @@ export function buildSheet(scene: Scene, index = scene.active, opts: SheetOpts =
     const bag = opts.bagL ?? defaultBagL(S), bagTxt = u === 'in' ? `${r1(bag / 0.946353)} qt` : `${r1(bag)} L`;
     let name: string;
     if (sub.type === 'custom') {
-      const c = sub.custom, g2 = c.grain2 !== 'none' ? ` mixed with ${GRAIN_LOOK[c.grain2].label.toLowerCase()} (${c.share} %)` : '';
-      name = `Custom: ${GRAIN_LOOK[c.grain].label.toLowerCase()}${g2}`;
+      const gs = sub.custom.grains, w = (g: typeof gs[number]) => GRAIN_LOOK[g.grain].label.toLowerCase();
+      // one grain: 'sand'; two (as before GB1): 'sand mixed with gravel (30 %)'; three or more: 'sand 60 % + gravel 25 % + pebbles 15 %'
+      name = `Custom: ${gs.length === 1 ? w(gs[0]) : gs.length === 2 ? `${w(gs[0])} mixed with ${w(gs[1])} (${gs[1].share} %)` : gs.map(g => `${w(g)} ${g.share} %`).join(' + ')}`;
     } else name = SUBSTRATES[sub.type].label;
     let main = gv.litres, drain = 0;
     if (sub.type === 'layered') {

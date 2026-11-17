@@ -5,7 +5,8 @@
 import * as THREE from 'three';
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
-import { GRAIN_LOOK, SUBSTRATES, blendRatio, blendZone, grain3D, shadesOf } from '../art/placeholder';
+import { blendOrder } from '../scene/blend';
+import { GRAIN_LOOK, SUBSTRATES, blendWeights, blendZone, grain3D, shadesOf } from '../art/placeholder';
 import { waterY } from '../scene/physics';
 import { footprint } from '../scene/shape';
 import type { Grain, Tank, TankSetup } from '../scene/types';
@@ -26,11 +27,10 @@ export function grainLooks(sub: TankSetup['substrate']): GrainLook[] {
       const G = GRAIN_LOOK[g];
       return { shape: 'stone', size: [G.size[0] * 2, G.size[1] * 2], round: G.round, colors: shadesOf(color, 10, rng(5)), speckle: true, wet: false, at };
     };
-    if (b.grain2 === 'none') return grain3D(b.grain) ? [look(b.grain, b.color)] : [];
-    // one ratio field r of the second grain (art/placeholder `blendRatio`), the same the ground shader paints
-    const z = blendZone(b), r2 = (x: number, d: number) => cover(blendRatio(b, x, d, z)), r1 = (x: number, d: number) => cover(1 - blendRatio(b, x, d, z)), out: GrainLook[] = [];
-    if (grain3D(b.grain)) out.push(look(b.grain, b.color, r1));
-    if (grain3D(b.grain2)) out.push(look(b.grain2, b.color2, r2));
+    if (b.grains.length === 1) return grain3D(b.grains[0].grain) ? [look(b.grains[0].grain, b.grains[0].color)] : [];
+    // one ratio per grain (art/placeholder `blendWeights`), the same the ground shader paints; each 3D grain's stones keep where it is
+    const z = blendZone(b), out: GrainLook[] = [], ord = blendOrder(b);
+    ord.forEach((g, k) => { if (grain3D(g.grain)) out.push(look(g.grain, g.color, (x, d) => cover(blendWeights(b, x, d, z)[k]))); });
     return out;
   }
   const t = SUBSTRATES[sub.type];
@@ -47,7 +47,7 @@ export function grainLook(sub: TankSetup['substrate']): GrainLook | null {
   const gs = grainLooks(sub); return gs.length ? gs.reduce((a, g) => (g.size[1] > a.size[1] ? g : a)) : null;
 }
 /** Whether a blend has painted-only patches (sand or mud) beside its 3D stones. */
-export const grainPatchy = (sub: TankSetup['substrate']) => sub.type === 'custom' && sub.custom.grain2 !== 'none' && !(grain3D(sub.custom.grain) && grain3D(sub.custom.grain2));
+export const grainPatchy = (sub: TankSetup['substrate']) => sub.type === 'custom' && sub.custom.grains.length > 1 && !sub.custom.grains.every(g => grain3D(g.grain));
 /** About how far the grains rise above the painted ground (mm): leaf litter lies on them. */
 export const grainTop = (g: GrainLook | null) => (g ? (g.size[0] + g.size[1]) / 2 * (g.shape === 'chip' ? 0.15 : 0.22) : 0);
 

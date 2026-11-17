@@ -25,7 +25,7 @@ describe('envKey / lookKey', () => {
   it('sends the colours patched in place to lookKey', () => {
     expect(changed(t => { t.water.color = '#336633'; })).toEqual({ env: false, look: true });
     expect(changed(t => { t.wall.color = '#123456'; })).toEqual({ env: false, look: true });
-    expect(changed(t => { t.substrate.custom.color2 = '#123456'; t.substrate.custom.mix = 0.9; })).toEqual({ env: false, look: true });
+    expect(changed(t => { t.substrate.custom.grains[0].color = '#123456'; t.substrate.custom.mix = 0.9; })).toEqual({ env: false, look: true });
   });
   it('patches the water volume in and out (built at opacity 0 too, hidden; lane EF2: no rebuild off 0)', () => {
     const a = tank(); a.water.opacity = 0.3;
@@ -46,7 +46,7 @@ describe('envKey / lookKey', () => {
     for (const fn of [
       (t: TankSetup) => { t.water.level = 0.5; },
       (t: TankSetup) => { t.tank.L += 10; },
-      (t: TankSetup) => { t.substrate.custom.grain2 = t.substrate.custom.grain2 === 'none' ? 'sand' : 'none'; },
+      (t: TankSetup) => { const c = t.substrate.custom; c.grains = c.grains.length > 1 ? [{ ...c.grains[0], share: 100 }] : [{ ...c.grains[0], share: 70 }, { grain: 'gravel', color: '#6f6556', share: 30 }]; },
       (t: TankSetup) => { t.stand.height += 10; },
       (t: TankSetup) => { t.light.height = (t.light.height ?? 100) + 50; },
       (t: TankSetup) => { t.render.beams = !t.render.beams; },

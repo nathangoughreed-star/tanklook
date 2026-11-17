@@ -1,6 +1,7 @@
 // Load-time validation and migration. Untrusted JSON in, a complete valid Scene out (plus warnings), or an error.
 import { fishTL, getSpecies, hasForm, hasSpecies } from '../data/species';
 import { defaultSetup } from './defaults';
+import { migrateBlend } from './blend';
 import { parsePatches } from './brush';
 import { ANIMAL_RANGE, DENS_RANGE, LIBRARY, MAX_ITEMS, clampItem, legacyDens, starterItems } from './items';
 import { CEILING_H, CEILING_MAX, CEILING_MIN, WALL_GAP, WALL_GAP_MAX, clamp, mapToTank } from './physics';
@@ -28,7 +29,6 @@ import { ensureUids } from './uid';
 import { parseIntegrated, parseProduct } from './integrated';
 import { parseSpace } from './space'; // lane P3: layout.space
 
-const GRAINS = ['mud', 'sand', 'gravel', 'pebble'] as const;
 
 export class SceneError extends Error {}
 
@@ -314,15 +314,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       ...(s.litter && typeof s.litter === 'object' ? { litter: (() => { const l = s.litter as Record<string, unknown>; return {
         leaf: pick(l.leaf, ['mixed', 'oak', 'magnolia', 'catappa'] as const, 'mixed'), density: Math.round(num(l.density, 50, 0, 100)), seed: Math.round(num(l.seed, 1, 1, 1e6)) }; })() } : {}),
       ...(typeof s.rough === 'number' && Number.isFinite(s.rough) ? { rough: Math.round(num(s.rough, 0, 0, 100)) } : {}), // surface roughness (2026-11-03): absent stays absent (reads as ROUGH_DEFAULT); an explicit 0 is kept (smooth)
-      custom: (() => { // added 2026-10-13 (no version bump); older files: the default blend
-        const c = (s.custom && typeof s.custom === 'object' ? s.custom : {}) as Record<string, unknown>, dc = d.substrate.custom;
-        const hex = (v: unknown, f: string) => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v) ? v.toLowerCase() : f;
-        return {
-          grain: pick(c.grain, GRAINS, dc.grain), color: hex(c.color, dc.color),
-          grain2: pick(c.grain2, ['none', ...GRAINS] as const, dc.grain2), color2: hex(c.color2, dc.color2),
-          share: Math.round(num(c.share, dc.share, 5, 95)), mix: num(c.mix, dc.mix, 0, 1),
-        };
-      })(),
+      custom: migrateBlend(s.custom, d.substrate.custom), // added 2026-10-13 (no version bump); GB1: a list of grains, the two-grain fields of older files read into it (scene/blend.ts); absent: the default blend
       fl: num(s.fl, d.substrate.fl, 0, subMax), fr: num(s.fr, d.substrate.fr, 0, subMax),
       bl: num(s.bl, d.substrate.bl, 0, subMax), br: num(s.br, d.substrate.br, 0, subMax),
     },

@@ -39,11 +39,13 @@ export interface Litter { leaf: LeafKind; density: number; seed: number }
 /** Grain size of a custom substrate, finest to coarsest. */
 export type Grain = 'mud' | 'sand' | 'gravel' | 'pebble';
 /**
- * Custom substrate (Nathan 2026-10-13): a grain and a colour, optionally blended with a second grain and colour.
- * `share` = % of the floor that is the second grain; `mix` 0-1: 0 = separate patches (no mixing), 1 = mixed grain
- * by grain, between = clumps of each with mixed ground between them.
+ * Custom substrate (Nathan 2026-10-13; GB1 2026-11-17: any number of grains): an ordered list of 1-5 grains, each with a
+ * colour and a `share` (whole %, summing to 100, scene/blend.ts); `mix` 0-1: 0 = separate patches (no mixing), 1 = mixed
+ * grain by grain, between = clumps of each with mixed ground between them. Files from before GB1 hold the two-grain
+ * fields { grain, color, grain2, color2, share, mix }; scene/validate.ts reads them into this list.
  */
-export interface SubstrateBlend { grain: Grain; color: string; grain2: Grain | 'none'; color2: string; share: number; mix: number }
+export interface BlendGrain { grain: Grain; color: string; share: number }
+export interface SubstrateBlend { grains: BlendGrain[]; mix: number }
 
 /** Tank floor outline (scene v8). L x D is always the bounding box; see scene/shape.ts. */
 export type TankShape = 'rect' | 'bow' | 'round' | 'poly' | 'bowl' | 'pie' | 'arch';

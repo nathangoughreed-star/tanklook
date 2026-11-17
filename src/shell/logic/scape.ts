@@ -4,6 +4,7 @@
 // ONLY through P3's scene/itemEdit.ts and the existing scene modules; the substrate / terrain edits are the old panel's, moved here
 // unchanged in behaviour (ui/panels.ts "Substrate" and "Custom terrain" blocks).
 import { GRAIN_LOOK, SUBSTRATES } from '../../art/placeholder';
+import { addGrain, removeGrain, setShare } from '../../scene/blend';
 import { isClump, isFloat, isPatch, growthOf, type PlantType } from '../../art/plants';
 import { clumpAuto } from '../../render/plant3d';
 import { itemLights } from '../../scene/lightcheck';
@@ -82,15 +83,20 @@ export function slopePreset(store: Store, id: string): void {
     Object.assign(s.substrate, { show: true, fl: c(p.d[0]), fr: c(p.d[1]), bl: c(p.d[2]), br: c(p.d[3]) });
   });
 }
-/** Custom blend: grain + colour, optionally a second grain, its share and how mixed the two are. */
-export function setBlend(store: Store, f: 'grain' | 'grain2' | 'color' | 'color2' | 'share' | 'mix', v: string | number): void {
-  store.edit(s => {
-    const c = s.substrate.custom;
-    if (f === 'grain') c.grain = v as typeof c.grain; else if (f === 'grain2') c.grain2 = v as typeof c.grain2;
-    else if (f === 'color') c.color = String(v); else if (f === 'color2') c.color2 = String(v);
-    else if (f === 'share') c.share = +v; else c.mix = +v / 100;
-  }, { coalesce: 'blend' + f });
+/** Custom blend (GB1): an ordered list of 1-5 grains, each with a colour and a share (summing to 100), and how mixed they are. */
+export function setBlendGrain(store: Store, i: number, v: string): void {
+  store.edit(s => { const g = s.substrate.custom.grains[i]; if (g) g.grain = v as typeof g.grain; }, { coalesce: 'blendGrain' + i });
 }
+export function setBlendColor(store: Store, i: number, v: string): void {
+  store.edit(s => { const g = s.substrate.custom.grains[i]; if (g) g.color = v; }, { coalesce: 'blendColor' + i });
+}
+/** One grain's share; the others are scaled to fill the rest. */
+export function setBlendShare(store: Store, i: number, v: number): void {
+  store.edit(s => { const c = s.substrate.custom; c.grains = setShare(c.grains, i, v); }, { coalesce: 'blendShare' + i });
+}
+export const setBlendMix = (store: Store, v: number) => store.edit(s => { s.substrate.custom.mix = v / 100; }, { coalesce: 'blendMix' });
+export const addBlendGrain = (store: Store) => store.edit(s => { const c = s.substrate.custom; c.grains = addGrain(c.grains); });
+export const removeBlendGrain = (store: Store, i: number) => store.edit(s => { const c = s.substrate.custom; c.grains = removeGrain(c.grains, i); });
 const litterOf = (s: TankSetup) => (s.substrate.litter ??= { leaf: 'mixed', density: 0, seed: 1 });
 export const setLitterLeaf = (store: Store, leaf: string) => store.edit(s => { const l = litterOf(s); l.leaf = leaf as typeof l.leaf; if (!l.density) l.density = 40; });
 export const setLitterDensity = (store: Store, v: number) => store.edit(s => { litterOf(s).density = v; }, { coalesce: 'litDens' });

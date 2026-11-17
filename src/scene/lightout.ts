@@ -357,9 +357,9 @@ export const SUB_ALBEDO: Record<string, number> = {
   soil: 0.07, tsand: 0.35, clay: 0.18, bark: 0.1, layered: 0.07, // terrestrial (lane T1)
 };
 const hexLum = (h: string) => { const c = [1, 3, 5].map(i => (parseInt(h.slice(i, i + 2), 16) / 255) ** 2.2); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
-export function subAlbedo(sub: { show: boolean; type: string; custom?: { color: string } }) {
+export function subAlbedo(sub: { show: boolean; type: string; custom?: { grains: { color: string }[] } }) {
   if (!sub.show) return 0.1;
-  if (sub.type === 'custom') return clamp(hexLum(sub.custom?.color ?? '#808080') * 1.1, 0.04, 0.7);
+  if (sub.type === 'custom') return clamp(hexLum(sub.custom?.grains[0]?.color ?? '#808080') * 1.1, 0.04, 0.7);
   return SUB_ALBEDO[sub.type] ?? 0.2;
 }
 /** Diffuse light kept in by the water surface and the glass (about 1 - 1/n² of it is totally reflected back in). */

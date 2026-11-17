@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import { SUBSTRATES } from '../src/art/placeholder';
 import { grainLook, grainLooks } from '../src/render/grains';
+import { blendFrom } from '../src/scene/blend';
 import { scatter, type GroundAt } from '../src/render/scatter';
 import { defaultScene } from '../src/scene/defaults';
 import { insideBy } from '../src/scene/shape';
@@ -34,15 +35,15 @@ describe('3D grains (render/grains.ts)', () => {
     expect(grainLook(sub('bark'))?.shape).toBe('chip');
     for (const t of ['gravel', 'pea', 'clown', 'blue', 'onyx']) expect(grainLook(sub(t))?.shape).toBe('stone');
     for (const t of ['soil', 'tsand', 'clay', 'layered', 'white', 'black', 'aragonite', 'coral']) expect(grainLook(sub(t))).toBeNull();
-    expect(grainLook(sub('custom', { grain: 'pebble', grain2: 'none' }))?.size).toEqual([12, 26]);
-    expect(grainLook(sub('custom', { grain: 'sand', grain2: 'none' }))).toBeNull();
+    expect(grainLook(sub('custom', blendFrom('pebble', '#8a7f70')))?.size).toEqual([12, 26]);
+    expect(grainLook(sub('custom', blendFrom('sand', '#cbb894')))).toBeNull();
     // blends: their gravel and pebbles in 3D on their own patches, sand and mud painted
-    const ps = grainLooks(sub('custom', { grain: 'pebble', grain2: 'sand', share: 30, mix: 0.5 }));
+    const ps = grainLooks(sub('custom', blendFrom('pebble', '#8a7f70', 'sand', '#cbb894', 30, 0.5)));
     expect(ps.map(g => g.size)).toEqual([[12, 26]]);
     let sum = 0; for (let i = 0; i < 400; i++) sum += ps[0].at!((i % 20) * 37, Math.floor(i / 20) * 23);
     expect(sum / 400).toBeGreaterThan(0.5); expect(sum / 400).toBeLessThan(0.9); // ~70 % pebbles
-    expect(grainLooks(sub('custom', { grain: 'pebble', grain2: 'gravel' })).length).toBe(2);
-    expect(grainLook(sub('custom', { grain: 'sand', grain2: 'mud' }))).toBeNull();
+    expect(grainLooks(sub('custom', blendFrom('pebble', '#8a7f70', 'gravel', '#6f6556'))).length).toBe(2);
+    expect(grainLook(sub('custom', blendFrom('sand', '#cbb894', 'mud', '#3a342c')))).toBeNull();
   });
 });
 
