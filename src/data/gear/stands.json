@@ -35,7 +35,9 @@
    "overhangMm": 12,
    "baseMm": 95,
    "topMm": 22
-  }
+  },
+  "ratedGal": 10,
+  "ratingNote": "Rating: PetSmart page \"Supports tanks up to 10 gallons\" (no load figure; the 120 lb on the page is a filled-tank weight, not a stand rating)."
  },
  {
   "id": "af-10-metal",
@@ -69,7 +71,10 @@
    "shelfAt": [
     0.1
    ]
-  }
+  },
+  "ratedGal": 10,
+  "maxLoadLb": 100,
+  "ratingNote": "Rating: 100 lb per the listing; 10 gal from the product name."
  },
  {
   "id": "tongmo-10",
@@ -101,7 +106,10 @@
    "shelfAt": [
     0.1
    ]
-  }
+  },
+  "ratedGal": 10,
+  "maxLoadLb": 150,
+  "ratingNote": "Rating: 150 lb per the listing; 10 gal from the product name."
  },
  {
   "id": "aqueon-forge-30",
@@ -141,7 +149,9 @@
    "est": [
     "photo: the Aqueon Forge 10 gal (same design); no separate 30 x 12 photo found"
    ]
-  }
+  },
+  "ratedGal": 29,
+  "ratingNote": "Rating: \"20 gallon long / 29 gallon high\" in the product name."
  },
  {
   "id": "aqueon-cabinet-30",
@@ -177,7 +187,9 @@
    "baseMm": 60,
    "planks": 7,
    "topMm": 32
-  }
+  },
+  "ratedGal": 37,
+  "ratingNote": "Rating: \"20 long / 29 / 37 gallon\" in the product name."
  },
  {
   "id": "imagitarium-newport-29",
@@ -207,7 +219,9 @@
    "shelf": "none",
    "brace": "window",
    "sheen": "satin"
-  }
+  },
+  "maxLoadLb": 435,
+  "ratingNote": "Rating: Petco page \"Weight limit: 435 lbs\". Its description says \"fits 20 gal.\" while the title says 29 gallon: ratedGal left out."
  },
  {
   "id": "imagitarium-modern-29",
@@ -244,7 +258,10 @@
    "baseMm": 72,
    "caps": true,
    "topMm": 18
-  }
+  },
+  "ratedGal": 29,
+  "maxLoadLb": 435,
+  "ratingNote": "Rating: Petco page \"Weight limit: 435 lbs\"; 29 gal from the title."
  },
  {
   "id": "topfin-20-37",
@@ -284,7 +301,9 @@
    "base": "block",
    "overhangMm": 14,
    "baseMm": 70
-  }
+  },
+  "ratedGal": 37,
+  "ratingNote": "Rating: PetSmart page \"Supports tanks up to 37 gallons\" (no load figure)."
  },
  {
   "id": "seapora-roman-36",
@@ -321,7 +340,9 @@
    "overhangMm": 6,
    "plate": 18,
    "plateOver": 22
-  }
+  },
+  "ratedGal": 40,
+  "ratingNote": "Rating: \"For 30 / 40 breeder\" on the Chewy listing (now discontinued there)."
  },
  {
   "id": "af-40b-cabinet",
@@ -356,7 +377,10 @@
    "plinthOver": 30,
    "baseMm": 62,
    "topMm": 24
-  }
+  },
+  "ratedGal": 40,
+  "maxLoadLb": 400,
+  "ratingNote": "Rating: Petco page \"designed for 40-gallon breeder tanks\"; 400 lb as quoted from its spec by buyers on the page."
  },
  {
   "id": "mewsden-40",
@@ -388,7 +412,9 @@
    "shelfAt": [
     0.42
    ]
-  }
+  },
+  "ratedGal": 40,
+  "ratingNote": "Rating: 40 gal from the product name; no load figure."
  },
  {
   "id": "filko-40",
@@ -429,7 +455,10 @@
     0.22,
     0.64
    ]
-  }
+  },
+  "ratedGal": 50,
+  "maxLoadLb": 660,
+  "ratingNote": "Rating: title \"weight capacity 660 lbs\", \"for 40-50 gallon\"."
  },
  {
   "id": "seapora-empress-48x12",
@@ -468,7 +497,9 @@
    "plate": 14,
    "plateOver": 6,
    "topMm": 24
-  }
+  },
+  "ratedGal": 55,
+  "ratingNote": "Rating: That Pet Place \"Designed for 55 Gallon Tanks\" (no load figure)."
  },
  {
   "id": "marineland-modern-48",
@@ -546,7 +577,9 @@
    "plate": 14,
    "plateOver": 6,
    "topMm": 24
-  }
+  },
+  "ratedGal": 90,
+  "ratingNote": "Rating: That Pet Place \"Designed for 75 Gallon & 90\" (no load figure)."
  },
  {
   "id": "seapora-monarch-48x18",
@@ -588,7 +621,9 @@
    "plate": 14,
    "plateOver": 6,
    "topMm": 24
-  }
+  },
+  "ratedGal": 110,
+  "ratingNote": "Rating: \"For 75 / 90 / 110\" (no load figure)."
  },
  {
   "id": "topfin-55-75",
@@ -630,7 +665,9 @@
    "overhangMm": 16,
    "baseMm": 100,
    "topMm": 28
-  }
+  },
+  "ratedGal": 75,
+  "ratingNote": "Rating: PetSmart page \"Supports tanks up to 75 gallons\" (no load figure; the 900 lb on the page is a filled-tank weight)."
  },
  {
   "id": "snughome-10",
@@ -663,7 +700,9 @@
     0.1,
     0.5
    ]
-  }
+  },
+  "ratedGal": 10,
+  "ratingNote": "Rating: 10 gal from the Amazon title; load not read."
  },
  {
   "id": "aqueon-metal-10",
@@ -700,7 +739,9 @@
    "shelfHex": "#2c2724",
    "shelfRails": true,
    "motif": true
-  }
+  },
+  "ratedGal": 10,
+  "ratingNote": "Rating: \"10 gallon\" in the Amazon title; load not read."
  },
  {
   "id": "likeem-40",
@@ -732,7 +773,9 @@
    "shelfAt": [
     0.42
    ]
-  }
+  },
+  "ratedGal": 40,
+  "ratingNote": "Rating: 40 gal from the Amazon title; load not read."
  },
  {
   "id": "imagitarium-brooklyn-10",
@@ -766,7 +809,10 @@
    "est": [
     "photo: the 29 gal Brooklyn (same design)"
    ]
-  }
+  },
+  "ratedGal": 10,
+  "maxLoadLb": 210,
+  "ratingNote": "Rating: Petco page \"Weight limit of 210 lbs\", for 10 gallon aquariums."
  },
  {
   "id": "imagitarium-brooklyn-29",
@@ -797,7 +843,10 @@
    "shelf": "none",
    "brace": "window",
    "sheen": "satin"
-  }
+  },
+  "ratedGal": 29,
+  "maxLoadLb": 435,
+  "ratingNote": "Rating: Petco page \"Weight limit 435 lbs\", for 29 gallon aquariums."
  },
  {
   "id": "imagitarium-brooklyn-40",
@@ -828,7 +877,10 @@
    "shelf": "none",
    "brace": "window",
    "sheen": "satin"
-  }
+  },
+  "ratedGal": 40,
+  "maxLoadLb": 660,
+  "ratingNote": "Rating: Petco page \"Weight limit 660 lbs\", for 40 gallon tanks."
  },
  {
   "id": "imagitarium-brooklyn-55",
@@ -859,7 +911,10 @@
    "shelf": "none",
    "brace": "window",
    "sheen": "satin"
-  }
+  },
+  "ratedGal": 55,
+  "maxLoadLb": 825,
+  "ratingNote": "Rating: Petco page \"Weight limit 825 lbs\", for 55 gallons."
  },
  {
   "id": "imagitarium-winston-29",
@@ -896,7 +951,9 @@
    "handleHex": "#c9a24a",
    "base": "tapered",
    "overhangMm": 16
-  }
+  },
+  "ratedGal": 29,
+  "ratingNote": "Rating: 29 gal from the Petco title; weight limit not read."
  },
  {
   "id": "tetra-wood-5-10",
@@ -931,7 +988,9 @@
    "base": "plinth",
    "overhangMm": 16,
    "topMm": 28
-  }
+  },
+  "ratedGal": 10,
+  "ratingNote": "Rating: \"5 to 10-gal\" in the Chewy title; no load figure on the page."
  },
  {
   "id": "caitec-titaneze-10",
@@ -966,7 +1025,9 @@
     0.08
    ],
    "feetMm": 24
-  }
+  },
+  "ratedGal": 10,
+  "ratingNote": "Rating: 10 gal from the Chewy title; no load figure on the page."
  },
  {
   "id": "helloreef-15",
@@ -1003,7 +1064,9 @@
    "base": "plinth",
    "overhangMm": 6
   },
-  "hidden": true
+  "hidden": true,
+  "ratedGal": 15,
+  "ratingNote": "Rating: \"15-gal\" in the Chewy title; no load figure on the page."
  },
  {
   "id": "seapora-empress-24x12",
@@ -1043,7 +1106,9 @@
    "plateOver": 14,
    "topMm": 24,
    "overhangMm": 14
-  }
+  },
+  "ratedGal": 20,
+  "ratingNote": "Rating: That Pet Place \"Designed for 15 gallon & 20 Gallon High Tanks\" (no load figure)."
  },
  {
   "id": "seapora-empress-30x12",
@@ -1083,7 +1148,9 @@
    "plateOver": 14,
    "topMm": 24,
    "overhangMm": 14
-  }
+  },
+  "ratedGal": 37,
+  "ratingNote": "Rating: That Pet Place \"Designed for 29 gallon & 37 Gallon Tanks\" (no load figure)."
  },
  {
   "id": "seapora-monarch-oak-30x12",
@@ -1122,7 +1189,9 @@
    "overhangMm": 18,
    "doorW": 0.62,
    "doorX": 0.03
-  }
+  },
+  "ratedGal": 37,
+  "ratingNote": "Rating: That Pet Place \"designed to fit: 20 Long, 29, and 37\" (no load figure)."
  },
  {
   "id": "seapora-empress-36x18",
@@ -1162,7 +1231,9 @@
    "plateOver": 14,
    "topMm": 24,
    "overhangMm": 14
-  }
+  },
+  "ratedGal": 65,
+  "ratingNote": "Rating: That Pet Place \"designed to fit: 40 Breeder and 65\" (no load figure)."
  },
  {
   "id": "aquatop-forza-21",
@@ -1200,7 +1271,8 @@
    "topMm": 26,
    "overhangMm": 6,
    "noBack": true
-  }
+  },
+  "ratingNote": "Rating not recorded: the That Pet Place page says it fits 15 and 20-High tanks, which a 21 x 10 in top cannot carry; no load figure."
  },
  {
   "id": "aquatop-forza-30",
@@ -1236,7 +1308,9 @@
    "baseMm": 60,
    "topMm": 20,
    "overhangMm": 6
-  }
+  },
+  "ratedGal": 37,
+  "ratingNote": "Rating: That Pet Place \"standard sized 20L, 29, 30H, 37-gal aquariums\" (no load figure)."
  },
  {
   "id": "aquatlantis-platinum-36",
@@ -1312,7 +1386,9 @@
    "topPlate": "#6b4226",
    "brace": "none",
    "sheen": "satin"
-  }
+  },
+  "ratedGal": 20,
+  "ratingNote": "Rating: Walmart \"For up to 20 Gallon Tanks\" (no load figure)."
  },
  {
   "id": "vibrant-life-black-29",
@@ -1348,6 +1424,8 @@
    "baseMm": 55,
    "topMm": 30,
    "overhangMm": 12
-  }
+  },
+  "ratedGal": 29,
+  "ratingNote": "Rating: Walmart \"For up to 29 Gallon Tanks\" (no load figure)."
  }
 ]

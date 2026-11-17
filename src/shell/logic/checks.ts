@@ -16,6 +16,9 @@ import { pinnedKit } from '../../demand/pinned';
 import { gearParts } from '../../demand/gearDeals';
 import { bundleLine, gearSaleCount, type BundleLine, type GearSale } from './deals';
 import { plantBundleOpt } from '../../demand/plantBundles';
+import { standOf, standCheck } from '../../data/stands';
+import { filledLb } from './tank';
+import { volume } from '../../scene/physics';
 import { climateOf, climateText, type Climate, type Status } from '../../data/climate';
 import { verdictOf, type Issue, type Verdict } from '../../scene/verdict';
 
@@ -58,6 +61,8 @@ export function habitatView(S: TankSetup, units: Units, r: Stocking = stockingMe
     ...st.mins.map(w => ({ tone: w.level === 'over' ? 'bad' as Tone : 'warn' as Tone, text: w.text })),
     ...(st.filter === 'unset' && !empty ? [{ tone: 'warn' as Tone, text: 'No filter chosen: a filter sized for this tank is strongly recommended.' }] : []),
   ];
+  const sc = (() => { try { const sp = standOf(S); return sp ? standCheck(sp, filledLb(S), volume(S.tank).gallons) : undefined; } catch { return undefined; } })();
+  if (sc) warnings.push({ tone: sc.level === 'over' ? 'bad' as Tone : 'warn' as Tone, text: sc.text });
   return {
     empty, pill, sizeLine: tankSizeLine(S, r, units), reason: st.reason, warnings, bars,
     cats: empty ? [] : sm.cats.map(c => ({ label: c.label, word: c.word, tone: TONE[c.level], items: c.items.map(i => i.text) })),

@@ -43,6 +43,8 @@ export interface StandProduct {
   hidden?: boolean;
   /** R96: the look read off product photos (research/screens/SP1/ref/<id>-*.jpg) */
   look?: StandLook;
+  /** R108: what the maker / retailer page states, left out when it does not (never derived from the footprint): the largest tank it is rated for (gallons, "for up to N gal" / "fits 40B"), the stated weight capacity (lb); where it was read is in ratingNote (the row's url is the page). */
+  ratedGal?: number; maxLoadLb?: number; ratingNote?: string;
 }
 export const STAND_PRODUCTS = standData as unknown as StandProduct[];
 export const standProduct = (id?: string) => (id ? STAND_PRODUCTS.find(p => p.id === id) : undefined);
@@ -65,3 +67,18 @@ export function standOf(S: Pick<TankSetup, 'tank' | 'stand'>): StandProduct | un
 }
 /** "Aqueon Black cabinet stand 20 long / 29 / 37, black" */
 export const standLabel = (p: StandProduct) => `${p.brand} ${p.line}, ${p.color.split(',')[0].split(' (')[0]}`;
+
+/** R108: the one-line rating on a stand tile, "Rated 40 gal · 600 lb"; undefined when the page stated neither (nothing is implied). */
+export const standRatingLine = (p: Pick<StandProduct, 'ratedGal' | 'maxLoadLb'>): string | undefined => {
+  const parts = [p.ratedGal ? `Rated ${p.ratedGal} gal` : '', p.maxLoadLb ? `${p.maxLoadLb} lb` : ''].filter(Boolean);
+  return parts.length ? (p.ratedGal ? parts.join(' · ') : `Rated ${parts[0]}`) : undefined;
+};
+export interface StandCheck { level: 'over' | 'soft'; text: string }
+/** R108: a stand holding a tank heavier than its stated weight capacity is a clear warning; a tank bigger than its rated gallons a softer note.
+ *  No stated rating, nothing to say (and nothing implied). filledLb = the tank filled to the line (shell/logic/tank.ts filledLb). */
+export function standCheck(p: Pick<StandProduct, 'ratedGal' | 'maxLoadLb'> | undefined, filledLb: number, gallons: number): StandCheck | undefined {
+  if (!p) return undefined;
+  if (p.maxLoadLb && filledLb > p.maxLoadLb) return { level: 'over', text: `Filled tank ~${Math.round(filledLb / 10) * 10} lb is over this stand's ${p.maxLoadLb} lb rating` };
+  if (p.ratedGal && gallons > p.ratedGal + 0.5) return { level: 'soft', text: `This tank holds about ${Math.round(gallons)} gal; the stand is rated for up to ${p.ratedGal} gal` };
+  return undefined;
+}

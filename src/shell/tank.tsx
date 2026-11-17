@@ -8,12 +8,12 @@ import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { LIMITS } from '../scene/validate';
-import { CEILING_MAX, CEILING_MIN, ceilingH, fromUnit, toUnit, IN } from '../scene/physics';
+import { CEILING_MAX, CEILING_MIN, ceilingH, fromUnit, toUnit, volume, IN } from '../scene/physics';
 import { setLid, lidLocked, setDoors, doorLocked, type DoorKind } from '../scene/tankEdit';
 import { lockNote } from '../scene/integrated';
 import { lockObject, unlockObject, isLocked } from '../scene/locks';
 import { placementOf, putOnFloor, putOnStand, putOnMyFurniture, putOnFurniture, minTop, setStandProduct, type Placement } from '../scene/placement';
-import { standsFor, standOf, standProduct, GENERIC_STAND_NOTE, type StandProduct } from '../data/stands';
+import { standsFor, standOf, standProduct, standRatingLine, standCheck, GENERIC_STAND_NOTE, type StandProduct } from '../data/stands';
 import { tankKind, type SetupKind } from '../scene/pickerKind';
 import { keepInWater } from '../scene/water';
 import { clampItem } from '../scene/items';
@@ -22,7 +22,7 @@ import { pinPreset } from '../demand/pinned';
 import { soleProduct } from '../data/tanks';
 import {
   modelCard, sitsOnSummary, lidSummary, bgSummary, roomSummary, heightText, len, LIDS, lidHeld, customRows, customLine, commercialRows, commercialLine,
-  previewRow, chooseCommercial, chooseCustom, saleOf, SIZE_CHIPS, loadGroups, saveGroups, GROUP_DEFAULT, type PickRow, type SizeChip, type TankGroup, type Units, kindView, setKind,
+  previewRow, chooseCommercial, chooseCustom, saleOf, filledLb, SIZE_CHIPS, loadGroups, saveGroups, GROUP_DEFAULT, type PickRow, type SizeChip, type TankGroup, type Units, kindView, setKind,
 } from './logic/tank';
 import { Group, Icon, Pill } from './ui';
 import { waterLook, setLevel, setTint, setColor, applyPreset } from './logic/animals';
@@ -310,20 +310,22 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
 
 /** SP1: real stands that fit this tank, as picture tiles (price, style, where sold); "Generic" is the fallback estimate. */
 function StandPicker({ S, store }: { S: TankSetup; store: Store }) {
-  const fit = standsFor(S.tank), cur = standOf(S), explicit = !!S.stand.product && !!standProduct(S.stand.product) && cur?.id === S.stand.product;
+  const lb = filledLb(S), gal = volume(S.tank).gallons, fit = standsFor(S.tank), cur = standOf(S), explicit = !!S.stand.product && !!standProduct(S.stand.product) && cur?.id === S.stand.product;
   if (!fit.length) return <div class="hint" data-testid="stand-generic">No stand product is listed for this size, so the budget uses a generic estimate ({GENERIC_STAND_NOTE.split(': ')[1]}).</div>;
   return (
     <div class="standpick" role="group" aria-label="Stands that fit this tank">
       <div class="cap">Stands that fit this tank <span class="n">{fit.length}</span></div>
       <div class="pgrid">
-        {fit.map(p => (
+        {fit.map(p => { const rate = standRatingLine(p), chk = standCheck(p, lb, gal); return (
           <button type="button" class={`ptile stile${cur?.id === p.id ? ' on' : ''}`} aria-pressed={cur?.id === p.id} onClick={() => store.edit(s => setStandProduct(s, p))}>
             <div class="tart"><StandArt p={p} /></div>
             <div class="tname">{p.brand} {p.line}</div>
             <div class="tmeta"><span>${Math.round(p.priceUsd)}</span><span>{p.kind === 'cabinet' ? 'Cabinet' : 'Open frame'}, {p.color.split(',')[0].split(' (')[0]}</span></div>
+            {rate ? <small class="why rating" data-testid="stand-rating">{rate}</small> : null}
+            {chk ? <small class={`why ${chk.level === 'over' ? 'bad' : 'warn'}`} data-testid="stand-check">{chk.text}</small> : null}
             <small class="why">{p.seller}{p.est.includes('priceUsd') ? ' · price is a guess' : ''}</small>
           </button>
-        ))}
+        ); })}
         <button type="button" class={`ptile stile${!explicit && !cur ? ' on' : ''}`} onClick={() => store.edit(s => { setStandProduct(s, undefined); })} title="Keeps the drawn style and prices a typical stand by tank size">
           <div class="tname">Generic</div><div class="tmeta"><span>estimate</span></div><small class="why">Typical price by tank size, not a product</small>
         </button>

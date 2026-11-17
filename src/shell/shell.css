@@ -679,3 +679,6 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .ui2app.phone .wsswatches { gap: var(--s2); } .ui2app.phone .wssw { width: 72px; }
 .wsback { display: inline-flex; transform: rotate(180deg); }
 .ui2app.ws-on .ov.getstarted { display: none; }
+/* R108: the rating line and over-rating warning on a stand tile */
+.stile .why.rating { color: var(--text-1, inherit); font-weight: 600; }
+.stile .why.bad, .stile .why.warn { margin-top: 2px; }
