@@ -1,0 +1,68 @@
+<!doctype html><meta charset="utf-8"><title>TA1 bake</title><body style="background:#888">
+<script type="module">
+// Lane TA1 (R111): bakes the Scape workspace tiles from our own 3D models. Driven by scripts/ta1-tiles.mjs (it serves this page, receives the webp files,
+// and runs headless Chrome). Query: ?seeds=id:seed,id:seed (per-item seed), ?only=id,id (a subset), ?sheet=1 (seeds 1-4 of each item, for picking).
+import * as THREE from 'three';
+import { defaultSetup } from '/src/scene/defaults.ts';
+import { LIBRARY, makeItem } from '/src/scene/items.ts';
+import { LU, applyLighting } from '/src/render/lighting.ts';
+import { itemMesh } from '/src/render/items.ts';
+import { buildTank, PART } from '/src/render/build.ts';
+import { SUBSTRATES } from '/src/art/placeholder.ts';
+const q = new URLSearchParams(location.search), only = q.get('only')?.split(','), sheet = q.get('sheet') === '1';
+const seedOf = Object.fromEntries((q.get('seeds') ?? '').split(',').filter(Boolean).map(s => s.split(':')).map(([k, v]) => [k, +v]));
+const SCALE = 2, TW = 240 * SCALE, TH = 180 * SCALE, FOV = 28;
+const canvas = document.createElement('canvas'), r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+r.outputColorSpace = THREE.SRGBColorSpace; r.setClearColor(0x000000, 0);
+const post = (path, blob) => fetch('http://127.0.0.1:8799/' + path, { method: 'POST', body: blob });
+const toBlob = (c, qual = 0.84) => new Promise(res => c.toBlob(res, 'image/webp', qual));
+function draw(sc, cam, w, h) {
+  r.setSize(w, h, false); const mode = LU.uMode.value, water = LU.uWater.value.w; LU.uMode.value = 0; LU.uWater.value.w = 0;
+  r.render(sc, cam); LU.uMode.value = mode; LU.uWater.value.w = water;
+  const c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(canvas, 0, 0); return c;
+}
+// Hardscape: 3/4 view (yaw 0.5, pitch 0.22 like the plant stills), the bounding box's projected corners fitted to ~88 % of a fixed 4:3 frame, centred.
+function hardscape(id, seed) {
+  const S = defaultSetup(), T = S.tank; S.water.on = true;
+  const it = makeItem(T, id, 1, seed, 0, 0, {}, S), m = itemMesh(S, T, it); if (!m) return null;
+  m.position.set(0, 0, 0); m.rotation.set(0, 0, 0);
+  const sc = new THREE.Scene(); sc.add(m); applyLighting(sc); sc.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(m), c = box.getCenter(new THREE.Vector3()), rad = box.getBoundingSphere(new THREE.Sphere()).radius;
+  const cam = new THREE.PerspectiveCamera(FOV, TW / TH, rad / 50, rad * 20), YAW = 0.5, PITCH = 0.22, dir = new THREE.Vector3(Math.sin(YAW) * Math.cos(PITCH), Math.sin(PITCH), Math.cos(YAW) * Math.cos(PITCH));
+  const pts = []; for (let i = 0; i < 8; i++) pts.push(new THREE.Vector3(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z));
+  let d = rad * 4;
+  for (let k = 0; k < 30; k++) {
+    cam.position.copy(dir).multiplyScalar(d).add(c); cam.lookAt(c); cam.updateMatrixWorld(true); cam.updateProjectionMatrix();
+    let mx = 0, my = 0; for (const p of pts) { const v = p.clone().project(cam); mx = Math.max(mx, Math.abs(v.x)); my = Math.max(my, Math.abs(v.y)); }
+    const f = Math.max(mx, my) / 0.88; if (Math.abs(f - 1) < 0.01) break; d *= (1 + (f - 1) * 0.9);
+  }
+  // re-centre on the projected box so the picture is not off to one side
+  let x0 = 9, x1 = -9, y0 = 9, y1 = -9; for (const p of pts) { const v = p.clone().project(cam); x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y); }
+  const ox = (x0 + x1) / 2, oy = (y0 + y1) / 2; cam.setViewOffset(TW, TH, ox * TW / 2, -oy * TH / 2, TW, TH);
+  const out = draw(sc, cam, TW, TH); m.geometry.dispose?.(); return out;
+}
+// Substrate swatch: the real ground of a tank (same shader, grains, roughness), looked at 3/4 from above, a square 360 px.
+function swatch(type, litter) {
+  const S = defaultSetup(); S.items = []; S.fish = []; S.layout.id = 'none'; S.water.on = false;
+  S.substrate = { ...S.substrate, show: true, type, fl: 60, fr: 60, bl: 60, br: 60, litter };
+  const T = S.tank, b = buildTank({ ...S, units: 'in' }, T, null);
+  for (const o of [...b.scene.children]) if ((o.userData.part !== PART.ground && !o.isLight) || o.userData.fixture) b.scene.remove(o);
+  b.scene.updateMatrixWorld(true);
+  const sc = b.scene, c = type === 'layered' ? new THREE.Vector3(T.L / 2, 30, -8) : new THREE.Vector3(T.L / 2, 60, -T.D / 2); if (q.get('dbg')) post('log/box-' + type, new Blob([JSON.stringify([box.min, box.max, T.L, T.D])]));
+  const cam = new THREE.PerspectiveCamera(30, 1, 5, 5000);
+  cam.position.copy(c).add(type === 'layered' ? new THREE.Vector3(30, 40, 95) : new THREE.Vector3(30, 130, 95).multiplyScalar(1.7)); cam.lookAt(c);
+  return draw(sc, cam, 360, 360);
+}
+const jobs = [];
+for (const id of Object.keys(LIBRARY)) { const k = LIBRARY[id].kind; if (!['stone', 'wood', 'cave', 'ornament'].includes(k)) continue; if (only && !only.includes(id)) continue; jobs.push({ id, dir: 'scape', seeds: sheet ? [1, 2, 3, 4] : [seedOf[id] ?? 1], f: s => hardscape(id, s) }); }
+if (!sheet) {
+  for (const id of Object.keys(SUBSTRATES)) if (!only || only.includes(id)) jobs.push({ id, dir: 'substrate', seeds: [1], f: () => swatch(id) });
+  for (const leaf of ['mixed', 'oak', 'magnolia', 'catappa']) { const id = 'litter-' + leaf; if (!only || only.includes(id)) jobs.push({ id, dir: 'substrate', seeds: [1], f: () => swatch('soil', { leaf, density: 1, seed: 3 }) }); }
+}
+let n = 0;
+for (const j of jobs) for (const s of j.seeds) {
+  try { const c = j.f(s); if (!c) { await post('log/nomesh-' + j.id, new Blob(['x'])); continue; } await post(`${j.dir}/${sheet ? j.id + '_s' + s : j.id}.webp`, await toBlob(c, j.dir === 'substrate' ? 0.62 : 0.84)); n++; }
+  catch (e) { await post('log/err-' + j.id, new Blob([String((e && e.stack) || e)])); }
+}
+await post('done', new Blob([String(n)])); document.title = 'done ' + n;
+</script>
