@@ -7,7 +7,7 @@ import type { Scene } from '../scene/types';
 import { listLib } from '../scene/library';
 import { readShare, shareUrl } from '../scene/share';
 import { parseScene } from '../scene/validate';
-import { EXAMPLES, examplesInScope, exampleScenes } from '../examples';
+import { EXAMPLES, exampleScenes } from '../examples';
 import { oldUiHref } from '../uiChoice';
 import { restoreChecklist } from './logic/checklist';
 import { setProjectAsker, confirmStart, startProject } from '../ui/projectStart';
@@ -15,17 +15,20 @@ import * as P7 from '../ui/logic/files';
 import { FILE_MENU, EMPTY_LIBRARY, newProject, libraryRows, savedLine, saveAsView, hashOf, type FileAction } from './logic/files';
 import { Icon } from './ui';
 import { StartSheet } from './start';
+import { KitsScreen, ExampleGrid } from './kits';
+import { pinDeal } from '../demand/pinned';
+import type { Deal } from '../data/deals';
 import { openSection } from './open';
 import type { SetupKind } from '../scene/pickerKind';
 
 export interface Ask { title: string; text: string; actions: { label: string; value: string; primary?: boolean; danger?: boolean }[]; resolve: (v: string) => void }
-export interface FState { dlg: 'open' | 'saveas' | 'start' | null; openTab?: 'saved' | 'examples' | 'file'; ask: Ask | null; toast: { text: string; bad: boolean } | null; n: number }
+export interface FState { dlg: 'open' | 'saveas' | 'start' | 'kits' | null; openTab?: 'saved' | 'examples' | 'file'; ask: Ask | null; toast: { text: string; bad: boolean } | null; n: number }
 export interface Files {
   get(): FState; sub(fn: () => void): () => void;
   say(text: string, bad?: boolean): void; close(): void; dismissToast(): void;
   run(a: FileAction): void; save(): void;
   /** SS1: the Start sheet, its Blank door (a new empty tank of that water) and its Open doors (the Open window at a tab) */
-  openStart(): void; newTank(kind: SetupKind): void; openAt(tab: 'saved' | 'examples' | 'file'): void;
+  openStart(): void; openKits(): void; startDeal(deal: Deal, scene: Scene): Promise<void>; newTank(kind: SetupKind): void; openAt(tab: 'saved' | 'examples' | 'file'): void;
   rename(v: string): void;
   openSaved(id: string): Promise<void>; deleteSaved(id: string): void; openExample(id: string): Promise<void>;
   openFile(file: File): Promise<void>; openShared(hash: string): Promise<void>;
@@ -81,6 +84,12 @@ export function createFiles(store: Store, thumb: () => string, afterReplace: () 
       else download(store.scene);
     },
     openStart: () => set({ dlg: 'start' }),
+    openKits: () => set({ dlg: 'kits' }),
+    async startDeal(deal, scene) { // SK1: the old chooser's openDeal: pin the bundle price, load the catalog tank and its gear
+      pinDeal(deal);
+      if (!await startProject(store, scene, P7.savedText())) return;
+      P7.setLibId(null); say(`Opened the deal "${scene.name}". Customise it; Cost and time prices the bundle. Undo brings the previous tank back.`); replaced(); openSection('tank');
+    },
     newTank(kind) {
       set({ dlg: null });
       void (async () => { if (await startProject(store, newProject(store.scene.units, kind, store.tank.camera), P7.savedText())) { P7.setLibId(null); say('New project. Undo brings the previous one back.'); afterReplace(); openSection('tank'); } })();
@@ -172,10 +181,10 @@ export function FileMenu({ files }: { files: Files }) {
   );
 }
 
-function Dialog({ title, onClose, children, wide }: { title: string; onClose: () => void; children: preact.ComponentChildren; wide?: boolean }) {
+function Dialog({ title, onClose, children, wide, full }: { title: string; onClose: () => void; children: preact.ComponentChildren; wide?: boolean; full?: boolean }) {
   return (
     <div class="scrim" onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div class={`dlg${wide ? ' wide' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
+      <div class={`dlg${wide ? ' wide' : ''}${full ? ' full' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
         <div class="sec-head"><h2>{title}</h2><button type="button" class="btn icon ghost" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
         <div class="dlgbody">{children}</div>
       </div>
@@ -203,9 +212,7 @@ function OpenDialog({ files, first }: { files: Files; first?: OpenTab }) {
             ? <span class="acts"><button type="button" class="btn sm danger" onClick={() => { files.deleteSaved(r.id); setDel(null); }}>Delete for good</button><button type="button" class="btn sm ghost" onClick={() => setDel(null)}>Keep</button></span>
             : <button type="button" class="btn sm ghost" aria-label={`Delete ${r.name}`} title={`Delete “${r.name}” from this browser`} onClick={() => setDel(r.id)}>Delete</button>}
         </div>))}</div> : <p class="hint" data-empty="true">{EMPTY_LIBRARY}</p>) : null}
-      {tab === 'examples' ? <div class="libgrid">{examplesInScope().map(x => (
-        <div class="card libcard"><button type="button" class="libopen" title={x.hint} onClick={() => void files.openExample(x.id)}>
-          <img src={x.thumb} alt="" loading="lazy" /><b class="t">{x.name}</b><span class="m">{x.hint}</span></button></div>))}</div> : null}
+      {tab === 'examples' ? <ExampleGrid files={files} /> : null}
       {tab === 'file' ? <div class="filetab">
         <div class="card"><div class="t">A scene file</div><div class="m">A .json file saved with Save as… (up to 5 MB). It is also added to your saved tanks.</div>
           <input ref={fileIn} type="file" accept=".json,application/json" hidden onChange={e => { const f = (e.target as HTMLInputElement).files?.[0]; (e.target as HTMLInputElement).value = ''; if (f) void files.openFile(f); }} />
@@ -247,6 +254,7 @@ export function FileLayer({ store, files }: { store: Store; files: Files }) {
   return (
     <>
       {s.dlg === 'open' ? <OpenDialog files={files} first={s.openTab} /> : null}
+      {s.dlg === 'kits' ? <KitsScreen files={files} Dialog={Dialog} /> : null}
       {s.dlg === 'start' ? <StartSheet files={files} Dialog={Dialog} /> : null}
       {s.dlg === 'saveas' ? <SaveAsDialog store={store} files={files} /> : null}
       {s.ask ? <Dialog title={s.ask.title} onClose={() => s.ask!.resolve(s.ask!.actions[0].value)}>

@@ -15,7 +15,7 @@ export function StartSheet({ files, Dialog }: { files: Files; Dialog: DialogC })
   markWelcomed();
   const go = (id: string) => {
     if (id === 'blank') { setBlank(true); return; }
-    if (id === 'starters') files.openAt('examples');
+    if (id === 'starters') files.openKits();
     else if (id === 'open') files.openAt('saved');
     else if (id === 'animal') { files.close(); dispatchEvent(new Event(ANIMAL_DOOR_EVENT)); }
   };

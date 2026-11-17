@@ -783,3 +783,19 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .clwrap .clLine { position: absolute; top: 30px; bottom: 30px; width: 0; border-left: 2px solid var(--bad); pointer-events: none; }
 .clwrap .clLine em { position: absolute; top: -14px; left: 0; transform: translateX(-50%); font: 600 10px/1 var(--font); color: var(--bad); font-style: normal; white-space: nowrap; }
 @media (max-width: 480px) { .clwrap .clAx { --cl-n: 84px; --cl-v: 80px; } }
+/* SK1: Starters and kits, a full-screen browse (DG1 fit: centred, 100dvh, the body scrolls inside) */
+.scrim:has(.dlg.full) { padding: 0; }
+.dlg.full { width: 100%; max-width: 100%; height: 100dvh; max-height: 100dvh; border-radius: 0; border: 0; }
+.dlg.full .dlgbody { overflow: auto; min-height: 0; }
+.kitwrap { max-width: 1200px; margin: 0 auto; display: grid; gap: var(--s3); align-content: start; padding-bottom: var(--s4); }
+.kitgrid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.dealcard { display: grid; gap: 4px; align-content: start; }
+.dealcard .dealpic { aspect-ratio: 16 / 10; border-radius: var(--r-ctl); background: var(--bg-sunken); display: grid; place-items: center; overflow: hidden; padding: var(--s2); box-sizing: border-box; }
+.dealcard .dealpic img { width: 100%; height: 100%; object-fit: contain; }
+.dealcard .dealpic > span { display: block; width: 62%; } .dealcard .dealpic svg { display: block; width: 100%; height: auto; }
+.dealcard .m { display: block; -webkit-line-clamp: unset; }
+.dealprice { font-size: var(--fs-md, 16px); } .dealprice s, .dealprice .off { color: var(--text-3); } .dealprice .off { color: var(--good, #2a7); }
+.dealsave { color: var(--good, #2a7); font-weight: 600; font-size: var(--fs-sm); }
+.dealsort { display: flex; flex-wrap: wrap; gap: var(--s2); } .dealsort .chip.on { border-color: var(--accent); color: var(--accent); }
+.dealcard .acts { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; margin-top: var(--s1); }
+@media (max-width: 640px) { .kitgrid { grid-template-columns: 1fr; } }

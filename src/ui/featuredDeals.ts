@@ -10,7 +10,7 @@ const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;
 const FINISH = { black: '#1d1f24', white: '#e8e6e0', oak: '#b58a58' };
 const PARTS: Record<string, string> = { tank: 'tank', stand: 'stand', lid: 'lid', light: 'light', filter: 'filter', heater: 'heater' };
 /** Front-view picture of the setup: tank (real aspect), lid, stand in its style and finish. */
-function pic(d: Deal, sc: Scene): string {
+export function pic(d: Deal, sc: Scene): string {
   const S = sc.tanks[0], L = S.tank.L, H = S.tank.H, W = 120, h = Math.max(30, Math.min(52, W * H / L)), stand = S.stand.show, sh = stand ? 38 : 0, y0 = 8, col = FINISH[S.stand.finish] ?? FINISH.black;
   const lid = S.lid === 'open' ? '' : `<rect x="4" y="${y0}" width="${W - 8}" height="5" rx="1" fill="${S.lid === 'glass' ? '#9fb8c4' : '#15171b'}"/>`;
   const led = d.includes.includes('light') ? `<rect x="14" y="${y0 + 5}" width="${W - 28}" height="2" fill="#f4f0d8"/>` : '';
@@ -21,7 +21,7 @@ function pic(d: Deal, sc: Scene): string {
 }
 /** Snapshot of each deal's starting scene, like the examples' pictures (src/data/deal-pics/<deal id>.jpg; procedure in prompts/deals-sweep.md). */
 const PICS = import.meta.glob('../data/deal-pics/*.jpg', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
-const picUrl = (id: string) => PICS[`../data/deal-pics/${id}.jpg`];
+export const picUrl = (id: string) => PICS[`../data/deal-pics/${id}.jpg`];
 const usd = (v: number) => '$' + Math.round(v).toLocaleString();
 
 /** The listing's own product photo (linked from the retailer, not copied), with `fallback` (snapshot or sketch) shown if it fails to load. */
