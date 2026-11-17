@@ -1,6 +1,6 @@
 // UI2 shell (request R91, 2026-11-15): Full screen and Tank only, as plain state and decisions (the Fullscreen API calls live in fullscreen.tsx).
-// Full screen = the browser's element fullscreen with the normal UI. Tank only = the panel, header, rail and bars hidden for a clean view (with
-// browser fullscreen too where there is one). iPhone Safari has no element fullscreen: there the Full screen item is hidden and Tank only is the fallback.
+// FS1 (2026-11-17): Full screen = the browser's element fullscreen with every bar, panel, card and button hidden: only the tank. Tank only = the same clean view
+// without browser fullscreen (the iPhone Safari fallback, where the Full screen item is hidden).
 export interface FsEnv { api: boolean; iphone: boolean }
 export interface FsState { fullscreen: boolean; tankOnly: boolean; /** Tank only entered the browser's fullscreen itself, so leaving fullscreen (Esc) leaves it too */ viaApi: boolean }
 export const FS_OFF: FsState = { fullscreen: false, tankOnly: false, viaApi: false };
@@ -11,23 +11,24 @@ export const fsAvailable = (e: FsEnv) => e.api && !e.iphone;
 export const isIphone = (ua: string) => /iPhone|iPod/.test(ua);
 
 export interface FsItem { id: FsId; label: string; hint: string }
-/** The View menu's items for this state: Full screen is left out where the browser cannot do it. */
+/** The View menu's items for this state. FS1 (2026-11-17): Full screen = browser fullscreen AND every bar, panel and card hidden (only the tank).
+ *  "Tank only" stays as the variant without browser fullscreen (iPhone Safari has none; on a desktop it is a clean view inside the window). */
 export function fsItems(s: FsState, e: FsEnv): FsItem[] {
   const out: FsItem[] = [];
-  if (fsAvailable(e)) out.push({ id: 'full', label: s.fullscreen && !s.tankOnly ? 'Exit full screen' : 'Full screen', hint: 'F' });
-  out.push({ id: 'tank', label: s.tankOnly ? 'Exit tank only' : 'Tank only', hint: 'Hides the panels and bars for a clean view' });
+  if (fsAvailable(e)) out.push({ id: 'full', label: s.fullscreen && s.tankOnly && s.viaApi ? 'Exit full screen' : 'Full screen', hint: 'F: just the tank, no bars' });
+  out.push({ id: 'tank', label: s.tankOnly && !s.viaApi ? 'Exit tank only' : 'Tank only', hint: 'Hides the panels and bars, stays in the window' });
   return out;
 }
 
 /** What choosing an item does: the Fullscreen API call to make and the state after it. */
 export function choose(s: FsState, e: FsEnv, id: FsId): { action: FsAction; next: FsState } {
   if (id === 'full') {
-    if (!fsAvailable(e)) return { action: null, next: s };
-    if (s.fullscreen) return { action: 'exit', next: { fullscreen: false, tankOnly: false, viaApi: false } };
-    return { action: 'enter', next: { fullscreen: true, tankOnly: false, viaApi: false } };
+    if (!fsAvailable(e)) return choose(s, e, 'tank');   // no browser fullscreen: the clean view is the best we can do
+    if (s.tankOnly && s.viaApi) return { action: 'exit', next: FS_OFF };
+    if (s.fullscreen) return { action: null, next: { fullscreen: true, tankOnly: true, viaApi: false } };   // already fullscreen (F11): just hide the bars; Esc then leaves the bars hidden, Exit button shows them
+    return { action: 'enter', next: { fullscreen: true, tankOnly: true, viaApi: true } };
   }
   if (s.tankOnly) return { action: s.viaApi && s.fullscreen ? 'exit' : null, next: { fullscreen: s.viaApi ? false : s.fullscreen, tankOnly: false, viaApi: false } };
-  if (fsAvailable(e) && !s.fullscreen) return { action: 'enter', next: { fullscreen: true, tankOnly: true, viaApi: true } };
   return { action: null, next: { ...s, tankOnly: true, viaApi: false } };
 }
 
@@ -37,10 +38,10 @@ export function onFullscreenChange(s: FsState, nowFull: boolean): FsState {
   return !nowFull && s.viaApi ? { fullscreen: false, tankOnly: false, viaApi: false } : { ...s, fullscreen: nowFull };
 }
 
-/** The F key: toggles Full screen, never while typing in a field and never with Ctrl / Alt / Meta. Where there is no Full screen it toggles Tank only. */
+/** The F key: toggles Full screen (Tank only where there is no browser fullscreen), never while typing in a field and never with Ctrl / Alt / Meta. Inside a Tank only that is not browser fullscreen it leaves that. */
 export function keyChoice(e: { key: string; ctrlKey?: boolean; metaKey?: boolean; altKey?: boolean }, typing: boolean, env: FsEnv, s: FsState): FsId | null {
   if (typing || e.ctrlKey || e.metaKey || e.altKey || e.key.toLowerCase() !== 'f') return null;
-  if (s.tankOnly) return s.fullscreen && fsAvailable(env) ? 'full' : 'tank';
+  if (s.tankOnly && !s.viaApi) return 'tank';
   return fsAvailable(env) ? 'full' : 'tank';
 }
 

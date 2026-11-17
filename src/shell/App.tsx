@@ -284,7 +284,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
       {phone && !ws ? <TabBar open={more ? 'more' : section} onPick={tab} /> : null}
       <FileLayer store={store} files={files} />
       {door ? <AnimalDoor store={store} say={files.say} onClose={() => setDoor(false)} /> : null}
-      {fs.tankOnly ? <FsExit /> : null}
+      {fs.tankOnly ? <FsExit full={fs.viaApi} /> : null}
       {maker ? <Maker store={store} init={maker} viewHost={viewHost} getViewer={viewer} preview={preview} onEnd={() => { setMaker(null); setLibN(n => n + 1); }} /> : null}
     </div>
   );

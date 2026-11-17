@@ -40,7 +40,7 @@ export function useFs(): FsState {
 export const useFsItems = () => { const s = useFs(); return { state: s, items: fsItems(s, env()) }; };
 
 /** Small floating exit button in Tank only; it fades after 2 s without a pointer move or touch. */
-export function FsExit() {
+export function FsExit({ full }: { full: boolean }) {
   const [shown, setShown] = useState(true);
   useEffect(() => {
     let t = 0;
@@ -48,5 +48,5 @@ export function FsExit() {
     wake(); addEventListener('pointermove', wake); addEventListener('pointerdown', wake);
     return () => { clearTimeout(t); removeEventListener('pointermove', wake); removeEventListener('pointerdown', wake); };
   }, []);
-  return <button type="button" class={`btn sm fsexit glass${shown ? '' : ' idle'}`} title="Back to the full app (F or Esc)" onClick={() => chooseFs('tank')}><Icon name="x" /> Exit tank only</button>;
+  return <button type="button" class={`btn sm fsexit glass${shown ? '' : ' idle'}`} title="Back to the app (F or Esc)" onClick={() => chooseFs(full ? 'full' : 'tank')}><Icon name="x" /> {full ? 'Exit full screen' : 'Exit tank only'}</button>;
 }
