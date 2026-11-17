@@ -110,7 +110,7 @@ export function contactObjects(S: TankSetup, T: Tank, items: { it: Item; m: THRE
   // lighter than the shaded sand round it (a pale cloud round every rock, Nathan 2026-11-12): over a painted berm the blob follows its surface
   const drape = surface ?? ground; // blobs and berms lie on the drawn mesh's own triangles (render/build.ts SURF)
   const berms = FX.embed && skin && skin.color === 0xffffff ? list.filter(b => b.grains && b.berm) : [];
-  if (FX.contact && list.length) out.push(blobMesh(T, list, berms.length ? onBerm(berms, drape) : drape, surface ? 0.4 * roughOf(S.substrate) : roughOf(S.substrate)));
+  if (FX.contact && list.length) out.push(blobMesh(T, list, berms.length ? onBerm(berms, drape) : drape, (surface ? 0.4 * roughOf(S.substrate) : roughOf(S.substrate)) + (berms.length ? 40 : 0)));
   if (FX.ground) out.push(...footGrains(S, T, list.filter(b => b.grains), ground));
   if (FX.mix) out.push(...coarseFeet(S, T, list.filter(b => b.grains && b.fx), ground));
   if (FX.embed && skin) out.push(...bermObjects(S, T, list.filter(b => b.grains && b.berm), drape, skin));
@@ -243,6 +243,7 @@ export const contactKey = (items: Item[]) => 'contact' + JSON.stringify([FX.cont
 
 /** What the ground mesh is drawn with (render/build.ts addSubstrate): the berm round a piece uses the same skin. */
 export interface GroundSkin { map: THREE.Texture; color: number; tile: number; colAt: (x: number, d: number) => number[]; terra: boolean }
+// colAt returns r, g, b, then the ground's own smooth lit normal (nx, ny, nz): the berm takes that normal plus its mound's slope (SB1)
 
 /**
  * A floor-plan point pulled inside the tank's outline (at least `gap` mm from every pane): the berm ring of a piece
@@ -268,7 +269,7 @@ const wobble = (u: number, a: number) => 1 + 0.11 * Math.sin(a * 2 + u * 40) + 0
 /** How far out (in footprints) a floor-plan point is from a piece, and the berm's height there, mm: a plateau against the piece, falling away. */
 function bermAt(b: Blob, x: number, d: number) {
   const lx = (x - b.x) * b.ux + (d - b.d) * b.ud, ld = -(x - b.x) * b.ud + (d - b.d) * b.ux;
-  const rho = Math.hypot(lx / b.fx!, ld / b.fd!), r = rho / wobble(b.u ?? 0, Math.atan2(ld, lx));
+  const rho = Math.hypot(lx / b.fx!, ld / b.fd!), r = rho / wobble(b.u ?? 0, Math.atan2(ld / b.fd!, lx / b.fx!)); // SB1: the angle the mesh was built at (atan2 of the raw lengths differed on a long piece, so a point's rho was not the ring's t)
   return { rho: r, h: r <= 1 ? b.berm! : b.berm! * smooth(0, 1, 1 - (r - 1) / (BERM_OUT - 1)) };
 }
 
@@ -283,19 +284,30 @@ function bermObjects(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt, skin
   // over 3D grains (gravel) a painted berm hides real stones under a flat dark smear (Nathan's blind test 2026-11-12: nano wood base):
   // the berm there is only its spilled grains, denser and a little damp-toned
   if (skin.color !== 0xffffff) return spillGrains(S, T, list, ground, 0.8, true);
-  const NA = 28, NR = 7, nv = (NR + 1) * NA, pos = new Float32Array(list.length * nv * 3), col = new Float32Array(list.length * nv * 3), uv = new Float32Array(list.length * nv * 2), idx: number[] = [];
+  const NA = 48, NR = 16, nv = (NR + 1) * NA, pos = new Float32Array(list.length * nv * 3), col = new Float32Array(list.length * nv * 3), nrm = new Float32Array(list.length * nv * 3), uv = new Float32Array(list.length * nv * 2), idx: number[] = [];
   const keep = clampInside(T), scale = skin.color === 0xffffff ? 1 : 0.5; // over 3D grains the berm is lower: the spilled grains make up the rest
+  // SB1: every berm is one opaque mesh each, so where two overlap the nearer-to-the-eye surface won and showed its own colour: a hard
+  // line (long, straight-looking, diagonal on the ripples) wherever one mound's surface crossed the other's. Height and damp ring are
+  // therefore functions of the POINT (the tallest mound, the darkest ring over all pieces), the same in every mesh that covers it:
+  // whichever mesh wins at a pixel, it shows the same colour and height (Nathan 2026-11-17, "sharp edges in substrates")
+  const heightAll = (x: number, d: number) => { let h = 0; for (const b of list) { const l = bermAt(b, x, d); if (l.rho < BERM_OUT) h = Math.max(h, l.h * scale); } return h; };
+  const dampAll = (x: number, d: number) => { let w = 1; for (const b of list) { const l = bermAt(b, x, d); if (l.rho < BERM_OUT) w = Math.min(w, 1 - 0.45 * smooth(0.3, 0.85, l.rho) * (1 - smooth(0.9, 1.55, l.rho))); } return w; }; // dark at the piece's edge, fading both ways: no dark rim where the mesh starts
   list.forEach((b, bi) => {
-    const o = bi * nv, H = b.berm! * scale;
+    const o = bi * nv;
     for (let r = 0; r <= NR; r++) for (let k = 0; k < NA; k++) {
-      const a = k / NA * Math.PI * 2, w = wobble(b.u ?? 0, a), t = 0.7 + (BERM_OUT - 0.7) * r / NR, rho = t * w;
+      const a = k / NA * Math.PI * 2, w = wobble(b.u ?? 0, a), t = BERM_OUT * r / NR, rho = t * w; // SB1: from the centre (0.7 left a hole whose inner rim was a hard dark outline on any piece that is not elliptical)
       const lx = Math.cos(a) * rho * b.fx!, ld = Math.sin(a) * rho * b.fd!, [x, d] = keep(b.x + lx * b.ux - ld * b.ud, b.d + lx * b.ud + ld * b.ux);
-      const g = ground(x, d), h = t <= 1 ? H : H * smooth(0, 1, 1 - (t - 1) / (BERM_OUT - 1)), i = o + r * NA + k, p = i * 3, c = skin.colAt(x, d);
+      const g = ground(x, d), h = heightAll(x, d), i = o + r * NA + k, p = i * 3, c = skin.colAt(x, d);
       // the damp ring: darker and a touch cooler against the piece, back to the bed's colour about 1.5 footprints out
-      const wet = 0.55 + 0.45 * smooth(0.9, 1.55, t);
+      const wet = dampAll(x, d);
       pos[p] = g[0]; pos[p + 1] = g[1] + h + (r === NR ? 0 : 0.15); pos[p + 2] = g[2];
       col[p] = c[0] * wet * 0.96; col[p + 1] = c[1] * wet; col[p + 2] = c[2] * wet * 1.04;
       uv[i * 2] = g[0] / skin.tile; uv[i * 2 + 1] = -g[2] / skin.tile;
+      // SB1: the lit shader's normal = the ground's own smooth per-vertex normal + the mound's slope, never computeVertexNormals on this
+      // coarse ring (28 x 7 samples of the exact rippled ground: its normals differed from the ground mesh's, so each berm's outline
+      // showed as a hard-edged lighter / darker polygon, Nathan 2026-11-17)
+      const e = 3, hx = (heightAll(x + e, d) - heightAll(x - e, d)) / (2 * e), hd = (heightAll(x, d + e) - heightAll(x, d - e)) / (2 * e);
+      const nn = new THREE.Vector3(c[3] - hx, c[4], c[5] + hd).normalize(); nrm[p] = nn.x; nrm[p + 1] = nn.y; nrm[p + 2] = nn.z;
     }
     for (let r = 0; r < NR; r++) for (let k = 0; k < NA; k++) {
       const a = o + r * NA + k, a1 = o + r * NA + (k + 1) % NA, c = a + NA, c1 = a1 + NA;
@@ -304,8 +316,7 @@ function bermObjects(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt, skin
   });
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
-  g.setIndex(idx); g.computeVertexNormals();
-  const n = g.attributes.normal; for (let i = 0; i < n.count; i++) if (n.getY(i) < 0) n.setXYZ(i, -n.getX(i), -n.getY(i), -n.getZ(i));
+  g.setAttribute('normal', new THREE.BufferAttribute(nrm, 3)); g.setIndex(idx);
   g.computeBoundingSphere();
   const m = new THREE.MeshBasicMaterial({ map: skin.map, color: skin.color, vertexColors: true, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
   m.userData.sub = true;

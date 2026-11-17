@@ -208,6 +208,7 @@ try {
       const grid = {}, labels = {};
       for (const fx of FXSETS) {
         await br.ev(`__vf.setFx(${JSON.stringify(fx)})`);
+        if (opt('pre', '')) { const r = await br.ev(opt('pre', '')); if (r != null) log('pre:', JSON.stringify(r).slice(0, 3000)); } // --pre "<js>": debug hook run in the page after each fx set (viewer = __gb.viewer)
         for (const view of opt('views', 'front,ground,rock').split(',')) {
           await br.ev(`__vf.view(${JSON.stringify(view)})`);
           for (const t of TIMES) { // --times: the caustic clock frozen at each (a strip of the motion); else the fixed 7.3 s

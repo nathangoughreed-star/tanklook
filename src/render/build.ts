@@ -1256,7 +1256,7 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   sc.userData.groundAt = (x: number, d: number) => G([x, d]); // the drawn ground, for the contact shadows (render/contact.ts)
   sc.userData.groundSurface = SURF; // the same on the mesh's own triangles (draped things: render/contact.ts)
   // VF-C2 (fx embed): what the berm round a piece needs to look like the ground (render/contact.ts bermMesh)
-  if (FX.embed && sub.show) sc.userData.groundSkin = { map: sub.type === 'custom' ? blendTexture(sub.custom, sub.custom.grain2 !== 'none' ? 'm' : 'a') : substrateTexture(sub.type), color: gd ? 0x6e6e6e : 0xffffff, tile, colAt: (x: number, d: number) => colAt([x, d]).slice(0, 3), terra }; // VF9: the ground's own bilinear colour (exactAt shaded each point by its ripple-scale slope: pale hard-edged slivers over the smoother ground, Nathan 2026-11-15)
+  if (FX.embed && sub.show) sc.userData.groundSkin = { map: sub.type === 'custom' ? blendTexture(sub.custom, sub.custom.grain2 !== 'none' ? 'm' : 'a') : substrateTexture(sub.type), color: gd ? 0x6e6e6e : 0xffffff, tile, colAt: (x: number, d: number) => colAt([x, d]).slice(0, 6), terra }; // VF9: the ground's own bilinear colour (exactAt shaded each point by its ripple-scale slope: pale hard-edged slivers over the smoother ground, Nathan 2026-11-15)
   if (gl) for (const o of [...grainMeshes(S, T, (x, d) => G([x, d])), ...(bowl ? [] : glassGrains(S, T, (x, d) => G([x, d])[1]))]) sc.add(o);
   const gt = grainTop(gl); // litter lies on the grains
   if (sub.litter?.density) for (const o of litterMeshes(S, T, (x, d) => { const p = SURF(x, d); p[1] += gt; return p; })) sc.add(o);
