@@ -17,9 +17,9 @@ describe('SS1 start sheet', () => {
     expect(shouldWelcome(null, 'bad file', mem())).toBe(false);
   });
   it('four doors with saved tanks, three without', () => {
-    expect(doorsFor(0).map(d => d.id)).toEqual(['blank', 'starters', 'animal']);
-    expect(doorsFor(2).map(d => d.id)).toEqual(['blank', 'starters', 'animal', 'open']);
-    expect(doorsFor(2)[3].hint).toContain('2 saved');
+    expect(doorsFor(0).map(d => d.id)).toEqual(['blank', 'examples', 'deals', 'animal']);
+    expect(doorsFor(2).map(d => d.id)).toEqual(['blank', 'examples', 'deals', 'animal', 'open']);
+    expect(doorsFor(2)[4].hint).toContain('2 saved');
   });
   it('the blank door offers the aquarium kinds', () => {
     const k = blankKinds().map(x => x.kind);

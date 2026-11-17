@@ -785,11 +785,11 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .clwrap .clLine { position: absolute; top: 30px; bottom: 30px; width: 0; border-left: 2px solid var(--bad); pointer-events: none; }
 .clwrap .clLine em { position: absolute; top: -14px; left: 0; transform: translateX(-50%); font: 600 10px/1 var(--font); color: var(--bad); font-style: normal; white-space: nowrap; }
 @media (max-width: 480px) { .clwrap .clAx { --cl-n: 84px; --cl-v: 80px; } }
-/* SK1: Starters and kits, a full-screen browse (DG1 fit: centred, 100dvh, the body scrolls inside) */
+/* SK1 / SK3: Example tanks and Bundles and sales, full-screen browses (DG1 fit: centred, 100dvh, the body scrolls inside) */
 .scrim:has(.dlg.full) { padding: 0; }
 .dlg.full { width: 100%; max-width: 100%; height: 100dvh; max-height: 100dvh; border-radius: 0; border: 0; }
 .dlg.full .dlgbody { overflow: auto; min-height: 0; }
-.kitwrap { max-width: 1200px; margin: 0 auto; display: grid; gap: var(--s3); align-content: start; padding-bottom: var(--s4); }
+.kitwrap { width: 100%; max-width: 1200px; margin: 0 auto; display: grid; gap: var(--s3); align-content: start; padding-bottom: var(--s4); }
 .kitgrid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
 .dealcard { display: grid; gap: 4px; align-content: start; }
 .dealcard .dealpic { aspect-ratio: 16 / 10; border-radius: var(--r-ctl); background: var(--bg-sunken); display: grid; place-items: center; overflow: hidden; padding: var(--s2); box-sizing: border-box; }
@@ -837,3 +837,7 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .dealcard .dealpic.photo { background: #fff; }
 .dealcard .dealfb { display: block; width: 62%; } .dealcard .dealfb[hidden] { display: none; } .dealcard .dealfb > span, .dealcard .dealfb svg { display: block; width: 100%; } .dealcard .dealfb > img { width: 100%; height: 100%; object-fit: contain; }
 .dealcard .dealpic img[hidden] { display: none; }
+/* SK3: an item-on-sale card with no photo shows its kind (Light, Filter...) in the picture box */
+.dealcard .itemkind { display: block; text-align: center; color: var(--tx-3, #8a94a6); font-size: 1.1rem; }
+.itemcard .dealpic .dealfb { width: 100%; height: 100%; display: grid; place-items: center; } .itemcard .dealpic .dealfb[hidden] { display: none; } .itemcard .dealpic .dealfb > img { width: auto; max-width: 100%; max-height: 100%; }
+@media (max-width: 640px) { .kitwrap .seg.full button { padding-inline: 4px; font-size: 0.82rem; white-space: nowrap; } }

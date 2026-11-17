@@ -13,13 +13,14 @@ export function shouldWelcome(restored: unknown, error?: string, st?: St): boole
 }
 export function markWelcomed(st?: St): void { try { store(st)?.setItem(WELCOME_KEY, '1'); } catch { /* private mode: it may show again */ } }
 
-export type DoorId = 'blank' | 'starters' | 'animal' | 'open';
+export type DoorId = 'blank' | 'examples' | 'deals' | 'animal' | 'open';
 export interface Door { id: DoorId; label: string; hint: string }
-/** The four doors; Open saved only when this browser has saved tanks. */
+/** The doors; Open saved only when this browser has saved tanks. */
 export function doorsFor(savedCount: number): Door[] {
   const d: Door[] = [
     { id: 'blank', label: 'Blank tank', hint: 'Pick fresh or salt water, then build it your way' },
-    { id: 'starters', label: 'Starters and kits', hint: 'Ready-made tanks to look at or start from' },
+    { id: 'examples', label: 'Example tanks', hint: 'Finished tanks to look at or start from' },
+    { id: 'deals', label: 'Bundles and sales', hint: 'Kits and discounts' },
     { id: 'animal', label: 'From an animal I want', hint: 'Name a fish or critter and get a tank that suits it' },
   ];
   if (savedCount > 0) d.push({ id: 'open', label: 'Open a saved tank', hint: `${savedCount} saved in this browser` });

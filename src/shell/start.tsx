@@ -1,5 +1,5 @@
-// SS1 (2026-11-16): the Start sheet of the new UI. Shown once on a first visit and from New in the header menu; four doors
-// (Blank tank, Starters and kits, From an animal I want, Open a saved tank). Closable: Esc, the x, or "Just look around" leave the empty tank.
+// SS1 (2026-11-16): the Start sheet of the new UI. Shown once on a first visit and from New in the header menu; doors
+// (Blank tank, Example tanks, Bundles and sales, From an animal I want, Open a saved tank). Closable: Esc, the x, or "Just look around" leave the empty tank.
 import { useState } from 'preact/hooks';
 import type { ComponentChildren } from 'preact';
 import type { Files } from './files';
@@ -15,7 +15,8 @@ export function StartSheet({ files, Dialog }: { files: Files; Dialog: DialogC })
   markWelcomed();
   const go = (id: string) => {
     if (id === 'blank') { setBlank(true); return; }
-    if (id === 'starters') files.openKits();
+    if (id === 'examples') files.openExamples();
+    else if (id === 'deals') files.openKits();
     else if (id === 'open') files.openAt('saved');
     else if (id === 'animal') { files.close(); dispatchEvent(new Event(ANIMAL_DOOR_EVENT)); }
   };

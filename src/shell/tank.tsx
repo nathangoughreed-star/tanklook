@@ -387,7 +387,7 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
   return (
     <section class="panel picker" aria-label="Choose a tank" onKeyDown={onKey}>
       <div class="sec-head"><button type="button" class="btn icon ghost" aria-label="Back to the Tank section" title="Back (Esc)" onClick={onClose}>◂</button><h2>Choose a tank</h2>
-        <button type="button" class={`btn kitsbtn${hasWork(store.scene) ? ' ghost sm' : ' primary'}`} title="Browse ready-made starters, bundles and sales instead of picking a single tank" onClick={() => dispatchEvent(new Event(KITS_EVENT))}>Start from a bundle or kit</button>
+        <button type="button" class={`btn kitsbtn${hasWork(store.scene) ? ' ghost sm' : ' primary'}`} title="Browse bundles, kits and sales instead of picking a single tank" onClick={() => dispatchEvent(new Event(KITS_EVENT))}>Start from a bundle or kit</button>
         <span class="hint">arrow keys flip, the tank redraws</span></div>
       <div class="sec-body" ref={listRef} role="listbox" aria-label="Tanks" tabIndex={-1}>
         <label class="search"><Icon name="search" /><input class="input" type="search" placeholder="Search tanks" value={q} onInput={e => setQ((e.target as HTMLInputElement).value)} aria-label="Search tanks" /></label>
