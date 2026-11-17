@@ -1123,8 +1123,8 @@ for (const r of albinoSpecies.species as { albino?: string; art: string; female?
 
 // CM3: black skirt tetra (Gymnocorymbus ternetzi): a deep silvery-grey body, two dark bars behind the gill, tall dark dorsal and the long black anal "skirt"
 Object.assign(PLANS, {
-  blackskirt: { shimmer: 0.6, shimmerRgb: '215,225,235', gillLine: 0.28, noseCap: 0.03, gape: 0.022, gapeDrop: 0.005, thick: 0.4, depth: 0.31, pedU: 0.2, ped: 0.04, peak: 0.55, snout: 0.55, shade: ['#6c706a', '#aeb1ab', '#d7d8d2'], tail: { type: 'fork', h: 0.15, tint: '#8a8e8c', a: 0.55 }, fin: '#3a3c3e',
-    dorsal: { at: 0.62, len: 0.13, h: 0.16, rake: 0.3, lead: 0.6, tip: 'point', trail: 0.06, drop: 0.3, tint: '#26272a', a: 0.88 }, anal: { at: 0.74, len: 0.52, h: 0.2, rake: 0.5, lead: 0.7, tip: 'point', trail: 0.05, drop: 0.5, tint: '#1c1d20', a: 0.9 }, adipose: true, pelvic: { u: 0.62, len: 0.07, tint: '#3a3c3e' },
+  blackskirt: { shimmer: 0.6, shimmerRgb: '215,225,235', gillLine: 0.28, noseCap: 0.03, gape: 0.022, gapeDrop: 0.005, thick: 0.4, depth: 0.36, pedU: 0.2, ped: 0.04, peak: 0.5, snout: 0.55, shade: ['#6c706a', '#aeb1ab', '#d7d8d2'], tail: { type: 'fork', h: 0.15, tint: '#8a8e8c', a: 0.55 }, fin: '#3a3c3e',
+    dorsal: { at: 0.62, len: 0.14, h: 0.14, rake: 0.5, lead: 0.6, tip: 'point', trail: 0.07, drop: 0.5, tint: '#26272a', a: 0.88 }, anal: { at: 0.72, len: 0.5, h: 0.14, rake: 0.85, lead: 0.5, tip: 'point', trail: 0.08, drop: 0.85, tint: '#1c1d20', a: 0.9 }, adipose: true, pelvic: { u: 0.62, len: 0.07, tint: '#3a3c3e' },
     marks: [{ k: 'band', u0: 0.22, u1: 0.92, v0: 0.07, v1: 0.18, c: '#e6e8e4', a: 0.4, f: 0.03 }, { k: 'bars', us: [0.865, 0.78], w: 0.035, c: '#16171a', a: 0.82 }],
     eye: { r: 0.03, iris: ['#cfd4d6', '#4a4e52'] } },
 });

@@ -689,3 +689,4 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .swatch.on { border-color: var(--accent, #4aa3ff); box-shadow: 0 0 0 1px var(--accent, #4aa3ff) inset; }
 .swatch-img { width: 100%; height: 44px; object-fit: contain; background: #2c4a52; border-radius: 4px; }
 .swatch span { overflow-wrap: anywhere; }
+.forms .input[type=search] { width: 100%; box-sizing: border-box; }

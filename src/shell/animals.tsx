@@ -10,6 +10,7 @@ import { createFitter } from '../ui/logic/animalPicker';
 import { OK_FIT } from '../scene/pickerKind';
 import { drawFishCard } from '../art/placeholder';
 import { artMeta } from '../art/fishgen';
+import { SHRIMP3D } from '../art/shrimps';
 import { drawSnailCard } from '../art/snails';
 import {
   DEFAULT_QUERY, pickView, stockView, selectionView, addSpecies, setCount, removeMisfits,
@@ -53,7 +54,13 @@ function FishArt({ id, look, big, art }: { id: string; look: string; big?: boole
 const swatches = new Map<string, string>();
 function Swatch({ art, aspect }: { art: string; aspect: number }) {
   let u = swatches.get(art);
-  if (u === undefined) { try { u = drawFishCard(art, aspect, 200).toDataURL(); } catch { u = ''; } swatches.set(art, u); }
+  if (u === undefined) {
+    try {
+      const sh = SHRIMP3D[art];   // a shrimp is the 3D model in the tank: its swatch is that model's own skin paint, not the old flat card
+      if (sh) { const c = document.createElement('canvas'); c.width = 200; c.height = 56; const x = c.getContext('2d')!; sh.skin(x, 200, 56); u = c.toDataURL(); } else u = drawFishCard(art, aspect, 200).toDataURL();
+    } catch { u = ''; }
+    swatches.set(art, u);
+  }
   return <img class="swatch-img" src={u} alt="" draggable={false} />;
 }
 type FormsView = NonNullable<ReturnType<typeof import('./logic/animals').selectionView>>['forms'];
