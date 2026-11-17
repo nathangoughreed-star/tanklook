@@ -799,3 +799,7 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .dealsort { display: flex; flex-wrap: wrap; gap: var(--s2); } .dealsort .chip.on { border-color: var(--accent); color: var(--accent); }
 .dealcard .acts { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; margin-top: var(--s1); }
 @media (max-width: 640px) { .kitgrid { grid-template-columns: 1fr; } }
+/* SK1: the Tank picker's "Start from a bundle or kit" (primary while the tank is blank, a small ghost button after) */
+.panel.picker .sec-head { flex-wrap: wrap; row-gap: var(--s1); }
+.panel.picker .sec-head .kitsbtn { margin-left: auto; flex: none; } .panel.picker .sec-head .kitsbtn + .hint { margin-left: 0; }
+@media (max-width: 640px) { .panel.picker .sec-head .kitsbtn + .hint { display: none; } }

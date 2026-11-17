@@ -8,6 +8,9 @@ import { pic, picUrl } from '../ui/featuredDeals';
 import { KIT_TAB_LABEL, SORTS, SORT_LABEL, cardOf, defaultSort, entriesFor, kitsModel, type KitTab, type KitsModel } from './logic/kits';
 import type { DealSort, DealEntry } from '../ui/startEntries';
 
+/** The Tank picker asks for this screen with this event (Back then returns to the picker underneath). */
+export const KITS_EVENT = 'ui2:kits';
+
 /** The starter examples as picture cards (the Open window's Examples tab and the Starters tab share this). */
 export function ExampleGrid({ files }: { files: Files }) {
   return <div class="libgrid kitgrid">{examplesInScope().map(x => (
@@ -42,7 +45,7 @@ export function DealTab({ model, tab, by, onSort, files }: { model: KitsModel; t
   </>;
 }
 
-export function KitsScreen({ files, Dialog, want }: { files: Files; Dialog: (p: { title: string; onClose: () => void; children: preact.ComponentChildren; wide?: boolean; full?: boolean }) => preact.VNode; want?: KitTab }) {
+export function KitsScreen({ files, Dialog, want, back }: { back?: 'start' | 'close'; files: Files; Dialog: (p: { title: string; onClose: () => void; children: preact.ComponentChildren; wide?: boolean; full?: boolean }) => preact.VNode; want?: KitTab }) {
   const [model] = useState(() => kitsModel(Date.now(), undefined, want));
   const [tab, setTab] = useState<KitTab>(model.land);
   const [sort, setSort] = useState<Record<'sale' | 'bundles', DealSort>>({ sale: defaultSort('sale'), bundles: defaultSort('bundles') });
@@ -54,7 +57,7 @@ export function KitsScreen({ files, Dialog, want }: { files: Files; Dialog: (p: 
             {KIT_TAB_LABEL[t]}{t === 'bundles' ? ` (${model.bundles.length})` : t === 'sale' ? ` (${model.sale.length})` : ''}</button>))}</div>
         {tab === 'starters' ? <ExampleGrid files={files} />
           : <DealTab model={model} tab={tab} by={sort[tab]} onSort={s => setSort({ ...sort, [tab]: s })} files={files} />}
-        <div class="acts"><button type="button" class="btn ghost" onClick={() => files.openStart()}>Back</button></div>
+        <div class="acts"><button type="button" class="btn ghost" onClick={() => back === 'close' ? files.close() : files.openStart()}>Back</button></div>
       </div>
     </Dialog>
   );

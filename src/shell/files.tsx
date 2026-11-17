@@ -15,20 +15,20 @@ import * as P7 from '../ui/logic/files';
 import { FILE_MENU, EMPTY_LIBRARY, newProject, libraryRows, savedLine, saveAsView, hashOf, type FileAction } from './logic/files';
 import { Icon } from './ui';
 import { StartSheet } from './start';
-import { KitsScreen, ExampleGrid } from './kits';
+import { KitsScreen, ExampleGrid, KITS_EVENT } from './kits';
 import { pinDeal } from '../demand/pinned';
 import type { Deal } from '../data/deals';
 import { openSection } from './open';
 import type { SetupKind } from '../scene/pickerKind';
 
 export interface Ask { title: string; text: string; actions: { label: string; value: string; primary?: boolean; danger?: boolean }[]; resolve: (v: string) => void }
-export interface FState { dlg: 'open' | 'saveas' | 'start' | 'kits' | null; openTab?: 'saved' | 'examples' | 'file'; ask: Ask | null; toast: { text: string; bad: boolean } | null; n: number }
+export interface FState { dlg: 'open' | 'saveas' | 'start' | 'kits' | null; openTab?: 'saved' | 'examples' | 'file'; kitsBack?: 'start' | 'close'; ask: Ask | null; toast: { text: string; bad: boolean } | null; n: number }
 export interface Files {
   get(): FState; sub(fn: () => void): () => void;
   say(text: string, bad?: boolean): void; close(): void; dismissToast(): void;
   run(a: FileAction): void; save(): void;
   /** SS1: the Start sheet, its Blank door (a new empty tank of that water) and its Open doors (the Open window at a tab) */
-  openStart(): void; openKits(): void; startDeal(deal: Deal, scene: Scene): Promise<void>; newTank(kind: SetupKind): void; openAt(tab: 'saved' | 'examples' | 'file'): void;
+  openStart(): void; openKits(back?: 'start' | 'close'): void; startDeal(deal: Deal, scene: Scene): Promise<void>; newTank(kind: SetupKind): void; openAt(tab: 'saved' | 'examples' | 'file'): void;
   rename(v: string): void;
   openSaved(id: string): Promise<void>; deleteSaved(id: string): void; openExample(id: string): Promise<void>;
   openFile(file: File): Promise<void>; openShared(hash: string): Promise<void>;
@@ -84,7 +84,7 @@ export function createFiles(store: Store, thumb: () => string, afterReplace: () 
       else download(store.scene);
     },
     openStart: () => set({ dlg: 'start' }),
-    openKits: () => set({ dlg: 'kits' }),
+    openKits: back => set({ dlg: 'kits', kitsBack: back ?? 'start' }),
     async startDeal(deal, scene) { // SK1: the old chooser's openDeal: pin the bundle price, load the catalog tank and its gear
       pinDeal(deal);
       if (!await startProject(store, scene, P7.savedText())) return;
@@ -246,6 +246,7 @@ function SaveAsDialog({ store, files }: { store: Store; files: Files }) {
 /** Mounted once in App: the open window, Save as, the replace question and the status toast. */
 export function FileLayer({ store, files }: { store: Store; files: Files }) {
   const s = useFiles(files);
+  useEffect(() => { const f = () => files.openKits('close'); addEventListener(KITS_EVENT, f); return () => removeEventListener(KITS_EVENT, f); }, [files]); // the Tank picker's "Start from a bundle or kit"
   useEffect(() => {
     if (!s.dlg && !s.ask) return;
     const k = (e: KeyboardEvent) => { if (e.key !== 'Escape') return; e.stopPropagation(); if (s.ask) s.ask.resolve(s.ask.actions[0].value); else files.close(); };
@@ -254,7 +255,7 @@ export function FileLayer({ store, files }: { store: Store; files: Files }) {
   return (
     <>
       {s.dlg === 'open' ? <OpenDialog files={files} first={s.openTab} /> : null}
-      {s.dlg === 'kits' ? <KitsScreen files={files} Dialog={Dialog} /> : null}
+      {s.dlg === 'kits' ? <KitsScreen files={files} Dialog={Dialog} back={s.kitsBack} /> : null}
       {s.dlg === 'start' ? <StartSheet files={files} Dialog={Dialog} /> : null}
       {s.dlg === 'saveas' ? <SaveAsDialog store={store} files={files} /> : null}
       {s.ask ? <Dialog title={s.ask.title} onClose={() => s.ask!.resolve(s.ask!.actions[0].value)}>

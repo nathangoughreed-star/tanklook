@@ -16,7 +16,7 @@ const facts = {};
 const tab = name => ev(`[...document.querySelectorAll('[role=tab]')].find(b => b.textContent.startsWith('${name}')).click()`);
 async function run(tag, w, h, mobile) {
   await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile });
-  await send('Page.navigate', { url: BASE + '?ui=2' }); await sleep(6000);
+  await send('Page.navigate', { url: BASE + '?ui=2' }); await sleep(3000); await ev(`localStorage.clear()`); await send('Page.navigate', { url: BASE + '?ui=2' }); await sleep(6000);
   await waitFor(`!!window.__gb`);
   await ev(`document.querySelector('[aria-label="File menu"]').click()`); await sleep(300);
   await ev(`[...document.querySelectorAll('[role=menuitem]')].find(b => b.textContent.trim().startsWith('New')).click()`); await sleep(500);
@@ -36,6 +36,28 @@ async function run(tag, w, h, mobile) {
     await shot(`${tag}-4-started`);
   }
 }
+async function picker(tag, w, h, mobile) {
+  await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile });
+  await send('Page.navigate', { url: BASE + '?ui=2' }); await sleep(3000); await ev(`localStorage.clear()`); await send('Page.navigate', { url: BASE + '?ui=2' }); await sleep(6000); await waitFor(`!!window.__gb`);
+  await ev(`document.querySelector('[aria-label="File menu"]').click()`); await sleep(300);
+  await ev(`[...document.querySelectorAll('[role=menuitem]')].find(b => b.textContent.trim().startsWith('New')).click()`); await sleep(500);
+  await ev(`document.querySelector('[data-door=blank]').click()`); await sleep(500);
+  await ev(`document.querySelector('.startdoors .door').click()`); await sleep(1500);
+  await ev(`[...document.querySelectorAll('button')].find(b => /Change|Choose a tank/.test(b.textContent))?.click()`); await sleep(1500);
+  facts[tag + '-btn'] = await ev(`document.querySelector('.kitsbtn')?.className`);
+  await shot(`${tag}-5-picker`);
+  await ev(`document.querySelector('.kitsbtn')?.click()`); await sleep(1200);
+  facts[tag + '-kits'] = await ev(`!!document.querySelector('.dlg.full')`);
+  facts[tag+'-dbg'] = await ev(`[...document.querySelectorAll('.dlg.full .btn')].map(b=>b.textContent).slice(-3)`); console.log(tag, JSON.stringify(facts[tag+'-dbg']));
+  await ev(`[...document.querySelectorAll('.dlg.full .acts .btn')].find(b => b.textContent === 'Back').click()`); await sleep(600);
+  facts[tag + '-backToPicker'] = await ev(`!!document.querySelector('.panel.picker') && !document.querySelector('.dlg')`);
+  await ev(`document.querySelector('.kitsbtn').click()`); await sleep(1000); await tab('Bundles'); await sleep(500);
+  await ev(`document.querySelector('.dealcard .btn.primary').click()`); await sleep(2500);
+  facts[tag + '-afterStart'] = [await ev(`window.__gb.store.scene.name`), await ev(`!!document.querySelector('.panel.picker')`), await ev(`!!document.querySelector('.dlg')`)];
+  await shot(`${tag}-6-after`);
+}
+await picker('d1280', 1280, 800, false);
+await picker('p390', 390, 844, true);
 await run('d1280', 1280, 800, false);
 await run('p390', 390, 844, true);
 writeFileSync(`${OUT}/facts.json`, JSON.stringify(facts, null, 1));
