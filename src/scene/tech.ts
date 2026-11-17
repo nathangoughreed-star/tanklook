@@ -375,6 +375,7 @@ export function withChoice(S: TankSetup, row: string, opt: string): TechSetup {
   if (row === 'filter') { delete next.filterModel; delete next.filterProduct; delete next.filters; delete next.returnInline; if (opt !== 'none') delete next.filterless; } // as withUnits (S207 review)
   if (row === 'heater') { delete next.heaterW; delete next.heaterProduct; delete next.heaters; }
   if (next.products?.[row]) { next.products = { ...next.products }; delete next.products[row]; if (!Object.keys(next.products).length) delete next.products; } // a product belongs to its option
+  if (row === 'filter' && next.products && (next.products.sump || next.products.overflow)) { next.products = { ...next.products }; delete next.products.sump; delete next.products.overflow; if (!Object.keys(next.products).length) delete next.products; } // PB2: so do a sump tank and an overflow box
   return next;
 }
 
@@ -704,6 +705,11 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
       if ((gp as { kind?: string }).kind === 'regulator') est = true; // the cylinder is bought on top: the listed price is a floor
     }
     if (!setup) { const u = unitPrice(g.price); if (u) { setup = s3(u.r, sizeK(g, gal, 'price')); est = u.est; } }
+    // PB2: a catalogue sump tank is the sump part's price; a catalogue overflow box is bought on top of the generic drain / return plumbing
+    if (row === 'filter' && opt === 'sump' && (id === 'sump' || id === 'plumbing')) {
+      const pp = rowProduct(t, id === 'sump' ? 'sump' : 'overflow', opt), lp = pp && listedPrice(pp);
+      if (lp) { setup = id === 'sump' || !setup ? pricePoint(lp) : a3(setup, pricePoint(lp)); if (id === 'sump') est = false; }
+    }
     if (g.monthly) {
       const m = 'key' in g.monthly ? (r => r && s3(r, 1 / (g.monthly as { months?: number }).months! || 1))(rowPrice(g.monthly.key)) : g.monthly;
       if (m) monthly = s3(m, sizeK(g, gal, 'monthly'));
@@ -727,7 +733,7 @@ export function optionCost(S: TankSetup, row: string, opt: string, o: { kwhUsd?:
 /** The gear parts a reef / planted catalogue product stands in for. */
 const REEF_PARTS = new Set(['skimmerhob', 'skimmer', 'surfaceskim', 'uv', 'co2kit', 'co2cart', 'diyco2', 'ato', 'chiller', 'chillerfan']);
 /** The catalogue product picked for a row, if it belongs to the option chosen there. */
-export function rowProduct(t: TechSetup, row: string, opt = t.rows[row] ?? 'none') {
+export function rowProduct(t: TechSetup, row: string, opt = (row === 'sump' || row === 'overflow' ? t.rows.filter : t.rows[row]) ?? 'none') { // PB2: sump and overflow are picked under the filter row's sump option
   const p = reefProduct(row, t.products?.[row]);
   return p && reefOptionProducts(row, opt).includes(p) ? p : undefined;
 }
@@ -877,7 +883,7 @@ export function parseTech(raw: unknown): TechSetup | undefined {
   }
   if (r.products && typeof r.products === 'object') {
     const products: Record<string, string> = {};
-    for (const [row, id] of Object.entries(r.products as Record<string, unknown>)) if (typeof id === 'string' && reefOptionProducts(row, rows[row] ?? '').some(p => p.id === id)) products[row] = id;
+    for (const [row, id] of Object.entries(r.products as Record<string, unknown>)) if (typeof id === 'string' && reefOptionProducts(row, (row === 'sump' || row === 'overflow' ? rows.filter : rows[row]) ?? '').some(p => p.id === id)) products[row] = id;
     if (Object.keys(products).length) t.products = products;
   }
   if (Array.isArray(r.returnInline)) { const ids = (r.returnInline as unknown[]).filter((v): v is string => typeof v === 'string' && !!inlineProduct(v)).slice(0, 4); if (ids.length) t.returnInline = ids; }

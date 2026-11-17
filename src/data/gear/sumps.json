@@ -1,0 +1,214 @@
+[
+ {
+  "id": "eshopps-rs-75",
+  "brand": "Eshopps",
+  "model": "RS-75 Reef Sump 4th Gen",
+  "kind": "sump",
+  "dimsIn": {
+   "l": 20,
+   "w": 10,
+   "h": 16
+  },
+  "priceUsd": 249.99,
+  "seller": "Bulk Reef Supply",
+  "url": "https://www.bulkreefsupply.com/rs-75-reef-sump-4th-gen-eshopps-ob.html",
+  "asOf": "2026-11-17",
+  "waterGal": 12,
+  "ratedGal": 75,
+  "ratedGph": 600,
+  "note": "Total water volume 12 US gal, sump flow rate 600 gph, for tanks 10-75 gal; skimmer chamber 6 x 9.5 in, return 5 x 9.5 in; 4 in. sock, 1 in. bulkhead. The page read is the open-box listing ($212.49, in stock); price is its struck-through new price. Reef Supplies Canada lists a 5th-gen RS-75 at 18 x 13 x 14 in, 14 gal: check the generation.",
+  "needSpec": [
+   "material"
+  ]
+ },
+ {
+  "id": "eshopps-rs-200",
+  "brand": "Eshopps",
+  "model": "RS-200 Reef Sump 5th Gen",
+  "kind": "sump",
+  "dimsIn": {
+   "l": 30,
+   "w": 12,
+   "h": 16
+  },
+  "priceUsd": 409.99,
+  "seller": "That Pet Place",
+  "url": "https://www.thatpetplace.com/eshopps-3rd-generation-rs-200-sump-125-225-gal",
+  "asOf": "2026-11-17",
+  "note": "Three compartments (micron bags, skimmer 12 x 11.5 in, return 6 x 11.5 in), two micron bags. Tank rating conflicts on the page (title 55-120 gal, description 125-225 gal), so none is recorded. Water volume and material not shown.",
+  "needSpec": [
+   "waterGal",
+   "ratedGal",
+   "material"
+  ]
+ },
+ {
+  "id": "trigger-crystal-cube-18",
+  "brand": "Trigger Systems",
+  "model": "Crystal Cube Sump 18",
+  "kind": "sump",
+  "dimsIn": {
+   "l": 18,
+   "w": 18,
+   "h": 15
+  },
+  "priceUsd": 439.99,
+  "seller": "Bulk Reef Supply",
+  "url": "https://fresh.bulkreefsupply.com/crystal-cube-18-trigger-systems.html",
+  "asOf": "2026-11-17",
+  "waterGal": 20,
+  "material": "clear acrylic",
+  "est": [
+   "material"
+  ],
+  "note": "Total water volume 20 gal. Skimmer section 10.875 x 11 in, refugium 17.5 x 6.5 in, return 6.4375 x 11 in; fixed 9.5 in skimmer level; 1 in. slip drain. The page says all clear material without naming acrylic. Tank rating not shown.",
+  "needSpec": [
+   "ratedGal"
+  ]
+ },
+ {
+  "id": "trigger-crystal-36",
+  "brand": "Trigger Systems",
+  "model": "Crystal Sump 36",
+  "kind": "sump",
+  "dimsIn": {
+   "l": 36,
+   "w": 14,
+   "h": 15
+  },
+  "priceUsd": 509.99,
+  "seller": "Bulk Reef Supply",
+  "url": "https://fresh.bulkreefsupply.com/crystal-sump-36-trigger-systems.html",
+  "asOf": "2026-11-17",
+  "waterGal": 30.6,
+  "ratedGal": 179,
+  "material": "clear acrylic",
+  "note": "Total water volume 30.6 gal. Skimmer 12 x 13.5 in, refugium 12.25 x 13.5 in, return 8 x 13.5 in; fixed 9.5 in skimmer level; 3/8 in. acrylic (staff Q&A). Rating up to 179 gal is a 2022 staff answer. Lids not included."
+ },
+ {
+  "id": "trigger-platinum-20-v2",
+  "brand": "Trigger Systems",
+  "model": "Platinum Sump 20 V2",
+  "kind": "sump",
+  "dimsIn": {
+   "l": 20,
+   "w": 20,
+   "h": 15
+  },
+  "priceUsd": 804.99,
+  "seller": "Bulk Reef Supply",
+  "url": "https://www.bulkreefsupply.com/trigger-platinum-sump-20-v2-trigger-systems.html",
+  "asOf": "2026-11-17",
+  "waterGal": 24.3,
+  "ratedGal": 90,
+  "material": "acrylic",
+  "note": "Total water volume 24.3 gal, ideal for aquariums up to 90 gal. Skimmer 9 x 12.5 in, refugium 5 x 19.5 in, return 6.75 x 12.5 in; skimmer level 7-9.5 in adjustable; 1 in. slip. A search result showed a sale price of $684.24; the page read shows $804.99."
+ },
+ {
+  "id": "trigger-platinum-39-v2",
+  "brand": "Trigger Systems",
+  "model": "Platinum Sump 39 V2",
+  "kind": "sump",
+  "dimsIn": {
+   "l": 39,
+   "w": 16,
+   "h": 15
+  },
+  "priceUsd": 949.99,
+  "seller": "Bulk Reef Supply",
+  "url": "https://www.bulkreefsupply.com/trigger-platinum-sump-39-v2-trigger-systems.html",
+  "asOf": "2026-11-17",
+  "waterGal": 40,
+  "ratedGal": 220,
+  "material": "acrylic",
+  "note": "Total water volume 40 gal, ideal for aquariums up to 220 gal. Middle section 20.75 x 15.5 in (divider removable), return 8 x 15.5 in; skimmer level 7-9.5 in adjustable. The page adds a $49.99 shipping surcharge."
+ },
+ {
+  "id": "trigger-titanium-39",
+  "brand": "Trigger Systems",
+  "model": "Titanium 39 Sump",
+  "kind": "sump",
+  "dimsIn": {
+   "l": 39,
+   "w": 16,
+   "h": 15
+  },
+  "priceUsd": 1199.99,
+  "seller": "Bulk Reef Supply",
+  "url": "https://fresh.bulkreefsupply.com/titanium-39-sump-trigger-systems.html",
+  "asOf": "2026-11-17",
+  "waterGal": 40,
+  "material": "acrylic",
+  "note": "Total water volume 40 gal. Built-in LED lights, two 1 in. primary drains, Neptune LLS compatible. Tank rating not shown.",
+  "needSpec": [
+   "ratedGal"
+  ]
+ },
+ {
+  "id": "trigger-triton-44-v2",
+  "brand": "Trigger Systems",
+  "model": "Triton 44 V2 Sump",
+  "kind": "sump",
+  "dimsIn": {
+   "l": 44,
+   "w": 16,
+   "h": 15
+  },
+  "priceUsd": 829.99,
+  "seller": "Bulk Reef Supply",
+  "url": "https://www.bulkreefsupply.com/triton44-v2-sump-trigger-systems.html",
+  "asOf": "2026-11-17",
+  "ratedGal": 200,
+  "material": "acrylic",
+  "est": [
+   "material"
+  ],
+  "note": "Rated for aquariums up to 200 gal; refugium about 18 gal (total water volume not shown). Refugium 23 x 15.5 in, skimmer 11.5 x 15.5 in, return 6 x 15.5 in; four 1 in. drains. The page names only the front as acrylic.",
+  "needSpec": [
+   "waterGal"
+  ]
+ },
+ {
+  "id": "pro-clear-redflex-100",
+  "brand": "Pro Clear Aquatic Systems",
+  "model": "RedFlex 100 Reef Sump",
+  "kind": "sump",
+  "dimsIn": {
+   "l": 23.5,
+   "w": 10,
+   "h": 16
+  },
+  "priceUsd": 328.79,
+  "seller": "Bulk Reef Supply",
+  "url": "https://www.bulkreefsupply.com/redflex-100-reef-sump-pro-clear-aquatic-systems.html",
+  "asOf": "2026-11-17",
+  "ratedGal": 100,
+  "material": "acrylic",
+  "note": "For aquariums up to 100 gal (listing: 20-100 gal). Price $328.79, struck-through $410.99. 4 in. sock, 1 in. bulkhead, adjustable water gate. Total water volume not shown.",
+  "needSpec": [
+   "waterGal"
+  ]
+ },
+ {
+  "id": "oceanvue-eco-30",
+  "brand": "Nature Aquariums (OCEANVUE)",
+  "model": "ECO 30 in. Glass Sump, black",
+  "kind": "sump",
+  "dimsIn": {
+   "l": 30.25,
+   "w": 12.75,
+   "h": 13.4
+  },
+  "priceUsd": 229.95,
+  "seller": "Nature Aquariums",
+  "url": "https://natureaquariums.com/products/eco-30-glass-sump-black",
+  "asOf": "2026-11-17",
+  "waterGal": 20,
+  "ratedGal": 150,
+  "material": "glass",
+  "est": [
+   "waterGal"
+  ],
+  "note": "The page calls it a 20-gallon sump, great for aquariums up to 150 gal (waterGal is that marketing figure, not a measured volume). Glass with bubble-reducing baffles, two 4 in. sock holders, two 1 in. inlets. Page read 2026-11-17: backordered; images are of a pre-production sample."
+ }
+]

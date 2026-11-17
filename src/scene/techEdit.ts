@@ -3,7 +3,7 @@
 // each tech edit is `(S: TankSetup, ...) => TechSetup` to hand to `commitTech` (inside store.edit); the light edits
 // change `s.light` in place. The Tech menu keeps its markup, tabs, previews and status; the new shell can call these.
 import { FILTER_MODELS, type FilterKind } from '../demand/gear';
-import { FILTER_PRODUCTS, HEATER_PRODUCTS, genericHeaterW, inlineProduct, lightProduct } from '../data/gearCatalog';
+import { FILTER_PRODUCTS, HEATER_PRODUCTS, SUMP_PRODUCTS, genericHeaterW, inlineProduct, lightProduct } from '../data/gearCatalog';
 import { fromUnits } from '../units';
 import { applyLightProduct } from './lightproduct';
 import {
@@ -70,18 +70,22 @@ export const tuneFilter = (S: TankSetup, i: number): TechSetup => {
 // ---- sump
 export const addSump = (S: TankSetup): TechSetup => { const t = techOf(S); return { ...withUnits(t, 'filter', [...filterUnits(t), { kind: 'sump' } as FilterUnit]), sump: t.sump ?? sumpDefault(S) }; };
 export const removeSump = (S: TankSetup): TechSetup => { const t = techOf(S); return withoutUnit(t, 'filter', filterUnits(t).findIndex(u => u.kind === 'sump')); };
-export const pickSump = (S: TankSetup, m: TankModel): TechSetup => ({ ...techOf(S), sump: sumpFromModel(m) });
+/** A sump of another size drops the catalogue sump (PB2): the product's dimensions are its own. */
+const withoutSumpProduct = (t: TechSetup): TechSetup => { if (!t.products?.sump) return t; const products = { ...t.products }; delete products.sump; const n = { ...t }; if (Object.keys(products).length) n.products = products; else delete n.products; return n; };
+export const pickSump = (S: TankSetup, m: TankModel): TechSetup => ({ ...withoutSumpProduct(techOf(S)), sump: sumpFromModel(m) });
 /** One side of a custom sump typed in the viewer's units (L, D or H), held to 50-3000 mm. */
 export const setSumpSide = (S: TankSetup, side: 'L' | 'D' | 'H', v: number, units: 'in' | 'cm'): TechSetup => {
   const t = techOf(S), z = sumpOf(S, true)!, mm = Math.min(3000, Math.max(50, fromUnits(v, units)));
-  return { ...t, sump: { L: z.L, D: z.D, H: z.H, [side]: mm } };
+  return { ...withoutSumpProduct(t), sump: { L: z.L, D: z.D, H: z.H, [side]: mm } };
 };
 
 // ---- pumps and catalogue products on the other rows
 /** A pump product for a gear part (airpump, powerhead, wavemaker); empty id = generic. */
 export const setPump = (S: TankSetup, gear: string, id: string): TechSetup => { const t = { ...techOf(S) }, pumps = { ...t.pumps }; if (id) pumps[gear] = id; else delete pumps[gear]; if (Object.keys(pumps).length) t.pumps = pumps; else delete t.pumps; return t; };
 /** A catalogue product for a reef / planted row (lane GX); empty id = the generic part. */
-export const setRowProduct = (S: TankSetup, row: string, id: string): TechSetup => { const t = { ...techOf(S) }, products = { ...t.products }; if (id) products[row] = id; else delete products[row]; if (Object.keys(products).length) t.products = products; else delete t.products; return t; };
+export const setRowProduct = (S: TankSetup, row: string, id: string): TechSetup => { const t = { ...techOf(S) }, products = { ...t.products }; if (id) products[row] = id; else delete products[row];
+  const sp = row === 'sump' && id ? SUMP_PRODUCTS.find(p => p.id === id) : undefined; if (sp) t.sump = { L: Math.round(sp.dimsIn.l * 25.4), D: Math.round(sp.dimsIn.w * 25.4), H: Math.round(sp.dimsIn.h * 25.4) }; // PB2: the catalogue sump is drawn and counted at its own size
+  if (Object.keys(products).length) t.products = products; else delete t.products; return t; };
 
 // ---- temperatures (typed in the viewer's units: `fToC` converts when `us` is true, i.e. °F)
 const hold = (c: number) => Math.min(40, Math.max(0, c));

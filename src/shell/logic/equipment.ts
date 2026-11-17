@@ -4,10 +4,10 @@
 // scene/gearOwn.ts (P8) and src/units.ts; the catalogue lists are read from data/gearCatalog.ts and data/hoods.ts.
 import { commitTech, withTech, addReturnInline, removeReturnInline, addHeater, pickHeaterProduct, tuneHeater, addFilter, pickFilterProduct, tuneFilter, setPump, setRowProduct, pickLightProduct, tuneLight, pickPreset, setHeaterWatts, setLightWatts } from '../../scene/techEdit';
 import { editGear, gearOfTank, GENERIC, isLockedItem, isOwned, lockItem, ownItem, ownedFor, setInUse, unlockItem, unownItem, type GearModel } from '../../scene/gearOwn';
-import { deliveredFlow, filterUnits, heatLoss, heaterUnits, presetsFor, roomOf, rowsFor, specialHeaters, techOf, withChoice } from '../../scene/tech';
+import { deliveredFlow, filterUnits, heatLoss, heaterUnits, presetsFor, roomOf, rowsFor, specialHeaters, techOf, withChoice, rowProduct, GEAR } from '../../scene/tech';
 import {
   FILTER_PRODUCTS, HEATER_PRODUCTS, REEF_ROWS, hoseLabel, inlineFor, inlineKinds, type InlineKind, filterProduct, heaterProduct, lightProduct, lightsFor, listedPrice, productName, pumpProduct, pumpRatedFor, pumpsFor,
-  reefOptionProducts, reefProduct, skimmerSuitsGal, type SkimmerProduct, type ChillerProduct, type UvProduct,
+  reefOptionProducts, reefProduct, skimmerSuitsGal, type SkimmerProduct, type ChillerProduct, type UvProduct, type SumpProduct, type OverflowProduct,
 } from '../../data/gearCatalog';
 import { hoodProduct, hoodsFor, lightIsHoods, hoodOf } from '../../data/hoods';
 import { volume } from '../../scene/physics';
@@ -18,6 +18,8 @@ import type { Scene, TankSetup } from '../../scene/types';
 type Units = Scene['units'];
 export type { GearModel };
 
+/** The return pump the engine sizes a sump system for (tech.json gear.returnpump gphPerGal), gal/h per display gallon: an overflow rated under it cannot carry the flow. */
+const RETURN_GPH_PER_GAL = GEAR.returnpump.gphPerGal ?? 6;
 const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
 const galOf = (S: TankSetup) => volume(S.tank).gallons;
 const galText = (g: number) => `${g < 10 ? +g.toFixed(1) : Math.round(g)} gal`;
@@ -25,15 +27,16 @@ const galText = (g: number) => `${g < 10 ? +g.toFixed(1) : Math.round(g)} gal`;
 // ---------------------------------------------------------------- categories
 
 /** The category ids the screen offers, in chip order. Light, filter and heater always; the rest when the tank's tech rows have them and the catalogue holds products. */
-const ORDER = ['filter', 'heater', 'light', 'co2', 'air', 'uv', 'skimmer', 'chiller', 'ato', 'flow', 'surfskim', 'ferts', 'conditioner', 'rodi', 'wcmethod', 'feeder', 'dosing', 'salinity', 'saltmix', 'heatlamp', 'thermostat', 'uvb', 'gauge', 'mist', 'timer'] as const;
+const ORDER = ['filter', 'heater', 'light', 'co2', 'air', 'uv', 'skimmer', 'chiller', 'ato', 'overflow', 'sump', 'flow', 'surfskim', 'ferts', 'conditioner', 'rodi', 'wcmethod', 'feeder', 'dosing', 'salinity', 'saltmix', 'heatlamp', 'thermostat', 'uvb', 'gauge', 'mist', 'timer'] as const;
 export type CatId = (typeof ORDER)[number];
-const LABEL: Record<CatId, string> = { filter: 'Filter', heater: 'Heater', light: 'Light', co2: 'CO2', air: 'Air', uv: 'UV', skimmer: 'Skimmer', chiller: 'Chiller', ato: 'Top-off', flow: 'Flow', surfskim: 'Surface skimmer', ferts: 'Fertilizer', conditioner: 'Conditioner', rodi: 'RO/DI', wcmethod: 'Water changes', feeder: 'Feeder', dosing: 'Dosing', salinity: 'Salinity', saltmix: 'Salt mix', heatlamp: 'Heat lamp', thermostat: 'Thermostat', uvb: 'UVB', gauge: 'Gauge', mist: 'Misting', timer: 'Timer' };
-const SINGULAR: Record<CatId, string> = { filter: 'filter', heater: 'heater', light: 'light', co2: 'CO2 kit', air: 'air pump', uv: 'UV sterilizer', skimmer: 'skimmer', chiller: 'chiller', ato: 'auto top-off', flow: 'powerhead', surfskim: 'surface skimmer', ferts: 'fertilizer', conditioner: 'water conditioner', rodi: 'RO/DI unit', wcmethod: 'water-change tool', feeder: 'auto feeder', dosing: 'dosing setup', salinity: 'salinity tester', saltmix: 'salt mix', heatlamp: 'heat lamp', thermostat: 'thermostat', uvb: 'UVB lamp', gauge: 'gauge', mist: 'misting setup', timer: 'timer' };
+const LABEL: Record<CatId, string> = { filter: 'Filter', heater: 'Heater', light: 'Light', co2: 'CO2', air: 'Air', uv: 'UV', skimmer: 'Skimmer', chiller: 'Chiller', ato: 'Top-off', overflow: 'Overflow box', sump: 'Sump', flow: 'Flow', surfskim: 'Surface skimmer', ferts: 'Fertilizer', conditioner: 'Conditioner', rodi: 'RO/DI', wcmethod: 'Water changes', feeder: 'Feeder', dosing: 'Dosing', salinity: 'Salinity', saltmix: 'Salt mix', heatlamp: 'Heat lamp', thermostat: 'Thermostat', uvb: 'UVB', gauge: 'Gauge', mist: 'Misting', timer: 'Timer' };
+const SINGULAR: Record<CatId, string> = { filter: 'filter', heater: 'heater', light: 'light', co2: 'CO2 kit', air: 'air pump', uv: 'UV sterilizer', skimmer: 'skimmer', chiller: 'chiller', ato: 'auto top-off', overflow: 'overflow box', sump: 'sump tank', flow: 'powerhead', surfskim: 'surface skimmer', ferts: 'fertilizer', conditioner: 'water conditioner', rodi: 'RO/DI unit', wcmethod: 'water-change tool', feeder: 'auto feeder', dosing: 'dosing setup', salinity: 'salinity tester', saltmix: 'salt mix', heatlamp: 'heat lamp', thermostat: 'thermostat', uvb: 'UVB lamp', gauge: 'gauge', mist: 'misting setup', timer: 'timer' };
 export const catLabel = (c: string) => LABEL[c as CatId] ?? c;
 export const isCat = (c: string): c is CatId => (ORDER as readonly string[]).includes(c);
 
 export function categories(S: TankSetup): { id: CatId; label: string }[] {
   const have = new Set(rowsFor(S).map(r => r.id));
+  if (S.water.on && techOf(S).rows.filter === 'sump') { have.add('overflow'); have.add('sump'); } // PB2: a sump's tank and its overflow box are picked under the filter row's sump option
   return ORDER.filter(c => c === 'filter' || c === 'heater' || c === 'light' || have.has(c)).map(id => ({ id, label: LABEL[id] }));
 }
 
@@ -84,6 +87,7 @@ export function inUseItem(S: TankSetup, cat: string): string | undefined {
     case 'light': return S.lid === 'hood' && lightIsHoods(S) ? hoodOf(S)?.id : S.light.product ?? GENERIC;
     case 'air': return t.pumps?.airpump;
     case 'flow': return t.pumps?.powerhead;
+    case 'overflow': case 'sump': { const p = rowProduct(t, cat); return p ? p.id : t.rows.filter === 'sump' && cat === 'sump' ? GENERIC : undefined; }
     default: { const p = reefProduct(cat, t.products?.[cat]); const on = (t.rows[cat] ?? 'none') !== 'none'; return p && reefOptionProducts(cat, t.rows[cat] ?? 'none').includes(p) ? p.id : on ? GENERIC : undefined; }
   }
 }
@@ -116,7 +120,7 @@ const price = (p: { priceUsd?: number; est?: string[] }): Pick<Entry, 'usd' | 'e
   const lp = listedPrice(p);
   return lp !== undefined ? { usd: lp } : p.priceUsd ? { usd: p.priceUsd, est: true } : {};
 };
-const kindWord: Record<string, string> = { hob: 'hang-on-back', canister: 'canister', internal: 'internal', sponge: 'sponge', sump: 'in-sump', surface: 'surface', fan: 'fan', compressor: 'compressor', inline: 'inline', regulator: 'regulator', cartridge: 'cartridge kit', diy: 'DIY yeast', air: 'air pump', powerhead: 'powerhead', wavemaker: 'wavemaker' };
+const kindWord: Record<string, string> = { 'hang-on': 'hang-on box', external: 'external box', hob: 'hang-on-back', canister: 'canister', internal: 'internal', sponge: 'sponge', sump: 'in-sump', surface: 'surface', fan: 'fan', compressor: 'compressor', inline: 'inline', regulator: 'regulator', cartridge: 'cartridge kit', diy: 'DIY yeast', air: 'air pump', powerhead: 'powerhead', wavemaker: 'wavemaker' };
 const kindType = (k: string) => { const w = kindWord[k] ?? k; return w.charAt(0).toUpperCase() + w.slice(1); };
 const HEAT_TYPE: Record<string, string> = { glass: 'Glass tube', shroud: 'Guarded (plastic shroud)', titanium: 'Titanium' };
 const LIGHT_TYPE: Record<string, string> = { bar: 'LED bar', 'rim-legs': 'LED bar on legs', gooseneck: 'Clamp-on', hanging: 'Hanging', submersible: 'Submersible' };
@@ -151,9 +155,11 @@ function catalogue(S: TankSetup, cat: CatId, units: Units): Entry[] {
         if (cat === 'skimmer' || cat === 'surfskim') { const s = skimmerSuitsGal(p as SkimmerProduct); fit = s === undefined ? null : s >= gal * 0.85 ? { tone: 'ok', text: `suits ${galText(gal)}` } : { tone: 'warn', text: `too small for ${galText(gal)}` }; }
         else if (cat === 'chiller') { const s = (p as ChillerProduct).suitsGal ?? (p as ChillerProduct).ratedGal; fit = s === undefined ? null : s >= gal * 0.85 ? { tone: 'ok', text: `suits ${galText(gal)}` } : { tone: 'warn', text: `too small for ${galText(gal)}` }; }
         else if (cat === 'uv') fit = ratedFit(gal, (p as UvProduct).galMin, (p as UvProduct).galMax);
+        else if (cat === 'sump') { const q = p as SumpProduct; fit = ratedFit(gal, undefined, q.ratedGal); facts = `${q.waterGal !== undefined ? `${q.waterGal} gal of water · ` : ''}${q.dimsIn.l} x ${q.dimsIn.w} x ${q.dimsIn.h} in${q.material ? ` · ${q.material}` : ''}`; }
+        else if (cat === 'overflow') { const q = p as OverflowProduct, need = gal * RETURN_GPH_PER_GAL; fit = q.ratedGph >= need ? { tone: 'ok', text: `handles a ${Math.round(need)} gph return` } : { tone: 'warn', text: `${q.ratedGph} gph is under a ${Math.round(need)} gph return` }; facts = `${kindWord[q.kind] ?? q.kind} · ${q.ratedGph} gph rated${q.drains ? ` · ${q.drains} drain${q.drains > 1 ? 's' : ''}` : ''}`; }
         if (p.watts) facts += `${facts ? ' · ' : ''}${p.watts} W`;
         const q = p as { ratedGal?: number; suitsGal?: number; galMax?: number; galMin?: number };
-        return { item: p.id, name: productName(p), sub: facts || 'catalogue product', ty: k ? kindType(k) : 'Standard', sz: cat === 'skimmer' || cat === 'surfskim' ? skimmerSuitsGal(p as SkimmerProduct) : q.suitsGal ?? q.ratedGal ?? q.galMax ?? q.galMin, ...price(p), fit, rank: rank(fit) };
+        return { item: p.id, name: productName(p), sub: facts || 'catalogue product', ty: k ? kindType(k) : 'Standard', sz: cat === 'skimmer' || cat === 'surfskim' ? skimmerSuitsGal(p as SkimmerProduct) : cat === 'overflow' ? (p as OverflowProduct).ratedGph : cat === 'sump' ? (p as SumpProduct).waterGal : q.suitsGal ?? q.ratedGal ?? q.galMax ?? q.galMin, ...price(p), fit, rank: rank(fit) };
       });
   }
 }
@@ -250,6 +256,8 @@ function bandSpec(S: TankSetup, cat: CatId, units: Units): BandSpec {
     return make([20, 30, 40, 48].map(n => Math.round(n * f)), us ? 'in' : 'cm', S.tank.L / (us ? 25.4 : 10));
   }
   if (['filter', 'uv', 'air', 'flow', 'skimmer', 'surfskim', 'chiller'].includes(cat)) return make([20, 40, 75, 125], 'gal', galOf(S));
+  if (cat === 'overflow') return make([400, 800, 1000], 'gph rated', galOf(S) * RETURN_GPH_PER_GAL); // PB2: the maker's flow rating against the return the engine sizes
+  if (cat === 'sump') return make([15, 25, 35], 'gal of water', galOf(S) * 0.25);
   return { labels: ['All sizes'], tank: 0, labelOf: () => 'All sizes' };
 }
 export interface BandView { label: string; rows: GearRow[]; hasTank: boolean }
@@ -298,6 +306,9 @@ export function useItem(S: TankSetup, cat: CatId, item: string): void {
       commitTech(S, s => { const t = (techOf(s).rows[cat] ?? 'none') === 'none' ? withChoice(s, cat, opt) : techOf(s); return setPump(withTech(s, t), gear, item); });
       break;
     }
+    case 'overflow': case 'sump': // PB2: both live under the filter row's sump option; picking one turns the sump on
+      commitTech(S, s => { const t = techOf(s).rows.filter === 'sump' ? techOf(s) : withChoice(s, 'filter', 'sump'); return setRowProduct(withTech(s, t), cat, item === GENERIC ? '' : item); });
+      break;
     default: {
       const opt = optionFor(cat, item);
       if (opt) commitTech(S, s => { const t = withChoice(s, cat, opt); return setRowProduct(withTech(s, t), cat, item); });
@@ -308,7 +319,7 @@ export function useItem(S: TankSetup, cat: CatId, item: string): void {
 }
 /** The Tech option a reef / planted product belongs to (the row it fills when "Use" turns the row on). */
 function optionFor(row: string, id: string): string | undefined {
-  const opts: Record<string, string[]> = { skimmer: ['hob', 'sump'], surfskim: ['surface'], uv: ['uv'], co2: ['pressurized', 'cartridge', 'diy'], ato: ['ato'], chiller: ['fan', 'chiller'] };
+  const opts: Record<string, string[]> = { overflow: ['sump'], sump: ['sump'], skimmer: ['hob', 'sump'], surfskim: ['surface'], uv: ['uv'], co2: ['pressurized', 'cartridge', 'diy'], ato: ['ato'], chiller: ['fan', 'chiller'] };
   return (opts[row] ?? []).find(o => reefOptionProducts(row, o).some(p => p.id === id));
 }
 /** "I have this" / "I don't have this". Owning never changes what is in use, except the first thing owned in a category when nothing was. */

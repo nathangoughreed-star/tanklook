@@ -21,7 +21,7 @@ describe('reef and planted gear catalogue (lane GX)', () => {
   it('about 35 products, each with a real https source URL, a price and a date, and a unique id', () => {
     const all = Object.values(REEF_ROWS).flat(), ids = new Set<string>();
     expect(SKIMMER_PRODUCTS.length + UV_PRODUCTS.length + CO2_PRODUCTS.length + ATO_PRODUCTS.length + CHILLER_PRODUCTS.length).toBeGreaterThanOrEqual(35);
-    for (const p of new Set(all)) { expect(ids.has(p.id)).toBe(false); ids.add(p.id); expect(p.url).toMatch(/^https:\/\/\S+$/); expect(p.priceUsd).toBeGreaterThan(0); expect(p.asOf).toMatch(/^2026-10-(27|29)$/); }
+    for (const p of new Set(all)) { expect(ids.has(p.id)).toBe(false); ids.add(p.id); expect(p.url).toMatch(/^https:\/\/\S+$/); expect(p.priceUsd).toBeGreaterThan(0); expect(p.asOf).toMatch(/^2026-(10-(27|29)|11-17)$/); } // 11-17: PB2 overflow boxes and sumps
   });
   it('a protein skimmer is rated for 1.5-2 times its real tank; a surface skimmer for its tank', () => {
     const m130 = SKIMMER_PRODUCTS.find(p => p.id === 'magtool-n130plus')!, oase = SKIMMER_PRODUCTS.find(p => p.id === 'oase-crystalskim-350')!;

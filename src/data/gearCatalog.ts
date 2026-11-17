@@ -242,7 +242,7 @@ export interface GearListing {
   est?: string[]; needSpec?: string[]; note?: string; popularity?: Popularity;
   /** part colours (hex) as far as the listing says; `colorsEst` the ones not seen in a photo */
   colors?: { body: string; cup?: string }; colorsEst?: string[];
-  watts?: number;
+  watts?: number; seller?: string;
 }
 /** hob = hang-on / clip-on, sump = in-sump, surface = a freshwater-and-marine surface (film) skimmer. */
 export interface SkimmerProduct extends GearListing {
@@ -263,15 +263,28 @@ export interface ChillerProduct extends GearListing {
   /** cooling a fan gives, deg F (min, max); a compressor's drop, deg F (one number or min-max) */
   coolF?: [number, number]; dropF?: number | [number, number]; noiseDb?: [number, number];
 }
-const reef = data as unknown as { skimmers?: SkimmerProduct[]; uv?: UvProduct[]; co2?: Co2Product[]; ato?: AtoProduct[]; chillers?: ChillerProduct[] };
+/** An overflow box (PB2, 2026-11-17, data/gear/overflows.json). `ratedGph` is the MAKER's stated maximum flow, gal/h: the number a return pump's flow is held against (never ours).
+ *  kind: hang-on = a box over the rim with a siphon or bulkhead, external = a box mounted on the glass or the outside of a drilled tank. `ratedGal` the maker's tank rating when
+ *  stated; `drains` the drain count and `drainBulkheadIn` the drain size in inches as printed; `dimsIn` the box's exterior l x w x h, inches; `maxGlassMm` the thickest glass it fits. */
+export interface OverflowProduct extends GearListing {
+  kind: 'hang-on' | 'external'; ratedGph: number; ratedGal?: number; drains?: number; drainBulkheadIn?: string; maxGlassMm?: number; dimsIn?: { l: number; w: number; h: number };
+}
+/** A sump tank (PB2, data/gear/sumps.json). `waterGal` is the total water volume the seller states (absent when it does not; then in `needSpec`), `ratedGal` the display tank
+ *  the maker rates it for, `ratedGph` a stated sump flow (RS-75 only), `dimsIn` the outer l x w x h in inches. */
+export interface SumpProduct extends GearListing {
+  kind: 'sump'; waterGal?: number; ratedGal?: number; ratedGph?: number; material?: string; dimsIn: { l: number; w: number; h: number };
+}
+const reef = data as unknown as { skimmers?: SkimmerProduct[]; uv?: UvProduct[]; co2?: Co2Product[]; ato?: AtoProduct[]; chillers?: ChillerProduct[]; overflows?: OverflowProduct[]; sumps?: SumpProduct[] };
 export const SKIMMER_PRODUCTS = reef.skimmers ?? [];
 export const UV_PRODUCTS = reef.uv ?? [];
 export const CO2_PRODUCTS = reef.co2 ?? [];
 export const ATO_PRODUCTS = reef.ato ?? [];
 export const CHILLER_PRODUCTS = reef.chillers ?? [];
-export type ReefProduct = SkimmerProduct | UvProduct | Co2Product | AtoProduct | ChillerProduct;
+export const OVERFLOW_PRODUCTS = reef.overflows ?? [];
+export const SUMP_PRODUCTS = reef.sumps ?? [];
+export type ReefProduct = SkimmerProduct | UvProduct | Co2Product | AtoProduct | ChillerProduct | OverflowProduct | SumpProduct;
 /** The Tech rows that take a catalogue product (TechSetup.products), with their products. */
-export const REEF_ROWS: Record<string, ReefProduct[]> = { skimmer: SKIMMER_PRODUCTS, surfskim: SKIMMER_PRODUCTS, uv: UV_PRODUCTS, co2: CO2_PRODUCTS, ato: ATO_PRODUCTS, chiller: CHILLER_PRODUCTS };
+export const REEF_ROWS: Record<string, ReefProduct[]> = { skimmer: SKIMMER_PRODUCTS, surfskim: SKIMMER_PRODUCTS, uv: UV_PRODUCTS, co2: CO2_PRODUCTS, ato: ATO_PRODUCTS, chiller: CHILLER_PRODUCTS, overflow: OVERFLOW_PRODUCTS, sump: SUMP_PRODUCTS };
 /** A protein skimmer's rating is for about this many times the tank it keeps clean (Nathan's brief: 1.5 to 2). A surface skimmer is rated for its tank. */
 export const SKIM_RATED_K = 1.75;
 /** The tank size a skimmer really suits, gallons (undefined: no rating read). */
@@ -281,7 +294,7 @@ export function reefProduct(row: string, id?: string): ReefProduct | undefined {
 /** Which products a row's option offers: skimmer hob / sump, surface, UV, CO2 by option, ATO, chiller fan / compressor. */
 export function reefOptionProducts(row: string, opt: string): ReefProduct[] {
   const all = REEF_ROWS[row] ?? [];
-  const kinds: Record<string, string> = { 'skimmer.hob': 'hob', 'skimmer.sump': 'sump', 'surfskim.surface': 'surface', 'co2.pressurized': 'regulator', 'co2.cartridge': 'cartridge', 'co2.diy': 'diy', 'chiller.fan': 'fan', 'chiller.chiller': 'compressor', 'uv.uv': '' };
+  const kinds: Record<string, string> = { 'skimmer.hob': 'hob', 'skimmer.sump': 'sump', 'surfskim.surface': 'surface', 'co2.pressurized': 'regulator', 'co2.cartridge': 'cartridge', 'co2.diy': 'diy', 'chiller.fan': 'fan', 'chiller.chiller': 'compressor', 'uv.uv': '', 'overflow.sump': '', 'sump.sump': '' };
   const k = kinds[`${row}.${opt}`];
   if (k === undefined) return row === 'ato' && opt === 'ato' ? all : [];
   return k ? all.filter(p => (p as { kind?: string }).kind === k) : all;

@@ -11,5 +11,7 @@ import filters from './filters.json';
 import lights from './lights.json';
 import pumps from './pumps.json';
 import inline from './inline.json';
+import overflows from './overflows.json';
+import sumps from './sumps.json';
 
-export const gearCatalog = { asOf: meta.asOf, note: meta.note, skimmers, uv, co2, ato, chillers, heaters, filters, lights, pumps, inline };
+export const gearCatalog = { asOf: meta.asOf, note: meta.note, skimmers, uv, co2, ato, chillers, heaters, filters, lights, pumps, inline, overflows, sumps };

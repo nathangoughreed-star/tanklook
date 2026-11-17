@@ -1,0 +1,164 @@
+[
+ {
+  "id": "eshopps-pf-300",
+  "brand": "Eshopps",
+  "model": "PF-300 Overflow Box 75 gal",
+  "kind": "hang-on",
+  "ratedGph": 300,
+  "dimsIn": {
+   "l": 6,
+   "w": 3,
+   "h": 10
+  },
+  "priceUsd": 129.99,
+  "seller": "That Pet Place",
+  "url": "https://www.thatpetplace.com/eshopps-pf-300-overflow-box-75-gal",
+  "asOf": "2026-11-17",
+  "ratedGal": 75,
+  "drains": 1,
+  "drainBulkheadIn": "1",
+  "note": "Maker's maximum flow 300 gph. Foam pre-filter, U-tube siphon. Page read 2026-11-17: out of stock (backorder available); MPN shown as 11000 and 89014."
+ },
+ {
+  "id": "eshopps-pf-800",
+  "brand": "Eshopps",
+  "model": "PF-800 Overflow Box 125 gal",
+  "kind": "hang-on",
+  "ratedGph": 800,
+  "dimsIn": {
+   "l": 8,
+   "w": 3,
+   "h": 10
+  },
+  "priceUsd": 139.99,
+  "seller": "That Pet Place",
+  "url": "https://www.thatpetplace.com/eshopps-pf-800-overflow-box-125-gal",
+  "asOf": "2026-11-17",
+  "ratedGal": 125,
+  "drains": 1,
+  "drainBulkheadIn": "1",
+  "note": "Maker's maximum flow 800 gph. Page read 2026-11-17: out of stock. Other retailers' pages quote 600 gph for the same model; the That Pet Place page says 800."
+ },
+ {
+  "id": "eshopps-pf-1000",
+  "brand": "Eshopps",
+  "model": "PF-1000 Overflow Box 150 gal",
+  "kind": "hang-on",
+  "ratedGph": 900,
+  "dimsIn": {
+   "l": 9,
+   "w": 3,
+   "h": 10
+  },
+  "priceUsd": 159.99,
+  "seller": "That Pet Place",
+  "url": "https://www.thatpetplace.com/eshopps-pf-1000-overflow-box-150-gal",
+  "asOf": "2026-11-17",
+  "ratedGal": 150,
+  "drains": 2,
+  "drainBulkheadIn": "1",
+  "note": "Maker's maximum flow 900 gph, two 1 in. drains. The page title says 200 gal but its description, URL and Max Tank Size field say 150 gal (150 used)."
+ },
+ {
+  "id": "eshopps-pf-1200",
+  "brand": "Eshopps",
+  "model": "PF-1200 Overflow Box 200 gal",
+  "kind": "hang-on",
+  "ratedGph": 1000,
+  "dimsIn": {
+   "l": 10,
+   "w": 3,
+   "h": 10
+  },
+  "priceUsd": 169.99,
+  "seller": "That Pet Place",
+  "url": "https://www.thatpetplace.com/eshopps-pf-1200-overflow-box-200-gal",
+  "asOf": "2026-11-17",
+  "ratedGal": 200,
+  "drains": 2,
+  "drainBulkheadIn": "1",
+  "note": "Maker's maximum flow 1000 gph, two 1 in. drains. The page title says 300 gal but its description and Max Tank Size say 200 gal (200 used)."
+ },
+ {
+  "id": "fiji-cube-lopro-400",
+  "brand": "Fiji Cube",
+  "model": "LoPro External Overflow Box 400 GPH",
+  "kind": "external",
+  "ratedGph": 400,
+  "dimsIn": {
+   "l": 5,
+   "w": 3.5,
+   "h": 5.25
+  },
+  "priceUsd": 111.99,
+  "seller": "Bulk Reef Supply",
+  "url": "https://www.bulkreefsupply.com/lopro-external-overflow-box-400-gph-fiji-cube.html",
+  "asOf": "2026-11-17",
+  "drains": 2,
+  "drainBulkheadIn": "3/4",
+  "maxGlassMm": 14,
+  "note": "Max Flow Rate 400 GPH. Exterior box 5 x 3.5 x 5.25 in; in-tank skimmer box 4 x 1.25 x 3.5 in. Drain bulkhead printed 3/4 in x 2. Price $111.99, struck-through $139.99. Max tank glass 14 mm."
+ },
+ {
+  "id": "fiji-cube-lopro-800",
+  "brand": "Fiji Cube",
+  "model": "LoPro External Overflow Box 800 GPH",
+  "kind": "external",
+  "ratedGph": 800,
+  "dimsIn": {
+   "l": 8,
+   "w": 4,
+   "h": 6.25
+  },
+  "priceUsd": 131.99,
+  "seller": "Bulk Reef Supply",
+  "url": "https://www.bulkreefsupply.com/lopro-external-overflow-box-800-gph-fiji-cube.html",
+  "asOf": "2026-11-17",
+  "drains": 2,
+  "drainBulkheadIn": "1",
+  "maxGlassMm": 14,
+  "note": "Max Flow Rate 800 GPH. Exterior box 8 x 4 x 6.25 in; in-tank skimmer box 8 x 1.25 x 4 in. Drain bulkhead printed 1 in x 2. Price $131.99, struck-through $164.99."
+ },
+ {
+  "id": "fiji-cube-lopro-1600",
+  "brand": "Fiji Cube",
+  "model": "LoPro External Overflow Box 1600 GPH",
+  "kind": "external",
+  "ratedGph": 1600,
+  "dimsIn": {
+   "l": 16,
+   "w": 4,
+   "h": 6.25
+  },
+  "priceUsd": 191.99,
+  "seller": "Bulk Reef Supply",
+  "url": "https://www.bulkreefsupply.com/lopro-external-overflow-box-1600-gph-fiji-cube.html",
+  "asOf": "2026-11-17",
+  "drains": 3,
+  "drainBulkheadIn": "1.5",
+  "maxGlassMm": 14,
+  "note": "Max Flow Rate 1,600 GPH, three 1.5 in. drains. Exterior box 16 x 4 x 6.25 in. Price $191.99, struck-through $239.99. Spec table says 14 mm glass; a Q&A answer says it works on 19 mm."
+ },
+ {
+  "id": "xaqua-inout",
+  "brand": "Xaqua",
+  "model": "INOUT Overflow and Pulsing Return System",
+  "kind": "hang-on",
+  "ratedGph": 660,
+  "dimsIn": {
+   "l": 4.7,
+   "w": 2,
+   "h": 4
+  },
+  "priceUsd": 113.43,
+  "seller": "Bulk Reef Supply",
+  "url": "https://www.bulkreefsupply.com/inout-overflow-and-pulsing-return-system-xaqua.html",
+  "asOf": "2026-11-17",
+  "drains": 1,
+  "est": [
+   "kind",
+   "drains"
+  ],
+  "note": "Max Flow 660 GPH. Needs a drain hole of 41.5-44 mm (1.5 in. soft tubing) and a return hole of 27-32 mm (3/4 in. tubing), so it works through drilled holes. kind and drains are read from that, not stated."
+ }
+]
