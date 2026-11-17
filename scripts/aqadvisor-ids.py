@@ -12,6 +12,7 @@ import json, re, time, urllib.parse, urllib.request, pathlib
 NAMES = {
     'neon': 'Neon Tetra (Paracheirodon innesi)',
     'cardinal': 'Cardinal Tetra (Paracheirodon axelrodi)',
+    'blackskirt': 'Black Skirt Tetra (Gymnocorymbus ternetzi)',
     'ember': 'Ember Tetra (Hyphessobrycon amandae)',
     'dwarfpencil': 'Dwarf Pencilfish (Nannostomus marginatus)',  # added 2026-10-22
     'sterbai': 'Sterbai Cory (Corydoras sterbai)',  # added 2026-10-22
