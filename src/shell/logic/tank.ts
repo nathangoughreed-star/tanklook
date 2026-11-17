@@ -471,3 +471,65 @@ export function setPieAngle(T: Tank, deg: number): Tank {
 }
 /** An old round tank as the maker shows it: a pie slice of 360 degrees (the same cylinder). */
 export const roundAsPie = (T: Tank): Tank => shapeOf(T) === 'round' ? { L: T.L, H: T.H, D: T.L, shape: 'pie', pieDeg: 360 } : T;
+
+// ---------- TS1 (2026-11-17): the three controls the parity audit found dropped (ranks 8, 9, 10). Same TankSetup fields and edits as the old panel (ui/panels.ts). ----------
+import type { BgFit, BgSide } from '../../scene/types';
+import { sidesTouch } from '../../scene/images';
+import { TABLE_MAX, tableOn, tableRange } from '../../scene/table';
+import { editTable } from '../../scene/tankEdit';
+export { tableOn };
+
+/** Condition (how long since the tank was cleaned): the old panel's four words, by level 0..1. The render takes the level only. */
+export const conditionWord = (l: number): string => l <= 0 ? 'Pristine' : l < 0.35 ? 'A few weeks' : l < 0.7 ? 'Overdue' : 'Neglected';
+/** One picture per stop: [level, word]. */
+export const CONDITION_STOPS: [number, string][] = [[0, 'Pristine'], [0.2, 'A few weeks'], [0.5, 'Overdue'], [0.9, 'Neglected']];
+export const setCondition = (s: TankSetup, level: number) => { s.condition = { level: Math.min(1, Math.max(0, level)) }; };
+
+/** Round and bowl tanks have a shell the background covers part of; the arc control shows only then, and only with a background colour. */
+export const bgArcShown = (S: TankSetup): boolean => { const sh = shapeOf(S.tank); return S.render.bg !== 'none' && (sh === 'round' || sh === 'bowl'); };
+export const arcText = (a: number): string => a >= 360 ? '360° (all round)' : `${a}°`;
+export const setBgArc = (s: TankSetup, a: number) => { s.render.bgArc = a; };
+export const setEdges = (s: TankSetup, on: boolean) => { s.render.edges = on; };
+
+export const PIC_MAX = 4;
+export const PIC_SIDES: [BgSide, string][] = [['left', 'Left'], ['back', 'Back'], ['right', 'Right'], ['front', 'Front']];
+export const PIC_FITS: [BgFit, string, string][] = [
+  ['fill', 'Fill', 'Covers the glass; the picture is cropped to fit'], ['fit', 'Fit', 'The whole picture, on the background colour'],
+  ['stretch', 'Stretch', 'Stretched to the glass'], ['tile', 'Tile', 'Repeated, at the size you set'],
+];
+const sideName = (k: BgSide) => k[0].toUpperCase() + k.slice(1);
+/** Add a stored picture (by id): on the first side no picture has. Returns what to say. */
+export function addPicture(s: TankSetup, id: string): { ok: boolean; say: string } {
+  const L = s.render.bgImages;
+  if (L.length >= PIC_MAX) return { ok: false, say: `At most ${PIC_MAX} background pictures per tank.` };
+  if (L.some(b => b.img === id)) return { ok: false, say: 'That picture is already on this tank.' };
+  const used = new Set(L.flatMap(b => b.sides));
+  const side = (['back', 'left', 'right', 'front'] as BgSide[]).find(k => !used.has(k));
+  L.push({ img: id, fit: 'fill', sides: side ? [side] : [], scale: 50 });
+  return { ok: true, say: side ? `Picture added on the ${side}. Click sides to move it, or to run it round a corner.` : 'Picture added; every side has a picture already, so pick its sides.' };
+}
+export const removePicture = (s: TankSetup, id: string) => { s.render.bgImages = s.render.bgImages.filter(b => b.img !== id); };
+/** Click a side on a picture: off when it has it; on when the sides still touch (the side leaves any other picture). Returns a refusal or ''. */
+export function togglePicSide(s: TankSetup, id: string, side: BgSide): string {
+  const b = s.render.bgImages.find(x => x.img === id); if (!b) return '';
+  if (b.sides.includes(side)) { b.sides = b.sides.filter(k => k !== side); return ''; }
+  if (!sidesTouch([...b.sides, side])) return `One picture can only span sides that touch: ${b.sides.map(sideName).join(' + ')} and ${sideName(side)} do not meet. Use a second picture for the ${side}.`;
+  for (const o of s.render.bgImages) o.sides = o.sides.filter(k => k !== side);
+  b.sides = [...b.sides, side]; return '';
+}
+export const setPicFit = (s: TankSetup, id: string, fit: BgFit) => { const b = s.render.bgImages.find(x => x.img === id); if (b) b.fit = fit; };
+export const setPicScale = (s: TankSetup, id: string, scale: number) => { const b = s.render.bgImages.find(x => x.img === id); if (b) b.scale = scale; };
+export const picSummary = (S: TankSetup): string => S.render.bgImages.length ? `${S.render.bgImages.length} picture${S.render.bgImages.length === 1 ? '' : 's'}` : '';
+
+/** Where the tank sits on a table or custom stand: the sliders' ranges (mm) and the words, as the old panel showed them. */
+export function tablePos(S: TankSetup, fmt: (mm: number) => string) {
+  const tb = S.stand.table, r = tableRange(S);
+  const off = (v: number, neg: string, pos: string) => Math.abs(v) < 1 ? 'Centred' : `${fmt(Math.abs(v))} ${v < 0 ? neg : pos}`;
+  return { x: tb.x, z: tb.z, x0: Math.floor(r.x0), x1: Math.ceil(r.x1), z0: Math.floor(r.z0), z1: Math.ceil(r.z1), xText: off(tb.x, 'left', 'right'), zText: off(tb.z, 'forward', 'back') };
+}
+export const setTableX = (s: TankSetup, v: number) => editTable(s, tb => { tb.x = v; });
+export const setTableZ = (s: TankSetup, v: number) => editTable(s, tb => { tb.z = v; });
+/** The three placement buttons; fitTable stops Back / Front at the edge. */
+export const placeTank = (s: TankSetup, where: 'centre' | 'back' | 'front') => editTable(s, tb => { tb.x = 0; tb.z = where === 'centre' ? 0 : where === 'back' ? TABLE_MAX : -TABLE_MAX; });
+export const setStandFinish = (s: TankSetup, f: TankSetup['stand']['finish']) => { s.stand.finish = f; s.stand.show = true; s.stand.need = 'added'; };
+export const finishCss = (f: TankSetup['stand']['finish']): string => '#' + STAND_FINISHES[f].color.toString(16).padStart(6, '0');

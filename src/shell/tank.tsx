@@ -25,7 +25,10 @@ import { soleProduct } from '../data/tanks';
 import {
   modelCard, sitsOnSummary, lidSummary, bgSummary, bdShown, bdDepthShown, BD_KINDS, BD_TITLE, BD_DEPTH_MM, len, LIDS, lidHeld, customRows, customLine, commercialRows, commercialLine,
   previewRow, chooseCommercial, chooseCustom, saleOf, filledLb, SIZE_CHIPS, loadGroups, saveGroups, GROUP_DEFAULT, type PickRow, type SizeChip, type TankGroup, type Units, kindView, setKind,
+  conditionWord, CONDITION_STOPS, setCondition, bgArcShown, arcText, setBgArc, setEdges, PIC_SIDES, PIC_FITS, PIC_MAX, addPicture, removePicture, togglePicSide, setPicFit, setPicScale,
+  tablePos, setTableX, setTableZ, placeTank, setStandFinish, finishCss, tableOn,
 } from './logic/tank';
+import { getImage, putImage, readPicture } from '../scene/images';
 import { Group, Icon, Pill } from './ui';
 import { TankFilters } from './tankFilters';
 import { freshFilter, loadFilter, saveFilter, type TankFilter } from './logic/tankFilter';
@@ -106,6 +109,8 @@ export function TankSection({ store, onPicker, onMaker, libN }: { store: Store; 
         {card.lost ? <div class="dwarn">This tank was deleted from my tanks; this setup keeps its own copy. <button type="button" class="btn sm" onClick={() => onMaker({ how: 'edit' })}>Save to my tanks again…</button></div> : null}
         {card.rows.map(([k, v]) => <div class="row kv"><span class="lbl">{k}</span><span>{v}</span></div>)}
         <div class="hint">{card.note}</div>
+        <div class="field"><div class="cap" title="The dark lines along the glass edges and corners">Glass outlines</div>
+          <Seg label="Glass outlines" value={S.render.edges ? 'on' : 'off'} opts={[['on', 'Shown'], ['off', 'Hidden']]} onPick={v => store.edit(s => setEdges(s, v === 'on'))} /></div>
         <div class="acts-row">
           {card.kind === 'commercial' ? <button type="button" class="btn sm" onClick={() => onMaker({ how: 'copy' })}>Make a custom tank from this…</button> : null}
           <button type="button" class={`btn sm${card.locked ? ' on' : ''}`} aria-pressed={card.locked} title="Use this one for sure: Discover and Suggest keep this tank"
@@ -136,8 +141,13 @@ function WaterLook({ store, open, onToggle }: { store: Store; open: boolean; onT
         <span class="val">{wl.tintText}</span></div>
       <div class="row"><span class="lbl">Colour</span>
         <input type="color" class="colorbox" value={wl.color} disabled={!wl.on} aria-label="Water colour" onInput={e => setColor(store, (e.target as HTMLInputElement).value)} /><span /></div>
+      <div class="row"><span class="lbl" title="How long since the tank was cleaned: algae on the glass, rocks, wood and substrate. Only changes the look.">Condition</span>
+        <input class="slider" type="range" min={0} max={100} step={1} value={Math.round(store.tank.condition.level * 100)} aria-label="Condition: how long since the tank was cleaned" onInput={e => store.edit(s => setCondition(s, +(e.target as HTMLInputElement).value / 100), { coalesce: 'cond' })} />
+        <span class="val" data-testid="cond-word">{conditionWord(store.tank.condition.level)}</span></div>
+      <div class="condstops" role="group" aria-label="Condition presets">{CONDITION_STOPS.map(([l, w]) => <button type="button" class={`condstop${conditionWord(store.tank.condition.level) === w ? ' on' : ''}`} aria-pressed={conditionWord(store.tank.condition.level) === w} title={`${w}: algae on the glass and rock`}
+        onClick={() => store.edit(s => setCondition(s, l))}><span class="condpic" style={{ '--algae': l } as never} /><small>{w}</small></button>)}</div>
       <div class="chips">{wl.presets.map(p => <button type="button" class={`chip${wl.current === p.id ? ' on' : ''}`} disabled={!wl.on} onClick={() => applyPreset(store, p)}>{p.label}</button>)}</div>
-      <div class="hint">Tint is how much of the colour shows through 12 in of water, so a deeper tank looks more tinted. The water numbers (temperature) are in the Water check.</div>
+      <div class="hint">Condition shows the tank weeks after a clean, or neglected: algae on the glass, then on the lit tops of rock and wood; it only changes the look. Tint is how much of the colour shows through 12 in of water, so a deeper tank looks more tinted. The water numbers (temperature) are in the Water check.</div>
     </Group>
   );
 }
@@ -158,7 +168,9 @@ function SitsOn({ store, S, u, open, onToggle }: { store: Store; S: TankSetup; u
             onChange={e => { const [st, f] = (e.target as HTMLSelectElement).value.split('|'); store.edit(s => putOnStand(s, { style: st as 'cabinet' | 'frame', finish: f as TankSetup['stand']['finish'] })); }}>
             {(['cabinet', 'frame'] as const).flatMap(st => (Object.keys(STAND_FINISHES) as TankSetup['stand']['finish'][]).map(f => <option value={`${st}|${f}`}>{st === 'cabinet' ? 'Cabinet' : 'Open frame'}, {STAND_FINISHES[f].label.toLowerCase()}</option>))}
           </select><span /></div>
+        <FinishRow store={store} S={S} />
         <LenRow label="Height" mm={S.stand.height} min={LIMITS.stand[0]} max={LIMITS.stand[1]} u={u} onMm={(mm, done) => store.edit(s => { s.stand.height = mm; }, done ? {} : { coalesce: 'standH' })} />
+        <TablePos store={store} S={S} u={u} />
         <StandPicker S={S} store={store} />
       </> : null}
       {p === 'furniture' ? <>
@@ -166,9 +178,39 @@ function SitsOn({ store, S, u, open, onToggle }: { store: Store; S: TankSetup; u
         <div class="row"><span class="lbl">Top</span><Seg label="Top shape" value={tb.shape} opts={[['rect', 'Rectangular'], ['round', 'Round']]} onPick={v => furn({ shape: v, L: v === 'round' ? Math.max(tb.L, tb.D) : tb.L })} /><span /></div>
         <LenRow label={tb.shape === 'round' ? 'Diameter' : 'Length'} mm={tb.L} min={min!.L} max={240 * IN} u={u} onMm={(mm, done) => furn({ L: mm }, done ? undefined : 'furnL')} />
         {tb.shape === 'rect' ? <LenRow label="Depth" mm={tb.D} min={min!.D} max={96 * IN} u={u} onMm={(mm, done) => furn({ D: mm }, done ? undefined : 'furnD')} /> : null}
+        <FinishRow store={store} S={S} />
+        <TablePos store={store} S={S} u={u} />
         <div class="hint">This tank needs a top at least {tb.shape === 'round' ? `${len(min!.L, u)} across` : `${len(min!.L, u)} × ${len(min!.D, u)}`}.</div>
       </> : null}
     </Group>
+  );
+}
+
+/** TS1 (rank 10): the stand / table finish as swatches (the old Finish select). */
+function FinishRow({ store, S }: { store: Store; S: TankSetup }) {
+  return (
+    <div class="row"><span class="lbl">Finish</span><div class="finsw" role="group" aria-label="Stand finish">
+          {(Object.keys(STAND_FINISHES) as TankSetup['stand']['finish'][]).map(f => <button type="button" class={`finbtn${S.stand.finish === f ? ' on' : ''}`} aria-pressed={S.stand.finish === f} title={STAND_FINISHES[f].label}
+            onClick={() => store.edit(s => setStandFinish(s, f))}><span class="finchip" style={{ background: finishCss(f) }} /><small>{STAND_FINISHES[f].label}</small></button>)}</div><span /></div>
+  );
+}
+
+/** TS1 (parity audit rank 10): where the tank sits on a table top; the old panel's two sliders and Centre / Back / Front. Shown only on a table or custom stand. */
+function TablePos({ store, S, u }: { store: Store; S: TankSetup; u: Units }) {
+  if (!tableOn(S)) return null;
+  const tp = tablePos(S, mm => len(mm, u)), step = u === 'in' ? 0.5 : 1;
+  const sl = (label: string, v: number, lo: number, hi: number, text: string, set: (s: TankSetup, mm: number) => void, key: string, neg: string, pos: string) => (
+    <div class="row"><span class="lbl">{label}</span>
+      <input class="slider" type="range" min={toUnit(lo, u)} max={toUnit(hi, u)} step={step} value={toUnit(v, u)} aria-label={`${label}: ${neg} to ${pos}`} onInput={e => store.edit(s => set(s, fromUnit(+(e.target as HTMLInputElement).value, u)), { coalesce: key })} />
+      <span class="val" data-testid={`${key}-text`}>{text}</span></div>);
+  return (
+    <div class="tablepos" data-testid="table-pos">
+      {sl('Left / right', tp.x, tp.x0, tp.x1, tp.xText, setTableX, 'tableX', 'left', 'right')}
+      {sl('Front / back', tp.z, tp.z0, tp.z1, tp.zText, setTableZ, 'tableZ', 'front', 'back')}
+      <div class="acts-row" role="group" aria-label="Place the tank on the top">
+        {(['centre', 'back', 'front'] as const).map(w => <button type="button" class="btn sm" onClick={() => store.edit(s => placeTank(s, w))}>{w === 'centre' ? 'Centre' : w === 'back' ? 'Back' : 'Front'}</button>)}
+      </div>
+    </div>
   );
 }
 
@@ -203,6 +245,10 @@ function Background({ store, S, u, open, onToggle }: { store: Store; S: TankSetu
         {SIDES.map(([v, t]) => { const on = S.render.bgSides.includes(v); return <button type="button" class={`chip${on ? ' on' : ''}`} aria-pressed={on}
           onClick={() => store.edit(s => { const b = s.render.bgSides; s.render.bgSides = b.includes(v) ? b.filter(x => x !== v) : [...b, v]; wallFit(s); })}>{t}</button>; })}
       </div><span /></div> : null}
+      {bgArcShown(S) ? <div class="row"><span class="lbl" title="How much of the round wall the background covers, centred on each chosen side">Arc</span>
+        <input class="slider" type="range" min={20} max={360} step={5} value={S.render.bgArc} aria-label="Background arc" onInput={e => store.edit(s => setBgArc(s, +(e.target as HTMLInputElement).value), { coalesce: 'bgArc' })} />
+        <span class="val">{arcText(S.render.bgArc)}</span></div> : null}
+      <BgPictures store={store} S={S} />
       {bdShown(S) ? <>
         <div class="row" title={BD_TITLE}><span class="lbl">3D background</span>
           <select class="select" aria-label="3D background" title={BD_TITLE} value={S.backdrop.kind} onChange={e => store.edit(s => { s.backdrop.kind = (e.target as HTMLSelectElement).value as TankSetup['backdrop']['kind']; wallFit(s); })}>
@@ -215,6 +261,43 @@ function Background({ store, S, u, open, onToggle }: { store: Store; S: TankSetu
         {bdDepthShown(S) ? <div class="hint">It takes up depth: animals and plants stay in front of it.</div> : null}
       </> : null}
     </Group>
+  );
+}
+
+/** TS1 (parity audit rank 9): your own pictures on the glass, up to 4, each on one side or round a corner; fit mode, tile size, remove. Pictures live in scene/images by id. */
+function BgPictures({ store, S }: { store: Store; S: TankSetup }) {
+  const [say, setSay] = useState<{ t: string; bad: boolean } | null>(null);
+  const file = useRef<HTMLInputElement>(null), L = S.render.bgImages;
+  const onFile = async (e: Event) => {
+    const inp = e.target as HTMLInputElement, f = inp.files?.[0]; inp.value = ''; if (!f) return;
+    if (store.tank.render.bgImages.length >= PIC_MAX) { setSay({ t: `At most ${PIC_MAX} background pictures per tank.`, bad: true }); return; }
+    let data: string; try { data = await readPicture(f); } catch { setSay({ t: 'That file is not a picture this browser can read.', bad: true }); return; }
+    const { id, stored } = putImage(data); let r = { ok: false, say: '' };
+    store.edit(s => { r = addPicture(s, id); });
+    setSay({ t: r.say + (r.ok && !stored ? ' This browser’s storage is full, so the picture is kept for this visit only; Save as… keeps it in the file.' : ''), bad: !r.ok || !stored });
+  };
+  return (
+    <div class="bgpics" data-testid="bg-pictures">
+      <div class="row"><span class="lbl" title="Your own pictures on the glass: each on one side, or running round a corner across sides that touch.">Pictures</span>
+        <button type="button" class="btn sm" disabled={L.length >= PIC_MAX} onClick={() => file.current?.click()}>Add picture…</button>
+        <span class="val">{L.length}/{PIC_MAX}</span>
+        <input ref={file} type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden onChange={onFile} /></div>
+      {L.map(b => { const data = getImage(b.img); return (
+        <div class="bgpic card" data-img={b.img}>
+          {data ? <img class="bgthumb" alt="" src={data} /> : <span class="bgthumb missing" title="This picture is not in this browser (share links do not carry pictures; a downloaded file does)">missing</span>}
+          <div class="bgctl">
+            <div class="chips">{PIC_SIDES.map(([k, t]) => { const on = b.sides.includes(k); return <button type="button" class={`chip${on ? ' on' : ''}`} aria-pressed={on} data-side={k}
+              onClick={() => { let why = ''; store.edit(s => { why = togglePicSide(s, b.img, k); }); setSay(why ? { t: why, bad: true } : null); }}>{t}</button>; })}</div>
+            <div class="row"><select class="select" aria-label="Picture fit" value={b.fit} onChange={e => store.edit(s => setPicFit(s, b.img, (e.target as HTMLSelectElement).value as typeof b.fit))}>
+              {PIC_FITS.map(([k, t, tip]) => <option value={k} title={tip}>{t}</option>)}</select>
+              <button type="button" class="btn sm ghost" aria-label="Remove picture" title="Remove this picture" onClick={() => store.edit(s => removePicture(s, b.img))}>✕</button></div>
+            {b.fit === 'tile' ? <div class="row"><span class="lbl">Size</span>
+              <input class="slider" type="range" min={LIMITS.bgScale[0]} max={LIMITS.bgScale[1]} step={5} value={b.scale} aria-label="Tile size" title="Tile height, % of the tank height" onInput={e => store.edit(s => setPicScale(s, b.img, +(e.target as HTMLInputElement).value), { coalesce: 'bgScale:' + b.img })} />
+              <span class="val">{b.scale}%</span></div> : null}
+          </div>
+        </div>); })}
+      {say ? <div class={`hint${say.bad ? ' warn' : ''}`} role="status">{say.t}</div> : null}
+    </div>
   );
 }
 
