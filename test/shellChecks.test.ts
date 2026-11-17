@@ -69,6 +69,19 @@ describe('water', () => {
     expect(fmtTemp(24, 'in')).toBe('75 °F');
     expect(fmtTemp(24.3, 'cm')).toBe('24.5 °C');
   });
+  it('carries the stacked per-species range bars: one temperature row and one pH row per inhabitant', () => {
+    const r = waterView(withFish(), 'in').rows[0];
+    const n = r.per.length;
+    expect(n).toBeGreaterThan(0);
+    const axes = r.chart.split('<div class="clAx">').slice(1);
+    const rowsOf = (a: string) => (a.match(/class="clN" title=/g) ?? []).length;
+    expect(axes[0]).toContain('temperature, °F');
+    expect(rowsOf(axes[0])).toBe(n);
+    expect(axes[0]).toContain('clLine');
+    const ph = axes.find(a => a.includes('>pH <'));
+    if (ph) expect(rowsOf(ph)).toBeGreaterThan(0);
+    expect(r.chart).toMatch(/\d+(\.\d)?-\d+(\.\d)? comfortable, /);
+  });
 });
 
 describe('notes', () => {

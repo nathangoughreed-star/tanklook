@@ -758,3 +758,28 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
   .fixbtn:hover .fixtip, .fixbtn:focus-within .fixtip { display: block; }
 }
 @media (hover: none) { .fixtip { display: block; color: var(--text-2); } }
+/* Water drawer: per-species stacked range bars (ported from the old UI's clAx family, src/data/climate.ts axis()) */
+.clwrap { display: grid; gap: var(--s3); min-width: 0; }
+.clwrap .clAx { --cl-n: 124px; --cl-v: 88px; position: relative; margin: 2px 0; min-width: 0; }
+.clwrap .clT { font-weight: 600; font-size: var(--fs-sm); line-height: 14px; color: var(--text-2); margin-bottom: 16px; }
+.clwrap .clR { display: flex; align-items: center; min-height: 22px; gap: 0; }
+.clwrap .clN { flex: none; width: var(--cl-n); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-xs); color: var(--text); padding-right: var(--s2); box-sizing: border-box; }
+.clwrap .clV { flex: none; width: var(--cl-v); text-align: right; font-size: var(--fs-xs); color: var(--text-2); white-space: nowrap; }
+.clwrap .clB { position: relative; flex: 1; min-width: 0; height: 9px; border-radius: 4px; background: color-mix(in srgb, var(--text) 10%, transparent); }
+.clwrap .clB i { position: absolute; top: 0; bottom: 0; border-radius: 4px; }
+.clwrap .clB i.t { background: color-mix(in srgb, var(--ok) 32%, transparent); }
+.clwrap .clB i.a { background: var(--ok); }
+.clwrap .clB i.w { background: var(--warn); }
+.clwrap .clV.s-ideal { color: var(--ok); }
+.clwrap .clV.s-fine { color: var(--warn); }
+.clwrap .clV.s-stretch { color: var(--warn); font-weight: 600; }
+.clwrap .clV.s-unsafe { color: var(--bad); font-weight: 600; }
+.clwrap .clScore { font-weight: 600; margin-left: 4px; }
+.clwrap .clScore.good { color: var(--ok); }
+.clwrap .clScore.bad { color: var(--bad); }
+.clwrap .clSum { font-size: var(--fs-xs); color: var(--text-3); margin-top: 4px; }
+.clwrap .clScale { background: none; height: 12px; }
+.clwrap .clScale b { position: absolute; top: 0; font-size: 10px; font-weight: 400; color: var(--text-3); transform: translateX(-50%); }
+.clwrap .clLine { position: absolute; top: 30px; bottom: 30px; width: 0; border-left: 2px solid var(--bad); pointer-events: none; }
+.clwrap .clLine em { position: absolute; top: -14px; left: 0; transform: translateX(-50%); font: 600 10px/1 var(--font); color: var(--bad); font-style: normal; white-space: nowrap; }
+@media (max-width: 480px) { .clwrap .clAx { --cl-n: 84px; --cl-v: 80px; } }

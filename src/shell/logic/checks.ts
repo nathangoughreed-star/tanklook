@@ -19,7 +19,7 @@ import { plantBundleOpt } from '../../demand/plantBundles';
 import { standOf, standCheck } from '../../data/stands';
 import { filledLb } from './tank';
 import { volume } from '../../scene/physics';
-import { climateOf, climateText, type Climate, type Status } from '../../data/climate';
+import { climateOf, climateText, climateChart, type Climate, type Status } from '../../data/climate';
 import { fixPlans, type FixPlan } from './noteFixes';
 import { verdictOf, type Issue, type Verdict } from '../../scene/verdict';
 
@@ -133,7 +133,7 @@ export const fmtTemp = (c: number, units: Units) => units === 'in' ? `${Math.rou
 export interface WaterView {
   /** the check bar: "75 °F" and a verdict */
   temp: string; pill: { tone: Tone; word: string };
-  rows: { label: string; line: string; note?: string; per: { name: string; word: string; tone: Tone }[] }[];
+  rows: { label: string; line: string; note?: string; /** the old per-species stacked range charts (temperature, humidity, pH) as markup; '' when no inhabitant has data */ chart: string; per: { name: string; word: string; tone: Tone }[] }[];
 }
 export function waterView(S: TankSetup, units: Units, rows: Climate[] = climateOf(S)): WaterView {
   const main = rows.find(r => r.label === 'Water') ?? rows[0];
@@ -143,7 +143,7 @@ export function waterView(S: TankSetup, units: Units, rows: Climate[] = climateO
     : worst === 'unsafe' ? { tone: 'bad' as Tone, word: 'does not fit' } : worst === 'stretch' ? { tone: 'warn' as Tone, word: 'tight' } : { tone: 'ok' as Tone, word: 'fits' };
   return {
     temp: main ? fmtTemp(main.at, units) : '-', pill,
-    rows: rows.map(r => ({ label: r.label, line: climateText(r, units === 'in'), ...(r.note ? { note: r.note } : {}), per: per(r) })),
+    rows: rows.map(r => ({ label: r.label, line: climateText(r, units === 'in'), chart: climateChart(r, units === 'in'), ...(r.note ? { note: r.note } : {}), per: per(r) })),
   };
 }
 

@@ -93,7 +93,8 @@ function Water({ v }: { v: WaterView }) {
           <div class="drow"><b>{r.label}</b></div>
           <div>{r.line}</div>
           {r.note ? <div class="hint">{r.note}</div> : null}
-          {r.per.length ? <ul class="dlist money">{r.per.map(p => <li><span>{p.name}</span><Pill tone={p.tone}>{p.word}</Pill></li>)}</ul>
+          {r.chart ? <div class="clwrap" dangerouslySetInnerHTML={{ __html: r.chart }} />
+            : r.per.length ? <ul class="dlist money">{r.per.map(p => <li><span>{p.name}</span><Pill tone={p.tone}>{p.word}</Pill></li>)}</ul>
             : <div class="hint">No animals with temperature data yet: the default range is shown.</div>}
         </div>
       ))}
