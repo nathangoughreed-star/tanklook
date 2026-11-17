@@ -99,14 +99,14 @@ const bettaT: Record<string, Patch> = {
 };
 
 // ---------- guppy (male: fancy tail and gonopodium; the female keeps her plain body with a coloured tail)
-const gDelta = { type: 'delta' as const, h: 0.3 };
+const gDelta = { type: 'delta' as const, h: 0.22 };
 const guppyC: Record<string, Patch> = {
   'full-red': look({ shade: ['#7a1218', '#b8202a', '#d8524e'], fin: '#c4222c', tail: '#c8222c', dorsal: '#c4222c', fm: 0.5, marks: [], finMarks: [spots('#e8504a', 24, 0.04, 0.4, -0.24, 0.24, 0.012, 0.25)], iris: ['#8a3a30', '#2a0c08'], fmarks: undefined }),
   'japan-blue': look({ shade: ['#142a58', '#2c5ca8', '#5a8cc8'], fin: '#2a58b4', tail: '#2c5eb8', dorsal: '#2c5eb8', fm: 0.45, marks: [spots('#8ab8f0', 36, 0.45, 0.95, -0.05, 0.06, 0.012, 0.3)], finMarks: [spots('#7aa8e8', 24, 0.04, 0.4, -0.24, 0.24, 0.012, 0.25)], shimmerRgb: '150,195,255' }),
   'moscow-blue': look({ shade: ['#0c1844', '#183c98', '#3868c0'], fin: '#1a3ca0', tail: '#1c40a8', dorsal: '#1a3ca0', fm: 0.45, marks: [spots('#6a9ee8', 36, 0.45, 0.95, -0.05, 0.06, 0.012, 0.3)], finMarks: [spots('#4a7ad0', 24, 0.04, 0.4, -0.24, 0.24, 0.012, 0.25)], shimmerRgb: '130,175,255', iris: ['#3a4a6a', '#0a0a18'] }),
   'moscow-green': look({ shade: ['#0c3a20', '#1a7a44', '#3cb070'], fin: '#1c8a4c', tail: '#1e8e50', dorsal: '#1c8a4c', fm: 0.45, marks: [spots('#78e0a0', 36, 0.45, 0.95, -0.05, 0.06, 0.012, 0.3)], finMarks: [spots('#4ac07a', 24, 0.04, 0.4, -0.24, 0.24, 0.012, 0.25)], shimmerRgb: '150,255,190' }),
   'moscow-purple': look({ shade: ['#2a0c4a', '#5a24a0', '#8c58c8'], fin: '#5a28a4', tail: '#5e2aa8', dorsal: '#5a28a4', fm: 0.45, marks: [spots('#b090f0', 36, 0.45, 0.95, -0.05, 0.06, 0.012, 0.3)], finMarks: [spots('#8a60d0', 24, 0.04, 0.4, -0.24, 0.24, 0.012, 0.25)], shimmerRgb: '200,170,255' }),
-  'black-moscow': look({ shade: ['#08080c', '#14141c', '#26262e'], fin: '#101018', tail: '#12121a', dorsal: '#101018', fm: 0.55, marks: [spots('#3a3a50', 30, 0.45, 0.95, -0.05, 0.06, 0.012, 0.3)], finMarks: [], shimmerRgb: '130,140,190', iris: ['#4a4a52', '#0a0a0c'] }),
+  'black-moscow': look({ shade: ['#08080c', '#14141c', '#26262e'], fin: '#101018', tail: '#12121a', dorsal: '#101018', fm: 0.55, marks: [spots('#3a3a50', 30, 0.45, 0.95, -0.05, 0.06, 0.012, 0.3)], finMarks: [band(0.02, 0.38, 0.03, 0.26, '#d8782a', 0.6, 0.07), band(0.02, 0.3, -0.2, -0.02, '#b8b090', 0.3, 0.07)], shimmerRgb: '130,140,190', iris: ['#4a4a52', '#0a0a0c'] }),
   tuxedo: look({ shade: ['#2a2a30', '#6a6c70', '#a8aab0'], fin: '#2a64b8', tail: '#2a64b8', dorsal: '#2a64b8', fm: 0.4,
     marks: [{ k: 'band', u0: 0.38, u1: 0.62, v0: -0.12, v1: 0.12, c: '#0a0a0e', a: 0.97, f: 0.05 }, { k: 'band', u0: 0.4, u1: 0.5, v0: -0.12, v1: 0.12, c: '#0a0a0e', a: 0.9, f: 0.03 }, { k: 'blob', u: 0.86, v: 0, ru: 0.2, rv: 0.1, c: '#c4d0dc', a: 0.55 }], finMarks: [spots('#1a3a8a', 24, 0.04, 0.4, -0.24, 0.24, 0.012, 0.3)] }),
   cobra: look({ shade: ['#8a6a2a', '#d8b050', '#f0dc94'], fin: '#e8a830', tail: '#e8a830', dorsal: '#e8a830', fm: 0.4,
@@ -118,14 +118,14 @@ const guppyC: Record<string, Patch> = {
 };
 const guppyT: Record<string, Patch> = {
   delta: fins({ tail: gDelta, dorsalH: 1.5 }),
-  fan: fins({ tail: { type: 'round', h: 0.27 }, dorsalH: 1.3 }),
-  veil: fins({ tail: { type: 'veil', h: 0.38 }, dorsalH: 2 }),
-  lyre: fins({ tail: { type: 'lyre', h: 0.3, cut: 0.45 }, dorsalH: 1.5 }),
-  spade: fins({ tail: { type: 'spade', h: 0.3 }, dorsalH: 1.3 }),
-  round: fins({ tail: { type: 'round', h: 0.2 } }),
+  fan: fins({ tail: { type: 'round', h: 0.2 }, dorsalH: 1.3 }),
+  veil: fins({ tail: { type: 'veil', h: 0.3 }, dorsalH: 2 }),
+  lyre: fins({ tail: { type: 'lyre', h: 0.24, cut: 0.45 }, dorsalH: 1.5 }),
+  spade: fins({ tail: { type: 'spade', h: 0.22 }, dorsalH: 1.3 }),
+  round: fins({ tail: { type: 'round', h: 0.16 } }),
   pin: fins({ tail: { type: 'pin', h: 0.22 } }),
-  doublesword: fins({ tail: { type: 'double', h: 0.3 }, dorsalH: 1.5 }),
-  dumbo: fins({ pec: 2.4, tail: { type: 'delta', h: 0.28 }, dorsalH: 1.4 }),
+  doublesword: fins({ tail: { type: 'double', h: 0.22 }, dorsalH: 1.5 }),
+  dumbo: fins({ pec: 2.4, tail: { type: 'delta', h: 0.2 }, dorsalH: 1.4 }),
 };
 
 // ---------- platy / molly / swordtail (males: gonopodium; females are paler)
@@ -174,16 +174,19 @@ const angelC: Record<string, Patch> = {
 const angelT: Record<string, Patch> = { veil: (p) => ({ ...p, tail: { ...p.tail, type: 'veil', h: 0.38 }, dorsal: p.dorsal && { ...p.dorsal, h: (p.dorsal as { h: number }).h * 1.25 } as typeof p.dorsal, anal: p.anal && { ...p.anal, h: (p.anal as { h: number }).h * 1.3 } as typeof p.anal, pelvic: p.pelvic && { ...p.pelvic, len: p.pelvic.len * 1.3 } }) };
 
 // ---------- discus
-const dlines = (a: string, b: string, seed = 0.012) => Array.from({ length: 15 }, (_, i) => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: -0.34 + i * 0.045, v1: -0.34 + i * 0.045 + seed, c: i % 2 ? a : b, a: 0.75, wave: 0.014 }));
+const eyeBar = (c = '#10202a', a = 0.55): Marks[number] => ({ k: 'bars', us: [0.925], w: 0.026, c, a });
+const net = (c: string, a: number, seed: number, o: { lv?: number; w?: number; scale?: number; stretch?: number; rim?: [number, number]; core?: number; above?: boolean } = {}): Marks[number] => ({ k: 'maze', u0: 0.13, u1: 1, v0: -0.42, v1: 0.42, c, a, scale: o.scale ?? 0.07, w: o.w ?? 0.26, lv: o.lv, seed, stretch: o.stretch ?? 1.5, rim: o.rim, core: o.core, above: o.above });
+const fnet = (c: string, a: number, o: { lv?: number; w?: number } = {}): Marks[number] => ({ k: 'maze', u0: 0, u1: 1, v0: -0.6, v1: 0.6, c, a, scale: 0.05, w: o.w ?? 0.42, lv: o.lv, seed: 31, stretch: 1.4 });
 const discusC: Record<string, Patch> = {
-  'red-turquoise': look({ shade: ['#7a2a1c', '#c8482c', '#e88860'], fin: '#c8502a', tail: '#b86a50', marks: [{ k: 'bars', us: [0.88, 0.2], w: 0.035, c: '#3a1a14', a: 0.35 }, ...dlines('#2f9ab8', '#6adbe0', 0.011).filter((_, i) => i % 2 === 0)], finMarks: [] }),
-  'pigeon-blood': look({ shade: ['#e0803a', '#f2a860', '#fad8a8'], fin: '#e8884a', tail: '#e6a070', marks: [{ k: 'blob', u: 0.5, v: 0.15, ru: 0.35, rv: 0.25, c: '#fff0d8', a: 0.55 }, { k: 'blob', u: 0.8, v: -0.2, ru: 0.15, rv: 0.12, c: '#e05a28', a: 0.5 }], finMarks: [], iris: ['#d02a1a', '#4a0808'] }),
-  snakeskin: look({ shade: ['#5a4a32', '#b8985a', '#dcc890'], fin: '#a88858', tail: '#9a8058', marks: [{ k: 'bars', us: [0.88, 0.2], w: 0.035, c: '#2a2a30', a: 0.4 }, ...Array.from({ length: 26 }, (_, i) => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: -0.38 + i * 0.03, v1: -0.38 + i * 0.03 + 0.012, c: i % 3 ? '#3a2a1a' : '#e8d8a0', a: 0.65, wave: 0.03 }))], finMarks: [] }),
-  cobalt: look({ shade: ['#10246a', '#2650b8', '#5088d8'], fin: '#2c58b8', tail: '#4468b0', marks: [{ k: 'bars', us: [0.88, 0.2], w: 0.035, c: '#10143a', a: 0.4 }, ...dlines('#4a88e8', '#7ab8f8', 0.012)], finMarks: [], shimmerRgb: '125,180,255' }),
-  red: look({ shade: ['#6a0e10', '#b81c1e', '#dc5a50'], fin: '#c01e20', tail: '#a84048', marks: [{ k: 'bars', us: [0.88, 0.2], w: 0.035, c: '#3a0c0c', a: 0.25 }], finMarks: [], iris: ['#d02a1a', '#3a0808'] }),
-  golden: look({ shade: ['#b88a1e', '#eec234', '#f8e68a'], fin: '#f0c850', tail: '#e8cc70', marks: [{ k: 'blob', u: 0.5, v: 0.1, ru: 0.35, rv: 0.25, c: '#fff4c0', a: 0.45 }], finMarks: [], iris: ['#d8381a', '#4a0808'] }),
-  white: look({ shade: ['#c8ccce', '#e8ebec', '#f8f9f9'], fin: '#eef0f0', tail: '#e2e6e8', marks: [spots('#2a2a30', 26, 0.2, 0.9, -0.3, 0.3, 0.02, 0.5)], finMarks: [], iris: ['#d02a1a', '#4a0808'] }),
-  brown: look({ shade: ['#3a2a1a', '#6a4a2e', '#a08462'], fin: '#6a5238', tail: '#7a6248', marks: [{ k: 'bars', us: [0.88, 0.62, 0.4, 0.2], w: 0.035, c: '#1a1210', a: 0.6 }], finMarks: [], shimmerRgb: '255,225,180' }),
+  'red-turquoise': look({ shade: ['#8a2a18', '#d4502c', '#ee9468'], fin: '#c8502a', tail: '#b46a4c', marks: [net('#2f9ab8', 0.85, 41, { w: 0.14, scale: 0.075, stretch: 2.2, rim: [0.25, 0.8], core: 0.15 }), net('#6adbe0', 0.9, 41, { w: 0.1, lv: 0.4, scale: 0.075, stretch: 2.2, rim: [0.25, 0.8], core: 0.15 }), eyeBar('#3a1008', 0.5)], finMarks: [fnet('#5a2218', 0.7), fnet('#58d4dc', 0.8, { lv: 0.5, w: 0.2 })], iris: ['#f2552a', '#a82010'] }),
+  'pigeon-blood': look({ shade: ['#e07c36', '#f4aa62', '#fadcae'], fin: '#e8884a', tail: '#e6a070', marks: [{ k: 'blob', u: 0.55, v: 0.15, ru: 0.35, rv: 0.25, c: '#fff2dc', a: 0.5 }, { k: 'blob', u: 0.8, v: -0.2, ru: 0.15, rv: 0.12, c: '#e05a28', a: 0.45 }, net('#f0e0c8', 0.55, 43, { w: 0.2, stretch: 1.8, rim: [0.1, 0.7], core: 0.3 }), eyeBar('#8a3014', 0.35)], finMarks: [fnet('#f2c898', 0.5, { w: 0.2 })], iris: ['#e8281a', '#7a0c08'] }),
+  snakeskin: look({ shade: ['#5a4a30', '#bc9c5c', '#e0cc94'], fin: '#a88858', tail: '#9a8058', marks: [net('#2a1e12', 0.8, 47, { scale: 0.04, w: 0.3, stretch: 1.2 }), net('#f0e2b0', 0.8, 47, { scale: 0.04, w: 0.2, lv: 0.55, stretch: 1.2 }), eyeBar('#2a1e12', 0.5)], finMarks: [fnet('#2a1e12', 0.7), fnet('#e8d8a0', 0.7, { lv: 0.5, w: 0.2 })] }),
+  cobalt: look({ shade: ['#142a72', '#2a58bc', '#5a90dc'], fin: '#2c58b8', tail: '#4468b0', marks: [net('#0a0e30', 0.85, 53, { rim: [0.65, 0.95] }), net('#6aa8f6', 0.9, 53, { lv: 0.5, w: 0.2, rim: [0.65, 0.95] }), eyeBar('#0a1030', 0.6)], finMarks: [fnet('#0a1030', 0.8), fnet('#62a0f0', 0.9, { lv: 0.5, w: 0.2 })], shimmerRgb: '125,180,255' }),
+  checkerboard: look({ shade: ['#9ab8c0', '#d8eaee', '#eaf4f4'], fin: '#a85a48', tail: '#8a6a60', marks: [net('#e04a1a', 0.95, 59, { scale: 0.068, w: 0.5, stretch: 1.5 }), { k: 'blob', u: 0.9, v: 0.04, ru: 0.12, rv: 0.2, c: '#ee6a28', a: 0.95 }, { k: 'maze', u0: 0.82, u1: 1, v0: -0.22, v1: 0.26, c: '#fff0e0', a: 0.85, scale: 0.034, w: 0.14, seed: 77, stretch: 0.45 }, eyeBar('#802010', 0.4)], finMarks: [fnet('#7a1a14', 0.8, { w: 0.3 }), fnet('#86e0e8', 0.75, { lv: 0.55, w: 0.2 })], iris: ['#e8281a', '#7a0c08'] }),
+  red: look({ shade: ['#6e1010', '#b81e20', '#de5c52'], fin: '#c01e20', tail: '#a84048', marks: [net('#3a0c0c', 0.3, 61, { w: 0.2, rim: [0.7, 0.97] }), eyeBar('#3a0c0c', 0.3)], finMarks: [fnet('#3a0c0c', 0.35, { w: 0.2 })], iris: ['#e8281a', '#6a0808'] }),
+  golden: look({ shade: ['#b88c20', '#f0c636', '#f8e88c'], fin: '#f0c850', tail: '#e8cc70', marks: [{ k: 'blob', u: 0.5, v: 0.1, ru: 0.35, rv: 0.25, c: '#fff6c8', a: 0.45 }, eyeBar('#6a4a10', 0.3)], finMarks: [], iris: ['#e8381a', '#7a0c08'] }),
+  white: look({ shade: ['#c4c8cc', '#e8ebee', '#f8f9fa'], fin: '#e4e8ea', tail: '#e2e6e8', marks: [net('#2a2a30', 0.75, 67, { lv: 1.05, w: 0.5, scale: 0.1, stretch: 1.1, above: true }), eyeBar('#2a2a30', 0.3)], finMarks: [], iris: ['#e8281a', '#7a0c08'] }),
+  brown: look({ shade: ['#38281a', '#6c4c30', '#a68866'], fin: '#6a5238', tail: '#7a6248', marks: [{ k: 'bars', us: [0.925, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.22], w: 0.03, c: '#1a1210', a: 0.55 }, net('#c8a878', 0.25, 71, { scale: 0.06, w: 0.18, rim: [0.2, 0.9] })], finMarks: [fnet('#2a1c10', 0.5, { w: 0.2 })], shimmerRgb: '255,225,180', iris: ['#d85a2a', '#6a1a0c'] }),
 };
 
 // ---------- zebra danio / tiger barb: GloFish colours (fluorescent, no stripes) and others

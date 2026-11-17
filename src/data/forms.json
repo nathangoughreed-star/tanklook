@@ -415,6 +415,11 @@
      "name": "Cobalt blue"
     },
     {
+     "id": "checkerboard",
+     "name": "Checkerboard / red pattern",
+     "est": true
+    },
+    {
      "id": "red",
      "name": "Solid red / red melon",
      "est": true

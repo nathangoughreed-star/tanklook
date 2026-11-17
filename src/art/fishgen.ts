@@ -41,7 +41,11 @@ type Mark =
   | { k: 'bars'; us: number[]; w: number; c: string; a?: number }
   | { k: 'spots'; n: number; u0: number; u1: number; v0: number; v1: number; r: number; c: string; a?: number }
   | { k: 'blob'; u: number; v: number; ru: number; rv: number; c: string; a?: number }
-  | { k: 'poly'; pts: Pt[]; c: string; a?: number }; // points flagged 'c' are sharp corners (shape())
+  | { k: 'poly'; pts: Pt[]; c: string; a?: number } // points flagged 'c' are sharp corners (shape())
+  // CM3 'maze': winding contour lines of a seeded wave field (the vermiculated net of a discus, the marbling of a koi): wherever
+  // |field - lv| < w the colour is laid down. scale = wavelength (widths); stretch > 1 runs the lines lengthways; rim = [r0, r1]
+  // fades the pattern in between those fractions of the box's ellipse radius (rim-only patterns); core = the weight kept inside r0.
+  | { k: 'maze'; u0: number; u1: number; v0: number; v1: number; c: string; a?: number; scale: number; w: number; lv?: number; seed?: number; stretch?: number; rim?: [number, number]; core?: number; above?: boolean };
 
 export interface Plan {
   depth: number;      // max body depth, widths
@@ -294,6 +298,27 @@ function plates(l: Ctx, P: Proj, W: number, p: Plan, prof: (u: number) => [numbe
   l.restore();
 }
 
+function maze(c: Ctx, P: Proj, m: Extract<Mark, { k: 'maze' }>) {
+  if (typeof ImageData === 'undefined') return;
+  const [xa, ya] = P(m.u0, m.v0), [xb, yb] = P(m.u1, m.v1), X0 = Math.floor(Math.min(xa, xb)), Y0 = Math.floor(Math.min(ya, yb)), w = Math.ceil(Math.abs(xb - xa)), h = Math.ceil(Math.abs(yb - ya));
+  if (w < 2 || h < 2 || w * h > 6e6) return;
+  const S = Math.abs(P(1, 0)[0] - P(0, 0)[0]), r = rng(m.seed ?? 5), st = m.stretch ?? 1, K = 8, waves: [number, number, number][] = [];
+  for (let i = 0; i < K; i++) { const ang = r() * Math.PI * 2, k = 2 * Math.PI / (m.scale * S * (0.8 + 0.4 * r())); waves.push([Math.cos(ang) * k / st, Math.sin(ang) * k, r() * Math.PI * 2]); }
+  const n = parseInt(m.c.slice(1), 16), R = n >> 16, G = (n >> 8) & 255, B = n & 255, A = m.a ?? 0.9, lv = m.lv ?? 0, norm = Math.sqrt(2 / K), [r0, r1] = m.rim ?? [0, 0], core = m.core ?? 0;
+  const img = new ImageData(w, h), d = img.data, ss = (e0: number, e1: number, x: number) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let wt = 1;
+    if (m.rim) { const rr = Math.hypot((2 * x) / w - 1, (2 * y) / h - 1); wt = core + (1 - core) * ss(r0, r1, rr); if (wt <= 0.003) continue; }
+    let f = 0; const X = X0 + x, Y = Y0 + y;
+    for (const [kx, ky, ph] of waves) f += Math.cos(kx * X + ky * Y + ph);
+    const t = Math.abs(f * norm - lv), a = (m.above ? ss(lv - m.w * 0.3, lv + m.w * 0.3, f * norm) : 1 - ss(m.w * 0.55, m.w, t)) * wt * A;
+    if (a <= 0.004) continue;
+    const i = (y * w + x) * 4; d[i] = R; d[i + 1] = G; d[i + 2] = B; d[i + 3] = Math.round(a * 255);
+  }
+  const tmp = document.createElement('canvas'); tmp.width = w; tmp.height = h; tmp.getContext('2d')!.putImageData(img, 0, 0);
+  c.drawImage(tmp, X0, Y0);
+}
+
 function paintMarks(c: Ctx, P: Proj, W: number, marks: Mark[] | undefined, seed: number) {
   const r = rng(seed);
   for (const m of marks ?? []) {
@@ -301,6 +326,7 @@ function paintMarks(c: Ctx, P: Proj, W: number, marks: Mark[] | undefined, seed:
     else if (m.k === 'band') { const f = m.f ?? 0.02; soft(c, P, m.u0, m.u1, m.v0, m.v1, m.c, m.a ?? 0.9, [f, f], [f * 0.6, f * 0.6]); }
     else if (m.k === 'bars') for (const u of m.us) soft(c, P, u - m.w / 2, u + m.w / 2, -1, 1, m.c, m.a ?? 0.85, [m.w * 0.3, m.w * 0.3], [0, 0]);
     else if (m.k === 'blob') blob(c, P, W, m.u, m.v, m.ru, m.rv, m.c, m.a ?? 0.9);
+    else if (m.k === 'maze') maze(c, P, m);
     else if (m.k === 'poly') { shape(c, P, m.pts); c.fillStyle = hexA(m.c, m.a ?? 0.9); c.fill(); }
     else for (let i = 0; i < m.n; i++) {
       const rr = m.r * (0.7 + r() * 0.6);
@@ -645,14 +671,21 @@ export const PLANS: Record<string, Plan> = {
       { k: 'blob', u: 0.6, v: 0.11, ru: 0.22, rv: 0.07, c: '#8a64b0', a: 0.3 }, { k: 'blob', u: 0.62, v: 0.1, ru: 0.15, rv: 0.06, c: '#d0405a', a: 0.75 }],
     finMarks: [{ k: 'blob', u: 0.3, v: -0.17, ru: 0.025, rv: 0.025, c: '#1a1a1a', a: 0.85 }, { k: 'blob', u: 0.1, v: -0.04, ru: 0.022, rv: 0.022, c: '#e8c040', a: 0.9 }, { k: 'blob', u: 0.1, v: -0.04, ru: 0.01, rv: 0.01, c: '#1a1a1a', a: 0.9 },
       { k: 'blob', u: 0.1, v: 0.04, ru: 0.022, rv: 0.022, c: '#e8c040', a: 0.9 }, { k: 'blob', u: 0.1, v: 0.04, ru: 0.01, rv: 0.01, c: '#1a1a1a', a: 0.9 }], eye: { r: 0.028, iris: ['#c8a050', '#3a2a10'] } },
-  discus: { shimmer: 0.6, shimmerRgb: '125,215,235', gillLine: 0.25, finFade: 0.2, scale: 0.014, thick: 0.2, depth: 0.78, pedU: 0.13, ped: 0.07, peak: 0.45, snout: 0.85, mouth: 0.02, shade: ['#5a6a7a', '#3f8aa8', '#4a98b0'], tail: { type: 'notch', h: 0.14, tint: '#6a8a9a' }, fin: '#5a8698',
-    // dorsal and anal follow the disc from behind the head and the pelvics round to the tail root
-    dorsal: { at: 0.8, len: 0.64, h: 0.075, spines: 0.35, nSp: 7, spineH: [0.03, 0.06], notch: 0.15, rake: 0.75, trail: 0.05, drop: 0.85, edge: '#c8603a' },
-    anal: { at: 0.7, len: 0.54, h: 0.075, spines: 0.2, nSp: 4, spineH: [0.03, 0.06], notch: 0.15, rake: 0.75, trail: 0.05, drop: 0.85, edge: '#c8603a' }, pelvic: { u: 0.72, len: 0.12, tint: '#c8603a' }, gape: 0.03,
-    marks: [{ k: 'bars', us: [0.88, 0.2], w: 0.035, c: '#2a2a30', a: 0.55 }, // wavy turquoise net over a blue-brown body (Commons: Blue Discus): thin wavy lines, neighbours out of phase, with fainter darker lines between
-      ...Array.from({ length: 15 }, (_, i) => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: -0.34 + i * 0.045, v1: -0.34 + i * 0.045 + 0.013, c: i % 2 ? '#2f9ab8' : '#6adbe0', a: 0.75, wave: 0.014 })),
-      ...Array.from({ length: 14 }, (_, i) => ({ k: 'band' as const, u0: 0.12, u1: 0.98, v0: -0.318 + i * 0.045, v1: -0.318 + i * 0.045 + 0.01, c: '#7a4a38', a: 0.3, wave: 0.016 }))],
-    eye: { r: 0.03, iris: ['#d04a2a', '#4a1208'] }, rim: 0.03 },
+  discus: { shimmer: 0.55, shimmerRgb: '125,215,235', gillLine: 0.25, finFade: 0.15, scale: 0.012, thick: 0.2, depth: 0.8, pedU: 0.13, ped: 0.07, peak: 0.5, snout: 0.9, mouth: 0.06, shade: ['#3a84a2', '#5cb4ce', '#8accdf'], tail: { type: 'notch', h: 0.12, tint: '#46788c' }, fin: '#4a7c92',
+    // dorsal and anal follow the disc from behind the head and the pelvics round to the tail root; both carry the body's net (finMarks)
+    dorsal: { at: 0.76, len: 0.6, h: 0.12, spines: 0.35, nSp: 7, spineH: [0.03, 0.06], notch: 0.15, rake: 0.6, trail: 0.05, drop: 0.85, edge: '#9a4a30' },
+    anal: { at: 0.68, len: 0.52, h: 0.12, spines: 0.2, nSp: 4, spineH: [0.03, 0.06], notch: 0.15, rake: 0.6, trail: 0.05, drop: 0.85, edge: '#9a4a30' }, pelvic: { u: 0.7, len: 0.3, thread: true, tint: '#d0683a', angle: 72 }, pec: { s: 1.0 }, gape: 0.03,
+    // Reference (Wikimedia Commons, blue hybrid discus): a smooth, light turquoise flank with only a faint dotted line; the pattern is a dense net of dark brown lines
+    // with bright turquoise between them, crowded toward the dorsal and anal margins; a dark bar through the red eye, curved dark lines on the cheek
+    marks: [
+      { k: 'maze', u0: 0.13, u1: 1, v0: -0.42, v1: 0.42, c: '#14222c', a: 0.88, scale: 0.06, w: 0.4, seed: 11, stretch: 1.8, rim: [0.6, 0.9] },
+      { k: 'maze', u0: 0.13, u1: 1, v0: -0.42, v1: 0.42, c: '#8cf0f6', a: 0.92, scale: 0.06, w: 0.3, lv: 0.62, seed: 11, stretch: 1.8, rim: [0.6, 0.9] },
+      { k: 'maze', u0: 0.85, u1: 1, v0: -0.2, v1: 0.24, c: '#1c3a4a', a: 0.55, scale: 0.032, w: 0.13, seed: 23, stretch: 0.45 },
+      { k: 'bars', us: [0.925], w: 0.026, c: '#10202a', a: 0.6 }],
+    finMarks: [
+      { k: 'maze', u0: 0, u1: 1, v0: -0.6, v1: 0.6, c: '#241a16', a: 0.88, scale: 0.05, w: 0.42, seed: 31, stretch: 1.4 },
+      { k: 'maze', u0: 0, u1: 1, v0: -0.6, v1: 0.6, c: '#6ae6ee', a: 0.92, scale: 0.05, w: 0.3, lv: 0.62, seed: 31, stretch: 1.4 }],
+    eye: { r: 0.038, u: 0.84, dv: -0.02, iris: ['#f04a2a', '#a01a10'], pupil: '#08090a' }, rim: 0.03 },
   angel: { shimmer: 0.5, shimmerRgb: '235,242,255', gillLine: 0.25, finFade: 0.4, thick: 0.2, angular: 0.8, depth: 0.78, pedU: 0.2, ped: 0.045, peak: 0.375, snout: 0.25, shade: ['#9a998e', '#c0beb2', '#e4e1d7'], tail: { type: 'notch', h: 0.24, tint: '#c3c4bc' }, fin: '#c3c4bc',
     // dorsal and anal: long bases, the spines stepping up the leading edge, the soft rays sweeping back to high trailing tips
     dorsal: { at: 0.68, len: 0.42, h: 0.42, spines: 0.3, nSp: 5, spineH: [0.04, 0.11], notch: 0.12, rake: 0.9, tip: 'point', trail: 0.13, drop: 1 },

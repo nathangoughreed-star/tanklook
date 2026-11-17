@@ -22,3 +22,12 @@ export async function sheet(id, o = {}) {
   await fetch('/__shot?name=CM3-' + (o.name ?? id), { method: 'POST', body: await c.convertToBlob({ type: 'image/png' }) });
   return 'ok ' + items.length;
 }
+
+/** One card of a species in a form, 900 px wide on the water background -> shots/CM3-card-<name>.png (for the photo-left compare images). */
+export async function card(id, o = {}) {
+  const s = speciesOf({ species: id, sex: o.sex, form: o.form, finForm: o.finForm }), w = 900, h = Math.round(w * s.aspect);
+  const c = new OffscreenCanvas(w, h), x = c.getContext('2d'); x.fillStyle = BG; x.fillRect(0, 0, w, h);
+  x.drawImage(drawFishCard(s.art, s.aspect, 1024), 0, 0, w, h);
+  await fetch('/__shot?name=CM3-card-' + (o.name ?? id), { method: 'POST', body: await c.convertToBlob({ type: 'image/png' }) });
+  return 'ok';
+}
