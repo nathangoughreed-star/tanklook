@@ -6,7 +6,11 @@ import type { Store } from '../scene/store';
 import type { Viewer } from '../render/viewer';
 import { setGearShown, gearShown } from '../render/gear3d';
 import { Icon } from './ui';
-import { Toggle } from './tank';
+import { Toggle, LenRow, Seg } from './tank';
+import type { TankSetup } from '../scene/types';
+import { LIMITS } from '../scene/validate';
+import { CEILING_MAX, CEILING_MIN, ceilingH } from '../scene/physics';
+import { roomSummary, heightText, type Units } from './logic/tank';
 import { chooseFs, useFsItems } from './fullscreen';
 import {
   CAM_PRESETS, CAM_SLIDERS, SHOWS, PNG_SIZES, camReadout, roomRead, roomByHand, roomAuto, ROOM_MAX, ROOM_HINT, presetNow, presetOf, loadHidden, saveHidden, loadMap, saveMap, pngName, pngTitle, anotherMoment, KEYS,
@@ -37,6 +41,40 @@ export function applyViewPrefs(viewer: Viewer, host: HTMLElement) {
   }
   addEventListener(MAP_EVENT, () => viewer.invalidate());
   viewer.invalidate();
+}
+
+
+const ROOM_OPEN_KEY = 'tanklook.ui2.viewRoomOpen';
+const loadRoomOpen = () => { try { return localStorage.getItem(ROOM_OPEN_KEY) === 'on'; } catch { return false; } };
+
+/** VM1 (2026-11-17): the room around the tank (wall, ceiling, wall colour, you for scale) lives in View, folded to a one-line summary; it was the Tank section's Room group. Same edits as before. */
+function RoomGroup({ store }: { store: Store }) {
+  const S: TankSetup = store.tank, u: Units = store.scene.units;
+  const [open, setOpen] = useState(loadRoomOpen);
+  const flip = () => { const n = !open; setOpen(n); try { localStorage.setItem(ROOM_OPEN_KEY, n ? 'on' : 'off'); } catch { /* blocked storage: forget */ } };
+  const wallSide = (side: TankSetup['wall']['side']) => store.edit(s => {
+    const was = s.wall.show ? s.wall.side : 'back', b = s.render.bgSides, bgOf = (w: typeof side) => (w === 'corner' ? 'back' : w);
+    if (b.length === 1 && b[0] === bgOf(was)) s.render.bgSides = [bgOf(side)]; // a background on the old wall side moves with the wall
+    s.wall.side = side; s.wall.show = true;
+  });
+  return (
+    <div class="vsec roomgrp"><h3><button type="button" class="roomhead" aria-expanded={open} onClick={flip}><span class="caret">{open ? '▾' : '▸'}</span> Room</button></h3>
+      {open ? null : <div class="hint">{roomSummary(S, u)}</div>}
+      {open ? <>
+        <Toggle on={S.wall.show} label="A wall near the tank" onFlip={on => store.edit(s => { s.wall.show = on; })} />
+        {S.wall.show ? <>
+          <Seg label="Wall" value={S.wall.side} opts={[['back', 'Behind'], ['left', 'Peninsula (left end)'], ['right', 'Peninsula (right end)'], ['corner', 'Corner']]} onPick={wallSide} />
+          <LenRow label="Ceiling" mm={ceilingH(S.wall)} min={CEILING_MIN} max={CEILING_MAX} u={u} step={1} onMm={(mm, done) => store.edit(s => { s.wall.height = mm; }, done ? {} : { coalesce: 'ceilH' })} />
+          <div class="row"><span class="lbl">Wall colour</span><input type="color" aria-label="Wall colour" value={S.wall.color} onInput={e => store.edit(s => { s.wall.color = (e.target as HTMLInputElement).value; }, { coalesce: 'wallColor' })} /><span /></div>
+        </> : null}
+        <Toggle on={S.person.show} label={<>You, for scale <span class="hint">{heightText(S.person.height, u)}</span></>} onFlip={on => store.edit(s => { s.person.show = on; })} />
+        {S.person.show ? <>
+          <LenRow label="Your height" mm={S.person.height} min={LIMITS.person[0]} max={LIMITS.person[1]} u={u} onMm={(mm, done) => store.edit(s => { s.person.height = mm; }, done ? {} : { coalesce: 'personH' })} />
+          <Seg label="Stand on the" value={S.person.side} opts={[['left', 'Left'], ['right', 'Right']]} onPick={v => store.edit(s => { s.person.side = v; })} />
+        </> : null}
+      </> : null}
+    </div>
+  );
 }
 
 export function ViewCluster({ store, getViewer, phone, compare }: { store: Store; getViewer: () => Viewer | undefined; phone: boolean; /** step 9: the Compare / Views linked / End compare buttons (compare.tsx) */ compare?: ComponentChildren }) {
@@ -103,6 +141,7 @@ export function ViewCluster({ store, getViewer, phone, compare }: { store: Store
           <div class="vsec"><h3>Viewpoint map</h3>
             <Toggle on={mapOn()} label="Top view of where you stand" onFlip={setMap} />
           </div>
+          <RoomGroup store={store} />
           <div class="vsec"><h3>Window</h3>
             {fs.items.map(it => <button type="button" class="btn sm fsitem" title={it.hint} onClick={() => { setOpen(false); chooseFs(it.id); }}>{it.label}{it.id === 'full' ? <span class="kbd">F</span> : null}</button>)}
           </div>

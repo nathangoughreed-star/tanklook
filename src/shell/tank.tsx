@@ -8,7 +8,7 @@ import type { Store } from '../scene/store';
 import type { TankSetup } from '../scene/types';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { LIMITS } from '../scene/validate';
-import { CEILING_MAX, CEILING_MIN, ceilingH, fromUnit, toUnit, volume, IN } from '../scene/physics';
+import { fromUnit, toUnit, volume, IN } from '../scene/physics';
 import { setLid, lidLocked, setDoors, doorLocked, type DoorKind } from '../scene/tankEdit';
 import { lockNote } from '../scene/integrated';
 import { lockObject, unlockObject, isLocked } from '../scene/locks';
@@ -21,7 +21,7 @@ import { loadLibrary, type CustomTank } from '../scene/customTanks';
 import { pinPreset } from '../demand/pinned';
 import { soleProduct } from '../data/tanks';
 import {
-  modelCard, sitsOnSummary, lidSummary, bgSummary, roomSummary, heightText, len, LIDS, lidHeld, customRows, customLine, commercialRows, commercialLine,
+  modelCard, sitsOnSummary, lidSummary, bgSummary, len, LIDS, lidHeld, customRows, customLine, commercialRows, commercialLine,
   previewRow, chooseCommercial, chooseCustom, saleOf, filledLb, SIZE_CHIPS, loadGroups, saveGroups, GROUP_DEFAULT, type PickRow, type SizeChip, type TankGroup, type Units, kindView, setKind,
 } from './logic/tank';
 import { Group, Icon, Pill } from './ui';
@@ -115,7 +115,6 @@ export function TankSection({ store, onPicker, onMaker, libN }: { store: Store; 
       <SitsOn store={store} S={S} u={u} open={g.sits} onToggle={() => flip('sits')} />
       <LidTop store={store} S={S} open={g.lid} onToggle={() => flip('lid')} />
       <Background store={store} S={S} open={g.bg} onToggle={() => flip('bg')} />
-      <Room store={store} S={S} u={u} open={g.room} onToggle={() => flip('room')} />
     </>
   );
 }
@@ -202,29 +201,6 @@ function Background({ store, S, open, onToggle }: { store: Store; S: TankSetup; 
         {SIDES.map(([v, t]) => { const on = S.render.bgSides.includes(v); return <button type="button" class={`chip${on ? ' on' : ''}`} aria-pressed={on}
           onClick={() => store.edit(s => { const b = s.render.bgSides; s.render.bgSides = b.includes(v) ? b.filter(x => x !== v) : [...b, v]; wallFit(s); })}>{t}</button>; })}
       </div><span /></div> : null}
-    </Group>
-  );
-}
-
-function Room({ store, S, u, open, onToggle }: { store: Store; S: TankSetup; u: Units; open: boolean; onToggle: () => void }) {
-  const wallSide = (side: TankSetup['wall']['side']) => store.edit(s => {
-    const was = s.wall.show ? s.wall.side : 'back', b = s.render.bgSides, bgOf = (w: typeof side) => (w === 'corner' ? 'back' : w);
-    if (b.length === 1 && b[0] === bgOf(was)) s.render.bgSides = [bgOf(side)]; // a background on the old wall side moves with the wall
-    s.wall.side = side; s.wall.show = true;
-  });
-  return (
-    <Group title="Room" sum={roomSummary(S, u)} open={open} onToggle={onToggle}>
-      <Toggle on={S.wall.show} label="A wall near the tank" onFlip={on => store.edit(s => { s.wall.show = on; })} />
-      {S.wall.show ? <>
-        <Seg label="Wall" value={S.wall.side} opts={[['back', 'Behind'], ['left', 'Peninsula (left end)'], ['right', 'Peninsula (right end)'], ['corner', 'Corner']]} onPick={wallSide} />
-        <LenRow label="Ceiling" mm={ceilingH(S.wall)} min={CEILING_MIN} max={CEILING_MAX} u={u} step={u === 'in' ? 1 : 1} onMm={(mm, done) => store.edit(s => { s.wall.height = mm; }, done ? {} : { coalesce: 'ceilH' })} />
-        <div class="row"><span class="lbl">Wall colour</span><input type="color" aria-label="Wall colour" value={S.wall.color} onInput={e => store.edit(s => { s.wall.color = (e.target as HTMLInputElement).value; }, { coalesce: 'wallColor' })} /><span /></div>
-      </> : null}
-      <Toggle on={S.person.show} label={<>You, for scale <span class="hint">{heightText(S.person.height, u)}</span></>} onFlip={on => store.edit(s => { s.person.show = on; })} />
-      {S.person.show ? <>
-        <LenRow label="Your height" mm={S.person.height} min={LIMITS.person[0]} max={LIMITS.person[1]} u={u} onMm={(mm, done) => store.edit(s => { s.person.height = mm; }, done ? {} : { coalesce: 'personH' })} />
-        <Seg label="Stand on the" value={S.person.side} opts={[['left', 'Left'], ['right', 'Right']]} onPick={v => store.edit(s => { s.person.side = v; })} />
-      </> : null}
     </Group>
   );
 }

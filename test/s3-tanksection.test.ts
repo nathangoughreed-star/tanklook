@@ -107,8 +107,8 @@ describe('summaries', () => {
     const st = fake();
     expect(loadGroups(st)).toEqual(GROUP_DEFAULT);
     expect(GROUP_DEFAULT).toMatchObject({ model: true, custom: false, commercial: false });
-    saveGroups({ ...GROUP_DEFAULT, room: true }, st);
-    expect(loadGroups(st).room).toBe(true);
+    saveGroups({ ...GROUP_DEFAULT, sits: true }, st);
+    expect(loadGroups(st).sits).toBe(true);
   });
 });
 

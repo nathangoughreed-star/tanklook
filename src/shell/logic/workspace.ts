@@ -152,7 +152,7 @@ export function terrainMode(on: boolean): { slopes: boolean; grid: boolean } { r
 // ---------------------------------------------------------------------------------------------------------------- WS3: Tank, Plants, Animals, Equipment
 /** What a workspace's title bar says, by section. */
 export const WS_META: Partial<Record<SectionId, { title: string; sub: string; count: (S: TankSetup) => string }>> = {
-  tank: { title: 'Tank', sub: 'Model, water, stand, lid, background, room', count: S => galText(volume(S.tank).gallons) },
+  tank: { title: 'Tank', sub: 'Model, water, stand, lid, background', count: S => galText(volume(S.tank).gallons) },
   plants: { title: 'Plants', sub: 'Pick plants, see growth over time', count: S => `${S.items.filter(it => it.kind === 'plant' || it.kind === 'coral' || it.kind === 'artificial').length} placed` },
   animals: { title: 'Animals', sub: 'Who lives here and how they fit', count: S => `${S.fish.length} animal${S.fish.length === 1 ? '' : 's'}` },
   equipment: { title: 'Equipment', sub: 'Filter, light, heater and the rest', count: S => `${categories(S).filter(c => inUseItem(S, c.id)).length} in use` },
