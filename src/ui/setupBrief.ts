@@ -270,7 +270,7 @@ let bound: Store | undefined, last: Brief = NONE;
 const listeners = new Set<Listener>();
 export const getBrief = (): Brief => bound?.tank.brief ?? NONE;
 const CAPS = [['constraints.budget', 'startupUsd'], ['constraints.monthly', 'monthlyUsd'], ['constraints.careMin', 'minutesPerWeek']] as const;
-function syncCaps(T: TankSetup, before: Brief, after: Brief) {
+export function syncCaps(T: TankSetup, before: Brief, after: Brief) {
   const c = { ...(T.constraints ?? {}) };
   for (const [id, key] of CAPS) {
     const it = getItem(after, id);

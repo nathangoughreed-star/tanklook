@@ -746,3 +746,15 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .ws-tank > * > .group, .ws-equipment > * > .group { break-inside: avoid; }
 .ui2app.phone .wsbody .pgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s2); }
 .ui2app.phone .ws-tank > .tank, .ui2app.phone .ws-equipment > .equipment { columns: 1; }
+
+/* NF1: Notes "Fix these" buttons + tooltip */
+.fixes { display: grid; gap: var(--s2); margin-top: var(--s2); }
+.fixbtn { position: relative; display: grid; gap: var(--s1); }
+.fixgo { display: grid; justify-items: start; gap: 2px; text-align: left; height: auto; padding: var(--s2) var(--s3); white-space: normal; }
+.fixgo span { font-size: var(--fs-sm); opacity: .9; }
+.fixtip { display: none; font-size: var(--fs-sm); line-height: 1.4; padding: var(--s2) var(--s3); border-radius: var(--r-card); background: var(--bg-raised); color: var(--text); border: 1px solid var(--line); }
+@media (hover: hover) {
+  .fixtip { position: absolute; left: 0; right: 0; bottom: calc(100% + 6px); z-index: 5; box-shadow: 0 6px 20px rgba(0,0,0,.35); pointer-events: none; }
+  .fixbtn:hover .fixtip, .fixbtn:focus-within .fixtip { display: block; }
+}
+@media (hover: none) { .fixtip { display: block; color: var(--text-2); } }

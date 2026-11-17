@@ -34,6 +34,8 @@ export interface Issue {
   text: string;
   /** the smallest relaxation, when there is one: said, never applied */
   relax?: string;
+  /** a limit that is over by a known amount: the limit the smallest change would set (the Notes panel's "Fix these" button applies it) */
+  fix?: { kind: 'limit'; id: 'startup' | 'monthly' | 'time'; from: number; to: number };
 }
 export interface Verdict { gates: Issue[]; hard: Issue[]; targets: Issue[]; advisories: Issue[]; feasible: boolean }
 export interface VerdictOpts {
@@ -114,7 +116,8 @@ function compute(S: TankSetup, b: Brief, o: VerdictOpts): Verdict {
       const cap = r.id === 'startup' ? L.setupUsd : r.id === 'monthly' ? L.upkeepUsd : L.minPerWeek;
       const relax = r.id === 'space' ? 'a smaller tank, or a bigger space'
         : v !== undefined && cap !== undefined ? r.id === 'time' ? `raise the time limit to ${Math.ceil(v)} min a week` : `raise the ${r.id === 'startup' ? 'budget' : 'monthly limit'} by $${Math.ceil(v - cap)}` : undefined;
-      put(kind === 'flexible' ? targets : hard, { id: `limit:${r.id}`, tab: r.id === 'space' ? 'tank' : 'equipment', uids: [], text: `${r.label}: ${r.text}`, ...(relax ? { relax } : {}) });
+      const fix = v !== undefined && cap !== undefined && r.id !== 'space' ? { kind: 'limit' as const, id: r.id as 'startup' | 'monthly' | 'time', from: cap, to: cap + Math.ceil(v - cap) } : undefined;
+      put(kind === 'flexible' ? targets : hard, { id: `limit:${r.id}`, tab: r.id === 'space' ? 'tank' : 'equipment', uids: [], text: `${r.label}: ${r.text}`, ...(relax ? { relax } : {}), ...(fix ? { fix } : {}) });
     }
   }
   return { gates, hard, targets, advisories, feasible: !gates.length && !hard.length };

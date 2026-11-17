@@ -3,6 +3,7 @@
 import { useState } from 'preact/hooks';
 import { openLimit } from './constraints';
 import { DEAL_NOTE } from './logic/deals';
+import type { FixPlan } from './logic/noteFixes';
 import type { ChecksModel, CheckId, HabitatView, CostView, WaterView, NotesView } from './logic/checks';
 import { CHECKS } from './logic/checks';
 import { Icon, Meter, Pill } from './ui';
@@ -100,7 +101,21 @@ function Water({ v }: { v: WaterView }) {
   );
 }
 
-function Notes({ v }: { v: NotesView }) {
+/** NF1: one button per kind of fix. The hover / focus tooltip says exactly what it changes; on touch (no hover) the same text always shows under the button. */
+function FixButtons({ fixes, onFix }: { fixes: FixPlan[]; onFix: (p: FixPlan) => void }) {
+  return (
+    <div class="fixes">
+      {fixes.map(p => (
+        <div class="fixbtn" data-fix={p.kind}>
+          <button type="button" class="btn primary fixgo" aria-describedby={`fixtip-${p.kind}`} onClick={() => onFix(p)}><b>{p.label}</b><span>{p.what}</span></button>
+          <div class="fixtip" role="tooltip" id={`fixtip-${p.kind}`}>{p.describe}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Notes({ v, onFix }: { v: NotesView; onFix?: (p: FixPlan) => void }) {
   if (!v.count) return <div class="hint">No notes: nothing in this design is over a limit or against advice.</div>;
   return (
     <>
@@ -108,6 +123,7 @@ function Notes({ v }: { v: NotesView }) {
       {v.groups.map(g => (
         <div class="dcat"><div class="cap">{g.title}</div><ul class="dlist">{g.items.map(i => <li>{i.text}{i.relax ? <i class="hint"> Smallest change: {i.relax}.</i> : null}</li>)}</ul></div>
       ))}
+      {onFix && v.fixes.length ? <FixButtons fixes={v.fixes} onFix={onFix} /> : null}
     </>
   );
 }
@@ -117,14 +133,14 @@ export function DrawerBody({ id, model }: { id: CheckId; model: ChecksModel }) {
   return id === 'habitat' ? <Habitat v={model.habitat} /> : id === 'cost' ? <Cost v={model.cost} /> : id === 'water' ? <Water v={model.water} /> : <Notes v={model.notes} />;
 }
 
-export function Drawer({ id, model, onClose }: { id: CheckId; model: ChecksModel; onClose: () => void }) {
+export function Drawer({ id, model, onClose, onFix }: { id: CheckId; model: ChecksModel; onClose: () => void; onFix?: (p: FixPlan) => void }) {
   const title = CHECKS.find(c => c.id === id)!.title;
   return (
     <aside class="drawer" aria-label={title}>
       <div class="sec-head"><h2>{title}</h2><button type="button" class="btn icon ghost" title="Close (Esc)" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
       <div class="sec-body">
-        {id === 'habitat' ? <Habitat v={model.habitat} /> : id === 'cost' ? <Cost v={model.cost} /> : id === 'water' ? <Water v={model.water} /> : <Notes v={model.notes} />}
-        <div class="hint dro">Read-only for now: each setting is changed in its own section.</div>
+        {id === 'habitat' ? <Habitat v={model.habitat} /> : id === 'cost' ? <Cost v={model.cost} /> : id === 'water' ? <Water v={model.water} /> : <Notes v={model.notes} onFix={onFix} />}
+        <div class="hint dro">{id === 'notes' ? (model.notes.fixes.length && onFix ? 'Each button makes one change and is one undo step. A note with no button has no exact fix: change it in its own section.' : 'These notes have no exact one-click fix: change each in its own section.') : 'Read-only for now: each setting is changed in its own section.'}</div>
       </div>
     </aside>
   );

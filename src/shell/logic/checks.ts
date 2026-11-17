@@ -20,6 +20,7 @@ import { standOf, standCheck } from '../../data/stands';
 import { filledLb } from './tank';
 import { volume } from '../../scene/physics';
 import { climateOf, climateText, type Climate, type Status } from '../../data/climate';
+import { fixPlans, type FixPlan } from './noteFixes';
 import { verdictOf, type Issue, type Verdict } from '../../scene/verdict';
 
 /** One look for every status pill in the shell (tokens.css .pill). */
@@ -147,14 +148,16 @@ export function waterView(S: TankSetup, units: Units, rows: Climate[] = climateO
 }
 
 // ---------- Notes ----------
-export interface NotesView { count: number; tone: Tone; info: string; groups: { title: string; items: Issue[] }[] }
-export function notesView(v: Verdict, brief: Brief = emptyBrief()): NotesView {
+export interface NotesView { count: number; tone: Tone; info: string; groups: { title: string; items: Issue[] }[]; /** NF1: the "Fix these" buttons, one per kind of fix that applies (empty without a tank to read) */ fixes: FixPlan[] }
+export function notesView(v: Verdict, brief: Brief = emptyBrief(), S?: TankSetup): NotesView {
   const groups = [
     { title: 'Welfare and physical limits', items: v.gates }, { title: 'Your limits', items: v.hard },
     { title: 'Preferences not met', items: v.targets }, { title: 'Advice', items: v.advisories },
   ].filter(g => g.items.length);
   const count = groups.reduce((s, g) => s + g.items.length, 0);
-  return { count, tone: v.gates.length + v.hard.length ? 'warn' : 'neutral', info: count ? checksNote(rulesOf(brief)) : '', groups };
+  let fixes: FixPlan[] = [];
+  if (S && count) try { fixes = fixPlans(S, groups.flatMap(g => g.items)); } catch { /* no fix offered */ }
+  return { count, tone: v.gates.length + v.hard.length ? 'warn' : 'neutral', info: count ? checksNote(rulesOf(brief)) : '', groups, fixes };
 }
 
 /** Everything the check bar and the drawers show, for one tank, in one pass (each engine is memoised or cheap). */
@@ -163,8 +166,8 @@ export function checksModel(S: TankSetup, active: number, units: Units, P: UserP
   const brief = S.brief ?? emptyBrief();
   let D: Demand | null = null;
   try { D = demandFor(S, active, P); } catch { /* an unfinished tank has no price yet */ }
-  let notes: NotesView = { count: 0, tone: 'neutral', info: '', groups: [] };
-  try { notes = notesView(verdictOf(S, brief, { units, limits: P.limits, ...(D ? { totals: D.totals } : {}) }), brief); } catch { /* nothing to judge */ }
+  let notes: NotesView = { count: 0, tone: 'neutral', info: '', groups: [], fixes: [] };
+  try { notes = notesView(verdictOf(S, brief, { units, limits: P.limits, ...(D ? { totals: D.totals } : {}) }), brief, S); } catch { /* nothing to judge */ }
   let water: WaterView = { temp: '-', pill: { tone: 'neutral', word: 'none' }, rows: [] };
   try { water = waterView(S, units); } catch { /* ignore */ }
   return { habitat: habitatView(S, units), cost: D ? costView(D, 8, { S, P }) : null, water, notes };

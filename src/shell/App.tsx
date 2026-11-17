@@ -290,7 +290,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
         <ScapeBars store={store} getViewer={viewer} />
       </main>
       {phone && !ws ? <div class="checkstrip">{split ? <CompareStrip store={store} models={models} side={cmpSide} setSide={setCmpSide} drawer={cmpDrawer} onPick={check} /> : <CheckBar m={model} on={drawer === 'selection' ? null : drawer} onPick={check} />}</div> : null}
-      {drawer === 'selection' ? <SelectionDrawer store={store} getViewer={viewer} onClose={() => setDrawer(d => (d === 'selection' ? null : d))} /> : drawer && split ? <CompareDrawer id={drawer} models={models} onClose={() => setDrawer(null)} /> : drawer ? <Drawer id={drawer} model={model} onClose={() => setDrawer(null)} /> : null}
+      {drawer === 'selection' ? <SelectionDrawer store={store} getViewer={viewer} onClose={() => setDrawer(d => (d === 'selection' ? null : d))} /> : drawer && split ? <CompareDrawer id={drawer} models={models} onClose={() => setDrawer(null)} /> : drawer ? <Drawer id={drawer} model={model} onClose={() => setDrawer(null)} onFix={p => store.editTank(store.scene.active, t => p.apply(t))} /> : null}
       {phone && !ws ? <TabBar open={more ? 'more' : section} onPick={tab} /> : null}
       <FileLayer store={store} files={files} />
       {door ? <AnimalDoor store={store} say={files.say} onClose={() => setDoor(false)} /> : null}
