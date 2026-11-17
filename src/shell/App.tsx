@@ -22,6 +22,7 @@ import { PrintSection, PrintPaper } from './print';
 import { AnimalsSection, SelectionDrawer, pickable } from './animals';
 import { ScapeBars, pickItems } from './scape';
 import { ScapeWorkspace } from './scapeWs';
+import { SectionWorkspace } from './sectionWs';
 import { isWorkspace } from './logic/workspace';
 import { PlantsSection } from './plants';
 import { Icon, Pill } from './ui';
@@ -129,7 +130,7 @@ function Panel({ id, more, onPick, onClose, tank, s8, disc, s5 }: { id: SectionI
       <div class="sec-body">{MORE.map(m => { const s = sectionOf(m); return <button type="button" class="card media morerow" onClick={() => onPick(m)}><span class="ic"><Icon name={s.icon} /></span><span class="t">{s.title}</span><Icon name="chev" /></button>; })}</div>
     </section>
   );
-  if (!id || isWorkspace(id)) return null;   // WS2: a workspace section draws itself next to the viewer (see App), not as a side panel
+  if (!id || isWorkspace(id)) return null;   // WS2 / WS3: a workspace section draws itself next to the viewer (see WsBody in App), not as a side panel
   const s = sectionOf(id);
   if (id === 'tank' && tank.picker) return <TankPicker store={tank.store} preview={tank.preview} onClose={() => tank.setPicker(false)} onMaker={tank.maker} libN={tank.libN} />;
   if (id === 'tank') return (
@@ -180,6 +181,14 @@ function Panel({ id, more, onPick, onClose, tank, s8, disc, s5 }: { id: SectionI
       <div class="sec-body"><div class="empty"><Icon name={s.icon} /><div>{s.title} moves here in shell step {COMES_IN[id]}.</div><div class="hint">Until then the current app (without <code>?ui=2</code>) has it.</div></div></div>
     </section>
   );
+}
+
+/** WS3: the workspace body of Tank, Plants, Animals and Equipment: the section's own component, wide. */
+function WsBody({ id, tank, s8 }: { id: SectionId; tank: TankHost; s8: S8Host }) {
+  if (id === 'tank') return tank.picker ? <TankPicker store={tank.store} preview={tank.preview} onClose={() => tank.setPicker(false)} onMaker={tank.maker} libN={tank.libN} /> : <TankSection store={tank.store} onPicker={() => tank.setPicker(true)} onMaker={tank.maker} libN={tank.libN} />;
+  if (id === 'animals') return <AnimalsSection store={s8.store} getViewer={s8.getViewer} />;
+  if (id === 'plants') return <PlantsSection store={s8.store} getViewer={s8.getViewer} />;
+  return <EquipmentSection store={s8.store} units={s8.store.scene.units} />;
 }
 
 function CheckBar({ m, on, onPick, head }: { m: ChecksModel; on: CheckId | null; onPick: (id: CheckId) => void; head?: boolean }) {
@@ -268,6 +277,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
         view={<ViewCluster store={store} getViewer={viewer} phone={phone} compare={<CompareButtons store={store} phone={phone} say={files.say} />} />} />
       {phone ? null : <Rail open={section} onPick={pick} />}
       <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); setPicker(false); }} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} disc={{ scope, onScope: setScope, say: files.say }} s5={{ onSurprise: () => { setScope(undefined); setSection('discover'); } }} />
+      {ws && section && section !== 'scape' ? <SectionWorkspace key={section} id={section} store={store} phone={phone} onDone={() => { setSection(null); setPicker(false); }} onIdeas={() => ideas(section)}><WsBody id={section} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} /></SectionWorkspace> : null}
       {ws && section === 'scape' ? <ScapeWorkspace store={store} getViewer={viewer} phone={phone} onDone={() => setSection(null)} onIdeas={() => ideas('scape')} /> : null}
       <IdeasButton section={more || ws ? null : section} onIdeas={ideas} />
       {split && panelOpen && !phone ? <EditingBar store={store} /> : null}

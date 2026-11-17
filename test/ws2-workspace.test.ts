@@ -8,9 +8,9 @@ import * as WS from '../src/shell/logic/workspace';
 const mk = () => new Store();
 
 describe('which rail sections open a workspace', () => {
-  it('Scape does; every other section keeps its panel for now', () => {
-    expect(WS.isWorkspace('scape')).toBe(true);
-    for (const id of ['tank', 'plants', 'animals', 'equipment', 'preferences', 'constraints', 'discover', 'print', 'settings'] as const) expect(WS.isWorkspace(id)).toBe(false);
+  it('Scape, Tank, Plants, Animals and Equipment do (WS3); the rest keep their panel', () => {
+    for (const id of ['scape', 'tank', 'plants', 'animals', 'equipment'] as const) expect(WS.isWorkspace(id)).toBe(true);
+    for (const id of ['preferences', 'constraints', 'discover', 'print', 'settings'] as const) expect(WS.isWorkspace(id)).toBe(false);
     expect(WS.isWorkspace(null)).toBe(false);
   });
 });
@@ -113,5 +113,27 @@ describe('cross-section', () => {
     expect(cs.front).toBeCloseTo(25.4, 0); expect(cs.back).toBeCloseTo(76.2, 0);
     expect(cs.frontText).toMatch(/^1.0/); expect(cs.ground.length).toBe(33); expect(cs.gridText).toBe('1 square = 1 in');
     SC.setSubstrateType(st, 'bare'); expect(WS.crossSection(st.tank, 'in').ground.every(g => g === 0)).toBe(true);
+  });
+});
+
+describe('WS3: workspaces for Tank, Plants, Animals, Equipment', () => {
+  it('every workspace section has a title bar entry and a side column', () => {
+    const st = mk();
+    for (const id of WS.WORKSPACES.filter(x => x !== 'scape')) {
+      expect(WS.WS_META[id]?.title).toBeTruthy();
+      expect(WS.WS_META[id]!.count(st.tank)).toBeTruthy();
+      const side = WS.wsSide(st.tank, id);
+      expect(side.chips.length + side.lines.length > 0 || !!side.empty).toBe(true);
+    }
+  });
+  it('the Plants side lists placed plants with counts', () => {
+    const st = mk(); SC.addPiece(st, 'anubias'); SC.addPiece(st, 'anubias');
+    const side = WS.wsSide(st.tank, 'plants');
+    expect(side.chips).toEqual([{ id: 'anubias', label: LIBRARY.anubias.label, n: 2 }]);
+  });
+  it('a zoomed-out camera goes back to framing the tank; a zoomed-in one is left alone', () => {
+    const st = mk(), c = st.tank.camera;
+    expect(WS.tankFraming({ ...c, zoom: 0.5 })).toEqual({ zoom: 1 });
+    expect(WS.tankFraming({ ...c, zoom: 1.6 })).toBeNull();
   });
 });

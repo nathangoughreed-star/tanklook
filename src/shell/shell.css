@@ -261,7 +261,7 @@ a.btn { text-decoration: none; }
 .discover .hint.bad { color: var(--bad, #e5645a); }
 .ideasslot { margin-left: auto; margin-right: var(--s2); display: inline-flex; } .ideasslot + .btn.icon { margin-left: 0; } .btn.ideas { white-space: nowrap; }
 .sec-head .ideasslot ~ .printsub { display: none; }
-.ov.getstarted { left: var(--s3); top: var(--s3); width: 260px; padding: var(--s2) var(--s3); display: grid; gap: var(--s2); z-index: calc(var(--z-overlay) + 2); border-radius: var(--r-card); }
+.ov.getstarted { left: var(--s3); bottom: var(--s3); top: auto; width: 260px; padding: var(--s2) var(--s3); display: grid; gap: var(--s2); z-index: calc(var(--z-overlay) + 2); border-radius: var(--r-card); }
 .getstarted .gshead { display: flex; align-items: center; justify-content: space-between; } .getstarted .gstitle { background: none; border: 0; color: var(--text); cursor: pointer; padding: 0; font: inherit; text-align: left; }
 .getstarted .dim { color: var(--text-3); }
 .gslist { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; } .gslist button { width: 100%; display: flex; align-items: center; gap: var(--s2); background: none; border: 0; border-radius: 6px; padding: 4px; cursor: pointer; color: var(--text); text-align: left; font: inherit; }
@@ -271,7 +271,7 @@ a.btn { text-decoration: none; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .gsanimal { justify-self: start; font-size: 12px; }
 .animalfound { display: grid; gap: var(--s1); } .card.picked { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); } .card.picked .val { min-width: 24px; text-align: center; } .dlgfoot { justify-content: flex-end; display: flex; gap: var(--s2); }
-@media (max-width: 699px) { .ov.getstarted { left: var(--s2); right: var(--s2); top: var(--s2); width: auto; } .ov.getstarted.folded { right: auto; } }
+@media (max-width: 699px) { .ov.getstarted { left: var(--s2); right: var(--s2); bottom: var(--s2); top: auto; width: auto; } .ov.getstarted.folded { right: auto; } }
 
 /* Compare (step 9, lane S9): two halves over the viewer, each with its own tab and check bar; "Editing A / B / Both" over the panel */
 .cmplayer { position: absolute; inset: 0; display: flex; pointer-events: none; z-index: var(--z-overlay); }
@@ -734,3 +734,12 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .pblegend span { display: inline-flex; align-items: center; gap: 6px; } .pblegend u { display: inline-block; width: 22px; border-top: 3px dashed; text-decoration: none; } .pblegend u.dot { border-top-style: dotted; border-top-width: 4px; }
 .pbempty { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; text-align: center; gap: var(--s2); padding: var(--s4); color: var(--text-2); } .pbempty h3 { margin: 0; color: var(--text); } .pbempty p { margin: 0; max-width: 420px; }
 @media (max-width: 699px) { .ov.pbswitch { top: var(--s2); left: var(--s2); } .pbchips { top: 72px; left: var(--s2); right: var(--s2); justify-content: flex-start; } .pbchip { font-size: 11px; padding: 3px 8px; } .pbbot { left: var(--s2); right: var(--s2); bottom: var(--s2); } .pblegend { font-size: 11px; gap: 4px 10px; padding: 5px 8px; } }
+/* WS3: Tank, Plants, Animals and Equipment in the workspace's wide catalogue pane: their grids and forms spread out instead of a 360 px column */
+.wsbody { display: grid; gap: var(--s3); min-width: 0; align-content: start; }
+.wsbody .pgrid { grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: var(--s3); }
+.wsbody .ptile { padding: var(--s3); } .wsbody .ptile .tart { aspect-ratio: 4 / 3; } .wsbody .ptile .tart img { width: 100%; height: 100%; object-fit: contain; }
+.wsbody .chips { gap: var(--s2); }
+.ws-tank > .tank, .ws-equipment > .equipment { columns: 2 340px; column-gap: var(--s4); }
+.ws-tank > * > .group, .ws-equipment > * > .group { break-inside: avoid; }
+.ui2app.phone .wsbody .pgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s2); }
+.ui2app.phone .ws-tank > .tank, .ui2app.phone .ws-equipment > .equipment { columns: 1; }

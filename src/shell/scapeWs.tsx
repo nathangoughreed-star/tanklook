@@ -8,7 +8,7 @@ import { drawSubstrate, drawBlendTile, SUBSTRATES, type PresetSubstrate } from '
 import { groundVolume } from '../scene/setupsheet';
 import { ideasLabel } from './logic/discover';
 import { substrateView, terrainView, brushView, placedView, setSubstrateType, setRough, slopePreset, setLitterLeaf, setLitterDensity, shuffleLitter, setCorner, addPiece, LEAVES } from './logic/scape';
-import { SCAPE_TABS, scapeTiles, scapeFacts, crossSection, substrateSwatches, enterVisit, revertVisit, visitDirty, type ScapeTab, type Visit, type CrossSection } from './logic/workspace';
+import { tankFraming, SCAPE_TABS, scapeTiles, scapeFacts, crossSection, substrateSwatches, enterVisit, revertVisit, visitDirty, type ScapeTab, type Visit, type CrossSection } from './logic/workspace';
 import { Group, Icon } from './ui';
 import { LenRow } from './tank';
 import { dragPiece } from './drag';
@@ -130,7 +130,7 @@ export function ScapeWorkspace({ store, getViewer, phone, onDone, onIdeas }: { s
   const { groups, shown, none } = scapeTiles(S, tab === 'ground' ? 'stone' : tab, q);
   const facts = scapeFacts(S);
   // pieces can be picked in the view while the workspace is open (App sets this from the open section as well; this keeps tests and the first frame right)
-  useEffect(() => { pickItems.sec = 'hardscape'; }, []);
+  useEffect(() => { pickItems.sec = 'hardscape'; const f = tankFraming(store.tank.camera); if (f) store.cam(c => { Object.assign(c, f); }); }, []);   // WS3: opens framed on the tank, not the room
   const add = (id: string) => { addPiece(store, id); };
   const ideas = ideasLabel('scape');
   return (

@@ -15,14 +15,17 @@ import { IN } from '../../scene/physics';
 import { fmtLen } from '../../scene/physics';
 import { SUBSTRATES } from '../../art/placeholder';
 import { aquariumOnly } from '../../scope';
-import type { ItemKind, TankSetup, Units } from '../../scene/types';
+import { volume } from '../../scene/physics';
+import { categories, inUseItem, itemName } from './equipment';
+import { galText, sitsOnSummary } from './tank';
+import type { CameraSettings, ItemKind, TankSetup, Units } from '../../scene/types';
 import type { Store } from '../../scene/store';
 import type { SectionId } from './sections';
 import type { Tone } from './checks';
 
 // ---------------------------------------------------------------------------------------------------------------- which sections
-/** Rail sections that open a full-screen workspace (frame A) instead of the narrow side panel. Plants, Animals, Equipment, Tank follow in later lanes. */
-export const WORKSPACES: readonly SectionId[] = ['scape'];
+/** Rail sections that open a full-screen workspace (frame A) instead of the narrow side panel (WS3, 2026-11-17: Tank, Plants, Animals and Equipment join Scape; Preferences, Constraints, Discover, Print and Settings stay panels). */
+export const WORKSPACES: readonly SectionId[] = ['scape', 'tank', 'plants', 'animals', 'equipment'];
 export const isWorkspace = (id: SectionId | null): id is SectionId => !!id && WORKSPACES.includes(id);
 
 /** Frame A on a screen at least 700 px wide: the live view left, the catalogue right. Below it the two stack (view strip over the grid). */
@@ -162,3 +165,35 @@ export function crossSection(S: TankSetup, units: Units): CrossSection {
   const front = ground[0], back = ground[n];
   return { D: T.D, H: T.H, water: S.water.on ? waterY(T, S.water.level) : T.H, ground, front, back, grid: units === 'in' ? IN : 20, gridText: units === 'in' ? '1 square = 1 in' : '1 square = 2 cm', frontText: fmtLen(front, units), backText: fmtLen(back, units) };
 }
+
+// ---------------------------------------------------------------------------------------------------------------- WS3: Tank, Plants, Animals, Equipment
+/** What a workspace's title bar says, by section. */
+export const WS_META: Partial<Record<SectionId, { title: string; sub: string; count: (S: TankSetup) => string }>> = {
+  tank: { title: 'Tank', sub: 'Model, water, stand, lid, background, room', count: S => galText(volume(S.tank).gallons) },
+  plants: { title: 'Plants', sub: 'Pick plants, see growth over time', count: S => `${S.items.filter(it => it.kind === 'plant' || it.kind === 'coral' || it.kind === 'artificial').length} placed` },
+  animals: { title: 'Animals', sub: 'Who lives here and how they fit', count: S => `${S.fish.length} animal${S.fish.length === 1 ? '' : 's'}` },
+  equipment: { title: 'Equipment', sub: 'Filter, light, heater and the rest', count: S => `${categories(S).filter(c => inUseItem(S, c.id)).length} in use` },
+};
+
+export interface WsSide { sub: string; chips: { id: string; label: string; n: number }[]; lines: [string, string][]; empty: string }
+/** The side column under the live view: what is in the tank for this section, as chips with counts and a few fact lines. */
+export function wsSide(S: TankSetup, id: SectionId): WsSide {
+  if (id === 'plants') {
+    const by = new Map<string, number>(); for (const it of S.items) if (it.kind === 'plant' || it.kind === 'coral' || it.kind === 'artificial') by.set(it.variant, (by.get(it.variant) ?? 0) + 1);
+    const n = [...by.values()].reduce((a, b) => a + b, 0);
+    return { sub: n ? `${n} plant${n === 1 ? '' : 's'}` : '', chips: [...by].map(([v, c]) => ({ id: v, label: LIBRARY[v]?.label ?? v, n: c })), lines: [], empty: 'No plants yet. Pick one on the right to add it.' };
+  }
+  if (id === 'animals') {
+    const by = new Map<string, number>(); for (const f of S.fish) by.set(f.species, (by.get(f.species) ?? 0) + 1);
+    return { sub: S.fish.length ? `${S.fish.length} in all` : '', chips: [...by].map(([sp, c]) => ({ id: sp, label: getSpecies(sp)?.name ?? sp, n: c })), lines: [], empty: 'No animals yet. Pick one on the right to add it.' };
+  }
+  if (id === 'equipment') {
+    const used = categories(S).map(c => ({ c, it: inUseItem(S, c.id) })).filter(x => x.it);
+    return { sub: '', chips: [], lines: used.map(({ c, it }) => [c.label, itemName(c.id, it!)] as [string, string]), empty: 'No gear chosen yet.' };
+  }
+  const T = S.tank;
+  return { sub: '', chips: [], lines: [['Volume', galText(volume(T).gallons)], ['Sits on', sitsOnSummary(S, 'in')], ['Water', S.water.on ? (isSalt(S) ? 'Saltwater' : 'Freshwater') : 'No water']], empty: '' };
+}
+
+/** A workspace opens framed on the tank, not the room: a camera that is zoomed out (zoom under 1) goes back to 1; orbit and distance are kept. Null = already fine. */
+export function tankFraming(c: CameraSettings): Partial<CameraSettings> | null { return c.zoom < 1 ? { zoom: 1 } : null; }

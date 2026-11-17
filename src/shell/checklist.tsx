@@ -6,11 +6,11 @@ import { checklistOf, showChecklist, isNewTank, hideChecklist, hideState, subscr
 import type { SectionId } from './logic/sections';
 import { Icon } from './ui';
 
-export function GetStarted({ tank, open, onOpen, onAnimal, phone }: { tank: TankSetup; open: SectionId | null; onOpen: (s: SectionId) => void; onAnimal: () => void; phone: boolean }) {
+export function GetStarted({ tank, open, onOpen, onAnimal, phone: _phone }: { tank: TankSetup; open: SectionId | null; onOpen: (s: SectionId) => void; onAnimal: () => void; phone: boolean }) {
   const [, bump] = useState(0);
   useEffect(() => subscribeHide(() => bump(n => n + 1)), []);
   const { hidden: off, forced, epoch } = hideState();
-  const [folded, setFolded] = useState(phone);
+  const [folded, setFolded] = useState(true);   // WS3: starts as a one-line pill docked at the bottom-left, out of the tank; a click opens the five steps upward
   const [started, setStarted] = useState(() => isNewTank(tank));
   const isNew = isNewTank(tank);
   useEffect(() => { setStarted(isNewTank(tank)); }, [epoch]);   // another project opened: it starts over
