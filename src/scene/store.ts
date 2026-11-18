@@ -1,5 +1,5 @@
 // Holds the scene, the selection and undo/redo history. Every mutation goes through update().
-import { effectiveTank } from './locks';
+import { effectiveTank, kitViolations } from './locks';
 import { emptyScene } from './defaults';
 import { parseScene } from './validate';
 import { clearCams, eyeClear, limitOrbit } from './orbit';
@@ -212,7 +212,23 @@ export class Store {
   static designKey(s: Scene): string {
     return JSON.stringify([s.tanks.map(t => { const { locks, discoverOn, brief, constraints, camera, render, ...d } = t as unknown as Record<string, unknown>; void locks; void discoverOn; void brief; void constraints; void camera; void render; return d; }), s.active]);
   }
+  /** R125: asked when an edit would change a part a kit / bundle locked. The shell shows "Unlock this locked item to continue"; `go(true)` unlocks those parts and applies the edit; `go(false)` drops it. Unset (tests, old UI) = no gate. */
+  kitGate?: (hit: { name: string }[], go: (unlock: boolean) => void) => void;
+  private kitAsking = false; private kitOff = false;
   update(fn: (s: Scene) => void, opts: UpdateOptions = {}) {
+    if (this.kitGate && !this.kitOff && (opts.kind ?? 'scene') === 'scene' && this.scene.tanks.some(t => t.locks?.objects.some(o => o.kit))) {
+      const draft = structuredClone(this.scene); fn(draft);
+      const hit = kitViolations(this.scene.tanks, draft.tanks);
+      if (hit.length) {
+        if (this.kitAsking) return;   // a slider keeps firing while the question is open: drop it
+        this.kitAsking = true;
+        this.kitGate([...new Set(hit.map(h => h.name))].map(name => ({ name })), unlock => {
+          this.kitAsking = false; if (!unlock) return; this.kitOff = true;
+          try { this.update(s => { for (const h of hit) { const L = s.tanks[h.tank]?.locks; if (L) L.objects = L.objects.filter(o => !(o.kit && o.target === h.target)); } fn(s); }, opts); } finally { this.kitOff = false; }
+        });
+        return;
+      }
+    }
     let reqOnly = false;   // PS1: a requirement change (a lock, a switch, the brief) while Discovery is open: the design, its undo history and its revision stay exactly as they were
     if (this.frozen && (opts.kind ?? 'scene') === 'scene') {
       const draft = structuredClone(this.scene); fn(draft);
