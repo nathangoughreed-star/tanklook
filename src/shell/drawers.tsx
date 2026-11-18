@@ -3,7 +3,7 @@
 import { useState } from 'preact/hooks';
 import { openLimit } from './constraints';
 import { openSection } from './open';
-import { DEAL_NOTE } from './logic/deals';
+import { DEAL_NOTE, type ApplyPlan } from './logic/deals';
 import { goTargetOf, type FixPlan, type GoTarget } from './logic/noteFixes';
 import type { ChecksModel, CheckId, HabitatView, CostView, WaterView, NotesView } from './logic/checks';
 import { CHECKS } from './logic/checks';
@@ -58,8 +58,30 @@ function LowerIt({ v }: { v: CostView }) {
     </div>
   );
 }
-function Cost({ v }: { v: CostView | null }) {
+/** R136: what Apply on the bundle card does, one line per swapped part; nothing changes until Apply is pressed in the confirm. */
+export interface BundleApply { plan: (id: string) => ApplyPlan | undefined; apply: (p: ApplyPlan) => void }
+function ApplyConfirm({ plan, onYes, onNo }: { plan: ApplyPlan; onYes: () => void; onNo: () => void }) {
+  return (
+    <div class="scrim" onClick={e => { if (e.target === e.currentTarget) onNo(); }}>
+      <div class="dlg" role="dialog" aria-modal="true" aria-label="Apply this bundle" data-applybundle={plan.deal.id}>
+        <div class="sec-head"><h2>Apply this bundle?</h2></div>
+        <div class="sec-body">
+          <div>{plan.title}, {plan.price}: saves about {plan.saving} against buying the parts.</div>
+          <div class="cap">Swapped into your build</div>
+          <ul class="dlist">{plan.lines.map(l => <li>{l}</li>)}</ul>
+          {plan.worse.length ? <><div class="cap">Also worse for this build</div><ul class="dlist">{plan.worse.map(l => <li>{l}</li>)}</ul></> : null}
+          {plan.loses.length ? <><div class="cap">What you lose</div><ul class="dlist">{plan.loses.map(l => <li>{l}</li>)}</ul></> : null}
+          <div class="hint">The bundle's parts are held like a kit start (unlock one to change it), and Cost and time prices the bundle. Undo puts your parts back. Your animals, plants and hardscape do not change.</div>
+          <div class="dacts"><button type="button" class="btn" data-applycancel onClick={onNo}>Cancel</button><button type="button" class="btn primary" data-applyyes onClick={onYes}>Apply</button></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Cost({ v, bundle }: { v: CostView | null; bundle?: BundleApply }) {
   const [sel, setSel] = useState<Fig>('setup');
+  const [ask, setAsk] = useState<ApplyPlan | null>(null);
   if (!v) return <div class="hint">No price yet: choose a tank first.</div>;
   const d = sel === 'setup' ? null : v.detail(sel);
   const fig = (id: Fig, cap: string, big: string) => (
@@ -82,8 +104,10 @@ function Cost({ v }: { v: CostView | null }) {
           <span class="m"><b>{v.deal.price}</b>{v.deal.was ? <> <s>{v.deal.was}</s></> : null} · saves about {v.deal.saving} against buying the parts</span>
           {v.deal.worse.length ? <span class="hint warn">Worse for this build: {v.deal.worse.join('; ')}.</span> : null}
           <span class="hint">Comes with: {v.deal.includes}. As of {v.deal.asOfText}{v.deal.guessed ? ' (some details guessed)' : ''}; {DEAL_NOTE}.</span>
+          {bundle ? <button type="button" class="btn sm applybundle" data-applybundle-open onClick={() => setAsk(bundle.plan(v.deal!.id) ?? null)}>Apply</button> : null}
         </div>
       ) : null}
+      {ask && bundle ? <ApplyConfirm plan={ask} onNo={() => setAsk(null)} onYes={() => { bundle.apply(ask); setAsk(null); }} /> : null}
       {v.gearSales ? <div class="hint">{v.gearSales.n === 1 ? '1 gear sale fits' : `${v.gearSales.n} gear sales fit`} this tank{v.gearSales.first ? `, such as ${v.gearSales.first.title} (${v.gearSales.first.off}% off)` : ''}: see On sale now in Equipment.</div> : null}
       <LowerIt v={v} />
       <div class="cap">{d ? d.title : 'Costs most to set up'}</div>
@@ -158,13 +182,13 @@ export function DrawerBody({ id, model }: { id: CheckId; model: ChecksModel }) {
   return id === 'habitat' ? <Habitat v={model.habitat} /> : id === 'cost' ? <Cost v={model.cost} /> : id === 'water' ? <Water v={model.water} /> : <Notes v={model.notes} />;
 }
 
-export function Drawer({ id, model, onClose, onFix }: { id: CheckId; model: ChecksModel; onClose: () => void; onFix?: (p: FixPlan) => void }) {
+export function Drawer({ id, model, onClose, onFix, bundle }: { id: CheckId; model: ChecksModel; onClose: () => void; onFix?: (p: FixPlan) => void; bundle?: BundleApply }) {
   const title = CHECKS.find(c => c.id === id)!.title;
   return (
     <aside class="drawer" aria-label={title}>
       <div class="sec-head"><h2>{title}</h2><button type="button" class="btn icon ghost" title="Close (Esc)" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
       <div class="sec-body">
-        {id === 'habitat' ? <Habitat v={model.habitat} /> : id === 'cost' ? <Cost v={model.cost} /> : id === 'water' ? <Water v={model.water} /> : <Notes v={model.notes} onFix={onFix} />}
+        {id === 'habitat' ? <Habitat v={model.habitat} /> : id === 'cost' ? <Cost v={model.cost} bundle={bundle} /> : id === 'water' ? <Water v={model.water} /> : <Notes v={model.notes} onFix={onFix} />}
         <div class="hint dro">{id === 'notes' ? (model.notes.fixes.length && onFix ? 'Each button makes one change and is one undo step. A note with no button has no exact fix: change it in its own section.' : 'These notes have no exact one-click fix: change each in its own section.') : 'Read-only for now: each setting is changed in its own section.'}</div>
       </div>
     </aside>
