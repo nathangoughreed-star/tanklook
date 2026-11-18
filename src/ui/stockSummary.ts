@@ -28,7 +28,7 @@ import { notesOf } from './stockPlanLogic';
 export interface MinWarn { level: 'over' | 'near'; text: string; rec?: true }
 export type CatId = 'minimums' | 'social' | 'environment' | 'behaviour' | 'fullness';
 export type CatLevel = 'ok' | 'caution' | 'problem' | 'unknown';
-export interface CatItem { level: 'caution' | 'problem' | 'unknown'; text: string; /** a cross-link: the item is counted here, also relevant there */ also?: string; /** a load percent: the line is tinted along the gauge's green-amber-red scale */ pct?: number }
+export interface CatItem { level: 'caution' | 'problem' | 'unknown'; text: string; /** a cross-link: the item is counted here, also relevant there */ also?: string; /** a load percent: the line is tinted along the gauge's green-amber-red scale */ pct?: number; /** R117: where the shell sends the user to fix it (a "Fix it" button): 'lid' = Tank > Lid and top, 'filter' = Equipment > Filter */ go?: 'lid' | 'filter' }
 export interface Category { id: CatId; label: string; what: string; level: CatLevel; word: string; items: CatItem[]; /** the category's one-line answer (Tank minimums: the smallest tank holding every species' minimum group) */ answer?: string }
 export interface StockSummary {
   cats: Category[];
@@ -86,7 +86,7 @@ function airChecks(land: Species[], add: (c: CatId, level: CatItem['level'], tex
 export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: Units = 'cm'): StockSummary {
   const us = units === 'in';
   const by: Record<CatId, CatItem[]> = { minimums: [], social: [], environment: [], behaviour: [], fullness: [] };
-  const add = (c: CatId, level: CatItem['level'], text: string, also?: string, pct?: number) => by[c].push({ level, text, ...(also ? { also } : {}), ...(pct !== undefined ? { pct } : {}) });
+  const add = (c: CatId, level: CatItem['level'], text: string, also?: string, pct?: number, go?: CatItem['go']) => by[c].push({ level, text, ...(also ? { also } : {}), ...(pct !== undefined ? { pct } : {}), ...(go ? { go } : {}) });
   const count = new Map<string, number>(), fem = new Map<string, number>();
   for (const f of S.fish) { const sp = getSpecies(f.species); if (!sp || !countsAgainstWater(sp)) continue; count.set(sp.id, (count.get(sp.id) ?? 0) + 1); if (f.sex === 'f' || f.gender === 'f') fem.set(sp.id, (fem.get(sp.id) ?? 0) + 1); }
   const sp = [...count.keys()].map(id => getSpecies(id)!) as Species[];
@@ -139,7 +139,7 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: 
   airChecks(land, add, us);
   for (const t of coverAdvice(S)) add('environment', 'caution', t.replace(/\.$/, ''), 'it also limits fighting: see Behavior');
   // the lid IS checked (lane LB1, data/lidNeed.ts): an open top with an animal that needs one is a Problem, named; the old "Lid:" lines are no longer "cannot check"
-  const openTop = openTopProblem(S); if (openTop) add('environment', 'problem', openTop.text);
+  const openTop = openTopProblem(S); if (openTop) add('environment', 'problem', openTop.text, undefined, undefined, 'lid');
   for (const s of sp) for (const n of needsOf(s.id)) if (n.status === 'unchecked' && !n.text.startsWith('Lid')) add('environment', 'unknown', `${s.name}: ${n.text} (the tool cannot check this)`);
   const litres = volume(S.tank).litres;
   for (const s of sp) {
@@ -150,7 +150,7 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: 
   // Filtration bar shelved (Nathan 2026-10-30): no filtration percent is shown. The missing choice is still "Not enough information" (never green, B1 audit), the nitrate lines stay
   if (r.contributors.length) {
     const unset = filterState(S) === 'unset', wc = r.nitrogen.waterChange.state;
-    if (unset) add('environment', 'unknown', 'No filter chosen: a filter sized for this tank is strongly recommended, so pick one in Tech › Filtration');
+    if (unset) add('environment', 'unknown', 'No filter chosen: a filter sized for this tank is strongly recommended, so pick one in Tech › Filtration', undefined, undefined, 'filter');
     if (wc === 'failure') add('environment', 'problem', 'Water changes cannot hold nitrate near 40 ppm for this stock (see the nitrate line)');
     else if (wc === 'high') add('environment', 'caution', 'High water-change maintenance to hold nitrate near 40 ppm (see the nitrate line)');
   }

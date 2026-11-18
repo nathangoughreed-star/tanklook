@@ -864,3 +864,6 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .pnplain { margin: 0; } .pnacts { display: flex; flex-wrap: wrap; gap: var(--s2); } .pnswaps { display: grid; gap: 2px; margin: 0; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .pnrowx { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); font-size: var(--fs-sm); } .pnrowx .hint { margin: 0; } .pnfert .select { max-width: 240px; }
+
+/* R117: the "Fix it" button on a check row: small, beside the line it fixes */
+.fixit { margin-left: 6px; padding: 1px 8px; font-size: 12px; min-height: 0; line-height: 1.5; vertical-align: baseline; }

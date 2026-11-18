@@ -115,9 +115,9 @@ function boxPickIn(viewer: Viewer, store: Store, vp: Viewport, x0: number, y0: n
 }
 
 /** `canPick`: whether aquascape pieces (of this kind) / animals can be picked and dragged now (only while their menu,
- *  Hardscape / Plants / Animals, is open); otherwise a press on one orbits like empty space. `focus`: a plain click on
+ *  Hardscape / Plants / Animals, is open); otherwise a press on one orbits like empty space. `id` (R116): a press drags only what is already the selection; an unselected thing orbits, and a click selects it. `focus`: a plain click on
  *  an animal, piece, gear, the light, stand or lid opens its menu at its options (clickMenu.ts). */
-export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'items' | 'fish' | 'gear', kind?: ItemKind) => boolean = () => true, focus?: (t: ClickTarget) => void) {
+export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'items' | 'fish' | 'gear', kind?: ItemKind, id?: number | string) => boolean = () => true, focus?: (t: ClickTarget) => void) {
   const canvas = viewer.canvas;
   const boxPick = (vp: Viewport, x0: number, y0: number, x1: number, y1: number) => boxPickIn(viewer, store, vp, x0, y0, x1, y1);
   // dragging an aquascape item: `grab` = the grabbed point relative to the piece's base, kept under the pointer while
@@ -250,15 +250,15 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     // GD1: the second click at one spot with something behind the gear takes what is behind (cycle); a finger must hold 0.45 s to pick gear up (else it turns the view)
     cycle.skip = editable && cycleSkip(hit, e.clientX, e.clientY);
     if (cycle.skip) cycleNote(vi, e.clientX, e.clientY, 'under');
-    else if (editable && hit.dot == null && !hit.pool && canPick('gear') && e.pointerType === 'touch' && gearGrab(hit)) {
+    else if (editable && hit.dot == null && !hit.pool && e.pointerType === 'touch' && gearGrab(hit)) {
       const x0 = e.clientX, y0 = e.clientY; if (lp) clearTimeout(lp.timer);
       lp = { x: x0, y: y0, timer: setTimeout(() => {
-        const h = viewer.hitTest(x0, y0), g = h && gearGrab(h); lp = null; if (!h || !g) return;
+        const h = viewer.hitTest(x0, y0), g = h && gearGrab(h); lp = null; if (!h || !g || !canPick('gear', undefined, g.row)) return;
         orbit = null; viewer.unpinOrbit(); gear = g; store.select(null); setGearSel(pickGear(h, store.scene.tanks[h.vp.i])); canvas.classList.add('dragging'); navigator.vibrate?.(15);
       }, 450) };
     }
-    else if (editable && hit.dot == null && !hit.pool && canPick('gear') && (gear = gearGrab(hit))) { store.select(null); setGearSel(pickGear(hit, store.scene.tanks[vi])); cycleNote(vi, e.clientX, e.clientY, 'gear'); return; } // the piece is picked and its box drawn // gear moves only while Tech is open (Nathan 2026-10-20)
-    if (editable && hit.itemId != null && hit.mesh && (canPick('items', store.scene.tanks[vi].items.find(q => q.id === hit!.itemId)?.kind ?? 'stone') || (store.groupCount > 1 && store.inGroup('item', hit.itemId)))) {
+    else if (editable && hit.dot == null && !hit.pool && (gear = gearGrab(hit)) && (canPick('gear', undefined, gear.row) || !(gear = null))) { store.select(null); setGearSel(pickGear(hit, store.scene.tanks[vi])); cycleNote(vi, e.clientX, e.clientY, 'gear'); return; } // the piece is picked and its box drawn // gear moves only while Tech is open (Nathan 2026-10-20)
+    if (editable && hit.itemId != null && hit.mesh && (canPick('items', store.scene.tanks[vi].items.find(q => q.id === hit!.itemId)?.kind ?? 'stone', hit.itemId) || (store.groupCount > 1 && store.inGroup('item', hit.itemId)))) {
       const inGroup = store.groupCount > 1 && store.inGroup('item', hit.itemId);
       if (inGroup) store.lead('item', hit.itemId); else store.selectItem(hit.itemId);
       const S = store.scene.tanks[vi], it = S.items.find(q => q.id === hit!.itemId);
@@ -287,7 +287,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, fishRiders, skip, float, wall: wallPlane(hit.vp.cam, S.camera.el, at), coral, moved: false };
       return;
     }
-    if (!editable || hit.fishId == null || !hit.mesh || !(canPick('fish') || (store.groupCount > 1 && store.inGroup('fish', hit.fishId)))) {
+    if (!editable || hit.fishId == null || !hit.mesh || !(canPick('fish', undefined, hit.fishId) || (store.groupCount > 1 && store.inGroup('fish', hit.fishId)))) {
       const c = store.camOf(vi); orbit = { i: vi, x: e.clientX, y: e.clientY, az: c.az, el: c.el };
       viewer.pinOrbit(e.clientX, e.clientY); return; // turn about what is under the pointer
     }
@@ -443,7 +443,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     if (orbit && !viewLocked() && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) {
       const hit = focus ? viewer.hitTest(e.clientX, e.clientY) : null, t = hit && store.isEditing(hit.vp.i) ? clickTarget(viewer, store, hit) : null;
       if (viewer.handleAt(e.clientX, e.clientY) && viewer.standAt(e.clientX, e.clientY) && (!t || t.kind === 'stand')) { tankView.standOpen = !tankView.standOpen; viewer.rebuild(); } // only from the handle box (CB1); the stand's options open on any other click
-      else if (t) { if (t.kind === 'gear') { const gs = hit && pickRow(viewer, store, hit.vp.i, t.row); if (gs) setGearSel(gs); } else setGearSel(null); focus!(t); }
+      else if (t) { if (t.kind === 'gear') { const gs = hit && pickRow(viewer, store, hit.vp.i, t.row); if (gs) { setGearSel(gs); cycleNote(hit.vp.i, e.clientX, e.clientY, 'gear'); } } else setGearSel(null); focus!(t); }
       else { setGearSel(null); if (patchPick != null) store.selectPatch(patchPick); else store.select(null); }
     }
     else if (e.type === 'pointerup' && store.groupCount <= 1) { // a click (no drag) on a piece / animal whose menu is open: show its editor
