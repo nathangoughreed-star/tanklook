@@ -79,6 +79,7 @@ export interface StandCheck { level: 'over' | 'soft'; text: string }
 export function standCheck(p: Pick<StandProduct, 'ratedGal' | 'maxLoadLb'> | undefined, filledLb: number, gallons: number): StandCheck | undefined {
   if (!p) return undefined;
   if (p.maxLoadLb && filledLb > p.maxLoadLb) return { level: 'over', text: `Filled tank ~${Math.round(filledLb / 10) * 10} lb is over this stand's ${p.maxLoadLb} lb rating` };
-  if (p.ratedGal && gallons > p.ratedGal + 0.5) return { level: 'soft', text: `This tank holds about ${Math.round(gallons)} gal; the stand is rated for up to ${p.ratedGal} gal` };
+  // R122: a stand "for a 55" is fine under a true-volume 55 (about 56 gal); allow the usual ~6 % gap between sold-as and true volume
+  if (p.ratedGal && gallons > p.ratedGal * 1.06 + 0.5) return { level: 'soft', text: `This tank holds about ${Math.round(gallons)} gal; the stand is rated for up to ${p.ratedGal} gal` };
   return undefined;
 }

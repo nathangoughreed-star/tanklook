@@ -419,6 +419,8 @@ export interface TankSetup {
   lid: LidType;
   /** HD1 (2026-11-13, no version bump): the hood product picked (data/gear/hoods.json id). Absent = the cheapest hood sold for the tank. */
   hoodProduct?: string;
+  /** TL1 (2026-11-18, no version bump): the glass lid or mesh top product picked (data/gear/lids.json id). Absent = the cheapest one sold for the tank. */
+  lidProduct?: string;
   doors?: DoorType;
   stand: StandSettings;
   wall: WallSettings;
