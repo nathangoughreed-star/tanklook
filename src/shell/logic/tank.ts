@@ -2,6 +2,7 @@
 // size, glass, rim", "Which tank", "Custom tank price"). Pure: no DOM. The components in ../tank*.tsx only draw these and call the edits.
 // Engine calls go through scene/tankEdit.ts (P1), scene/customTanks.ts (P9) and the pure picker logic of ui/tankDockLogic.ts (ST1).
 import { standOf } from '../../data/stands';
+import { hoodsFor, hoodOf, hoodProduct, type HoodProduct } from '../../data/hoods';
 import { BACKGROUNDS, STAND_FINISHES } from '../../render/build';
 import { BACKDROPS } from '../../render/backdrop';
 import { LIMITS as VLIMITS } from '../../scene/validate';
@@ -10,7 +11,7 @@ import { tankRowPrice } from '../../demand/prices';
 import { getTankModel, modelOfVariant, outerOf, pickRimless, saleLive, soleProduct, tankFromModel, tankSaleFor, variantByKey, variantName, type TankModel, type TankVariant } from '../../data/tanks';
 import { dockGroups, optKey, previewSetup, rangeText, isBundle, type DockOpt } from '../../ui/tankDockLogic';
 import { applyTankPick } from '../../ui/tankPick';
-import { applyTankEdit, flatEnds } from '../../scene/tankEdit';
+import { applyTankEdit, flatEnds, setLid } from '../../scene/tankEdit';
 import { customGlass } from '../../scene/autoGlass';
 import { GLASS_SIZES, STOCK_METRIC, type BraceSpec } from '../../scene/glassSolver';
 import { autoName, setRenderBrace, refOf, specOfSetup, newerVersion, libraryLost, type CustomTank, type CustomTankSpec } from '../../scene/customTanks';
@@ -128,6 +129,29 @@ export const LIDS: [TankSetup['lid'], string][] = [['open', 'Open'], ['glass', '
 export function lidSummary(S: TankSetup): string {
   const l = LIDS.find(x => x[0] === S.lid)?.[1] ?? S.lid;
   return S.doors ? `${l} · ${S.doors} doors` : l;
+}
+/** TK2: where a hood is sold, from its listing's address ("www.petsmart.com" -> "PetSmart"). */
+const STORE_NAME: Record<string, string> = { 'petsmart.com': 'PetSmart', 'walmart.com': 'Walmart', 'chewy.com': 'Chewy', 'petco.com': 'Petco', 'thatpetplace.com': 'That Pet Place', 'm.reach.dog': 'a reseller' };
+export function hoodStore(h: Pick<HoodProduct, 'url'>): string {
+  let host = ''; try { host = new URL(h.url).host.replace(/^www\./, ''); } catch { /* no address */ }
+  return STORE_NAME[host] ?? host ?? '';
+}
+export interface HoodTile { id: string; /** "Aqueon" */ brand: string; /** "LED hood 24 x 12 in" */ name: string; price: string; store: string; /** "Sold for 15, 20, 25 gal tanks" */ fits: string; on: boolean; /** file stem under gallery/gear/ */ art: string }
+export interface HoodView { tiles: HoodTile[]; /** no hood product is sold for this tank: say so plainly */ none: boolean }
+/** The hood products sold for this setup's tank, cheapest first, with the one in use marked (the picked one, else the cheapest: hoodOf). */
+export function hoodView(S: TankSetup): HoodView {
+  const fit = hoodsFor(S.tank), cur = S.lid === 'hood' ? hoodOf(S)?.id : undefined;
+  return { none: !fit.length, tiles: fit.map(h => ({ id: h.id, brand: h.brand, name: h.model, price: usd(h.priceUsd), store: hoodStore(h), fits: `Sold for ${h.fitsGal.join(', ')} gal tanks`, on: h.id === cur, art: h.id })) };
+}
+/** Pick a hood product: the lid becomes a hood, and the hood's own light replaces the lamp (setLid, HD1). */
+export function chooseHood(s: TankSetup, id: string): void {
+  if (!hoodProduct(id)) return;
+  s.hoodProduct = id; setLid(s, 'hood');
+}
+/** The lid as the summary card says it: "Hood: Aqueon LED hood, $65". */
+export function lidDetail(S: TankSetup): string {
+  const h = S.lid === 'hood' ? hoodOf(S) : undefined;
+  return h ? `Hood: ${h.brand} ${(h.model.toLowerCase().startsWith(h.brand.toLowerCase() + ' ') ? h.model.slice(h.brand.length + 1) : h.model)}, ${usd(h.priceUsd)}` : lidSummary(S);
 }
 export function bgSummary(S: TankSetup): string {
   const b = S.render.bg, n = S.render.bgSides.length;

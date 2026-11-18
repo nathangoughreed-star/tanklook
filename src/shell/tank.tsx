@@ -26,7 +26,7 @@ import {
   modelCard, sitsOnSummary, lidSummary, bgSummary, bdShown, bdDepthShown, BD_KINDS, BD_TITLE, BD_DEPTH_MM, len, LIDS, lidHeld, customRows, customLine, commercialRows, commercialLine,
   previewRow, chooseCommercial, chooseCustom, saleOf, filledLb, SIZE_CHIPS, loadGroups, saveGroups, GROUP_DEFAULT, type PickRow, type SizeChip, type TankGroup, type Units, kindView, setKind,
   conditionWord, CONDITION_STOPS, setCondition, bgArcShown, arcText, setBgArc, setEdges, PIC_SIDES, PIC_FITS, PIC_MAX, addPicture, removePicture, togglePicSide, setPicFit, setPicScale,
-  tablePos, setTableX, setTableZ, placeTank, setStandFinish, finishCss, tableOn,
+  hoodView, chooseHood, tablePos, setTableX, setTableZ, placeTank, setStandFinish, finishCss, tableOn,
 } from './logic/tank';
 import { getImage, putImage, readPicture } from '../scene/images';
 import { Group, Icon, Pill } from './ui';
@@ -247,6 +247,27 @@ function OpenTop({ store, S }: { store: Store; S: TankSetup }) {
   );
 }
 
+/** TK2: the hood products sold for this tank, as picture tiles like the stands (brand, name, price, store, which tanks); the live view draws the chosen one. */
+function HoodPicker({ store, S }: { store: Store; S: TankSetup }) {
+  const v = hoodView(S), [bad, setBad] = useState<Record<string, boolean>>({});
+  if (v.none) return <div class="hint" data-testid="hood-none">No hood product is sold for this size, so a glass lid is the usual choice.</div>;
+  return (
+    <div class="standpick" role="group" aria-label="Hoods that fit this tank" data-testid="hood-picker">
+      <div class="cap">Hoods that fit this tank <span class="n">{v.tiles.length}</span></div>
+      <div class="pgrid">
+        {v.tiles.map(t => (
+          <button type="button" class={`ptile stile${t.on ? ' on' : ''}`} aria-pressed={t.on} data-hood={t.id} onClick={() => store.edit(s => chooseHood(s, t.id))}>
+            <div class="tart">{bad[t.id] ? null : <img class="stillart" src={`${import.meta.env.BASE_URL}gallery/gear/${t.art}.webp`} alt={`${t.brand} ${t.name}`} loading="lazy" onError={() => setBad(b => ({ ...b, [t.id]: true }))} />}</div>
+            <div class="tname">{t.brand}</div>
+            <div class="tmeta"><span>{t.price}</span></div><div class="tmeta"><span>{t.name.startsWith(t.brand + ' ') ? t.name.slice(t.brand.length + 1) : t.name}</span></div>
+            <small class="why">{t.store} · {t.fits}</small>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function LidTop({ store, S, open, onToggle }: { store: Store; S: TankSetup; open: boolean; onToggle: () => void }) {
   const held = lidHeld(S), k = tankKind(S), dry = k === 'terrarium' || k === 'vivarium';
   const lidWhy = (l: TankSetup['lid']) => lidLocked(S.tank, held.lid, l) && l !== S.lid ? (held.lid ? lockNote(S, 'lid') : 'A hood fits box, bow and curved-front tanks only') : false;
@@ -255,6 +276,7 @@ function LidTop({ store, S, open, onToggle }: { store: Store; S: TankSetup; open
       <Seg label="Lid" value={S.lid} opts={LIDS} disabled={lidWhy} onPick={l => store.edit(s => { setLid(s, l); setNoLid(s, l === 'open'); })} />
       {held.lid ? <div class="hint">{lockNote(S, 'lid')}</div> : null}
       {S.lid === 'open' && !held.lid ? <OpenTop store={store} S={S} /> : null}
+      {S.lid === 'hood' && !held.lid ? <HoodPicker store={store} S={S} /> : null}
       {dry ? <div class="row"><span class="lbl">Front doors</span>
         <Seg<DoorKind> label="Front doors" value={S.doors ?? 'none'} opts={[['none', 'None'], ['hinged', 'Hinged'], ['sliding', 'Sliding']]}
           disabled={d => doorLocked(S, d, held.doors) ? (held.doors ? lockNote(S, 'doors') : 'Doors fit box tanks only') : false} onPick={d => store.edit(s => setDoors(s, d))} /><span /></div> : null}

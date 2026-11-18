@@ -13,7 +13,9 @@ import { SUBSTRATES } from '../../art/placeholder';
 import { aquariumOnly } from '../../scope';
 import { volume } from '../../scene/physics';
 import { categories, inUseItem, itemName } from './equipment';
-import { galText, sitsOnSummary } from './tank';
+import { galText, sitsOnSummary, dims, bgSummary, lidDetail } from './tank';
+import { placementOf } from '../../scene/placement';
+import { productName } from '../../scene/integrated';
 import type { CameraSettings, ItemKind, TankSetup } from '../../scene/types';
 import type { Store } from '../../scene/store';
 import type { SectionId } from './sections';
@@ -174,8 +176,18 @@ export function wsSide(S: TankSetup, id: SectionId): WsSide {
     const used = categories(S).map(c => ({ c, it: inUseItem(S, c.id) })).filter(x => x.it);
     return { sub: '', chips: [], lines: used.map(({ c, it }) => [c.label, itemName(c.id, it!)] as [string, string]), empty: 'No gear chosen yet.' };
   }
-  const T = S.tank;
-  return { sub: '', chips: [], lines: [['Volume', galText(volume(T).gallons)], ['Sits on', sitsOnSummary(S, 'in')], ['Water', S.water.on ? (isSalt(S) ? 'Saltwater' : 'Freshwater') : 'No water']], empty: '' };
+  return { sub: '', chips: [], lines: tankLines(S), empty: '' };
+}
+
+/** TK2: everything chosen on the Tank tab, in a fixed order: Tank, Dimensions, Volume, Water, Stand, Background, Lid and top. Empty rows are left out except Tank. */
+export function tankLines(S: TankSetup): [string, string][] {
+  const T = S.tank, p = placementOf(S), out: [string, string][] = [];
+  const name = S.product || S.integrated ? (productName(S) || 'Commercial tank') : (S.customTank?.name ? (/^custom/i.test(S.customTank.name) ? S.customTank.name : `Custom: ${S.customTank.name}`) : 'Custom');
+  out.push(['Tank', name], ['Dimensions', dims(T, 'in')], ['Volume', galText(volume(T).gallons)], ['Water', S.water.on ? (isSalt(S) ? 'Saltwater' : 'Freshwater') : 'No water']);
+  if (!(p === 'floor' && S.stand.need === 'ask')) out.push([p === 'stand' ? 'Stand' : 'Sits on', sitsOnSummary(S, 'in')]);
+  if (S.render.bg !== 'none' || S.backdrop.kind !== 'none') out.push(['Background', bgSummary(S)]);
+  out.push(['Lid and top', lidDetail(S)]);
+  return out.filter(([k, v]) => k === 'Tank' || !!v);
 }
 
 /** A workspace opens framed on the tank, not the room: a camera that is zoomed out (zoom under 1) goes back to 1; orbit and distance are kept. Null = already fine. */
