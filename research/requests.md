@@ -133,7 +133,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R116 | 11-18 | No dragging scape or equipment straight from the main view: a click selects it and opens its menu; only then can it be dragged within the tank | DS1 | 754502cb | 2323 | deploying | C27 check live |
 | R117 | 11-18 | Habitat check rows (e.g. Environment: "needs a lid and the top is open") get a "Fix it" button that opens the matching section (lid -> Tank > Lid and top) | DS1 | 754502cb | 2323 | deploying | C27 check live |
 | R118 | 11-18 | Fish keep to their own habits: royal gramma, firefish, watchman goby, clownfish act and move alike today (no marine species in scene/fishBehavior.ts). Per-species home (rock cave, burrow, host, open water), range, posture (perched on sand, hover just above it, under ledges), actions (peck at rock, dart into cover and back out, patrol back and forth) | FB3 | b417be20 | 2340 | deploying | C27 check live; Nathan judges motion |
-| R119 | 11-18 | Plumbing view heater: replace the wavy root/tentacle heat lines with simple arrows radiating in several directions (heat added), in the view's flat art style | PB1 | 0d186666 | 2344 | deploying | C27 check live |
+| R119 | 11-18 | Plumbing view heater: replace the wavy root/tentacle heat lines with simple arrows radiating in several directions (heat added), in the view's flat art style | PB1 | 0d186666 | 2345 | deploying | C27 check live |
 | R120 | 11-18 | "Another moment" (view bar) shows only when the fish animations are off (with animation on the fish already move) | BF1 | 624d7d7d | 2323 | deploying | C27 check live |
 | R121 | 11-18 | "Glass outlines Shown / Hidden" moves out of Tank model into the View menu or Settings > Graphics (wherever the graphics options are) | DS1 | 50a8e4e6 | 2324+ | deploying | C27 check live |
 | R122 | 11-18 | No stand-rating warning when the stand is made for the tank's nominal size (55 gal stand, standard 55 holding ~56 gal = fine) | TL1 | 4268b430 | - | - | TL1 fixing new 48 in hood art + PM1 look (3 tests); next batch |
@@ -142,7 +142,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R125 | 11-18 | Starting from a kit or bundle: every included part is locked by default; swapping one first says "Unlock this locked item to continue" | DS1 | 50a8e4e6 | 2324+ | deploying | C27 check live |
 | R126 | 11-18 | Picture backgrounds (Scene: coral reef / river bed / planted jungle / rock wall) look too cartoony: research the real popular backgrounds people buy and use, then make ours serious / realistic | BG2 | 7c403935 | 2340 | deploying | C27 check live |
 | R127 | 11-18 | Custom blend at Mixed 100 % shows gravel in patches and streaks; 100 % mixed must be uniform, every grain evenly interspersed like an alloy lattice (lower Mixed = more clumping) | GB2 | a93c5de1 | 2324+ | deploying | C27 check live |
-| R128 | 11-18 | Tank / Plumbing toggle (and the Plumbing view) only shows while the Equipment workspace is open; it showed over Discover | PB1 | - | 2344 | deploying | C27 check live |
+| R128 | 11-18 | Tank / Plumbing toggle (and the Plumbing view) only shows while the Equipment workspace is open; it showed over Discover | PB1 | - | 2345 | deploying | C27 check live |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
