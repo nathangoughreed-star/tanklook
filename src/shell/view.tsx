@@ -3,7 +3,7 @@
 import type { ComponentChildren } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { Store } from '../scene/store';
-import type { Viewer } from '../render/viewer';
+import { SWIM_EVENT, type Viewer } from '../render/viewer';
 import { setGearShown, gearShown } from '../render/gear3d';
 import { Icon } from './ui';
 import { Toggle, LenRow, Seg } from './tank';
@@ -77,12 +77,21 @@ function RoomGroup({ store }: { store: Store }) {
   );
 }
 
+/** R120: true while the fish are effectively swimming (setting on and not paused for a slow machine); re-renders when it changes */
+export function useFishSwimming(getViewer: () => Viewer | undefined): boolean {
+  const [, bump] = useState(0);
+  useEffect(() => { const f = () => bump(n => n + 1); addEventListener(SWIM_EVENT, f); return () => removeEventListener(SWIM_EVENT, f); }, []);
+  const v = getViewer();
+  return !!v && v.swim && !v.swimAuto;
+}
+
 export function ViewCluster({ store, getViewer, phone, compare }: { store: Store; getViewer: () => Viewer | undefined; phone: boolean; /** step 9: the Compare / Views linked / End compare buttons (compare.tsx) */ compare?: ComponentChildren }) {
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState('');
   const [, bump] = useState(0);
   const wrap = useRef<HTMLDivElement>(null);
   const fs = useFsItems();
+  const swimming = useFishSwimming(getViewer);
   const v = getViewer(), cam = store.tank.camera, u = store.scene.units;
   useEffect(() => {
     if (!open) return;
@@ -113,13 +122,13 @@ export function ViewCluster({ store, getViewer, phone, compare }: { store: Store
       <div class="toolbar">
         <button type="button" class={`btn sm${open ? ' on' : ''}`} aria-haspopup="dialog" aria-expanded={open} title="Camera, what is shown, viewpoint map, export a picture" onClick={() => setOpen(!open)}><Icon name="eye" /><span class="lb"> View{phone ? '' : ' ▾'}</span></button>
         {phone ? null : <>{compare}
-        <button type="button" class="btn sm" disabled={!store.tank.fish.length} title={store.tank.fish.length ? 'Every animal in a new spot, as if the tank were photographed a little later. Plants and scape stay.' : 'Add an animal first'} onClick={moment}><Icon name="shuffle" /><span class="lb"> {phone ? 'Moment' : 'Another moment'}</span></button></>}
+        {swimming ? null : <button type="button" class="btn sm" disabled={!store.tank.fish.length} title={store.tank.fish.length ? 'Every animal in a new spot, as if the tank were photographed a little later. Plants and scape stay.' : 'Add an animal first'} onClick={moment}><Icon name="shuffle" /><span class="lb"> {phone ? 'Moment' : 'Another moment'}</span></button>}</>}
       </div>
       {note ? <div class="viewnote glass" role="status">{note}</div> : null}
       {open ? (
         <div class="pop viewpop" role="dialog" aria-label="View">
           {phone ? <div class="vsec phoneacts" onClick={() => setOpen(false)}><h3>Actions</h3><div class="chips">{compare}
-        <button type="button" class="btn sm chip" disabled={!store.tank.fish.length} title={store.tank.fish.length ? 'Every animal in a new spot, as if the tank were photographed a little later. Plants and scape stay.' : 'Add an animal first'} onClick={moment}><Icon name="shuffle" /><span class="lb"> {phone ? 'Moment' : 'Another moment'}</span></button></div></div> : null}
+        {swimming ? null : <button type="button" class="btn sm chip" disabled={!store.tank.fish.length} title={store.tank.fish.length ? 'Every animal in a new spot, as if the tank were photographed a little later. Plants and scape stay.' : 'Add an animal first'} onClick={moment}><Icon name="shuffle" /><span class="lb"> {phone ? 'Moment' : 'Another moment'}</span></button>}</div></div> : null}
           <div class="vsec"><h3>Camera</h3>
             <div class="chips">{CAM_PRESETS.map(p => <button type="button" class={`btn sm chip${on === p.id ? ' on' : ''}`} aria-pressed={on === p.id} onClick={() => store.cam(c => Object.assign(c, presetOf(p.id)!.cam))}>{p.label}</button>)}
               <button type="button" class="btn sm chip" title="Re-centre the panned view (Home)" onClick={() => v?.resetPan()}>⌖ Re-centre</button></div>
