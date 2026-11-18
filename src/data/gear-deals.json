@@ -1,5 +1,5 @@
 {
- "asOf": "2026-10-20",
+ "asOf": "2026-11-18",
  "note": "Gear on sale at five specialist stores, read by scripts/gear-deals.py (lane GD). price.usd = sale price, regularUsd = the store's own was-price. Rerun before a release.",
  "rows": [
   {
@@ -13,7 +13,177 @@
     "regularUsd": 516.99
    },
    "url": "https://buceplant.com/products/chihiros-rgb-vivid2-led-light-black-10th-anniversary-edition?variant=42997256716488",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "buceplant-twinstar-led-ea-iv-series-aquarium-light-fixture-42820377641160",
+   "store": "Buce Plant",
+   "slot": "light",
+   "salt": false,
+   "title": "Twinstar LED - EA Series Vr. IV Aquarium Light Fixture (200EA IV)",
+   "fitMm": [
+    190,
+    240
+   ],
+   "price": {
+    "usd": 59.19,
+    "regularUsd": 73.99
+   },
+   "url": "https://buceplant.com/products/twinstar-led-ea-iv-series-aquarium-light-fixture?variant=42820377641160",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "buceplant-onf-flat-one-led-light-blue-white-pendant-32476493414481",
+   "store": "Buce Plant",
+   "slot": "light",
+   "salt": false,
+   "title": "ONF Flat ONE+ LED Light (Blue/White) - Pendant (24\" Pendant)",
+   "fitMm": [
+    581,
+    871
+   ],
+   "price": {
+    "usd": 335.99,
+    "regularUsd": 419.99
+   },
+   "url": "https://buceplant.com/products/onf-flat-one-led-light-blue-white-pendant?variant=32476493414481",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "buceplant-onf-flat-one-led-light-blue-white-pendant-32476493447249",
+   "store": "Buce Plant",
+   "slot": "light",
+   "salt": false,
+   "title": "ONF Flat ONE+ LED Light (Blue/White) - Pendant (36\" Pendant)",
+   "fitMm": [
+    871,
+    1306
+   ],
+   "price": {
+    "usd": 419.99,
+    "regularUsd": 524.99
+   },
+   "url": "https://buceplant.com/products/onf-flat-one-led-light-blue-white-pendant?variant=32476493447249",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "buceplant-onf-flat-one-led-light-blue-white-32476486926417",
+   "store": "Buce Plant",
+   "slot": "light",
+   "salt": false,
+   "title": "ONF Flat ONE+ LED Light (Blue/White) - With Legs (24\" With Legs)",
+   "fitMm": [
+    581,
+    871
+   ],
+   "price": {
+    "usd": 327.99,
+    "regularUsd": 409.99
+   },
+   "url": "https://buceplant.com/products/onf-flat-one-led-light-blue-white?variant=32476486926417",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "buceplant-onf-flat-one-led-light-blue-white-32476486959185",
+   "store": "Buce Plant",
+   "slot": "light",
+   "salt": false,
+   "title": "ONF Flat ONE+ LED Light (Blue/White) - With Legs (36\" With Legs)",
+   "fitMm": [
+    871,
+    1306
+   ],
+   "price": {
+    "usd": 331.99,
+    "regularUsd": 414.99
+   },
+   "url": "https://buceplant.com/products/onf-flat-one-led-light-blue-white?variant=32476486959185",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "buceplant-twinstar-led-s-model-40925921805",
+   "store": "Buce Plant",
+   "slot": "light",
+   "salt": false,
+   "title": "Twinstar LED - S Series Aquarium Light Fixture (900S - 36 Inch)",
+   "fitMm": [
+    855,
+    1080
+   ],
+   "price": {
+    "usd": 255.99,
+    "regularUsd": 319.99
+   },
+   "url": "https://buceplant.com/products/twinstar-led-s-model?variant=40925921805",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "aquaforestaquarium-twinstar-led-light-s-line-ver-iv-sa-design-with-adjustable-leg-pendant-option-copy-43284517290093",
+   "store": "Aqua Forest Aquarium",
+   "slot": "light",
+   "salt": false,
+   "title": "Twinstar LED Light S-LINE V with LightControl Pro - Adjustable legs (300SA (for 30cm to 36cm tank))",
+   "fitMm": [
+    285,
+    360
+   ],
+   "price": {
+    "usd": 129.99,
+    "regularUsd": 144.99
+   },
+   "url": "https://aquaforestaquarium.com/products/twinstar-led-light-s-line-ver-iv-sa-design-with-adjustable-leg-pendant-option-copy?variant=43284517290093",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "aquaforestaquarium-twinstar-led-light-s-line-ver-iv-sa-design-with-adjustable-leg-pendant-option-copy-43284517322861",
+   "store": "Aqua Forest Aquarium",
+   "slot": "light",
+   "salt": false,
+   "title": "Twinstar LED Light S-LINE V with LightControl Pro - Adjustable legs (450SA (for 45cm to 55cm tank))",
+   "fitMm": [
+    428,
+    540
+   ],
+   "price": {
+    "usd": 159.99,
+    "regularUsd": 174.99
+   },
+   "url": "https://aquaforestaquarium.com/products/twinstar-led-light-s-line-ver-iv-sa-design-with-adjustable-leg-pendant-option-copy?variant=43284517322861",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "aquaforestaquarium-twinstar-led-light-s-line-ver-iv-sa-design-with-adjustable-leg-pendant-option-copy-43284517355629",
+   "store": "Aqua Forest Aquarium",
+   "slot": "light",
+   "salt": false,
+   "title": "Twinstar LED Light S-LINE V with LightControl Pro - Adjustable legs (600SA (for 60cm to 70cm tank))",
+   "fitMm": [
+    570,
+    720
+   ],
+   "price": {
+    "usd": 209.99,
+    "regularUsd": 229.99
+   },
+   "url": "https://aquaforestaquarium.com/products/twinstar-led-light-s-line-ver-iv-sa-design-with-adjustable-leg-pendant-option-copy?variant=43284517355629",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "aquaforestaquarium-twinstar-led-light-s-line-ver-iv-sa-design-with-adjustable-leg-pendant-option-copy-43284702658669",
+   "store": "Aqua Forest Aquarium",
+   "slot": "light",
+   "salt": false,
+   "title": "Twinstar LED Light S-LINE V with LightControl Pro - Adjustable legs (900SA (for 90cm to 100cm tank))",
+   "fitMm": [
+    855,
+    1080
+   ],
+   "price": {
+    "usd": 289.99,
+    "regularUsd": 309.99
+   },
+   "url": "https://aquaforestaquarium.com/products/twinstar-led-light-s-line-ver-iv-sa-design-with-adjustable-leg-pendant-option-copy?variant=43284702658669",
+   "asOf": "2026-11-18"
   },
   {
    "id": "aquaforestaquarium-twinstar-led-light-s-line-vr-iv-with-fixed-leg-design-33198086520941",
@@ -30,7 +200,7 @@
     "regularUsd": 149.99
    },
    "url": "https://aquaforestaquarium.com/products/twinstar-led-light-s-line-vr-iv-with-fixed-leg-design?variant=33198086520941",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "aquaforestaquarium-twinstar-led-light-s-line-vr-iv-with-fixed-leg-design-33198017577069",
@@ -47,7 +217,7 @@
     "regularUsd": 169.99
    },
    "url": "https://aquaforestaquarium.com/products/twinstar-led-light-s-line-vr-iv-with-fixed-leg-design?variant=33198017577069",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "aquaforestaquarium-twinstar-led-light-s-line-vr-iv-with-fixed-leg-design-33198017609837",
@@ -64,7 +234,7 @@
     "regularUsd": 259.99
    },
    "url": "https://aquaforestaquarium.com/products/twinstar-led-light-s-line-vr-iv-with-fixed-leg-design?variant=33198017609837",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "aquaforestaquarium-twinstar-light-ver-iii-sa-series-led-adjustable-type-40946620399725",
@@ -81,7 +251,7 @@
     "regularUsd": 128.99
    },
    "url": "https://aquaforestaquarium.com/products/twinstar-light-ver-iii-sa-series-led-adjustable-type?variant=40946620399725",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "aquaforestaquarium-twinstar-light-ver-iii-sa-series-led-adjustable-type-45701913018477",
@@ -98,7 +268,7 @@
     "regularUsd": 139.99
    },
    "url": "https://aquaforestaquarium.com/products/twinstar-light-ver-iii-sa-series-led-adjustable-type?variant=45701913018477",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "aquaforestaquarium-twinstar-light-b-line-ver-ii-led-adjustable-type-43823458353261",
@@ -115,7 +285,7 @@
     "regularUsd": 119.0
    },
    "url": "https://aquaforestaquarium.com/products/twinstar-light-b-line-ver-ii-led-adjustable-type?variant=43823458353261",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "aquaforestaquarium-twinstar-light-ver-iii-c-series-led-adjustable-leg-w-built-in-dimmer-39999274647661",
@@ -132,7 +302,7 @@
     "regularUsd": 79.99
    },
    "url": "https://aquaforestaquarium.com/products/twinstar-light-ver-iii-c-series-led-adjustable-leg-w-built-in-dimmer?variant=39999274647661",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "aquaforestaquarium-copy-of-5-lb-aluminum-co2-cyliner-brand-new-unfilled-empty-32496077144173",
@@ -145,7 +315,7 @@
     "regularUsd": 268.94
    },
    "url": "https://aquaforestaquarium.com/products/copy-of-5-lb-aluminum-co2-cyliner-brand-new-unfilled-empty?variant=32496077144173",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "aquaforestaquarium-archaea-co2-regulator-pro-single-gauge-fits-cga-320-7828526337",
@@ -158,7 +328,7 @@
     "regularUsd": 99.99
    },
    "url": "https://aquaforestaquarium.com/products/archaea-co2-regulator-pro-single-gauge-fits-cga-320?variant=7828526337",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "aquaforestaquarium-archaea-co2-regulator-pro-single-gauge-fits-paintball-tank-7822489345",
@@ -171,63 +341,255 @@
     "regularUsd": 99.99
    },
    "url": "https://aquaforestaquarium.com/products/archaea-co2-regulator-pro-single-gauge-fits-paintball-tank?variant=7822489345",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
-   "id": "brs-100w-titanium-aquarium-heater-system-wifi-bulk-reef-supply",
+   "id": "brs-kessil-a160we-tuna-blue-led-light",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "A160WE Tuna Blue LED Light",
+   "price": {
+    "usd": 245.65,
+    "regularUsd": 289.0
+   },
+   "url": "https://www.bulkreefsupply.com/kessil-a160we-tuna-blue-led-light.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-kessil-a160we-tuna-sun-led-light",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "A160WE Tuna Sun LED Light",
+   "price": {
+    "usd": 245.65,
+    "regularUsd": 289.0
+   },
+   "url": "https://www.bulkreefsupply.com/kessil-a160we-tuna-sun-led-light.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-a80-tuna-blue-nano-led-light-kessil",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "A80 Tuna Blue Nano LED Light",
+   "price": {
+    "usd": 126.65,
+    "regularUsd": 149.0
+   },
+   "url": "https://www.bulkreefsupply.com/a80-tuna-blue-nano-led-light-kessil.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-a80-tuna-sun-nano-led-light-kessil",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "A80 Tuna Sun Nano LED Light",
+   "price": {
+    "usd": 126.65,
+    "regularUsd": 149.0
+   },
+   "url": "https://www.bulkreefsupply.com/a80-tuna-sun-nano-led-light-kessil.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-h80-tuna-sun-flora-refugium-led-light-kessil",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "H80 Tuna Flora Refugium LED Light",
+   "price": {
+    "usd": 126.65,
+    "regularUsd": 149.0
+   },
+   "url": "https://www.bulkreefsupply.com/h80-tuna-sun-flora-refugium-led-light-kessil.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-hydra-64-hd-led-reef-light-black-aqua-illumination",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "Hydra 64 HD LED Reef Light - Black Body",
+   "price": {
+    "usd": 678.0,
+    "regularUsd": 799.88
+   },
+   "url": "https://www.bulkreefsupply.com/hydra-64-hd-led-reef-light-black-aqua-illumination.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-hydra-64-hd-led-reef-light-white-aqua-illumination",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "Hydra 64 HD LED Reef Light - White Body",
+   "price": {
+    "usd": 678.0,
+    "regularUsd": 799.88
+   },
+   "url": "https://www.bulkreefsupply.com/hydra-64-hd-led-reef-light-white-aqua-illumination.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-hydra-32-hd-led-reef-light-black-aqua-illumination",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "Hydra 32 HD LED Reef Light - Black Body",
+   "price": {
+    "usd": 403.0,
+    "regularUsd": 479.88
+   },
+   "url": "https://www.bulkreefsupply.com/hydra-32-hd-led-reef-light-black-aqua-illumination.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-hydra-32-hd-led-reef-light-white-aqua-illumination",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "Hydra 32 HD LED Reef Light - White Body",
+   "price": {
+    "usd": 403.0,
+    "regularUsd": 479.88
+   },
+   "url": "https://www.bulkreefsupply.com/hydra-32-hd-led-reef-light-white-aqua-illumination.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-prime-16-hd-led-reef-light-black-body-aqua-illumination",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "Prime 16 HD LED Reef Light - Black Body",
+   "price": {
+    "usd": 233.0,
+    "regularUsd": 279.88
+   },
+   "url": "https://www.bulkreefsupply.com/prime-16-hd-led-reef-light-black-body-aqua-illumination.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-prime-16-hd-led-reef-light-white-body-aqua-illumination",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "Prime 16 HD LED Reef Light - White Body",
+   "price": {
+    "usd": 233.0,
+    "regularUsd": 279.88
+   },
+   "url": "https://www.bulkreefsupply.com/prime-16-hd-led-reef-light-white-body-aqua-illumination.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-100w-titanium-heater-element-bulk-reef-supply-1",
    "store": "Bulk Reef Supply",
    "slot": "heater",
    "salt": true,
-   "title": "100W Titanium Aquarium Heater System - WiFi",
+   "title": "100W Titanium Heater Element (OPEN BOX)",
    "watts": 100,
    "price": {
-    "usd": 95.19,
-    "regularUsd": 118.99
+    "usd": 51.99,
+    "regularUsd": 64.99
    },
-   "url": "https://www.bulkreefsupply.com/100w-titanium-aquarium-heater-system-wifi-bulk-reef-supply.html",
-   "asOf": "2026-10-20"
+   "url": "https://www.bulkreefsupply.com/100w-titanium-heater-element-bulk-reef-supply-1.html",
+   "asOf": "2026-11-18"
   },
   {
-   "id": "brs-200w-titanium-aquarium-heater-system-wifi-bulk-reef-supply",
+   "id": "brs-a500x-controllable-led-aquarium-light-tuna-blue-kessil",
    "store": "Bulk Reef Supply",
-   "slot": "heater",
+   "slot": "light",
    "salt": true,
-   "title": "200W Titanium Aquarium Heater System - WiFi",
-   "watts": 200,
+   "title": "A500X Controllable LED Aquarium Light - Tuna Blue",
    "price": {
-    "usd": 99.99,
-    "regularUsd": 124.99
+    "usd": 721.65,
+    "regularUsd": 849.0
    },
-   "url": "https://www.bulkreefsupply.com/200w-titanium-aquarium-heater-system-wifi-bulk-reef-supply.html",
-   "asOf": "2026-10-20"
+   "url": "https://www.bulkreefsupply.com/a500x-controllable-led-aquarium-light-tuna-blue-kessil.html",
+   "asOf": "2026-11-18"
   },
   {
-   "id": "brs-300w-titanium-aquarium-heater-system-wifi-bulk-reef-supply",
+   "id": "brs-radion-xr30-g5-freshwater-led-light-fixture-ecotech-marine",
    "store": "Bulk Reef Supply",
-   "slot": "heater",
-   "salt": true,
-   "title": "300W Titanium Aquarium Heater System - WiFi",
-   "watts": 300,
+   "slot": "light",
+   "salt": false,
+   "title": "Radion XR30 G5 Freshwater LED Light Fixture",
    "price": {
-    "usd": 103.99,
-    "regularUsd": 129.99
+    "usd": 799.9,
+    "regularUsd": 999.88
    },
-   "url": "https://www.bulkreefsupply.com/300w-titanium-aquarium-heater-system-wifi-bulk-reef-supply.html",
-   "asOf": "2026-10-20"
+   "url": "https://www.bulkreefsupply.com/radion-xr30-g5-freshwater-led-light-fixture-ecotech-marine.html",
+   "asOf": "2026-11-18"
   },
   {
-   "id": "brs-600w-titanium-aquarium-heater-system-wifi-bulk-reef-supply",
+   "id": "brs-radion-xr15-g5-freshwater-led-light-fixture-ecotech-marine",
    "store": "Bulk Reef Supply",
-   "slot": "heater",
-   "salt": true,
-   "title": "600W Titanium Aquarium Heater System - WiFi",
-   "watts": 600,
+   "slot": "light",
+   "salt": false,
+   "title": "Radion XR15 G5 Freshwater LED Light Fixture",
    "price": {
-    "usd": 115.99,
-    "regularUsd": 144.99
+    "usd": 439.9,
+    "regularUsd": 549.88
    },
-   "url": "https://www.bulkreefsupply.com/600w-titanium-aquarium-heater-system-wifi-bulk-reef-supply.html",
-   "asOf": "2026-10-20"
+   "url": "https://www.bulkreefsupply.com/radion-xr15-g5-freshwater-led-light-fixture-ecotech-marine.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-radion-xr30-g6-blue-led-light-fixture-ecotech-marine",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "Radion XR30 G6 Blue LED Light Fixture",
+   "price": {
+    "usd": 875.0,
+    "regularUsd": 999.0
+   },
+   "url": "https://www.bulkreefsupply.com/radion-xr30-g6-blue-led-light-fixture-ecotech-marine.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-radion-xr30-g6-pro-led-light-fixture-ecotech-marine",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "Radion XR30 G6 Pro LED Light Fixture",
+   "price": {
+    "usd": 875.0,
+    "regularUsd": 999.0
+   },
+   "url": "https://www.bulkreefsupply.com/radion-xr30-g6-pro-led-light-fixture-ecotech-marine.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-radion-xr15-g6-pro-led-light-fixture-ecotech-marine",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "Radion XR15 G6 Pro LED Light Fixture",
+   "price": {
+    "usd": 479.0,
+    "regularUsd": 549.88
+   },
+   "url": "https://www.bulkreefsupply.com/radion-xr15-g6-pro-led-light-fixture-ecotech-marine.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-radion-xr15-g6-blue-led-light-fixture-ecotech-marine",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "Radion XR15 G6 Blue LED Light Fixture",
+   "price": {
+    "usd": 479.0,
+    "regularUsd": 549.88
+   },
+   "url": "https://www.bulkreefsupply.com/radion-xr15-g6-blue-led-light-fixture-ecotech-marine.html",
+   "asOf": "2026-11-18"
   },
   {
    "id": "brs-jump-sk400-protein-skimmer-maxspect",
@@ -241,7 +603,21 @@
     "regularUsd": 444.99
    },
    "url": "https://www.bulkreefsupply.com/jump-sk400-protein-skimmer-maxspect.html",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-miniq-nano-internal-protein-skimmer-bubble-magus-ob-a",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "MiniQ Nano Internal Protein Skimmer (OPEN BOX)",
+   "galMax": 20,
+   "price": {
+    "usd": 58.49,
+    "regularUsd": 64.99
+   },
+   "url": "https://www.bulkreefsupply.com/miniq-nano-internal-protein-skimmer-bubble-magus-ob-a.html",
+   "asOf": "2026-11-18"
   },
   {
    "id": "brs-jump-sk800-protein-skimmer-maxspect",
@@ -255,7 +631,7 @@
     "regularUsd": 699.99
    },
    "url": "https://www.bulkreefsupply.com/jump-sk800-protein-skimmer-maxspect.html",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "brs-25-watt-pre-set-quartz-glass-heater-lifegard-aquatics",
@@ -269,21 +645,7 @@
     "regularUsd": 19.99
    },
    "url": "https://www.bulkreefsupply.com/25-watt-pre-set-quartz-glass-heater-lifegard-aquatics.html",
-   "asOf": "2026-10-20"
-  },
-  {
-   "id": "brs-50-watt-pre-set-quartz-glass-heater-lifegard-aquatics",
-   "store": "Bulk Reef Supply",
-   "slot": "heater",
-   "salt": true,
-   "title": "50 Watt Pre-Set Quartz Glass Heater Aquatics",
-   "watts": 50,
-   "price": {
-    "usd": 17.84,
-    "regularUsd": 20.99
-   },
-   "url": "https://www.bulkreefsupply.com/50-watt-pre-set-quartz-glass-heater-lifegard-aquatics.html",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "brs-jump-sk200-protein-skimmer-maxspect",
@@ -296,7 +658,46 @@
     "regularUsd": 279.99
    },
    "url": "https://www.bulkreefsupply.com/jump-sk200-protein-skimmer-maxspect.html",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-hob-1-5-hang-on-back-protein-skimmer-aquaready",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "HOB-1.5 Hang-on-Back Protein Skimmer",
+   "price": {
+    "usd": 217.41,
+    "regularUsd": 289.88
+   },
+   "url": "https://www.bulkreefsupply.com/hob-1-5-hang-on-back-protein-skimmer-aquaready.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-ws-1-in-sump-protein-skimmer-aquaready",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "WS-1 In-Sump Protein Skimmer",
+   "price": {
+    "usd": 119.91,
+    "regularUsd": 159.88
+   },
+   "url": "https://www.bulkreefsupply.com/ws-1-in-sump-protein-skimmer-aquaready.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-nf-1-internal-nano-protein-skimmer-aquaready",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "NF-1 Internal Nano Protein Skimmer",
+   "price": {
+    "usd": 78.66,
+    "regularUsd": 104.88
+   },
+   "url": "https://www.bulkreefsupply.com/nf-1-internal-nano-protein-skimmer-aquaready.html",
+   "asOf": "2026-11-18"
   },
   {
    "id": "brs-ws-1-in-sump-protein-skimmer-aquaready-ob-a",
@@ -310,7 +711,158 @@
     "regularUsd": 189.99
    },
    "url": "https://www.bulkreefsupply.com/ws-1-in-sump-protein-skimmer-aquaready-ob-a.html",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-a360xe-led-light-tuna-blue-kessil",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "A360XE LED Light - Tuna Blue",
+   "price": {
+    "usd": 424.15,
+    "regularUsd": 499.0
+   },
+   "url": "https://www.bulkreefsupply.com/a360xe-led-light-tuna-blue-kessil.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-a360xe-led-light-tuna-sun-kessil",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "A360XE LED Light - Tuna Sun",
+   "price": {
+    "usd": 424.15,
+    "regularUsd": 499.0
+   },
+   "url": "https://www.bulkreefsupply.com/a360xe-led-light-tuna-sun-kessil.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-bullet-1-hang-on-back-protein-skimmer-aquaready",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "Bullet-1 Hang-On-Back Protein Skimmer",
+   "galMax": 30,
+   "price": {
+    "usd": 89.91,
+    "regularUsd": 119.88
+   },
+   "url": "https://www.bulkreefsupply.com/bullet-1-hang-on-back-protein-skimmer-aquaready.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-bullet-2-hang-on-back-protein-skimmer-aquaready",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "Bullet-2 Hang-On-Back Protein Skimmer",
+   "galMax": 50,
+   "price": {
+    "usd": 134.91,
+    "regularUsd": 179.88
+   },
+   "url": "https://www.bulkreefsupply.com/bullet-2-hang-on-back-protein-skimmer-aquaready.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-bullet-3-hang-on-back-protein-skimmer-aquaready",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "Bullet-3 Hang-On-Back Protein Skimmer",
+   "galMax": 80,
+   "price": {
+    "usd": 153.66,
+    "regularUsd": 204.88
+   },
+   "url": "https://www.bulkreefsupply.com/bullet-3-hang-on-back-protein-skimmer-aquaready.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-bullet-2-hang-on-back-protein-skimmer-aquaready-ob-a",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "Bullet-2 Hang-On-Back Protein Skimmer (OPEN BOX)",
+   "galMax": 50,
+   "price": {
+    "usd": 143.99,
+    "regularUsd": 179.99
+   },
+   "url": "https://www.bulkreefsupply.com/bullet-2-hang-on-back-protein-skimmer-aquaready-ob-a.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-bullet-1-hang-on-back-protein-skimmer-aquaready-ob-a",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "Bullet-1 Hang-On-Back Protein Skimmer (OPEN BOX)",
+   "galMax": 30,
+   "price": {
+    "usd": 103.49,
+    "regularUsd": 114.99
+   },
+   "url": "https://www.bulkreefsupply.com/bullet-1-hang-on-back-protein-skimmer-aquaready-ob-a.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-cones-hob-hang-on-back-protein-skimmer-aquaready",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "ConeS HOB Hang-On-Back Protein Skimmer",
+   "price": {
+    "usd": 262.41,
+    "regularUsd": 349.88
+   },
+   "url": "https://www.bulkreefsupply.com/cones-hob-hang-on-back-protein-skimmer-aquaready.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-cones-q-2-in-sump-protein-skimmer-aquaready",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "ConeS Q-2 In-Sump Protein Skimmer",
+   "galMax": 250,
+   "price": {
+    "usd": 264.66,
+    "regularUsd": 352.88
+   },
+   "url": "https://www.bulkreefsupply.com/cones-q-2-in-sump-protein-skimmer-aquaready.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-cones-q-3-in-sump-protein-skimmer-aquaready",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "ConeS Q-3 In-Sump Protein Skimmer",
+   "galMax": 420,
+   "price": {
+    "usd": 337.41,
+    "regularUsd": 449.88
+   },
+   "url": "https://www.bulkreefsupply.com/cones-q-3-in-sump-protein-skimmer-aquaready.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-cones-q-1-in-sump-protein-skimmer-aquaready",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "ConeS Q-1 In-Sump Protein Skimmer",
+   "galMax": 140,
+   "price": {
+    "usd": 200.91,
+    "regularUsd": 267.88
+   },
+   "url": "https://www.bulkreefsupply.com/cones-q-1-in-sump-protein-skimmer-aquaready.html",
+   "asOf": "2026-11-18"
   },
   {
    "id": "brs-minox-tropic-led-aquarium-light-fixture-black-giesemann-aquaristic",
@@ -323,7 +875,60 @@
     "regularUsd": 199.0
    },
    "url": "https://www.bulkreefsupply.com/minox-tropic-led-aquarium-light-fixture-black-giesemann-aquaristic.html",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-jump-sk200-protein-skimmer-maxspect-ob-a",
+   "store": "Bulk Reef Supply",
+   "slot": "skimmer",
+   "salt": true,
+   "title": "Jump SK200 Protein Skimmer (OPEN BOX)",
+   "galMax": 171,
+   "price": {
+    "usd": 237.99,
+    "regularUsd": 279.99
+   },
+   "url": "https://www.bulkreefsupply.com/jump-sk200-protein-skimmer-maxspect-ob-a.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-hydra-edge-44hd-led-reef-light-fixture-aquaillumination",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "Hydra Edge 44HD LED Reef Light Fixture",
+   "price": {
+    "usd": 335.0,
+    "regularUsd": 399.99
+   },
+   "url": "https://www.bulkreefsupply.com/hydra-edge-44hd-led-reef-light-fixture-aquaillumination.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-hydra-edge-44hd-led-freshwater-light-fixture-aquaillumination",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": false,
+   "title": "Hydra Edge 44HD LED Freshwater Light Fixture",
+   "price": {
+    "usd": 187.9,
+    "regularUsd": 234.88
+   },
+   "url": "https://www.bulkreefsupply.com/hydra-edge-44hd-led-freshwater-light-fixture-aquaillumination.html",
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-hydra-edge-68hd-led-reef-light-fixture-aquaillumination",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "Hydra Edge 68HD LED Reef Light Fixture",
+   "price": {
+    "usd": 590.0,
+    "regularUsd": 699.88
+   },
+   "url": "https://www.bulkreefsupply.com/hydra-edge-68hd-led-reef-light-fixture-aquaillumination.html",
+   "asOf": "2026-11-18"
   },
   {
    "id": "brs-30w-aquaready-preset-aquarium-heater-aquaready-ob-a",
@@ -337,7 +942,7 @@
     "regularUsd": 32.99
    },
    "url": "https://www.bulkreefsupply.com/30w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "brs-50w-aquaready-preset-aquarium-heater-aquaready-ob-a",
@@ -351,21 +956,7 @@
     "regularUsd": 34.99
    },
    "url": "https://www.bulkreefsupply.com/50w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
-   "asOf": "2026-10-20"
-  },
-  {
-   "id": "brs-100w-aquaready-preset-aquarium-heater-aquaready-ob-a",
-   "store": "Bulk Reef Supply",
-   "slot": "heater",
-   "salt": true,
-   "title": "100W AquaReady Preset Aquarium Heater (OPEN BOX)",
-   "watts": 100,
-   "price": {
-    "usd": 15.39,
-    "regularUsd": 35.99
-   },
-   "url": "https://www.bulkreefsupply.com/100w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "brs-150w-aquaready-preset-aquarium-heater-aquaready-ob-a",
@@ -379,7 +970,7 @@
     "regularUsd": 37.99
    },
    "url": "https://www.bulkreefsupply.com/150w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "brs-200w-aquaready-preset-aquarium-heater-aquaready-ob-a",
@@ -393,7 +984,7 @@
     "regularUsd": 38.99
    },
    "url": "https://www.bulkreefsupply.com/200w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "brs-250w-aquaready-preset-aquarium-heater-aquaready-ob-a",
@@ -407,21 +998,20 @@
     "regularUsd": 39.99
    },
    "url": "https://www.bulkreefsupply.com/250w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
-   "id": "brs-300w-aquaready-preset-aquarium-heater-aquaready-ob-a",
+   "id": "brs-hydra-edge-44hd-led-reef-light-fixture-aquaillumination-ob-a",
    "store": "Bulk Reef Supply",
-   "slot": "heater",
+   "slot": "light",
    "salt": true,
-   "title": "300W AquaReady Preset Aquarium Heater (OPEN BOX)",
-   "watts": 300,
+   "title": "Hydra Edge 44HD LED Reef Light Fixture (OPEN BOX)",
    "price": {
-    "usd": 17.59,
-    "regularUsd": 40.99
+    "usd": 339.99,
+    "regularUsd": 399.99
    },
-   "url": "https://www.bulkreefsupply.com/300w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
-   "asOf": "2026-10-20"
+   "url": "https://www.bulkreefsupply.com/hydra-edge-44hd-led-reef-light-fixture-aquaillumination-ob-a.html",
+   "asOf": "2026-11-18"
   },
   {
    "id": "brs-6w-jolly-preset-heater-bundle-sicce",
@@ -429,13 +1019,13 @@
    "slot": "heater",
    "salt": true,
    "title": "6W Jolly Preset Heater Bundle",
+   "watts": 6,
    "price": {
     "usd": 30.0,
     "regularUsd": 59.99
    },
    "url": "https://www.bulkreefsupply.com/6w-jolly-preset-heater-bundle-sicce.html",
-   "asOf": "2026-10-20",
-   "watts": 6
+   "asOf": "2026-11-18"
   },
   {
    "id": "brs-22w-aquaready-preset-aquarium-heater-aquaready-ob-a",
@@ -449,7 +1039,7 @@
     "regularUsd": 29.99
    },
    "url": "https://www.bulkreefsupply.com/22w-aquaready-preset-aquarium-heater-aquaready-ob-a.html",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
   },
   {
    "id": "brs-eheim-classic-1500xl-special-edition-canister-filter-eheim-ob-a",
@@ -458,11 +1048,24 @@
    "salt": true,
    "title": "EHEIM classic 1500XL Special Edition Canister Filter (OPEN BOX)",
    "price": {
-    "usd": 560.95,
+    "usd": 527.96,
     "regularUsd": 659.95
    },
    "url": "https://www.bulkreefsupply.com/eheim-classic-1500xl-special-edition-canister-filter-eheim-ob-a.html",
-   "asOf": "2026-10-20"
+   "asOf": "2026-11-18"
+  },
+  {
+   "id": "brs-ap9xe-led-light-fixture-kessil",
+   "store": "Bulk Reef Supply",
+   "slot": "light",
+   "salt": true,
+   "title": "AP9XE LED Light Fixture",
+   "price": {
+    "usd": 815.15,
+    "regularUsd": 959.0
+   },
+   "url": "https://www.bulkreefsupply.com/ap9xe-led-light-fixture-kessil.html",
+   "asOf": "2026-11-18"
   }
  ]
 }
