@@ -8,9 +8,10 @@ const day = (iso: string, plus = 0) => Date.parse(iso + 'T12:00:00') + plus * 86
 const v = (checked: string, extra: Partial<TankVariant> = {}): TankVariant => ({ brand: 'X', L_in: 20, D_in: 10, H_in: 12, price_usd: 40, regular_usd: 80, retailer: 'PetSmart', checked, ...extra });
 
 describe('DL1: what the new UI shows as a deal', () => {
-  it('shows a listing read within 14 days and hides an older one', () => {
-    expect(showable('2026-11-02', day('2026-11-15'))).toBe(true);
-    expect(showable('2026-10-30', day('2026-11-15'))).toBe(false);
+  it('shows a dated listing however old, hides one the sweep marked expired or gone (R112)', () => {
+    expect(showable('2026-09-01', day('2026-11-18'))).toBe(true);
+    expect(showable('2026-11-01', day('2026-11-18'), { expired: true })).toBe(false);
+    expect(showable('2026-11-01', day('2026-11-18'), { gone: true })).toBe(false);
     expect(showable(undefined)).toBe(false);
   });
   it('a tank sale has the was-price, percent, store and date; an old or ended one is not shown', () => {
@@ -19,19 +20,20 @@ describe('DL1: what the new UI shows as a deal', () => {
     expect(s.off).toBe(50);
     expect(s.text).toContain('was $80');
     expect(s.text).toContain('PetSmart');
-    expect(tankSale(v('2026-10-20'), now)).toBeUndefined();
+    expect(tankSale(v('2026-11-05', { expired: true }), now)).toBeUndefined();
     expect(tankSale(v('2026-11-05', { sale_ends: '2026-11-08' }), now)).toBeUndefined();
     expect(tankSale(v('2026-11-05', { regular_usd: undefined }), now)).toBeUndefined();
   });
   it('gear sales: only fresh rows that fit the tank, biggest discount first, none for a non-gear category', () => {
     const S = defaultSetup(), light = GEAR_DEALS.find(d => d.slot === 'light' && d.fitMm && !d.salt)!;
     S.tank.L = (light.fitMm![0] + light.fitMm![1]) / 2;
-    const fresh = day(light.asOf), stale = fresh + 20 * 864e5;
+    const fresh = day(light.asOf), stale = fresh + 40 * 864e5;
     const a = gearSales(S, 'light', fresh);
     expect(a.length).toBeGreaterThan(0);
     expect(a.every(x => x.slot === 'light')).toBe(true);
     expect(a.map(x => x.off)).toEqual([...a.map(x => x.off)].sort((p, q) => q - p));
-    expect(gearSales(S, 'light', stale)).toEqual([]);
+    expect(gearSales(S, 'light', stale)).toEqual([]); // past the engine's own 30-day fit rule, which is unchanged
+    expect(gearSales(S, 'light', fresh, 3, GEAR_DEALS.map(d => ({ ...d, expired: true })))).toEqual([]);
     expect(gearSales(S, 'substrate', fresh)).toEqual([]);
   });
 });

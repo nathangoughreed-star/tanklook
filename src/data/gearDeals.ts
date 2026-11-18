@@ -22,6 +22,8 @@ export interface GearDeal {
   price: { usd: number; regularUsd: number };
   url: string;
   asOf: string;
+  /** the re-check sweep found the listing gone or the sale over: the new UI stops showing it (R112) */
+  expired?: boolean;
 }
 export const GEAR_DEALS = (data as unknown as { rows: GearDeal[] }).rows;
 export const GEAR_DEALS_AS_OF = (data as { asOf: string }).asOf;
