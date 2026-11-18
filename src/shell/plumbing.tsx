@@ -186,7 +186,7 @@ function Cutaway({ p, dims }: { p: Plumb; dims: string }) {
       {co2 && inline ? <><Box x={co2Start - 52} y={chainY + 76} w={105} h={52} mid n={{ name: co2.name, lines: co2.lines }} /><Pipe d={`M${co2Start} ${chainY + 76} L${co2Start} ${chainY + 52}`} flow="co2" /></> : null}
       {co2 && !inline ? <><Box x={diffCx - 52} y={348} w={104} h={52} mid n={{ name: co2.name, lines: co2.lines.slice(0, 1) }} /><Pipe d={`M${diffCx} 348 L${diffCx} ${258}`} flow="co2" /></> : null}
       {/* in-tank gear */}
-      <InTank items={tankItems} x0={200} x1={sponge ? 400 : hob || inT ? 460 : 600} y={sponge ? 190 : 214} />
+      <InTank items={tankItems} x0={200} x1={sponge ? 400 : hob || inT ? 460 : 600} y={sponge ? 168 : 214} />
       {/* CO2 sinks */}
       {hasCo2(p) ? <>
         {faintArrows([330, 400, 470, 540].filter(x => !inT || x < 420), 150, 178, 'co2')}<Txt x={430} y={196} c="pbtg" a="middle">plant uptake</Txt>

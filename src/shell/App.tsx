@@ -218,7 +218,8 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const [maker, setMaker] = useState<MakerInit | null>(null);
   const [libN, setLibN] = useState(0);
   const [scope, setScope] = useState<Tab[] | undefined>(undefined);   // S10: "Ideas for Plants" scopes Discover
-  const [plumb, setPlumb] = useState(false);   // PB1: the Plumbing view over the viewer
+  const [plumb, setPlumb0] = useState(() => { try { return localStorage.getItem('tanklook.plumbView') === 'on'; } catch { return false; } });   // PB1: the Plumbing view over the viewer; PB3: remembered per browser, one state for the viewer switch and the Equipment workspace's toggle
+  const setPlumb = (v: boolean) => { setPlumb0(v); try { localStorage.setItem('tanklook.plumbView', v ? 'on' : 'off'); } catch { /* not remembered */ } };
   const [door, setDoor] = useState(false);   // S10: the start door "From an animal I want"
   useEffect(() => { const f = () => setDoor(true); addEventListener(ANIMAL_DOOR_EVENT, f); return () => removeEventListener(ANIMAL_DOOR_EVENT, f); }, []);   // SS1: the Start sheet's animal door
   const openMaker = (h: MakerHow) => {
@@ -285,7 +286,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
         {section === 'print' && !phone ? <PrintPaper store={store} profile={profile} getViewer={viewer} /> : null}
         {split ? <CompareLayer store={store} models={models} drawer={cmpDrawer} onPick={check} phone={phone} say={files.say} /> : null}
         {plumb ? <PlumbingView store={store} phone={phone} /> : null}
-        {split || ws ? null : <PlumbSwitch on={plumb} onChange={setPlumb} />}
+        {split || (ws && section !== 'equipment') ? null : <PlumbSwitch on={plumb} onChange={setPlumb} />}
         <GetStarted tank={store.tank} open={section} onOpen={pick} onAnimal={() => setDoor(true)} phone={phone} />
         <ScapeBars store={store} getViewer={viewer} />
       </main>
