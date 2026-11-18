@@ -144,6 +144,8 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R127 | 11-18 | Custom blend at Mixed 100 % shows gravel in patches and streaks; 100 % mixed must be uniform, every grain evenly interspersed like an alloy lattice (lower Mixed = more clumping) | GB2 | a93c5de1 | 2324+ | deploying | C27 check live |
 | R128 | 11-18 | Tank / Plumbing toggle (and the Plumbing view) only shows while the Equipment workspace is open; it showed over Discover | PB1 | - | 2345 | deploying | C27 check live |
 | R129 | 11-18 | Blend follow-up to R127: the 100 % mix now looks uncanny, too uniform and grid-like; want natural randomness (well mixed, irregular, no lattice, no big patches). And with 3 grains (Sand 38 / Gravel 29 / Pebbles 33, Mixed 62 %) pebbles and gravel clump together in shared patches while sand gets its own: each grain needs its own independent patch field | GB2 | - | - | - | pictures research/screens/C27/R129-*; sent to GB2 |
+| R130 | 11-18 | Animals picker: "African cichlids" and "South American cichlids" groups (cichlids are scattered in Centerpiece / Community today; stocking a 55 he could not find them) | PK1 | - | - | - | picture research/screens/C27/R130-no-cichlid-group.png |
+| R131 | 11-18 | A full species list of everything we have (115 species: freshwater, marine, inverts, herps), browsable and findable from the app | PK1 | - | - | - | - |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
