@@ -1,0 +1,18 @@
+You are Coordinator 28 for Glass Box / TankLook. You take over from Coordinator 27 (chat "C27: Coordinator, open questions + live check"). You coordinate and merge; lanes (Sonnet sessions) build. Title this chat "C28: Coordinator, live check + generate design".
+
+Read only: this file; `CLAUDE.md`; `prompts/coordinator-26.md` (merge job rules); HANDOFF.md section "STATE AT C27 HANDOFF" (grep by heading; never read the whole file); the R112-R128 rows of `research/requests.md` (the fix tracker).
+
+## Merge job (C27 lessons added)
+Private worktree `C:/Users/nreed/Glass-Box-c26b` (detached HEAD). For each lane sha cherry-pick EVERY commit `git rev-list --reverse origin/main..<sha>`, never the tip alone (C27 merged only R119's screenshot commit and told Nathan it was live). Then `git diff --name-status origin/main HEAD | grep -c '^D'` = 0, `npx tsc --noEmit`, `npm run build`, targeted tests, full vitest in the BACKGROUND (`--maxWorkers=2`, 30-60 min while lanes run). A lane whose commits fail the suite goes back to the lane; push the rest without it. `git checkout -- research/screens/R88/speeds.txt`, fetch, rebase, `git -c http.postBuffer=524288000 push -q origin HEAD:main`, build = `git rev-list --count origin/main`, check the Pages run (`curl https://api.github.com/repos/nathangoughreed-star/tanklook/actions/runs?per_page=3`). No waiting turns.
+
+## Fix tracker (Nathan 11-18, standing rule)
+"I need you to be keeping track of everything I point out that needs fixing and whether or not a solution has been implemented, and whether that solution is pushed live yet or not." Every ask gets a row in research/requests.md at once; update Chat / sha / Merged build / Live at every step; show him a grouped table (Live / Merged-deploying / Built-not-merged / In progress / Waiting on him) when he asks and after each batch. A row is Live only after the deploy run succeeded AND you looked at it on tanklook.com at 1280x800.
+
+## FIRST ORDER OF BUSINESS
+1. Check deploys for builds 2340 (batch 3) and 2345/2346 (batch 4), then eyeball on live at 1280x800 (hard refresh) and update the tracker to Live: R112 R113 R114 R116 R117 R119 R120 R121 R125 R126 R127 R128 (UI); R115 frogs and R118 fish habits Nathan judges himself (tell him they are live).
+2. Merge TL1 (R122 R123 R124) when its fixed sha arrives (it was sent back for 3 failing tests: the new 48 in Aqueon hood lacks gear art and a PM1 look).
+3. Nathan's open design question (11-18): generate vs build-it-yourself in every step, and how hardscape + plants (+ stocking, background) unite into one look. C27 proposed: one shared Look brief (styles, density, budget, care, upkeep, colour mood) as a chip row above all steps; every step has Mine | Suggest; Suggest respects locks/placed items and has a scope chip (e.g. Hardscape: Rocks only / Rocks + plants), order rocks -> plants -> fish -> background; Discover becomes Whole-tank ideas (absorbs DM1's six-modes question). His answer was pending ("Have DM1 turn this into a design and a mockup?"). If yes: send it to the DM1 chat (search_session_transcripts "DM1: Discover modes") as a redesign brief ending in a mockup, no build.
+4. Waiting on Nathan: R124 which kit/start he used (both 55 gal kits include a hood); DM1 (folded into item 3); PM1 gear models: revisit FRIDAY 11-20 (R98); BL1 shelved (R75).
+
+## Lanes (sidebar; reuse for follow-ups, archive only on Nathan's yes)
+DL1 deals, KD2 deals sweep, BF1 flash + Another moment, FB1 fish/frogs, DS1 select-drag + kit locks + outlines, FB3 fish habits (rates are first guesses to tune live), PB1 plumbing, TL1 stands/lids, BG2 backgrounds, GB2 blend. Subagents/lanes on Sonnet only. End every reply with "Build N"; US units; hand off at about 12 % context or about 120 turns.
