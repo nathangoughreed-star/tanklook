@@ -81,3 +81,26 @@ Script: `scripts/bg2-lookmock.py`.
 1. Procedural for stone + planted, real CC0/NOAA photo for the reef? Or procedural for all three?
 2. Merge river bed into planted stream and drop it (recommended), or keep a separate river option?
 3. Fine to drop `gradient` (keep `blue` and `abyss`)?
+
+---
+## Phase 2 (built 2026-11-18, Nathan's answers via C27)
+Decisions: reef from a real public-domain photo; river bed kept (more is better); blue gradient kept; planted AND river both
+read as photographs. The mock procedural textures above were ideas only and were NOT used (planted looked cartoony).
+All four picture scenes are now real photographs, baked by `scripts/bg2-bake.py` into `public/art/bg/*.jpg` (about 70 to 105 kB each):
+blurred for depth of field, desaturated, tinted, dark base and edges, light grain. Ids unchanged (`reefscene` `riverscene` `plantscene` `rockscene`),
+so saved tanks keep working. Loader: `src/art/bgscenes.ts` + `sceneTexture` in `src/render/textures.ts` (dark fill until the photo loads, no flash).
+The painted code is gone.
+
+### Credits (source, author, licence)
+| Scene | File | Source | Author | Licence |
+|---|---|---|---|---|
+| Coral reef | `reef.jpg` | Wikimedia Commons, "Colorful underwater landscape of a coral reef.jpg" (originally public-domain-image.com) | Jim E. Maragos, U.S. Fish and Wildlife Service | Public domain (US government work) |
+| Planted | `plant.jpg` | Wikimedia Commons, "Nature Aquarium Aquascape.jpg" (underwater planted belt only; a small fish painted out) | Dileepkumardr | CC0 |
+| River bed | `river.jpg` | Poly Haven, "Ganges River Pebbles" (polyhaven.com/a/ganges_river_pebbles) | Amal Kumar | CC0 |
+| Rock wall | `rock.jpg` | Poly Haven, "Rock Wall 08" (polyhaven.com/a/rock_wall_08) | Amal Kumar | CC0 |
+Poly Haven licence FAQ: all assets CC0. Note: the Commons aquascape photo may be digitally generated; it is CC0 either way.
+
+### Live check
+Real renderer (dev server, headless Chrome, 1280x800), every scene before and after: `research/screens/BG2/before-after.png`
+(left before, right after, rows reef / river / planted / rock); full shots in `research/screens/BG2/live/<scene>-before|after.png`.
+Known limits: the reef photo still shows two small clownfish (blurred); the 2.5:1 tiles crop the middle on other tank shapes.
