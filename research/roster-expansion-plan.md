@@ -49,3 +49,5 @@ Audit the generic labels (Peacock cichlid, Fancy goldfish, Black molly). Attach 
 
 ## How each species gets built
 Each species needs a species.json row with sources (the ratchet must not go up), stock and compat data, fish art in the crisp tank-render style (not cartoony), behavior or habits (FB3 tables), and picker group and origin.
+
+Art for every species follows `research/species-art-method.md`: real reference photos first, a written look, a side-by-side check.

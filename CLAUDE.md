@@ -13,6 +13,9 @@ Every chat commits its own finished work itself, right away. You don't need a co
 
 A Stop hook (`scripts/commit_check.py`) checks for files you edited that are still uncommitted, and stops you once to commit them.
 
+## Fish art starts from reference photos (Nathan, 2026-11-18)
+Every new species and every look change is drawn from real photos (two or more per look, one per sex), not from memory. Write the look down, render it beside the photo, record the photo URLs. Full method: `research/species-art-method.md`. A look with no reference noted is unreviewed.
+
 ## Other house rules
 - **Nathan's asks outside your task are forwarded at once (2026-11-15).** If Nathan asks you for anything that is not your own lane's task (a bug he noticed, a feature, a fix in another area), send it to the coordinator chat right away with his exact words and any picture path, before doing anything else, and tell him you did. Never hold it or answer "noted". The coordinator logs every ask in `research/requests.md`; an ask that never reaches it gets lost (R81 sat in a lane chat for four hours).
 - End replies with "Build N", the commit count on origin/main.
