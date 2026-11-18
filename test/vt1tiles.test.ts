@@ -23,7 +23,7 @@ describe('VT1 tank tiles', () => {
   });
   it('there is one background tile per BACKGROUNDS key, in order, with a picture and a short label', () => {
     expect(BG_TILES.map(t => t.id)).toEqual(Object.keys(BACKGROUNDS));
-    expect(BG_TILES.length).toBe(17);
+    expect(BG_TILES.length).toBe(21);
     expect(BG_TILES.filter(t => !has(t.img))).toEqual([]);
     expect(new Set(BG_TILES.map(t => t.label)).size).toBe(BG_TILES.length);
     expect(bgShort('Deep-sea fade (blue to black)')).toBe('Deep-sea fade');
