@@ -12,8 +12,8 @@ import { addHood } from '../src/render/build';
 const NICREW = LIGHT_PRODUCTS.filter(p => p.brand === 'NICREW' && /c10|classicled|hyperreef|navareef/.test(p.id));
 
 describe('PM1 hood looks', () => {
-  it('all 8 hoods carry a look with a hex colour, sheen and photo source', () => {
-    expect(HOOD_PRODUCTS.length).toBe(8);
+  it('all 9 hoods carry a look with a hex colour, sheen and photo source', () => {
+    expect(HOOD_PRODUCTS.length).toBe(9); // 8 photographed + the TL1 Aqueon 48 in T8 hood, which shares the Aqueon housing look (look.est says so)
     for (const h of HOOD_PRODUCTS) {
       expect(h.look, h.id).toBeTruthy();
       expect(h.look!.color, h.id).toMatch(/^#[0-9a-f]{6}$/i);
