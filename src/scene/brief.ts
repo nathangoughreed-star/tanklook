@@ -17,7 +17,7 @@ import { parseTaste, type Taste } from '../demand/taste';
 import { parseAspects, type Aspects } from '../explore/aspects';
 import type { Background, LayoutId, SpaceLimit } from './types';
 /** The background ids a saved recipe may name (types.ts Background). */
-const BG_IDS: readonly string[] = ['black', 'blue', 'lightblue', 'gradient', 'abyss', 'sky', 'grey', 'white', 'green', 'sand', 'reefscene', 'riverscene', 'plantscene', 'rockscene', 'frosted', 'custom', 'none'];
+const BG_IDS: readonly string[] = ['black', 'blue', 'lightblue', 'gradient', 'abyss', 'sky', 'grey', 'white', 'green', 'sand', 'reefscene', 'riverscene', 'plantscene', 'rockscene', 'reefpaint', 'riverpaint', 'plantpaint', 'rockpaint', 'frosted', 'custom', 'none'];
 import type { Density, Env, Water } from './archetypes';
 
 export type Status = 'hard' | 'preference' | 'locked';
