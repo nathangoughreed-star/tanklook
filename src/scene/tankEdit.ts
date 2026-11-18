@@ -5,7 +5,9 @@ import { breakNote, releaseProduct, type Held } from './integrated';
 import { STYLE_KIND } from './items';
 import { fitFixture, fixtureOf, TECHS, techOf } from './lightout';
 import { hoodExists, hoodOf, hoodLight } from '../data/hoods';
-import { clamp, fromUnit } from './physics';
+import { clamp, fromUnit, volume } from './physics';
+import { standProduct, standFits } from '../data/stands';
+import { tankWeight } from './weight';
 import { applyKind, type SetupKind } from './pickerKind';
 import { adaptToTank } from './reeval';
 import { BOWL_DEFAULT, PIE_DEFAULT, shapeOf } from './shape';
@@ -47,7 +49,25 @@ export function applyTankEdit(s: TankSetup, next: (T: Tank) => Tank, o: TankEdit
   if (te.h.length && !sameGrid(te, s.tank)) s.terrain = { ...sampleTerrain(s, s.tank, te.cols), on: te.on };
   const max = T.H * 0.5;
   for (const k of ['fl', 'fr', 'bl', 'br'] as const) s.substrate[k] = Math.min(s.substrate[k], max);
+  keepStandHolding(s);
   if (!flatEnds(s.tank)) { if (s.lid === 'hood') s.lid = 'glass'; if (s.wall.side === 'left' || s.wall.side === 'right') s.wall.side = 'back'; }
+}
+
+/** TK2: the last automatic stand change, as one sentence for the Sits on group; cleared when a stand is picked by hand. */
+let standNote = '';
+export const takeStandNote = (): string => standNote;
+export const clearStandNote = (): void => { standNote = ''; };
+/** After the tank changes: a picked stand product stays while it still fits the footprint and holds the tank (rated gallons, weight rating);
+ *  otherwise the setup falls back to the generic stand and a note says why. Returns the note ('' = nothing changed). */
+export function keepStandHolding(s: TankSetup): string {
+  const p = standProduct(s.stand.product); if (!p || !s.stand.product) return '';
+  const gal = volume(s.tank).gallons, lb = tankWeight({ ...s, water: { ...s.water, on: true, level: 1 } }).total * 2.20462;
+  const why = !standFits(p, s.tank) ? `it does not fit the ${Math.round(s.tank.L / 25.4)} × ${Math.round(s.tank.D / 25.4)} in footprint`
+    : p.ratedGal && gal > p.ratedGal + 0.5 ? `the ${p.brand} ${p.line} stand is rated ${p.ratedGal} gal` : p.maxLoadLb && lb > p.maxLoadLb ? `the ${p.brand} ${p.line} stand is rated ${p.maxLoadLb} lb` : '';
+  if (!why) { standNote = ''; return ''; }
+  delete s.stand.product; s.stand.style = p.kind === 'frame' ? 'frame' : 'cabinet'; // the drawn look stays; the product is gone
+  standNote = why.startsWith('it does') ? `Stand changed to Generic: the ${p.brand} ${p.line} stand ${why}.` : `Stand changed to Generic: ${why}.`;
+  return standNote;
 }
 
 /** Each shape keeps its own length / depth for a visit: a round or pie tank derives one from the other, so going back to a

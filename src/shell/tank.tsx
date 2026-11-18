@@ -11,7 +11,7 @@ import type { TankSetup } from '../scene/types';
 import { STAND_FINISHES } from '../render/build';
 import { LIMITS } from '../scene/validate';
 import { fromUnit, toUnit, volume, IN } from '../scene/physics';
-import { setLid, lidLocked, setDoors, doorLocked, type DoorKind } from '../scene/tankEdit';
+import { setLid, lidLocked, takeStandNote, clearStandNote, setDoors, doorLocked, type DoorKind } from '../scene/tankEdit';
 import { lockNote } from '../scene/integrated';
 import { lockObject, unlockObject, isLocked } from '../scene/locks';
 import { placementOf, putOnFloor, putOnStand, putOnMyFurniture, putOnFurniture, minTop, setStandProduct, type Placement } from '../scene/placement';
@@ -161,12 +161,14 @@ function SitsOn({ store, S, u, open, onToggle }: { store: Store; S: TankSetup; u
   const place = (v: Placement) => store.edit(s => { if (v === 'floor') putOnFloor(s); else if (v === 'stand') putOnStand(s); else putOnMyFurniture(s); });
   const furn = (o: Partial<{ shape: 'rect' | 'round'; L: number; D: number; height: number }>, c?: string) =>
     store.edit(s => { const t = s.stand.table; putOnFurniture(s, { shape: t.shape, L: t.L, D: t.D, height: s.stand.height, ...o }); }, c ? { coalesce: c } : {});
-  const min = p === 'furniture' ? minTop(S, tb.shape) : null;
+  const min = p === 'furniture' ? minTop(S, tb.shape) : null, product = !!S.stand.product && standOf(S)?.id === S.stand.product, standNote = takeStandNote();
   return (
     <Group id="sits" title="Sits on" sum={sitsOnSummary(S, u)} open={open} onToggle={onToggle}>
       <PicTiles label="Sits on" tiles={SITS_TILES} on={sitsTileOn(S)} onPick={place} />
       {S.stand.need === 'ask' && !S.stand.show ? <div class="hint">Not chosen yet: the budget counts a typical stand until you pick.</div> : null}
       {p === 'stand' ? <>
+        {standNote ? <div class="hint warn" role="status" data-testid="stand-note">{standNote}</div> : null}
+        {!product ? <>
         <div class="row"><span class="lbl">Style</span>
           <select class="select" aria-label="Stand style" value={`${S.stand.style === 'frame' ? 'frame' : 'cabinet'}|${S.stand.finish}`}
             onChange={e => { const [st, f] = (e.target as HTMLSelectElement).value.split('|'); store.edit(s => putOnStand(s, { style: st as 'cabinet' | 'frame', finish: f as TankSetup['stand']['finish'] })); }}>
@@ -174,6 +176,7 @@ function SitsOn({ store, S, u, open, onToggle }: { store: Store; S: TankSetup; u
           </select><span /></div>
         <FinishRow store={store} S={S} />
         <LenRow label="Height" mm={S.stand.height} min={LIMITS.stand[0]} max={LIMITS.stand[1]} u={u} onMm={(mm, done) => store.edit(s => { s.stand.height = mm; }, done ? {} : { coalesce: 'standH' })} />
+        </> : null}
         <TablePos store={store} S={S} u={u} />
         <StandPicker S={S} store={store} />
       </> : null}
@@ -456,7 +459,7 @@ function StandPicker({ S, store }: { S: TankSetup; store: Store }) {
       <div class="cap">Stands that fit this tank <span class="n">{fit.length}</span></div>
       <div class="pgrid">
         {fit.map(p => { const rate = standRatingLine(p), chk = standCheck(p, lb, gal); return (
-          <button type="button" class={`ptile stile${cur?.id === p.id ? ' on' : ''}`} aria-pressed={cur?.id === p.id} onClick={() => store.edit(s => setStandProduct(s, p))}>
+          <button type="button" class={`ptile stile${cur?.id === p.id ? ' on' : ''}`} aria-pressed={cur?.id === p.id} onClick={() => { clearStandNote(); store.edit(s => setStandProduct(s, p)); }}>
             <div class="tart"><StandArt p={p} /></div>
             <div class="tname">{p.brand} {p.line}</div>
             <div class="tmeta"><span>${Math.round(p.priceUsd)}</span><span>{p.kind === 'cabinet' ? 'Cabinet' : 'Open frame'}, {p.color.split(',')[0].split(' (')[0]}</span></div>
@@ -465,7 +468,7 @@ function StandPicker({ S, store }: { S: TankSetup; store: Store }) {
             <small class="why">{p.seller}{p.est.includes('priceUsd') ? ' · price is a guess' : ''}</small>
           </button>
         ); })}
-        <button type="button" class={`ptile stile${!explicit && !cur ? ' on' : ''}`} onClick={() => store.edit(s => { setStandProduct(s, undefined); })} title="Keeps the drawn style and prices a typical stand by tank size">
+        <button type="button" class={`ptile stile${!explicit && !cur ? ' on' : ''}`} onClick={() => { clearStandNote(); store.edit(s => { setStandProduct(s, undefined); }); }} title="Keeps the drawn style and prices a typical stand by tank size">
           <div class="tname">Generic</div><div class="tmeta"><span>estimate</span></div><small class="why">Typical price by tank size, not a product</small>
         </button>
       </div>
