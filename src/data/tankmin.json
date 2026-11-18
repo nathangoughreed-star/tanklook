@@ -1242,8 +1242,23 @@
     "url": "https://www.fishkeepingworld.com/siamese-algae-eater/"
    },
    "groupVol": [
-    {"from": 2, "gal": 40, "L": 765, "mark": "sourced", "site": "Fishkeeping World", "url": "https://www.fishkeepingworld.com/siamese-algae-eater/"},
-    {"from": 5, "gal": 75, "L": 900, "provisional": true, "mark": "sourced (est)", "site": "FS1 audit 2026-11-10 (hobby guides: 55+ gal for a group of 3-5, 50 gal minimum for 6+; adults 6 in, constant swimmers, rank-fight below 6, so 75)", "url": "research/audit/FS1-siamese-algae-eater.md"}
+    {
+     "from": 2,
+     "gal": 40,
+     "L": 765,
+     "mark": "sourced",
+     "site": "Fishkeeping World",
+     "url": "https://www.fishkeepingworld.com/siamese-algae-eater/"
+    },
+    {
+     "from": 5,
+     "gal": 75,
+     "L": 900,
+     "provisional": true,
+     "mark": "sourced (est)",
+     "site": "FS1 audit 2026-11-10 (hobby guides: 55+ gal for a group of 3-5, 50 gal minimum for 6+; adults 6 in, constant swimmers, rank-fight below 6, so 75)",
+     "url": "research/audit/FS1-siamese-algae-eater.md"
+    }
    ],
    "why": "one geometry page: it or the gallon figure's tank, whichever is lower"
   },
@@ -2427,6 +2442,268 @@
     "url": "https://thetyedyediguana.com/care-sheets/hermit-crab-coenobita-clypeatus"
    },
    "why": "arthropod research 2026-10-28: floor derived, height derived; see research/arthropods/arthropods.json"
+  },
+  "endler": {
+   "red": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/poecilia-wingei/",
+    "states": "45 × 30 × 30 cm (18 × 12 × 12 in), about 41 litres: enough for a fairly large colony",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 11,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/poecilia-wingei/"
+   },
+   "why": "one species profile: Seriously Fish's minimum, which it calls enough for a fairly large colony"
+  },
+  "threespot": {
+   "red": {
+    "L": 900,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/trichopodus-trichopterus/",
+    "states": "aquarium base 90 × 30 cm (36 × 12 in), about 81 litres",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 21,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/trichopodus-trichopterus/"
+   },
+   "why": "one species profile: the base Seriously Fish gives; males squabble, so more room helps"
+  },
+  "glowlight": {
+   "red": {
+    "L": 600,
+    "W": 380,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/hemigrammus-erythrozonus/",
+    "states": "60 × 38 cm (24 × 15 in) base, about 68 litres; a 60 × 38 × 30 cm tank holds a small group comfortably",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 18,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/hemigrammus-erythrozonus/"
+   },
+   "why": "one species profile: Seriously Fish's stated base"
+  },
+  "convict": {
+   "red": {
+    "L": 900,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/amatitlania-nigrofasciata/",
+    "states": "90 × 30 cm base is adequate for a single pair (no height or litres given)",
+    "from": "footprint"
+   },
+   "why": "one species profile: the base for one pair; a larger tank is needed for more pairs or other cichlids"
+  },
+  "electricblueacara": {
+   "red": {
+    "L": 1200,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/andinoacara-pulcher/",
+    "states": "120 × 30 cm base or equivalent is just about sufficient for a pair (the blue acara page; no litres given)",
+    "from": "footprint"
+   },
+   "why": "the wild blue acara's page, because the electric blue is a colour form of the same species; the electric blue care page's own 30 gal single-fish figure is smaller"
+  },
+  "clownkilli": {
+   "red": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/epiplatys-annulatus/",
+    "states": "45 × 30 cm (18 × 12 in) base, about 41 litres; smaller tanks only for breeding",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 11,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/epiplatys-annulatus/"
+   },
+   "why": "one species profile: Seriously Fish's minimum"
+  },
+  "peacockgudgeon": {
+   "red": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/tateurndina-ocellicauda/",
+    "states": "45 × 30 cm (18 × 12 in) base, about 41 litres, suits a couple of adult pairs",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 11,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/tateurndina-ocellicauda/"
+   },
+   "why": "one species profile: Seriously Fish's stated base"
+  },
+  "falsejulii": {
+   "red": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/corydoras-trilineatus/",
+    "states": "45 × 30 cm (18 × 12 in) base, about 41 litres; 45 × 30 × 30 cm is big enough for a small group",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 11,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/corydoras-trilineatus/"
+   },
+   "why": "one species profile: Seriously Fish's stated base"
+  },
+  "neonrainbow": {
+   "red": {
+    "L": 600,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/melanotaenia-praecox/",
+    "states": "60 × 30 × 30 cm (24 × 12 × 12 in), about 54 litres",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 14,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/melanotaenia-praecox/"
+   },
+   "why": "one species profile: Seriously Fish's stated tank"
+  },
+  "firemouth": {
+   "red": {
+    "L": 1200,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/thorichthys-meeki/",
+    "states": "120 × 30 cm (48 × 12 in), about 108 litres: acceptable for a single pair; does best in larger tanks",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 29,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/thorichthys-meeki/"
+   },
+   "why": "one species profile: Seriously Fish's minimum for a pair"
+  },
+  "saltpepper": {
+   "red": {
+    "L": 600,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/corydoras-habrosus/",
+    "states": "minimum base 60 × 30 cm (24 × 12 in), roughly 54 litres",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 14,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/corydoras-habrosus/"
+   },
+   "why": "one species profile: Seriously Fish's stated base"
+  },
+  "yoyoloach": {
+   "red": {
+    "L": 1200,
+    "W": 450,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/botia-almorhae/",
+    "states": "base 120 × 45 cm (48 × 18 in), about 243 litres, the minimum considered",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 64,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/botia-almorhae/"
+   },
+   "why": "one species profile: Seriously Fish's minimum base for a group"
+  },
+  "glasscatfish": {
+   "red": {
+    "L": 900,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/kryptopterus-vitreolus/",
+    "states": "90 × 30 cm (36 × 12 in), about 81 litres, the smallest considered",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 21,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/kryptopterus-vitreolus/"
+   },
+   "why": "one species profile: Seriously Fish's smallest tank for a group"
+  },
+  "pleco": {
+   "red": {
+    "L": 1220,
+    "W": 458,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Aquarium Source",
+    "url": "https://www.aquariumsource.com/common-pleco/",
+    "states": "75-80 gal for an adult (at least 150 gal to reach full size)",
+    "from": "volume",
+    "ref": "g75"
+   },
+   "vol": {
+    "gal": 75,
+    "mark": "sourced",
+    "site": "Aquarium Source",
+    "url": "https://www.aquariumsource.com/common-pleco/"
+   },
+   "why": "one care page: the 75 gal low end for a 15 in adult; the footprint is the standard 75 gal tank, because the page gives no base"
+  },
+  "clownpleco": {
+   "red": {
+    "L": 765,
+    "W": 324,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Aquarium Source",
+    "url": "https://www.aquariumsource.com/clown-pleco/",
+    "states": "20 gal for one fish, plus 10 gal per extra",
+    "from": "volume",
+    "ref": "g20l"
+   },
+   "vol": {
+    "gal": 20,
+    "mark": "sourced",
+    "site": "Aquarium Source",
+    "url": "https://www.aquariumsource.com/clown-pleco/"
+   },
+   "why": "one care page: 20 gal for one fish; the footprint is the standard 20 gal long, because the page gives no base"
   }
  }
 }

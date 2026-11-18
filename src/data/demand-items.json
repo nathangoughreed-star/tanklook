@@ -2006,6 +2006,111 @@
    "hi": 22.99,
    "unit": "50 W heater, tanks 5-15 gal: Aquaneat $8.87, Datoo $7.99, Hitop $13.97, Pulaco $13.99, Tetra HT50 $15.27 (Chewy), Aqueon preset $17.24 (Petco), GloFish $22.99 (Petco); catalogue 2026-10-19/20; lane U5",
    "url": "https://www.chewy.com/tetra-ht10-submersible-aquarium/dp/191044"
+  },
+  "animal:endler": {
+   "lo": 4,
+   "mode": 5,
+   "hi": 10,
+   "unit": "each; Aquatic Arts $4.99 (multicolor males), $8.99 (koi); Flip Aquatics calico $9.99; hi judgement (RX1 search 2026-11-18)",
+   "url": "https://aquaticarts.com/collections/livebearers/products/multicolor-endlers-livebearer-male"
+  },
+  "animal:threespot": {
+   "lo": 6,
+   "mode": 9,
+   "hi": 15,
+   "unit": "each; iFISH Store $5.99, Chief's Treats $8.99, Reach.dog opaline $10.99; hi judgement (RX1 search 2026-11-18)",
+   "url": "https://chieftreats.com/products/three-spot-gourami-opaline-gourami"
+  },
+  "animal:pleco": {
+   "lo": 8,
+   "mode": 15,
+   "hi": 20,
+   "unit": "each, 3-4 in juvenile; Monster Aquarium Online $8, Tampa Bay Cichlids 3.5-4 in $19.99 (RX1 search 2026-11-18)",
+   "url": "https://m.reach.dog/shop/tampa-bay-cichlids/products/hypostomus-plecostomus-pleco-sucker-fish-3-4-inch-guaranteed"
+  },
+  "animal:glowlight": {
+   "lo": 2.5,
+   "mode": 3,
+   "hi": 4,
+   "unit": "each; US retailers $2.49-3.59 (iFISH Store, Aquahuna) (RX1 search 2026-11-18)",
+   "url": "https://reach.dog/shop/the-ifish-store/products/tetra-glowlight-tetra"
+  },
+  "animal:convict": {
+   "lo": 5,
+   "mode": 10,
+   "hi": 15,
+   "unit": "each; black convict $9.29-9.99, pink or gold $7.99-14.99; Tampa Bay Cichlids (RX1 search 2026-11-18)",
+   "url": "https://reach.dog/shop/tampa-bay-cichlids/products/convict-cichlid-amatitlania-nigrofasciata"
+  },
+  "animal:electricblueacara": {
+   "lo": 8,
+   "mode": 14,
+   "hi": 19,
+   "unit": "each; Aquahuna $11, KGTropicals $13.99, Tropical Treasures $17.99, The Shrimp Farm $18.99 (RX1 search 2026-11-18)",
+   "url": "https://www.theshrimpfarm.com/electric-blue-acara-for-sale.html"
+  },
+  "animal:clownkilli": {
+   "lo": 4.5,
+   "mode": 6,
+   "hi": 13,
+   "unit": "each; Aquahuna $4.50, Whitlyna $5.99, Flip Aquatics $11.99, Shrimpy Business $13.50 (tank-bred) (RX1 search 2026-11-18)",
+   "url": "https://reach.dog/shop/flip-aquatics/products/clown-killifish"
+  },
+  "animal:peacockgudgeon": {
+   "lo": 9,
+   "mode": 13,
+   "hi": 17,
+   "unit": "each; Whitlyna $9.74 sale, Aquatic Arts and Dan's Fish $13.99, Danbury Aquarium $16.99 (RX1 search 2026-11-18)",
+   "url": "https://aquaticarts.com/products/peacock-gudgeon"
+  },
+  "animal:falsejulii": {
+   "lo": 6.99,
+   "mode": 8,
+   "hi": 12,
+   "unit": "each; Baybridge Aquarium $6.99, Global Fish Co $8, Cuboid Store $12 (RX1 search 2026-11-18)",
+   "url": "https://cuboidstore.com/products/false-julii-corydoras"
+  },
+  "animal:neonrainbow": {
+   "lo": 5,
+   "mode": 9,
+   "hi": 13,
+   "unit": "each; Whitlyna $5.24-6.99, Shrimpy Business $9.95, Nuaqua $12.99 (RX1 search 2026-11-18)",
+   "url": "https://nuaquashop.com/products/dwarf-neon-rainbowfish"
+  },
+  "animal:firemouth": {
+   "lo": 7.99,
+   "mode": 10,
+   "hi": 25,
+   "unit": "each; Tropical Treasures $9.99, Tampa Bay Cichlids $10.99 (1.25-2 in), Whitlyna $19.99-24.99 (RX1 search 2026-11-18)",
+   "url": "https://reach.dog/shop/tampa-bay-cichlids/products/two-thorichthys-meeki-firemouth-cichlid-over-2-inch-live-fish-guaranteed"
+  },
+  "animal:saltpepper": {
+   "lo": 5.99,
+   "mode": 7,
+   "hi": 10,
+   "unit": "each; Nuaqua $5.99, Aquatics Unlimited $6.99-9.99 (RX1 search 2026-11-18)",
+   "url": "https://nuaquashop.com/products/salt-and-pepper-pygmy-cory"
+  },
+  "animal:clownpleco": {
+   "lo": 10,
+   "mode": 12,
+   "hi": 18,
+   "unit": "each; Imperial Tropicals $9.99, Flip Aquatics $11.49, April's Aquarium CAD $17.99; wild-caught and scarcer than other plecos (RX1 search 2026-11-18)",
+   "url": "https://reach.dog/shop/flip-aquatics/products/clown-pleco-l104"
+  },
+  "animal:yoyoloach": {
+   "lo": 3.19,
+   "mode": 8,
+   "hi": 16,
+   "unit": "each; Fish Warehouse $3.19, Aquahuna $5, KGTropicals $8.99, Dan's Fish $9.99, Aquatic Arts $15.99 (RX1 search 2026-11-18)",
+   "url": "https://aquaticarts.com/products/yo-yo-loach"
+  },
+  "animal:glasscatfish": {
+   "lo": 7,
+   "mode": 11,
+   "hi": 15,
+   "unit": "each; Coastgem $6.67, iFish Store $10.99, Nuaqua $12.27, Dan's Fish and Aquatic Unlimited $14.99 (RX1 search 2026-11-18)",
+   "url": "https://reach.dog/shop/the-ifish-store/products/catfish-glass-catfish"
   }
  }
 }

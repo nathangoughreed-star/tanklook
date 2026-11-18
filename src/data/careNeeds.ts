@@ -28,6 +28,22 @@ export const NEEDS: Record<string, CareNeed[]> = {
   hermit: [{ kind: 'environment', severity: 'S2', text: 'Shells: needs a spare shell each; short of shells they can attack snails' }],
   // an advisory, not a computed result: the engine does not model territorial behaviour (gbr review 2026-10-22)
   gbr: [{ kind: 'environment', severity: 'S1', text: 'Breeding territory: when breeding, rams may chase other bottom-dwelling fish; provide separate sheltered areas and watch for any fish kept away from food or cover' }],
+  // RX1 (R139 phase 1, 2026-11-18): the essential conditions and warnings of the new species, from the pages in research/screens/RX1/README.md
+  endler: [{ kind: 'environment', severity: 'S1', text: 'Water: moderately hard to hard and alkaline; soft acid water is tolerated but is not the long-term home (Seriously Fish)' }],
+  threespot: [{ kind: 'environment', severity: 'S2', text: 'Temperament: males are territorial and some turn spiteful as they mature; keep with robust tankmates, one male' }],
+  pleco: [{ kind: 'environment', severity: 'S3', text: 'Adult size: sold at 3-4 in but grows to about 15 in, needs a 75 gal or larger tank and heavy filtration; adults are territorial and very messy' }],
+  glowlight: [{ kind: 'environment', severity: 'S1', text: 'Group: stays shy and stressed below six; ten or more is better' }],
+  convict: [{ kind: 'environment', severity: 'S2', text: 'Breeding: becomes violent when breeding and will attack fish several times its size; a species tank or a pair, with caves' }],
+  electricblueacara: [{ kind: 'environment', severity: 'S2', text: 'Pairs: peaceful for a cichlid until it pairs, then it claims the floor; other fish may need to go unless the tank is very large' }],
+  clownkilli: [{ kind: 'environment', severity: 'S2', text: 'Water: soft and acidic; it is small and specialised, not an easy community fish, and wants small live or frozen foods' }],
+  peacockgudgeon: [{ kind: 'environment', severity: 'S1', text: 'Territory: males flare and squabble with each other; keep a small group with cover to break sight lines' }],
+  falsejulii: [{ kind: 'environment', severity: 'S1', text: 'Group: a group of at least six is best; most fish sold as julii cory are this species' }],
+  neonrainbow: [{ kind: 'environment', severity: 'S1', text: 'Group: does far better in a shoal of six to eight or more; males deepen and colour up with age' }],
+  firemouth: [{ kind: 'environment', severity: 'S2', text: 'Breeding: territorial when spawning and may eat much smaller fish; best as a pair, gregarious only outside spawning' }],
+  saltpepper: [{ kind: 'environment', severity: 'S1', text: 'Group: at least four to six, ideally ten or more; a small cory that stays close to the floor' }],
+  clownpleco: [{ kind: 'feeding', severity: 'S2', text: 'Feeding: eats wood as part of its diet; needs driftwood in the tank, plus algae wafers and vegetables' }],
+  yoyoloach: [{ kind: 'environment', severity: 'S3', text: 'Lid: yoyo loaches jump; needs a tight lid' }, { kind: 'environment', severity: 'S2', text: 'Tankmates: boisterous and can nip long, slow fins (bettas, guppies, many cichlids are poor partners); needs a group of five or six or more' }],
+  glasscatfish: [{ kind: 'environment', severity: 'S2', text: 'Light and cover: timid, prefers dim light with floating plants, and does not compete with large or boisterous fish; needs a group of six or more' }],
 };
 
 const KIND_NAME: Record<NeedKind, string> = { feeding: 'food supply', maturity: 'tank age', environment: 'fixture' };

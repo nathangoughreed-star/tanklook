@@ -25,3 +25,12 @@ Known gaps: the false julii body is the peppered cory's (a little deep); the gud
 Photos viewed (scratchpad only): Seriously Fish, https://www.seriouslyfish.com/species/corydoras-habrosus/ (Peter Macguire), /botia-almorhae/ (Mick Wright; the page says its photos are of close relatives, the yo-yo pattern matches), /kryptopterus-vitreolus/ (Nonn Panitvong, Unimati.dk); Aquarium Source https://www.aquariumsource.com/clown-pleco/ (its one photo is a dim shot under wood, so the clown pleco's orange-cream bands follow the page text, not a clear photo).
 Pictures: batch3-cards.png (salt-and-pepper, clown pleco, yoyo loach, glass catfish), batch3-in-tank.png.
 Known gaps: clown pleco needs a better photo before sign-off; yoyo bars are more regular than the fish's looping pattern; the glass catfish is see-through: the plan got a `bodyA` (body opacity, 2D card and 3D body material, no outline) and `solid` marks (the spine and the organ patch behind the head, painted over the clear body). Nathan 2026-11-18: transparency is the whole point of this fish.
+
+## R140 (2026-11-18): clown pleco and yoyo loach redrawn
+- Clown pleco: new reference photos from https://en.aqua-fish.net/fish/clown-pleco (JJPhoto.dk, profile and side shots; viewed only): near-black olive body with narrow, slanted pale-yellow bands that are broader toward the tail, a banded dorsal and tail, a tan underside; the bands are now thin cream bands (wider on the rear half), with the orange removed.
+- Yoyo loach: the regular bars were replaced by a meandering, broken pattern of dark strokes with Y joins and loops (Seriously Fish photo by Mick Wright), cream-white base.
+- Side-by-side with the photos (photo left, card right): kept outside the repo because the photos are not ours: C:\Users\nreed\AppData\Local\Claude-Data\claude_pzs8sxrjxfjjc\side-session-notes\local_845f863a-6800-4615-9597-55c10d790f11\RX1-r140-pleco-yoyo-vs-photos.png
+- Gaps: the yoyo pattern is a close read of the fish, not a copy of one fish; the clown pleco's bands are straighter than the photo's slanted and broken ones.
+
+## R141 backfill
+All 15 Phase 1 species now pass every check in test/species-onboarding.test.ts: tankmin footprint rows (Seriously Fish bases, or the standard tank for the two plecos), class-median space factors, substrate rows for the new bottom dwellers, NEEDS lines, AqAdvisor stand-in ids (flagged standIn: the real AqAdvisor ids are not looked up), demand rows from retailer searches (2026-11-18), baked gallery pictures, model-version records and review sheets.
