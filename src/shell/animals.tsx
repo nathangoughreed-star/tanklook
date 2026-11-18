@@ -19,6 +19,7 @@ import {
 import { wantsAlbino } from '../data/species';
 import { setForm } from './logic/animals';
 import { Icon } from './ui';
+import { useFishSwimming } from './view';
 import { dragOut } from './drag';
 import { aqView, aqCheck, onAq } from './logic/aq';
 import { emptyScene } from '../scene/defaults';
@@ -241,6 +242,7 @@ function CopiesBox({ store, say }: { store: Store; say: (s: string) => void }) {
 }
 
 export function SelectionDrawer({ store, getViewer, onClose }: { store: Store; getViewer: () => Viewer | undefined; onClose: () => void }) {
+  const swimming = useFishSwimming(getViewer);
   const v = selectionView(store.tank, store.selId, store.scene.units, f => getViewer()?.measure(f) ?? null, store.group.fish.length - 1);
   useEffect(() => { if (!v) onClose(); }, [!v]);
   const [copies, setCopies] = useState(false), [msg, setMsg] = useState('');
@@ -272,7 +274,7 @@ export function SelectionDrawer({ store, getViewer, onClose }: { store: Store; g
         </div>
         {copies ? <CopiesBox store={store} say={setMsg} /> : null}
         {msg ? <div class="hint" role="status">{msg}</div> : null}
-        <div class="hint">Position and pose are random: "Another moment" (view bar) rolls them again.</div>
+        <div class="hint">{swimming ? 'Position and pose are random; the fish keep swimming.' : 'Position and pose are random: "Another moment" (view bar) rolls them again.'}</div>
       </div>
     </aside>
   );
