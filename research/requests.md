@@ -141,6 +141,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R124 | 11-18 | Check whether the 55 gal kit/bundle Nathan started from includes a lid; if so the tank must get it | TK2 | - | - | - | kit unknown: lane checks every 55 gal kit/bundle against its listing |
 | R125 | 11-18 | Starting from a kit or bundle: every included part is locked by default; swapping one first says "Unlock this locked item to continue" | DS1 | - | - | - | - |
 | R126 | 11-18 | Picture backgrounds (Scene: coral reef / river bed / planted jungle / rock wall) look too cartoony: research the real popular backgrounds people buy and use, then make ours serious / realistic | BG2 | - | - | - | picture research/screens/C27/R126-scene-backgrounds.png; research + look sheet to Nathan before build |
+| R127 | 11-18 | Custom blend at Mixed 100 % shows gravel in patches and streaks; 100 % mixed must be uniform, every grain evenly interspersed like an alloy lattice (lower Mixed = more clumping) | GB2 | - | - | - | picture research/screens/C27/R127-blend-not-mixed.webp |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
