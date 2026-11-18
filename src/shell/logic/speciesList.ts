@@ -1,10 +1,11 @@
 // R131 (lane PK1, 2026-11-18): the full species list: everything the catalogue carries, as one table (common and scientific name, adult
 // size, care level, where from, which kinds of tank it suits, the picker group it is listed under). Pure view-model: no DOM. The same rows
 // feed research/species-list.md (scripts/species-list.mjs), so the file and the app never disagree.
-import { CATEGORIES, SPECIES, type Species } from '../../data/species';
+import { CATEGORIES, SPECIES, gloForm, type Species } from '../../data/species';
 import { CARE, EXPERTISE_NAME } from '../../data/care';
 import { continentText, originOf } from '../../data/origin';
 import { ALL_SETUP_KINDS, ROLES, offeredIn, roleOf, type SetupKind } from '../../scene/pickerKind';
+import { LAB_LABEL } from './animals';
 import { speciesInScope } from '../../scope';
 import { fmtLen } from '../../scene/physics';
 import type { Units } from '../../scene/types';
@@ -22,7 +23,7 @@ export function rowOf(sp: Species, units: Units): ListRow {
   return {
     id: sp.id, name: sp.name, sci: sp.sci, cat: sp.cat, catLabel: CATEGORIES.find(x => x[0] === sp.cat)?.[1] ?? sp.cat, tl: sp.tl,
     size: sp.female ? `${fmtLen(sp.tl, units)} / ${fmtLen(sp.female.tl, units)}` : fmtLen(sp.tl, units),
-    care: c ? EXPERTISE_NAME[c.care] : '', careN: c?.care ?? 0, origin: o ? continentText(o) : '',
+    care: c ? EXPERTISE_NAME[c.care] : '', careN: c?.care ?? 0, origin: (o ? continentText(o) : '') + (gloForm(sp) ? `${o ? '; ' : ''}GloFish colours: ${LAB_LABEL}` : ''),
     suits: suitsOf(sp).map(k => KIND_WORD[k]).join(', '), group: ROLES.find(r => r[0] === roleOf(sp))![1], hidden: !speciesInScope(sp),
   };
 }

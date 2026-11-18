@@ -18,3 +18,17 @@ describe('R131 species list', () => {
     for (const sp of SPECIES) expect(md).toContain(`| ${sp.name}`);
   });
 });
+
+import { Store } from '../src/scene/store';
+import { createFitter } from '../src/ui/logic/animalPicker';
+import { DEFAULT_QUERY, pickView } from '../src/shell/logic/animals';
+describe('R132 The Lab', () => {
+  it('GloFish rows sit under The Lab, not under their wild continent; plain species keep theirs', () => {
+    const S = new Store().tank, q = { ...DEFAULT_QUERY, fitsOnly: false }, f = createFitter();
+    const all = pickView(S, 'in', 'guided', f, q), lab = pickView(S, 'in', 'guided', f, { ...q, origin: 'lab' }), asia = pickView(S, 'in', 'guided', f, { ...q, origin: 'asia' });
+    const chip = all.origins.find(c => c.c === 'lab'); expect(chip?.label).toBe('The Lab'); expect(chip!.n).toBeGreaterThan(0);
+    expect(lab.groups.map(g => g.role)).toEqual(['glo']); expect(lab.groups[0].rows.length).toBe(chip!.n);
+    expect(asia.groups.some(g => g.role === 'glo')).toBe(false);
+    expect(asia.chips.find(c => c.role === 'glo')).toBeUndefined();
+  });
+});

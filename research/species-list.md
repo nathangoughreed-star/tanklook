@@ -10,7 +10,7 @@ Generated from `src/data/species.json` by `scripts/species-list.mjs`; do not edi
 | Bala shark | *Balantiocheilos melanopterus* | 13.0″ | Intermediate | Asia | Freshwater, Vivarium | Schooling fish |
 | Betta | *Betta splendens* | 2.6″ / 2.2″ | Intermediate | Asia | Freshwater, Vivarium | Centerpiece fish |
 | Black molly | *Poecilia sphenops* | 3.3″ / 3.8″ | Beginner | North America, Central America and South America | Freshwater, Vivarium | Schooling fish |
-| Black skirt tetra | *Gymnocorymbus ternetzi* | 2.8″ | Beginner | South America | Freshwater, Vivarium | Schooling fish |
+| Black skirt tetra | *Gymnocorymbus ternetzi* | 2.8″ | Beginner | South America; GloFish colours: The Lab | Freshwater, Vivarium | Schooling fish |
 | Blue-nosed mbuna | *Labeotropheus trewavasae* | 4.7″ | Intermediate | Africa | Freshwater, Vivarium | African cichlids |
 | Boeseman's rainbowfish | *Melanotaenia boesemani* | 4.3″ / 3.1″ | Intermediate | Australia / Oceania | Freshwater, Vivarium | Schooling fish |
 | Bolivian ram | *Mikrogeophagus altispinosus* | 3.5″ | Intermediate | South America | Freshwater, Vivarium | South American cichlids |
@@ -64,10 +64,10 @@ Generated from `src/data/species.json` by `scripts/species-list.mjs`; do not edi
 | Sterba's corydoras | *Corydoras sterbai* | 2.6″ | Beginner | South America | Freshwater, Vivarium | Bottom & cleanup crew |
 | Strawberry rasbora | *Boraras merah* | 0.9″ | Intermediate | Asia | Freshwater, Vivarium | Schooling fish |
 | Swordtail | *Xiphophorus hellerii* | 4.3″ / 4.7″ | Intermediate | North America and Central America | Freshwater, Vivarium | Schooling fish |
-| Tiger barb | *Puntigrus tetrazona* | 2.8″ | Beginner | Asia | Freshwater, Vivarium | Schooling fish |
+| Tiger barb | *Puntigrus tetrazona* | 2.8″ | Beginner | Asia; GloFish colours: The Lab | Freshwater, Vivarium | Schooling fish |
 | White cloud mountain minnow | *Tanichthys albonubes* | 1.6″ | Beginner | Asia | Freshwater, Vivarium | Schooling fish |
 | Yellow lab cichlid | *Labidochromis caeruleus* | 3.9″ / 3.5″ | Beginner | Africa | Freshwater, Vivarium | African cichlids |
-| Zebra danio | *Danio rerio* | 2.0″ | Beginner | Asia | Freshwater, Vivarium | Schooling fish |
+| Zebra danio | *Danio rerio* | 2.0″ | Beginner | Asia; GloFish colours: The Lab | Freshwater, Vivarium | Schooling fish |
 
 ## Freshwater inverts (12)
 

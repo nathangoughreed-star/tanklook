@@ -39,7 +39,7 @@ export interface PickView {
   kind: SetupKind;
   chips: { role: Role | undefined; label: string; n: number }[];
   /** R104: where-from chips (continent / ocean region); only places with an animal in the pool, counts follow the group chip */
-  origins: { c: Continent | undefined; label: string; n: number }[];
+  origins: { c: PickOrigin | undefined; label: string; n: number }[];
   groups: PickGroup[];
   /** rows listed now */
   shown: number;
@@ -50,12 +50,15 @@ export interface PickView {
   placeholder: string;
 }
 
-export interface PickQuery { q: string; role?: Role; origin?: Continent; fitsOnly: boolean }
+/** R132: "The Lab" is the where-from of GloFish (lab-made colours): they are listed there INSTEAD of under their wild species' continent (the plain zebra danio stays under Asia). */
+export type PickOrigin = Continent | 'lab';
+export const LAB_LABEL = 'The Lab';
+export interface PickQuery { q: string; role?: Role; origin?: PickOrigin; fitsOnly: boolean }
 /** "Fits this tank" is ON by default (screen map §2a); the choice is remembered per browser by the component. */
 export const DEFAULT_QUERY: PickQuery = { q: '', role: undefined, fitsOnly: true };
 
 /** The species this kind of tank offers that match the search and the chosen group. */
-export const findSpecies = (S: TankSetup, q: string, role?: Role, origin?: Continent) => { const k = tankKind(S); return searchSpecies(q).filter(sp => offeredIn(sp, k) && (!role || (role === 'glo' ? !!gloForm(sp) : roleOf(sp) === role)) && (!origin || inContinent(sp.id, origin))); };
+export const findSpecies = (S: TankSetup, q: string, role?: Role, origin?: PickOrigin) => { const k = tankKind(S); return searchSpecies(q).filter(sp => offeredIn(sp, k) && (!role || (role === 'glo' ? !!gloForm(sp) : roleOf(sp) === role)) && (!origin || (origin === 'lab' ? !!gloForm(sp) : inContinent(sp.id, origin)))); };
 
 /** AT1 (R54): the start door reuses the picker with no tank behind it: `held` = species already on its list (they leave the tiles, as in-tank species do), `free` = nothing is judged against a tank. */
 export interface PickOpts { held?: ReadonlySet<string>; free?: boolean; heldWord?: string }
@@ -65,30 +68,32 @@ export function pickView(S: TankSetup, units: Units, rules: Rules, fitter: Fitte
   const counts = new Map<Role, number>(), oCounts = new Map<Continent, number>();
   const inTank = new Set([...S.fish.map(f => f.species), ...(opt.held ?? [])]);   // AT1 (R51): a species already in the tank is in the stock rows, not in the tiles
   const pool = scopeSpecies(SPECIES).filter(sp => offeredIn(sp, kind) && !inTank.has(sp.id));
-  const origin = query.origin && pool.some(sp => inContinent(sp.id, query.origin!)) ? query.origin : undefined;
-  const roleAll = new Map<Role, number>();
-  for (const sp of pool) roleAll.set(roleOf(sp), (roleAll.get(roleOf(sp)) ?? 0) + 1);
   const gloOn = !opt.free && !opt.held && kind === 'freshwater';   // CM3: the GloFish group needs a tank behind it (forms are set on animals in the tank)
   const isGlo = (sp: (typeof pool)[number]) => gloOn && !!gloForm(sp);
+  const labN = pool.filter(isGlo).length;
+  const origin: PickOrigin | undefined = query.origin === 'lab' ? (labN ? 'lab' : undefined) : query.origin && pool.some(sp => inContinent(sp.id, query.origin as Continent)) ? query.origin : undefined;
+  const wild = (sp: (typeof pool)[number]) => !origin || (origin !== 'lab' && inContinent(sp.id, origin));   // a plain (wild-form) row: GloFish rows are the Lab's
+  const roleAll = new Map<Role, number>();
+  for (const sp of pool) roleAll.set(roleOf(sp), (roleAll.get(roleOf(sp)) ?? 0) + 1);
   if (gloOn) { const n = pool.filter(isGlo).length; if (n) roleAll.set('glo', n); }
   const inRole = (sp: (typeof pool)[number]) => !role || (role === 'glo' ? isGlo(sp) : roleOf(sp) === role);
   const role = query.role && roleAll.has(query.role) ? query.role : undefined;
   // faceted counts: the group chips follow the chosen place, the place chips follow the chosen group
   for (const sp of pool) {
-    if (!origin || inContinent(sp.id, origin)) counts.set(roleOf(sp), (counts.get(roleOf(sp)) ?? 0) + 1);
-    if (isGlo(sp) && (!origin || inContinent(sp.id, origin))) counts.set('glo', (counts.get('glo') ?? 0) + 1);
-    if (inRole(sp)) for (const c of originOf(sp.id)?.c ?? []) oCounts.set(c, (oCounts.get(c) ?? 0) + 1);
+    if (wild(sp)) counts.set(roleOf(sp), (counts.get(roleOf(sp)) ?? 0) + 1);
+    if (isGlo(sp) && (!origin || origin === 'lab')) counts.set('glo', (counts.get('glo') ?? 0) + 1);
+    if (role !== 'glo' && inRole(sp)) for (const c of originOf(sp.id)?.c ?? []) oCounts.set(c, (oCounts.get(c) ?? 0) + 1);
   }
   const total = [...counts].reduce((a, [r, n]) => r === 'glo' ? a : a + n, 0);   // GloFish species are already counted in their own groups
   const chips = [{ role: undefined as Role | undefined, label: 'All', n: total }, ...rolesFor(kind).filter(r => counts.has(r) || r === role).map(r => ({ role: r as Role | undefined, label: ROLES.find(x => x[0] === r)![1], n: counts.get(r) ?? 0 }))];
-  const originChips = pool.some(sp => originOf(sp.id)) ? [{ c: undefined as Continent | undefined, label: 'Anywhere', n: pool.filter(inRole).length }, ...CONTINENTS.filter(([c]) => oCounts.has(c) || c === origin).map(([c, l]) => ({ c: c as Continent | undefined, label: l, n: oCounts.get(c) ?? 0 }))] : [];
+  const originChips = pool.some(sp => originOf(sp.id)) ? [{ c: undefined as Continent | undefined, label: 'Anywhere', n: pool.filter(inRole).length }, ...CONTINENTS.filter(([c]) => oCounts.has(c) || c === origin).map(([c, l]) => ({ c: c as PickOrigin | undefined, label: l, n: oCounts.get(c) ?? 0 })), ...(labN ? [{ c: 'lab' as PickOrigin | undefined, label: LAB_LABEL, n: !role || role === 'glo' ? labN : 0 }] : [])] : [];
   const found = findSpecies(S, query.q, role, origin), all = found.filter(sp => !inTank.has(sp.id)), already = found.filter(sp => inTank.has(sp.id));
   const list = query.fitsOnly && !opt.free ? fitsThisTank(all, fitOf) : all;
-  let groups: PickGroup[] = role === 'glo' ? [] : groupPicker(list, kind, fitOf).map(g => ({
+  let groups: PickGroup[] = role === 'glo' || origin === 'lab' ? [] : groupPicker(list, kind, fitOf).map(g => ({
     role: g.role, label: g.label,
     rows: g.rows.map(({ sp, fit }) => pickRow(S, sp, fit, units)),
   }));
-  if (gloOn && (!role || role === 'glo')) {   // CM3: GloFish as its own group (after the schooling fish): the same species, added in a GloFish colour; change it in the Selection drawer
+  if (gloOn && (!role || role === 'glo') && (!origin || origin === 'lab')) {   // CM3: GloFish as its own group (after the schooling fish): the same species, added in a GloFish colour; change it in the Selection drawer
     const rows = list.filter(sp => gloForm(sp)).sort((a, b) => a.name.localeCompare(b.name)).map(sp => { const f = gloForm(sp)!, g = speciesOf({ species: sp.id, form: f })!; return { ...pickRow(S, sp, fitOf(sp), units), name: `GloFish ${sp.name.toLowerCase()}`, glo: f, art: g.art, look: g.look }; });
     if (rows.length) { const i = groups.findIndex(g => g.role === 'school'), at = i < 0 ? 0 : i + 1; groups = [...groups.slice(0, at), { role: 'glo', label: ROLES.find(r => r[0] === 'glo')![1], rows }, ...groups.slice(at)]; }
   }
