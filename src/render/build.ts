@@ -13,7 +13,7 @@ import { clingPace } from '../scene/clingPace';
 import type { ClingData } from './cling';
 import { STAND_PANEL } from '../scene/standspace';
 import { addLidClips, clipLid, LID_CLIP_DROP, LID_SHORT, LID_T } from './lidClips';
-import { GRAIN_FIELD_OFF, LECA, SUBSTRATES, blendTile, blendZone, grain3D } from '../art/placeholder';
+import { GRAIN_FIELD_OFF_N, LECA, SUBSTRATES, blendTile, blendZone, grain3D } from '../art/placeholder';
 import { blendOrder } from '../scene/blend';
 import { litterMeshes, type GroundAt } from './scatter';
 import { patchHighlight, patchMeshes, patchSel } from './brushmesh';
@@ -1317,10 +1317,10 @@ function blendGrains(m: THREE.MeshBasicMaterial, b: TankSetup['substrate']['cust
   const uniforms = m.userData.blend = blendUniforms(b); // patchLook updates them in place
   m.userData.ng = ng; // one program per grain count (render/lighting.ts progKey)
   // the shader's own field offsets for grains 2-4 (art/placeholder GRAIN_FIELD_OFF)
-  const offs = GRAIN_FIELD_OFF.map(o => `vec2(${o[0].toFixed(2)}, ${o[1].toFixed(2)})`);
+  const offs = GRAIN_FIELD_OFF_N.map(o => `vec2(${o[0].toFixed(2)}, ${o[1].toFixed(2)})`);
   const maps = MAP_UNIFORMS.slice(0, ng - 1).join(', ');
   // the ratio of ordered grain k (k >= 1): its own drift and pocket noise, biased so its mean is its share
-  const ratio = (k: number) => `{ vec2 cz = texture2D(uField, vAqMk * uF.x + uOff.xy + ${offs[k]}).rg * 255.0 - 128.0; rr[${k}] = 1.0 / (1.0 + exp(-(${k === 1 ? 'uF.z' : `uBias.${'xyzw'[k - 1]}`} + uF.w * (cz.x * 0.8 + cz.y * 0.6) / 40.0))); }`;
+  const ratio = (k: number) => `{ vec2 cz = texture2D(uField, vAqMk * uF.x + uOff.xy + ${offs[k]}).rg * 255.0 - 128.0; rr[${k}] = exp(${k === 0 ? '0.0' : `uBias.${'xyzw'[k - 1]}`} + uF.w * (cz.x * 0.8 + cz.y * 0.6) / 40.0); }`; // GB3: a softmax of per-grain fields
   // two grains: the code that drew them before GB1; more: the same idea with a ratio per grain and cumulative thresholds
   const blendFn = ng === 2 ? `vec4 aqBlend(vec2 uv) {
   vec2 cz = texture2D(uField, vAqMk * uF.x + uOff.xy).rg * 255.0 - 128.0;
