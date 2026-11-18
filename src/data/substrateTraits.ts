@@ -44,6 +44,7 @@ export const DWELLER: Record<string, DwellerRule> = {
   pandacory: { prefers: 'sand', sharp: true, why: 'sifts the bottom with its barbels, which sharp or coarse gravel can wear down and infect' },
   sterbai: { prefers: 'sand', sharp: true, why: 'sifts the bottom with its barbels, which sharp or coarse gravel can wear down and infect' },
   pepperedcory: { prefers: 'sand', sharp: true, why: 'sifts the bottom with its barbels, which sharp or coarse gravel can wear down and infect' },
+  falsejulii: { prefers: 'sand', sharp: true, why: 'sifts the bottom with its barbels, which sharp or coarse gravel can wear down and infect' },
   pygmycory: { sharp: true, why: 'forages with its barbels, which sharp gravel can wear down' },
   clownloach: { prefers: 'sand', sharp: true, why: 'roots in the bottom with sensitive barbels' },
   watchman: { needs: 'gravel', minDepth: 2 * MM_IN, why: 'builds its burrow in sand and rubble' },

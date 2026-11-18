@@ -1151,6 +1151,51 @@ Object.assign(PLANS, {
     anal: { at: 0.5, len: 0.27, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.035, 0.06], tip: 'point', trail: 0.08, tint: '#7a9ad8' }, pelvic: { u: 0.66, len: 0.1, ext: 0.03, tint: '#8aa8e0' },
     marks: [{ k: 'blob', u: 0.42, v: 0.0, ru: 0.28, rv: 0.07, c: '#c8d890', a: 0.5 }, { k: 'spots', n: 90, u0: 0.2, u1: 0.8, v0: -0.08, v1: 0.1, r: 0.012, c: '#e8f2fb', a: 0.22 }, { k: 'blob', u: 0.1, v: 0.03, ru: 0.13, rv: 0.08, c: '#2f6ae0', a: 0.9 }, { k: 'blob', u: 0.07, v: -0.07, ru: 0.08, rv: 0.04, c: '#4a4e58', a: 0.7 }],
     finMarks: [{ k: 'band', u0: 0, u1: 0.5, v0: -0.3, v1: -0.15, c: '#4a6ac0', a: 0.4, f: 0.05 }, { k: 'band', u0: 0, u1: 0.5, v0: 0.05, v1: 0.2, c: '#4a6ac0', a: 0.4, f: 0.05 }], eye: { r: 0.03, iris: ['#2a2a2a', '#0a0a0a'] } }),
+  // Clown killifish (reference: Seriously Fish photos by Hristo Hristov and others, 2026-11-18): slim cream-yellow body with three broad black bars (through the eye and gill, mid-body and at the tail base) in a net of dark scale edges, a long rounded tail with orange-red streaks in the male, steel-blue eye
+  clownkilli: her('danio', { barbels: undefined, finFade: 0.25, thick: 0.45, depth: 0.17, shade: ['#6a5a38', '#d8c68c', '#f0e8c8'], shimmer: 0.4, shimmerRgb: '255,240,190', mouth: -0.01, gape: 0.03,
+    tail: { type: 'round', h: 0.13, tint: '#e0803a', edge: '#c8302a', a: 0.8 }, fin: '#b8c0a8',
+    dorsal: { at: 0.72, len: 0.09, h: 0.07, rake: 0.3, lead: 0.7, drop: 0.5, trail: 0.02, tint: '#a8b09a' }, anal: { at: 0.6, len: 0.17, h: 0.06, rake: 0.2, lead: 0.75, drop: 0.45, trail: 0.02, tint: '#a8b09a' }, pelvic: { u: 0.52, len: 0.05 },
+    marks: [{ k: 'bars', us: [0.12, 0.3, 0.5, 0.74], w: 0.075, c: '#1a1612', a: 0.88 }, { k: 'spots', n: 45, u0: 0.2, u1: 0.85, v0: -0.06, v1: 0.05, r: 0.006, c: '#3a3226', a: 0.3 }],
+    finMarks: [{ k: 'band', u0: 0.5, u1: 1, v0: -0.12, v1: -0.06, c: '#d8302a', a: 0.85, f: 0.02 }, { k: 'band', u0: 0.5, u1: 1, v0: 0.06, v1: 0.12, c: '#d8302a', a: 0.85, f: 0.02 }], eye: { r: 0.033, iris: ['#6ec8e8', '#1a3a50'] } }),
+});
+Object.assign(PLANS, {
+  // the female: paler, a clear cream tail, no red streaks, a rounder belly
+  clownkilli_f: her('clownkilli', { depth: 0.19, tail: { type: 'round', h: 0.12, tint: '#d8d0b0', a: 0.6 }, finMarks: [], shade: ['#7a6a44', '#e0d09a', '#f4eccc'],
+    marks: [{ k: 'bars', us: [0.12, 0.3, 0.5, 0.74], w: 0.075, c: '#1a1612', a: 0.85 }, { k: 'spots', n: 45, u0: 0.2, u1: 0.85, v0: -0.06, v1: 0.05, r: 0.006, c: '#3a3226', a: 0.3 }] }),
+  // Peacock gudgeon (reference: Seriously Fish photos by Duncan Wraight and Hippocampus, 2026-11-18): long torpedo body, silver-blue with orange-red vertical streaks, a yellow-edged red-streaked dorsal and anal, a black tail-base spot ringed pale, a pink-lilac head
+  peacockgudgeon: her('danio', { barbels: undefined, finMarks: [], thick: 0.5, depth: 0.19, shade: ['#6a7080', '#a4b4c8', '#e0e4e8'], shimmer: 0.55, shimmerRgb: '180,220,255', mouth: 0, gape: 0.03,
+    tail: { type: 'round', h: 0.15, tint: '#c8a888', edge: '#e8b030', a: 0.75 }, fin: '#c89870',
+    dorsal: { at: 0.55, len: 0.2, h: 0.06, rake: 0.3, lead: 0.7, drop: 0.5, trail: 0.02, tint: '#d89040', edge: '#f0d030' }, anal: { at: 0.58, len: 0.2, h: 0.05, rake: 0.2, lead: 0.75, drop: 0.45, trail: 0.02, tint: '#d89040', edge: '#f0d030' }, pelvic: { u: 0.5, len: 0.06, tint: '#e0a040' },
+    marks: [{ k: 'blob', u: 0.18, v: 0.01, ru: 0.12, rv: 0.05, c: '#c8909c', a: 0.5 }, { k: 'spots', n: 60, u0: 0.28, u1: 0.9, v0: -0.05, v1: 0.05, r: 0.006, c: '#e8602a', a: 0.7 }, { k: 'bars', us: [0.34, 0.42, 0.5, 0.58, 0.66, 0.74], w: 0.012, c: '#e8602a', a: 0.65 }, { k: 'blob', u: 0.93, v: 0, ru: 0.02, rv: 0.03, c: '#101010', a: 0.95 }],
+    eye: { r: 0.034, iris: ['#e8602a', '#2a1a10'] } }),
+});
+Object.assign(PLANS, {
+  // the female: a yellow belly, a plainer pearly body, a dark bar on the outer edge of the anal fin
+  peacockgudgeon_f: her('peacockgudgeon', { depth: 0.2, shade: ['#6a7078', '#a8b4bc', '#f0d878'], shimmer: 0.4, tail: { type: 'round', h: 0.14, tint: '#c8b898', edge: '#d8b050', a: 0.65 },
+    marks: [{ k: 'blob', u: 0.5, v: 0.07, ru: 0.28, rv: 0.05, c: '#f2cc48', a: 0.7 }, { k: 'spots', n: 40, u0: 0.28, u1: 0.9, v0: -0.05, v1: 0.03, r: 0.005, c: '#e8602a', a: 0.4 }, { k: 'blob', u: 0.93, v: 0, ru: 0.02, rv: 0.03, c: '#101010', a: 0.9 }] }),
+  // False julii corydoras (reference: Seriously Fish photos, Hippocampus, 2026-11-18): silvery olive-cream body covered in small black spots, a dark broken lateral line from the gill to the tail, a black dorsal fin with a clear base, a barred tail, a pink-cream face
+  falsejulii: her('pepperedcory', { shade: ['#5a5a44', '#a8a68a', '#e8e4d0'], shimmer: 0.4, shimmerRgb: '215,225,200',
+    marks: [{ k: 'spots', n: 170, u0: 0.18, u1: 0.9, v0: -0.11, v1: 0.1, r: 0.0075, c: '#16160e', a: 0.85 }, { k: 'band', u0: 0.28, u1: 0.95, v0: 0.005, v1: 0.022, c: '#16160e', a: 0.75, f: 0.01 }, { k: 'blob', u: 0.12, v: 0.03, ru: 0.08, rv: 0.06, c: '#d8a898', a: 0.5 },
+    ],
+    finMarks: [{ k: 'spots', n: 18, u0: 0.1, u1: 0.9, v0: -0.25, v1: 0.25, r: 0.014, c: '#16160e', a: 0.7 }] }),
+  // Neon dwarf rainbowfish, male (reference: Seriously Fish photo by Kris Bolam, 2026-11-18): a deep body, purple-violet with a blue-silver sheen and a fine scale net, a bright red dorsal, anal and tail edge, a red-orange tail base, a dark eye
+  neonrainbow: her('cherrybarb', { barbels: undefined, thick: 0.4, depth: 0.31, peak: 0.5, shade: ['#4a3a68', '#8c7ab0', '#d4cce0'], shimmer: 0.6, shimmerRgb: '190,170,255', gape: 0.03,
+    tail: { type: 'fork', h: 0.18, tint: '#d8302a', edge: '#e0402e', a: 0.85 }, fin: '#c8403a',
+    dorsal: { at: 0.6, len: 0.2, h: 0.12, rake: 0.4, lead: 0.7, tip: 'point', trail: 0.06, drop: 0.3, tint: '#d8302a', edge: '#e04a3a' }, anal: { at: 0.5, len: 0.3, h: 0.1, rake: 0.3, lead: 0.7, tip: 'point', trail: 0.05, drop: 0.3, tint: '#d8302a', edge: '#e04a3a' }, pelvic: { u: 0.56, len: 0.08, tint: '#d8503a' },
+    marks: [{ k: 'band', u0: 0.25, u1: 0.9, v0: 0.0, v1: 0.03, c: '#6a8ad8', a: 0.4, f: 0.02 }, { k: 'spots', n: 160, u0: 0.25, u1: 0.9, v0: -0.12, v1: 0.1, r: 0.012, c: '#e8dcf4', a: 0.18 }, { k: 'blob', u: 0.88, v: 0.0, ru: 0.06, rv: 0.04, c: '#e0603a', a: 0.6 }],
+    finMarks: [], eye: { r: 0.032, iris: ['#2a2020', '#0a0808'] } }),
+});
+Object.assign(PLANS, {
+  // the female: slimmer, a pale silver-olive body, an orange-clear tail and fins, a faint dark flank stripe
+  neonrainbow_f: her('neonrainbow', { depth: 0.22, shade: ['#6a6a58', '#b4b4a0', '#e8e4d8'], shimmer: 0.4, shimmerRgb: '220,210,255', tail: { type: 'fork', h: 0.16, tint: '#d8a070', a: 0.6 }, fin: '#d8b080',
+    dorsal: { at: 0.6, len: 0.2, h: 0.1, rake: 0.4, lead: 0.7, tip: 'point', trail: 0.04, drop: 0.3, tint: '#d8a070' }, anal: { at: 0.5, len: 0.3, h: 0.08, rake: 0.3, lead: 0.7, tip: 'point', trail: 0.03, drop: 0.3, tint: '#d8a070' }, pelvic: { u: 0.56, len: 0.07, tint: '#d8a878' },
+    marks: [{ k: 'band', u0: 0.25, u1: 0.9, v0: -0.01, v1: 0.015, c: '#4a4a3a', a: 0.35, f: 0.02 }] }),
+  // Firemouth cichlid (reference: Seriously Fish photo, Unimati.dk, 2026-11-18): olive-grey body, a red-orange throat and belly, a black gill spot ringed white, a long dorsal and a rounded tail with rows of blue-green spots, pelvics striped blue, a blue-green ring in the eye
+  firemouth: her('convict', { shade: ['#4a5236', '#7e8662', '#d8643a'], shimmer: 0.55, shimmerRgb: '120,220,230', depth: 0.29, thick: 0.4, tail: { type: 'round', h: 0.2, tint: '#4a6a90', a: 0.85 }, fin: '#4a6a90',
+    dorsal: { at: 0.8, len: 0.6, h: 0.11, spines: 0.6, nSp: 9, spineH: [0.05, 0.075], notch: 0.2, tip: 'point', trail: 0.1, rake: 0.6, tint: '#4a6a90', edge: '#d84a2a' },
+    anal: { at: 0.5, len: 0.27, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.035, 0.06], tip: 'point', trail: 0.08, tint: '#4a6a90' }, pelvic: { u: 0.66, len: 0.1, ext: 0.03, tint: '#3a7ac8' },
+    marks: [{ k: 'blob', u: 0.4, v: 0.09, ru: 0.32, rv: 0.06, c: '#e8503a', a: 0.85 }, { k: 'blob', u: 0.2, v: 0.04, ru: 0.07, rv: 0.075, c: '#f0f0e8', a: 0.9 }, { k: 'blob', u: 0.2, v: 0.04, ru: 0.052, rv: 0.058, c: '#0c0c0c', a: 1 }, { k: 'spots', n: 70, u0: 0.28, u1: 0.9, v0: -0.08, v1: 0.07, r: 0.008, c: '#5ac8d8', a: 0.5 }, { k: 'blob', u: 0.08, v: 0.07, ru: 0.1, rv: 0.04, c: '#e8603a', a: 0.7 }],
+    finMarks: [{ k: 'spots', n: 60, u0: 0, u1: 0.6, v0: -0.25, v1: 0.25, r: 0.012, c: '#6ad8e8', a: 0.65 }], eye: { r: 0.034, iris: ['#7adac8', '#10202a'] } }),
   //@@RX1END
 });
 Object.assign(PLANS, {

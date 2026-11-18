@@ -15,3 +15,8 @@ Reference pages viewed (photos downloaded to the scratchpad only, per Nathan's s
 - Electric blue acara: https://www.aquariumsource.com/electric-blue-acara/ ; wild blue acara https://www.seriouslyfish.com/species/andinoacara-pulcher/ (Hippocampus)
 Looks written down in the comment above each plan in src/art/fishgen.ts. Pictures: batch1-cards.png (cards, three-spot in standard / blue / gold; then pleco, convict male + female, electric blue acara, Endler male + female), batch1-in-tank.png (all in the planted example).
 Known gaps: the cards are a stylised read of the photos (bars on the convict are more regular than the fish's); common pleco has no sex look; the opaline three-spot is in the picker but not on the card sheet.
+
+## Batch 2 (2026-11-18): clown killifish, peacock gudgeon, false julii corydoras, neon dwarf rainbowfish, firemouth cichlid
+Photos viewed (scratchpad only): Seriously Fish pages, https://www.seriouslyfish.com/species/epiplatys-annulatus/ (male, female), /tateurndina-ocellicauda/ (male, female), /corydoras-trilineatus/ (Hippocampus), /melanotaenia-praecox/ (Kris Bolam male), /thorichthys-meeki/ (Unimati.dk). Looks are written in the comment above each plan in src/art/fishgen.ts.
+Pictures: batch2-cards.png (killifish male + female, gudgeon male + female, false julii, rainbowfish male + female, firemouth), batch2-in-tank.png.
+Known gaps: the false julii body is the peppered cory's (a little deep); the gudgeon's dorsal / anal fins are simplified; no photo of a female rainbowfish or a female firemouth (the sheet's female rainbowfish follows the Seriously Fish text: slimmer, paler); the firemouth has no sex look.
