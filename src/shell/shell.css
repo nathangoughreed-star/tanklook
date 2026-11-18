@@ -730,8 +730,8 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .pbflow { fill: none; stroke-dasharray: 7 7; stroke-linejoin: round; animation: pbdash 1.2s linear infinite; } .pbflow.dots { stroke-dasharray: .1 14; stroke-linecap: round; }
 @keyframes pbdash { from { stroke-dashoffset: var(--o, 0px); } to { stroke-dashoffset: calc(var(--o, 0px) - 14px); } }
 .pbfaint { opacity: .5; } .pbbub { animation-duration: .8s; }
-.pbray { fill: none; stroke: #ff7a5c; stroke-width: 1.1; stroke-linecap: round; opacity: .38; }
-.pbheat { animation: pbpulse 5s ease-in-out infinite; } @keyframes pbpulse { 0%, 100% { opacity: .62; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
+.pbray { fill: none; stroke: #ff6b4a; stroke-width: 2.2; stroke-linecap: round; opacity: .85; }
+.pbheat { animation: pbpulse 3.2s ease-in-out infinite; } @keyframes pbpulse { 0%, 100% { opacity: .55; transform: scale(1); } 50% { opacity: 1; transform: scale(1.12); } }
 .pbview.paused .pbheat { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) { .pbheat { animation: none; } } .pbview.paused .pbflow { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) { .pbflow { animation: none; } }
