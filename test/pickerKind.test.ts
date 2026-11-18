@@ -41,9 +41,15 @@ describe('gating by kind', () => {
   });
 });
 describe('role groups', () => {
+  it('R130: cichlids sit only in their cichlid group, by where they live in the wild', () => {
+    for (const id of ['angel', 'discus', 'oscar', 'gbr', 'bolivianram', 'cockatoo']) expect(roleOf(sp(id))).toBe('cichSa');
+    for (const id of ['kribensis', 'yellowlab', 'peacock', 'demasoni', 'kadango', 'labeo', 'auratus', 'livingstonii', 'afra']) expect(roleOf(sp(id))).toBe('cichAf');
+    expect(rolesFor('freshwater').slice(0, 7)).toEqual(['school', 'glo', 'centre', 'community', 'cichAf', 'cichSa', 'cichCa']);
+    expect(rolesFor('terrarium')).not.toContain('cichAf');
+  });
   it('derives each species a role', () => {
     expect(roleOf(sp('neon'))).toBe('school'); expect(roleOf(sp('oto'))).toBe('algae'); expect(roleOf(sp('bronzecory'))).toBe('bottom');
-    expect(roleOf(sp('discus'))).toBe('centre'); expect(roleOf(sp('cherryshrimp'))).toBe('algae'); expect(roleOf(sp('mystery'))).toBe('invert');
+    expect(roleOf(sp('discus'))).toBe('cichSa'); expect(roleOf(sp('cherryshrimp'))).toBe('algae'); expect(roleOf(sp('mystery'))).toBe('invert');
     expect(roleOf(sp('leopardgecko'))).toBe('herp'); expect(roleOf(sp('adf'))).toBe('herp'); expect(roleOf(sp('chacogoldenknee'))).toBe('arthropod');
   });
   it('every species lands in a group its kind lists', () => {

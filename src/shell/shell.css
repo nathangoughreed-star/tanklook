@@ -867,3 +867,17 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 
 /* R117: the "Fix it" button on a check row: small, beside the line it fixes */
 .fixit { margin-left: 6px; padding: 1px 8px; font-size: 12px; min-height: 0; line-height: 1.5; vertical-align: baseline; }
+
+/* R131 (PK1): the full species list */
+.species-list { height: min(760px, calc(100dvh - 2 * var(--s3))); }
+.sltable { overflow-x: auto; }
+.sltable table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.sltable th, .sltable td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.sltable thead th { position: sticky; top: calc(-1 * var(--s3)); background: var(--bg-panel); z-index: 1; }
+.sltable .slcat th { background: var(--bg-panel); color: var(--text-2); text-transform: uppercase; font-size: 11px; letter-spacing: .06em; padding-top: 12px; }
+.sltable .sortbtn { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; color: var(--text-2); cursor: pointer; }
+.sltable .sortbtn.on { color: var(--accent); }
+.sltable .linkbtn { color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; font: inherit; text-align: left; }
+.sltable .linkbtn:hover { text-decoration: underline; }
+.sltable td .hint { display: block; font-size: 11px; }
+.animals .endnote .linkbtn { color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; font: inherit; text-decoration: underline; }
