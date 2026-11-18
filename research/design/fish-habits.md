@@ -235,3 +235,10 @@ royal gramma         firefish              watchman             ocellaris
 1. Is "dart flush to the cave mouth and hold" (no actual disappearing) acceptable for phase 2, or do you want the cave's interior modelled?
 2. Should the watchman shrimp pairing (an `alpheus` sharing the burrow) be shown? Not planned; a pistol shrimp isn't in the species list.
 3. OK to leave the freshwater tables alone for now and use HABIT only where it adds (mbuna, plecos, kribs, goldfish)? Order of build: marine first.
+
+## 5. Built (phase 2, 2026-11-18)
+
+In: `HABIT` table (`fishBehavior.ts`: 11 marine fish, 5 mbuna, kribensis, cockatoo, GBR, Bolivian ram, rainbow and red-tail shark), `SwimmerSpec.habit`, `SwimField.anchors`, `swimHome.ts` (home picking: items first, back glass if nothing), and in `swimSim.ts` a per-fish action machine (dart / hold / peek, peck, patrol, flick, hop), leash-bound goals, belly-to-rock roll. Own random stream, so tanks without habit fish move exactly as before.
+Decisions taken: dart = flush to the face and hold (answer 1); no pistol shrimp (2); freshwater otherwise untouched (3).
+Not built: startle (a shared alarm that sends every darter in at once), sift, a real dorsal-flick rig (the flick is a body shudder), cave interiors, bristlenose / synodontis / peacock / goldfish / angel habits (bottom-zone upside-down needs the sim's floor rule relaxed first).
+Known: with no anemone the clownfish hold at the top of the highest coral; hosts are picked from item kinds (anemone first, then any coral). Rates are first guesses for Nathan to tune live.

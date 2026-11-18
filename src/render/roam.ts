@@ -37,7 +37,7 @@ export class Roam {
     const specs: SwimmerSpec[] = [], world = (meshes[0].userData.roam as RoamData).world;
     for (const m of meshes) specs.push((m.userData.roam as RoamData).spec);
     const wf = swimFieldFor(world);
-    const key = specs.map(s => `${s.id}|${s.len}|${s.zone}|${s.pace ?? 1}|${s.style ? [s.style.rate, s.style.tau, s.style.turn, s.style.mix] : ''}|${s.rest ?? ''}|${s.hover ? [s.hover.w, s.hover.pec, s.hover.caudal] : ''}|${s.dig ? [s.dig.k, s.dig.dark, s.dig.rest, s.dig.rate] : ''}|${s.band}|${s.group?.key}|${s.home.x},${s.home.y},${s.home.z},${s.home.yaw},${s.home.pitch},${s.home.roll}`).join(';') + '#' + wf.key;
+    const key = specs.map(s => `${s.id}|${s.len}|${s.zone}|${s.pace ?? 1}|${s.style ? [s.style.rate, s.style.tau, s.style.turn, s.style.mix] : ''}|${s.rest ?? ''}|${s.hover ? [s.hover.w, s.hover.pec, s.hover.caudal] : ''}|${s.dig ? [s.dig.k, s.dig.dark, s.dig.rest, s.dig.rate] : ''}|${s.habit ? [s.habit.home, s.habit.post, s.habit.leash, s.habit.act, s.habit.dart, s.habit.peck, s.habit.patrol, s.habit.flick, s.habit.hop] : ''}|${s.band}|${s.group?.key}|${s.home.x},${s.home.y},${s.home.z},${s.home.yaw},${s.home.pitch},${s.home.roll}`).join(';') + '#' + wf.key;
     if (key !== this.key || !this.sim) {
       const t0 = performance.now();
       this.sim = makeSwimSim(specs, wf.field, this.seed); this.key = key;

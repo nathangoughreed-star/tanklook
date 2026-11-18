@@ -162,8 +162,14 @@ export function buildSwimField(S: TankSetup, T: Tank, opts: SwimFieldOpts = {}):
     const c = data[o + sy] * (1 - tx) + data[o + sy + 1] * tx, e = data[o + sy + sx] * (1 - tx) + data[o + sy + sx + 1] * tx;
     return (a * (1 - ty) + b * ty) * (1 - tz) + (c * (1 - ty) + e * ty) * tz;
   }
+  const anchors: NonNullable<SwimField['anchors']> = [];
+  for (const it of S.items) { // FB3: what each solid is, for fish that pick a home (rock, cave, host, plant)
+    if (it.variant === 'planter' || ((it.kind === 'plant' || it.kind === 'artificial') && isFloat(it.variant))) continue;
+    const [l, hh, w] = itemDims(it), base = groundHeight(S, T, it.x, it.depth) + it.lift - itemSink(it);
+    anchors.push({ kind: it.kind, variant: it.variant, x: it.x, z: -it.depth, y0: base, y1: base + hh, r: Math.max(l, w) / 2 });
+  }
   const field: SwimFieldEx = {
-    min: [0, 0, -D], max: [L, waterTop, 0], waterTop, cell: h, dims: [nx, ny, nz], data, store,
+    min: [0, 0, -D], max: [L, waterTop, 0], waterTop, cell: h, dims: [nx, ny, nz], data, store, anchors,
     floorAt: (x, z) => flo(x, -z),
     clearance(x, y, z, grad, cap = store) {
       const d = -z, fx = (x - x0) * ix, fy = (y - y0) * iy, fz = (d - d0) * iz;
