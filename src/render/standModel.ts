@@ -70,6 +70,7 @@ function cabinet(g: THREE.Group, look: StandLook, sp: StandSpace, mk: Mk) {
     put(g, mk(W - sw - 2 * inset, 14, D - 2 * inset, bodyC), -sw / 2, bodyY0 + bodyH * 0.5, cz); // the middle shelf of the open half
     put(g, mk(W - sw - 2 * inset, bodyH, 8, dark), -sw / 2, bodyY0 + bodyH / 2, -(D / 2 - inset - 4));
     put(g, mk(W - sw - 2 * inset, 18, D - 2 * inset, front), -sw / 2, bodyY0 + 16, cz);
+    put(g, mk(18, bodyH, D - 2 * inset, bodyC), -(W / 2 - inset - 9), bodyY0 + bodyH / 2, cz); // the open half's left side panel (Vibrant Life 29 had none: the cabinet showed through its left end)
   } else if (look.open === 'arch' || look.open === 'center') {
     const sideW = look.open === 'arch' ? Math.max(45, W * 0.1) : Math.max(60, W * 0.36);
     const sides: [number, number][] = [[-(W / 2 - sideW / 2 - inset), sideW], [W / 2 - sideW / 2 - inset, sideW]];
@@ -156,7 +157,7 @@ function frame(g: THREE.Group, look: StandLook, sp: StandSpace, mk: Mk) {
     const [lo, hi] = look.braceSpan ?? [0.25, 0.75], span = sp.h * (hi - lo), bl = Math.hypot(D - 2 * s, span), ang = Math.atan2(span, D - 2 * s);
     for (const x of xs) for (const a of [ang, -ang]) { const b = mk(5, 5, bl, sc2); b.rotation.x = a; put(g, b, x, y0 + sp.h * (lo + hi) / 2, 0); }
   } else if (look.brace === 'window') { // a cross in each end frame: a mid rail with a mullion above and below it
-    for (const x of xs) { rail(D - 2 * s, x, y0 + sp.h * 0.5, 0, false); put(g, mk(s * 0.7, sp.h * 0.5 - s, s * 0.7, sc2), x, y0 + sp.h * 0.75 - s / 2, 0); put(g, mk(s * 0.7, sp.h * 0.4, s * 0.7, sc2), x, y0 + sp.h * 0.3, 0); }
+    for (const x of xs) { rail(D - 2 * s, x, y0 + sp.h * 0.5, 0, false); put(g, mk(s * 0.7, sp.h * 0.5 - s, s * 0.7, sc2), x, y0 + sp.h * 0.75 - s / 2, 0); put(g, mk(s * 0.7, sp.h * 0.5 - foot, s * 0.7, sc2), x, y0 + foot + (sp.h * 0.5 - foot) / 2, 0); } // lower mullion runs floor to mid rail (was 0.1h-0.5h, floating)
     for (const z of zs) rail(W - 2 * s, 0, y0 + sp.h * 0.5, z, true);
   } else if (look.brace === 'rails') rail(W - 2 * s, 0, y0 + sp.h * 0.55, zs[0], true);
   if (look.apron) { // a front apron: a door and two drawers when the stand has them (Filko), else one panel
