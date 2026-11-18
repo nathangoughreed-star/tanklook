@@ -140,8 +140,9 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
 
   // ---- FB1: hold direction (a hovering fish keeps its heading, turned a little at each nudge)
   function setHold(i: number, a: number) {
-    let hh = Math.sqrt(hx[i] * hx[i] + hz[i] * hz[i]); if (hh < 1e-6) hh = 1;
-    const ang = (R() - 0.5) * 2 * a, c = Math.cos(ang), s = Math.sin(ang), ux = hx[i] / hh, uz = hz[i] / hh;
+    const g = gi[i]; let sx = g >= 0 ? ghx[g] : hx[i], sz = g >= 0 ? ghz[g] : hz[i]; // a school hovers facing the way the school was heading
+    let hh = Math.sqrt(sx * sx + sz * sz); if (hh < 1e-6) { sx = hx[i]; sz = hz[i]; hh = Math.sqrt(sx * sx + sz * sz) || 1; }
+    const ang = (R() - 0.5) * 2 * (g >= 0 ? a * 0.5 : a), c = Math.cos(ang), s = Math.sin(ang), ux = sx / hh, uz = sz / hh;
     holdX[i] = ux * c - uz * s; holdZ[i] = ux * s + uz * c;
   }
   // a cover spot for a hiding fish: the nearest of a few samples with something over it or tight beside it (rock, wood, plants), still clear of the solid itself
@@ -240,7 +241,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       if (sRate[i] > 0) {
         const was = subMode[i];
         if (g >= 0) subMode[i] = gSub[g]; else { subT[i] -= dt; if (subT[i] <= 0) { subMode[i] = pickSub(i); subT[i] = 5 + R() * 10; } }
-        if (subMode[i] === 0 && was !== 0) pulseT[i] = 0.3 + R() * 0.7; // coming out of a hover or a cruise: the first pulse is a beat away, not at once
+        if (subMode[i] === 0 && was !== 0) { pulseT[i] = 0.3 + R() * 0.7; pulseP[i] = pulseT[i] + 0.4; burstLeft[i] = 0; pv0[i] = 0; jitA[i] = 0; } // coming out of a hover or a cruise: the first pulse is a beat away, not at once
       }
       // burst-and-coast: when a pulse is due, a short burst starts and the heading is nudged by a few degrees (toward the goal / school, which `wish` already is)
       if (sRate[i] > 0 && mode[i] === MOVE && dst === 0 && subMode[i] === 0) {

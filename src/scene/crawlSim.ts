@@ -163,7 +163,7 @@ export function makeCrawlSim(specs: CrawlSpec[], field: SwimField, seed: number)
         }
       }
       let dth = want - th[i]; dth = Math.atan2(Math.sin(dth), Math.cos(dth));
-      const maxTurn = (snail(i) ? 35 : s.kind === 'crab' ? 90 : 130) * D2R * dt * (mode[i] === GRAZE ? 0.25 : 1);
+      const maxTurn = (snail(i) ? 35 : s.kind === 'crab' ? 90 : 130) * D2R * dt * (mode[i] === GRAZE ? (s.kind === 'shrimp' ? 0.04 : 0.25) : 1); // a shrimp feeding sits facing one way
       th[i] += Math.max(-maxTurn, Math.min(maxTurn, dth)); turnS[i] += (Math.max(-maxTurn, Math.min(maxTurn, dth)) / dt - turnS[i]) * Math.min(1, dt * 4);
 
       // speed
