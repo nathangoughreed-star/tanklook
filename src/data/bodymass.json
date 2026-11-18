@@ -114,6 +114,42 @@
    "model": 0.3,
    "flag": true
   },
+  "electricblueacara": {
+   "a": 0.01445,
+   "b": 2.99,
+   "src": "estimate",
+   "note": "cichlid estimate: the same FishBase Bayesian a, b the other cichlids here use (no species row read)",
+   "model": 0.93
+  },
+  "convict": {
+   "a": 0.01445,
+   "b": 2.99,
+   "src": "estimate",
+   "note": "cichlid estimate: the same FishBase Bayesian a, b the other cichlids here use (no species row read)",
+   "model": 0.85
+  },
+  "glowlight": {
+   "a": 0.01122,
+   "b": 3.08,
+   "src": "estimate",
+   "note": "tetra estimate: the neon tetra's FishBase Bayesian a, b used (no species row read)",
+   "model": 0.53,
+   "flag": true
+  },
+  "pleco": {
+   "a": 0.01479,
+   "b": 2.98,
+   "src": "estimate",
+   "note": "genus estimate: the bristlenose pleco's FishBase Bayesian a, b used (no species row read)",
+   "model": 1.21
+  },
+  "threespot": {
+   "a": 0.01622,
+   "b": 3,
+   "src": "estimate",
+   "note": "Trichopodus genus: the pearl gourami's FishBase Bayesian a, b used (no species row read)",
+   "model": 1.28
+  },
   "platy": {
    "a": 0.01047,
    "b": 3.14,

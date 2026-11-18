@@ -40,6 +40,36 @@
   "src": "estimate",
   "note": "Poecilia genus: the guppy's FishBase Bayesian a, b used for Endler's livebearer (no species row read)"
  },
+ "threespot": {
+  "a": 0.01622,
+  "b": 3,
+  "src": "estimate",
+  "note": "Trichopodus genus: the pearl gourami's FishBase Bayesian a, b used (no species row read)"
+ },
+ "pleco": {
+  "a": 0.01479,
+  "b": 2.98,
+  "src": "estimate",
+  "note": "genus estimate: the bristlenose pleco's FishBase Bayesian a, b used (no species row read)"
+ },
+ "glowlight": {
+  "a": 0.01122,
+  "b": 3.08,
+  "src": "estimate",
+  "note": "tetra estimate: the neon tetra's FishBase Bayesian a, b used (no species row read)"
+ },
+ "convict": {
+  "a": 0.01445,
+  "b": 2.99,
+  "src": "estimate",
+  "note": "cichlid estimate: the same FishBase Bayesian a, b the other cichlids here use (no species row read)"
+ },
+ "electricblueacara": {
+  "a": 0.01445,
+  "b": 2.99,
+  "src": "estimate",
+  "note": "cichlid estimate: the same FishBase Bayesian a, b the other cichlids here use (no species row read)"
+ },
  "betta": {
   "a": 0.00977,
   "b": 2.97,

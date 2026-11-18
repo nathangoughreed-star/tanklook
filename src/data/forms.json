@@ -1,6 +1,24 @@
 {
  "_doc": "CM3: colour / pattern forms (axis 'colour') and fin forms (axis 'fin') sold within one species. Ids are saved in files (Fish.form, Fish.finForm): never rename. est = listed by breeders / retailers but not pinned to one source. Paint lives in src/art/forms.ts (same ids).",
  "species": {
+  "threespot": {
+   "src": "https://www.seriouslyfish.com/species/trichopodus-trichopterus/",
+   "colour": [
+    {
+     "id": "blue",
+     "name": "Blue"
+    },
+    {
+     "id": "gold",
+     "name": "Gold"
+    },
+    {
+     "id": "opaline",
+     "name": "Opaline"
+    }
+   ],
+   "colourNote": "The plain fish is the wild-type steel-blue three-spot; blue, gold and opaline are hobby colour forms (Seriously Fish lists the wild, blue, gold and opaline looks)."
+  },
   "betta": {
    "src": "https://joshsfrogs.com/blog/a-guide-to-fancy-betta-varieties",
    "colour": [

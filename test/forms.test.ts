@@ -26,7 +26,7 @@ describe('CM3 colour / fin forms', () => {
     for (const sp of Object.keys(COLOUR_PATCH)) expect(FORMS[sp], sp).toBeTruthy();
   });
   it('the species covered, each with plenty of forms', () => {
-    expect(Object.keys(FORMS).sort()).toEqual(['angel', 'betta', 'blackskirt', 'cherryshrimp', 'danio', 'discus', 'goldfish', 'guppy', 'molly', 'platy', 'swordtail', 'tigerbarb']);
+    expect(Object.keys(FORMS).sort()).toEqual(['angel', 'betta', 'blackskirt', 'cherryshrimp', 'danio', 'discus', 'goldfish', 'guppy', 'molly', 'platy', 'swordtail', 'threespot', 'tigerbarb']);
     expect(FORMS.betta.colour.length).toBeGreaterThanOrEqual(12); expect(FORMS.betta.fin.length).toBeGreaterThanOrEqual(6); expect(FORMS.guppy.colour.length).toBeGreaterThanOrEqual(10);
   });
   it('every form has a plan (males and females) with a card size', () => {

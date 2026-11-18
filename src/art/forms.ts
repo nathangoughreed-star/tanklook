@@ -234,7 +234,13 @@ const gfC: Record<string, Patch> = {
   lemon: look({ shade: ['#c8a820', '#f0d444', '#faeaa0'], fin: '#f4dc64', tail: '#f4dc64', marks: [] }),
 };
 
-export const COLOUR_PATCH: Record<string, Record<string, Patch>> = { betta: bettaC, guppy: guppyC, platy: platyC, molly: mollyC, swordtail: swordC, angel: angelC, discus: discusC, danio: danioC, blackskirt: skirtC, tigerbarb: barbC, goldfish: gfC };
+// ---------- three-spot gourami (reference: Seriously Fish blue, gold and opaline photos, 2026-11-18)
+const threespotC: Record<string, Patch> = {
+  blue: look({ shade: ['#173f6e', '#2f7ac0', '#9cc4e8'], fin: '#3a78c0', tail: '#5a90cc', shimmerRgb: '150,200,255', marks: [band(0.3, 0.7, -0.03, 0.03, '#0c2a4c', 0.2, 0.03), { k: 'blob', u: 0.5, v: -0.005, ru: 0.022, rv: 0.032, c: '#0a1220', a: 0.9 }, { k: 'blob', u: 0.9, v: 0, ru: 0.02, rv: 0.026, c: '#0a1220', a: 0.9 }] }),
+  gold: look({ shade: ['#a8742a', '#e8b84a', '#f6e2a0'], fin: '#f0cf78', tail: '#ecc86a', shimmerRgb: '255,235,170', marks: [{ k: 'blob', u: 0.5, v: -0.005, ru: 0.02, rv: 0.028, c: '#6a4a1a', a: 0.55 }, { k: 'blob', u: 0.9, v: 0, ru: 0.018, rv: 0.024, c: '#5a3c14', a: 0.7 }], iris: ['#d83a20', '#3a1a10'] }),
+  opaline: look({ shade: ['#2a4660', '#6e9bb8', '#c8dce8'], fin: '#7aa0b8', tail: '#8aaabc', shimmerRgb: '215,235,250', marks: [{ k: 'bars', us: [0.24, 0.32, 0.4, 0.48, 0.56, 0.64, 0.72, 0.8], w: 0.05, c: '#12283c', a: 0.5 }, ...blobs(31, 14, ['#1a3550', '#e6eef4'], 0.2, 0.85, -0.08, 0.06, 0.03, 0.06, 0.3), { k: 'blob', u: 0.5, v: -0.005, ru: 0.02, rv: 0.03, c: '#10151c', a: 0.5 }, { k: 'blob', u: 0.9, v: 0, ru: 0.02, rv: 0.026, c: '#10151c', a: 0.6 }], iris: ['#d85a2a', '#3a2010'] }),
+};
+export const COLOUR_PATCH: Record<string, Record<string, Patch>> = { betta: bettaC, threespot: threespotC, guppy: guppyC, platy: platyC, molly: mollyC, swordtail: swordC, angel: angelC, discus: discusC, danio: danioC, blackskirt: skirtC, tigerbarb: barbC, goldfish: gfC };
 export const FIN_PATCH: Record<string, Record<string, Patch>> = { betta: bettaT, guppy: guppyT, platy: platyT, molly: mollyT, swordtail: swordT, angel: angelT, danio: danioT, blackskirt: skirtT };
 
 /** The plan of a base plan in a colour form and / or fin form (fin shape first, then the paint). */

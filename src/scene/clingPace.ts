@@ -5,6 +5,7 @@ export interface ClingPace { creepBL: number; dartBL: number; dartEveryS: number
 export const CLING: Record<string, ClingPace> = {
   oto: { creepBL: 0.2, dartBL: 7, dartEveryS: 45, still: 0.7 },
   bristlenose: { creepBL: 0.12, dartBL: 3, dartEveryS: 140, still: 0.85 },
+  pleco: { creepBL: 0.1, dartBL: 2.5, dartEveryS: 160, still: 0.88 },
   hillstream: { creepBL: 0.3, dartBL: 5, dartEveryS: 80, still: 0.6 },
 };
 export const clingPace = (speciesId: string): ClingPace | undefined => CLING[speciesId];

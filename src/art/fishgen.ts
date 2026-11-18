@@ -606,7 +606,7 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'band', u0: 0, u1: 0.2, v0: -0.3, v1: 0.3, c: '#3a6ab8', a: 0.55, f: 0.08 }, { k: 'spots', n: 26, u0: 0.04, u1: 0.38, v0: -0.24, v1: 0.24, r: 0.014, c: '#2a2a40', a: 0.6 }],
     eye: { r: 0.026, iris: ['#c9b890', '#4a3e2c'] } },
   // Endler's male (reference: Seriously Fish photos by JJPhoto, 2026-11-18): olive back with a silver-white stripe above the flank, orange blotches on the upper flank and tail base, a black vertical bar and a black belly patch mid-body, a green-yellow rear body, a clear tail edged black above and orange-over-black below, gonopodium
-  endler: { finFade: 0.3, shimmer: 0.55, shimmerRgb: '170,235,190', gillLine: 0.25, gape: 0.035, gapeDrop: 0.008, thick: 0.45, depth: 0.2, pedU: 0.4, ped: 0.04, peak: 0.45, snout: 0.4, mouth: -0.03, shade: ['#6a6838', '#b4b98c', '#eef0e2'], tail: { type: 'notch', h: 0.2, tint: '#dcdcc4', edge: '#171717', a: 0.5 }, fin: '#d8d8c4',
+  endler: { finFade: 0.3, shimmer: 0.55, shimmerRgb: '170,235,190', gillLine: 0.25, gape: 0.035, gapeDrop: 0.008, thick: 0.45, depth: 0.2, pedU: 0.4, ped: 0.04, peak: 0.45, snout: 0.4, mouth: -0.03, shade: ['#6a6838', '#b4b98c', '#eef0e2'], tail: { type: 'notch', h: 0.15, tint: '#dcdcc4', edge: '#171717', a: 0.6 }, fin: '#d8d8c4',
     dorsal: { u0: 0.42, u1: 0.58, h: 0.08, tint: '#e0e0cc', a: 0.7 }, gono: { at: 0.57, len: 0.11 }, pelvic: { u: 0.65, len: 0.04 },
     marks: [{ k: 'band', u0: 0.2, u1: 0.8, v0: -0.075, v1: -0.05, c: '#f4f4e8', a: 0.7, f: 0.012 }, { k: 'blob', u: 0.52, v: -0.03, ru: 0.06, rv: 0.025, c: '#e8681c', a: 0.9 }, { k: 'blob', u: 0.68, v: -0.01, ru: 0.07, rv: 0.025, c: '#ee7a22', a: 0.9 }, { k: 'blob', u: 0.33, v: -0.025, ru: 0.045, rv: 0.02, c: '#f08a30', a: 0.85 }, { k: 'blob', u: 0.42, v: 0, ru: 0.014, rv: 0.065, c: '#141414', a: 0.9 }, { k: 'blob', u: 0.32, v: 0.035, ru: 0.05, rv: 0.025, c: '#141414', a: 0.85 }, { k: 'blob', u: 0.84, v: 0.005, ru: 0.1, rv: 0.04, c: '#b8cf3c', a: 0.75 }, { k: 'blob', u: 0.9, v: -0.04, ru: 0.045, rv: 0.012, c: '#141414', a: 0.9 }],
     finMarks: [{ k: 'band', u0: 0.55, u1: 1, v0: -0.32, v1: -0.2, c: '#171717', a: 0.85, f: 0.04 }, { k: 'band', u0: 0.5, u1: 1, v0: 0.22, v1: 0.32, c: '#e8681c', a: 0.9, f: 0.04 }],
@@ -1028,7 +1028,7 @@ Object.assign(PLANS, {
     marks: [{ k: 'blob', u: 0.5, v: 0.075, ru: 0.045, rv: 0.035, c: '#2a2420', a: 0.55 }], finMarks: [{ k: 'spots', n: 12, u0: 0.02, u1: 0.22, v0: -0.1, v1: 0.1, r: 0.01, c: '#7a6a4a', a: 0.3 }],
     eye: { r: 0.024, iris: ['#c9b890', '#4a3e2c'] } }),
   // Endler's female (reference: Seriously Fish photos): golden-brown back with dark scale edges, a silvery blue-white belly with iridescence, a translucent olive tail, a dark gravid spot low on the belly
-  endler_f: her('endler', { thick: 0.5, depth: 0.26, pedU: 0.27, ped: 0.05, peak: 0.5, snout: 0.5, shade: ['#6a5634', '#9c8658', '#d6dad4'], tail: { type: 'notch', h: 0.14, tint: '#b4aa78', edge: undefined, a: 0.5 }, fin: '#c4b98a', gono: undefined, shimmer: 0.6, shimmerRgb: '175,215,255',
+  endler_f: her('endler', { thick: 0.5, depth: 0.26, pedU: 0.27, ped: 0.05, peak: 0.5, snout: 0.5, shade: ['#6a5634', '#9c8658', '#d6dad4'], tail: { type: 'notch', h: 0.11, tint: '#b4aa78', edge: undefined, a: 0.5 }, fin: '#c4b98a', gono: undefined, shimmer: 0.6, shimmerRgb: '175,215,255',
     dorsal: { u0: 0.42, u1: 0.54, h: 0.07, tint: '#c4b98a', a: 0.7 }, anal: { u0: 0.38, u1: 0.48, h: 0.06 }, pelvic: { u: 0.63, len: 0.05 },
     marks: [{ k: 'blob', u: 0.5, v: 0.075, ru: 0.04, rv: 0.03, c: '#2a2a3c', a: 0.6 }, { k: 'blob', u: 0.4, v: 0.04, ru: 0.12, rv: 0.04, c: '#eef4ff', a: 0.55 }], finMarks: [],
     eye: { r: 0.024, iris: ['#d9c9a0', '#3a3a28'] } }),
@@ -1112,6 +1112,47 @@ Object.assign(PLANS, {
 
 // nano schoolers (S238, 2026-10-26): built from the chili and neon plans with their own paint; no reference photos opened, so colours are from
 // Seriously Fish's descriptions (recorded as model v1 on the review page)
+// RX1 phase 1 plans (reference photos: research/screens/RX1/README.md)
+Object.assign(PLANS, {
+  // Three-spot gourami (reference: Seriously Fish photos, wild / blue / gold / opaline forms, 2026-11-18): steel-blue body with faint dark bars and a fine scale net, two black spots (mid-body and tail base), a long anal fin and rounded tail dotted yellow, thread feelers
+  threespot: her('gourami', { thick: 0.34, depth: 0.4, shade: ['#2b4258', '#6c92ae', '#b9ccd8'], shimmer: 0.6, shimmerRgb: '200,225,245', tail: { type: 'round', h: 0.17, tint: '#86a3b6', a: 0.7 }, fin: '#7e9fb4', ray: '#4f6a7c',
+    dorsal: { at: 0.5, len: 0.26, h: 0.1, spines: 0.35, nSp: 5, spineH: [0.05, 0.07], notch: 0.3, tip: 'point', trail: 0.1, drop: 0.9, rake: 0.6, tint: '#7e9fb4' },
+    anal: { at: 0.7, len: 0.5, h: 0.11, spines: 0.4, nSp: 7, spineH: [0.03, 0.07], notch: 0.18, rake: 0.7, tip: 'point', trail: 0.05, fringe: true, edge: '#d8c870', tint: '#7e9fb4' }, pelvic: { u: 0.72, len: 0.4, thread: true, tint: '#d9e4ea' },
+    marks: [{ k: 'bars', us: [0.3, 0.4, 0.5, 0.6, 0.7], w: 0.05, c: '#1c3144', a: 0.14 }, { k: 'blob', u: 0.5, v: -0.005, ru: 0.03, rv: 0.04, c: '#0a0e14', a: 0.95 }, { k: 'blob', u: 0.9, v: 0, ru: 0.028, rv: 0.034, c: '#0a0e14', a: 0.95 }, { k: 'blob', u: 0.4, v: 0.06, ru: 0.3, rv: 0.04, c: '#e6edf0', a: 0.3 }],
+    finMarks: [{ k: 'spots', n: 40, u0: 0, u1: 0.4, v0: -0.25, v1: 0.25, r: 0.01, c: '#e8cf6a', a: 0.7 }],
+    eye: { r: 0.03, iris: ['#e0c070', '#3a3020'] } }),
+  // Common pleco (reference: Aquarium Source photo, 2026-11-18): brown body netted with dark blotches, armoured, a tall sail dorsal, paddle pectorals; no bristles
+  pleco: her('bristlenose', { bristles: false, shade: ['#3a2c1c', '#6b573d', '#a08c68'], keel: '#2a2014', tail: { type: 'fork', h: 0.13, tint: '#2e2418', a: 0.9 }, fin: '#2e2418',
+    pec: { s: 2.7, v: 0.86, w: 1.5, flat: true, spread: 1.3, edge: '#6b573d', spots: '#14100a', tint: '#2e2418' },
+    dorsal: { at: 0.66, len: 0.26, h: 0.2, spines: 0.1, nSp: 1, spineH: 0.18, rake: 0.3, drop: 0.55, tint: '#2e2418', a: 0.9 }, pelvic: { u: 0.58, len: 0.16, w: 1.5, spread: 0.95, edge: '#6b573d', spots: '#14100a', tint: '#2e2418' },
+    marks: [{ k: 'spots', n: 800, u0: 0.12, u1: 0.99, v0: -0.2, v1: 0.07, r: 0.0095, c: '#120d08', a: 0.85 }],
+    finMarks: [{ k: 'spots', n: 70, u0: 0, u1: 0.7, v0: -0.4, v1: 0.2, r: 0.0075, c: '#120d08', a: 0.7 }], eye: { r: 0.02, iris: ['#a08a4a', '#14100a'], dv: -0.12, up: 1, bulge: 0.5 } }),
+  // Glowlight tetra (reference: Seriously Fish photo, JJPhoto, 2026-11-18): translucent olive-silver body, one red-orange stripe from the eye to the tail base with gold above its front, a red-topped dorsal, a red ring above the eye, yellow-gold gill patch
+  glowlight: her('tetra', { thick: 0.4, shade: ['#6b7458', '#b4baa6', '#e6e5d6'], shimmer: 0.7, shimmerRgb: '240,230,170', fin: '#d4d8d0', tail: { type: 'fork', h: 0.15, tint: '#d8dcd6', a: 0.45 },
+    dorsal: { at: 0.62, len: 0.06, h: 0.085, rake: 0.12, taper: 0.4, lead: 0.6, tip: 'point', trail: 0.05, drop: 0.2, tint: '#d8402a' },
+    marks: [{ k: 'band', u0: 0.22, u1: 0.93, v0: 0.05, v1: 0.15, c: '#f1f4f1', a: 0.45, f: 0.03 }, { k: 'band', u0: 0.1, u1: 0.96, v0: -0.03, v1: -0.008, c: '#e0402a', a: 0.92, f: 0.008 }, { k: 'band', u0: 0.14, u1: 0.6, v0: -0.065, v1: -0.04, c: '#e8c860', a: 0.55, f: 0.012 }, { k: 'blob', u: 0.2, v: 0.04, ru: 0.06, rv: 0.04, c: '#e8d070', a: 0.6 }],
+    finMarks: [], eye: { r: 0.03, iris: ['#e84a2a', '#1a1a1a'] } }),
+  // Convict cichlid (reference: Seriously Fish photo by Nora Brede, 2026-11-18): grey-lavender body with eight black vertical bars (one through the eye), a dark head, a green-edged dorsal, clear greyish fins with a pink tail base
+  convict: her('kribensis', { shade: ['#5e6470', '#a1a6b0', '#d6d8d6'], shimmer: 0.45, shimmerRgb: '210,235,220', thick: 0.42, depth: 0.28, tail: { type: 'round', h: 0.2, tint: '#a8929a', a: 0.7 }, fin: '#8c9098',
+    dorsal: { at: 0.8, len: 0.56, h: 0.09, spines: 0.6, nSp: 9, spineH: [0.05, 0.065], notch: 0.25, tip: 'point', trail: 0.09, rake: 0.6, tint: '#6e7a78', edge: '#7fb08a' },
+    anal: { at: 0.5, len: 0.27, h: 0.09, spines: 0.25, nSp: 3, spineH: [0.035, 0.06], tip: 'point', trail: 0.08, tint: '#8c9098' }, pelvic: { u: 0.66, len: 0.1, ext: 0.03, tint: '#6a6e78' },
+    marks: [{ k: 'bars', us: [0.17, 0.27, 0.37, 0.47, 0.57, 0.67, 0.78], w: 0.05, c: '#14161a', a: 0.85 }, { k: 'blob', u: 0.1, v: -0.03, ru: 0.11, rv: 0.07, c: '#3c414a', a: 0.7 }],
+    finMarks: [], eye: { r: 0.028, iris: ['#d8c898', '#2a2418'] } }),
+});
+Object.assign(PLANS, {
+  // the female: smaller, rounder, an orange-pink belly patch, less green on the dorsal
+  convict_f: her('convict', { belly: 0.35, depth: 0.26, dorsal: { at: 0.8, len: 0.56, h: 0.08, spines: 0.6, nSp: 9, spineH: [0.05, 0.065], notch: 0.25, tip: 'point', trail: 0.05, rake: 0.6, tint: '#7a8480', edge: '#a8b09a' },
+    marks: [{ k: 'bars', us: [0.17, 0.27, 0.36, 0.45, 0.54, 0.63, 0.72, 0.82], w: 0.04, c: '#14161a', a: 0.9 }, { k: 'blob', u: 0.1, v: -0.03, ru: 0.1, rv: 0.06, c: '#3c414a', a: 0.5 }, { k: 'blob', u: 0.55, v: 0.1, ru: 0.2, rv: 0.06, c: '#e87a3a', a: 0.8 }] }),
+});
+Object.assign(PLANS, {
+  // Electric blue acara (reference: Aquarium Source photo, 2026-11-18): pale blue body with a green-cream flank and a visible scale net, a bright blue head and lips, a dark grey patch from the nape to the upper lip, blue-striped fins, a yellow edge on the dorsal
+  electricblueacara: her('convict', { shade: ['#4f79b0', '#98b6da', '#d8e4d6'], shimmer: 0.6, shimmerRgb: '170,210,255', depth: 0.3, thick: 0.4, tail: { type: 'round', h: 0.22, tint: '#86a4dc', a: 0.85 }, fin: '#7a9ad8',
+    dorsal: { at: 0.8, len: 0.56, h: 0.11, spines: 0.6, nSp: 9, spineH: [0.06, 0.08], notch: 0.15, tip: 'point', trail: 0.08, rake: 0.6, tint: '#7ea0d8', edge: '#e8d030' },
+    anal: { at: 0.5, len: 0.27, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.035, 0.06], tip: 'point', trail: 0.08, tint: '#7a9ad8' }, pelvic: { u: 0.66, len: 0.1, ext: 0.03, tint: '#8aa8e0' },
+    marks: [{ k: 'blob', u: 0.42, v: 0.0, ru: 0.28, rv: 0.07, c: '#c8d890', a: 0.5 }, { k: 'spots', n: 90, u0: 0.2, u1: 0.8, v0: -0.08, v1: 0.1, r: 0.012, c: '#e8f2fb', a: 0.22 }, { k: 'blob', u: 0.1, v: 0.03, ru: 0.13, rv: 0.08, c: '#2f6ae0', a: 0.9 }, { k: 'blob', u: 0.07, v: -0.07, ru: 0.08, rv: 0.04, c: '#4a4e58', a: 0.7 }],
+    finMarks: [{ k: 'band', u0: 0, u1: 0.5, v0: -0.3, v1: -0.15, c: '#4a6ac0', a: 0.4, f: 0.05 }, { k: 'band', u0: 0, u1: 0.5, v0: 0.05, v1: 0.2, c: '#4a6ac0', a: 0.4, f: 0.05 }], eye: { r: 0.03, iris: ['#2a2a2a', '#0a0a0a'] } }),
+  //@@RX1END
+});
 Object.assign(PLANS, {
   // green neon tetra (Paracheirodon simulans): a blue-green stripe from the eye to the tail base, a silvery-white belly, clear forked tail, no red band
   greenneon: her('tetra', { depth: 0.2, shade: ['#3e5238', '#8a9c80', '#d6dccc'], tail: { type: 'fork', h: 0.14, tint: '#c4ccc8', a: 0.7 }, fin: '#c4ccc8',

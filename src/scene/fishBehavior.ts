@@ -26,7 +26,7 @@ export const HOVER: Record<string, HoverSpec> = {
   hatchet: { w: 0.45, pec: 1, caudal: 0.2 }, peapuffer: { w: 0.5, pec: 1, caudal: 0.2 },
   // schooling fish stop now and then too, much less
   neon: { w: 0.15, pec: 0.6, caudal: 0.4 }, cardinal: { w: 0.15, pec: 0.6, caudal: 0.4 }, harlequin: { w: 0.15, pec: 0.6, caudal: 0.4 },
-  rummynose: { w: 0.15, pec: 0.6, caudal: 0.4 }, guppy: { w: 0.15, pec: 0.6, caudal: 0.4 }, endler: { w: 0.15, pec: 0.6, caudal: 0.4 }, platy: { w: 0.15, pec: 0.6, caudal: 0.4 },
+  rummynose: { w: 0.15, pec: 0.6, caudal: 0.4 }, guppy: { w: 0.15, pec: 0.6, caudal: 0.4 }, endler: { w: 0.15, pec: 0.6, caudal: 0.4 }, electricblueacara: { w: 0.5, pec: 0.9, caudal: 0.25 }, convict: { w: 0.5, pec: 0.9, caudal: 0.25 }, glowlight: { w: 0.15, pec: 0.6, caudal: 0.4 }, pleco: { w: 0.3, pec: 0.5, caudal: 0.3 }, threespot: { w: 0.6, pec: 0.9, caudal: 0.2 }, platy: { w: 0.15, pec: 0.6, caudal: 0.4 },
   // bottom dwellers rest on the pectorals and fan
   pandacory: { w: 0.35, pec: 0.5, caudal: 0.3 }, bronzecory: { w: 0.35, pec: 0.5, caudal: 0.3 }, sterbai: { w: 0.35, pec: 0.5, caudal: 0.3 },
   pepperedcory: { w: 0.35, pec: 0.5, caudal: 0.3 }, pygmycory: { w: 0.3, pec: 0.5, caudal: 0.3 }, clownloach: { w: 0.3, pec: 0.5, caudal: 0.3 },
@@ -84,7 +84,7 @@ const SLOWER: StyleSpec = { rate: 1.1, tau: 0.45, turn: 14, mix: [0.45, 0.3, 0.2
 export const STYLE: Record<string, StyleSpec> = {
   danio: { rate: 2.0, tau: 0.3, turn: 22, mix: [0.65, 0.15, 0.2] }, cpd: QUICK, whitecloud: QUICK, neon: QUICK, cardinal: QUICK, greenneon: QUICK, ember: QUICK,
   merah: QUICK, exclamation: QUICK, dwarfrasbora: QUICK, chili: QUICK, harlequin: SLOWER,
-  dwarfpencil: { rate: 0.9, tau: 0.5, turn: 12, mix: [0.4, 0.3, 0.3] }, guppy: SLOWER, endler: SLOWER, cherrybarb: SLOWER, peapuffer: { rate: 1.0, tau: 0.4, turn: 25, mix: [0.4, 0.2, 0.4] },
+  dwarfpencil: { rate: 0.9, tau: 0.5, turn: 12, mix: [0.4, 0.3, 0.3] }, guppy: SLOWER, endler: SLOWER, glowlight: QUICK, cherrybarb: SLOWER, peapuffer: { rate: 1.0, tau: 0.4, turn: 25, mix: [0.4, 0.2, 0.4] },
 };
 
 /**
@@ -150,4 +150,6 @@ export const HABIT: Record<string, HabitSpec> = {
   bolivianram: H('host',    'hoverLow', 5,   1.4, 0,    0.8, 0.4,  0.3, 4,   1,   0,   2),
   rainbowshark: H('crevice', 'perch',   10,  1.4, 0,    0,   0.5,  1,   3,   2,   0,   1,   [8, 40]),  // a cave or log is its territory
   redtailshark: H('crevice', 'perch',   10,  1.4, 0,    0,   0.5,  1,   3,   2,   0,   1,   [8, 40]),
+  electricblueacara: H('crevice', 'hoverLow', 8,   1.5, 0,    0.8, 0.4,  0.8, 1,   1,   1,   0,   [4, 25]),
+  convict: H('crevice', 'hoverLow', 6,   1.5, 0,    0.8, 0.5,  1.5, 1,   1.5, 1,   0,   [4, 25]),
 };
