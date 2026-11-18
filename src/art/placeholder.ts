@@ -511,7 +511,9 @@ export function substrateField() {
 let fineCache: Uint8Array<ArrayBuffer> | undefined;
 export function substrateFine() {
   if (fineCache) return fineCache;
-  const N = FIELD_N, cells = 64, r = rng(53), g = Array.from({ length: cells * cells }, () => r()), f = new Float32Array(N * N);
+  // GB2: the grain values are a low-discrepancy lattice (R2 sequence, a little jitter), not white noise: neighbours then span the
+  // whole 0-1 range evenly, so at a full mix no grain gathers in clumps or streaks (white noise left knots of low values)
+  const N = FIELD_N, cells = 64, r = rng(53), g = Array.from({ length: cells * cells }, (_, k) => { const v = ((k % cells) * 0.7548776662466927 + Math.floor(k / cells) * 0.5698402909980532 + (r() - 0.5) * 0.06) % 1; return v < 0 ? v + 1 : v; }), f = new Float32Array(N * N);
   const at = (i: number, j: number) => g[(j % cells) * cells + (i % cells)];
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
     const u = x / N * cells, v = y / N * cells, i = Math.floor(u), j = Math.floor(v), s = u - i, t = v - j;
@@ -552,7 +554,7 @@ function biasFor(p2: number, amp: number) {
   return bias;
 }
 export function blendZone(b: SubstrateBlend) {
-  const ord = blendOrder(b), amp = 0.2 + 3.6 * (1 - b.mix);
+  const ord = blendOrder(b), amp = 3.8 * (1 - b.mix); // GB2: 0 at a full mix: the ratio is the share everywhere
   // `biases[k]`: grain k of `blendOrder` (k >= 1) has its mean ratio at its share; [0] is the remainder. `bias` = grain 1's (two grains: the second's, as before)
   const biases = ord.map((g, k) => (k ? biasFor(Math.min(1, Math.max(0, g.share / 100)), amp) : 0));
   const bias = ord.length > 1 ? biases[1] : -14;

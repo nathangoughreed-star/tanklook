@@ -42,6 +42,8 @@ export function grainLooks(sub: TankSetup['substrate']): GrainLook[] {
  *  1 - exp(-K p): keeping r of them would show well over r of the floor as stone). */
 const COVER_K = 1.6;
 const cover = (r: number) => Math.min(1, -Math.log(1 - Math.min(r, 0.999)) / COVER_K);
+/** GB2: how mixed a multi-grain blend is, 0-1 (0 for anything else): the size sorting and knots of the ground effects fade out with it. */
+export const blendMixed = (S: TankSetup) => (S.substrate.type === 'custom' && S.substrate.custom.grains.length > 1 ? S.substrate.custom.mix : 0);
 /** The ground's coarsest 3D grain, or null for a ground drawn as a surface only. */
 export function grainLook(sub: TankSetup['substrate']): GrainLook | null {
   const gs = grainLooks(sub); return gs.length ? gs.reduce((a, g) => (g.size[1] > a.size[1] ? g : a)) : null;
@@ -146,16 +148,24 @@ function topGrains(S: TankSetup, T: Tank, ground: GroundAt, g: GrainLook, layer:
   if (g.at) {
     // VF3 (fx ground): thinned by a clumping field, so the stones gather in dense knots with sparse fringes (not an even
     // pepper), more near hardscape and on slopes; the same number of tries, so about as many stones in all
-    const cl = FX.ground ? clumpField(S, ground) : null, K = cl ? 1.7 : 1;
-    const r = rng(23 + layer), n = Math.round(count * 1.15 * K * T.L * T.D / area); at = [];
-    for (let i = 0; i < n && at.length < count; i++) { const x = r() * T.L, d = r() * T.D; if (r() < g.at(x, d) * (cl ? cl(x, d) / K : 1)) at.push([x, d]); }
+    // GB2: the knots fade out as the blend's Mixed rises (none at 100 %); the points are a jittered grid, each kept by the
+    // grain's share against a low-discrepancy threshold (not random draws), so at a full mix the kept stones are spread evenly
+    const loose = 1 - blendMixed(S), cl = FX.ground && loose > 0.01 ? clumpField(S, ground) : null, K = cl ? 1 + 0.7 * loose : 1;
+    const r = rng(23 + layer), n = Math.round(count * 1.15 * K * T.L * T.D / area), cs = Math.sqrt(T.L * T.D / Math.max(1, n)), nx = Math.max(1, Math.ceil(T.L / cs)), nz = Math.max(1, Math.ceil(T.D / cs));
+    const a1 = [0.7548776662, 0.5698402910, 0.6180339887, 0.4142135624, 0.3247179572][layer % 5], a2 = [0.5698402910, 0.7548776662, 0.3247179572, 0.7320508076, 0.4655712319][layer % 5];
+    at = [];
+    for (let j = 0; j < nz && at.length < count * 1.2; j++) for (let i = 0; i < nx && at.length < count * 1.2; i++) {
+      const x = (i + r()) * T.L / nx, d = (j + r()) * T.D / nz; if (x > T.L || d > T.D) continue;
+      const th = ((i * a1 + j * a2 + (r() - 0.5) * 0.08 + layer * 0.37) % 1 + 1) % 1, f = cl ? 1 + loose * (cl(x, d) - 1) : 1;
+      if (th < g.at(x, d) * f / K) at.push([x, d]);
+    }
   }
   const out = scatter(T, ground, {
     seed: 11 + layer, count, at, kinds: grainKinds(g), lift: [0, 0], pile: 0, tilt: chip ? 0.35 : 0.5,
     slope: 0.35, clump: 0, liftK: chip ? [-0.05, 0.05] : [-0.18, 0], pileK: chip ? 0.12 : 0.18, cell: Math.max(1, mean / 3),
     // stones a shade under their tile colours: lit from above, their tops came out near white
     palette: g.colors.map(c => new THREE.Color(c).multiplyScalar(chip ? 1 : 0.8)), shade: y => (y < wy ? 0.55 : 1),
-    ...(FX.mix && !chip ? { sortAt: sortField(S, ground, layer), vary: true } : FX.mix ? { vary: true } : {}), // VF-C2
+    ...(FX.mix && !chip ? { sortAt: sortField(S, ground, layer, 1 - blendMixed(S)), vary: true } : FX.mix ? { vary: true } : {}), // VF-C2
   });
   // drawn before the ground (renderOrder): the depth test then skips the ground's shading under them (fill was the cost)
   for (const m of out) { m.userData.grains = true; m.renderOrder = -1; }
@@ -277,12 +287,12 @@ function clumpField(S: TankSetup, ground: GroundAt) {
  * the open flats. Depends on the ground and the seed only (not on the items: the ground is not rebuilt on a drag). The
  * coarse grains by a piece's foot are in render/contact.ts.
  */
-function sortField(S: TankSetup, ground: GroundAt, layer: number) {
+function sortField(S: TankSetup, ground: GroundAt, layer: number, loose = 1) {
   const n = valueNoise((S.layout.seed ?? 1) + 131 + layer * 7), R = 45;
   return (x: number, d: number) => {
     const h = ground(x, d)[1];
     const mean = (ground(x - R, d)[1] + ground(x + R, d)[1] + ground(x, d - R)[1] + ground(x, d + R)[1]) / 4;
     const hollow = Math.max(-1, Math.min(1, (mean - h) / 7));
-    return Math.max(0, Math.min(1, 0.3 + 1.1 * (n(x / 110, d / 110) - 0.5) + 0.45 * hollow));
+    return Math.max(0, Math.min(1, 0.3 + loose * (1.1 * (n(x / 110, d / 110) - 0.5) + 0.45 * hollow))); // GB2: sorting fades out with the blend's Mixed
   };
 }

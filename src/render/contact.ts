@@ -22,7 +22,7 @@ import { footprint } from '../scene/shape';
 import type { Item, Tank, TankSetup } from '../scene/types';
 import { roughOf } from '../scene/types';
 import { FX } from './fx';
-import { grainKinds, grainLooks, type GrainLook } from './grains';
+import { blendMixed, grainKinds, grainLooks, type GrainLook } from './grains';
 import { scatter, type GroundAt } from './scatter';
 
 /** fx, fd, berm, u: VF-C2 (fx embed): the piece's own footprint semi-axes, the berm's height (mm) and a per-piece random 0..1. */
@@ -363,7 +363,7 @@ function coarseFeet(S: TankSetup, T: Tank, list: Blob[], ground: GroundAt): THRE
   }
   const r = rng(171 + (S.layout.seed ?? 1)), at: [number, number][] = [];
   for (const b of list) {
-    const per = Math.min(36, Math.round((b.fx! + b.fd!) * 0.2));
+    const per = Math.min(36, Math.round((b.fx! + b.fd!) * 0.2 * (1 - blendMixed(S)))); // GB2: none at a full mix
     for (let i = 0; i < per; i++) {
       const a = r() * Math.PI * 2, t = 0.9 + 0.55 * r(), lx = Math.cos(a) * t * b.fx!, ld = Math.sin(a) * t * b.fd!;
       at.push([b.x + lx * b.ux - ld * b.ud, b.d + lx * b.ud + ld * b.ux]);
