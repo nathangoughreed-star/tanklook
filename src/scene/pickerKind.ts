@@ -65,7 +65,7 @@ export const ROLES: [Role, string, string][] = [
 ];
 if (aquariumOnly()) { const h = ROLES.find(r => r[0] === 'herp')!; h[1] = 'Aquatic amphibians'; h[2] = 'Fully aquatic frogs and salamanders'; }   // AQ1: only the fully aquatic ones (dwarf frog, axolotl) are in scope
 /** Grazers by diet: the species the grazer table (data/grazers.ts) knows plus the fish and shrimp keepers buy for algae. Not derivable from the data otherwise. */
-const ALGAE_EATERS = new Set([...Object.keys(GRAZE), 'oto', 'bristlenose', 'pleco', 'sae', 'cherryshrimp', 'amano', 'nerite', 'turbo']);
+const ALGAE_EATERS = new Set([...Object.keys(GRAZE), 'oto', 'bristlenose', 'pleco', 'clownpleco', 'sae', 'cherryshrimp', 'amano', 'nerite', 'turbo']);
 /** R130: the cichlid genera we carry or may carry. A cichlid is listed ONLY in its cichlid group (by where it lives in the wild), not also under Centerpiece / Community, so the chip counts still add up to All. */
 const CICHLID_GENERA = new Set(['Pterophyllum', 'Symphysodon', 'Astronotus', 'Mikrogeophagus', 'Apistogramma', 'Pelvicachromis', 'Labidochromis', 'Aulonocara', 'Pseudotropheus', 'Copadichromis', 'Labeotropheus', 'Melanochromis', 'Nimbochromis', 'Cynotilapia', 'Maylandia', 'Metriaclima', 'Tropheus', 'Neolamprologus', 'Julidochromis', 'Altolamprologus', 'Cyphotilapia', 'Haplochromis', 'Protomelas', 'Sciaenochromis', 'Cichla', 'Heros', 'Geophagus', 'Laetacara', 'Hemichromis', 'Amatitlania', 'Archocentrus', 'Thorichthys', 'Amphilophus', 'Herichthys', 'Parachromis', 'Vieja', 'Hypselecara', 'Uaru', 'Satanoperca', 'Nannacara', 'Cleithracara']);
 export const isCichlid = (sp: Species) => CICHLID_GENERA.has(sp.sci.split(' ')[0]);

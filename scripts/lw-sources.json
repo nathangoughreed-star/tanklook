@@ -100,6 +100,30 @@
   "src": "estimate",
   "note": "cichlid estimate: the same FishBase Bayesian a, b the other cichlids here use (no species row read)"
  },
+ "saltpepper": {
+  "a": 0.02344,
+  "b": 2.97,
+  "src": "estimate",
+  "note": "corydoras estimate: the peppered cory's FishBase Bayesian a, b used (no species row read)"
+ },
+ "clownpleco": {
+  "a": 0.01479,
+  "b": 2.98,
+  "src": "estimate",
+  "note": "genus estimate: the bristlenose pleco's FishBase Bayesian a, b used (no species row read)"
+ },
+ "yoyoloach": {
+  "a": 0.01047,
+  "b": 2.97,
+  "src": "estimate",
+  "note": "loach estimate: the clown loach's FishBase Bayesian a, b used (no species row read)"
+ },
+ "glasscatfish": {
+  "a": 0.0025,
+  "b": 3.1,
+  "src": "estimate",
+  "note": "slender catfish estimate: a judgement low a (a 78 mm glass catfish weighs about 1-1.5 g); b 3.1; no species row read"
+ },
  "betta": {
   "a": 0.00977,
   "b": 2.97,

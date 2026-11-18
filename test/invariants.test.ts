@@ -263,7 +263,7 @@ describe('invariant 6: an unsuitable temperature cannot be rescued by excess spa
       const v = tempVerdict([{ species: ALLF[i].id, n: 1 }, { species: ALLF[j].id, n: 1 }]).level; if (v === 'compromise') comp++; else none++;
     }
     expect(comp + none).toBeGreaterThan(0);
-    expect({ comp, none }).toEqual({ comp: 242, none: 72 }) // RX1 2026-11-18: +Endler, three-spot, pleco, glowlight, convict, EB acara (242/72 after batch 2); batch 1 218/67, Endler alone 203/62; FS1 part 3 2026-11-15: +sparkling and croaking gourami (was 193 / 58). C24 2026-11-15: +peppered cory (cool 64-75 °F: 8 more tolerable-overlap pairs) on top of FS1. FS1 2026-11-15: +bala shark, red-tail shark and rainbow shark (was 183 / 55 before them). S245: 238 disjoint-comfortable freshwater pairs of 2485; the 55 are refused, the 183 fit with a caution;
+    expect({ comp, none }).toEqual({ comp: 254, none: 76 }) // RX1 2026-11-18: +Endler, three-spot, pleco, glowlight, convict, EB acara (254/76 after batch 3; 242/72 after batch 2); batch 1 218/67, Endler alone 203/62; FS1 part 3 2026-11-15: +sparkling and croaking gourami (was 193 / 58). C24 2026-11-15: +peppered cory (cool 64-75 °F: 8 more tolerable-overlap pairs) on top of FS1. FS1 2026-11-15: +bala shark, red-tail shark and rainbow shark (was 183 / 55 before them). S245: 238 disjoint-comfortable freshwater pairs of 2485; the 55 are refused, the 183 fit with a caution;
   });
 });
 

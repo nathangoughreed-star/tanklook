@@ -91,6 +91,8 @@ export interface Plan {
   sectionExp?: number; // 3D: cross-section exponent (2 = elliptical; >2 = boxier); default 2.4
   gillLine?: number;   // 3D: faint raised operculum seam opacity (0..1); opt-in to avoid extra meshes for other species
   finFade?: number;    // 2D: fins turn this much more translucent toward their edge (0..0.4); opt-in
+  bodyA?: number;      // 2D card: the whole body is this opaque (0..1), a see-through fish (glass catfish); `solid` marks are painted over it at full strength
+  solid?: Mark[];       // marks drawn over a see-through body (the spine, the organs behind the head)
   shimmerRgb?: string; // 2D: glint colour as 'r,g,b' (default warm gold)
   shimmer?: number;    // 2D: fine, deterministic warm scale glints (0..1); opt-in, projected to 3D flanks
   // 3D body shape (all optional): flat belly 0..1; cross-section widest low (+) or high (-); thickness at the peduncle
@@ -413,6 +415,7 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
     fin(ctx, P, W, [[u + 0.03, b + 0.01], [u, b - 0.035, 'c'], [u - 0.03, b + 0.01]], [u, b], p.fin, ray, { rays: 0 });
   }
   const [t0, b0] = [Math.min(...g.bodyPts.map(q => q[1])), Math.max(...g.bodyPts.map(q => q[1]))];
+  if (p.bodyA !== undefined) { ctx.save(); ctx.globalAlpha *= p.bodyA; }
   body(ctx, P, W, g.bodyPts, t0, b0, [[0, p.shade[0]], [0.4, p.shade[1]], [0.65, p.shade[1]], [1, p.shade[2]]], p.rim ?? 0.035, l => {
     paintMarks(l, P, W, p.marks, 7);
     if (p.shimmer) shimmer(l, P, W, p.pedU + 0.025, 1 - (1 - p.pedU) * 0.14, g.prof, p.shimmer, p.shimmerRgb);
@@ -428,6 +431,7 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
     l.beginPath(); l.moveTo(mx, my); l.quadraticCurveTo((mx + ex) / 2, ey, ex, ey);
     l.strokeStyle = 'rgba(18,16,12,0.45)'; l.lineWidth = 0.004 * W; l.stroke();
   });
+  if (p.bodyA !== undefined) { ctx.restore(); if (p.solid) paintMarks(ctx, P, W, p.solid, 11); }
   // pectoral fin: faint fan behind the gill cover
   if (style.paired) drawPairedFin(paired[paired.length - 1], ctx, P, W, ray);
   if (p.barbels && style.paired) { // style.paired off = painted for the 3D pipeline, which has its own barbels
@@ -1196,6 +1200,28 @@ Object.assign(PLANS, {
     anal: { at: 0.5, len: 0.27, h: 0.1, spines: 0.25, nSp: 3, spineH: [0.035, 0.06], tip: 'point', trail: 0.08, tint: '#4a6a90' }, pelvic: { u: 0.66, len: 0.1, ext: 0.03, tint: '#3a7ac8' },
     marks: [{ k: 'blob', u: 0.4, v: 0.09, ru: 0.32, rv: 0.06, c: '#e8503a', a: 0.85 }, { k: 'blob', u: 0.2, v: 0.04, ru: 0.07, rv: 0.075, c: '#f0f0e8', a: 0.9 }, { k: 'blob', u: 0.2, v: 0.04, ru: 0.052, rv: 0.058, c: '#0c0c0c', a: 1 }, { k: 'spots', n: 70, u0: 0.28, u1: 0.9, v0: -0.08, v1: 0.07, r: 0.008, c: '#5ac8d8', a: 0.5 }, { k: 'blob', u: 0.08, v: 0.07, ru: 0.1, rv: 0.04, c: '#e8603a', a: 0.7 }],
     finMarks: [{ k: 'spots', n: 60, u0: 0, u1: 0.6, v0: -0.25, v1: 0.25, r: 0.012, c: '#6ad8e8', a: 0.65 }], eye: { r: 0.034, iris: ['#7adac8', '#10202a'] } }),
+  // Salt and pepper cory (reference: Seriously Fish photo by Peter Macguire, 2026-11-18): golden-orange body mottled with brown, a thick black band along the rear half of the flank, a cream-yellow belly, a barred tail and a spotted dorsal, a black eye band
+  saltpepper: her('pepperedcory', { shade: ['#6a5a30', '#c8a558', '#ecdcae'], shimmer: 0.35, shimmerRgb: '235,210,150',
+    marks: [{ k: 'blob', u: 0.45, v: -0.06, ru: 0.28, rv: 0.07, c: '#d89a3a', a: 0.6 }, { k: 'spots', n: 70, u0: 0.18, u1: 0.5, v0: -0.12, v1: 0.0, r: 0.012, c: '#3a2c14', a: 0.7 }, { k: 'band', u0: 0.42, u1: 0.93, v0: -0.005, v1: 0.04, c: '#14100a', a: 0.88, f: 0.035 }, { k: 'blob', u: 0.5, v: 0.01, ru: 0.12, rv: 0.04, c: '#14100a', a: 0.8 }, { k: 'band', u0: 0.12, u1: 0.3, v0: -0.03, v1: 0.0, c: '#14100a', a: 0.8, f: 0.02 }, { k: 'blob', u: 0.4, v: 0.06, ru: 0.28, rv: 0.05, c: '#f2e4b0', a: 0.5 }],
+    finMarks: [{ k: 'bars', us: [0.15, 0.3, 0.45, 0.6, 0.75, 0.9], w: 0.045, c: '#16160e', a: 0.8 }] }),
+  // Clown pleco (reference: the Aquarium Source page text, 2026-11-18, black base with whitish-yellow or orange bands, tall dorsal, large eyes; its one photo is a dim shot under wood showing only a mottled tan-on-brown head, so the bands follow the text): near-black brown body with broad orange-cream vertical bands, a tall banded dorsal, banded tail
+  clownpleco: her('bristlenose', { bristles: false, shade: ['#14100c', '#2a2016', '#5a4a34'], keel: '#14100c', tail: { type: 'fork', h: 0.13, tint: '#2a2016', a: 0.9, edge: '#d89040' }, fin: '#2a2016',
+    pec: { s: 2.5, v: 0.86, w: 1.4, flat: true, spread: 1.3, edge: '#d89040', spots: '#d89040', tint: '#2a2016' },
+    dorsal: { at: 0.66, len: 0.27, h: 0.3, spines: 0.1, nSp: 1, spineH: 0.26, rake: 0.3, drop: 0.55, tint: '#2a2016', a: 0.9, edge: '#d89040' }, pelvic: { u: 0.58, len: 0.16, w: 1.5, spread: 0.95, edge: '#d89040', spots: '#d89040', tint: '#2a2016' },
+    marks: [{ k: 'bars', us: [0.2, 0.34, 0.48, 0.62, 0.76, 0.9], w: 0.05, c: '#dc9a46', a: 0.85 }, { k: 'spots', n: 160, u0: 0.12, u1: 0.99, v0: -0.2, v1: 0.07, r: 0.005, c: '#e8b060', a: 0.5 }],
+    finMarks: [{ k: 'bars', us: [0.2, 0.4, 0.6, 0.8], w: 0.06, c: '#dc9a46', a: 0.75 }], eye: { r: 0.03, iris: ['#b08a4a', '#14100a'], dv: -0.12, up: 1, bulge: 0.5 } }),
+  // Yoyo loach (reference: Seriously Fish photo by Mick Wright, 2026-11-18; the page notes the photo is of a close relative, the yo-yo pattern is the same): slim cream-tan body with dark brown irregular vertical bands joined by thin lines (the yo-yo marks), a barred tail and dorsal, a dark line through the eye, four barbels
+  yoyoloach: her('clownloach', { shade: ['#6a5638', '#d8c8a0', '#f0e8d0'], depth: 0.2, thick: 0.5, tail: { type: 'fork', h: 0.14, tint: '#d8c8a0', a: 0.85 }, fin: '#d8c8a8', barbels: 0.045,
+    dorsal: { at: 0.62, len: 0.16, h: 0.11, rake: 0.25, drop: 0.55, tint: '#d8c8a8' }, anal: { at: 0.4, len: 0.1, h: 0.07, rake: 0.4, drop: 0.6, tint: '#d8c8a8' },
+    marks: [{ k: 'bars', us: [0.18, 0.27, 0.4, 0.47, 0.6, 0.7, 0.83, 0.92], w: 0.04, c: '#3a2812', a: 0.85 }, { k: 'band', u0: 0.1, u1: 0.95, v0: -0.03, v1: -0.015, c: '#3a2812', a: 0.6, f: 0.01 }, { k: 'band', u0: 0.05, u1: 0.2, v0: -0.02, v1: 0.0, c: '#2a1c0a', a: 0.9, f: 0.008 }],
+    finMarks: [{ k: 'bars', us: [0.15, 0.4, 0.65, 0.88], w: 0.05, c: '#3a2812', a: 0.85 }], eye: { r: 0.024, iris: ['#c8a050', '#2a1a0a'] } }),
+  // Glass catfish (reference: Seriously Fish photo by Nonn Panitvong, 2026-11-18): a transparent, flattened, leaf-shaped body, the spine and ribs as a thin dark line, a dark patch behind the head (the organs), two long barbels, a long anal fin along the belly, no dorsal, a tiny forked tail
+  glasscatfish: her('danio', { finFade: 0.5, thick: 0.28, depth: 0.2, pedU: 0.14, peak: 0.3, shade: ['#8a9a82', '#b8c6ae', '#dee4d6'], shimmer: 0.3, shimmerRgb: '210,235,220', barbels: 0.22, mouth: 0, gape: 0.02,
+    bodyA: 0.3, tail: { type: 'fork', h: 0.06, tint: '#c8d4c4', a: 0.3 }, fin: '#c4d0c0', dorsal: { at: 0.4, len: 0.02, h: 0.015, tint: '#c4d0c0', a: 0.4 },
+    anal: { u0: 0.28, u1: 0.92, h: 0.09, tint: '#c4d0c0', a: 0.5 }, pelvic: { u: 0.3, len: 0.03, tint: '#c4d0c0' },
+    marks: [{ k: 'band', u0: 0.15, u1: 0.55, v0: 0.03, v1: 0.07, c: '#a8b8a2', a: 0.5, f: 0.03 }],
+    solid: [{ k: 'band', u0: 0.12, u1: 0.9, v0: -0.012, v1: 0.004, c: '#3e4e3a', a: 0.9, f: 0.005 }, { k: 'band', u0: 0.14, u1: 0.88, v0: -0.03, v1: -0.024, c: '#7a8a76', a: 0.4, f: 0.004 }, { k: 'blob', u: 0.22, v: 0.0, ru: 0.09, rv: 0.055, c: '#2a3228', a: 0.85 }, { k: 'blob', u: 0.2, v: 0.0, ru: 0.05, rv: 0.04, c: '#c8d0c4', a: 0.35 }],
+    finMarks: [], eye: { r: 0.034, iris: ['#c0b890', '#1a1a18'] } }),
   //@@RX1END
 });
 Object.assign(PLANS, {

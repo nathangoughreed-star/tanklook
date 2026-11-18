@@ -26,7 +26,7 @@ export const HOVER: Record<string, HoverSpec> = {
   hatchet: { w: 0.45, pec: 1, caudal: 0.2 }, peapuffer: { w: 0.5, pec: 1, caudal: 0.2 },
   // schooling fish stop now and then too, much less
   neon: { w: 0.15, pec: 0.6, caudal: 0.4 }, cardinal: { w: 0.15, pec: 0.6, caudal: 0.4 }, harlequin: { w: 0.15, pec: 0.6, caudal: 0.4 },
-  rummynose: { w: 0.15, pec: 0.6, caudal: 0.4 }, guppy: { w: 0.15, pec: 0.6, caudal: 0.4 }, endler: { w: 0.15, pec: 0.6, caudal: 0.4 }, firemouth: { w: 0.5, pec: 0.9, caudal: 0.25 }, neonrainbow: { w: 0.15, pec: 0.6, caudal: 0.4 }, falsejulii: { w: 0.35, pec: 0.5, caudal: 0.3 }, peacockgudgeon: { w: 0.4, pec: 0.8, caudal: 0.3 }, clownkilli: { w: 0.15, pec: 0.6, caudal: 0.4 }, electricblueacara: { w: 0.5, pec: 0.9, caudal: 0.25 }, convict: { w: 0.5, pec: 0.9, caudal: 0.25 }, glowlight: { w: 0.15, pec: 0.6, caudal: 0.4 }, pleco: { w: 0.3, pec: 0.5, caudal: 0.3 }, threespot: { w: 0.6, pec: 0.9, caudal: 0.2 }, platy: { w: 0.15, pec: 0.6, caudal: 0.4 },
+  rummynose: { w: 0.15, pec: 0.6, caudal: 0.4 }, guppy: { w: 0.15, pec: 0.6, caudal: 0.4 }, endler: { w: 0.15, pec: 0.6, caudal: 0.4 }, glasscatfish: { w: 0.15, pec: 0.5, caudal: 0.4 }, yoyoloach: { w: 0.3, pec: 0.5, caudal: 0.3 }, clownpleco: { w: 0.3, pec: 0.5, caudal: 0.3 }, saltpepper: { w: 0.35, pec: 0.5, caudal: 0.3 }, firemouth: { w: 0.5, pec: 0.9, caudal: 0.25 }, neonrainbow: { w: 0.15, pec: 0.6, caudal: 0.4 }, falsejulii: { w: 0.35, pec: 0.5, caudal: 0.3 }, peacockgudgeon: { w: 0.4, pec: 0.8, caudal: 0.3 }, clownkilli: { w: 0.15, pec: 0.6, caudal: 0.4 }, electricblueacara: { w: 0.5, pec: 0.9, caudal: 0.25 }, convict: { w: 0.5, pec: 0.9, caudal: 0.25 }, glowlight: { w: 0.15, pec: 0.6, caudal: 0.4 }, pleco: { w: 0.3, pec: 0.5, caudal: 0.3 }, threespot: { w: 0.6, pec: 0.9, caudal: 0.2 }, platy: { w: 0.15, pec: 0.6, caudal: 0.4 },
   // bottom dwellers rest on the pectorals and fan
   pandacory: { w: 0.35, pec: 0.5, caudal: 0.3 }, bronzecory: { w: 0.35, pec: 0.5, caudal: 0.3 }, sterbai: { w: 0.35, pec: 0.5, caudal: 0.3 },
   pepperedcory: { w: 0.35, pec: 0.5, caudal: 0.3 }, pygmycory: { w: 0.3, pec: 0.5, caudal: 0.3 }, clownloach: { w: 0.3, pec: 0.5, caudal: 0.3 },
@@ -60,12 +60,14 @@ export const DIG: Record<string, DigSpec> = {
   // snout-sifting: a short dip of the head, barbels in the sand, the body hardly sinks
   bronzecory: { rate: 3, depth: 0.15, pitch: 28, hold: [1.5, 4], hide: 0.05, hideT: [10, 30], grain: [1, 1, 0.55, 0.15] },
   pepperedcory: { rate: 3, depth: 0.15, pitch: 28, hold: [1.5, 4], hide: 0.05, hideT: [10, 30], grain: [1, 1, 0.55, 0.15] },
+  saltpepper: { rate: 3, depth: 0.15, pitch: 28, hold: [1.5, 4], hide: 0.05, hideT: [10, 30], grain: [1, 1, 0.55, 0.15] },
   falsejulii: { rate: 3, depth: 0.15, pitch: 28, hold: [1.5, 4], hide: 0.05, hideT: [10, 30], grain: [1, 1, 0.55, 0.15] },
   pandacory: { rate: 3, depth: 0.15, pitch: 28, hold: [1.5, 4], hide: 0.05, hideT: [10, 30], grain: [1, 1, 0.55, 0.15] },
   sterbai: { rate: 3, depth: 0.15, pitch: 28, hold: [1.5, 4], hide: 0.05, hideT: [10, 30], grain: [1, 1, 0.55, 0.15] },
   pygmycory: { rate: 2.5, depth: 0.1, pitch: 25, hold: [1, 3], hide: 0.05, hideT: [10, 30], grain: [1, 1, 0.5, 0.1] },
   // clown loaches root in the bottom and tuck under cover
   clownloach: { rate: 0.6, depth: 0.2, pitch: 25, hold: [2, 6], hide: 0.35, hideT: [20, 90], grain: [1, 1, 0.4, 0.1] },
+  yoyoloach: { rate: 0.6, depth: 0.2, pitch: 25, hold: [2, 6], hide: 0.35, hideT: [20, 90], grain: [1, 1, 0.4, 0.1] },
 };
 
 const GRAIN_IX: Record<Grain, number> = { mud: 0, sand: 1, gravel: 2, pebble: 3 };
@@ -85,7 +87,7 @@ const SLOWER: StyleSpec = { rate: 1.1, tau: 0.45, turn: 14, mix: [0.45, 0.3, 0.2
 export const STYLE: Record<string, StyleSpec> = {
   danio: { rate: 2.0, tau: 0.3, turn: 22, mix: [0.65, 0.15, 0.2] }, cpd: QUICK, whitecloud: QUICK, neon: QUICK, cardinal: QUICK, greenneon: QUICK, ember: QUICK,
   merah: QUICK, exclamation: QUICK, dwarfrasbora: QUICK, chili: QUICK, harlequin: SLOWER,
-  dwarfpencil: { rate: 0.9, tau: 0.5, turn: 12, mix: [0.4, 0.3, 0.3] }, guppy: SLOWER, endler: SLOWER, neonrainbow: QUICK, clownkilli: SLOWER, glowlight: QUICK, cherrybarb: SLOWER, peapuffer: { rate: 1.0, tau: 0.4, turn: 25, mix: [0.4, 0.2, 0.4] },
+  dwarfpencil: { rate: 0.9, tau: 0.5, turn: 12, mix: [0.4, 0.3, 0.3] }, guppy: SLOWER, endler: SLOWER, glasscatfish: SLOWER, neonrainbow: QUICK, clownkilli: SLOWER, glowlight: QUICK, cherrybarb: SLOWER, peapuffer: { rate: 1.0, tau: 0.4, turn: 25, mix: [0.4, 0.2, 0.4] },
 };
 
 /**
@@ -94,9 +96,9 @@ export const STYLE: Record<string, StyleSpec> = {
  * roams together. A bottom dweller not listed keeps the old mix (about 70 % rest).
  */
 export const BENTHIC: Record<string, number> = {
-  bronzecory: 0.85, pepperedcory: 0.85, falsejulii: 0.85, pandacory: 0.85, sterbai: 0.85, pygmycory: 0.8, // corys: mostly still, the shoal goes foraging now and then
+  bronzecory: 0.85, pepperedcory: 0.85, saltpepper: 0.85, falsejulii: 0.85, pandacory: 0.85, sterbai: 0.85, pygmycory: 0.8, // corys: mostly still, the shoal goes foraging now and then
   watchman: 0.88, // FB3: sits on its sand patch, hops now and then
-  kuhli: 0.8, clownloach: 0.75, syno: 0.75, sae: 0.72, rainbowshark: 0.75, redtailshark: 0.75,
+  kuhli: 0.8, clownloach: 0.75, yoyoloach: 0.75, syno: 0.75, sae: 0.72, rainbowshark: 0.75, redtailshark: 0.75,
 };
 
 /**
