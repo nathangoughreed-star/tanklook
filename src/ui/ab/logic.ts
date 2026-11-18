@@ -7,6 +7,7 @@
 //   championConflicts      does the favourite still honour the project's locks (after a Keep)?
 //   makePlan / acceptPlan  Make It Yours: preview diff, conflicts, then applyProposal (one undo step, never locks)
 //   adaptToLocks           a design that honours the current locks, or a refusal (the record it came from is never touched)
+import { fmtMin, roundMinWk } from '../../units';
 import { TABS, type Tab } from '../../scene/scope';
 import { isGearKept } from '../../scene/gearOwn';
 import { SUBSTRATE_KEYS, HARDSCAPE_KEYS, lockObject, lockRoster, unlockObject, unlockRoster, lockViolations, locksOf, isLocked, gearPart, type GearLock } from '../../scene/locks';
@@ -25,11 +26,11 @@ const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
 const round = (n: number, step: number) => Math.round(n / step) * step;
 /** "about $120" / "$80 to $140" (a wide estimate shows its range; any estimate says "about"). */
 export function figText(f: Figure, o: { kind: 'usd' | 'min'; unit?: string } = { kind: 'usd' }): string {
-  const fmt = (n: number) => o.kind === 'usd' ? usd(round(n, n >= 200 ? 10 : 5)) : `${Math.round(round(n, 5))} min`;
+  const fmt = (n: number) => o.kind === 'usd' ? usd(round(n, n >= 200 ? 10 : 5)) : fmtMin(n);
   const u = o.unit ? ' ' + o.unit : '';
   if (o.kind === 'usd' && f.hi <= 0.5) return 'nothing more to buy';
   const spread = f.hi - f.lo > Math.max(0.25 * f.mean, o.kind === 'usd' ? 20 : 10);
-  if (spread && o.kind === 'min') return `about ${Math.round(round(f.lo, 5))} to ${fmt(f.hi)}${u}`;
+  if (spread && o.kind === 'min') return `about ${roundMinWk(f.lo)} to ${fmt(f.hi)}${u}`;
   return spread ? `${f.est ? 'about ' : ''}${fmt(f.lo)} to ${fmt(f.hi)}${u}` : `${f.est || o.kind === 'min' ? 'about ' : ''}${fmt(f.mean)}${u}`;
 }
 export interface Metrics { spend: string; upkeep: string; minutes: string; difficulty: string }

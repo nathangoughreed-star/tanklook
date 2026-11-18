@@ -2,6 +2,7 @@
 // from the stocking engine, hard truths from the care gates), what to buy with each item tied to the need it serves (an item no need asks for
 // is flagged, a need with nothing on the list is flagged), the totals (the demand model's one number each) and the sales that fit.
 // Pure; src/ui/planSheet.ts draws it and writes the text. It READS stocking, tankfit, tech, the care gates and the demand model.
+import { fmtMin } from '../units';
 import { dealShip } from '../data/deals';
 import { gearShip } from '../data/gearDeals';
 import { getSpecies } from '../data/species';
@@ -219,7 +220,7 @@ export function planText(p: Plan): string {
   for (const m of p.missing) L.push(`  ! ${m}`);
   L.push('', 'Shopping list (each item and the need it serves)');
   for (const r of p.rows) L.push(`  ${usd(r.usd).padStart(7)}  ${r.item}${r.kind === 'extra' ? ' [not needed]' : ''}: ${r.serves}`);
-  L.push('', ...(p.bundle ? [bundleLine(p.bundle)] : []), `Set-up ${usd(p.setupUsd)}; ${usd(p.upkeepUsdMo)} a month; about ${p.minPerWeek} minutes a week.`, `Rhythm: ${p.rhythm} (estimate).${p.awayText ? ` Can be left: ${p.awayText}.` : ''}`);
+  L.push('', ...(p.bundle ? [bundleLine(p.bundle)] : []), `Set-up ${usd(p.setupUsd)}; ${usd(p.upkeepUsdMo)} a month; about ${fmtMin(p.minPerWeek)} a week.`, `Rhythm: ${p.rhythm} (estimate).${p.awayText ? ` Can be left: ${p.awayText}.` : ''}`);
   if (p.deals.length) { L.push('', 'Sales that fit'); for (const d of p.deals) L.push(`  ${d.text}`); }
   L.push('', p.cycleNote);
   return L.join('\n');

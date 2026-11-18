@@ -3,6 +3,7 @@
 // three proposals, each pictured in 3D in its own tank with the numbers the engines give and every enabled guardrail's state. Pick one and it opens
 // in the editor with those guardrails set (Undo brings the old tank back). Logic is demand/suggest.ts (pure, tested); this file draws it. When no
 // setup passes every enabled guardrail and the husbandry checks it says exactly "No available suggestions satisfy all your enabled guardrails".
+import { fmtMin } from '../units';
 import { kindInScope } from '../scope';
 import { getSpecies } from '../data/species';
 import { demandOf } from '../demand/engine';
@@ -24,7 +25,7 @@ import { minWarnings } from './stockSummary';
 import { tankMinimum } from '../scene/tankMin';
 import { placedSetup, sceneForBuild } from './buildPick';
 import { adoptTank } from './projectStart';
-import { constraintsOf, editBrief, emptyBrief, getBrief, lockedStock, onBrief, setBudget, setCareTime, setMonthly, setSpace, setTank } from './setupBrief';
+import { constraintsOf, editBrief, emptyBrief, getBrief, lockedStock, onBrief, setBudget, setMonthly, setSpace, setTank } from './setupBrief';
 import { recordTaste, tasteOf, tasteWhy } from '../demand/taste';
 import { briefToWants, clearItem, setItem, targetOf, valueOf } from '../scene/brief';
 import { openBuildPlan, confBadge } from './buildPlanSheet';
@@ -45,10 +46,9 @@ export interface Fields { startup: string; monthly: string; time: string; spaceO
 const num = (s: string) => { const v = parseFloat(s); return Number.isFinite(v) && v >= 0 ? v : undefined; };
 /** Fields -> the constraints and space the generator checks. A box with no number is off; the space box needs both sizes. */
 export function wantsFrom(f: Fields, units: Units): { constraints: Constraints; space?: SpaceLimit; spaceMissing: boolean; needStand: boolean; owned: OwnedMap; kinds: Kind[]; groups: DryGroup[] } {
-  const c: Constraints = {}, s = num(f.startup), m = num(f.monthly), t = num(f.time);
+  const c: Constraints = {}, s = num(f.startup), m = num(f.monthly);
   if (s !== undefined) c.startupUsd = { on: true, value: s };
   if (m !== undefined) c.monthlyUsd = { on: true, value: m };
-  if (t !== undefined) c.minutesPerWeek = { on: true, value: t };
   const k = units === 'in' ? MM_IN : 10, w = num(f.w), d = num(f.d);
   let space: SpaceLimit | undefined;
   if (f.spaceOn) { c.space = { on: true }; if (w !== undefined && d !== undefined && w > 0 && d > 0) space = { w: Math.round(w * k), d: Math.round(d * k) }; }
@@ -96,12 +96,11 @@ export function attachSuggest(store: Store, viewer: Viewer, status: (m: string, 
   const seed = () => {
     const c = store.tank.constraints ?? lastUsed(), sp = store.tank.layout.space, k = units() === 'in' ? MM_IN : 10;
     const v = (x?: { on: boolean; value: number }) => x && x.on ? String(x.value) : '';
-    f = { startup: v(c?.startupUsd), monthly: v(c?.monthlyUsd), time: v(c?.minutesPerWeek), spaceOn: !!(c?.space?.on && sp), w: sp ? String(Math.round(sp.w / k * 10) / 10) : '', d: sp ? String(Math.round(sp.d / k * 10) / 10) : '', needStand: f.needStand, owned: f.owned, kinds: f.kinds, groups: f.groups };
+    f = { startup: v(c?.startupUsd), monthly: v(c?.monthlyUsd), time: '', spaceOn: !!(c?.space?.on && sp), w: sp ? String(Math.round(sp.w / k * 10) / 10) : '', d: sp ? String(Math.round(sp.d / k * 10) / 10) : '', needStand: f.needStand, owned: f.owned, kinds: f.kinds, groups: f.groups };
     // the setup brief wins over the tank's own guardrails: what the person already told us is not asked again (lane U3)
     const bc = constraintsOf(getBrief());
     if (bc.startupUsd !== undefined) f.startup = String(bc.startupUsd);
     if (bc.monthlyUsd !== undefined) f.monthly = String(bc.monthlyUsd);
-    if (bc.minutesPerWeek !== undefined) f.time = String(bc.minutesPerWeek);
     if (bc.space) { f.spaceOn = true; f.w = String(Math.round(bc.space.w / k * 10) / 10); f.d = String(Math.round(bc.space.d / k * 10) / 10); }
     f.owned = { ...(valueOf(getBrief(), 'constraints.owned') ?? {}) }; // owned gear is read from the brief, set only in My equipment (lane EQ1)
     tags = new Set(); res = undefined; pics = []; note = ''; strip = undefined;
@@ -138,7 +137,7 @@ ${cardLines[i] ? `<div class="sgTrade" data-trade="${i}">${esc(cardLines[i])}</d
 <div class="spNote">${esc(p.archetype.why)} ${esc(tankLabel(b.tank, units()))} with ${animals}. ${esc(b.label)} build.</div>
 ${b.finish ? `<ul class="bpGear sgFinish">${b.finish.lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
 ${p.costLines.length ? `<ul class="bpGear sgCost" aria-label="What the set-up price is made of, by standard">${layered(p.costLines)}</ul>` : ''}
-<div class="bpNums"><span><b>${usd(p.totals.startupUsd)}</b>set-up${confBadge(cf.startup)}${p.saved ? `<i>${usd(p.saved)} less: what you have</i>` : ''}</span><span><b>${usd(p.totals.monthlyUsd)}</b>a month${confBadge(cf.monthly)}</span><span><b>${p.totals.minPerWeek}</b>min a week${confBadge(cf.care)}</span><span><b>${cf.setupHours}</b>h to set up${confBadge(cf.setup)}</span></div>
+<div class="bpNums"><span><b>${usd(p.totals.startupUsd)}</b>set-up${confBadge(cf.startup)}${p.saved ? `<i>${usd(p.saved)} less: what you have</i>` : ''}</span><span><b>${usd(p.totals.monthlyUsd)}</b>a month${confBadge(cf.monthly)}</span><span><b>${fmtMin(p.totals.minPerWeek)}</b>a week${confBadge(cf.care)}</span><span><b>${cf.setupHours}</b>h to set up${confBadge(cf.setup)}</span></div>
 ${p.phases ? `<div class="sgPhases"><b>Buy in two phases</b><div>Phase 1, ${usd(p.phases.phase1Usd)} now: ${esc(p.phases.phase1.join(', '))}.</div><div>Phase 2, ${usd(p.phases.phase2Usd)} after the tank has cycled: ${esc(p.phases.phase2.join(', ') || 'the animals')}.</div><div class="spNote">${esc(p.phases.note)}</div></div>` : ''}
 <div class="spNote">Rhythm: ${esc(rh.text)} (estimate)${rh.awayText ? `. Can be left: ${esc(rh.awayText)}.` : ''}</div>
 ${p.ownedNotes.map(n => `<div class="${n.kind === 'credit' ? 'spNote' : 'spWarn'}">${esc(n.text)}</div>`).join('')}
@@ -182,7 +181,6 @@ ${f.kinds.length ? '' : '<div class="spWarn">Tick at least one kind.</div>'}</fi
 ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals: ${lockedStock(getBrief()).map(a => `${a.n} ${esc(speciesOf(a.species)?.name ?? a.species)}`).join(', ')}. They stay as you chose them; the limits below are checked against them.</div>` : ''}
 <label class="sgRow"><span>Set-up budget ($)</span><input id="sgStartup" type="number" min="0" step="10" inputmode="decimal" value="${esc(f.startup)}" placeholder="no limit"></label>
 <label class="sgRow"><span>Monthly budget ($ a month)</span><input id="sgMonthly" type="number" min="0" step="1" inputmode="decimal" value="${esc(f.monthly)}" placeholder="no limit"></label>
-<label class="sgRow"><span>Care time (min a week)</span><input id="sgTime" type="number" min="0" step="5" inputmode="decimal" value="${esc(f.time)}" placeholder="no limit"></label>
 <div class="sgRow"><label><input id="sgSpaceOn" type="checkbox" ${f.spaceOn ? 'checked' : ''}> Space (${k})</label><span class="sgSp"><input id="sgW" type="number" min="0" aria-label="Width" value="${esc(f.w)}" placeholder="wide"> x <input id="sgD" type="number" min="0" aria-label="Depth" value="${esc(f.d)}" placeholder="deep"></span></div>
 <label class="sgRow"><span><input id="sgNeedStand" type="checkbox" ${f.needStand ? 'checked' : ''}> I'll need a stand</span></label>
 <div class="sgOwned" id="sgOwnedLine"><b>Equipment I already have</b> <span class="spNote">${esc(equipmentSummary(getBrief(), store.tank))}</span> <button type="button" class="spLink" data-act="equip">Edit my equipment</button></div>
@@ -206,7 +204,7 @@ ${lockedStock(getBrief()).length ? `<div class="spNote sgLocked">Locked animals:
     const w = wantsFrom(f, units());
     note = '';
     // what was filled in here goes back into the brief, so every entry point shows it
-    editBrief(b => { const c = w.constraints; let n = setMonthly(setBudget(b, c.startupUsd?.on ? c.startupUsd.value : undefined), c.monthlyUsd?.on ? c.monthlyUsd.value : undefined); n = setCareTime(n, c.minutesPerWeek?.on ? c.minutesPerWeek.value : undefined); return w.space ? setSpace(n, w.space, units()) : n; });
+    editBrief(b => { const c = w.constraints; let n = setMonthly(setBudget(b, c.startupUsd?.on ? c.startupUsd.value : undefined), c.monthlyUsd?.on ? c.monthlyUsd.value : undefined); return w.space ? setSpace(n, w.space, units()) : n; });
     const hi = !!el.querySelector<HTMLInputElement>('#sgHigh')?.checked, ph = !!el.querySelector<HTMLInputElement>('#sgPhased')?.checked;
     editBrief(b => { let n = hi ? setItem(b, 'preferences.hightech', true, 'hard') : clearItem(b, 'preferences.hightech'); n = ph ? setItem(n, 'constraints.phased', true, 'hard') : clearItem(n, 'constraints.phased'); return n; }); // the owned gear is the My equipment menu's to write (lane EQ1)
     if (!w.kinds.length) { note = 'Tick at least one kind of setup.'; res = undefined; draw(); return; }

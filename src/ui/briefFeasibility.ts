@@ -2,6 +2,7 @@
 //  - evaluateAnimals: the locked animals' smallest tank (ui/stockPlanLogic planFor) and the cheapest finished build for it (scene/builds buildsFor),
 //    against the budget ceiling, so "goldfish + $200" is answered BEFORE anything is proposed.
 //  - consequence: the tank on screen's totals against the brief's limits, through scene/constraints compliance.
+import { fmtMin } from '../units';
 import { getSpecies } from '../data/species';
 import { demandOf, type DemandOpts } from '../demand/engine';
 import type { UserProfile } from '../demand/types';
@@ -52,7 +53,7 @@ export const constraintsFrom = (b: Brief): Constraints => briefToWants(b).constr
 /** The tank on screen against the brief's limits: its totals, and how they stand against the ceiling, time and space. */
 export function consequence(T: TankSetup, b: Brief, P: UserProfile, units: Units, kit?: DemandOpts['kit']): { totals: string; line?: string; over: boolean } {
   const D = demandOf(T, P, kit ? { kit } : {}), t = D.totals; // `kit`: a pinned starter-kit price (demand/pinned.ts pinnedKit), as the demand panel prices it
-  const totals = `${usd(t.setupUsd)} to set up, ${usd(t.upkeepUsdMo)} a month, ${Math.round(t.minPerWeek)} min a week`;
+  const totals = `${usd(t.setupUsd)} to set up, ${usd(t.upkeepUsdMo)} a month, ${fmtMin(t.minPerWeek)} a week`;
   const c = constraintsFrom(b), lo = rangeOf(b, 'constraints.budget').min, under = lo !== undefined && t.setupUsd < lo;
   if (!Object.keys(c).length) return under ? { totals, line: `Set-up ${usd(t.setupUsd)} is under your ${usd(lo!)} minimum.`, over: false } : { totals, over: false };
   const S = { constraints: c, layout: { ...T.layout, space: spaceOf(b) ?? T.layout.space }, tank: T.tank };

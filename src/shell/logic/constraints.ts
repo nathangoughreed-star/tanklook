@@ -13,7 +13,6 @@ export interface CapRow { key: CapKey; label: string; unit: string; value: numbe
 const CAPS: { key: CapKey; label: string; unit: string; step: number }[] = [
   { key: 'startupUsd', label: 'Set-up budget', unit: '$', step: 10 },
   { key: 'monthlyUsd', label: 'Monthly limit', unit: '$ a month', step: 1 },
-  { key: 'minutesPerWeek', label: 'Time per week', unit: 'min', step: 5 },
 ];
 export const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
 
@@ -45,7 +44,7 @@ export function limitsModel(b: Brief | undefined, units: Units, e: ExperienceSta
   const h = homeOf(brief), rc = roomTempC(brief);
   const home: HomeView = { roomF: rc === undefined ? undefined : F(rc), water: h.water, kwh: h.kwhUsd, risk: h.risk,
     text: [rc === undefined ? '' : `room ${F(rc)} deg F`, h.water ? WATER_LABEL[h.water].toLowerCase() : '', h.kwhUsd !== undefined ? `$${h.kwhUsd.toFixed(2)}/kWh` : ''].filter(Boolean).join(', ') || 'Not set' };
-  const set = money.filter(m => m.value !== undefined && m.on).map(m => m.key === 'startupUsd' ? `${usd(m.value!)} set-up` : m.key === 'monthlyUsd' ? `${usd(m.value!)}/mo` : `${m.value} min/wk`);
+  const set = money.filter(m => m.value !== undefined && m.on).map(m => m.key === 'startupUsd' ? `${usd(m.value!)} set-up` : m.key === 'monthlyUsd' ? `${usd(m.value!)}/mo`: '');
   if (noNew) set.push('no new equipment');
   return { money, noNew, moneyText: set.join(', ') || 'No limits set', space, exp: expView(e), home };
 }

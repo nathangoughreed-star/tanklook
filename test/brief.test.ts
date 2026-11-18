@@ -8,7 +8,7 @@ import { Store } from '../src/scene/store';
 
 const WANTS: Wants = {
   kinds: ['freshwater', 'vivarium'], groups: ['herp'], owned: { filter: 'care', heater: 'unknown', light: 'x' }, needStand: false,
-  constraints: { startupUsd: { on: true, value: 400 }, monthlyUsd: { on: false, value: 20 }, minutesPerWeek: { on: true, value: 45 }, space: { on: true }, effort: 'low', experience: 1 },
+  constraints: { startupUsd: { on: true, value: 400 }, monthlyUsd: { on: false, value: 20 }, space: { on: true }, effort: 'low', experience: 1 },
   space: { w: 900, d: 400, h: 600 }, setupHours: 6, tags: ['calm', 'natural'],
 };
 

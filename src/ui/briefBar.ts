@@ -7,7 +7,7 @@ import type { Store } from '../scene/store';
 import { onBuildPicked } from './buildPick';
 import { loadProfile } from './demandPanel';
 import {
-  answer, answeredOf, directionOf, recordAnswer, setDirection, budgetOf, careTimeOf, editBrief, rangeOf, getBrief, isEmpty, lockedStock, nextQuestions, onBrief, removeItem, setTank, spaceOf, summarise, toggleLock,
+  answer, answeredOf, directionOf, recordAnswer, setDirection, budgetOf, editBrief, rangeOf, getBrief, isEmpty, lockedStock, nextQuestions, onBrief, removeItem, setTank, spaceOf, summarise, toggleLock,
   emptyBrief, setBrief, type Direction, type ItemId, type QId, type Question,
 } from './setupBrief';
 import { applyRetainedFix, consequence, evaluateAnimals, feasibilityNow, onReeval, retainedHtml, type ReevalNote } from './briefFeasibility';
@@ -50,12 +50,12 @@ export function attachBriefBar(store: Store, host: { suggest(): void; /** opens 
     let cons = '';
     try { const P = loadProfile(), c = consequence(store.tank, b, P, units(), pinnedKit(store.tank, store.scene.active, P)); cons = `<div class="bbCons${c.over ? ' over' : ''}"><b>This tank now:</b> ${esc(c.totals)}.${c.line ? ` <span>${esc(c.line)}</span>` : ''}</div>`; } catch { /* no tank to price yet */ }
     const items = rows.map(r => `<div class="bbRow"><b>${esc(r.label)}</b>${r.rows.length ? r.rows.map(i => `<span class="bbItem ${i.status}">${esc(i.label)}${i.status === 'hard' ? ' <i>limit</i>' : ''}<button type="button" data-lock="${i.id}" aria-pressed="${i.status === 'locked'}" title="${i.status === 'locked' ? 'Locked: suggestions keep it. Click to unlock.' : 'Lock it: suggestions will keep it.'}">${i.status === 'locked' ? 'Locked' : 'Lock'}</button><button type="button" data-del="${i.id}" aria-label="Remove ${esc(i.label)}">✕</button></span>`).join('') : `<span class="bbOpen">${esc(r.text)}</span>`}</div>`).join('');
-    const sp = spaceOf(b), cap = budgetOf(b), t = careTimeOf(b), rb = rangeOf(b, 'constraints.budget'), rt = rangeOf(b, 'constraints.careMin'), r1 = (mm: number) => String(Math.round(mm / k() * 10) / 10);
+    const sp = spaceOf(b), cap = budgetOf(b), rb = rangeOf(b, 'constraints.budget'), r1 = (mm: number) => String(Math.round(mm / k() * 10) / 10);
     const noteBox = note ? `<div class="bbEval${note.warning ? ' bad' : ''}" role="status"><b>Your design was adapted, not replaced:</b> ${note.lines.map(esc).join(' ')}${note.warning ? ` <b>${esc(note.warning)}</b>` : ''} <button type="button" class="spLink" data-act="dismissnote">Dismiss</button></div>` : '';
     keep = feasibilityNow(b, store.tank);
     const keepBox = retainedHtml(keep, esc);
     const rng = (r: { min?: number; max?: number }, f: (n: number) => string) => r.min !== undefined && r.max !== undefined ? `${f(r.min)} to ${f(r.max)}` : r.max !== undefined ? `up to ${f(r.max)}` : r.min !== undefined ? `at least ${f(r.min)}` : '';
-    const lim = [['Set-up', rng({ min: rb.min, max: cap }, n => '$' + n)], ['Time', rng({ min: rt.min, max: t }, n => n + ' min a week')], ['Space', sp ? `${r1(sp.w)} x ${r1(sp.d)} ${units()}` : '']].filter(x => x[1]);
+    const lim = [['Set-up', rng({ min: rb.min, max: cap }, n => '$' + n)], ['Space', sp ? `${r1(sp.w)} x ${r1(sp.d)} ${units()}` : '']].filter(x => x[1]);
     const limitsLine = `<span class="bbLimLine">${lim.length ? lim.map(([l, v]) => `<b>${l}</b> ${esc(v)}`).join(' · ') : 'No limits set: optional.'}</span> `;
     const evalBox = next.action === 'evaluate' && ev?.text ? `<div class="bbEval ${ev.fits === false ? 'bad' : ''}" role="status"><b>Checked before proposing:</b> ${esc(ev.text)}</div>` : '';
     bar.insertAdjacentHTML('beforeend', `<div class="bbCard">${noteBox}${keepBox}${evalBox}${next.questions[0] ? askCard(next.questions[0]) : ''}

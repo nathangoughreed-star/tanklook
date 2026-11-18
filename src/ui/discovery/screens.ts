@@ -3,6 +3,7 @@
 // when a step already holds a pick, nothing disabled. Tiles are flat runtime placeholders in the family's colour; a file at
 // public/art/discovery/<id>.webp (density: <archetype>-<density>.webp) replaces one when it exists, and a missing file removes its <img>
 // quietly. Picks are saved in the brief (`vision`) as they are made, so a refresh keeps them. Logic: ./logic.ts (pure, tested).
+import { fmtMinDelta, fmtMin } from '../../units';
 import { adoptTank } from '../projectStart';
 import { archetype, family, type Archetype, type Card, type Family } from '../../scene/archetypes';
 import { getSpecies } from '../../data/species';
@@ -244,15 +245,15 @@ export function mountDiscovery(store: Store, host: DiscoveryHost, root: HTMLElem
     draw();
   };
   const picHtml = (): string => !host.shot ? '' : `<div class="da-pic${pending && shownUrl ? ' da-stale' : ''}">${shownUrl ? `<img class="da-img" src="${shownUrl}" alt="Your tank with the animals you added">` : `<span class="da-ph">${shotOk ? 'Drawing your tank…' : 'The picture cannot be drawn on this device: the meter shows how full the tank is.'}</span>`}<span class="da-picnote">${pending && shownUrl ? 'Updating the picture…' : ''}</span></div>`;
-  const deltaWord = (d: Delta) => `${usdWord(d.setupUsd, true)} set-up, ${usdWord(d.monthlyUsd, true)} a month${d.minPerWeek ? `, ${d.minPerWeek > 0 ? '+' : '-'}${Math.abs(d.minPerWeek)} min a week` : ''}`;
+  const deltaWord = (d: Delta) => `${usdWord(d.setupUsd, true)} set-up, ${usdWord(d.monthlyUsd, true)} a month${d.minPerWeek ? `, ${fmtMinDelta(d.minPerWeek)} a week` : ''}`;
   /** The live side panel: the picture, the stocking meter, the money and the roster-level welfare lines. */
   const liveInner = (a: Archetype, tc: TankChoice, p: Picks): string => {
     const m = meterOf(chosen, tc.model), money = moneyOf(chosen, tc.model), proj = projects.get(liveKey(a, tc, p)), rl = rosterNow(tc);
     const meter = `<div class="da-meter da-${m.band}"><div class="da-mrow"><b>How full the tank is</b><span class="da-pct">${chosen.length ? Math.round(m.pct) + ' %' : ''}</span></div><span class="gauge da-gauge" style="${gaugeStyle(m.pct)}" role="img" aria-label="Stocking: ${Math.round(m.pct)} percent of what the tank holds"><i></i></span><span class="da-word">${esc(m.word)}</span></div>`;
     const cost = money ? `<div class="da-cost"><div class="da-row"><span class="da-k">Set-up</span><b>${usdWord(money.setupUsd)}</b><span class="da-sub">${usdWord(money.minSetupUsd)} at the cheapest that keeps them well</span></div>
 <div class="da-row"><span class="da-k">Monthly</span><b>${usdWord(money.monthlyUsd)}</b></div>
-<div class="da-row"><span class="da-k">Care</span><b>${money.minPerWeek} min a week</b></div>
-<div class="da-row da-add"><span class="da-k">The animals add</span><span>${usdWord(money.addSetupUsd, true)} set-up, ${usdWord(money.addMonthlyUsd, true)} a month${money.addMinPerWeek ? `, +${money.addMinPerWeek} min a week` : ''}</span></div>
+<div class="da-row"><span class="da-k">Care</span><b>${fmtMin(money.minPerWeek)} a week</b></div>
+<div class="da-row da-add"><span class="da-k">The animals add</span><span>${usdWord(money.addSetupUsd, true)} set-up, ${usdWord(money.addMonthlyUsd, true)} a month${money.addMinPerWeek ? `, ${fmtMinDelta(money.addMinPerWeek)} a week` : ''}</span></div>
 ${lastChange ? `<div class="da-row da-last"><span class="da-k">Last change</span><span>${esc(lastChange.what)}: ${esc(deltaWord(lastChange.delta))}</span></div>` : ''}
 <div class="da-row da-proj${proj?.over ? ' da-over' : ''}"><span class="da-k">Your project</span><span>${proj ? esc(proj.text) : pending ? 'Working it out…' : '—'}</span></div></div>` : '<p class="da-empty">Add an animal to see what it costs and how much room it takes.</p>';
     const temp = rl.temp ? `<p class="da-temp da-${rl.temp.tone}">Water temperature: ${esc(rl.temp.text)}</p>` : '';

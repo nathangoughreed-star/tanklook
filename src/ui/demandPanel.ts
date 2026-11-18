@@ -1,6 +1,7 @@
 // The demand panel (lane KK phase 4): three live readouts for the current tank (money, time, risk), in Quick Setup. Each is an
 // one expected number per bar; limits turn a bar red; a click lists what drives it and which swap lowers it.
 // Computed when the scene settles (debounced), never per frame. The profile (skill, water, kWh rate, limits) is an app pref.
+import { fmtMinDelta, fmtMin } from '../units';
 import { onExperience, getExperience, experienceOn, profileSkill, setAllLevels, setAreaLevel, setExperienceOn, type Area, type Level } from '../demand/experience';
 import { aquariumOnly } from '../scope';
 import { profileOf } from '../demand/limitsHome';
@@ -123,7 +124,7 @@ export function attachDemandPanel(store: Store, mount: HTMLElement, opts: Demand
     const S = store.tank, nA = S.fish.length, nP = S.items.filter(i => i.kind === 'plant' || i.kind === 'coral').length;
     q('.dmmode').textContent = nA ? `With ${nA} animal${nA > 1 ? 's' : ''}${B ? `; without them: ${usd(B.totals.setupUsd)} to set up, ${usd(B.totals.upkeepUsdMo)} a month` : ''}`
       : nP ? 'Plants only: what it costs to keep this planted tank running. Add animals and watch it climb.' : 'Empty tank: the gear and upkeep before anything lives in it.';
-    q('.dmsum').innerHTML = `${esc(usd(D.totals.setupUsd))}<span class="dmrest"> · ${esc(usd(D.totals.upkeepUsdMo))}/mo · ${Math.round(D.totals.minPerWeek)} min/wk · difficulty ${D.totals.risk.toFixed(1)}</span>`;
+    q('.dmsum').innerHTML = `${esc(usd(D.totals.setupUsd))}<span class="dmrest"> · ${esc(usd(D.totals.upkeepUsdMo))}/mo · ${fmtMin(D.totals.minPerWeek)}/wk · difficulty ${D.totals.risk.toFixed(1)}</span>`;
     renderCompliance();
     renderLid();
     renderDeals();
@@ -155,8 +156,8 @@ export function attachDemandPanel(store: Store, mount: HTMLElement, opts: Demand
     if (!sol || sol.status !== 'over') return;
     const sgn = (v: number, f: (n: number) => string) => (v < 0 ? '−' : '+') + f(Math.abs(v));
     const deltas = (o: Option) => [Math.abs(o.delta.startupUsd) >= 1 ? `${sgn(o.delta.startupUsd, usd)} set-up` : '', Math.abs(o.delta.monthlyUsd) >= 0.5 ? `${sgn(o.delta.monthlyUsd, usd)}/mo` : '',
-      Math.abs(o.delta.minPerWeek) >= 0.5 ? `${sgn(o.delta.minPerWeek, n => Math.round(n) + ' min/wk')}${o.estimate ? ' (estimate)' : ''}` : ''].filter(Boolean).join(', ') || 'no change in cost or time';
-    const need = (o: Option) => [o.needs.startupUsd ? `+${usd(o.needs.startupUsd)} set-up` : '', o.needs.monthlyUsd ? `+${usd(o.needs.monthlyUsd)}/mo` : '', o.needs.minPerWeek ? `+${o.needs.minPerWeek} min/wk` : ''].filter(Boolean).join(', ');
+      Math.abs(o.delta.minPerWeek) >= 0.5 ? `${sgn(o.delta.minPerWeek, n => fmtMinDelta(n) + '/wk')}${o.estimate ? ' (estimate)' : ''}` : ''].filter(Boolean).join(', ') || 'no change in cost or time';
+    const need = (o: Option) => [o.needs.startupUsd ? `+${usd(o.needs.startupUsd)} set-up` : '', o.needs.monthlyUsd ? `+${usd(o.needs.monthlyUsd)}/mo` : '', o.needs.minPerWeek ? `${fmtMinDelta(o.needs.minPerWeek)}/wk` : ''].filter(Boolean).join(', ');
     const card = (o: Option, relax: boolean) => `<div class="dmopt"><b>${esc(o.title)}</b><div class="dmoptd">${esc(o.detail)}</div><div>${esc(deltas(o))}</div>
       <ul class="dmoptst">${o.status.map(r => `<li class="${r.state}">${r.state === 'pass' ? '✓' : r.state === 'over' ? '✗' : '?'} ${esc(r.label)}: ${esc(r.text)}</li>`).join('')}</ul>
       ${relax ? `<div class="dmneeds">Needs ${esc(need(o))} on your limit</div>` : ''}${o.newUnknown.length ? `<div class="dmoptd">Not enough information to check: ${esc(o.newUnknown[0])}</div>` : ''}
@@ -278,7 +279,7 @@ Relative to your stated experience (see Your situation).`;
     drill.innerHTML = h || '<div class="hint">Nothing in this tank adds to it.</div>';
   }
   const eff = (d: { setup: number; upkeep: number; minutes: number; risk: number }) => [
-    `set-up ${sgn(d.setup, usd)}`, `upkeep ${sgn(d.upkeep, usd)}/mo`, `time ${sgn(d.minutes, v => `${Math.round(v)} min`)}`, `risk ${sgn(d.risk, v => v.toFixed(1))}`].join(' · ');
+    `set-up ${sgn(d.setup, usd)}`, `upkeep ${sgn(d.upkeep, usd)}/mo`, `time ${sgn(d.minutes, fmtMinDelta)}`, `risk ${sgn(d.risk, v => v.toFixed(1))}`].join(' · ');
   const sgn = (v: number, f: (n: number) => string) => (f(Math.abs(v)).replace(/[^0-9.]/g, '').replace(/^0+(\.0+)?$/, '') === '' ? 'same' : (v < 0 ? '−' : '+') + f(Math.abs(v)));
 
   // ---- limits and situation forms
@@ -290,20 +291,19 @@ Relative to your stated experience (see Your situation).`;
     lim.innerHTML = `<div class="hint">Switch a guardrail on to check this tank against it. A limit that is off is never held against the build; its cost and time still show above.</div>`
       + capRow('dmSetup', 'Set-up cost under', C.startupUsd, 10, '$')
       + capRow('dmMonthly', 'Upkeep under', C.monthlyUsd, 5, '$ a month')
-      + capRow('dmMin', 'Time under', C.minutesPerWeek, 5, 'minutes a week')
       + `<label class="dmcap"><input type="checkbox" id="dmSpaceOn" ${C.space?.on !== false && sp ? 'checked' : ''} ${sp ? '' : 'disabled'}> Fits my space ${sp ? '' : '<i>(set your space on the fullness tile first)</i>'}</label>
       <label>Difficulty <select id="dmRisk"><option value="any">no limit</option><option value="moderate">moderate at most</option><option value="safe">easy only</option></select></label>
       <label>Care effort (advice only) <select id="dmEffort"><option value="">any</option><option value="low">low</option><option value="medium">medium</option><option value="high">high</option></select></label>
       <label>Experience (advice only) <select id="dmExp"><option value="">not said</option>${SKILL.map((t, i) => `<option value="${i}">${t}</option>`).join('')}</select></label>`;
     (q('#dmRisk') as HTMLSelectElement).value = L.risk ?? 'any'; (q('#dmEffort') as HTMLSelectElement).value = C.effort ?? ''; (q('#dmExp') as HTMLSelectElement).value = experienceOn() ? String(getExperience().levels.fundamentals) : '';
-    const START: Record<string, number> = { dmSetup: 300, dmMonthly: 40, dmMin: 60 }; // what a newly switched-on limit starts at
+    const START: Record<string, number> = { dmSetup: 300, dmMonthly: 40 }; // what a newly switched-on limit starts at
     const cap = (id: string, prev?: Cap): Cap | undefined => {
       const on = (q(`#${id}On`) as HTMLInputElement).checked, v = (q('#' + id) as HTMLInputElement).value;
       return v === '' ? (on ? { on: true, value: prev?.value || START[id] } : undefined) : { on, value: Math.max(0, +v) || START[id] };
     };
     const change = () => {
-      const c: Constraints = {}, s = cap('dmSetup', C.startupUsd), m = cap('dmMonthly', C.monthlyUsd), t = cap('dmMin', C.minutesPerWeek);
-      if (s) c.startupUsd = s; if (m) c.monthlyUsd = m; if (t) c.minutesPerWeek = t;
+      const c: Constraints = {}, s = cap('dmSetup', C.startupUsd), m = cap('dmMonthly', C.monthlyUsd);
+      if (s) c.startupUsd = s; if (m) c.monthlyUsd = m;
       if (sp || C.space) c.space = { on: (q('#dmSpaceOn') as HTMLInputElement).checked };
       const ef = (q('#dmEffort') as HTMLSelectElement).value, ex = (q('#dmExp') as HTMLSelectElement).value;
       if (ef) c.effort = ef as Constraints['effort'];
@@ -337,16 +337,16 @@ Relative to your stated experience (see Your situation).`;
   recompute();
   /** Set some limits from outside (the care slider's shortcut): saved, the form and the bars follow. */
   const setLimits = (l: Partial<UserProfile['limits']>) => {
-    const { upkeep: up0, minPerWeek: mpw0, risk: rk0 } = l, c0 = constraintsFromLimits({ upkeep: up0, minPerWeek: mpw0 });
+    const { upkeep: up0, risk: rk0 } = l, c0 = constraintsFromLimits({ upkeep: up0 });   // R137: care time is never a limit
     store.edit(t => { // P5: a shortcut is a brief edit
       let b = t.brief; if (rk0 !== undefined) b = setHome(b, { risk: rk0 === 'any' ? undefined : rk0 });
-      if (mpw0 !== undefined || up0 !== undefined) { const k = capsOf(b); b = withCaps(b, { ...k, ...(mpw0 !== undefined ? { minutesPerWeek: c0.minutesPerWeek ?? { on: false, value: k.minutesPerWeek?.value ?? 0 } } : {}), ...(up0 !== undefined ? { monthlyUsd: c0.monthlyUsd ?? { on: false, value: k.monthlyUsd?.value ?? 0 } } : {}) }); }
+      if (up0 !== undefined) { const k = capsOf(b); b = withCaps(b, { ...k, ...(up0 !== undefined ? { monthlyUsd: c0.monthlyUsd ?? { on: false, value: k.monthlyUsd?.value ?? 0 } } : {}) }); }
       t.brief = b;
     }, { coalesce: 'guardrails' });
     P = load(store.tank.brief);
     if (store.tank.constraints) { // this tank has guardrails: the shortcut moves its time and upkeep caps too
-      const { upkeep, minPerWeek } = l, c = constraintsFromLimits({ upkeep, minPerWeek });
-      store.edit(t => { const k = { ...t.constraints }; if (minPerWeek !== undefined) k.minutesPerWeek = c.minutesPerWeek ?? { on: false, value: k.minutesPerWeek?.value ?? 0 }; if (upkeep !== undefined) k.monthlyUsd = c.monthlyUsd ?? { on: false, value: k.monthlyUsd?.value ?? 0 }; t.constraints = k; }, { coalesce: 'guardrails' });
+      const { upkeep } = l, c = constraintsFromLimits({ upkeep });
+      store.edit(t => { const k = { ...t.constraints }; if (upkeep !== undefined) k.monthlyUsd = c.monthlyUsd ?? { on: false, value: k.monthlyUsd?.value ?? 0 }; t.constraints = k; }, { coalesce: 'guardrails' });
     }
     limits(); render();
   };

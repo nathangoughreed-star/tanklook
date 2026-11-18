@@ -1,6 +1,7 @@
 // Setup effort, care commitment and confidence (lane NG6, 2026-10-29). Everything here is derived from the build's own parts and the demand
 // model's rhythm rows, never typed per proposal. Every figure carries a confidence: 'validated' = the number rests on a retailer listing or a cited
 // page; 'provisional' = an assumption we state (shown with a dotted underline and the reason). Information only: no gate or score reads it.
+import { fmtMin } from '../units';
 import { priceRow, PRICES_AS_OF } from './prices';
 import { demandOf } from './engine';
 import { mean3 } from './range';
@@ -58,7 +59,7 @@ export function careCommitmentOf(p: Proposal, h: Habitat, gal: number, P: UserPr
   const D = demandOf(p.build.setup, P), min = Math.round(D.totals.minPerWeek);
   const wc = D.items.find(c => c.key === 'waterchange'), pct = wc ? Number(/(\d+) %/.exec(wc.label)?.[1]) : NaN;
   const waterChange = h !== 'dry' && Number.isFinite(pct) ? { pct, gal: Math.max(0.5, round(gal * pct / 100)) } : undefined;
-  const text = `about ${min} min a week${waterChange ? `, 1 x ${waterChange.gal} gal water change` : ''}`;
+  const text = `about ${fmtMin(min)} a week${waterChange ? `, 1 x ${waterChange.gal} gal water change` : ''}`;
   return { minPerWeek: min, waterChange, text, ...careFigure() };
 }
 

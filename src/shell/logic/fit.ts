@@ -1,5 +1,6 @@
 // UI2 shell step 5 (lane S5): "If it does not all fit" -> "Fill in what I left open" (Suggest) as a pure view-model.
 // Engine calls: `suggestFromBrief` only (limits are read from the brief, no own fields); the cards are drawn from its Proposals.
+import { fmtMin } from '../../units';
 import type { Brief } from '../../scene/brief';
 import { suggestFromBrief, type Proposal, type Suggestions } from '../../demand/suggest';
 import type { UserProfile } from '../../demand';
@@ -13,7 +14,7 @@ export interface FitRun { cards: FitCard[]; /** nothing fit: one sentence, with 
 export function cardOf(p: Proposal, i: number): FitCard {
   const b = p.build, t = p.totals;
   return { i, title: p.archetype.title, tank: b.tank.name, animals: b.animals.map(a => `${a.n} ${getSpecies(a.species)?.name ?? a.species}`).join(', '),
-    setup: usd(t.startupUsd), monthly: `${usd(t.monthlyUsd)}/mo`, minutes: `${Math.round(t.minPerWeek)} min/wk`, checks: p.status.map(s => `${s.label}: ${s.text}`), note: p.experienceNote ?? '', setupUsd: t.startupUsd };
+    setup: usd(t.startupUsd), monthly: `${usd(t.monthlyUsd)}/mo`, minutes: `${fmtMin(t.minPerWeek)}/wk`, checks: p.status.map(s => `${s.label}: ${s.text}`), note: p.experienceNote ?? '', setupUsd: t.startupUsd };
 }
 /** Run Suggest on what the brief holds (budget, monthly, time, space, owned gear, No new equipment, experience through the profile). */
 export function runFit(b: Brief, P: UserProfile, units: Units, now = Date.now()): FitRun {

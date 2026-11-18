@@ -2,6 +2,7 @@
 // animal, set how many (graded band messages, male / female counts for species kept by sex), say whether other animals go in with them
 // (ranked by compatibility), and watch the bare tank in the viewer step up through catalogue sizes. The fork card answers the fullness
 // tile's "Make room or swap..." button. Logic lives in stockPlanLogic.ts (pure, tested); this file draws it and writes the scene.
+import { fmtMin } from '../units';
 import { hasLocks } from './projectStart';
 import { rng } from '../art/paint';
 import { CARE } from '../data/care';
@@ -191,13 +192,13 @@ export function attachStockPlan(store: Store, viewer: Viewer, status: (m: string
     const b = getBrief(), max = valueOf(b, 'constraints.budget'), lo = minOf(b, 'constraints.budget'), { minimum: mn, ideal: id } = t.tiers;
     const lvl = (n: number) => max !== undefined && n > max || lo !== undefined && n < lo ? ' gvOver' : '';   // lane GV8: red outside the band, above or below
     const ws = rosterWarnings(st, { maxUsd: max, minUsd: lo }, store.scene.units === 'in');
-    const mins = (a: number, c: number) => a === c ? `${a}` : `${a}-${c}`;
+    const mins = (a: number, c: number) => a === c ? fmtMin(a) : `${fmtMin(a)}-${fmtMin(c)}`;
     return `<div class="spHd">What this roster comes to</div><div class="gvTotals" aria-label="Running totals">
 <div class="gvDiff"><span class="spLab">Difficulty</span><b>${esc(t.difficulty.word)}</b><span class="spNote">${esc(t.difficulty.why)}</span></div>
 <div class="gvTier${lvl(mn.setupUsd)}"><span class="spLab">Minimum viable set-up</span><b>${usd(mn.setupUsd)}</b><span class="spNote">animal-care essentials only</span></div>
 <div class="gvTier${lvl(id.setupUsd)}"><span class="spLab">Ideal set-up</span><b>${usd(id.setupUsd)}</b><span class="spNote">the full build</span></div>
 <div class="gvTier"><span class="spLab">Monthly</span><b>${Math.round(mn.upkeepUsdMo) === Math.round(id.upkeepUsdMo) ? usd(mn.upkeepUsdMo) : `${usd(mn.upkeepUsdMo)}-${usd(id.upkeepUsdMo)}`}</b></div>
-<div class="gvTier"><span class="spLab">Care</span><b>${mins(Math.round(mn.minPerWeek), Math.round(id.minPerWeek))} min</b><span class="spNote">a week</span></div></div>
+<div class="gvTier"><span class="spLab">Care</span><b>${mins(mn.minPerWeek, id.minPerWeek)}</b><span class="spNote">a week</span></div></div>
 <div class="spHd">Warnings${ws.length ? ` (${ws.length})` : ''}</div>${ws.length ? `<ul class="gvWarns">${ws.map((w, i) => `<li class="${w.welfare ? 'gvRed' : 'gvAmber'}"><span>${esc(w.text)}${w.welfare ? ' <em>Not a valid tradeoff.</em>' : ''}</span>${w.fix ? `<button type="button" data-fix="${i}">${esc(w.fix.label)}</button>` : ''}</li>`).join('')}</ul>` : '<p class="spNote">No conflicts so far.</p>'}${undoFix ? `<button type="button" class="spLink" data-act="undofix">Undo: ${esc(undoFix.label)}</button>` : ''}`;
   };
   const fixesNow = (): ({ op: RosterFixOp; label: string } | undefined)[] => { const b = getBrief(); return rosterWarnings({ picks, chosen }, { maxUsd: valueOf(b, 'constraints.budget'), minUsd: minOf(b, 'constraints.budget') }, store.scene.units === 'in').map(w => w.fix); };

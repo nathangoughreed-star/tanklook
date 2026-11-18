@@ -1,6 +1,7 @@
 // The plan sheet of path 1 (lane P6b, 2026-10-20): a paper-white page over the app (it reuses the setup sheet's page, bar and print rules), worked
 // out from the tank as it stands in the editor: the verdict (space and filtration bars, hard truths), the shopping list with the need each item
 // serves, the totals, the sales that fit, and the one-line cycle note. Print uses the browser's print dialog; .txt downloads the same text.
+import { fmtMin } from '../units';
 import type { Build } from '../scene/builds';
 import { bundleLine, planOf, planText, type Level, type Plan } from '../scene/plan';
 import { pinnedKit } from '../demand/pinned';
@@ -49,7 +50,7 @@ ${needs.length ? `<h3>Care needs the tool cannot check</h3><ul class="planTruths
 <h2>What it costs</h2>${p.bundle ? `<p class="sheetNote">${esc(bundleLine(p.bundle))}</p>` : ''}
 <table><tr><th scope="row">Set-up</th><td class="q">${usd(p.setupUsd)}</td><td>once, with the sales below that fit</td></tr>
 <tr><th scope="row">Each month</th><td class="q">${usd(p.upkeepUsdMo)}</td><td>food, salt or supplies, power, replacing what dies</td></tr>
-<tr><th scope="row">Your time</th><td class="q">${p.minPerWeek} min</td><td>a week, once it is running</td></tr>
+<tr><th scope="row">Your time</th><td class="q">${fmtMin(p.minPerWeek)}</td><td>a week, once it is running</td></tr>
 <tr title="${esc(p.rhythmNote)}"><th scope="row">Rhythm</th><td colspan="2">${esc(p.rhythm)} <em>(estimate)</em></td></tr>${p.awayText ? `
 <tr title="${esc(p.rhythmNote)}"><th scope="row">Can be left</th><td colspan="2">${esc(p.awayText)}</td></tr>` : ''}</table>
 ${p.deals.length ? `<h2>Sales that fit</h2><ul class="planDeals">${p.deals.map(d => `<li>${esc(d.text)}</li>`).join('')}</ul>` : ''}

@@ -81,7 +81,6 @@ export const LIMIT_FIELDS: readonly LimitField[] = [
   { id: 'startup', label: 'Startup budget', hint: 'What you would like to spend getting set up', unit: '$', step: 10, kind: 'num' },
   { id: 'ongoing', label: 'Ongoing budget', hint: 'Per month, once it is running', unit: '$ a month', step: 1, kind: 'num' },
   { id: 'setup', label: 'Setup time', hint: 'How long you can spend building it', unit: 'hours', step: 1, kind: 'num' },
-  { id: 'care', label: 'Care time', hint: 'The upkeep you can give it', unit: 'min a week', step: 5, kind: 'num' },
   { id: 'experience', label: 'Experience', hint: 'Guidance only: nothing is ruled out for it', unit: '', step: 1, kind: 'experience' },
 ];
 /** What a typed limit is when the person does not say (Nathan 2026-11-02, Q3): space is Firm (a tank either fits or it does not); the budgets and the setup and

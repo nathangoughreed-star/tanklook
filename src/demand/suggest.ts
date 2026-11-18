@@ -12,6 +12,7 @@
 // or auto-water-changer time savings: the build's own gear and the engine's own totals decide), costs and minutes are estimates, and when nothing
 // qualifies the answer is exactly NO_SUGGESTION, never "impossible", with the closest misses (what limit to raise) listed apart, never as fits.
 // Deterministic: fixed archetype order, scores, ties by id. Only the guardrails are filters; appeal tags only rank.
+import { fmtMinDelta, fmtMin } from '../units';
 import { experienceOf } from './experience';
 import { gateReason } from '../scene/experienceGate';
 import { kindInScope } from '../scope';
@@ -449,7 +450,7 @@ function complexityOf(b: Build, S: TankSetup): number {
   return Math.min(1, Math.min(b.minPerWeek, 120) / 120 * 0.5 + (S.water.on && S.water.salt ? 0.25 : 0) + co2 + small + (b.finish?.level === 3 ? 0.1 : 0));
 }
 function experienceNote(exp: 0 | 1 | 2 | undefined, cx: number, min: number): string | undefined {
-  if (exp === 0 && cx >= 0.5) return `More hands-on than a first tank usually needs (about ${Math.round(min)} min a week, more to learn): fine if you enjoy it.`;
+  if (exp === 0 && cx >= 0.5) return `More hands-on than a first tank usually needs (about ${fmtMin(min)} a week, more to learn): fine if you enjoy it.`;
   if (exp === 2 && cx < 0.2) return 'A simple build: you could take it further (more plants, stronger light, CO2) if you want a project.';
   return undefined;
 }
@@ -474,7 +475,7 @@ function tradeoffOf(p: Pick<Proposal, 'build' | 'totals' | 'underCeilingUsd'>, s
   const t: Record<StrategyId, string> = {
     economy: `Lowest cost: the smallest tank that holds them (${gal} gal) and ${finishWord}, so less room and a plainer look.${left}`,
     size: `Room first: ${gal} gal gives stability and space; the money goes to the tank, so ${finishWord}.${left}`,
-    look: `Look first: ${finishWord} in ${gal} gal; more plants mean more light and feeding (about ${Math.round(p.totals.minPerWeek)} min a week) and less room than the biggest tank.${left}`,
+    look: `Look first: ${finishWord} in ${gal} gal; more plants mean more light and feeding (about ${fmtMin(p.totals.minPerWeek)} a week) and less room than the biggest tank.${left}`,
     balanced: `A middle path: ${gal} gal, a filter with headroom and ${finishWord}; nothing is stretched, nothing is the best it could be.${left}`,
     equipment: `Easier upkeep: gear that saves chores costs more than the plainest gear, in ${gal} gal with ${finishWord}.${left}`,
     scape: `Same animals, another look (${p.build.finish ? LAYOUTS[p.build.finish.style].label : 'a different style'}): ${finishWord} in ${gal} gal; the cost is close to the other looks, the mood is different.${left}`,
@@ -568,7 +569,7 @@ function conceptMaker(w: Wants, P0: UserProfile, units: Units, now: number) {
           else if (r.id === 'monthly') needs.monthlyUsd = Math.ceil(t.monthlyUsd - (L.upkeepUsd ?? 0));
           else if (r.id === 'time') needs.minPerWeek = Math.ceil(t.minPerWeek - (L.minPerWeek ?? 0));
         }
-        const text = [needs.startupUsd ? `+${usd(needs.startupUsd)} set-up` : '', needs.monthlyUsd ? `+${usd(needs.monthlyUsd)} a month` : '', needs.minPerWeek ? `+${needs.minPerWeek} min a week` : ''].filter(Boolean).join(', ');
+        const text = [needs.startupUsd ? `+${usd(needs.startupUsd)} set-up` : '', needs.monthlyUsd ? `+${usd(needs.monthlyUsd)} a month` : '', needs.minPerWeek ? `${fmtMinDelta(needs.minPerWeek)} a week` : ''].filter(Boolean).join(', ');
         if (text && (!near || relaxSize(needs) < relaxSize(near.needs))) near = { archetype: a, build: b, totals: t, needs, text };
       }
     }
@@ -773,7 +774,7 @@ export type Option = Proposal;
 const signed = (n: number, unit: (x: number) => string) => Math.round(n) === 0 ? '' : `${n < 0 ? '-' : '+'}${unit(Math.abs(n))}`;
 /** "+$85 set-up, +$3 a month" (zero differences left out; "same cost and care time" when nothing moves); compromise.ts words its edits with it */
 export function deltaText(d: Money): string {
-  const min = (x: number) => `${Math.round(x)} min`;
+  const min = (x: number) => fmtMin(x);
   const parts = [signed(d.startupUsd, usd) && `${signed(d.startupUsd, usd)} set-up`, signed(d.monthlyUsd, usd) && `${signed(d.monthlyUsd, usd)} a month`, signed(d.minPerWeek, min) && `${signed(d.minPerWeek, min)} a week`].filter(Boolean);
   return parts.length ? parts.join(', ') : 'same cost and care time';
 }

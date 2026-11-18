@@ -1,5 +1,6 @@
 // Sidebar wiring. Inputs write through store.update(); one sync() pulls every control back from the scene,
 // so undo/redo, file open and pointer drags all refresh the panels the same way.
+import { fmtMin } from '../units';
 import { adoptLegacy, experienceOn, getExperience, onExperience, setAllLevels } from '../demand/experience';
 import { aquariumOnly, kindInScope, PAUSED_NOTE, scopeSpecies } from '../scope';
 import { FOCUS_SECS, type FocusSec } from '../render/menuFocus';
@@ -1425,7 +1426,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     const r = fitToLimits(S(), P), nm: Record<string, string> = { setup: 'set-up money', upkeep: 'upkeep', minutes: 'time', risk: 'difficulty' };
     if (r.swaps.length) store.edit(s => { s.fish = r.scene.fish; s.items = r.scene.items; }, { history: false });
     const sw = r.swaps.slice(0, 3).map(x => `${x.from} for ${x.to}`).join(', ') + (r.swaps.length > 3 ? ` and ${r.swaps.length - 3} more` : '');
-    const why = (b: string) => b === 'setup' ? `the tank, stand, light and filter alone cost about $${Math.round(r.floor.setup).toLocaleString()}` : b === 'minutes' ? `water changes and upkeep alone take about ${Math.round(r.floor.minutes)} min` : b === 'upkeep' ? `power, water and filter parts alone come to about $${Math.round(r.floor.upkeep)} a month` : 'nothing easier suits this style';
+    const why = (b: string) => b === 'setup' ? `the tank, stand, light and filter alone cost about $${Math.round(r.floor.setup).toLocaleString()}` : b === 'minutes' ? `water changes and upkeep alone take about ${fmtMin(r.floor.minutes)}` : b === 'upkeep' ? `power, water and filter parts alone come to about $${Math.round(r.floor.upkeep)} a month` : 'nothing easier suits this style';
     return (r.swaps.length ? ` Swapped ${sw} to stay within your limits.` : '') + r.left.map(b => ` Still over your ${nm[b]} limit: ${why(b)}.`).join('');
   };
   $('layoutShuffle').onclick = async () => {

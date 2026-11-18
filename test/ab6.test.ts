@@ -42,9 +42,9 @@ describe('AB6 one strength model: hard = filters, prefer = ranks, unsure = nothi
     }
   });
   it('practical limits: a target is a preference, a firm maximum is hard; same brief fields as the limits panel', () => {
-    let b = applyQuickPrefs(fresh(), A({ budget: { max: 300, firm: false }, care: { max: 60, firm: true } }));
+    let b = applyQuickPrefs(fresh(), A({ budget: { max: 300, firm: false }, care: { max: 60, firm: true } }));   // R137: a typed care limit is stored in the brief but never read back as a limit
     expect(getItem(b, 'constraints.budget')).toMatchObject({ value: 300, status: 'preference' }); expect(getItem(b, 'constraints.careMin')).toMatchObject({ value: 60, status: 'hard' });
-    expect(readQuickPrefs(b)).toMatchObject({ budgetUsd: { value: 300, strength: 'prefer' }, careMinPerWeek: { value: 60, strength: 'hard' } });
+    expect(readQuickPrefs(b)).toMatchObject({ budgetUsd: { value: 300, strength: 'prefer' } }); expect(readQuickPrefs(b).careMinPerWeek).toBeUndefined();
     b = applyQuickPrefs(b, A({ budget: { max: 300, firm: true } })); expect(readQuickPrefs(b).budgetUsd?.strength).toBe('hard'); expect(readQuickPrefs(b).careMinPerWeek).toBeUndefined();
     expect(applyQuickPrefs(b, emptyAnswers())).toEqual(fresh());
     expect(setLimit(A({}), 'budget', 250).budget).toEqual({ max: 250, firm: false }); expect(setLimit(A({ budget: { max: 5, firm: true } }), 'budget', 0).budget).toBeUndefined();

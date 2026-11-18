@@ -25,7 +25,7 @@ export interface Reason { gate: GateId; severity: 'blocked' | 'provisional'; tex
 export interface GateVerdict { verdict: Verdict; gates: GateResult[]; reasons: Reason[]; /** limits nobody set, worded for the card's assumptions list */ assumptions: string[] }
 export interface GateInput { w: Wants; ev: ConceptEval; est: Estimate; world: Env; water: Water; tank: TankModel; roster: AnimalCount[]; /** the roster fits the tank by the stocking screen's own fit (tankfit `fitIn`: no fails) */ holds: boolean }
 
-const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US'), min = (n: number) => `${Math.round(n)} min`;
+const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
 
 export function gateCandidate(x: GateInput): GateVerdict {
   const { w, ev, est, world, water, tank, roster } = x, C = w.constraints, fx = w.flexLimits ?? {};
@@ -68,7 +68,6 @@ export function gateCandidate(x: GateInput): GateVerdict {
   };
   numeric('budget', 'set-up budget', C.startupUsd?.on ? C.startupUsd.value : undefined, !!fx.startupUsd, est.startupUsd, est.figures.startup.conf, usd, '');
   numeric('monthly', 'monthly', C.monthlyUsd?.on ? C.monthlyUsd.value : undefined, !!fx.monthlyUsd, est.monthlyUsd, est.figures.monthly.conf, usd, ' a month');
-  numeric('care', 'care-time', C.minutesPerWeek?.on ? C.minutesPerWeek.value : undefined, !!fx.minPerWeek, est.minPerWeek, est.figures.care.conf, min, ' a week');
   numeric('setup', 'set-up time', w.setupHours, !!fx.setupHours, est.setupHours, est.figures.setup.conf, n => `${Math.round(n * 10) / 10} h`, '');
 
   // ---- space and the tank's size: exact, no estimate in them ----
@@ -88,7 +87,6 @@ export function gateCandidate(x: GateInput): GateVerdict {
   if (lo) {
     if (lo.startupUsd !== undefined && !fx.startupUsd && est.startupUsd.mean < lo.startupUsd) under.push(`set-up under your ${usd(lo.startupUsd)} floor`);
     if (lo.monthlyUsd !== undefined && !fx.monthlyUsd && est.monthlyUsd.mean < lo.monthlyUsd) under.push(`upkeep under your ${usd(lo.monthlyUsd)} a month floor`);
-    if (lo.minPerWeek !== undefined && !fx.minPerWeek && est.minPerWeek.mean < lo.minPerWeek) under.push(`care under your ${lo.minPerWeek} min a week floor`);
     if (lo.setupHours !== undefined && !fx.setupHours && est.setupHours.mean < lo.setupHours) under.push(`set-up time under your ${lo.setupHours} h floor`);
   }
   if (under.length) { gates.push({ id: 'lower', kind: 'firm', state: 'over', text: under.join('; ') }); block('lower', `Under a lower bound you set: ${under.join('; ')}.`); }
