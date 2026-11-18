@@ -13,7 +13,7 @@ describe('Equipment tree', () => {
     expect(g[0].kinds.map(k => k.id)).toEqual(expect.arrayContaining(['filter']));
     const all = g.flatMap(x => x.kinds.map(k => k.id));
     expect(new Set(all).size).toBe(all.length);
-    expect(all.sort()).toEqual(kindsOf(new Store().tank).sort());
+    expect(all.sort()).toEqual(kindsOf(new Store().tank).filter(k => k !== 'ferts').sort());   // PL2: fertiliser lives in the Plants card
     expect(g.every(x => x.kinds.every(k => k.status.length > 0))).toBe(true);
   });
   for (const gallons of ['default', 'bigger']) {

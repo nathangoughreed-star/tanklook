@@ -173,7 +173,7 @@ export function wsSide(S: TankSetup, id: SectionId): WsSide {
     return { sub: S.fish.length ? `${S.fish.length} in all` : '', chips: [...by].map(([sp, c]) => ({ id: sp, label: getSpecies(sp)?.name ?? sp, n: c })), lines: [], empty: 'No animals yet. Pick one on the right to add it.' };
   }
   if (id === 'equipment') {
-    const used = categories(S).map(c => ({ c, it: inUseItem(S, c.id) })).filter(x => x.it);
+    const used = categories(S).filter(c => c.id !== 'ferts').map(c => ({ c, it: inUseItem(S, c.id) })).filter(x => x.it);
     return { sub: '', chips: [], lines: used.map(({ c, it }) => [c.label, itemName(c.id, it!)] as [string, string]), empty: 'No gear chosen yet.' };
   }
   return { sub: '', chips: [], lines: tankLines(S), empty: '' };

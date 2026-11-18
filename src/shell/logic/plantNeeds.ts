@@ -61,7 +61,13 @@ export interface PlantNeedsView {
   /** the "Remove these plants" button; null when the tank has none */
   remove: { n: number; label: string; describe: string; apply: (t: TankSetup) => void } | null;
   replace: ReplacePlan | null;
+  /** the fertiliser row (Nathan 2026-11-17: fertiliser lives in Plants, not Equipment); null on a salt or dry tank or with none chosen */
+  fert: FertView | null;
+  /** the CO2 system the tank has (gear: edited in Equipment, never here); null when none injects */
+  co2Sys: { label: string } | null;
 }
+export interface FertOption { id: string; label: string; dose: string; setupUsd: number; monthlyUsd: number; on: boolean }
+export interface FertView { current: FertOption | null; options: FertOption[]; pick: (t: TankSetup, id: string) => void }
 
 const usd = (v: number) => '$' + Math.round(v).toLocaleString('en-US');
 const BAND = { low: 'Low light', medium: 'Medium light', high: 'High light' } as const;
@@ -260,5 +266,25 @@ export function plantNeedsView(S: TankSetup, price?: PriceOf): PlantNeedsView {
     describe: `Takes every plant out of the tank: ${rows.map(r => `${r.label} ×${r.n}`).join(', ')}. The rest of the design is not touched. Ctrl+Z brings them back.`,
     apply: (t: TankSetup) => { for (const it of removable) removeItem(t, it.id); },
   } : null;
-  return { rows, total, summary, ok: !!rows.length && !bad.length, tank: has, fixes, remove, replace: replacePlan(S, rows) };
+  return { rows, total, summary, ok: !!rows.length && !bad.length, tank: has, fixes, remove, replace: replacePlan(S, rows), fert: fertView(S), co2Sys: co2System(S) };
+}
+
+// ---------------------------------------------------------------------------------------------------------------- fertiliser row and the CO2 pointer
+const DOSE = (f: number) => (f >= 2 ? 'Heavy dose' : f >= 1 ? 'Regular dose' : 'Light dose');
+/** The fertiliser choices (the Tech menu's own ferts row) with dose and cost; shown once a fertiliser is in the tank. Picking is one undo step. */
+export function fertView(S: TankSetup): FertView | null {
+  if (!S.water.on || isSalt(S)) return null;
+  const cur = techOf(S).rows.ferts ?? 'none';
+  if (cur === 'none') return null;
+  const opt = (id: string): FertOption => { const d = optionDef('ferts', id), c = optionCost(S, 'ferts', id); return { id, label: d?.label ?? id, dose: DOSE(d?.fert ?? 0), setupUsd: c.setup.mode, monthlyUsd: c.monthly.mode, on: id === cur }; };
+  const options = ['roottabs', 'aio', 'ei', 'doser'].filter(id => optionDef('ferts', id)).map(opt);
+  return { current: options.find(o => o.on) ?? null, options, pick: (t, id) => { commitTech(t, s => withChoice(s, 'ferts', id)); } };
+}
+/** The tank's CO2 system, when one injects gas. */
+export function co2System(S: TankSetup): { label: string } | null {
+  if (!S.water.on || isSalt(S)) return null;
+  const t = techOf(S), d = optionDef('co2', t.rows.co2 ?? 'none');
+  if ((d?.co2 ?? 0) < 1) return null;
+  const p = reefOptionProducts('co2', t.rows.co2 ?? '').find(x => x.id === t.products?.co2);
+  return { label: p ? productName(p) : d!.label.replace(/ \(.*/, '') };
 }

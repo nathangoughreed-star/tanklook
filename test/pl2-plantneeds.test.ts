@@ -121,3 +121,18 @@ describe('remove and replace', () => {
     for (const s of none) expect(r.describe).toContain(`${s.fromLabel} ×${s.n}: no comparable plant`);
   });
 });
+
+describe('fertiliser row and CO2 pointer', () => {
+  it('no fertiliser row until one is added; then it lists choices with dose and cost and a pick is one undo step', () => {
+    const st = stocked(['stemred']);
+    expect(plantNeedsView(st.tank).fert).toBeNull(); expect(plantNeedsView(st.tank).co2Sys).toBeNull();
+    st.edit(s => plantNeedsView(s).fixes.find(f => f.kind === 'co2')!.apply(s));
+    const v = plantNeedsView(st.tank);
+    expect(v.co2Sys).toBeTruthy(); expect(v.fert!.current!.id).toBe('aio');
+    expect(v.fert!.options.map(o => o.id)).toEqual(expect.arrayContaining(['roottabs', 'aio', 'ei']));
+    expect(v.fert!.options.every(o => /dose/.test(o.dose))).toBe(true);
+    st.edit(s => v.fert!.pick(s, 'ei'));
+    expect(plantNeedsView(st.tank).fert!.current!.id).toBe('ei');
+    st.undo(); expect(plantNeedsView(st.tank).fert!.current!.id).toBe('aio');
+  });
+});

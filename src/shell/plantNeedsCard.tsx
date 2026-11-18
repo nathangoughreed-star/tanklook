@@ -6,6 +6,7 @@ import type { UserProfile } from '../demand';
 import { demandFor } from './logic/checks';
 import { plantNeedsView, type NeedCell, type PlantRow } from './logic/plantNeeds';
 import { PlantArt } from './plants';
+import { openSection } from './open';
 
 const Cell = ({ k, c }: { k: string; c: NeedCell }) => (
   <span class={`pncell ${c.met ? 'met' : 'unmet'}`} title={`${k}: ${c.need}. This tank: ${c.have}.`}>
@@ -45,6 +46,13 @@ export function PlantNeedsCard({ store, profile }: { store: Store; profile: () =
       ) : null}
       {v.replace ? <div class="hint pnswaps">{v.replace.swaps.map(s => <div>{s.to ? <>{s.fromLabel} ×{s.n} → <b>{s.toLabel}</b></> : <>{s.fromLabel} ×{s.n}: no comparable plant suits this tank, so it stays</>}</div>)}</div> : null}
       {done ? <div class="hint" role="status">Done: {done}. Ctrl+Z undoes it.</div> : null}
+      {v.co2Sys ? <div class="pnrowx"><span>CO2 system added: {v.co2Sys.label}.</span> <button type="button" class="linkbtn" onClick={() => openSection('equipment', 'co2')}>Edit it further in Equipment</button></div> : null}
+      {v.fert ? (
+        <div class="pnrowx pnfert"><span class="lbl">Fertiliser</span>
+          <select class="select" aria-label="Fertiliser" value={v.fert.current?.id} onChange={e => run('Fertiliser changed', t => v.fert!.pick(t, (e.target as HTMLSelectElement).value))}>
+            {v.fert.options.map(o => <option value={o.id}>{o.label}</option>)}</select>
+          <span class="hint">{v.fert.current ? `${v.fert.current.dose} · about $${Math.round(v.fert.current.monthlyUsd)}/mo${v.fert.current.setupUsd >= 0.5 ? ` + $${Math.round(v.fert.current.setupUsd)} to set up` : ''}` : ''}</span></div>
+      ) : null}
       <div class="pnrows">{v.rows.map(r => <Row r={r} onPick={() => { const it = S.items.find(x => x.variant === r.variant); if (it) store.selectItem(it.id); }} />)}</div>
     </div>
   );

@@ -236,7 +236,7 @@ const GROUPS: { id: string; label: string; kinds: CatId[] }[] = [
 const FIVE = new Set<string>(GROUPS.flatMap(g => g.kinds));
 /** Nathan's five categories (and "More equipment" for reef / reptile kinds he did not list), each with its kinds and a one-line status: what is chosen, or "none". */
 export function categoryGroups(S: TankSetup): CategoryGroup[] {
-  const have = categories(S).map(c => c.id), g = gearOfTank(S);
+  const have: CatId[] = categories(S).map(c => c.id).filter(id => id !== 'ferts'), g = gearOfTank(S); // fertiliser lives in the Plants card (PL2), not here
   const status = (id: CatId): KindStatus => { const u = inUseItem(S, id); return { id, label: LABEL[id], status: u ? itemName(id, u) : 'none', owned: g[id]?.owned.length ?? 0 }; };
   const groups = [...GROUPS, { id: 'more', label: 'More equipment', kinds: have.filter(c => !FIVE.has(c)) }];
   return groups.map(x => ({ id: x.id, label: x.label, kinds: x.kinds.filter(k => have.includes(k)).map(status) })).filter(x => x.kinds.length);
