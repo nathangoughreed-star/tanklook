@@ -34,6 +34,12 @@
   "b": 3.14,
   "src": "fishbase-bayes"
  },
+ "endler": {
+  "a": 0.01288,
+  "b": 3.14,
+  "src": "estimate",
+  "note": "Poecilia genus: the guppy's FishBase Bayesian a, b used for Endler's livebearer (no species row read)"
+ },
  "betta": {
   "a": 0.00977,
   "b": 2.97,

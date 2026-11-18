@@ -19,6 +19,7 @@
  "tigerbarb": {"c": ["asia"], "r": "Sumatra and Borneo, Indonesia", "s": "FishBase"},
  "boesemani": {"c": ["oceania"], "r": "Lake Ayamaru area, Bird's Head of West Papua (New Guinea)", "s": "FishBase"},
  "guppy": {"c": ["samerica"], "r": "Venezuela, Guyana, Trinidad and Barbados", "s": "FishBase", "form": "captive-bred"},
+ "endler": {"c": ["samerica"], "r": "Northeastern Venezuela (Campoma and Buena Vista lagoons, near Carúpano)", "s": "Seriously Fish"},
  "platy": {"c": ["namerica", "camerica"], "r": "Atlantic slope from Veracruz, Mexico to northern Belize", "s": "FishBase"},
  "molly": {"c": ["namerica", "camerica", "samerica"], "r": "Atlantic slope from Mexico to Colombia", "s": "FishBase", "est": 1},
  "swordtail": {"c": ["namerica", "camerica"], "r": "Atlantic slope from Veracruz, Mexico to Guatemala and Honduras", "s": "FishBase"},

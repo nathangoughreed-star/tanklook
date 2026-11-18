@@ -605,6 +605,12 @@ export const PLANS: Record<string, Plan> = {
     marks: [{ k: 'blob', u: 0.55, v: 0, ru: 0.06, rv: 0.05, c: '#2d6fb0', a: 0.8 }, { k: 'blob', u: 0.47, v: 0.01, ru: 0.03, rv: 0.03, c: '#1a1a1a', a: 0.8 }, { k: 'blob', u: 0.68, v: 0.02, ru: 0.06, rv: 0.04, c: '#e0884a', a: 0.7 }],
     finMarks: [{ k: 'band', u0: 0, u1: 0.2, v0: -0.3, v1: 0.3, c: '#3a6ab8', a: 0.55, f: 0.08 }, { k: 'spots', n: 26, u0: 0.04, u1: 0.38, v0: -0.24, v1: 0.24, r: 0.014, c: '#2a2a40', a: 0.6 }],
     eye: { r: 0.026, iris: ['#c9b890', '#4a3e2c'] } },
+  // Endler's male: smaller and slimmer than a guppy; a green-black back, an orange flank patch, a green-blue iridescent sheen, black edged orange tail, gonopodium
+  endler: { finFade: 0.3, shimmer: 0.6, shimmerRgb: '120,230,200', gillLine: 0.25, gape: 0.035, gapeDrop: 0.008, thick: 0.45, depth: 0.2, pedU: 0.4, ped: 0.04, peak: 0.45, snout: 0.4, mouth: -0.03, shade: ['#3f5a3a', '#7aa070', '#c9d2a8'], tail: { type: 'notch', h: 0.22, tint: '#e8741c', edge: '#161616', a: 0.9 }, fin: '#d4a05a',
+    dorsal: { u0: 0.42, u1: 0.58, h: 0.09, tint: '#e8741c', a: 0.85 }, gono: { at: 0.57, len: 0.11 }, pelvic: { u: 0.65, len: 0.04 },
+    marks: [{ k: 'blob', u: 0.62, v: 0.015, ru: 0.12, rv: 0.06, c: '#f0701a', a: 0.85 }, { k: 'blob', u: 0.42, v: 0.01, ru: 0.06, rv: 0.04, c: '#1a1a1a', a: 0.8 }, { k: 'blob', u: 0.3, v: -0.02, ru: 0.05, rv: 0.03, c: '#2fb89a', a: 0.7 }, { k: 'band', u0: 0.15, u1: 0.8, v0: -0.07, v1: -0.04, c: '#173a2a', a: 0.5, f: 0.02 }],
+    finMarks: [{ k: 'band', u0: 0.55, u1: 1, v0: -0.3, v1: 0.3, c: '#171717', a: 0.55, f: 0.08 }],
+    eye: { r: 0.026, iris: ['#d9c9a0', '#4a3e2c'] } },
   // male: the anal fin is a gonopodium (platy_f keeps the anal fin; same body)
   platy: { gape: 0.03, gapeDrop: 0.008, thick: 0.5, depth: 0.36, pedU: 0.21, ped: 0.06, peak: 0.45, snout: 0.6, mouth: -0.03, shade: ['#b0482a', '#de6a3a', '#eb9a6a'], tail: { type: 'round', h: 0.17, tint: '#d87850' }, fin: '#da8a62',
     dorsal: { at: 0.62, len: 0.2, h: 0.12, rake: 0.35, lead: 0.6, drop: 0.6, trail: 0.04 }, gono: { at: 0.52, len: 0.12 }, anal: { at: 0.5, len: 0.1, h: 0.07, rake: 0.3, lead: 0.7, tip: 'point', trail: 0.03, drop: 0.4 }, pelvic: { u: 0.62, len: 0.06 },
@@ -1020,6 +1026,11 @@ Object.assign(PLANS, {
   guppy_f: her('guppy', { thick: 0.5, depth: 0.27, pedU: 0.27, ped: 0.05, peak: 0.5, snout: 0.5, shade: ['#76785e', '#b2b196', '#dcd8c4'], tail: { type: 'notch', h: 0.14, tint: '#c8b490', a: 0.6 }, fin: '#c8bea4', gono: undefined,
     dorsal: { u0: 0.42, u1: 0.54, h: 0.07 }, anal: { u0: 0.38, u1: 0.48, h: 0.06 }, pelvic: { u: 0.63, len: 0.05 },
     marks: [{ k: 'blob', u: 0.5, v: 0.075, ru: 0.045, rv: 0.035, c: '#2a2420', a: 0.55 }], finMarks: [{ k: 'spots', n: 12, u0: 0.02, u1: 0.22, v0: -0.1, v1: 0.1, r: 0.01, c: '#7a6a4a', a: 0.3 }],
+    eye: { r: 0.024, iris: ['#c9b890', '#4a3e2c'] } }),
+  // Endler's female: drab silver-olive, a little larger and deeper, plain tail, no gonopodium, a faint gravid spot
+  endler_f: her('endler', { thick: 0.5, depth: 0.26, pedU: 0.27, ped: 0.05, peak: 0.5, snout: 0.5, shade: ['#7a7f62', '#b4b69a', '#dcdac6'], tail: { type: 'notch', h: 0.13, tint: '#d2c8a6', edge: undefined, a: 0.55 }, fin: '#cfc6a8', gono: undefined, shimmer: 0.3,
+    dorsal: { u0: 0.42, u1: 0.54, h: 0.07, tint: '#cfc6a8', a: 0.7 }, anal: { u0: 0.38, u1: 0.48, h: 0.06 }, pelvic: { u: 0.63, len: 0.05 },
+    marks: [{ k: 'blob', u: 0.5, v: 0.07, ru: 0.04, rv: 0.03, c: '#2a2420', a: 0.45 }], finMarks: [],
     eye: { r: 0.024, iris: ['#c9b890', '#4a3e2c'] } }),
   // no sword: a plain notched tail; deeper, a fan anal fin, gravid spot
   swordtail_f: her('swordtail', { gono: undefined, depth: 0.24, pedU: 0.22, ped: 0.05, dorsal: { u0: 0.47, u1: 0.62, h: 0.09 }, eye: { r: 0.028, iris: ['#cfb890', '#4a3e2c'] }, shade: ['#a84a34', '#d0684a', '#e6987a'], tail: { type: 'notch', h: 0.15, tint: '#d26a48' },

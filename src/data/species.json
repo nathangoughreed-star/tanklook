@@ -22,6 +22,7 @@
   {"id": "tigerbarb", "albino": "https://en.wikipedia.org/wiki/Tiger_barb", "name": "Tiger barb", "sci": "Puntigrus tetrazona", "tl": 70, "group": "school", "art": "tigerbarb"},
   {"id": "boesemani", "name": "Boeseman's rainbowfish", "sci": "Melanotaenia boesemani", "tl": 108, "group": "shoal", "art": "boesemani", "female": {"art": "boesemani_f", "tl": 80}, "note": "Males reach about 10 cm, rarely 14 (FishBase)."},
   {"id": "guppy", "name": "Guppy", "sci": "Poecilia reticulata", "tl": 38, "group": "shoal", "level": "top", "art": "guppy", "female": {"art": "guppy_f", "tl": 54}},
+  {"id": "endler", "name": "Endler's livebearer", "sci": "Poecilia wingei", "tl": 28, "group": "shoal", "level": "top", "art": "endler", "female": {"art": "endler_f", "tl": 38}, "note": "A small livebearer for hard, alkaline water; males are about 1 in, females a little larger. Keep several females per male (Seriously Fish)."},
   {"id": "platy", "name": "Platy", "sci": "Xiphophorus maculatus", "tl": 40, "group": "shoal", "art": "platy", "female": {"art": "platy_f", "tl": 60}},
   {"id": "molly", "name": "Black molly", "sci": "Poecilia sphenops", "tl": 85, "group": "shoal", "art": "molly", "female": {"art": "molly_f", "tl": 96}},
   {"id": "swordtail", "name": "Swordtail", "sci": "Xiphophorus hellerii", "tl": 110, "group": "shoal", "art": "swordtail", "female": {"art": "swordtail_f", "tl": 120}},

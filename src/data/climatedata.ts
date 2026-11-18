@@ -39,6 +39,7 @@ export const WATER: Record<string, { ok: R; tol: R; est?: true }> = {
   tigerbarb: { ok: [23,27], tol: [20,29] },
   boesemani: { ok: [26,29], tol: [24,30] },
   guppy: { ok: [24,27], tol: [17,28] },
+  endler: { ok: [24,28], tol: [20,30] },
   platy: { ok: [21,26], tol: [18,28] },
   molly: { ok: [23,28], tol: [20,30] },
   swordtail: { ok: [22,27], tol: [18,28] },

@@ -17,7 +17,7 @@ describe('native range data', () => {
       expect(o.c.length, id).toBeGreaterThan(0);
       for (const c of o.c) expect(keys, `${id} ${c}`).toContain(c);
       expect(o.r.length, id).toBeGreaterThan(5);
-      expect(o.s, id).toMatch(/FishBase|SeaLifeBase|AmphibiaWeb|Reptile Database|World Spider Catalog/);
+      expect(o.s, id).toMatch(/FishBase|Seriously Fish|SeaLifeBase|AmphibiaWeb|Reptile Database|World Spider Catalog/);
     }
   });
   it('covers every species in the catalogue', () => {

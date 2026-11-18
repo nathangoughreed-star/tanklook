@@ -34,7 +34,7 @@ export const CHEM: Record<string, { ph: R; gh?: R; phOk?: R; ghOk?: R }> = {
   blackskirt: { ph: [6.0, 7.5], gh: [4, 18] }, rummynose: { ph: [5.5, 7.0], gh: [1, 10], phOk: [5.5, 7.5] }, harlequin: { ph: [5.0, 7.0], gh: [1, 12], phOk: [5.0, 7.5] }, chili: { ph: [5.0, 7.0], gh: [1, 8] },
   danio: { ph: [6.0, 8.0], gh: [5, 20] }, whitecloud: { ph: [6, 8.3], gh: [5, 20] }, cpd: { ph: [6.5, 7.5], gh: [5, 15] }, hatchet: { ph: [5, 7], gh: [1, 10], phOk: [5, 8] },
   cherrybarb: { ph: [6, 8], gh: [2, 20] }, tigerbarb: { ph: [6, 8], gh: [1, 20] }, boesemani: { ph: [7.0, 8.0], gh: [9, 19] },
-  guppy: { ph: [7, 8.3], gh: [8, 25] }, platy: { ph: [7.0, 8.2], gh: [9, 25] }, molly: { ph: [7.5, 8.5], gh: [10, 25] },
+  guppy: { ph: [7, 8.3], gh: [8, 25] }, endler: { ph: [7, 8.5], gh: [15, 35] }, platy: { ph: [7.0, 8.2], gh: [9, 25] }, molly: { ph: [7.5, 8.5], gh: [10, 25] },
   swordtail: { ph: [7, 8], gh: [9, 25] }, betta: { ph: [6.0, 7.5], gh: [1, 15], phOk: [5.0, 8.0] }, dwarfgourami: { ph: [6.0, 7.5], gh: [2, 18] }, honeygourami: { ph: [6.0, 7.5], gh: [2, 15] },
   gourami: { ph: [5.5, 8], gh: [3, 35] }, gbr: { ph: [4, 7], gh: [1, 8] }, bolivianram: { ph: [6.0, 7.5], gh: [1, 10] }, kribensis: { ph: [6.0, 7.5], gh: [0, 12] },
   cockatoo: { ph: [5, 6], gh: [2, 15] },
