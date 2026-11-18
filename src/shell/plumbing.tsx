@@ -23,7 +23,6 @@ export function PlumbSwitch({ on, onChange }: { on: boolean; onChange: (v: boole
 // ---- drawing helpers (SVG)
 const Defs = () => (
   <defs>
-    <radialGradient id="pbheatg"><stop offset="0" stop-color="#ff6a4d" stop-opacity=".26" /><stop offset=".55" stop-color="#ff6a4d" stop-opacity=".1" /><stop offset="1" stop-color="#ff6a4d" stop-opacity="0" /></radialGradient>
     <linearGradient id="pbwater" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a6fc0" stop-opacity=".34" /><stop offset="1" stop-color="#1c4c86" stop-opacity=".18" /></linearGradient>
     {(Object.keys(COL) as Flow[]).map(f => <marker id={`pba-${f}`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill={COL[f]} /></marker>)}
   </defs>
@@ -52,13 +51,13 @@ function Box({ x, y, w, h, n, stroke, dash, mid, big }: { x: number; y: number; 
     </g>
   );
 }
-/** Soft heat from a heater body: a faint warm halo and a few thin wavy rays in every direction, a slow pulse (still under reduced motion or Pause). */
+/** Heat added by a heater: eight short straight arrows pointing outward in every direction (the view's flat arrow style, warm red), with a gentle outward pulse (still under Pause or reduced motion). */
 function HeatHalo({ cx, cy, rx, ry }: { cx: number; cy: number; rx: number; ry: number }) {
-  const rays = Array.from({ length: 12 }, (_, i) => {
-    const deg = i * 30 + 15, r = (deg * Math.PI) / 180, edge = (rx * ry) / Math.hypot(ry * Math.cos(r), rx * Math.sin(r)) + 4;
-    return <path d={`M${edge.toFixed(1)} 0 q5 -3.5 10 0 t10 0 t10 0 t10 0`} transform={`translate(${cx} ${cy}) rotate(${deg})`} class="pbray" />;
+  const arrows = Array.from({ length: 8 }, (_, i) => {
+    const deg = i * 45 + (i % 2 ? 0 : 0), r = (deg * Math.PI) / 180, edge = (rx * ry) / Math.hypot(ry * Math.cos(r), rx * Math.sin(r)) + 6;
+    return <path d={`M${edge.toFixed(1)} 0 L${(edge + 20).toFixed(1)} 0`} transform={`translate(${cx} ${cy}) rotate(${deg})`} class="pbray" marker-end="url(#pba-heat)" />;
   });
-  return <g class="pbheat" style={`transform-origin:${cx}px ${cy}px`} pointer-events="none"><ellipse cx={cx} cy={cy} rx={rx + 52} ry={ry + 40} fill="url(#pbheatg)" />{rays}</g>;
+  return <g class="pbheat" style={`transform-origin:${cx}px ${cy}px`} pointer-events="none">{arrows}</g>;
 }
 const Plants = ({ x0, x1, base, k = 1 }: { x0: number; x1: number; base: number; k?: number }) => {
   const hs = [31, 45, 27, 40, 33, 48, 29, 38, 32, 42], out = [];
