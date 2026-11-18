@@ -2,7 +2,7 @@
 // states) derived from the tank's equipment (techParts, IL1's return-hose gear), plus plain sums. NO fluid dynamics, no heat loss, RATED
 // flow only (Nathan 2026-11-16). The view (shell/plumbing.tsx) draws it; nothing here touches the DOM.
 import type { TankSetup } from '../../scene/types';
-import { rowsFor, techOf, techParts, type TechPiece } from '../../scene/tech';
+import { rowsFor, sumpOf, techOf, techParts, type TechPiece } from '../../scene/tech';
 import { volume } from '../../scene/physics';
 import { OVERFLOW_PRODUCTS, filterProduct, heaterProduct, inlineProduct, productName, pumpProduct, reefProduct } from '../../data/gearCatalog';
 import { FILTER_MODELS } from '../../demand/gear';
@@ -25,6 +25,8 @@ export interface PEdge { from: string; to: string; flow: Flow; gph?: number; wat
 export type Loop = 'none' | 'inTank' | 'hob' | 'canister' | 'sump';
 export interface Plumb {
   gal: number; loop: Loop;
+  /** a sump's label, 'L × W × H in · N gal' (its own size), when the loop is a sump */
+  sumpDims?: string;
   nodes: PNode[]; edges: PEdge[];
   /** the filter node(s) of the loop, the return-hose chain (in flow order, filter -> tank) and the in-tank gear */
   filters: PNode[]; chain: PNode[]; inTank: PNode[];
@@ -157,7 +159,8 @@ export function plumbingOf(S: TankSetup, opts: PlumbOpts = {}): Plumb {
   // ---- sums
   const sums: Plumb['sums'] = { filterGph: round(filterGph), turnover: gal > 0 ? round(filterGph / gal, 1) : 0, circGph: round(circGph), heaterW: round(heaterW), wPerGal: gal > 0 ? round(heaterW / gal, 1) : 0, returnGph, overflowGph };
   if (loop === 'sump' && returnGph !== undefined && overflowGph !== undefined && returnGph > overflowGph) warnings.push(`The return pump (${round(returnGph)} GPH rated) out-runs the overflow${ovf ? ` (${productName(ovf)}, ` : ' ('}${round(overflowGph)} GPH rated): the display would flood.`);
-  return { gal, loop, nodes, edges, filters, chain, inTank, sums, warnings, empty: nodes.length === 1 };
+  const z = loop === 'sump' ? sumpOf(S) : undefined, sumpDims = z ? `${round(z.L / 25.4)} × ${round(z.D / 25.4)} × ${round(z.H / 25.4)} in · ${round((z.L * z.D * z.H) / 1e6 / 3.785411784)} gal` : undefined;
+  return { gal, loop, sumpDims, nodes, edges, filters, chain, inTank, sums, warnings, empty: nodes.length === 1 };
 }
 
 /** Greedy word wrap to at most `max` lines of `cap` characters; only a name still too long after that is cut with an ellipsis (the <title> tooltip carries the whole name). */

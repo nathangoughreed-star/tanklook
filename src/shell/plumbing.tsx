@@ -137,11 +137,10 @@ function Cutaway({ p, dims }: { p: Plumb; dims: string }) {
   return (
     <svg class="pbdiag" viewBox={`0 40 ${W} ${VH}`} role="img" aria-label="Plumbing: side cutaway of the tank and its equipment" preserveAspectRatio="xMidYMid meet">
       <Defs />
-      <rect x={70} y={300} width={W - 80} height={short ? 100 : 250} rx={4} class="pbstand" /><Txt x={W - 52} y={322} c="pbt3" a="end">stand</Txt>
       <rect x={92} y={95} width={516} height={205} fill="url(#pbwater)" /><rect x={92} y={270} width={516} height={30} class="pbsub" />
       <g opacity=".7"><Plants x0={230} x1={590} base={272} /></g>
       <path d="M92 95 H608" stroke="#47a3ff" stroke-opacity=".5" /><rect x={90} y={70} width={520} height={230} rx={3} class="pbglass" />
-      <Txt x={90} y={322} c="pbt2">{dims}</Txt>
+      <Txt x={92} y={61} c="pbt2">{dims}</Txt>
 
       {/* in-tank circulation of the loop */}
       {canister ? <Pipe d="M548 124 L280 132 Q158 136 150 190 L150 238" flow="clean" arrow={false} /> : null}
@@ -170,7 +169,7 @@ function Cutaway({ p, dims }: { p: Plumb; dims: string }) {
       {sump ? <>
         <rect x={566} y={95} width={40} height={140} class="pbbox" /><Txt x={586} y={160} c="pbt3" a="middle">over-</Txt><Txt x={586} y={173} c="pbt3" a="middle">flow</Txt>
         <Pipe d="M586 235 L586 345" flow="dirty" /><Txt x={596} y={290} c="pbtd">drain</Txt>
-        <rect x={230} y={345} width={470} height={195} rx={8} class="pbbox" /><Txt x={242} y={364} c="pbt1">Sump</Txt>
+        <rect x={230} y={345} width={470} height={195} rx={8} class="pbbox" /><Txt x={242} y={364} c="pbt1">{`Sump${p.sumpDims ? ` · ${p.sumpDims}` : ''}`}</Txt>
         <rect x={242} y={450} width={100} height={78} rx={4} fill="#11151b" stroke="#2f3644" /><Txt x={292} y={494} c="pbt3" a="middle">baffles · bio</Txt>
         {p.nodes.find(x => x.id === 'skimmer') ? <><Box x={364} y={380} w={130} h={84} n={p.nodes.find(x => x.id === 'skimmer')!} /><Pipe d="M364 410 L250 410" flow="waste" /><Box x={110} y={388} w={110} h={46} n={{ name: 'Skimmate cup', lines: [] }} /></> : null}
         {p.nodes.find(x => x.id === 'ato') ? <><Box x={96} y={466} w={124} h={56} n={p.nodes.find(x => x.id === 'ato')!} /><Pipe d="M220 494 L242 494" flow="clean" /></> : null}
@@ -190,7 +189,7 @@ function Cutaway({ p, dims }: { p: Plumb; dims: string }) {
       {/* CO2 sinks */}
       {hasCo2(p) ? <>
         {faintArrows([330, 400, 470, 540].filter(x => !inT || x < 420), 150, 178, 'co2')}<Txt x={430} y={196} c="pbtg" a="middle">plant uptake</Txt>
-        {faintArrows([190, 270, 350, 430, 510], 104, 78, 'co2')}<Txt x={190} y={64} c="pbtg">off-gassing at the surface</Txt>
+        {faintArrows([190, 270, 350, 430, 510], 104, 78, 'co2')}<Txt x={330} y={64} c="pbtg">off-gassing at the surface</Txt>
       </> : null}
     </svg>
   );
@@ -208,7 +207,7 @@ function Flat({ p, dims }: { p: Plumb; dims: string }) {
   const slots: Slot[] = []; let y = 206;
   const fl = (s: Slot, gap = 50) => { slots.push(s); y += s.h + gap; };
   if (loopF) {
-    const lines = withSump ? [...(sk ? [`Skimmer: ${sk.name}`] : []), ...(p.sums.returnGph ? [`Return pump ${p.sums.returnGph} GPH rated`] : []), 'baffles · bio media'] : loopF.lines;
+    const lines = withSump ? [...(p.sumpDims ? [p.sumpDims] : []), ...(sk ? [`Skimmer: ${sk.name}`] : []), ...(p.sums.returnGph ? [`Return pump ${p.sums.returnGph} GPH rated`] : []), 'baffles · bio media'] : loopF.lines;
     fl({ n: { name: withSump ? 'Sump' : loopF.name, lines }, y, h: withSump ? 86 : 84, flow: 'dirty', id: loopF.id });
   }
   for (const c of p.chain) fl({ n: c, y, h: 60, flow: 'clean', id: c.id });
