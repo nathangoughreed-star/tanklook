@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { BLEND_TILE_IDS, LECA, blendTile, drawBlendTile, drawFishCard, drawLook, drawPerson, drawSubstrate, substrateField, substrateFine, type BlendTileId, type PresetSubstrate } from '../art/placeholder';
 import { drawPairedFin, type PairedFin } from '../art/fishgen';
-import { drawScene, type BgScene } from '../art/bgscenes';
+import { drawScene, scenePhoto, type BgScene } from '../art/bgscenes';
 import { FX } from './fx';
 import { SUBSTRATES } from '../art/placeholder';
 import { rng } from '../art/paint';
@@ -156,11 +156,14 @@ export const gradientTexture = (kind: BgGradient = 'ocean') => cached(kind === '
 
 /** A printed-scene background, drawn at the sheet's aspect (rounded, so a resize does not repaint every frame). */
 export function sceneTexture(kind: BgScene, aspect: number) {
-  const a = Math.min(5, Math.max(1, Math.round(aspect * 2) / 2)), h = 512;
+  const a = Math.min(5, Math.max(1, Math.round(aspect * 2) / 2)), h = 640;
   return cached(`bg-scene-${kind}-${a}`, () => {
     const c = document.createElement('canvas'); c.height = h; c.width = Math.round(h * a);
-    drawScene(c.getContext('2d')!, kind, c.width, h);
-    return finish(c);
+    const ctx = c.getContext('2d')!, t = finish(c);
+    const paint = () => { drawScene(ctx, kind, c.width, h, img); t.needsUpdate = true; };
+    const img = scenePhoto(kind, () => { paint(); for (const fn of pictureListeners) fn(); });
+    paint();
+    return t;
   });
 }
 
