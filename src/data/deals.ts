@@ -41,6 +41,8 @@ export interface Deal {
   confidence?: 'high' | 'medium' | 'low';
   /** sold for store pickup only: no shipping to add (lane BS) */
   pickupOnly?: boolean;
+  /** the re-check sweep found the listing gone or the sale over: the new UI stops showing it (R112) */
+  expired?: boolean;
   note?: string;
 }
 /** Every guess behind a deal, in plain words: the row's own list plus a light whose power the listing does not give. */

@@ -39,6 +39,8 @@ export interface TankVariant {
   discontinued?: boolean;
   url?: string;
   checked?: string;
+  /** the re-check sweep found the listing gone or the sale over: the new UI stops showing it (R112) */
+  expired?: boolean;
   confidence?: 'high' | 'medium' | 'low';
 }
 

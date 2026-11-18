@@ -428,12 +428,12 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
             <div class="chips">
               {SIZE_CHIPS.map(([c, t]) => <button type="button" class={`chip${chips.has(c) ? ' on' : ''}`} aria-pressed={chips.has(c)} onClick={() => { const n = new Set(chips); if (n.has(c)) n.delete(c); else n.add(c); setChips(n); }}>{t}</button>)}
               <button type="button" class={`chip${fits ? ' on' : ''}`} aria-pressed={fits} disabled={comm.noSpace} title={comm.noSpace ? 'Set your space in Constraints first (comes in shell step 5)' : 'Only tanks that fit the space you set'} onClick={() => setFits(!fits)}>Fits my space</button>
-              <button type="button" class={`chip${sale ? ' on' : ''}`} aria-pressed={sale} title="Only tanks with a live sale price (read within the last 14 days)" onClick={() => setSale(!sale)}>On sale</button>
+              <button type="button" class={`chip${sale ? ' on' : ''}`} aria-pressed={sale} title="Only tanks with a sale price on record; each row says when it was last checked" onClick={() => setSale(!sale)}>On sale</button>
             </div>
             <TankFilters f={tf} set={setFilter} shown={comm.rows.length} total={comm.total} brands={comm.brands} u={u} extra={chips.size + (fits ? 1 : 0) + (sale ? 1 : 0)} onClear={clearAll} />
             <div class="hint" data-testid="tank-count">{comm.rows.length} of {comm.total} shown</div>
             {comm.rows.map(row)}
-            {!comm.rows.length ? <div class="hint">{sale ? 'No tank sale has been checked in the last 14 days.' : 'No commercial tank matches.'}</div> : null}
+            {!comm.rows.length ? <div class="hint">{sale ? 'No tank sale is on record.' : 'No commercial tank matches.'}</div> : null}
           </div> : null}
         </div>
         {!showCustom && !showComm ? <div class="hint">Open a group to browse; the tank you flip to redraws in the room.</div> : null}
