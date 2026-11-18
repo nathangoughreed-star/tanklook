@@ -24,6 +24,7 @@ import { openClicked } from './clickOpen';
 import { shouldWelcome } from './logic/start';
 
 export function bootShell() {
+  document.documentElement.classList.remove('gb-new'); // BF1: the index.html pre-paint guard (hid the old markup, set a plain background)
   // the old shell off: its markup removed (no old id stays in the page), its stylesheet disabled (kept in place so dev HMR has a node to update)
   for (const el of [...document.body.children]) if (el.tagName !== 'SCRIPT') el.remove();
   for (const n of document.head.querySelectorAll('link[rel="stylesheet"], style')) n.setAttribute('media', 'not all');
