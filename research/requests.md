@@ -153,6 +153,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R134 | 11-18 | (TL1 found) Bundle tank card note says it "comes with a glass top" while the bundle's hood is in the scene (matched variant is the bare Open-Glass tank) | TL1 | - | - | - | C28 to send to TL1 after R133 merges |
 | R135 | 11-18 | (TL1 found) Kit hood shows as the catalogue Aqueon hood and its price, not the kit's own hood; cost may be wrong | TL1 | - | - | - | C28 to send to TL1 after R133 merges |
 | R136 | 11-18 | "A bundle close to your build" card (e.g. PetSmart Top Fin 55 gal kit) has no Apply any more: bring back an Apply button that swaps the bundle's parts into the build, after a confirm listing each consequence ("the light in this bundle may not perform as well as your current one", filter 100 vs 360 gph, etc.); kit parts come in locked (R124) | KD2 | - | - | - | picture research/screens/C27/R136-bundle-card-no-apply.png; sent to KD2 |
+| R137 | 11-18 | Upkeep time: keep a best-guess estimate but no false precision: round every shown maintenance time to multiples of 5 min per week; remove upkeep time as a gate/constraint (limits, filters, Discover, suggest/fit) | PK1 | - | - | - | sent to PK1 |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
 | R16 | Notes pill per tank (single view seen; split per-side seen in HM3 shots) | 1901 | C24 leaf-1896-low.png ('Notes: 1 advice') |
 | R17 | Split tab differences: no change, Nathan 11-13 "Hover is fine" (the tab shows "N diffs", the list on hover) | - | - |
