@@ -3,10 +3,10 @@
 import { useState } from 'preact/hooks';
 import type { Store } from '../scene/store';
 import { mmToIn } from '../units';
-import { plumbingOf, type Flow, type Plumb, type PNode } from './logic/plumbing';
+import { plumbingOf, wrap, type Flow, type Plumb, type PNode } from './logic/plumbing';
 
-const COL: Record<Flow, string> = { clean: '#47a3ff', dirty: '#6f88a8', co2: '#34d57f', heat: '#ff5b52', cold: '#6fe0e8', waste: '#b8935f' };
-const TXT: Record<Flow, string> = { clean: 'pbtc', dirty: 'pbtd', co2: 'pbtg', heat: 'pbth', cold: 'pbtk', waste: 'pbtw' };
+const COL: Record<Flow, string> = { clean: '#47a3ff', dirty: '#6f88a8', co2: '#34d57f', heat: '#ff5b52', cold: '#6fe0e8', waste: '#b8935f', air: '#cfe3f5' };
+const TXT: Record<Flow, string> = { clean: 'pbtc', dirty: 'pbtd', co2: 'pbtg', heat: 'pbth', cold: 'pbtk', waste: 'pbtw', air: 'pbta' };
 
 /** The Tank | Plumbing switch, top left of the viewer. */
 export function PlumbSwitch({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
@@ -23,6 +23,7 @@ export function PlumbSwitch({ on, onChange }: { on: boolean; onChange: (v: boole
 // ---- drawing helpers (SVG)
 const Defs = () => (
   <defs>
+    <radialGradient id="pbheatg"><stop offset="0" stop-color="#ff6a4d" stop-opacity=".26" /><stop offset=".55" stop-color="#ff6a4d" stop-opacity=".1" /><stop offset="1" stop-color="#ff6a4d" stop-opacity="0" /></radialGradient>
     <linearGradient id="pbwater" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a6fc0" stop-opacity=".34" /><stop offset="1" stop-color="#1c4c86" stop-opacity=".18" /></linearGradient>
     {(Object.keys(COL) as Flow[]).map(f => <marker id={`pba-${f}`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill={COL[f]} /></marker>)}
   </defs>
@@ -35,17 +36,29 @@ function Pipe({ d, flow, w = 3, dots, arrow = true, faint, off = 0 }: { d: strin
     : <g class={faint ? 'pbfaint' : ''}><path d={d} class="pbtrk" stroke={c} stroke-width={w * 3} /><path d={d} class="pbflow" stroke={c} stroke-width={w} style={`--o:${off}px`} marker-end={arrow ? `url(#pba-${flow})` : undefined} /></g>;
 }
 const Txt = ({ x, y, c = 'pbt2', a = 'start', children }: { x: number; y: number; c?: string; a?: 'start' | 'middle' | 'end'; children: string }) => <text x={x} y={y} class={c} text-anchor={a}>{children}</text>;
-/** A gear box: name, then lines; `stroke` tints the outline (the heater's red), `dash` marks optional gear. */
+const capOf = (w: number, mid = false) => Math.max(8, Math.floor((w - (mid ? 10 : 20)) / 5.7));
+/** A gear box: the whole name (wrapped to two lines, small type), then detail lines; `stroke` tints the outline, `dash` marks optional gear. */
 function Box({ x, y, w, h, n, stroke, dash, mid, big }: { x: number; y: number; w: number; h: number; n: { name: string; lines: string[] }; stroke?: string; dash?: boolean; mid?: boolean; big?: boolean }) {
-  const tx = mid ? x + w / 2 : x + 10, a = mid ? 'middle' : 'start', cap = Math.max(8, Math.floor((w - 16) / (mid ? 6.6 : 6.4)));
-  const clip = (s: string) => (s.length > cap ? `${s.slice(0, cap - 1)}…` : s);
+  const tx = mid ? x + w / 2 : x + 10, a = mid ? 'middle' : 'start', cap = capOf(w, mid);
+  const nl = wrap(n.name, cap), rows: string[] = [];
+  for (const l of n.lines) rows.push(...wrap(l, Math.floor(cap * 1.08), 2).slice(0, 2));
+  const y0 = y + 17 + (nl.length - 1) * 13 + 15, fit = Math.max(0, Math.floor((y + h - 5 - y0) / 12) + 1);
   return (
     <g>
+      <title>{[n.name, ...n.lines].join(' · ')}</title>
       <rect x={x} y={y} width={w} height={h} rx={8} class={`pbbox${dash ? ' dash' : ''}`} style={stroke ? `stroke:${stroke}` : undefined} />
-      <Txt x={tx} y={y + 19} c={big ? 'pbt1 big' : 'pbt1'} a={a}>{clip(n.name)}</Txt>
-      {n.lines.slice(0, Math.max(0, Math.floor((h - 26) / 14))).map((l, i) => <Txt x={tx} y={y + 34 + i * 14} c="pbt2" a={a}>{clip(l)}</Txt>)}
+      {nl.map((l, i) => <Txt x={tx} y={y + 17 + i * 13} c={big ? 'pbt1 big' : 'pbt1'} a={a}>{l}</Txt>)}
+      {rows.slice(0, fit).map((l, i) => <Txt x={tx} y={y0 + i * 12} c="pbt2" a={a}>{l}</Txt>)}
     </g>
   );
+}
+/** Soft heat from a heater body: a faint warm halo and a few thin wavy rays in every direction, a slow pulse (still under reduced motion or Pause). */
+function HeatHalo({ cx, cy, rx, ry }: { cx: number; cy: number; rx: number; ry: number }) {
+  const rays = Array.from({ length: 12 }, (_, i) => {
+    const deg = i * 30 + 15, r = (deg * Math.PI) / 180, edge = (rx * ry) / Math.hypot(ry * Math.cos(r), rx * Math.sin(r)) + 4;
+    return <path d={`M${edge.toFixed(1)} 0 q5 -3.5 10 0 t10 0 t10 0 t10 0`} transform={`translate(${cx} ${cy}) rotate(${deg})`} class="pbray" />;
+  });
+  return <g class="pbheat" style={`transform-origin:${cx}px ${cy}px`} pointer-events="none"><ellipse cx={cx} cy={cy} rx={rx + 52} ry={ry + 40} fill="url(#pbheatg)" />{rays}</g>;
 }
 const Plants = ({ x0, x1, base, k = 1 }: { x0: number; x1: number; base: number; k?: number }) => {
   const hs = [31, 45, 27, 40, 33, 48, 29, 38, 32, 42], out = [];
@@ -54,22 +67,51 @@ const Plants = ({ x0, x1, base, k = 1 }: { x0: number; x1: number; base: number;
 };
 const faintArrows = (xs: number[], y0: number, y1: number, flow: Flow) => xs.map(x => <Pipe d={`M${x} ${y0} L${x} ${y1}`} flow={flow} w={2} faint />);
 
-/** Arrows and labels of the gear that sits in the tank (heater, diffuser, powerhead, fan), laid out left to right at tank row `y`. */
+/** The gear that sits in the tank (heater, diffuser, powerhead, fan), left to right at tank row `y`; a heater radiates softly in all directions. */
 function InTank({ items, x0, x1, y }: { items: PNode[]; x0: number; x1: number; y: number }) {
   if (!items.length) return null;
   const step = Math.min(140, (x1 - x0) / items.length), w = step - 12;
   return <>{items.map((n, i) => {
     const x = x0 + i * step, cx = x + w / 2, flow: Flow = n.kind === 'heater' ? 'heat' : n.kind === 'chiller' ? 'cold' : n.id === 'diffuser' ? 'co2' : 'clean';
-    const arrows = flow === 'clean' ? <Pipe d={`M${x + w + 2} ${y + 12} L${x + w + 26} ${y + 12}`} flow="clean" w={2.5} /> : flow === 'cold' ? faintArrows([cx - 30, cx, cx + 30], y - 50, y - 22, 'cold') : [cx - 28, cx, cx + 28].map(ax => <Pipe d={`M${ax} ${y - 6} L${ax} ${y - 40}`} flow={flow} w={2.5} />);
+    const arrows = flow === 'clean' ? <Pipe d={`M${x + w + 2} ${y + 12} L${x + w + 26} ${y + 12}`} flow="clean" w={2.5} /> : flow === 'cold' ? faintArrows([cx - 30, cx, cx + 30], y - 50, y - 22, 'cold') : flow === 'co2' ? [cx - 28, cx, cx + 28].map(ax => <Pipe d={`M${ax} ${y - 6} L${ax} ${y - 40}`} flow={flow} w={2.5} />) : null;
+    const nl = wrap(n.name, Math.max(10, Math.floor((step - 4) / 5.5)));
     return (
       <g>
+        <title>{[n.name, ...n.lines].join(' · ')}</title>
+        {flow === 'heat' ? <HeatHalo cx={cx} cy={y + 12} rx={w / 2} ry={12} /> : null}
         <rect x={x} y={y} width={w} height={24} rx={flow === 'heat' ? 12 : 6} class="pbbox" style={`stroke:${flow === 'clean' ? COL.dirty : COL[flow]};fill:${flow === 'heat' ? '#3a1d20' : flow === 'co2' ? '#173a2b' : flow === 'cold' ? '#12333a' : ''}`} />
         {arrows}
-        <Txt x={cx} y={y + 40} c={`${TXT[flow]} s`} a="middle">{n.name.length > w / 6.2 ? `${n.name.slice(0, Math.floor(w / 6.2) - 1)}…` : n.name}</Txt>
-        {n.lines[0] ? <Txt x={cx} y={y + 53} c="pbt3" a="middle">{n.lines[0].length > w / 5.8 ? `${n.lines[0].slice(0, Math.floor(w / 5.8) - 1)}…` : n.lines[0]}</Txt> : null}
+        {nl.map((l, k) => <Txt x={cx} y={y + 38 + k * 12} c={`${TXT[flow]} s`} a="middle">{l}</Txt>)}
+        {n.lines[0] ? <Txt x={cx} y={y + 38 + nl.length * 12} c="pbt3" a="middle">{n.lines[0]}</Txt> : null}
       </g>
     );
   })}</>;
+}
+
+/** The sponge filter drawn as it works (desktop): the air pump's airline enters at the base, bubbles rise in the lift tube and carry water up and out the top; water is drawn in through the sponge. */
+function SpongeCutaway({ f, air }: { f: PNode; air?: PNode }) {
+  const pores = [[462, 222], [480, 240], [458, 258], [518, 226], [526, 250], [470, 272], [512, 270], [504, 240]];
+  return (
+    <g>
+      <title>{`${f.name} · ${f.lines.join(' · ')}`}</title>
+      <Pipe d="M488 110 L300 118 Q190 124 190 200" flow="clean" arrow={false} />
+      <Pipe d="M190 200 Q190 262 300 262 L446 252" flow="dirty" />
+      <rect x={450} y={205} width={90} height={80} rx={10} fill="#3a3f47" stroke="#5b6472" />
+      {pores.map(([px, py]) => <ellipse cx={px} cy={py} rx={3.5} ry={2.5} fill="#272b31" />)}
+      {[225, 272].map(ay => <Pipe d={`M420 ${ay} L446 ${ay}`} flow="dirty" w={2} />)}
+      {[240, 268].map(ay => <Pipe d={`M568 ${ay} L544 ${ay}`} flow="dirty" w={2} />)}
+      <rect x={489} y={112} width={12} height={156} rx={3} fill="#9bb3cc" fill-opacity=".22" stroke="#9bb3cc" stroke-opacity=".7" />
+      <path d="M495 112 L495 110 Q495 108 487 108 L470 108" fill="none" stroke="#9bb3cc" stroke-opacity=".7" stroke-width="2" />
+      <path d="M495 268 L495 118" class="pbflow dots pbbub" stroke={COL.air} stroke-width="4.5" />
+      <Pipe d="M472 108 L452 108" flow="clean" w={2.5} />
+      <path d="M705 190 L705 60 L604 60 L604 289 L495 289 L495 268" class="pbflow" fill="none" stroke={COL.air} stroke-width="1.6" style="--o:0px" />
+      <Txt x={713} y={128} c="pbta s">airline</Txt>
+      <Txt x={440} y={192} c="pbtd s" a="end">water drawn in</Txt><Txt x={440} y={204} c="pbtd s" a="end">through the sponge</Txt>
+      <Txt x={508} y={150} c="pbta s">bubbles lift the</Txt><Txt x={508} y={162} c="pbta s">water up the tube</Txt>
+      <Txt x={440} y={99} c="pbtc s" a="end">out the top, with the air</Txt>
+      {air ? <Box x={640} y={190} w={140} h={54} n={air} /> : null}
+    </g>
+  );
 }
 
 const hasCo2 = (p: Plumb) => p.nodes.some(n => n.id === 'co2');
@@ -80,9 +122,9 @@ function Cutaway({ p, dims }: { p: Plumb; dims: string }) {
   const sump = p.loop === 'sump', canister = p.loop === 'canister', hob = p.loop === 'hob', inT = p.loop === 'inTank';
   const x0 = sump ? 720 : 470, retX = Math.max(canister || sump ? 730 : 700, (canister || sump ? x0 + n * 115 : 700) + 20), W = hob ? 870 : retX + 90, short = hob || inT, VH = short ? 370 : 520;
   const heat = p.nodes.filter(x => x.kind === 'heater' && !x.inTank), inline = chain.find(x => x.kind === 'inline');
-  const loopFilter = hob || canister ? p.filters.find(f => !f.inTank)! : undefined, inTankFilter = inT ? p.filters[0] : undefined;
+  const loopFilter = hob || canister ? p.filters.find(f => !f.inTank)! : undefined, inTankFilter = inT ? p.filters[0] : undefined, sponge = inT && inTankFilter?.fkind === 'sponge';
   const tankItems = p.inTank, diffIdx = tankItems.findIndex(x => x.id === 'diffuser');
-  const itemStep = tankItems.length ? Math.min(140, (hob ? 400 : inT ? 250 : 420) / tankItems.length) : 0;
+  const itemStep = tankItems.length ? Math.min(140, (hob ? 400 : inT ? 200 : 420) / tankItems.length) : 0;
   const diffCx = diffIdx >= 0 ? 200 + diffIdx * itemStep + (itemStep - 12) / 2 : 0;
   const chainY = sump ? 470 : 420;
   // the return: out of the filter / pump, along the chain, up the right and over the rim into the tank
@@ -104,14 +146,14 @@ function Cutaway({ p, dims }: { p: Plumb; dims: string }) {
       {/* in-tank circulation of the loop */}
       {canister ? <Pipe d="M548 124 L280 132 Q158 136 150 190 L150 238" flow="clean" arrow={false} /> : null}
       {hob ? <Pipe d="M548 150 Q548 200 480 196 L250 196 Q150 196 150 240 Q150 282 250 282 L400 282" flow="clean" arrow={false} /> : null}
-      {inT && inTankFilter ? <><Pipe d="M470 205 L330 205 Q190 205 190 245" flow="clean" arrow={false} /><Pipe d="M190 245 Q190 282 330 282 L470 282" flow="dirty" /></> : null}
+      {inT && inTankFilter && !sponge ? <><Pipe d="M470 205 L330 205 Q190 205 190 245" flow="clean" arrow={false} /><Pipe d="M190 245 Q190 282 330 282 L470 282" flow="dirty" /></> : null}
 
       {/* canister: intake hose out of the tank, the box, the chain, the return */}
       {canister && loopFilter ? <>
         <Pipe d={`M150 238 L150 410 L300 410`} flow="dirty" />
         <rect x={300} y={370} width={120} height={170} rx={8} class="pbbox" />
-        <Txt x={310} y={389} c="pbt1">{loopFilter.name.length > 17 ? `${loopFilter.name.slice(0, 16)}…` : loopFilter.name}</Txt>
-        {loopFilter.lines.slice(0, 3).map((l, i) => <Txt x={310} y={405 + i * 14}>{l}</Txt>)}
+        <title>{[loopFilter.name, ...loopFilter.lines].join(' · ')}</title>{wrap(loopFilter.name, 19).map((l, i) => <Txt x={310} y={388 + i * 13} c="pbt1">{l}</Txt>)}
+        {loopFilter.lines.slice(0, 3).map((l, i) => <Txt x={310} y={418 + i * 12}>{l}</Txt>)}
         <rect x={312} y={450} width={96} height={78} rx={4} fill="#11151b" stroke="#2f3644" /><Txt x={360} y={484} c="pbt3" a="middle">foam · bio rings</Txt><Txt x={360} y={500} c="pbt3" a="middle">carbon</Txt>
         <Pipe d={retD} flow="clean" w={3.5} /><Txt x={retX + 12} y={250} c="pbtc">return hose</Txt><Txt x={160} y={360} c="pbtd">intake hose</Txt><Txt x={566} y={150} c="pbtc">outflow</Txt>
       </> : null}
@@ -121,7 +163,8 @@ function Cutaway({ p, dims }: { p: Plumb; dims: string }) {
         <Pipe d="M650 84 L566 84 Q548 84 548 106 L548 150" flow="clean" /><Txt x={452} y={176} c="pbtc">outflow lip</Txt>
         <Box x={640} y={62} w={200} h={100} n={{ name: loopFilter.name, lines: loopFilter.lines }} big />
       </> : null}
-      {inT && inTankFilter ? <><Box x={470} y={190} w={130} h={92} n={{ name: inTankFilter.name, lines: inTankFilter.lines }} /></> : null}
+      {inT && inTankFilter && !sponge ? <><Box x={470} y={190} w={130} h={92} n={{ name: inTankFilter.name, lines: inTankFilter.lines }} /></> : null}
+      {sponge && inTankFilter ? <SpongeCutaway f={inTankFilter} air={p.nodes.find(x => x.id === 'airpump')} /> : null}
 
       {/* sump: overflow box, drain, the sump with its skimmer and return pump, the return */}
       {sump ? <>
@@ -143,10 +186,10 @@ function Cutaway({ p, dims }: { p: Plumb; dims: string }) {
       {co2 && inline ? <><Box x={co2Start - 52} y={chainY + 76} w={105} h={52} mid n={{ name: co2.name, lines: co2.lines }} /><Pipe d={`M${co2Start} ${chainY + 76} L${co2Start} ${chainY + 52}`} flow="co2" /></> : null}
       {co2 && !inline ? <><Box x={diffCx - 52} y={348} w={104} h={52} mid n={{ name: co2.name, lines: co2.lines.slice(0, 1) }} /><Pipe d={`M${diffCx} 348 L${diffCx} ${258}`} flow="co2" /></> : null}
       {/* in-tank gear */}
-      <InTank items={tankItems} x0={200} x1={hob || inT ? 460 : 600} y={214} />
+      <InTank items={tankItems} x0={200} x1={sponge ? 400 : hob || inT ? 460 : 600} y={sponge ? 190 : 214} />
       {/* CO2 sinks */}
       {hasCo2(p) ? <>
-        {faintArrows([330, 400, 470, 540].filter(x => !inT || x < 440), 150, 178, 'co2')}<Txt x={430} y={196} c="pbtg" a="middle">plant uptake</Txt>
+        {faintArrows([330, 400, 470, 540].filter(x => !inT || x < 420), 150, 178, 'co2')}<Txt x={430} y={196} c="pbtg" a="middle">plant uptake</Txt>
         {faintArrows([190, 270, 350, 430, 510], 104, 78, 'co2')}<Txt x={190} y={64} c="pbtg">off-gassing at the surface</Txt>
       </> : null}
     </svg>
@@ -156,7 +199,8 @@ function Cutaway({ p, dims }: { p: Plumb; dims: string }) {
 /** The flat portrait drawing (phone): the tank on top, the loop running down the page and back up the right edge. */
 function Flat({ p, dims }: { p: Plumb; dims: string }) {
   const co2 = p.nodes.find(x => x.id === 'co2'), loopF = p.loop === 'canister' || p.loop === 'hob' ? p.filters.find(f => !f.inTank) : p.loop === 'sump' ? p.filters.find(f => f.id === 'sump') : undefined;
-  const items = [...p.inTank, ...(p.loop === 'inTank' ? p.filters.slice(0, 1) : [])];
+  const sponge = p.loop === 'inTank' && p.filters[0]?.fkind === 'sponge' ? p.filters[0] : undefined;
+  const items = [...p.inTank, ...(p.loop === 'inTank' && !sponge ? p.filters.slice(0, 1) : [])];
   const withSump = p.loop === 'sump';
   const sk = p.nodes.find(x => x.id === 'skimmer'), ato = p.nodes.find(x => x.id === 'ato');
   const step = items.length ? Math.min(100, 282 / items.length) : 0;
@@ -171,20 +215,26 @@ function Flat({ p, dims }: { p: Plumb; dims: string }) {
   const lastBottom = slots.length ? slots.at(-1)!.y + slots.at(-1)!.h : 168, retY = lastBottom + 50, H = (slots.length ? retY : Math.max(262, 170 + (co2 ? 80 : 0))) + 56;
   const inl = p.chain.find(c => c.kind === 'inline'), heatN = p.chain.find(c => c.kind === 'heater');
   const sideY = (id: string) => slots.find(s => s.id === id)?.y;
-  const sides: { n: PNode; y: number; flow: Flow }[] = []; let free = 190;
-  const place = (n: PNode | undefined, flow: Flow, at?: number) => { if (!n) return; const yy = at ?? free; if (at === undefined) free += 62; sides.push({ n, y: yy, flow }); };
-  place(co2, 'co2', inl ? sideY(inl.id) : undefined); place(ato, 'clean'); place(p.nodes.find(x => x.id === 'skimmate'), 'waste');
+  const sides: { n: PNode; y: number; flow: Flow }[] = []; let free = 186;
+  const place = (n: PNode | undefined, flow: Flow, at?: number) => { if (!n) return; const yy = at ?? free; if (at === undefined) free += 66; sides.push({ n, y: yy, flow }); };
+  place(p.nodes.find(x => x.id === 'airpump'), 'air'); place(co2, 'co2', inl ? sideY(inl.id) : undefined); place(ato, 'clean'); place(p.nodes.find(x => x.id === 'skimmate'), 'waste');
   const RX = 368, mid = 129;
   const dTop = slots.length ? `M60 168 L60 ${slots[0].y}` : '';
   return (
     <svg class="pbdiag port" viewBox={`0 0 390 ${H}`} role="img" aria-label="Flat plumbing diagram, phone layout" preserveAspectRatio="xMidYMin meet">
       <Defs />
-      <rect x={14} y={8} width={320} height={160} rx={8} class="pbbox" /><Txt x={26} y={28} c="pbt1">{dims.length > 44 ? dims.slice(0, 43) + '…' : dims}</Txt>
+      <rect x={14} y={8} width={320} height={160} rx={8} class="pbbox" /><Txt x={26} y={28} c="pbt1">{dims}</Txt>
       <rect x={26} y={40} width={296} height={80} rx={6} fill="url(#pbwater)" /><rect x={26} y={108} width={296} height={12} class="pbsub" /><g opacity=".7"><Plants x0={90} x1={300} base={110} k={0.6} /></g>
       {items.map((n, i) => {
-        const x = 30 + i * step, w = step - 8, flow: Flow = n.kind === 'heater' ? 'heat' : n.kind === 'chiller' ? 'cold' : n.id === 'diffuser' ? 'co2' : n.kind === 'filter' ? 'dirty' : 'clean';
-        return <g><rect x={x} y={84} width={w} height={22} rx={flow === 'heat' ? 11 : 5} class="pbbox" style={`stroke:${COL[flow]}`} /><Txt x={x + w / 2} y={99} c={`${TXT[flow]} s`} a="middle">{n.name.length > w / 6 ? n.name.slice(0, Math.max(3, Math.floor(w / 6) - 1)) + '…' : n.name}</Txt>{flow === 'heat' ? faintArrows([x + w / 2], 80, 62, 'heat') : flow === 'co2' ? faintArrows([x + w / 2], 80, 62, 'co2') : null}</g>;
+        const x = 30 + i * step, w = step - 8, flow: Flow = n.kind === 'heater' ? 'heat' : n.kind === 'chiller' ? 'cold' : n.id === 'diffuser' ? 'co2' : n.kind === 'filter' ? 'dirty' : 'clean', nl = wrap(n.name, Math.max(8, Math.floor((w - 6) / 5.2)));
+        return <g><title>{[n.name, ...n.lines].join(' · ')}</title>{flow === 'heat' ? <HeatHalo cx={x + w / 2} cy={95} rx={w / 2} ry={11} /> : null}<rect x={x} y={84} width={w} height={nl.length > 1 ? 32 : 22} rx={flow === 'heat' ? 11 : 5} class="pbbox" style={`stroke:${COL[flow]}`} />{nl.map((l, k) => <Txt x={x + w / 2} y={98 + k * 11} c={`${TXT[flow]} s`} a="middle">{l}</Txt>)}{flow === 'co2' ? faintArrows([x + w / 2], 80, 62, 'co2') : null}</g>;
       })}
+      {sponge ? <g><title>{`${sponge.name} · ${sponge.lines.join(' · ')}`}</title>
+        <rect x={236} y={78} width={52} height={36} rx={6} fill="#3a3f47" stroke="#5b6472" /><rect x={259} y={50} width={7} height={40} rx={2} fill="#9bb3cc" fill-opacity=".25" stroke="#9bb3cc" stroke-opacity=".7" />
+        <path d="M262.500 88 L262.500 54" class="pbflow dots pbbub" stroke={COL.air} stroke-width="3.5" />
+        {[90, 104].map(ay => <Pipe d={`M222 ${ay} L234 ${ay}`} flow="dirty" w={1.6} />)}{[96].map(ay => <Pipe d={`M304 ${ay} L290 ${ay}`} flow="dirty" w={1.6} />)}
+        <Pipe d="M259 52 L240 52" flow="clean" w={1.8} />
+        <Txt x={26} y={142} c="pbt3">{wrap('Air from the pump lifts water up the tube: in through the sponge, out the top with the bubbles.', 60)[0]}</Txt><Txt x={26} y={154} c="pbt3">{wrap('Air from the pump lifts water up the tube: in through the sponge, out the top with the bubbles.', 60)[1] ?? ''}</Txt></g> : null}
       {co2 ? <>{faintArrows([240, 280, 310], 82, 54, 'co2')}<Txt x={316} y={48} c="pbtg" a="end">off-gassing</Txt></> : null}
       {slots.length ? <><Pipe d={dTop} flow="dirty" /><Txt x={70} y={190} c="pbtd">{withSump ? 'overflow drain' : 'intake'}</Txt></> : null}
       {slots.length ? <>
@@ -197,8 +247,8 @@ function Flat({ p, dims }: { p: Plumb; dims: string }) {
         <Box x={14} y={s.y} w={230} h={s.h} n={s.n} stroke={s.flow === 'clean' && 'kind' in s.n && s.n.kind === 'heater' ? COL.heat : s.flow === 'clean' && 'kind' in s.n && s.n.kind === 'chiller' ? COL.cold : undefined} />
         {i ? <Pipe d={`M${mid} ${slots[i - 1].y + slots[i - 1].h} L${mid} ${s.y}`} flow="clean" /> : null}
       </g>)}
-      {sides.map(s => <g><Box x={262} y={s.y} w={86} h={52} n={{ name: s.n.name.length > 12 ? s.n.name.slice(0, 11) + '…' : s.n.name, lines: s.n.lines.slice(0, 1) }} />
-        {s.flow === 'co2' && inl ? <Pipe d={`M262 ${s.y + 26} L246 ${s.y + 26}`} flow="co2" /> : s.flow === 'co2' ? <Pipe d={`M305 ${s.y} L305 ${s.y - 22}`} flow="co2" /> : s.flow === 'waste' ? <Pipe d={`M262 ${s.y + 26} L246 ${s.y + 26}`} flow="waste" /> : <Pipe d={`M305 ${s.y} L305 ${s.y - 22}`} flow="clean" />}</g>)}
+      {sides.map(s => <g><Box x={252} y={s.y} w={124} h={56} n={{ name: s.n.name, lines: s.n.lines.slice(0, 1) }} />
+        {s.flow === 'co2' && inl ? <Pipe d={`M252 ${s.y + 28} L246 ${s.y + 28}`} flow="co2" /> : s.flow === 'air' ? <Pipe d={`M314 ${s.y} L314 ${s.y - 22}`} flow="air" /> : s.flow === 'co2' ? <Pipe d={`M305 ${s.y} L305 ${s.y - 22}`} flow="co2" /> : s.flow === 'waste' ? <Pipe d={`M252 ${s.y + 28} L246 ${s.y + 28}`} flow="waste" /> : <Pipe d={`M305 ${s.y} L305 ${s.y - 22}`} flow="clean" />}</g>)}
     </svg>
   );
 }
@@ -210,6 +260,7 @@ const Legend = ({ p }: { p: Plumb }) => {
       {e('clean', 'clean water')}{p.edges.some(x => x.flow === 'dirty') ? e('dirty', 'dirty water to the filter') : null}
       {hasCo2(p) ? e('co2', 'CO₂ in, then out through plants + the surface', true) : null}
       {p.edges.some(x => x.flow === 'heat') ? e('heat', 'heat in at the heater', true) : null}
+      {p.edges.some(x => x.flow === 'air') ? e('air', 'air from the pump') : null}
       {p.edges.some(x => x.flow === 'cold') ? e('cold', 'cooling') : null}{p.edges.some(x => x.flow === 'waste') ? e('waste', 'skimmate') : null}
     </div>
   );

@@ -8,13 +8,15 @@ import { OVERFLOW_PRODUCTS, filterProduct, heaterProduct, inlineProduct, product
 import { FILTER_MODELS } from '../../demand/gear';
 
 /** What rides a connection: clean water, dirty water to the filter, CO2 (green), heat (red), cooling (cyan), skimmate. */
-export type Flow = 'clean' | 'dirty' | 'co2' | 'heat' | 'cold' | 'waste';
+export type Flow = 'clean' | 'dirty' | 'co2' | 'heat' | 'cold' | 'waste' | 'air';
 export type NodeKind = 'tank' | 'filter' | 'inline' | 'heater' | 'chiller' | 'co2' | 'pump' | 'skimmer' | 'ato' | 'sump' | 'uv' | 'sink';
 export interface PNode {
   id: string; kind: NodeKind; name: string;
   /** small lines under the name: rated GPH, watts, what is inside */
   lines: string[];
   gph?: number; watts?: number;
+  /** filters: the filter kind (sponge, internal, hob, canister, sump), so the view can draw each its own way */
+  fkind?: string;
   /** drawn inside the tank (heater, powerhead, sponge) rather than outside it */
   inTank?: boolean;
 }
@@ -64,7 +66,7 @@ export function plumbingOf(S: TankSetup, opts: PlumbOpts = {}): Plumb {
     const k = kindOf(p), each = p.gph ?? 0, total = each * (p.n || 1);
     if (k !== 'sump') filterGph += total;
     const lines = [`${each ? `${round(each)} GPH rated` : 'air driven'}${p.n > 1 ? ` × ${p.n}` : ''}`, ...(p.watts ? [`${round(p.watts * (p.n || 1))} W`] : []), FILTER_INSIDE[k] ?? ''].filter(Boolean);
-    const node = add({ id: `filter${i}`, kind: 'filter', name: p.n > 1 ? `${filterName(p)}` : filterName(p), lines, gph: total || undefined, watts: p.watts, inTank: k === 'sponge' || k === 'internal' });
+    const node = add({ id: `filter${i}`, kind: 'filter', name: p.n > 1 ? `${filterName(p)}` : filterName(p), lines, gph: total || undefined, watts: p.watts, fkind: k, inTank: k === 'sponge' || k === 'internal' });
     filters.push(node);
   });
   if (sumpPiece || (pumpPiece && !fPieces.length)) {
@@ -116,6 +118,14 @@ export function plumbingOf(S: TankSetup, opts: PlumbOpts = {}): Plumb {
     edges.push({ from: prev, to: 'tank', flow: 'clean', gph });
   } else if (loop === 'inTank') for (const f of filters) edges.push({ from: 'tank', to: f.id, flow: 'dirty', gph: f.gph }), edges.push({ from: f.id, to: 'tank', flow: 'clean', gph: f.gph });
 
+  // ---- a sponge filter is air driven: the air pump feeds it through an airline
+  const spongeNode = filters.find(f => f.fkind === 'sponge');
+  if (spongeNode) {
+    const ap = parts.find(x => x.gear === 'airpump'), pp = pumpProduct(ap?.product);
+    const a = add({ id: 'airpump', kind: 'pump', name: pp ? productName(pp) : 'Air pump', lines: [ap?.watts ? `${round(ap.watts)} W` : 'air line to the sponge'] });
+    edges.push({ from: a.id, to: spongeNode.id, flow: 'air' });
+  }
+
   // ---- CO2: cylinder (or the kit) -> the in-line reactor if there is one, else a diffuser in the tank; out through plants and the surface
   const co2 = parts.find(p => p.row === 'co2' && ['co2kit', 'co2cart', 'diyco2'].includes(p.gear));
   if (co2) {
@@ -148,4 +158,15 @@ export function plumbingOf(S: TankSetup, opts: PlumbOpts = {}): Plumb {
   const sums: Plumb['sums'] = { filterGph: round(filterGph), turnover: gal > 0 ? round(filterGph / gal, 1) : 0, circGph: round(circGph), heaterW: round(heaterW), wPerGal: gal > 0 ? round(heaterW / gal, 1) : 0, returnGph, overflowGph };
   if (loop === 'sump' && returnGph !== undefined && overflowGph !== undefined && returnGph > overflowGph) warnings.push(`The return pump (${round(returnGph)} GPH rated) out-runs the overflow${ovf ? ` (${productName(ovf)}, ` : ' ('}${round(overflowGph)} GPH rated): the display would flood.`);
   return { gal, loop, nodes, edges, filters, chain, inTank, sums, warnings, empty: nodes.length === 1 };
+}
+
+/** Greedy word wrap to at most `max` lines of `cap` characters; only a name still too long after that is cut with an ellipsis (the <title> tooltip carries the whole name). */
+export function wrap(text: string, cap: number, max = 2): string[] {
+  const out: string[] = []; let cur = '';
+  for (const w of text.split(/\s+/).filter(Boolean)) {
+    if (!cur) cur = w; else if ((cur + ' ' + w).length <= cap) cur += ' ' + w; else { out.push(cur); cur = w; }
+  }
+  if (cur) out.push(cur);
+  if (out.length > max) { const keep = out.slice(0, max); keep[max - 1] = (keep[max - 1] + ' ' + out.slice(max).join(' ')).trim(); out.length = 0; out.push(...keep); }
+  return out.map(l => (l.length > cap + 2 ? `${l.slice(0, cap - 1)}…` : l));
 }

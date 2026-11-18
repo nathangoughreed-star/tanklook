@@ -4,7 +4,7 @@ import { SCENES } from '../src/examples/scenes';
 import { parseScene } from '../src/scene/validate';
 import { techOf } from '../src/scene/tech';
 import * as TE from '../src/scene/techEdit';
-import { plumbingOf } from '../src/shell/logic/plumbing';
+import { plumbingOf, wrap } from '../src/shell/logic/plumbing';
 import type { TankSetup } from '../src/scene/types';
 
 const load = (k: string): TankSetup => { const sc = parseScene(JSON.parse(SCENES[k])).scene; return sc.tanks[sc.active]; };
@@ -59,5 +59,18 @@ describe('PB1 plumbing graph', () => {
     const p = plumbingOf(S); expect(p.sums.overflowGph).toBe(300); expect(p.sums.returnGph).toBeGreaterThan(300);
     expect(p.warnings.length).toBe(1); expect(p.warnings[0]).toContain('300 GPH');
     S.tech.products = { overflow: 'eshopps-pf-800' }; expect(plumbingOf(S).warnings).toEqual([]);
+  });
+  it('PB3: a sponge filter gets its air pump and an air edge; other filters do not', () => {
+    const S = structuredClone(load('planted')); S.tech = { rows: { ...techOf(S).rows, filter: 'sponge' }, filters: [{ kind: 'sponge' }], preset: 'custom' };
+    const p = plumbingOf(S);
+    expect(p.filters[0].fkind).toBe('sponge'); expect(p.nodes.some(n => n.id === 'airpump')).toBe(true);
+    expect(p.edges.some(e => e.flow === 'air' && e.from === 'airpump' && e.to === p.filters[0].id)).toBe(true);
+    expect(plumbingOf(canister()).edges.some(e => e.flow === 'air')).toBe(false);
+  });
+  it('PB3: wrap keeps whole names on at most two lines', () => {
+    expect(wrap('Aquaneat Bio Sponge Filter', 14)).toEqual(['Aquaneat Bio', 'Sponge Filter']);
+    expect(wrap('Fluval 307 Performance Canister', 18, 2).join(' ')).toBe('Fluval 307 Performance Canister');
+    expect(wrap('Hydor ETH 200 In-Line Heater 5/8 inch', 14, 2).length).toBeLessThanOrEqual(2);
+    expect(wrap('Short', 10)).toEqual(['Short']);
   });
 });
