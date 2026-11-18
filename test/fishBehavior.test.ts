@@ -271,11 +271,11 @@ describe('FB2: shrimp, frogs and bottom dwellers rest', () => {
   it('dwarf frog: rests about 95 %, slow short moves, still goes up for air a few times an hour, and that dive is unchanged', () => {
     const r = crawlRun('adf', CRAWL.adf, 7200, 9), old = crawlRun('adf', BEFORE.adf, 7200, 9);
     expect(r.bad).toBe(0);
-    expect(r.stillShare).toBeGreaterThan(0.93);
-    expect(r.trips / 6 / 2).toBeGreaterThan(4.5); expect(r.trips / 6 / 2).toBeLessThan(10);   // real: every 15-20 min (3-4 an hour); about double that so the dive shows
+    expect(r.stillShare).toBeGreaterThan(0.94);
+    expect(r.trips / 6 / 2).toBeGreaterThan(2); expect(r.trips / 6 / 2).toBeLessThan(5);   // real: every 15-20 min (3-4 an hour); about double that so the dive shows
     expect(r.maxLift).toBeGreaterThan(100);              // the breath trip still climbs high
     expect(old.trips).toBeGreaterThan(r.trips * 2);
-    expect(CRAWL.adf.tripS).toBeGreaterThanOrEqual(400);
+    expect(CRAWL.adf.tripS).toBeGreaterThanOrEqual(900);
   });
   it('bottom dwellers rest by species group: corys most, loaches and sharks less; before / after', () => {
     const rest = (specLen: number, share: number | undefined, seed: number) => {

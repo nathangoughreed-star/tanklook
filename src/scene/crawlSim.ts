@@ -94,7 +94,7 @@ export function makeCrawlSim(specs: CrawlSpec[], field: SwimField, seed: number)
   const snail = (i: number) => specs[i].kind === 'snail';
   function setMode(i: number, m: number) {
     const s = specs[i]; mode[i] = m;
-    const walk = snail(i) ? 12 + R() * 30 : 2 + R() * 5;
+    const walk = snail(i) ? 12 + R() * 30 : specs[i].kind === 'frog' ? 2 + R() * 3 : 2 + R() * 5;
     if (m === WALK) modeT[i] = walk;
     else modeT[i] = Math.max(1, walk * s.graze / Math.max(0.05, 1 - s.graze) * (0.6 + R() * 0.8));
   }
@@ -111,7 +111,7 @@ export function makeCrawlSim(specs: CrawlSpec[], field: SwimField, seed: number)
     let ph = 0, hind = 0, fore = 0, pit = 0;
     if (mode[i] === ASC) {
       kph[i] += dt * 2.2 * 2 * Math.PI; ph = Math.sin(kph[i]);
-      hopY[i] += s.len * 1.5 * (1 + 0.7 * ph) * dt; // the kick pulses the climb
+      hopY[i] += s.len * 0.95 * (1 + 0.7 * ph) * dt; // the kick pulses the climb (R115: a gentler climb than the first cut)
       hind = -0.45 + 0.75 * ph; fore = 0.2 * Math.sin(kph[i] + 1); pit = 60;
       if (hopY[i] >= lift) { hopY[i] = lift; mode[i] = TOP; modeT[i] = 1.5 + R() * 2.5; }
     } else if (mode[i] === TOP) {
@@ -211,12 +211,12 @@ export function makeCrawlSim(specs: CrawlSpec[], field: SwimField, seed: number)
       const pitch = Math.atan2(field.floorAt(px[i] + c * e, pz[i] + sn * e) - field.floorAt(px[i] - c * e, pz[i] - sn * e), 2 * e) * R2D;
       const roll = Math.atan2(field.floorAt(px[i] - sn * e, pz[i] + c * e) - field.floorAt(px[i] + sn * e, pz[i] - c * e), 2 * e) * R2D;
       let nd = 0;
-      if (mode[i] === GRAZE && s.kind !== 'snail') nd = s.kind === 'shrimp' ? -2 + 1.2 * Math.sin(T * 1.3 + p1[i]) : -5 + 4 * Math.sin(T * 5 + p1[i]); // dips and picks
+      if (mode[i] === GRAZE && s.kind !== 'snail') nd = s.kind === 'shrimp' ? -2 + 1.2 * Math.sin(T * 1.3 + p1[i]) : s.kind === 'frog' ? -1 + 0.6 * Math.sin(T * 0.7 + p1[i]) : -5 + 4 * Math.sin(T * 5 + p1[i]); // dips and picks
       if (mode[i] === HOP) nd = 14 * Math.cos(Math.PI * Math.max(0, Math.min(1, 1 - hopT[i] / 0.85)));
       if (s.kind === 'shrimp') o.fore += ((mode[i] === GRAZE ? 1 : 0.15) - o.fore) * Math.min(1, dt * 3); // FB2: the front claws work while it sits (render/crawl.ts swings them)
       pitchS[i] += (pitch + nd - pitchS[i]) * Math.min(1, dt * 8); rollS[i] += (roll - rollS[i]) * Math.min(1, dt * 8);
       o.x = px[i]; o.z = pz[i]; o.y = f0 + s.rest + hopY[i]; o.yaw = th[i] * R2D; o.pitch = pitchS[i]; o.roll = rollS[i];
-      if (s.kind === 'frog') { const wk = mode[i] === WALK && spd[i] > s.speed * 0.2, sw = Math.sin(T * 2 * Math.PI * 0.9 + p1[i]); o.hind += ((wk ? 0.4 * sw : 0) - o.hind) * Math.min(1, dt * 8); o.fore += ((wk ? -0.3 * sw : 0) - o.fore) * Math.min(1, dt * 8); } // leg-walk: legs swing alternately; at rest the splayed pose
+      if (s.kind === 'frog') { const wk = mode[i] === WALK && spd[i] > s.speed * 0.2, sw = Math.sin(T * 2 * Math.PI * 0.5 + p1[i]); o.hind += ((wk ? 0.4 * sw : 0) - o.hind) * Math.min(1, dt * 8); o.fore += ((wk ? -0.3 * sw : 0) - o.fore) * Math.min(1, dt * 8); } // leg-walk: legs swing alternately; at rest the splayed pose
     }
   }
 
