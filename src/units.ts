@@ -53,3 +53,17 @@ export const GAL_L = 3.785;
 export const fmtVol = (l: number, u: Units) => u === 'in' ? `${Math.round(l / GAL_L * 10) / 10} gal` : `${Math.round(l)} L`;
 /** "46 sq in" / "300 cm²" (stockSummary.fmtOf.area). */
 export const fmtArea = (cm2: number, u: Units) => u === 'in' ? `${Math.round(cm2 / 6.4516)} sq in` : `${Math.round(cm2)} cm²`;
+
+// ---- R137 (Nathan 2026-11-18): upkeep time is a best guess, so it is never shown finer than 5 minutes a week
+/** Weekly care minutes as shown: to the nearest 5, never under 5 (the underlying estimate keeps its precision). */
+export const roundMinWk = (n: number) => Math.max(5, Math.round(n / 5) * 5);
+/** "45 min", "1 h", "1 h 15 min": minutes a week in 5-minute steps, hours once it reaches an hour. Append "/wk" or " a week" yourself. */
+export function fmtMin(n: number): string {
+  const r = roundMinWk(n), h = Math.floor(r / 60), m = r % 60;
+  return h ? `${h} h${m ? ` ${m} min` : ''}` : `${r} min`;
+}
+/** A change in weekly minutes ("+15 min", "-1 h 5 min", "0 min"): 5-minute steps, sign kept, zero allowed. */
+export function fmtMinDelta(n: number): string {
+  const r = Math.round(Math.abs(n) / 5) * 5, h = Math.floor(r / 60), m = r % 60;
+  return `${n < 0 && r ? '-' : n > 0 && r ? '+' : ''}${h ? `${h} h${m ? ` ${m} min` : ''}` : `${r} min`}`;
+}

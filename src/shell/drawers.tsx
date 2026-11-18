@@ -41,6 +41,23 @@ function Habitat({ v }: { v: HabitatView }) {
 }
 
 type Fig = 'setup' | 'upkeep' | 'minutes' | 'risk';
+/** R138: the "Lower it?" button by the time estimate: a short list of what would cut the weekly time. Information only; nothing is applied. */
+function LowerIt({ v }: { v: CostView }) {
+  const [open, setOpen] = useState(false);
+  const items = open ? v.lower() : [];
+  return (
+    <div class="lowerit">
+      <button type="button" class="btn sm" aria-expanded={open} onClick={() => setOpen(!open)}>Lower it?</button>
+      {open ? (items.length ? (
+        <ul class="dlist money lowerlist">{items.map(i => (
+          <li class="dbrk" data-lower={i.id}><span>{i.title}</span><b>{i.savesText.replace('saves about ', '−')}</b>
+            <div class="hint dswap">{i.detail} {i.costText.charAt(0).toUpperCase() + i.costText.slice(1)}.{i.section ? <> <button type="button" class="spLink" onClick={() => openSection(i.section!)}>See it in Equipment</button></> : null}</div></li>
+        ))}</ul>
+      ) : <div class="hint">Nothing in this build would cut the time by a noticeable amount: it is already about as light as it gets.</div>) : null}
+      {open && items.length ? <div class="hint">Best guesses to the nearest 5 minutes a week. Information only: nothing is applied or required.</div> : null}
+    </div>
+  );
+}
 function Cost({ v }: { v: CostView | null }) {
   const [sel, setSel] = useState<Fig>('setup');
   if (!v) return <div class="hint">No price yet: choose a tank first.</div>;
@@ -57,7 +74,7 @@ function Cost({ v }: { v: CostView | null }) {
       </div>
       {fig('risk', 'Relative difficulty', `${v.risk} / 10 · ${v.riskWord}`)}
       <div class="hint">Difficulty uses your Experience constraint (off means an average keeper). <button type="button" class="spLink" onClick={() => openLimit('experience')}>Edit in Constraints</button></div>
-      <div class="hint">Budget, monthly limit and time per week live in <button type="button" class="spLink" onClick={() => openLimit('money')}>Constraints</button>.</div>
+      <div class="hint">Budget and monthly limit live in <button type="button" class="spLink" onClick={() => openLimit('money')}>Constraints</button>. Time is a best guess to the nearest 5 min, never a limit.</div>
       {v.deal ? (
         <div class="dealbox" data-deal={v.deal.id}>
           <span class="t">A bundle close to your build</span>
@@ -68,6 +85,7 @@ function Cost({ v }: { v: CostView | null }) {
         </div>
       ) : null}
       {v.gearSales ? <div class="hint">{v.gearSales.n === 1 ? '1 gear sale fits' : `${v.gearSales.n} gear sales fit`} this tank{v.gearSales.first ? `, such as ${v.gearSales.first.title} (${v.gearSales.first.off}% off)` : ''}: see On sale now in Equipment.</div> : null}
+      <LowerIt v={v} />
       <div class="cap">{d ? d.title : 'Costs most to set up'}</div>
       {d ? (
         <>

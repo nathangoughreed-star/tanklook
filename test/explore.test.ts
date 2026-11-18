@@ -14,7 +14,6 @@ import { explorePool, isBuildable, type Candidate } from '../src/explore/pool';
 import { gateCandidate, type GateInput } from '../src/explore/gate';
 import type { Estimate, Range } from '../src/explore/estimate';
 import { difficultyOf } from '../src/explore/difficulty';
-import { NEAR_CAP } from '../src/explore/constants';
 
 const P = defaultProfile(), NOW = Date.parse('2026-11-02'), cap = (value: number) => ({ on: true, value });
 /** a few looks across every world the pool serves: freshwater, saltwater, a terrarium, a paludarium, and a brackish one (never offered) */
@@ -97,10 +96,10 @@ describe('firm limits gate before presentation (criterion 3)', () => {
     for (const c of dearer) expect(r.candidates.some(x => x.key === c.key)).toBe(false);
     expect(r.stats.byGate.budget).toBeGreaterThan(0);
   });
-  it('monthly and care-time caps are firm too, on the high end of their ranges', () => {
+  it('the monthly cap is firm too, on the high end of its range; a care-time cap gates nothing (R137)', () => {
     const a = pool({ constraints: { monthlyUsd: cap(30) } }).eligible, b = pool({ constraints: { minutesPerWeek: cap(60) } }).eligible;
     for (const c of a) expect(c.estimate.monthlyUsd.hi).toBeLessThanOrEqual(30);
-    for (const c of b) expect(c.estimate.minPerWeek.hi).toBeLessThanOrEqual(60);
+    expect(b.length).toBe(open.eligible.length);
     expect(a.length).toBeLessThan(open.eligible.length);
   });
   it('a firm $300 budget never shows a $330 setup; a $275 one that is certain fits (hand-made figures, the rule alone)', () => {
@@ -118,11 +117,9 @@ describe('firm limits gate before presentation (criterion 3)', () => {
     expect(g.verdict).toBe('provisional');
     expect(g.gates.find(x => x.id === 'budget')!.state).toBe('uncertain');
   });
-  it('a stated estimate within NEAR_CAP of its cap is provisional (care minutes are always our own estimate); further under it certifies on the high end (Q1)', () => {
-    const w: Wants = { constraints: { minutesPerWeek: cap(100) } };
-    const near = gateCandidate(stub({ w, est: { minPerWeek: rng(80, 70, 100 * (1 - NEAR_CAP) + 1) } })), clear = gateCandidate(stub({ w, est: { minPerWeek: rng(60, 50, 80) } }));
-    expect(near.verdict).toBe('provisional'); expect(clear.verdict).toBe('eligible');
-    expect(clear.gates.find(x => x.id === 'care')!.hi).toBe(80);
+  it('R137: a care-time cap is information only: it never gates, however far over', () => {
+    const g = gateCandidate(stub({ w: { constraints: { minutesPerWeek: cap(10) } }, est: { minPerWeek: rng(80, 70, 120) } }));
+    expect(g.verdict).toBe('eligible'); expect(g.gates.some(x => x.id === 'care')).toBe(false);
   });
   it('a firm setup-time cap behaves the same way', () => {
     const w: Wants = { constraints: {}, setupHours: 8 };
@@ -139,7 +136,7 @@ describe('firm limits gate before presentation (criterion 3)', () => {
   });
   it('a limit nobody set is UNKNOWN: it neither filters nor certifies (no "pass" for a limit that was never set)', () => {
     const g = gateCandidate(stub());
-    for (const id of ['budget', 'monthly', 'care', 'setup', 'space'] as const) { const x = g.gates.find(y => y.id === id)!; expect(x.state).toBe('unknown'); expect(x.kind).toBe('none'); }
+    for (const id of ['budget', 'monthly', 'setup', 'space'] as const) { const x = g.gates.find(y => y.id === id)!; expect(x.state).toBe('unknown'); expect(x.kind).toBe('none'); }
     expect(g.assumptions.some(a => /set-up budget limit/.test(a))).toBe(true);
     expect(g.verdict).toBe('eligible');
   });
@@ -236,7 +233,7 @@ describe('skip-friendly (criterion 12): no limits at all', () => {
   it('still returns candidates, and every limit gate reads unknown with the assumption stated, never pass', () => {
     expect(open.eligible.length).toBeGreaterThan(3);
     for (const c of open.candidates) {
-      for (const id of ['budget', 'monthly', 'care', 'setup'] as const) expect(c.verdict.gates.find(x => x.id === id)!.state).toBe('unknown');
+      for (const id of ['budget', 'monthly', 'setup'] as const) expect(c.verdict.gates.find(x => x.id === id)!.state).toBe('unknown');
       expect(c.verdict.assumptions.some(a => /set-up budget limit is set/.test(a))).toBe(true);
     }
   });

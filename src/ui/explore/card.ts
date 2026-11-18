@@ -2,6 +2,7 @@
 // so the numbers on a card are the numbers the pool certified, and the same card draws a fresh pick, a saved favourite and a provisional concept. The compact card carries the picture, the name, the
 // world and water, and four prominent figures (start-up $ range, care time on the high end, tank gallons, difficulty); "Details" opens the roster, the rest of the figures, the verdict (a provisional
 // concept says why) and the assumptions. Reactions: Like / Pass / Save / Unrated (neutral); the "What caught your eye?" panel offers aspect TAGS only (aspects.ts: no money, room or time tag exists).
+import { fmtMin } from '../../units';
 import { FAMILIES } from '../../scene/archetypes';
 import { getSpecies } from '../../data/species';
 import { TAGS, tagOf, type AspectTag, type TagGroup } from '../../explore/aspects';
@@ -35,7 +36,7 @@ export function startupText(c: Pick<StoredLite, 'estimate'>): string {
 /** Care time on the HIGH end of its range, as an estimate ("up to 70 min a week"); the typical figure is the small line. */
 export function careText(c: Pick<StoredLite, 'estimate'>): { main: string; sub: string } {
   const r = c.estimate.minPerWeek;
-  return { main: `up to ${to(r.hi, 5)} min a week`, sub: `about ${to(r.mean, 5)} typical` };
+  return { main: `up to ${fmtMin(r.hi)} a week`, sub: `about ${fmtMin(r.mean)} typical` };
 }
 export const galText = (c: Pick<StoredLite, 'estimate'>): string => `${Math.round(c.estimate.gal * 10) / 10} gal`;
 /** The four prominent figures of the compact card, in order. */
@@ -50,7 +51,7 @@ export function statsOf(c: Pick<StoredLite, 'estimate'>): { id: 'startup' | 'car
 }
 
 const GATE_LABEL: Partial<Record<GateId, string>> = { budget: 'Set-up budget', monthly: 'Monthly cost', care: 'Care time', setup: 'Set-up time', space: 'Space', size: 'Tank size' };
-const CAP_TEXT: Partial<Record<GateId, (n: number) => string>> = { budget: usd, monthly: n => `${usd(n)} a month`, care: n => `${Math.round(n)} min a week`, setup: n => `${Math.round(n * 10) / 10} h` };
+const CAP_TEXT: Partial<Record<GateId, (n: number) => string>> = { budget: usd, monthly: n => `${usd(n)} a month`, care: n => `${fmtMin(n)} a week`, setup: n => `${Math.round(n * 10) / 10} h` };
 /** What the card was checked against: one line per limit the person set (never a line for an unset one: it is unknown, so it says so in the assumptions). */
 export function limitLines(c: Pick<StoredLite, 'verdict' | 'provenance'>): string[] {
   const out: string[] = [];

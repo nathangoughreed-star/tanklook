@@ -6,7 +6,7 @@ import { parseScene } from '../src/scene/validate';
 import { compliance, activeSpace, constraintsFromLimits, effectiveLimits, parseConstraints, type Constraints } from '../src/scene/constraints';
 import { defaultProfile, demandOf, limitState } from '../src/demand';
 
-const C: Constraints = { startupUsd: { on: true, value: 500 }, monthlyUsd: { on: false, value: 25 }, minutesPerWeek: { on: true, value: 45 }, space: { on: false }, effort: 'low', experience: 1 };
+const C: Constraints = { startupUsd: { on: true, value: 500 }, monthlyUsd: { on: false, value: 25 }, space: { on: false }, effort: 'low', experience: 1 };
 const withC = () => { const s = defaultScene(); s.tanks[0].constraints = structuredClone(C); return s; };
 
 describe('Guardrails state (lane C1)', () => {
@@ -29,11 +29,11 @@ describe('Guardrails state (lane C1)', () => {
   });
   it('a tank without it reads the profile; with it, only the switched-on caps gate', () => {
     const P = defaultProfile(); P.limits = { setupUsd: 100, upkeep: 'low', minPerWeek: 20, risk: 'safe' };
-    expect(effectiveLimits(undefined, P.limits)).toBe(P.limits);
-    expect(effectiveLimits({}, P.limits)).toBe(P.limits);
-    expect(constraintsFromLimits(P.limits)).toEqual({ startupUsd: { on: true, value: 100 }, monthlyUsd: { on: true, value: 40 }, minutesPerWeek: { on: true, value: 20 } });
+    expect(effectiveLimits(undefined, P.limits)).toEqual({ ...P.limits, minPerWeek: undefined });   // R137: care time is never a limit
+    expect(effectiveLimits({}, P.limits)).toEqual({ ...P.limits, minPerWeek: undefined });
+    expect(constraintsFromLimits(P.limits)).toEqual({ startupUsd: { on: true, value: 100 }, monthlyUsd: { on: true, value: 40 } });
     const L = effectiveLimits({ constraints: C }, P.limits);
-    expect(L).toEqual({ setupUsd: 500, minPerWeek: 45, upkeepUsd: undefined, risk: 'safe' });
+    expect(L).toEqual({ setupUsd: 500, upkeepUsd: undefined, risk: 'safe' });
     const D = demandOf(defaultScene().tanks[0], P);
     const st = limitState(D, { limits: effectiveLimits({ constraints: { monthlyUsd: { on: true, value: 0 } } }, P.limits) });
     expect(st.upkeep.limit).toBe(0);
@@ -53,18 +53,19 @@ describe('compliance (lane C2)', () => {
   const S = (c?: Constraints) => { const t = defaultScene().tanks[0]; if (c) t.constraints = c; return t; };
   const none = {};
   it('all pass on known data is "Within your guardrails"', () => {
-    const r = compliance(S({ startupUsd: { on: true, value: 500 }, monthlyUsd: { on: true, value: 25 }, minutesPerWeek: { on: true, value: 60 } }), T, none);
+    const r = compliance(S({ startupUsd: { on: true, value: 500 }, monthlyUsd: { on: true, value: 25 } }), T, none);
     expect(r.overall).toBe('within'); expect(r.line).toBe('Within your guardrails'); expect(r.results.every(x => x.state === 'pass')).toBe(true);
   });
   it('one over reads "1 over" with value vs cap', () => {
-    const r = compliance(S({ startupUsd: { on: true, value: 500 }, minutesPerWeek: { on: true, value: 30 } }), T, none);
-    expect(r.overall).toBe('over'); expect(r.over).toBe(1); expect(r.line).toMatch(/^1 over/); expect(r.line).toContain('45 / 30 min a week');
+    const r = compliance(S({ startupUsd: { on: true, value: 500 }, monthlyUsd: { on: true, value: 15 } }), T, none);
+    expect(r.overall).toBe('over'); expect(r.over).toBe(1); expect(r.line).toMatch(/^1 over/); expect(r.line).toContain('$20 / $15 a month');
+    expect(compliance(S({ minutesPerWeek: { on: true, value: 30 } }), T, none).overall).toBe('off');   // R137: a time cap is never checked
   });
   it('unknown is not green', () => {
     const r = compliance(S({ startupUsd: { on: true, value: 500 } }), undefined, none);
     expect(r.overall).toBe('unknown'); expect(r.line).not.toContain('Within');
     const sp = compliance(S({ space: { on: true } }), T, none); expect(sp.results[0].state).toBe('unknown');
-    const mix = compliance(S({ startupUsd: { on: true, value: 100 }, minutesPerWeek: { on: true, value: 60 }, space: { on: true } }), T, none);
+    const mix = compliance(S({ startupUsd: { on: true, value: 100 }, monthlyUsd: { on: true, value: 60 }, space: { on: true } }), T, none);
     expect(mix.overall).toBe('over'); expect(mix.unknown).toBe(1);
   });
   it('all off = numbers only, no pass / fail', () => {
@@ -72,8 +73,8 @@ describe('compliance (lane C2)', () => {
     expect(r.overall).toBe('off'); expect(r.results).toEqual([]);
   });
   it('a disabled limit does not gate, but its cost is still in the demand totals', () => {
-    const r = compliance(S({ startupUsd: { on: false, value: 1 }, minutesPerWeek: { on: true, value: 60 } }), T, none);
-    expect(r.overall).toBe('within'); expect(r.results.map(x => x.id)).toEqual(['time']);
+    const r = compliance(S({ startupUsd: { on: false, value: 1 }, monthlyUsd: { on: true, value: 60 } }), T, none);
+    expect(r.overall).toBe('within'); expect(r.results.map(x => x.id)).toEqual(['monthly']);
     const D = demandOf(S(), defaultProfile()); expect(D.totals.setupUsd).toBeGreaterThan(1);
   });
   it('space over reads over', () => {

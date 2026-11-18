@@ -18,7 +18,7 @@ export { emptyBrief, isEmpty, GROUPS, ADAPTS, DESIRES, setFlex, setRange, setBou
 export type { Brief, GroupId, ItemId, Status, LimitId, NumLimitId, Range, Adapt, Desire, TapWater, WaterSrc };
 
 const MM_IN = 25.4;
-const NUM_LIMITS: readonly ItemId[] = ['constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.tankGal'];
+const NUM_LIMITS: readonly ItemId[] = ['constraints.budget', 'constraints.monthly', 'constraints.setupHours', 'constraints.tankGal'];
 
 // ---------- reading the brief ----------
 export interface RowView { id: ItemId; label: string; status: Status; off: boolean }
@@ -27,7 +27,7 @@ const OPEN_TEXT: Record<GroupId, string> = { animals: 'open', appearance: 'open'
 /** Where an item shows: U1 groups by id prefix; the tank you already own and the gear you own read as "Tank and equipment" to a person. */
 const SHOWN_IN: Partial<Record<ItemId, GroupId>> = { 'constraints.existingTank': 'equipment', 'constraints.owned': 'equipment' };
 const ORDER: ItemId[] = ['animals.stock', 'animals.kinds', 'animals.groups', 'appearance.look', 'appearance.plantMode', 'equipment.tank', 'constraints.existingTank', 'constraints.owned', 'equipment.needStand',
-  'constraints.budget', 'constraints.monthly', 'constraints.careMin', 'constraints.setupHours', 'constraints.tankGal', 'constraints.maxSpace', 'constraints.phased', 'preferences.hightech', 'preferences.tags', 'preferences.wishes', 'preferences.experience', 'preferences.effort',
+  'constraints.budget', 'constraints.monthly', 'constraints.setupHours', 'constraints.tankGal', 'constraints.maxSpace', 'constraints.phased', 'preferences.hightech', 'preferences.tags', 'preferences.wishes', 'preferences.experience', 'preferences.effort',
   'constraints.roomTempC', 'constraints.tapWater', 'preferences.desired', 'preferences.adapt', 'preferences.future'];
 export const tankName = (model?: string) => TANK_MODELS.find(m => m.id === model)?.name ?? model ?? 'a tank';
 const EXP = ['beginner', 'some experience', 'experienced'];
@@ -97,7 +97,6 @@ export function lockedRoster(b: Brief): Stocked[] {
 }
 export const budgetOf = (b: Brief) => valueOf(b, 'constraints.budget');
 export const monthlyOf = (b: Brief) => valueOf(b, 'constraints.monthly');
-export const careTimeOf = (b: Brief) => valueOf(b, 'constraints.careMin');
 export const spaceOf = (b: Brief): { w: number; d: number } | undefined => { const s = valueOf(b, 'constraints.maxSpace'); return s ? { w: s.w, d: s.d } : undefined; };
 /** The lower bounds ("at least"): undefined = none. */
 export const budgetMinOf = (b: Brief) => rangeOf(b, 'constraints.budget').min;
@@ -179,7 +178,6 @@ export function nextQuestions(b: Brief, ctx: NextCtx = {}): Next {
     if (!animals && !done('activity') && !hasTag(b, 'active') && !hasTag(b, 'calm')) q.push(QUESTIONS.activity);
     const bigNeed = animals ? (ctx.animalTankGal === undefined || ctx.animalTankGal > SMALL_GAL) : true;
     if (!hasTank && !valueOf(b, 'constraints.maxSpace') && !done('space') && bigNeed) q.push(QUESTIONS.space);
-    if (ctx.direction === 'lowmaint' && careTimeOf(b) === undefined && !done('careTime')) q.push(QUESTIONS.careTime);
   }
   const evaluate = animals && budgetOf(b) !== undefined;
   return { action: evaluate ? 'evaluate' : q.length ? 'ask' : 'generate', questions: q };
@@ -217,7 +215,7 @@ export function setSpace(b: Brief, s: { w: number; d: number } | undefined, _uni
   return s ? setItem(setItem(b, 'constraints.maxSpace', { w: s.w, d: s.d }, 'hard'), 'constraints.spaceGate', true, 'hard') : clearItem(clearItem(b, 'constraints.maxSpace'), 'constraints.spaceGate');
 }
 /** Brief -> the figures the Suggest panel's fields hold (startup budget, monthly, minutes, space). */
-export const constraintsOf = (b: Brief) => ({ startupUsd: budgetOf(b), monthlyUsd: monthlyOf(b), minutesPerWeek: careTimeOf(b), space: spaceOf(b) });
+export const constraintsOf = (b: Brief) => ({ startupUsd: budgetOf(b), monthlyUsd: monthlyOf(b), space: spaceOf(b) });
 
 export type Experience = 0 | 1 | 2;
 export const EXPERIENCE: readonly { id: Experience; label: string }[] = [{ id: 0, label: 'Beginner' }, { id: 1, label: 'Some experience' }, { id: 2, label: 'Experienced' }];
@@ -269,7 +267,7 @@ const NONE = emptyBrief();
 let bound: Store | undefined, last: Brief = NONE;
 const listeners = new Set<Listener>();
 export const getBrief = (): Brief => bound?.tank.brief ?? NONE;
-const CAPS = [['constraints.budget', 'startupUsd'], ['constraints.monthly', 'monthlyUsd'], ['constraints.careMin', 'minutesPerWeek']] as const;
+const CAPS = [['constraints.budget', 'startupUsd'], ['constraints.monthly', 'monthlyUsd']] as const;
 export function syncCaps(T: TankSetup, before: Brief, after: Brief) {
   const c = { ...(T.constraints ?? {}) };
   for (const [id, key] of CAPS) {

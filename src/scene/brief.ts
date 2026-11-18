@@ -541,8 +541,8 @@ export function briefFromWants(w: Wants): Brief {
 /** Wants from a brief. `constraints` is always present (possibly {}), as Wants requires. */
 export function briefToWants(b: Brief): Wants {
   const g = <K extends ItemId>(id: K) => getItem(b, id);
-  const c: Constraints = {}, st = capOf(g('constraints.budget')), mo = capOf(g('constraints.monthly')), mi = capOf(g('constraints.careMin')), sp = g('constraints.maxSpace'), gate = g('constraints.spaceGate');
-  if (st) c.startupUsd = st; if (mo) c.monthlyUsd = mo; if (mi) c.minutesPerWeek = mi;
+  const c: Constraints = {}, st = capOf(g('constraints.budget')), mo = capOf(g('constraints.monthly')), sp = g('constraints.maxSpace'), gate = g('constraints.spaceGate');
+  if (st) c.startupUsd = st; if (mo) c.monthlyUsd = mo;   // R137: care time is information only: a saved careMin is not a limit
   if (gate) c.space = { on: gate.value };
   const ef = g('preferences.effort'), ex = g('preferences.experience');
   if (ef) c.effort = ef.value; if (ex) c.experience = ex.value;
@@ -573,8 +573,8 @@ export function briefToWants(b: Brief): Wants {
   if (lt && !lt.off && lt.value) w.lowtech = true;
   // lane GV8: lower bounds filter ("do not offer builds below this"), and the middle of a band ranks (a narrow band is a target)
   const lows: NonNullable<Wants['mins']> = {}, lo = (id: NumLimitId) => minOf(b, id);
-  const lb = lo('constraints.budget'), lm = lo('constraints.monthly'), lc = lo('constraints.careMin'), lh = lo('constraints.setupHours');
-  if (lb !== undefined) lows.startupUsd = lb; if (lm !== undefined) lows.monthlyUsd = lm; if (lc !== undefined) lows.minPerWeek = lc; if (lh !== undefined) lows.setupHours = lh;
+  const lb = lo('constraints.budget'), lm = lo('constraints.monthly'), lh = lo('constraints.setupHours');
+  if (lb !== undefined) lows.startupUsd = lb; if (lm !== undefined) lows.monthlyUsd = lm; if (lh !== undefined) lows.setupHours = lh;
   if (Object.keys(lows).length) w.mins = lows;
   const gal = rangeOf(b, 'constraints.tankGal'); if (gal.min !== undefined || gal.max !== undefined) w.tankGal = gal;
   const mt = targetOf(b, 'constraints.budget'), hh = targetOf(b, 'constraints.setupHours');

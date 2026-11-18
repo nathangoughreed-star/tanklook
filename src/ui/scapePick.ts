@@ -3,6 +3,7 @@
 // animals and gear (taken with the main viewer, like the builds screen), with set-up $, minutes a week, light and CO2 need. Picking one loads it
 // in the editor ("make it yours": the editor and its gates); "scape it from scratch" leaves the build's plain tank. A "Your plan" chip then opens
 // the plan sheet (ui/planSheet.ts). Logic is scene/scapes.ts (pure, tested); this file draws it.
+import { fmtMin } from '../units';
 import { getSpecies } from '../data/species';
 import { needsOf, tankLabel } from '../scene/tankfit';
 import { PLANT_MODES, scapeOptions, type PlantMode, type ScapeOption } from '../scene/scapes';
@@ -57,7 +58,7 @@ export function attachScapePick(store: Store, viewer: Viewer, status: (m: string
 <div class="bpPic">${pics[i] ? `<img src="${pics[i]}" alt="${esc(o.label)} in your tank with your animals">` : ''}</div>
 <div class="bpHead"><b>${esc(o.label)}</b></div>
 <div class="spNote">${esc(o.why[0])}</div>
-<div class="bpNums"><span><b>${usd(o.setupUsd)}</b>set-up</span><span><b>${usd(o.upkeepUsdMo)}</b>a month</span><span><b>${o.minPerWeek}</b>min a week</span></div>
+<div class="bpNums"><span><b>${usd(o.setupUsd)}</b>set-up</span><span><b>${usd(o.upkeepUsdMo)}</b>a month</span><span><b>${fmtMin(o.minPerWeek)}</b>a week</span></div>
 <ul class="bpGear"><li>Light: ${esc(o.light)}</li><li>${esc(o.co2)}</li>${o.fakeCount ? `<li>${o.fakeCount} ${o.silk ? 'silk' : 'artificial'} plant${o.fakeCount === 1 ? '' : 's'}${o.silk ? ' (soft on long fins)' : ''}</li>` : ''}</ul>
 ${o.why.slice(1).map(w => `<div class="spNote">${esc(w)}</div>`).join('')}
 ${o.lightNote ? `<div class="spWarn">${esc(o.lightNote)}</div>` : ''}

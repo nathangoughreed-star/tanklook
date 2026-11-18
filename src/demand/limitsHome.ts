@@ -30,11 +30,9 @@ export function profileOf(b: Brief | undefined, skill: UserProfile['skill'], leg
   const limits: Limits = {};
   const setup = said('constraints.budget') ? valueOf(br, 'constraints.budget') : old.setupUsd;
   const mo = said('constraints.monthly') ? valueOf(br, 'constraints.monthly') : undefined;
-  const mins = said('constraints.careMin') ? valueOf(br, 'constraints.careMin') : old.minPerWeek;
   const risk = h.risk ?? old.risk;
   if (setup !== undefined) limits.setupUsd = setup;
   if (mo !== undefined) limits.upkeepUsd = mo; else if (!said('constraints.monthly')) { if (old.upkeep) limits.upkeep = old.upkeep; if (old.upkeepUsd !== undefined) limits.upkeepUsd = old.upkeepUsd; }
-  if (mins !== undefined) limits.minPerWeek = mins;
   if (risk) limits.risk = risk;
   const kwhUsd = h.kwhUsd ?? legacy.kwhUsd;
   return { ...d, skill, waterSource: h.water ?? legacy.waterSource ?? d.waterSource, ...(kwhUsd !== undefined ? { kwhUsd } : {}), limits, ...(legacy.mode ? { mode: legacy.mode } : {}) };

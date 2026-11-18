@@ -120,7 +120,7 @@ describe('Equipment: Required / Available, scratch, skip', () => {
 });
 
 describe('Limits: skip = unknown, hard vs flexible', () => {
-  it('has the six fields of the spec', () => { expect(LIMIT_FIELDS.map(f => f.id)).toEqual([...CONSTRAINT_IDS]); });
+  it('has the six fields of the spec', () => { expect(LIMIT_FIELDS.map(f => f.id)).toEqual(CONSTRAINT_IDS.filter(i => i !== 'care')); /* R137: care time is no longer a limit */ });
   it('untouched or skipped is UNKNOWN (never 0, never unlimited), and the step counts as answered', () => {
     const b = skipLimits(fresh());
     for (const id of CONSTRAINT_IDS) expect(constraintOf(b, id)).toEqual({ id, unknown: true });

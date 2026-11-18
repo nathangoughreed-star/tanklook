@@ -5,7 +5,7 @@ import { getItem, valueOf } from '../src/scene/brief';
 import { Store } from '../src/scene/store';
 import { defaultScene } from '../src/scene/defaults';
 import {
-  answer, bindBriefStore, careTimeOf, editBrief, emptyBrief, experienceOf, getBrief, lockAnimals, lockedStock, nextQuestions, ownedKeys, primaryAction, removeItem, setBudget, setCareTime, setExperience,
+  answer, bindBriefStore, editBrief, emptyBrief, experienceOf, getBrief, lockAnimals, lockedStock, nextQuestions, ownedKeys, primaryAction, removeItem, setBudget, setCareTime, setExperience,
   setLook, setMonthly, setOwnedKey, setSpace, setTank, summarise, toggleLock, budgetOf, type NextCtx, type QId,
 } from '../src/ui/setupBrief';
 
@@ -65,10 +65,9 @@ describe('nextQuestions: follow-ups', () => {
     expect(ids(b, { answered: ['space' as QId] })).not.toContain('space');
     expect(ids(answer(b, 'space', 'md'))).not.toContain('space');
   });
-  it('"little upkeep" asks the time a week', () => {
+  it('R137: "little upkeep" no longer asks a time limit (care time is information only)', () => {
     const b = answer(setBudget(emptyBrief(), 100), 'priority', 'lowmaint');
-    expect(ids(b, { direction: 'lowmaint', answered: ['activity', 'space'] })).toEqual(['careTime']);
-    expect(careTimeOf(answer(b, 'careTime', '30'))).toBe(30);
+    expect(ids(b, { direction: 'lowmaint', answered: ['activity', 'space'] })).toEqual([]);
   });
   it('a picked (not owned) tank is also not asked about space', () => {
     expect(ids(setTank(setLook(emptyBrief(), 'nature'), { id: 'g20' }))).toEqual(['activity']);
@@ -139,10 +138,9 @@ describe('the brief lives in the tank', () => {
     expect(store.tank.constraints?.startupUsd).toEqual({ on: true, value: 200 });
     editBrief(b => setCareTime(setBudget(b, 150), 30));
     expect(store.tank.constraints?.startupUsd?.value).toBe(150);
-    expect(store.tank.constraints?.minutesPerWeek?.value).toBe(30);
+    expect(store.tank.constraints?.minutesPerWeek).toBeUndefined();   // R137: a time cap is never a guardrail
     editBrief(b => setBudget(b, undefined));
     expect(store.tank.constraints?.startupUsd).toBeUndefined();
-    expect(store.tank.constraints?.minutesPerWeek?.value).toBe(30);
     store.undo();
     expect(store.tank.constraints?.startupUsd?.value).toBe(150);
   });

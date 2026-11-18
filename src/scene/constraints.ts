@@ -41,8 +41,8 @@ const cap = (v: unknown): Cap | undefined => {
 export function parseConstraints(raw: unknown): Constraints | undefined {
   if (!raw || typeof raw !== 'object') return undefined;
   const o = raw as Record<string, unknown>, c: Constraints = {};
-  const s = cap(o.startupUsd), m = cap(o.monthlyUsd), t = cap(o.minutesPerWeek);
-  if (s) c.startupUsd = s; if (m) c.monthlyUsd = m; if (t) c.minutesPerWeek = t;
+  const s = cap(o.startupUsd), m = cap(o.monthlyUsd);   // R137: care time is information only, never a limit: a saved minutesPerWeek cap is dropped
+  if (s) c.startupUsd = s; if (m) c.monthlyUsd = m;
   if (o.space && typeof o.space === 'object') c.space = { on: (o.space as { on?: unknown }).on !== false };
   if (o.effort === 'low' || o.effort === 'medium' || o.effort === 'high') c.effort = o.effort;
   if (o.experience === 0 || o.experience === 1 || o.experience === 2) c.experience = o.experience;
@@ -56,16 +56,15 @@ export function constraintsFromLimits(l: Limits): Constraints {
   const c: Constraints = {};
   if (l.setupUsd !== undefined) c.startupUsd = { on: true, value: l.setupUsd };
   if (l.upkeep === 'free' || l.upkeep === 'low') c.monthlyUsd = { on: true, value: UPKEEP_USD[l.upkeep] };
-  if (l.minPerWeek !== undefined) c.minutesPerWeek = { on: true, value: l.minPerWeek };
   return c;
 }
 
 /** The Limits the demand engine checks for this tank. `risk` is not a guardrail in v1: it always comes from the profile. */
 export function effectiveLimits(S: Pick<TankSetup, 'constraints'> | undefined, profile: Limits): Limits {
   const c = S?.constraints;
-  if (!c) return profile;
+  if (!c) return { ...profile, minPerWeek: undefined };   // R137: care time is never a limit
   const on = (k?: Cap) => (k && k.on ? k.value : undefined);
-  const l: Limits = { setupUsd: on(c.startupUsd), minPerWeek: on(c.minutesPerWeek), upkeepUsd: on(c.monthlyUsd) };
+  const l: Limits = { setupUsd: on(c.startupUsd), upkeepUsd: on(c.monthlyUsd) };
   if (profile.risk) l.risk = profile.risk;
   return l;
 }
@@ -112,7 +111,6 @@ export function compliance(S: Pick<TankSetup, 'constraints' | 'layout' | 'tank'>
   };
   num('startup', 'Set-up cost', totals?.setupUsd, L.setupUsd, usd, '');
   num('monthly', 'Upkeep', totals?.upkeepUsdMo, L.upkeepUsd ?? upkeepCapOf(L.upkeep), usd, ' a month');
-  num('time', 'Time', totals?.minPerWeek, L.minPerWeek, n => String(Math.round(n)), ' min a week');
   const sp = S.constraints?.space?.on === true ? S.layout.space : activeSpace(S);
   if (S.constraints?.space?.on === true && !S.layout.space) results.push({ id: 'space', label: 'Space', state: 'unknown', text: 'Space: no size set yet' });
   else if (sp) {

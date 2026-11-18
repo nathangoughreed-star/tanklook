@@ -2,6 +2,7 @@
 // button. Nathan: "the quick rundown, a picture of the tank, existing equipment, shopping list, expected costs, plant/coral list, etc. Also include
 // any basic warnings or cautions." Everything comes from the existing sheets' data (scene/plan.ts, scene/setupsheet.ts, ui/stockSummary.ts,
 // demand/tiers.ts); nothing is re-priced here. Always US units. Print uses the browser's print dialog ("Save as PDF" is in it).
+import { fmtMin } from '../units';
 import { planNeeds } from './planSheet';
 import { planOf, type PlanRow } from '../scene/plan';
 import { buildSheet } from '../scene/setupsheet';
@@ -118,7 +119,7 @@ export function reportHtml(r: Report, shot = ''): string {
 <tr><th scope="row">Kind</th><td>${esc(r.kind)}</td></tr>
 <tr><th scope="row">Animals</th><td>${r.animals.length ? esc(r.animals.map(a => `${a.n} ${a.name}`).join(', ')) : 'None yet'}</td></tr>
 <tr><th scope="row">Difficulty</th><td>${r.difficulty ? `<b>${esc(r.difficulty.word)}</b>: ${esc(r.difficulty.why)}` : 'No animals yet'}</td></tr>
-<tr><th scope="row">Your time</th><td>about ${r.minPerWeek} min a week, once it is running</td></tr></table></section>
+<tr><th scope="row">Your time</th><td>about ${fmtMin(r.minPerWeek)} a week, once it is running</td></tr></table></section>
 <section class="rp-sec rp-pic" data-rp="picture"><h2>The tank</h2>${shot ? `<figure class="rp-shot"><img src="${shot}" alt="The tank from the front"></figure>` : none('No picture: the 3D view is off in this browser.')}</section>
 <section class="rp-sec" data-rp="have"><h2>Equipment you have</h2>${lines(r.have, 'None: everything is on the shopping list.')}</section>
 <section class="rp-sec" data-rp="shopping"><h2>Shopping list</h2>
@@ -127,7 +128,7 @@ export function reportHtml(r: Report, shot = ''): string {
 <section class="rp-sec" data-rp="costs"><h2>Expected costs</h2><table class="rp-costs"><tr><td></td><th scope="col">Minimum viable</th><th scope="col">Ideal</th>${anyLim ? '<th scope="col">Your limit</th>' : ''}</tr>
 <tr><th scope="row">Set-up</th><td class="q">${fig(usd(lo.setupUsd), L.budget?.minimum)}</td><td class="q">${fig(usd(hi.setupUsd), L.budget?.ideal)}</td>${limCell(L.budget)}</tr>
 <tr><th scope="row">Each month</th><td class="q">${fig(usd(lo.upkeepUsdMo), L.monthly?.minimum)}</td><td class="q">${fig(usd(hi.upkeepUsdMo), L.monthly?.ideal)}</td>${limCell(L.monthly)}</tr>
-<tr><th scope="row">Your time</th><td class="q">${fig(`${Math.round(lo.minPerWeek)} min/wk`, L.care?.minimum)}</td><td class="q">${fig(`${Math.round(hi.minPerWeek)} min/wk`, L.care?.ideal)}</td>${limCell(L.care)}</tr></table>${L.hours ? `<p class="sheetNote">Your set-up time limit: ${esc(L.hours.text)}.</p>` : ''}
+<tr><th scope="row">Your time</th><td class="q">${fig(`${fmtMin(lo.minPerWeek)}/wk`, L.care?.minimum)}</td><td class="q">${fig(`${fmtMin(hi.minPerWeek)}/wk`, L.care?.ideal)}</td>${limCell(L.care)}</tr></table>${L.hours ? `<p class="sheetNote">Your set-up time limit: ${esc(L.hours.text)}.</p>` : ''}
 <p class="sheetNote">Minimum viable: what the animals need to live well (tank, filter, heat, light, water care, the animals). Ideal: the full build as designed.</p></section>
 <section class="rp-sec" data-rp="living"><h2>Plants and corals</h2>${r.living.map(l => `<h3>${esc(l.title)}</h3>${l.rows.length ? `<table class="rp-lines">${l.rows.map(x =>
   `<tr><th scope="row">${esc(x.name)}</th><td class="q">${esc(x.n)}</td><td>${esc(x.detail)}</td></tr>`).join('')}</table>` : none('None.')}`).join('') || none('None.')}</section>

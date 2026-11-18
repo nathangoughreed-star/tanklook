@@ -52,7 +52,7 @@ export function prefsHtml(d: HabitatDirection, a: QuickAnswers, open: { limits?:
   const rows: string[] = [];
   rows.push(sizeSliderHtml(d, a));
   rows.push(archRowHtml(d, a, base));
-  rows.push(`<details class="qp-more" data-x="limits"${open.limits || a.budget || a.care ? ' open' : ''}><summary>Practical limits</summary>${limitRow('budget', 'Set-up cost under', '$', a.budget)}${limitRow('care', 'Weekly upkeep under', 'min', a.care)}<p class="hint">Target = I’d prefer it; Firm maximum = never go over.</p></details>`);
+  rows.push(`<details class="qp-more" data-x="limits"${open.limits || a.budget || a.care ? ' open' : ''}><summary>Practical limits</summary>${limitRow('budget', 'Set-up cost under', '$', a.budget)}<p class="hint">Target = I’d prefer it; Firm maximum = never go over.</p></details>`);
   rows.push(`<details class="qp-more" data-x="avoid"${open.avoid || a.avoid.length ? ' open' : ''}><summary>Don’t want</summary><div class="qp-opts">${AVOIDS.filter(x => x.shown(d)).map(x => btn(`data-avoid="${x.id}"`, a.avoid.includes(x.id), x.label(d), x.id === 'large-animals' ? `over ${LARGE_IN} in` : '')).join('')}</div><p class="hint">Firm: designs with these are left out. </p></details>`);
   return rows.join('');
 }

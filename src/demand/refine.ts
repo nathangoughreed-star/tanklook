@@ -3,6 +3,7 @@
 // on the edited brief and the card says what the edit bought and what it cost in one line. Rules: locked items (the locked stock, an existing tank,
 // owned gear) are never changed by a chip, except that the add-animals chip EXTENDS the locked stock (never removes or swaps one); welfare is the
 // generator's own gate (a chip that leaves no setup passing it is refused and the old result stays); the budget stays a ceiling.
+import { fmtMinDelta } from '../units';
 import { getSpecies } from '../data/species';
 import { TIER_LABEL } from '../scene/finish';
 import { clearItem, getItem, setItem, valueOf, type Brief, type Wish } from '../scene/brief';
@@ -75,7 +76,7 @@ export function tradeoffLine(p: Proposal, b?: Proposal): string {
   const m = Math.round(p.totals.monthlyUsd - b.totals.monthlyUsd);
   if (m) (m < 0 ? better : cost).push(`${sgn(m)} a month`);
   const t = p.totals.minPerWeek - b.totals.minPerWeek;
-  if (t) (t < 0 ? better : cost).push(`${t > 0 ? '+' : '-'}${Math.abs(t)} min a week`);
+  if (t) (t < 0 ? better : cost).push(`${fmtMinDelta(t)} a week`);
   if (!better.length && !cost.length) return 'Nothing else changed.';
   return `${better.length ? `Better: ${better.join(', ')}.` : ''}${better.length && cost.length ? ' ' : ''}${cost.length ? `Costs: ${cost.join(', ')}.` : ''}`;
 }

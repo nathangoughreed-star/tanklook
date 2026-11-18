@@ -103,7 +103,6 @@ export function limitsLine(w: Wants): { set: string[]; unset: string[] } {
   const num = (label: string, on: boolean | undefined, text: string, flex: boolean | undefined) => on ? set.push(`${label} ${text} (${kind(flex)})`) : unset.push(label);
   num('set-up budget', C.startupUsd?.on, usd(C.startupUsd?.value ?? 0), fx.startupUsd);
   num('monthly cost', C.monthlyUsd?.on, `${usd(C.monthlyUsd?.value ?? 0)} a month`, fx.monthlyUsd);
-  num('care time', C.minutesPerWeek?.on, `${Math.round(C.minutesPerWeek?.value ?? 0)} min a week`, fx.minPerWeek);
   num('set-up time', w.setupHours !== undefined && w.setupHours > 0, `${Math.round((w.setupHours ?? 0) * 10) / 10} h`, fx.setupHours);
   const sp = C.space?.on === false ? undefined : w.space;
   num('space', !!sp, sp ? `${Math.round(sp.w / 25.4)} x ${Math.round(sp.d / 25.4)} in` : '', fx.space);

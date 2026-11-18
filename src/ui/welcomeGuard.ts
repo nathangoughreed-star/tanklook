@@ -25,7 +25,7 @@ export function attachWelcomeGuard(el: HTMLElement) {
     const rows = summarise(b).filter(g => !g.open);
     el.innerHTML = `<h3><span class="welcomeH"><span>2</span></span> Your resources and limits</h3><div class="hint">All optional; add them whenever they matter. Blank means not specified.</div>
 <fieldset class="wgSet"><legend>Money</legend>${field('wgBudget', 'Upfront budget ($)', 10)}${field('wgMonthly', 'Monthly budget ($)', 1)}</fieldset>
-<fieldset class="wgSet"><legend>Time</legend>${field('wgTime', 'Upkeep (min / week)', 5)}<div class="hint">Set-up time is coming: it needs the build plan.</div></fieldset>
+<fieldset class="wgSet"><legend>Time</legend><div class="hint">Set-up time is coming: it needs the build plan.</div></fieldset>
 <fieldset class="wgSet"><legend>Space</legend><div class="wgRow"><span>Largest footprint (in)</span><span class="wgMax"><span><input id="wgW" type="number" min="0" aria-label="Width" placeholder="wide" value="${sp ? r(sp.w) : ''}"> x <input id="wgD" type="number" min="0" aria-label="Depth" placeholder="deep" value="${sp ? r(sp.d) : ''}"></span></span></div>${field('wgGal', 'Tank size (gal)', 1)}</fieldset>
 <fieldset class="wgSet"><legend>Environment</legend><label class="wgRow"><span>Room temperature (deg F)</span><input id="wgTemp" type="number" min="30" max="110" step="1" placeholder="not specified" value="${temp ?? ''}"></label>
 <label class="wgRow"><span>Water from</span><select id="wgWater"><option value="">not specified</option>${(['tap', 'well', 'ro'] as WaterSrc[]).map(w => `<option value="${w}" ${tw?.source === w ? 'selected' : ''}>${{ tap: 'Tap', well: 'Well', ro: 'RO / remineralized' }[w]}</option>`).join('')}</select></label>

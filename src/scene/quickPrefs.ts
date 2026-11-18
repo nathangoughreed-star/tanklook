@@ -193,7 +193,6 @@ export function readQuickPrefs(b: Brief): QuickPrefs {
   const own = new Set([...Object.keys(toldKeys(a)), ...Object.keys(legacyOf(b) ? legacyTold(legacyOf(b)!) : {})]), hand = Object.entries(told).filter(([k]) => !own.has(k) && !k.startsWith('natural:'));
   if (hand.length) out.told = Object.fromEntries(hand) as Record<string, 1 | -1>;
   if (a.budget) out.budgetUsd = { value: a.budget.max, strength: a.budget.firm ? 'hard' : 'prefer' };
-  if (a.care) out.careMinPerWeek = { value: a.care.max, strength: a.care.firm ? 'hard' : 'prefer' };
   return out;
 }
 
@@ -207,7 +206,6 @@ export function passesHard(q: QuickPrefs, c: PrefFacts): boolean {
   if (q.heightIn?.strength === 'hard' && !inR(c.heightIn, q.heightIn.value)) return false;
   if (q.plants?.strength === 'hard' && c.plants) { if (q.plants.value === 'live' ? c.plants === 'artificial' : c.plants !== 'artificial') return false; }
   if (q.budgetUsd?.strength === 'hard' && c.setupUsd !== undefined && c.setupUsd > q.budgetUsd.value) return false;
-  if (q.careMinPerWeek?.strength === 'hard' && c.weeklyMin !== undefined && c.weeklyMin > q.careMinPerWeek.value) return false;
   const sp = (c.species ?? []).map(getSpecies).filter((x): x is NonNullable<typeof x> => !!x);
   for (const p of q.prohibit) {
     if (p === 'co2' && c.co2) return false;

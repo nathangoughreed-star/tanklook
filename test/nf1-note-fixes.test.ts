@@ -60,19 +60,11 @@ describe('deepen the substrate', () => {
 });
 
 describe('limits', () => {
-  it('a limit note carries the exact figure; the plan sets it and clears the note', () => {
+  it('R137: care time is no longer a limit, so no time note or fix is ever raised', () => {
     const s = tank([]);
     const t = { setupUsd: 100, upkeepUsdMo: 5, minPerWeek: 44, risk: 1 } as never;
-    const mk = (S: TankSetup) => verdictOf(S, S.brief ?? emptyBrief(), { totals: t, limits: { minPerWeek: 30 }, units: 'in' });
-    const v = mk(s), i = [...v.hard, ...v.targets].find(x => x.id === 'limit:time')!;
-    expect(i.fix).toEqual({ kind: 'limit', id: 'time', from: 30, to: 44 });
-    const p = fixPlans(s, [i])[0];
-    expect(p.kind).toBe('time'); expect(p.what).toBe('Raise the time limit to 44 min a week');
-    expect(p.describe).toMatch(/from 30 min a week to 44 min a week/);
-    p.apply(s);
-    expect(s.constraints?.minutesPerWeek?.value).toBe(44);
-    const v2 = verdictOf(s, s.brief ?? emptyBrief(), { totals: t, limits: { minPerWeek: 30 }, units: 'in' });
-    expect([...v2.hard, ...v2.targets].some(x => x.id === 'limit:time')).toBe(false);
+    const v = verdictOf(s, s.brief ?? emptyBrief(), { totals: t, limits: { minPerWeek: 30 }, units: 'in' });
+    expect([...v.hard, ...v.targets].some(x => x.id === 'limit:time')).toBe(false);
   });
   it('no fix is offered for a note with no exact figure', () => {
     expect(fixPlans(tank([]), [{ id: 'stock:filter', tab: 'equipment', uids: [], text: 'x', relax: 'a bigger filter, or fewer animals' }])).toEqual([]);

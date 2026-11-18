@@ -3,6 +3,7 @@
 // cheaper (or whatever metric was limited) style. When a chosen look breaks a limit (set-up, a month, care time, set-up hours, space, tank size; GV8's ranges), this searches small
 // COMPOUND edits that keep the look: drop or shrink one species group, a smaller tank, a plainer finish tier, low-tech plants (no CO2, no stronger light). Every candidate is built and
 // checked by the generator's own concept builder (the strict welfare rule, every limit on both sides), so nothing is promised that the engine does not deliver. Pure: the UI draws it.
+import { fmtMin } from '../units';
 import { getSpecies } from '../data/species';
 import { TANK_MODELS, tankFromModel, type TankModel } from '../data/tanks';
 import { TIER_LABEL } from '../scene/finish';
@@ -180,7 +181,7 @@ export function compromiseFor(an: Anchor, w: Wants, P: UserProfile, units: Units
     const delta = minus(c.p.totals, anchor.totals);
     return { proposal: c.p, steps: c.steps, animals: c.animals, delta,
       label: `${lab}: ${c.p.build.tank.name}, ${usd(c.p.totals.startupUsd)}`,
-      text: `Keep this ${lab.toLowerCase()} ${within}: ${list(c.steps.map(s => s.text))} (${deltaText(delta)}; ${usd(c.p.totals.startupUsd)} to set up, ${usd(c.p.totals.monthlyUsd)} a month, about ${Math.round(c.p.totals.minPerWeek)} min a week).` };
+      text: `Keep this ${lab.toLowerCase()} ${within}: ${list(c.steps.map(s => s.text))} (${deltaText(delta)}; ${usd(c.p.totals.startupUsd)} to set up, ${usd(c.p.totals.monthlyUsd)} a month, about ${fmtMin(c.p.totals.minPerWeek)} a week).` };
   });
 
   // ---- beside it: the same roster in another style, the best one on the leading limit (the chosen tank first, then smaller) ----
@@ -196,7 +197,7 @@ export function compromiseFor(an: Anchor, w: Wants, P: UserProfile, units: Units
     const best = found.map(x => ({ s: x.s, p: real.finalize(x.r!, 'look', animals.length > 0, false) })).sort((a, b) => metric(a.p) - metric(b.p))[0];
     const d = minus(best.p.totals, anchor.totals);
     other = { proposal: best.p, style: best.s, delta: d, label: `${styleLabel(best.s)}: ${best.p.build.tank.name}, ${usd(best.p.totals.startupUsd)}`,
-      text: `Or ${animals.length ? `keep all ${animalsText(animals)} and ` : ''}change the look: ${styleLabel(best.s)} in the ${best.p.build.tank.name} for ${usd(best.p.totals.startupUsd)} to set up, ${usd(best.p.totals.monthlyUsd)} a month, about ${Math.round(best.p.totals.minPerWeek)} min a week (${deltaText(d)}), ${within}.` };
+      text: `Or ${animals.length ? `keep all ${animalsText(animals)} and ` : ''}change the look: ${styleLabel(best.s)} in the ${best.p.build.tank.name} for ${usd(best.p.totals.startupUsd)} to set up, ${usd(best.p.totals.monthlyUsd)} a month, about ${fmtMin(best.p.totals.minPerWeek)} a week (${deltaText(d)}), ${within}.` };
     break;
   }
   return { style, anchor, broken, compromises, ...(other ? { other } : {}),

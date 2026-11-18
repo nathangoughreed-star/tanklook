@@ -2,6 +2,7 @@
 // tanks for those animals (cheapest, least work, balanced), each pictured in 3D in ITS tank with ITS animals and gear. The user picks one;
 // it opens in the editor ("make it yours": the look is free, the gates hold). Logic is scene/builds.ts (pure, tested); this file draws it,
 // takes the pictures with the main viewer, and loads the choice. Lane P6b (scape choice, plan sheet) listens through onBuildPicked().
+import { fmtMin } from '../units';
 import { rng } from '../art/paint';
 import { dealShip } from '../data/deals';
 import { gearShip } from '../data/gearDeals';
@@ -85,7 +86,7 @@ export function attachBuildPick(store: Store, viewer: Viewer, status: (m: string
 <div class="bpPic">${pics[i] ? `<img src="${pics[i]}" alt="The ${esc(b.label)} build: ${esc(tankLabel(b.tank, store.scene.units))} with the animals">` : ''}</div>
 <div class="bpHead"><b>${esc(b.label)}</b>${twin ? `<span class="spNote">same gear as ${esc(twin.label)}</span>` : ''}</div>
 <div class="spNote">${esc(b.blurb)}</div>
-<div class="bpNums"><span><b>${usd(b.setupUsd)}</b>set-up${b.savingUsd ? `<i>${usd(b.listUsd)} before deals</i>` : ''}</span><span><b>${usd(b.upkeepUsdMo)}</b>a month</span><span><b>${b.minPerWeek}</b>min a week</span></div>
+<div class="bpNums"><span><b>${usd(b.setupUsd)}</b>set-up${b.savingUsd ? `<i>${usd(b.listUsd)} before deals</i>` : ''}</span><span><b>${usd(b.upkeepUsdMo)}</b>a month</span><span><b>${fmtMin(b.minPerWeek)}</b>a week</span></div>
 <ul class="bpGear">${b.gear.map(g => `<li>${esc(g)}</li>`).join('')}</ul>
 ${deals ? `<ul class="bpDeals">${deals}</ul>` : ''}
 ${meetsNeeds(b) ? '' : '<div class="spWarn">No filter on the list carries these animals in this tank.</div>'}

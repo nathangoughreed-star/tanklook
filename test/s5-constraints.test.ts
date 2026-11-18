@@ -25,16 +25,15 @@ const exp = () => X.getExperience();
 describe('Constraints model and edits', () => {
   it('money, no-new, space, room, home round trip through the brief homes (P5)', () => {
     let b = L.setCap(undefined, 'startupUsd', 300);
-    b = L.setCap(b, 'monthlyUsd', 25); b = L.setCap(b, 'minutesPerWeek', 60);
+    b = L.setCap(b, 'monthlyUsd', 25);
     b = L.setNoNew(b, true); b = L.setSpaceDims(b, 48, 18, 'in'); b = L.setRoomF(b, 70);
     b = L.setWater(b, 'well'); b = L.setKwh(b, 0.15); b = L.setRisk(b, 'safe');
     expect(capsOf(b).startupUsd).toEqual({ on: true, value: 300 });
-    expect(capsOf(b).minutesPerWeek?.value).toBe(60);
     expect(projectExtras(b).noNewEquipment).toBe(true);
     expect(homeOf(b)).toMatchObject({ water: 'well', kwhUsd: 0.15, risk: 'safe' });
     expect(Math.round(roomTempC(b)! * 9 / 5 + 32)).toBe(70);
     const m = L.limitsModel(b, 'in', exp());
-    expect(m.money.map(r => r.value)).toEqual([300, 25, 60]);
+    expect(m.money.map(r => r.value)).toEqual([300, 25]);
     expect(m.space).toMatchObject({ on: true, w: 48, d: 18, text: '48 x 18 in' });
     expect(m.home.roomF).toBe(70); expect(m.moneyText).toContain('$300 set-up'); expect(m.moneyText).toContain('no new equipment');
     const P = profileOf(b, X.profileSkill());

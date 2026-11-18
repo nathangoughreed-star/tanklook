@@ -2,6 +2,7 @@
 // Pure (no DOM, no Preact), so node tests cover it; the components in src/shell/ only draw what these return.
 // Engines: habitat = ui/logic/habitat.ts (P6) + stockSummary; cost = demand/engine.ts demandOf, priced as the old cost panel prices
 // it (pinned kit, gear deals, plant bundle); water = data/climate.ts; notes = scene/verdict.ts.
+import { fmtMinDelta, fmtMin } from '../../units';
 import type { TankSetup, Units } from '../../scene/types';
 import type { Brief } from '../../scene/brief';
 import { emptyBrief, rulesOf } from '../../scene/brief';
@@ -14,7 +15,8 @@ import { swapsFor, type Bar as DBar, type Delta, type Swap } from '../../demand/
 import { rhythmOf, rhythmNote } from '../../demand/rhythm';
 import { pinnedKit } from '../../demand/pinned';
 import { gearParts } from '../../demand/gearDeals';
-import { bundleLine, gearSaleCount, type BundleLine, type GearSale } from './deals';
+import { lowerIt, type LowerItem } from './lowerIt';
+import { bundleLine,gearSaleCount, type BundleLine, type GearSale } from './deals';
 import { plantBundleOpt } from '../../demand/plantBundles';
 import { standOf, standCheck } from '../../data/stands';
 import { filledLb } from './tank';
@@ -86,6 +88,8 @@ export interface CostView {
   rows: { label: string; setup: string }[];
   /** the breakdown behind one figure, built on demand from the same `drivers` / `swapsFor` / `rhythmOf` the old panel uses */
   detail: (bar: DBar) => Breakdown;
+  /** R138: what would lower the weekly time (information only); worked out when asked */
+  lower: () => LowerItem[];
 }
 export interface Breakdown {
   title: string;
@@ -99,11 +103,11 @@ export interface Breakdown {
 const BREAK_TITLE: Record<DBar, string> = { setup: 'Costs most to set up', upkeep: 'Where the upkeep goes', minutes: 'Where the time goes', risk: 'What makes it harder' };
 const sgn = (v: number, f: (n: number) => string) => (f(Math.abs(v)).replace(/[^0-9.]/g, '').replace(/^0+(\.0+)?$/, '') === '' ? 'same' : (v < 0 ? '−' : '+') + f(Math.abs(v)));
 /** one swap's effect, as the old panel words it (US units) */
-export const swapEffect = (d: Delta) => [`set-up ${sgn(d.setup, usd)}`, `upkeep ${sgn(d.upkeep, usd)}/mo`, `time ${sgn(d.minutes, v => `${Math.round(v)} min`)}`, `risk ${sgn(d.risk, v => v.toFixed(1))}`].join(' · ');
+export const swapEffect = (d: Delta) => [`set-up ${sgn(d.setup, usd)}`, `upkeep ${sgn(d.upkeep, usd)}/mo`, `time ${sgn(d.minutes, fmtMinDelta)}`, `risk ${sgn(d.risk, v => v.toFixed(1))}`].join(' · ');
 export const swapLine = (s: Swap) => `${s.kind === 'remove' ? 'Leave them out' : `Swap for ${s.to}`}: ${swapEffect(s.delta)}`;
 /** The breakdown of one bar: the old panel's fillDrill + rhythmLine, same functions, same numbers. */
 export function breakdownOf(D: Demand, S: TankSetup, P: UserProfile, bar: DBar): Breakdown {
-  const unit = bar === 'setup' || bar === 'upkeep' ? usd : (v: number) => (bar === 'risk' ? v.toFixed(1) : `${Math.round(v)} min/wk`);
+  const unit = bar === 'setup' || bar === 'upkeep' ? usd : (v: number) => (bar === 'risk' ? v.toFixed(1) : `${fmtMin(v)}/wk`);
   const rows = drivers(D, P, bar, 6).map(r => {
     let swaps: string[] = [];
     if (r.key.startsWith('animal:') || r.key.startsWith('plant:')) { try { swaps = swapsFor(S, P, r.key, bar, {}, 2).map(swapLine); } catch { /* no swap to offer */ } }
@@ -118,10 +122,11 @@ export function costView(D: Demand, k = 8, ctx?: { S: TankSetup; P: UserProfile 
   const t = D.totals, deal = ctx ? bundleLine(ctx.S, ctx.P) : undefined, gs = ctx ? gearSaleCount(ctx.S) : undefined;
   return {
     ...(deal ? { deal } : {}), ...(gs?.n ? { gearSales: gs } : {}),
-    setup: usd(t.setupUsd), monthly: `${usd(t.upkeepUsdMo)}/mo`, minutes: `${Math.round(t.minPerWeek)} min/wk`,
+    setup: usd(t.setupUsd), monthly: `${usd(t.upkeepUsdMo)}/mo`, minutes: `${fmtMin(t.minPerWeek)}/wk`,
     risk: Math.round(t.risk * 10) / 10, riskWord: riskWord(t.risk),
     rows: D.items.filter(i => (i.setup?.mode ?? 0) >= 0.5).sort((a, b) => b.setup!.mode - a.setup!.mode).slice(0, k)
       .map(i => ({ label: i.n && i.n > 1 ? `${i.label} × ${i.n}` : i.label, setup: usd(i.setup!.mode) })),
+    lower: () => (ctx ? lowerIt(ctx.S, ctx.P) : []),
     detail: (bar: DBar) => ctx ? breakdownOf(D, ctx.S, ctx.P, bar) : { title: BREAK_TITLE[bar], rows: [], warnings: [], empty: 'Nothing in this tank adds to it.' },
   };
 }

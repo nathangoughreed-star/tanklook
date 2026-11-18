@@ -3,6 +3,7 @@
 // the setup brief (locks kept, except an explicit change of species, which is the click itself), after which the UI re-runs the generator.
 // Rules (Nathan): welfare is never compromised and never traded for price; locked animals are never swapped to hit a number (a different species is only ever an OPTION the person clicks); nothing
 // necessary is silently stripped. Every alternative is VERIFIED by running the generator with the edit applied: nothing is promised that the engine does not deliver.
+import { fmtMin } from '../units';
 import { getSpecies } from '../data/species';
 import { TANK_MODELS } from '../data/tanks';
 import { TIER_LABEL } from '../scene/finish';
@@ -315,7 +316,7 @@ export function explainInfeasible(x: Ctx): Infeasible {
     if (sp && !((o.L <= sp.w && o.D <= sp.d) || (o.L <= sp.d && o.D <= sp.w))) { breaks.push(`${L} x ${D} in of floor, your space is ${inch(sp.w)} x ${inch(sp.d)} in`); edits.push({ op: 'space', w: Math.max(sp.w, o.L), d: Math.max(sp.d, o.D) }); }
     const facts: VisionFacts = { title: vb.archetype.title, animals: animalsText(vb.build.animals), gal, outerIn: [L, D], usd: t.startupUsd, monthlyUsd: t.monthlyUsd, minPerWeek: t.minPerWeek, gear: FIRST(vb.costLines).slice(0, 6), breaks };
     P('vision').facts = facts;
-    reqs = `needs a ${gal} gal tank (${L} x ${D} in outside), ${usd(t.startupUsd)} to set up, about ${usd(t.monthlyUsd)} a month and about ${Math.round(t.minPerWeek)} minutes a week`;
+    reqs = `needs a ${gal} gal tank (${L} x ${D} in outside), ${usd(t.startupUsd)} to set up, about ${usd(t.monthlyUsd)} a month and about ${fmtMin(t.minPerWeek)} a week`;
     ambition = `${facts.animals} in a ${gal} gal tank`;
     if (edits.length) {
       const v = verified(x, edits.length === 1 ? edits[0] : { op: 'all', edits }), edit = v?.edit ?? edits[0], best = v?.best;
@@ -335,7 +336,7 @@ export function explainInfeasible(x: Ctx): Infeasible {
     for (const { p, keeps } of opts) {
       const t = p.totals, now = animalsText(p.build.animals);
       add('limits', { kind: 'change-animals', label: `Use ${now} instead`, edit: { op: 'species', animals: p.build.animals }, resultUsd: t.startupUsd,
-        text: `Different animals, only if you want them: ${now} instead of ${animalsText(from)}, in a ${tankText(p)} tank for ${usd(t.startupUsd)} to set up, ${usd(t.monthlyUsd)} a month, about ${Math.round(t.minPerWeek)} minutes a week. ${keeps.length ? `Keeps ${list(keeps)}; ` : 'Keeps little of the look or the behaviour; '}it is not the same animal. Your ${animalsText(from)} stay locked until you choose this.` });
+        text: `Different animals, only if you want them: ${now} instead of ${animalsText(from)}, in a ${tankText(p)} tank for ${usd(t.startupUsd)} to set up, ${usd(t.monthlyUsd)} a month, about ${fmtMin(t.minPerWeek)} a week. ${keeps.length ? `Keeps ${list(keeps)}; ` : 'Keeps little of the look or the behaviour; '}it is not the same animal. Your ${animalsText(from)} stay locked until you choose this.` });
     }
     if (!opts.length) P('limits').none = `No other animals of this kind can be kept well within your limits (${[cap !== undefined ? `${usd(cap)} to set up` : '', w.ownTank ? `your ${Math.round(w.ownTank.ratedGal)} gal tank` : '', x.space ? `${inch(x.space.w)} x ${inch(x.space.d)} in of space` : ''].filter(Boolean).join(', ') || 'the limits you set'}), so there is no honest swap to offer.`;
   } else P('limits').none = locked ? 'Those animals are not in the data yet, so nothing can be compared.' : 'Your animals are not locked, so there is no animal to swap: nothing in the catalogue of that kind fits these limits either.';

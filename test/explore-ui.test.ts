@@ -1,3 +1,4 @@
+import { fmtMin } from '../src/units';
 // Explore Complete Setups, stage X3 (lane OX5): the Explore screens (src/ui/explore/*), checked without WebGL and without pixels (reconcile 8.4 criteria 1, 6, 7, 11).
 // The screens are strings over stored records and a session that gates the pool in chunks, so what a card says, what a click writes and what a no-result state offers are all plain data here;
 // the live screen is checked in the browser (shots/ox5/). The pool is slow to build, so one small pool of looks across the worlds is shared by the tests that need candidates.
@@ -76,7 +77,7 @@ describe('acceptance 6: an informative card', () => {
   it('the care figure is the HIGH end of its range, labelled an estimate, and the start-up figure a range, never one invented number', () => {
     for (let i = 0; i < batch.picks.length; i++) {
       const st = stored(i), r = st.estimate.minPerWeek;
-      expect(careText(st).main).toBe(`up to ${Math.round(r.hi / 5) * 5} min a week`);
+      expect(careText(st).main).toBe(`up to ${fmtMin(r.hi)} a week`);
       expect(careText(st).main.startsWith('up to')).toBe(true);
       expect(startupText(st)).toMatch(/^(about )?\$|^\$/);
     }
@@ -222,7 +223,7 @@ describe('acceptance 11: no feasible result, and "fewer than six, here is why"',
   });
   it('the limits line says what was applied and calls an unset limit unknown, not zero', () => {
     const l = limitsLine({ constraints: { startupUsd: cap(300) }, flexLimits: { monthlyUsd: true } });
-    expect(l.set).toEqual(['set-up budget $300 (firm)']); expect(l.unset).toEqual(expect.arrayContaining(['monthly cost', 'care time', 'space']));
+    expect(l.set).toEqual(['set-up budget $300 (firm)']); expect(l.unset).toEqual(expect.arrayContaining(['monthly cost', 'space']));
     expect(limitsLine({ constraints: { monthlyUsd: cap(50) }, flexLimits: { monthlyUsd: true } }).set[0]).toBe('monthly cost $50 a month (flexible target)');
     expect(limitsLine({ constraints: {} }).set).toEqual([]);
   });
