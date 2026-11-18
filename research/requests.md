@@ -146,6 +146,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R129 | 11-18 | Blend follow-up to R127: the 100 % mix now looks uncanny, too uniform and grid-like; want natural randomness (well mixed, irregular, no lattice, no big patches). And with 3 grains (Sand 38 / Gravel 29 / Pebbles 33, Mixed 62 %) pebbles and gravel clump together in shared patches while sand gets its own: each grain needs its own independent patch field | GB2 | - | - | - | pictures research/screens/C27/R129-*; sent to GB2 |
 | R130 | 11-18 | Animals picker: "African cichlids" and "South American cichlids" groups (cichlids are scattered in Centerpiece / Community today; stocking a 55 he could not find them) | PK1 | - | - | - | picture research/screens/C27/R130-no-cichlid-group.png |
 | R131 | 11-18 | A full species list of everything we have (115 species: freshwater, marine, inverts, herps), browsable and findable from the app | PK1 | - | - | - | - |
+| R132 | 11-18 | Where from: a "The Lab" origin chip for GloFish (cheeky) | PK1 | - | - | - | sent to PK1 with R130/R131 |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
