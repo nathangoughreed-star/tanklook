@@ -148,16 +148,15 @@ function topGrains(S: TankSetup, T: Tank, ground: GroundAt, g: GrainLook, layer:
   if (g.at) {
     // VF3 (fx ground): thinned by a clumping field, so the stones gather in dense knots with sparse fringes (not an even
     // pepper), more near hardscape and on slopes; the same number of tries, so about as many stones in all
-    // GB2: the knots fade out as the blend's Mixed rises (none at 100 %); the points are a jittered grid, each kept by the
-    // grain's share against a low-discrepancy threshold (not random draws), so at a full mix the kept stones are spread evenly
+    // GB2: the knots fade out as the blend's Mixed rises (none at 100 %). GB3: the points are plain random draws, only kept
+    // to the same number in every 4-point cell of the floor (no big clumps or gaps, no lattice or rows: Nathan 11-18 found
+    // the even grid uncanny), each kept by the grain's share at random
     const loose = 1 - blendMixed(S), cl = FX.ground && loose > 0.01 ? clumpField(S, ground) : null, K = cl ? 1 + 0.7 * loose : 1;
-    const r = rng(23 + layer), n = Math.round(count * 1.15 * K * T.L * T.D / area), cs = Math.sqrt(T.L * T.D / Math.max(1, n)), nx = Math.max(1, Math.ceil(T.L / cs)), nz = Math.max(1, Math.ceil(T.D / cs));
-    const a1 = [0.7548776662, 0.5698402910, 0.6180339887, 0.4142135624, 0.3247179572][layer % 5], a2 = [0.5698402910, 0.7548776662, 0.3247179572, 0.7320508076, 0.4655712319][layer % 5];
+    const r = rng(23 + layer), n = Math.round(count * 1.15 * K * T.L * T.D / area), per = 4, cs = Math.sqrt(per * T.L * T.D / Math.max(1, n)), nx = Math.max(1, Math.ceil(T.L / cs)), nz = Math.max(1, Math.ceil(T.D / cs));
     at = [];
-    for (let j = 0; j < nz && at.length < count * 1.2; j++) for (let i = 0; i < nx && at.length < count * 1.2; i++) {
-      const x = (i + r()) * T.L / nx, d = (j + r()) * T.D / nz; if (x > T.L || d > T.D) continue;
-      const th = ((i * a1 + j * a2 + (r() - 0.5) * 0.08 + layer * 0.37) % 1 + 1) % 1, f = cl ? 1 + loose * (cl(x, d) - 1) : 1;
-      if (th < g.at(x, d) * f / K) at.push([x, d]);
+    for (let j = 0; j < nz && at.length < count * 1.2; j++) for (let i = 0; i < nx && at.length < count * 1.2; i++) for (let q = 0; q < per; q++) {
+      const x = (i + r()) * T.L / nx, d = (j + r()) * T.D / nz, f = cl ? 1 + loose * (cl(x, d) - 1) : 1;
+      if (r() < g.at(x, d) * f / K) at.push([x, d]);
     }
   }
   const out = scatter(T, ground, {

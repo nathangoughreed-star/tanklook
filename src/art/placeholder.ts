@@ -511,9 +511,14 @@ export function substrateField() {
 let fineCache: Uint8Array<ArrayBuffer> | undefined;
 export function substrateFine() {
   if (fineCache) return fineCache;
-  // GB2: the grain values are a low-discrepancy lattice (R2 sequence, a little jitter), not white noise: neighbours then span the
-  // whole 0-1 range evenly, so at a full mix no grain gathers in clumps or streaks (white noise left knots of low values)
-  const N = FIELD_N, cells = 64, r = rng(53), g = Array.from({ length: cells * cells }, (_, k) => { const v = ((k % cells) * 0.7548776662466927 + Math.floor(k / cells) * 0.5698402909980532 + (r() - 0.5) * 0.06) % 1; return v < 0 ? v + 1 : v; }), f = new Float32Array(N * N);
+  // GB3: random, but stratified in 2x2 blocks (each block holds the four quarters of 0-1 in a random order): no large knots
+  // of one grain, yet no lattice or rows either (GB2's R2 lattice read as a grid)
+  const N = FIELD_N, cells = 64, r = rng(53), g = new Array<number>(cells * cells);
+  for (let bj = 0; bj < cells; bj += 2) for (let bi = 0; bi < cells; bi += 2) {
+    const q = [0, 1, 2, 3]; for (let k = 3; k > 0; k--) { const m = Math.floor(r() * (k + 1)); [q[k], q[m]] = [q[m], q[k]]; }
+    g[bj * cells + bi] = (q[0] + r()) / 4; g[bj * cells + bi + 1] = (q[1] + r()) / 4; g[(bj + 1) * cells + bi] = (q[2] + r()) / 4; g[(bj + 1) * cells + bi + 1] = (q[3] + r()) / 4;
+  }
+  const f = new Float32Array(N * N);
   const at = (i: number, j: number) => g[(j % cells) * cells + (i % cells)];
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
     const u = x / N * cells, v = y / N * cells, i = Math.floor(u), j = Math.floor(v), s = u - i, t = v - j;
@@ -538,6 +543,25 @@ const sig = (x: number) => 1 / (1 + Math.exp(-x));
 const biasCache = new Map<string, number>();
 /** GB1: where each further grain's own ratio field starts, as a fraction of a repeat (blendOrder places 2-4; place 1 has none, as before). */
 export const GRAIN_FIELD_OFF: [number, number][] = [[0, 0], [0, 0], [0.31, 0.57], [0.67, 0.13], [0.83, 0.41]];
+/** GB3: three or more grains: each grain k (0 included) has its own patch field, the same noise map started at these far-apart
+ *  points of it, and its weight is exp(bias_k + amp * z_k); the ratios are the weights over their sum (a softmax), so any grain
+ *  can patch anywhere, independently of the others. Two grains keep the single field. */
+export const GRAIN_FIELD_OFF_N: [number, number][] = [[0, 0], [0.38, 0.62], [0.76, 0.24], [0.14, 0.86], [0.52, 0.48]];
+const nBiasCache = new Map<string, number[]>();
+/** Log-weight biases of grains 0..n-1 (grain 0 = 0) so each grain's floor-wide mean ratio is its share. */
+function biasesN(shares: number[], amp: number): number[] {
+  const key = `${shares.join(',')}:${amp}`, hit = nBiasCache.get(key); if (hit) return hit;
+  const tot = shares.reduce((a, v) => a + v, 0) || 1, sh = shares.map(v => Math.max(1e-4, v / tot));
+  const F = substrateField(), N = FIELD_N, b = sh.map(() => 0), zs: number[][] = [];
+  for (let k = 0; k < N * N; k += 7) { const i = k % N, j = Math.floor(k / N); zs.push(sh.map((_, g) => { const ii = (i + Math.round(GRAIN_FIELD_OFF_N[g][0] * N)) % N, jj = (j + Math.round(GRAIN_FIELD_OFF_N[g][1] * N)) % N, o = (jj * N + ii) * 4; return ((F[o] - 128) * ZD + (F[o + 1] - 128) * ZP) / 40; })); }
+  for (let it = 0; it < 80; it++) {
+    const m = sh.map(() => 0);
+    for (const z of zs) { const w = z.map((v, g) => Math.exp(b[g] + amp * v)), t = w.reduce((a, v) => a + v, 0); w.forEach((v, g) => { m[g] += v / t / zs.length; }); }
+    sh.forEach((p, g) => { b[g] += Math.log(p / Math.max(m[g], 1e-9)); }); const b0 = b[0]; for (let g = 0; g < b.length; g++) b[g] -= b0;
+  }
+  nBiasCache.set(key, b); if (nBiasCache.size > 50) nBiasCache.delete(nBiasCache.keys().next().value!);
+  return b;
+}
 function biasFor(p2: number, amp: number) {
   const key = `${p2}:${amp}`;
   let bias = biasCache.get(key);
@@ -557,6 +581,7 @@ export function blendZone(b: SubstrateBlend) {
   const ord = blendOrder(b), amp = 3.8 * (1 - b.mix); // GB2: 0 at a full mix: the ratio is the share everywhere
   // `biases[k]`: grain k of `blendOrder` (k >= 1) has its mean ratio at its share; [0] is the remainder. `bias` = grain 1's (two grains: the second's, as before)
   const biases = ord.map((g, k) => (k ? biasFor(Math.min(1, Math.max(0, g.share / 100)), amp) : 0));
+  if (ord.length > 2) { const bn = biasesN(ord.map(g => g.share), amp); bn.forEach((v, k) => { biases[k] = v; }); } // GB3
   const bias = ord.length > 1 ? biases[1] : -14;
   const cell = Math.max(0.5, Math.max(...b.grains.map(g => GRAIN_LOOK[g.grain].size[0] + GRAIN_LOOK[g.grain].size[1])) * 0.9); // mm: mean diameter ~ r0 + r1
   let h = 2166136261; for (const c of `${b.grains.map(g => g.color).join('')}${b.grains.slice(1).map(g => g.share).join('')}${b.mix}`) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
@@ -576,6 +601,15 @@ function rawRatio(b: SubstrateBlend, k: number, x: number, d: number, z: ReturnT
  *  remainder; the others' own drifts and pockets, scaled down together where they would add past 1 (as the ground shader does). */
 export function blendWeights(b: SubstrateBlend, x: number, d: number, z = blendZone(b)): number[] {
   const n = b.grains.length; if (n === 1) return [1];
+  if (n > 2) { // GB3: a softmax of independent per-grain fields
+    const N = FIELD_N, M = substrateField(), t = blendTile(b), lw = z.biases.map((bk, k) => {
+      const [ex, ey] = GRAIN_FIELD_OFF_N[k], u = ((x / t) * z.scale + z.off[0] + ex) * N - 0.5, v = ((d / t) * z.scale + z.off[1] + ey) * N - 0.5, i = Math.floor(u), j = Math.floor(v), fu = u - i, fv = v - j;
+      const at = (a: number, c: number, ch: number) => M[((((c % N) + N) % N) * N + (((a % N) + N) % N)) * 4 + ch];
+      const smp = (ch: number) => (at(i, j, ch) * (1 - fu) + at(i + 1, j, ch) * fu) * (1 - fv) + (at(i, j + 1, ch) * (1 - fu) + at(i + 1, j + 1, ch) * fu) * fv;
+      return bk + z.amp * (((smp(0) - 128) * ZD + (smp(1) - 128) * ZP) / 40);
+    }), mx = Math.max(...lw), e = lw.map(v => Math.exp(v - mx)), s = e.reduce((a, v) => a + v, 0);
+    return e.map(v => v / s);
+  }
   const w = Array.from({ length: n - 1 }, (_, k) => rawRatio(b, k + 1, x, d, z)), tot = w.reduce((a, v) => a + v, 0), k = tot > 1 ? tot : 1;
   return [1 - tot / k, ...w.map(v => v / k)];
 }
