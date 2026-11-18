@@ -112,6 +112,27 @@ export function lockRoster(t: TankSetup, species: string, mode: RosterMode, n = 
 export function unlockRoster(t: TankSetup, species: string): Locks {
   const L = t.locks ??= emptyLocks(); L.roster = L.roster.filter(r => r.species !== species); return L;
 }
+/** R125: hold the parts a kit / bundle includes (tank size, stand + lid = the room, light, filter, heater), marked `kit` so a swap asks first (Store.kitGate). */
+export function lockKitParts(t: TankSetup, includes: readonly string[]): void {
+  const has = (p: string) => includes.includes(p), room = has('stand') || has('lid');
+  const props = [...(has('tank') ? ['dimensions'] : []), ...(room ? ['room'] : [])];
+  const L = t.locks ??= emptyLocks();
+  const hold = (target: string, p?: string[]) => { lockObject(t, target, p); L.objects.find(o => o.target === target)!.kit = true; };
+  if (props.length) hold('tank', props);
+  for (const g of ['light', 'filter', 'heater'] as const) if (has(g)) hold(g);
+}
+/** What a change from `before` to `after` breaks among the KIT locks (R125): one entry per held target, with a plain name. Pure. */
+export function kitViolations(before: TankSetup[], after: TankSetup[]): { tank: number; target: string; name: string }[] {
+  const out: { tank: number; target: string; name: string }[] = [];
+  before.forEach((b, i) => {
+    const a = after[i], kit = b.locks?.objects.filter(o => o.kit); if (!a || !kit?.length) return;
+    for (const v of lockViolations(b, a, { objects: kit, roster: [] })) {
+      const name = v.target === 'tank' ? (v.props?.length ? v.props : ['dimensions']).map(g => g === 'dimensions' ? 'tank' : g === 'room' ? 'stand and lid' : g).join(' and ') : v.target === 'light' ? 'light' : v.target === 'filter' ? 'filter' : v.target === 'heater' ? 'heater' : v.target;
+      out.push({ tank: i, target: v.target, name });
+    }
+  });
+  return out;
+}
 export const isLocked = (t: TankSetup, target: string) => locksOf(t).objects.some(o => o.target === target);
 
 // ------------------------------------------------------------------------------------------------ queries
@@ -167,7 +188,7 @@ export function parseLocks(raw: unknown): Locks | undefined {
     const t = (o as ObjectLock | null)?.target; if (typeof t !== 'string' || !t || seenO.has(t)) continue; seenO.add(t);
     const props = Array.isArray((o as ObjectLock).props) ? (o as ObjectLock).props!.filter((p): p is string => typeof p === 'string').slice(0, 12) : [];
     const h = (o as ObjectLock).held, held = h && typeof h === 'object' && (h.item && typeof h.item === 'object' || h.patch && typeof h.patch === 'object') && JSON.stringify(h).length < 400000 ? { held: h } : {};
-    objects.push({ target: t, ...(props.length ? { props } : {}), ...held });
+    objects.push({ target: t, ...(props.length ? { props } : {}), ...held, ...((o as ObjectLock).kit === true ? { kit: true as const } : {}) });
   }
   for (const x of Array.isArray(r.roster) ? r.roster.slice(0, 200) : []) {
     const q = x as RosterLock | null; if (!q || typeof q.species !== 'string' || seenR.has(q.species) || !MODES.includes(q.mode)) continue; seenR.add(q.species);

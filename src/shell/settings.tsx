@@ -10,6 +10,7 @@ import { sceneFile } from '../ui/logic/files';
 import { Group } from './ui';
 import { Seg, Toggle } from './tank';
 import { KEYS } from './logic/view';
+import { setEdges } from './logic/tank';
 import { UNIT_OPTS, UNIT_NOTE, RULE_OPTS, RULE_NOTE, setUnits, chooseRules, rulesNow, graphicsModel, HELP } from './logic/settings';
 
 const GROUPS_KEY = 'tanklook.ui2.settings';
@@ -54,6 +55,7 @@ function Graphics({ store, getViewer }: { store: Store; getViewer: () => Viewer 
       <div class="acts-row"><button type="button" class="btn sm" title="Every fish back to the spot you placed it at" onClick={() => v?.resetRoam()}>Reset fish to where I placed them</button></div>
       <Toggle on={!!v?.hideOverhead} label="Hide the light fixture when looking down from above it" onFlip={on => {
         if (v) { v.hideOverhead = on; v.invalidate(); } try { localStorage.setItem(KEYS.hideLight, on ? 'on' : 'off'); } catch { /* lasts this visit */ } bump(n => n + 1); }} />
+      <span title="The dark lines along the glass edges and corners (R121: moved here from Tank > Tank model; same setting)"><Toggle on={render.edges} label="Glass outlines (dark lines on the glass edges)" onFlip={on => store.edit(s => setEdges(s, on))} /></span>
       <Toggle on={render.grid} label={`Grid on back wall and floor (${store.scene.units === 'in' ? '2″' : '5 cm'})`} onFlip={on => store.edit(s => { s.render.grid = on; })} />
     </>
   );

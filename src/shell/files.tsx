@@ -3,6 +3,7 @@
 // view-models are logic/files.ts. `createFiles` is the controller boot.tsx builds (it needs the viewer for thumbnails).
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { Store } from '../scene/store';
+import { lockKitParts } from '../scene/locks';
 import type { Scene } from '../scene/types';
 import { listLib } from '../scene/library';
 import { readShare, shareUrl } from '../scene/share';
@@ -42,6 +43,12 @@ export function createFiles(store: Store, thumb: () => string, afterReplace: () 
   const set = (p: Partial<FState>) => { st = { ...st, ...p, n: st.n + 1 }; subs.forEach(f => f()); };
   const say = (text: string, bad = false) => { set({ toast: { text, bad } }); clearTimeout(tt); tt = window.setTimeout(() => set({ toast: null }), bad ? 9000 : 6000); };
   const ask = (a: Omit<Ask, 'resolve'>) => new Promise<string>(res => set({ ask: { ...a, resolve: v => { set({ ask: null }); res(v); } } }));
+  // R125: a swap of something the bundle included first asks; Unlock lets it through (and keeps it unlocked), Cancel drops the edit
+  store.kitGate = (hit, go) => {
+    const names = hit.map(h => h.name).join(' and ');
+    void ask({ title: 'Unlock this locked item to continue', text: `Locked because it came with your bundle: the ${names}. Unlock it to change it; undo puts the change back, and you can lock it again with "Use this one for sure".`,
+      actions: [{ label: 'Cancel', value: 'no' }, { label: 'Unlock', value: 'yes', primary: true }] }).then(v => go(v === 'yes'));
+  };
   const doSave = async (): Promise<boolean> => {
     const g = store.scene, plan = P7.planSave(g);
     if (plan.kind === 'replace' && await ask({ title: 'Replace the saved tank?', text: P7.replaceQuestion(g.name, plan.existing!.saved), actions: [{ label: 'Cancel', value: 'no' }, { label: 'Replace', value: 'yes', primary: true, danger: true }] }) !== 'yes') return false;
@@ -89,6 +96,7 @@ export function createFiles(store: Store, thumb: () => string, afterReplace: () 
     async startDeal(deal, scene) { // SK1: the old chooser's openDeal: pin the bundle price, load the catalog tank and its gear
       pinDeal(deal);
       if (!await startProject(store, scene, P7.savedText())) return;
+      store.update(s => { const t = s.tanks[s.active]; if (t) lockKitParts(t, deal.includes); }, { history: false });   // R125: what the bundle includes is held until the user unlocks it
       P7.setLibId(null); say(`Opened the deal "${scene.name}". Customise it; Cost and time prices the bundle. Undo brings the previous tank back.`); replaced(); openSection('tank');
     },
     newTank(kind) {

@@ -25,7 +25,7 @@ import { soleProduct } from '../data/tanks';
 import {
   modelCard, sitsOnSummary, lidSummary, bgSummary, bdShown, bdDepthShown, BD_KINDS, BD_TITLE, BD_DEPTH_MM, len, LIDS, lidHeld, customRows, customLine, commercialRows, commercialLine,
   previewRow, chooseCommercial, chooseCustom, saleOf, filledLb, SIZE_CHIPS, loadGroups, saveGroups, GROUP_DEFAULT, type PickRow, type SizeChip, type TankGroup, type Units, kindView, setKind,
-  conditionWord, CONDITION_STOPS, setCondition, bgArcShown, arcText, setBgArc, setEdges, PIC_SIDES, PIC_FITS, PIC_MAX, addPicture, removePicture, togglePicSide, setPicFit, setPicScale,
+  conditionWord, CONDITION_STOPS, setCondition, bgArcShown, arcText, setBgArc, PIC_SIDES, PIC_FITS, PIC_MAX, addPicture, removePicture, togglePicSide, setPicFit, setPicScale,
   hoodView, chooseHood, tablePos, setTableX, setTableZ, placeTank, setStandFinish, finishCss, tableOn,
 } from './logic/tank';
 import { getImage, putImage, readPicture } from '../scene/images';
@@ -113,8 +113,6 @@ export function TankSection({ store, onPicker, onMaker, libN }: { store: Store; 
         {card.lost ? <div class="dwarn">This tank was deleted from my tanks; this setup keeps its own copy. <button type="button" class="btn sm" onClick={() => onMaker({ how: 'edit' })}>Save to my tanks again…</button></div> : null}
         {card.rows.map(([k, v]) => <div class="row kv"><span class="lbl">{k}</span><span>{v}</span></div>)}
         <div class="hint">{card.note}</div>
-        <div class="field"><div class="cap" title="The dark lines along the glass edges and corners">Glass outlines</div>
-          <Seg label="Glass outlines" value={S.render.edges ? 'on' : 'off'} opts={[['on', 'Shown'], ['off', 'Hidden']]} onPick={v => store.edit(s => setEdges(s, v === 'on'))} /></div>
         <div class="acts-row">
           {card.kind === 'commercial' ? <button type="button" class="btn sm" onClick={() => onMaker({ how: 'copy' })}>Make a custom tank from this…</button> : null}
           <button type="button" class={`btn sm${card.locked ? ' on' : ''}`} aria-pressed={card.locked} title="Use this one for sure: Discover and Suggest keep this tank"
