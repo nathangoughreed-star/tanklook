@@ -20,7 +20,7 @@ import { standOf, standCheck } from '../../data/stands';
 import { filledLb } from './tank';
 import { volume } from '../../scene/physics';
 import { climateOf, climateText, climateChart, type Climate, type Status } from '../../data/climate';
-import { fixPlans, type FixPlan } from './noteFixes';
+import { fixPlans, GO_LID, GO_FILTER, type FixPlan, type GoTarget } from './noteFixes';
 import { lidIssues, tempIssues } from './lidTemp';
 import { verdictOf, type Issue, type Verdict } from '../../scene/verdict';
 
@@ -41,7 +41,7 @@ export interface HabitatView {
   empty: boolean;
   pill: { tone: Tone; word: string };
   sizeLine: string;
-  cats: { label: string; word: string; tone: Tone; items: string[] }[];
+  cats: { label: string; word: string; tone: Tone; items: { text: string; /** R117: the "Fix it" button's destination, when the row has an obvious section */ go?: GoTarget }[] }[];
   bars: { key: string; label: string; bar: Bar; tone: Tone; top: TopRow[]; topLines: string[] }[];
   warnings: { tone: Tone; text: string }[];
   reason: string;
@@ -67,7 +67,7 @@ export function habitatView(S: TankSetup, units: Units, r: Stocking = stockingMe
   if (sc) warnings.push({ tone: sc.level === 'over' ? 'bad' as Tone : 'warn' as Tone, text: sc.text });
   return {
     empty, pill, sizeLine: tankSizeLine(S, r, units), reason: st.reason, warnings, bars,
-    cats: empty ? [] : sm.cats.map(c => ({ label: c.label, word: c.word, tone: TONE[c.level], items: c.items.map(i => i.text) })),
+    cats: empty ? [] : sm.cats.map(c => ({ label: c.label, word: c.word, tone: TONE[c.level], items: c.items.map(i => ({ text: i.text, ...(i.go ? { go: i.go === 'lid' ? GO_LID : GO_FILTER } : {}) })) })),
   };
 }
 

@@ -11,6 +11,7 @@ import { applySavedFx } from '../render/fxPrefs';
 import { attachLightHover } from '../ui/lightHover';
 import { attachLightContours } from '../ui/lightContours';
 import { attachPointer } from '../interact/pointer';
+import { gearSel } from '../render/gearSel';
 import { loadProfile } from '../ui/demandPanel';
 import { App } from './App';
 import { createFiles } from './files';
@@ -57,7 +58,7 @@ export function bootShell() {
 
   viewer = new Viewer(canvas, viewHost, store);
   applyViewPrefs(viewer, viewHost);
-  attachPointer(viewer, store, (what, kind) => what === 'gear' || (what === 'fish' && pickable.fish) || (what === 'items' && pickItems.sec != null && scapeSec(kind ?? 'stone') === pickItems.sec),
+  attachPointer(viewer, store, (what, kind, id) => (what === 'gear' && gearSel()?.row === id) || (what === 'fish' && pickable.fish && store.selId === id) || (what === 'items' && pickItems.sec != null && scapeSec(kind ?? 'stone') === pickItems.sec && store.selItem === id), // R116: a press drags only what a click already selected
     t => openClicked(t, store, scapeSec)); // animals only, while Animals is open (step 4); the other pieces come with their sections; a click on a thing opens it (CM2)
   attachLightHover(viewer, store); // light map: the value under the pointer (PG1, ported from the old shell)
   attachLightContours(viewer); // light map: numbers on the contour lines

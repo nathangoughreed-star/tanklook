@@ -36,6 +36,19 @@ export interface FixPlan {
   apply: (t: TankSetup) => void;
 }
 
+/** R117: where the user goes to fix an issue by hand (the "Fix it" button on a Habitat-check row and the Notes list). It navigates, it never applies.
+ *  Keyed by the issue id's prefix; an issue with no obvious home has no entry. `section` is a workspace id (logic/sections.ts), `group` a group / category inside it. */
+export interface GoTarget { section: 'tank' | 'equipment' | 'scape'; group: string; label: string }
+export const GO_LID: GoTarget = { section: 'tank', group: 'lid', label: 'Lid and top' };
+export const GO_FILTER: GoTarget = { section: 'equipment', group: 'filter', label: 'Filter' };
+export function goTargetOf(issueId: string): GoTarget | undefined {
+  if (issueId === 'lid:open') return GO_LID;
+  if (issueId === 'temp:hold:noheater' || issueId === 'temp:hold:weak') return { section: 'equipment', group: 'heater', label: 'Heater' };
+  if (issueId === 'temp:hold:cool' || issueId === 'temp:chiller') return { section: 'equipment', group: 'chiller', label: 'Chiller' };
+  if (issueId.startsWith('substrate:plant:') || issueId.startsWith('substrate:needs:depth:')) return { section: 'scape', group: 'substrate', label: 'Substrate' };
+  return undefined;
+}
+
 const inch = (mm: number) => `${+(mm / MM_IN).toFixed(1)} in`;
 const usd = (v: number) => '$' + Math.round(v).toLocaleString('en-US');
 const lbOf = (kg: number) => +(kg * 2.20462).toFixed(1);

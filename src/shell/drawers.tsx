@@ -2,11 +2,17 @@
 // editing (Set my space, feeding, limits) comes with the sections that own those settings (§3: one home per setting).
 import { useState } from 'preact/hooks';
 import { openLimit } from './constraints';
+import { openSection } from './open';
 import { DEAL_NOTE } from './logic/deals';
-import type { FixPlan } from './logic/noteFixes';
+import { goTargetOf, type FixPlan, type GoTarget } from './logic/noteFixes';
 import type { ChecksModel, CheckId, HabitatView, CostView, WaterView, NotesView } from './logic/checks';
 import { CHECKS } from './logic/checks';
 import { Icon, Meter, Pill } from './ui';
+
+/** R117: "Fix it" takes the user to the section where the problem is fixed by hand. It navigates only: nothing is applied. */
+function GoButton({ to }: { to: GoTarget }) {
+  return <button type="button" class="btn fixit" data-goto={`${to.section}:${to.group}`} title={`Open ${to.label}`} onClick={() => openSection(to.section, to.group)}>Fix it</button>;
+}
 
 function Habitat({ v }: { v: HabitatView }) {
   return (
@@ -26,7 +32,7 @@ function Habitat({ v }: { v: HabitatView }) {
       {v.cats.map(c => (
         <div class="dcat">
           <div class="drow"><span>{c.label}</span><Pill tone={c.tone}>{c.word}</Pill></div>
-          {c.items.length ? <ul class="dlist">{c.items.map(t => <li>{t}</li>)}</ul> : null}
+          {c.items.length ? <ul class="dlist">{c.items.map(t => <li>{t.text}{t.go ? <> <GoButton to={t.go} /></> : null}</li>)}</ul> : null}
         </div>
       ))}
       {v.reason ? <div class="hint">{v.reason}</div> : null}
@@ -122,7 +128,7 @@ function Notes({ v, onFix }: { v: NotesView; onFix?: (p: FixPlan) => void }) {
     <>
       {v.info ? <div class="hint">{v.info}</div> : null}
       {v.groups.map(g => (
-        <div class="dcat"><div class="cap">{g.title}</div><ul class="dlist">{g.items.map(i => <li>{i.text}{i.relax ? <i class="hint"> Smallest change: {i.relax}.</i> : null}</li>)}</ul></div>
+        <div class="dcat"><div class="cap">{g.title}</div><ul class="dlist">{g.items.map(i => <li>{i.text}{i.relax ? <i class="hint"> Smallest change: {i.relax}.</i> : null}{goTargetOf(i.id) ? <> <GoButton to={goTargetOf(i.id)!} /></> : null}</li>)}</ul></div>
       ))}
       {onFix && v.fixes.length ? <FixButtons fixes={v.fixes} onFix={onFix} /> : null}
     </>
