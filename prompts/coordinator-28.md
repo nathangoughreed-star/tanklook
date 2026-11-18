@@ -10,7 +10,7 @@ Private worktree `C:/Users/nreed/Glass-Box-c26b` (detached HEAD). For each lane 
 
 ## FIRST ORDER OF BUSINESS
 1. Check deploys for builds 2340 (batch 3) and 2345/2346 (batch 4), then eyeball on live at 1280x800 (hard refresh) and update the tracker to Live: R112 R113 R114 R116 R117 R119 R120 R121 R125 R126 R127 R128 (UI); R115 frogs and R118 fish habits Nathan judges himself (tell him they are live).
-2. Merge TL1 (R122 R123 R124) when its fixed sha arrives (it was sent back for 3 failing tests: the new 48 in Aqueon hood lacks gear art and a PM1 look).
+2. Merge TL1 (R122 R123 R124): fixed sha f531dca6 on branch claude/tl1-rebased-2 (based on d4a0e2a8; pick all commits origin/main..f531dca6). It fixes the 3 failing tests (48 in Aqueon hood: gear art baked, shares the Aqueon look, pm1 count 9 with reason).
 3. Nathan's open design question (11-18): generate vs build-it-yourself in every step, and how hardscape + plants (+ stocking, background) unite into one look. C27 proposed: one shared Look brief (styles, density, budget, care, upkeep, colour mood) as a chip row above all steps; every step has Mine | Suggest; Suggest respects locks/placed items and has a scope chip (e.g. Hardscape: Rocks only / Rocks + plants), order rocks -> plants -> fish -> background; Discover becomes Whole-tank ideas (absorbs DM1's six-modes question). His answer was pending ("Have DM1 turn this into a design and a mockup?"). If yes: send it to the DM1 chat (search_session_transcripts "DM1: Discover modes") as a redesign brief ending in a mockup, no build.
 4. Waiting on Nathan: R124 which kit/start he used (both 55 gal kits include a hood); DM1 (folded into item 3); PM1 gear models: revisit FRIDAY 11-20 (R98); BL1 shelved (R75).
 
