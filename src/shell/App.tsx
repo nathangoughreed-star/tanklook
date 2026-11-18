@@ -267,6 +267,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const tab = (id: SectionId | 'more') => { if (id === 'more') { setSection(null); setMore(!more); setDrawer(null); } else pick(id); };
   const check = (id: CheckId) => { if (drawer === 'selection') store.select(null); setDrawer(drawer === id ? null : id); if (phone) { setSection(null); setMore(false); } };
   const ws = isWorkspace(section) && !more;   // WS2: the open section is a full-screen workspace
+  const inEquipment = ws && section === 'equipment';   // R128: the Plumbing view and its toggle exist only while the Equipment workspace is open (the choice is remembered for next time)
   const panelOpen = (!!section && !ws) || more;
   const cmpDrawer = drawer === 'selection' ? null : drawer;
   const cls = ['ui2app', ws ? 'ws-on' : panelOpen ? 'panel-on' : 'panel-off', drawer ? 'drawer-on' : '', phone ? 'phone' : '', split ? 'split' : '', fs.tankOnly ? 'tankonly' : ''].filter(Boolean).join(' ');
@@ -285,8 +286,8 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
       <main class="viewer" ref={viewRef}>
         {section === 'print' && !phone ? <PrintPaper store={store} profile={profile} getViewer={viewer} /> : null}
         {split ? <CompareLayer store={store} models={models} drawer={cmpDrawer} onPick={check} phone={phone} say={files.say} /> : null}
-        {plumb ? <PlumbingView store={store} phone={phone} /> : null}
-        {split || (ws && section !== 'equipment') ? null : <PlumbSwitch on={plumb} onChange={setPlumb} />}
+        {plumb && inEquipment ? <PlumbingView store={store} phone={phone} /> : null}
+        {split || !inEquipment ? null : <PlumbSwitch on={plumb} onChange={setPlumb} />}
         <GetStarted tank={store.tank} open={section} onOpen={pick} onAnimal={() => setDoor(true)} phone={phone} />
         <ScapeBars store={store} getViewer={viewer} />
       </main>
