@@ -3,6 +3,7 @@
 // Engine calls go through scene/tankEdit.ts (P1), scene/customTanks.ts (P9) and the pure picker logic of ui/tankDockLogic.ts (ST1).
 import { standOf } from '../../data/stands';
 import { hoodsFor, hoodOf, hoodProduct, type HoodProduct } from '../../data/hoods';
+import { lidsFor, lidOf, lidProduct, type LidProduct } from '../../data/lids';
 import { BACKGROUNDS, STAND_FINISHES } from '../../render/build';
 import { BACKDROPS } from '../../render/backdrop';
 import { LIMITS as VLIMITS } from '../../scene/validate';
@@ -148,8 +149,21 @@ export function chooseHood(s: TankSetup, id: string): void {
   if (!hoodProduct(id)) return;
   s.hoodProduct = id; setLid(s, 'hood');
 }
+/** TL1 (R123): the glass lids / mesh tops sold for this setup's tank (the lid kind showing), as tiles like the hoods; the one in use marked. */
+export interface LidTile { id: string; brand: string; name: string; price: string; store: string; fits: string; on: boolean }
+export interface LidProductView { tiles: LidTile[]; none: boolean; kind: 'glass' | 'mesh' }
+export function lidProductView(S: TankSetup): LidProductView {
+  const kind = S.lid === 'mesh' ? 'mesh' : 'glass', fit = lidsFor(S.tank, kind), cur = lidOf(S)?.id;
+  return { kind, none: !fit.length, tiles: fit.map((p: LidProduct) => ({ id: p.id, brand: p.brand, name: p.model, price: usd(p.priceUsd), store: hoodStore(p), fits: `Sold for ${p.fitsGal.join(', ')} gal tanks`, on: p.id === cur })) };
+}
+/** Pick a glass lid / mesh top product: the lid becomes that product's kind. */
+export function chooseLidProduct(s: TankSetup, id: string): void {
+  const p = lidProduct(id); if (!p) return;
+  setLid(s, p.kind); s.lidProduct = id;
+}
 /** The lid as the summary card says it: "Hood: Aqueon LED hood, $65". */
 export function lidDetail(S: TankSetup): string {
+  const lp = lidOf(S); if (lp) return `${S.lid === 'mesh' ? 'Mesh' : 'Glass lid'}: ${lp.brand} ${lp.model}, ${usd(lp.priceUsd)}`;
   const h = S.lid === 'hood' ? hoodOf(S) : undefined;
   return h ? `Hood: ${h.brand} ${(h.model.toLowerCase().startsWith(h.brand.toLowerCase() + ' ') ? h.model.slice(h.brand.length + 1) : h.model)}, ${usd(h.priceUsd)}` : lidSummary(S);
 }

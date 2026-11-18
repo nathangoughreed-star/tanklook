@@ -345,6 +345,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
     })(),
     lid: pick(raw.lid, ['open', 'glass', 'hood', 'mesh'] as const, d.lid),
     ...(typeof raw.hoodProduct === 'string' && raw.lid === 'hood' ? { hoodProduct: raw.hoodProduct } : {}),
+    ...(typeof raw.lidProduct === 'string' && (raw.lid === 'glass' || raw.lid === 'mesh') ? { lidProduct: raw.lidProduct } : {}),
     ...(raw.doors === 'hinged' || raw.doors === 'sliding' ? { doors: raw.doors } : {}),
     stand: { // no `show` = a file older than stands: off (new tanks start with one on, audit #29)
       ...(typeof st.product === 'string' && standProduct(st.product) ? { product: st.product } : {}), // SP1 (no version bump): kept only while it is still in the catalogue

@@ -20,10 +20,10 @@ describe('hood products', () => {
       expect(h.url).toMatch(/^https:/); expect(h.asOf).toMatch(/^\d{4}-\d\d-\d\d$/); expect(['led', 'tube']).toContain(h.light.type); expect(h.light.watts).toBeGreaterThan(0);
     }
   });
-  it('a 20 gal long has hoods; a custom 37 x 15 in tank, a 55 and a 75 have none', () => {
+  it('a 20 gal long has hoods; a custom 37 x 15 in tank, a 75 has none; a 55 has the Aqueon 48 in hood', () => {
     expect(hoodsFor(setup('g20l', 'hood').tank).length).toBeGreaterThan(0);
     expect(hoodExists(custom('hood').tank)).toBe(false);
-    expect(hoodExists(setup('g55', 'hood').tank)).toBe(false); expect(hoodExists(setup('g75', 'hood').tank)).toBe(false);
+    expect(hoodExists(setup('g55', 'hood').tank)).toBe(true); expect(hoodExists(setup('g75', 'hood').tank)).toBe(false); // TL1: the 48 in Aqueon T8 hood
     expect(lidLocked(custom('open').tank, false, 'hood')).toBe(true); expect(lidLocked(setup('g20l', 'open').tank, false, 'hood')).toBe(false);
   });
 });
