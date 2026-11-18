@@ -1,5 +1,5 @@
 // A new scene built from a bundle deal (lane KD): catalog tank, stand on, the kit's light and lid when the deal names a kit.
-import { getTankModel, modelOfVariant, tankFromModel } from '../data/tanks';
+import { getTankModel, modelOfVariant, tankFromModel, variantKey, soleProduct } from '../data/tanks';
 import { hoodExists } from '../data/hoods';
 import { kitById } from '../data/kits';
 import { DEALS, dealAsKit, type Deal } from '../data/deals';
@@ -17,6 +17,8 @@ export function sceneFromDeal(d: Deal): Scene | undefined {
   const m = d.dims ? modelOfVariant(cat, d.dims) : cat; // the bundle's own size on the catalog shape
   const sc = emptyScene(); let S = sc.tanks[0];
   S.tank = tankFromModel(m);
+  // R133: the bundle's tank is a catalogue product, not the default custom tank (whose stale 'Custom 24 x 12 x 12 in' name would otherwise show over the bundle's size)
+  { const v = (d.dims ? cat.variants?.find(x => Math.abs(x.L_in - d.dims!.L_in) < 0.06 && Math.abs(x.D_in - d.dims!.D_in) < 0.06 && Math.abs(x.H_in - d.dims!.H_in) < 0.06) : undefined) ?? soleProduct(cat); S.product = v ? { model: cat.id, key: variantKey(v) } : { model: cat.id }; delete S.customTank; }
   S.camera = { ...S.camera, az: 35, el: 22, zoom: 0.8 }; // three-quarter view from above: the picture and the opened scene show the stand and the top
   // a bundle without a stand does not get one added: the user adds one or says they don't need one (the budget counts one meanwhile)
   const hasStand = d.includes.includes('stand');

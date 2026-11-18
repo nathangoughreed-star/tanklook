@@ -41,3 +41,16 @@ describe('R124 kits with a lid start with it', () => {
     for (const id of ['petco-imagitarium-led-55', 'petsmart-top-fin-essentials-55']) expect(sceneFromDeal(DEALS.find(x => x.id === id)!)!.tanks[0].lid, id).toBe('hood');
   });
 });
+
+describe('R133 a bundle start keeps its tank product', () => {
+  it('every deal with a catalogue tank starts as a commercial tank, never the stale custom name', async () => {
+    const { DEALS } = await import('../src/data/deals');
+    const { sceneFromDeal } = await import('../src/demand/dealscene');
+    const { modelCard } = await import('../src/shell/logic/tank');
+    for (const d of DEALS.filter(x => x.tank)) {
+      const sc = sceneFromDeal(d); if (!sc) continue;
+      const S = sc.tanks[0], c = modelCard(S, 'us' as never, []);
+      expect(S.customTank, d.id).toBeUndefined(); expect(c.kind, d.id).toBe('commercial'); expect(c.title, d.id).not.toMatch(/^Custom/);
+    }
+  });
+});
