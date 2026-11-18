@@ -39,10 +39,10 @@ describe('crawlSim', () => {
       }
     }
     expect(minClear).toBe(1);
-    expect(hopped).toBe(true);
+    expect(hopped).toBe(false); // FB2: shrimp no longer dart in hops (the pace table has hopPerMin 0)
     expect(maxLift).toBeLessThan(40);
   });
-  it('walks at real speeds (in/s): nerite ~0.1, cherry shrimp 0.4-1', () => {
+  it('walks at real speeds (in/s): nerite ~0.1, cherry shrimp walk slowly (FB2)', () => {
     const specs = cast(), sim = makeCrawlSim(specs, field, 9), dt = 1 / 30;
     const dist = specs.map(() => 0), peak = specs.map(() => 0), prev = specs.map(sp => ({ ...sim.pose(sp.id)! }));
     const T = 400;
@@ -50,7 +50,7 @@ describe('crawlSim', () => {
     const mean = dist.map(d => d / T / IN);
     const by = (id: number) => mean[specs.findIndex(s => s.id === id)];
     expect(by(4)).toBeLessThan(0.12); expect(by(4)).toBeGreaterThan(0.02);   // nerite
-    expect(by(1)).toBeLessThan(0.7); expect(by(1)).toBeGreaterThan(0.12);    // cherry shrimp: walking + stops averages below the walking speed
+    expect(by(1)).toBeLessThan(0.2); expect(by(1)).toBeGreaterThan(0.005);   // cherry shrimp (FB2): mostly still, a slow walk now and then
     expect(by(5)).toBeLessThan(0.25);                                        // mystery snail
     for (let i = 0; i < specs.length; i++) if (specs[i].kind !== 'shrimp') expect(peak[i]).toBeLessThan(CRAWL[['', '', '', 'nerite', 'mystery', 'redclaw', 'thaicrab', 'ramshorn'][i]]?.inPerSec * 1.6 + 0.05);
   });

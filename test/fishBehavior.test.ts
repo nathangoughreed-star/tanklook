@@ -2,7 +2,9 @@
 import { describe, expect, it } from 'vitest';
 import { makeSwimSim } from '../src/scene/swimSim';
 import type { SwimPose, SwimmerSpec } from '../src/scene/swimTypes';
-import { DIG, HOVER, STYLE, digGrainK } from '../src/scene/fishBehavior';
+import { BENTHIC, DIG, HOVER, STYLE, digGrainK } from '../src/scene/fishBehavior';
+import { makeCrawlSim, type CrawlSpec } from '../src/scene/crawlSim';
+import { CRAWL, type CrawlPace } from '../src/scene/crawlPace';
 import { SPECIES } from '../src/data/species';
 import { boxTank } from './swimFieldDouble';
 import { OBS } from './swimCast';
@@ -240,3 +242,57 @@ describe('FB2: pulse-glide, slow cruise and hover mix over time', () => {
   });
 });
 
+
+describe('FB2: shrimp, frogs and bottom dwellers rest', () => {
+  const IN = 25.4, GROUND = 30;
+  const cfield = boxTank(900, 450, 450, GROUND, OBS);
+  const crawlRun = (id: string, pace: CrawlPace, secs: number, seed: number, n = 6) => {
+    const specs: CrawlSpec[] = Array.from({ length: n }, (_, k) => ({ id: k + 1, len: id === 'adf' ? 40 : 30, kind: pace.kind, speed: pace.inPerSec * IN, graze: pace.graze, hop: pace.hopPerMin, rest: 3, trip: pace.tripS, home: { x: 100 + k * 120, y: GROUND + 3, z: -100 - (k % 3) * 100, yaw: k * 50, pitch: 0, roll: 0 } }));
+    const sim = makeCrawlSim(specs, cfield, seed), dt = 1 / 30; let still = 0, tot = 0, maxV = 0, bad = 0, trips = 0, maxLift = 0, clawsStill = 0, clawsMove = 0, nStill = 0, nMove = 0; const prev = specs.map(s => ({ ...sim.pose(s.id)! })); const inTrip = specs.map(() => false);
+    for (let s = 0; s < secs / dt; s++) {
+      sim.step(dt);
+      specs.forEach((sp, i) => { const p = sim.pose(sp.id)!; if (![p.x, p.y, p.z, p.yaw].every(Number.isFinite)) bad++; const v = Math.hypot(p.x - prev[i].x, p.z - prev[i].z) / dt; if (s > 2) maxV = Math.max(maxV, v); const lift = p.y - (GROUND + 3);
+        const up = lift > 20; if (up && !inTrip[i]) trips++; inTrip[i] = up; maxLift = Math.max(maxLift, lift);
+        if (lift < 1) { tot++; if (v < 1) { still++; clawsStill += p.fore; nStill++; } else { clawsMove += p.fore; nMove++; } } prev[i] = { ...p }; });
+    }
+    return { stillShare: still / tot, maxV: maxV / IN, bad, trips, maxLift, clawsStill: clawsStill / Math.max(1, nStill), clawsMove: clawsMove / Math.max(1, nMove) };
+  };
+  const BEFORE: Record<string, CrawlPace> = { cherryshrimp: { kind: 'shrimp' as const, inPerSec: 0.7, graze: 0.5, hopPerMin: 1.5 }, adf: { kind: 'frog' as const, inPerSec: 0.5, graze: 0.85, hopPerMin: 0, tripS: 150 } };
+  it('shrimp: still about 85-90 % of the time, walk slowly (a third of the old speed or less), no darting, the claws work while it sits', () => {
+    const r = crawlRun('cherryshrimp', CRAWL.cherryshrimp, 3600, 4), old = crawlRun('cherryshrimp', BEFORE.cherryshrimp, 3600, 4);
+    expect(r.bad).toBe(0);
+    expect(r.stillShare).toBeGreaterThan(0.8); expect(r.stillShare).toBeLessThan(0.95);
+    expect(r.maxV).toBeLessThan(0.7 / 3 + 0.02);      // at most a third of the old 0.7 in/s walk
+    expect(r.maxLift).toBeLessThan(1);                  // no hops
+    expect(old.stillShare).toBeLessThan(r.stillShare);
+    expect(r.clawsStill).toBeGreaterThan(0.8); expect(r.clawsMove).toBeLessThan(0.4);
+    for (const id of ['cherryshrimp', 'cajundwarf', 'amano', 'cpo', 'cleanershrimp']) { expect(CRAWL[id].graze, id).toBeGreaterThanOrEqual(0.85); expect(CRAWL[id].hopPerMin, id).toBe(0); expect(CRAWL[id].inPerSec, id).toBeLessThanOrEqual(0.25); }
+  });
+  it('dwarf frog: rests about 95 %, slow short moves, still goes up for air a few times an hour, and that dive is unchanged', () => {
+    const r = crawlRun('adf', CRAWL.adf, 7200, 9), old = crawlRun('adf', BEFORE.adf, 7200, 9);
+    expect(r.bad).toBe(0);
+    expect(r.stillShare).toBeGreaterThan(0.93);
+    expect(r.trips / 6 / 2).toBeGreaterThan(1.5); expect(r.trips / 6 / 2).toBeLessThan(6);   // a few per hour
+    expect(r.maxLift).toBeGreaterThan(100);              // the breath trip still climbs high
+    expect(old.trips).toBeGreaterThan(r.trips * 3);
+    expect(CRAWL.adf.tripS).toBeGreaterThanOrEqual(900);
+  });
+  it('bottom dwellers rest by species group: corys most, loaches and sharks less; before / after', () => {
+    const rest = (specLen: number, share: number | undefined, seed: number) => {
+      const specs: SwimmerSpec[] = Array.from({ length: 6 }, (_, k) => ({ id: k + 1, len: specLen, zone: 'bottom' as const, band: [0, 0.05] as [number, number], rest: share, group: { key: 'g', tight: false }, home: home(150 + k * 60, 80, -300) }));
+      let still = 0, tot = 0, breath = 0, bad = 0; const prev = specs.map(() => null as SwimPose | null);
+      run(specs, 70, 1800, seed, (p, s) => { if (!finite(p)) bad++; const q = prev[s.id - 1]; if (q) { const v = Math.hypot(p.x - q.x, p.z - q.z) * 30 / s.len; tot++; if (v < 0.06) { still++; breath += p.breath ?? 0; } } prev[s.id - 1] = { ...p }; });
+      return { still: still / tot, breath: breath / Math.max(1, still), bad };
+    };
+    const old = rest(60, undefined, 3), cory = rest(60, BENTHIC.bronzecory, 3), loach = rest(100, BENTHIC.clownloach, 3), shark = rest(150, BENTHIC.sae, 3);
+    expect(cory.bad + loach.bad + shark.bad).toBe(0);
+    expect(cory.still).toBeGreaterThan(0.75); expect(cory.still).toBeGreaterThan(old.still + 0.05);
+    expect(cory.still).toBeGreaterThan(loach.still); expect(loach.still).toBeGreaterThan(shark.still);
+    expect(cory.breath).toBeGreaterThan(0.7);                // breathing animates while it sits
+    expect(old.breath).toBe(0);                              // no spec, no breathing term (the old fish are untouched)
+  });
+  it('the table lists real bottom dwellers only', () => {
+    const ids = new Map(SPECIES.map(s => [s.id, s]));
+    for (const id of Object.keys(BENTHIC)) { expect(ids.get(id)?.zone, id).toBe('bottom'); expect(BENTHIC[id]).toBeGreaterThan(0.5); expect(BENTHIC[id]).toBeLessThan(0.95); }
+  });
+});

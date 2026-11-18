@@ -1,0 +1,6 @@
+SHRIMP cherry (3600 s): before still 30% mean moving speed 0.40 in/s trips/frog/h 0.0 | after still 87% mean moving speed 0.14 in/s trips/frog/h 0.0
+SHRIMP amano (3600 s): before still 23% mean moving speed 0.49 in/s trips/frog/h 16.3 | after still 87% mean moving speed 0.18 in/s trips/frog/h 0.0
+ADF frog (7200 s): before still 84% mean moving speed 0.35 in/s trips/frog/h 21.0 | after still 95% mean moving speed 0.18 in/s trips/frog/h 3.1
+CORY (1800 s): before still 73%, mean moving speed 0.31 BL/s | after still 85%, mean moving speed 0.31 BL/s
+CLOWN LOACH (1800 s): before still 73%, mean moving speed 0.30 BL/s | after still 74%, mean moving speed 0.29 BL/s
+SAE: before still 71%, mean moving speed 0.24 BL/s | after still 72%, mean moving speed 0.24 BL/s

@@ -82,3 +82,13 @@ export const STYLE: Record<string, StyleSpec> = {
   merah: QUICK, exclamation: QUICK, dwarfrasbora: QUICK, chili: QUICK, harlequin: SLOWER,
   dwarfpencil: { rate: 0.9, tau: 0.5, turn: 12, mix: [0.4, 0.3, 0.3] }, guppy: SLOWER, cherrybarb: SLOWER, peapuffer: { rate: 1.0, tau: 0.4, turn: 25, mix: [0.4, 0.2, 0.4] },
 };
+
+/**
+ * Resting on the bottom (FB2, Nathan 2026-11-17: "corys are too active"): the share of its time a bottom dweller sits nearly still
+ * (only breathing: gill covers and mouth, and tiny fin shifts) between short foraging trips along the floor. A shoal rests and
+ * roams together. A bottom dweller not listed keeps the old mix (about 70 % rest).
+ */
+export const BENTHIC: Record<string, number> = {
+  bronzecory: 0.85, pepperedcory: 0.85, pandacory: 0.85, sterbai: 0.85, pygmycory: 0.8, // corys: mostly still, the shoal goes foraging now and then
+  kuhli: 0.8, clownloach: 0.75, syno: 0.75, sae: 0.72, rainbowshark: 0.75, redtailshark: 0.75,
+};

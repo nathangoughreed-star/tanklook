@@ -169,13 +169,14 @@ function jointed(pts: THREE.Vector3[], r: number[]) {
 }
 
 /** The + side's legs and swimmerets (one geometry; the far side is the mirror). */
-function legGeometry(s: Shrimp3D) {
+function legGeometry(s: Shrimp3D, part: 'all' | 'front' | 'rest' = 'all') {
   const sp = spine(s), G = -REST - s.stand, L = s.legL, parts: THREE.BufferGeometry[] = [];
   // five pairs of walking legs (pereiopods) under the carapace, front to rear (t runs head to tail): the roots spread
   // along it and the feet fan out from them, front pair forward, rear pair back, so no two legs cross
   [0.06, 0.11, 0.17, 0.25, 0.33].forEach((t, i) => {
     const f = sp.at(t), y0 = f.c.y - HV * s.deep * 0.75, x0 = f.c.x, b = V(x0, y0, 0.02);
     if (i === 0 && s.claw) return; // a crayfish's first pair are the big chelae (clawGeometry)
+    if (part === 'front' && i >= 2) return; if (part === 'rest' && i < 2) return;
     if (i < 2) { // the two small front pairs (tiny pincers in these shrimp), carried forward and down
       const r = 0.0034;
       parts.push(jointed([b, V(x0 + 0.012, y0 - 0.026, 0.032), V(x0 + 0.04, y0 - 0.042 + i * 0.006, 0.032), V(x0 + 0.062, y0 - 0.046 + i * 0.008, 0.024)], [r, r * 0.9, r * 0.75, r * 0.6]));
@@ -188,7 +189,7 @@ function legGeometry(s: Shrimp3D) {
     parts.push(jointed([b, V(x0 + dx * 0.15, y0 - 0.012, 0.036), V(x0 + dx * 0.5, y0 + 0.002 + 0.006 * L, zf * 0.7), V(x0 + dx * 0.82, G + 0.03, zf * 0.94), V(x0 + dx, G + 0.002, zf)], [r, r * 0.95, r * 0.8, r * 0.6, r * 0.4]));
   });
   // swimmerets (pleopods) under abdominal segments 1-5: a short stalk forking into two small paddles, angled forward
-  for (let k = 0; k < 5; k++) {
+  if (part !== 'front') for (let k = 0; k < 5; k++) {
     const [a, b] = segRange(k), f = sp.at((a + b) / 2), fw = f.t.clone().negate(), dn = f.n.clone().negate(), hv = SEG_HV[k] * s.deep;
     const root = f.c.clone().addScaledVector(dn, hv * 0.8).addScaledVector(Z, 0.011);
     const len = 0.038 - k * 0.003, fork = root.clone().addScaledVector(dn, len * 0.45).addScaledVector(fw, len * 0.12).addScaledVector(Z, 0.003);
@@ -295,7 +296,14 @@ export function shrimpBody(art: string, w: number) {
       if (pm) { const q = new THREE.Mesh(geo(art + ':patch', () => clawGeometry(s, true)), pm); q.scale.z = side; grp.add(q); }
     }
   }
-  for (const side of [1, -1]) for (const [g, m] of [[legs, lm], [ants, am]] as const) { const o = new THREE.Mesh(g, m); o.scale.z = side; grp.add(o); }
+  // the two small front pairs (the feeding arms) hang from their own pivot so the swim code can work them while the shrimp sits (userData.cheli, render/crawl.ts)
+  const fsp = spine(s), ff = fsp.at(0.08), fpx = ff.c.x, fpy = ff.c.y - HV * s.deep * 0.75;
+  const frontLegs = s.claw ? null : geo(art + ':legsF', () => legGeometry(s, 'front').translate(-fpx, -fpy, 0));
+  for (const side of [1, -1]) {
+    const o = new THREE.Mesh(s.claw ? legs : geo(art + ':legsR', () => legGeometry(s, 'rest')), lm); o.scale.z = side; grp.add(o);
+    if (frontLegs) { const pv = new THREE.Group(); pv.position.set(fpx, fpy, 0); pv.scale.z = side; pv.userData.cheli = { side }; pv.add(new THREE.Mesh(frontLegs, lm)); grp.add(pv); }
+    const q = new THREE.Mesh(ants, am); q.scale.z = side; grp.add(q);
+  }
   // stalked eyes: a short stalk out of the carapace front, a dark ball on its end, looking out and a little forward
   const sp = spine(s), f = sp.at(0.03), eyeR = 0.0135;
   const stalk = geo(art + ':stalk', () => {

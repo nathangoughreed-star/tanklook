@@ -25,6 +25,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
   const digT = F(), digK = F(), digTgt = F(), digCd = F(), hgx = F(), hgz = F(), dgx = F(), dgz = F(), wig = F(), digHold = F(), sinkS = F();
   const sRate = F(), sTau = F(), sTurn = F(), pulseT = F(), pulseP = F(), burstLeft = F(), jitA = F(), pv0 = F(); // burst-and-coast
   const subMode = new Uint8Array(n), subT = F(), mx0 = F(), mx1 = F(), mx2 = F(); // FB2: 0 pulse-glide, 1 slow cruise, 2 hover
+  const restS = F(), breathS = F(); // FB2: a bottom dweller's share of time resting (0 = the old mix) and its breathing amount
   const restFlag = new Uint8Array(n), digSt = new Uint8Array(n), hasDig = new Uint8Array(n);
   const fanIdx = new Int8Array(n), mode = new Uint8Array(n), gi = new Int32Array(n).fill(-1), bottom = new Uint8Array(n), tight = new Uint8Array(n);
   // FB2: which of pulse-glide / slow cruise / hover comes next (seeded, by the species' time shares; each lasts 5-15 s so the shares are time shares)
@@ -42,7 +43,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
   const GF = () => new Float64Array(G);
   const gcx = GF(), gcy = GF(), gcz = GF(), ghx = GF(), ghy = GF(), ghz = GF(), gpol = GF(), gspread = GF();
   const ggx = GF(), ggy = GF(), ggz = GF(), ggT = GF(), gModeT = GF(), gSide = GF(), gPh = GF(), gSpeedW = GF();
-  const gSub = new Uint8Array(G), gSubT = new Float64Array(G), gHov = new Float64Array(G), gMode = new Uint8Array(G), gTight = new Uint8Array(G), gBottom = new Uint8Array(G);
+  const gRest = new Float64Array(G), gSub = new Uint8Array(G), gSubT = new Float64Array(G), gHov = new Float64Array(G), gMode = new Uint8Array(G), gTight = new Uint8Array(G), gBottom = new Uint8Array(G);
 
   const FAN = [0, 0.6, -0.6, 1.2, -1.2, 1.9, -1.9, 2.6, -2.6]; // radians off the heading
   // clearance at a probe point; a bottom dweller probes above the ground so the ground itself never reads as an obstacle
@@ -82,14 +83,14 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
   function setMode(i: number, m: number) {
     if (sRate[i] > 0 && !bottom[i]) { mode[i] = MOVE; modeT[i] = 1e9; return; } // FB2: a burst-and-coast species stays in MOVE; its hovers are the sub-mode (subMode 2)
     mode[i] = m;
-    if (bottom[i]) modeT[i] = m === REST ? 5 + R() * 20 : m === HOP ? 1.2 + R() * 0.5 : 3 + R() * 6;
+    if (bottom[i]) modeT[i] = m === REST && restS[i] > 0 ? 6 * restS[i] / (1 - restS[i]) * (0.5 + R()) : m === REST ? 5 + R() * 20 : m === HOP ? 1.2 + R() * 0.5 : 3 + R() * 6;
     else if (hov[i] > 0) modeT[i] = m === REST ? (3 + R() * 8) * (0.6 + hov[i]) : (10 + R() * 30) * (1.5 - hov[i]);
     else modeT[i] = pace[i] < 1 ? (m === REST ? 3 + R() * 7 : 6 + R() * 14) : m === REST ? 2 + R() * 4 : 15 + R() * 40;
   }
   function setGroupMode(g: number, m: number) {
     gMode[g] = m;
     if (!gBottom[g] && gHov[g] > 0) gModeT[g] = m === REST ? (3 + R() * 7) * (0.6 + gHov[g]) : (12 + R() * 30) * (1.5 - gHov[g]); // a water group that hovers together
-    else gModeT[g] = m === REST ? 6 + R() * 20 : 3 + R() * 6;
+    else gModeT[g] = m === REST ? (gRest[g] > 0 ? 6 * gRest[g] / (1 - gRest[g]) * (0.5 + R()) : 6 + R() * 20) : 3 + R() * 6;
   }
 
   function initFish(i: number) {
@@ -120,13 +121,14 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
     ph1[i] = R() * 6.28; ph2[i] = R() * 6.28; ph3[i] = R() * 6.28; w1[i] = 0.25 + R() * 0.3; w2[i] = 0.7 + R() * 0.6;
     side[i] = R() < 0.5 ? -1 : 1; indep[i] = R() < 0.3 ? 1 : 0;
     if (s.hover && s.hover.w > 0) { hov[i] = Math.min(1, s.hover.w); hovPec[i] = s.hover.pec; hovCau[i] = s.hover.caudal; }
+    if (s.rest && bottom[i]) restS[i] = clamp(s.rest, 0.05, 0.97);
     if (s.style && !bottom[i]) { const m = s.style.mix ?? [1, 0, 0], tot = m[0] + m[1] + m[2] || 1; mx0[i] = m[0] / tot; mx1[i] = m[1] / tot; mx2[i] = m[2] / tot; if (!s.hover) { hovPec[i] = 0.6; hovCau[i] = 0.3; } sRate[i] = s.style.rate; sTau[i] = s.style.tau; sTurn[i] = s.style.turn; pulseT[i] = R() / s.style.rate; }
     if (s.dig && bottom[i]) {
       const d = s.dig; hasDig[i] = 1; dRate[i] = d.rate; dDepth[i] = d.depth; dPitch[i] = d.pitch; dH0[i] = d.hold[0]; dH1[i] = d.hold[1]; dHide[i] = d.hide; dHT0[i] = d.hideT[0]; dHT1[i] = d.hideT[1]; dK[i] = clamp(d.k, 0, 1); dDark[i] = clamp(d.dark, 0, 1); dRest[i] = d.rest;
     }
   }
   for (let g = 0; g < G; g++) {
-    const f = gFirst[g]; gHov[g] = hov[f]; gTight[g] = tight[f]; gBottom[g] = bottom[f]; gSide[g] = R() < 0.5 ? -1 : 1; gPh[g] = R() * 6.28; gSpeedW[g] = 0.2 + R() * 0.3;
+    const f = gFirst[g]; gHov[g] = hov[f]; gRest[g] = restS[f]; gTight[g] = tight[f]; gBottom[g] = bottom[f]; gSide[g] = R() < 0.5 ? -1 : 1; gPh[g] = R() * 6.28; gSpeedW[g] = 0.2 + R() * 0.3;
     gSub[g] = sRate[f] > 0 && !bottom[f] ? pickSub(f) : 0; gSubT[g] = 5 + R() * 10;
     gcx[g] = gcy[g] = gcz[g] = 0;
     for (let m = gStart[g]; m < gStart[g + 1]; m++) { const i = gMem[m]; gcx[g] += fish[i].home.x; gcz[g] += fish[i].home.z; }
@@ -403,7 +405,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       // ---- speed
       const sv = 1 + 0.18 * Math.sin(T * w1[i] + ph3[i]) + 0.1 * Math.sin(T * w2[i] + ph2[i]);
       let target: number;
-      if (isB) target = mode[i] === REST ? L * 0.05 * (0.5 + 0.5 * Math.sin(T * 0.5 + ph1[i]) ** 2) : mode[i] === HOP ? L * 0.9 : L * 0.55 * sv * boost;
+      if (isB) target = mode[i] === REST ? L * (restS[i] > 0 ? 0.012 : 0.05) * (0.5 + 0.5 * Math.sin(T * 0.5 + ph1[i]) ** 2) : mode[i] === HOP ? L * 0.9 : L * 0.55 * sv * boost;
       else if (mode[i] === REST) target = L * 0.04;
       else {
         target = cruise[i] * sv * boost;
@@ -474,6 +476,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
         else if (sRate[i] > 0 && mode[i] === MOVE && subMode[i] === 1) calmT = 0.4 + 0.6 * clamp(rel / 0.8, 0, 1);
         else if (hov[i] > 0 || hover2) calmT = hovCau[i] + (1 - hovCau[i]) * clamp(rel / 0.35, 0, 1);
         calmS[i] += (calmT - calmS[i]) * Math.min(1, dt * (pulsing2 ? 14 : 3));
+        { const bT = restS[i] > 0 && isB && mode[i] === REST && dst === 0 && spd[i] < L * 0.05 ? 1 : 0; breathS[i] += (bT - breathS[i]) * Math.min(1, dt * 2); if (restS[i] > 0) P.breath = breathS[i]; }
         P.fan = fanS[i]; P.calm = calmS[i]; P.dig = sk; if (sRate[i] > 0) P.sub = mode[i] === MOVE ? subMode[i] : 2; }
       pitchS[i] += (pt - pitchS[i]) * Math.min(1, dt * 4);
       rollS[i] += (clamp(-yawRate[i] * R2D * 0.12, -12, 12) - rollS[i]) * Math.min(1, dt * 4);

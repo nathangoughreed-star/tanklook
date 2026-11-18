@@ -19,6 +19,14 @@ function poseLimbs(root: THREE.Object3D, hind: number, fore: number) {
   for (const l of ls) { const a = l.i === 0 ? hind : fore, c = Math.cos(a), sn = Math.sin(a); l.m.rotation.z = a; l.m.position.set(l.rx - (l.rx * c - l.ry * sn), l.ry - (l.rx * sn + l.ry * c), 0); }
 }
 
+const cheliOf = new WeakMap<THREE.Object3D, THREE.Object3D[]>();
+/** Work a shrimp's feeding arms (FB2): the two front pairs swing up and down about their root, a little out of step, ~3 Hz, `amt` 0..1. */
+function workClaws(root: THREE.Object3D, amt: number, t: number, id: number) {
+  let cs = cheliOf.get(root);
+  if (!cs) { cs = []; root.traverse(o => { if (o.userData.cheli) cs!.push(o); }); cheliOf.set(root, cs); }
+  for (const c of cs) { const side = c.userData.cheli.side as number; c.rotation.z = amt * (0.12 + 0.34 * Math.sin(6.2832 * 3.1 * t + id * 1.3 + (side > 0 ? 0 : 1.6))); c.rotation.y = amt * 0.18 * Math.sin(6.2832 * 1.9 * t + id + (side > 0 ? 0.7 : 2.1)); }
+}
+
 /** Bounds of a flat vertical pane for a body of `size`, and which way is into the water; null if the pane is not flat (bowl, relief wall). */
 function paneOf(field: SwimField, home: { x: number; y: number; z: number }, u: V3, v: V3, size: number): CrawlPlane | null {
   if (Math.abs(v[1]) < 0.99) return null;
@@ -38,6 +46,7 @@ export class Crawl {
   private homes = new WeakMap<THREE.Object3D, Home>();
   private moved = new Set<THREE.Object3D>();
   private seed = 4242;
+  private t = 0;
   reset() { this.sim?.reset(); this.seed++; this.key = ''; }
   update(meshes: THREE.Object3D[], dt: number, on: boolean, paused: boolean) {
     if (!on || !meshes.length) { this.home(); return; }
@@ -52,7 +61,7 @@ export class Crawl {
       }
       this.sim = makeCrawlSim(specs, field, this.seed); this.key = key;
     }
-    if (!paused && dt > 0) this.sim.step(Math.min(dt, 0.2));
+    if (!paused && dt > 0) { this.sim.step(Math.min(dt, 0.2)); this.t += Math.min(dt, 0.2); }
     for (const m of meshes) {
       const d = m.userData.crawl as CrawlData, p = this.sim.pose(d.spec.id); if (!p) continue;
       let h = this.homes.get(m);
@@ -61,6 +70,7 @@ export class Crawl {
       if (d.spec.plane) m.quaternion.setFromEuler(_e.set(h.ex, h.ey, p.yaw * D2R, 'YXZ')); // spin about the pane normal
       else m.quaternion.setFromEuler(_e.set(p.roll * D2R, p.yaw * D2R, p.pitch * D2R, 'YXZ'));
       if (d.spec.kind === 'frog') poseLimbs(m, p.hind, p.fore);
+      else if (d.spec.kind === 'shrimp') workClaws(m, p.fore, this.t, d.spec.id);
       m.updateMatrix(); m.updateMatrixWorld(true);
       const sh = m.userData.shadow as THREE.Object3D | undefined;
       if (sh && h.sp) { sh.position.set(h.sp.x + p.x - h.p.x, h.sp.y, h.sp.z + p.z - h.p.z); sh.rotation.y = p.yaw * D2R; sh.updateMatrixWorld(true); }
@@ -70,7 +80,7 @@ export class Crawl {
   private home() {
     for (const m of this.moved) {
       const h = this.homes.get(m); if (!h) continue;
-      if ((m.userData.crawl as CrawlData).spec.kind === 'frog') poseLimbs(m, 0, 0);
+      if ((m.userData.crawl as CrawlData).spec.kind === 'frog') poseLimbs(m, 0, 0); else if ((m.userData.crawl as CrawlData).spec.kind === 'shrimp') workClaws(m, 0, 0, 0);
       m.position.copy(h.p); m.quaternion.copy(h.q); m.updateMatrix(); m.updateMatrixWorld(true);
       const sh = m.userData.shadow as THREE.Object3D | undefined; if (sh && h.sp) { sh.position.copy(h.sp); sh.updateMatrixWorld(true); }
     }

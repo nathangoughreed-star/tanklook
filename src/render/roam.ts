@@ -37,7 +37,7 @@ export class Roam {
     const specs: SwimmerSpec[] = [], world = (meshes[0].userData.roam as RoamData).world;
     for (const m of meshes) specs.push((m.userData.roam as RoamData).spec);
     const wf = swimFieldFor(world);
-    const key = specs.map(s => `${s.id}|${s.len}|${s.zone}|${s.pace ?? 1}|${s.style ? [s.style.rate, s.style.tau, s.style.turn, s.style.mix] : ''}|${s.hover ? [s.hover.w, s.hover.pec, s.hover.caudal] : ''}|${s.dig ? [s.dig.k, s.dig.dark, s.dig.rest, s.dig.rate] : ''}|${s.band}|${s.group?.key}|${s.home.x},${s.home.y},${s.home.z},${s.home.yaw},${s.home.pitch},${s.home.roll}`).join(';') + '#' + wf.key;
+    const key = specs.map(s => `${s.id}|${s.len}|${s.zone}|${s.pace ?? 1}|${s.style ? [s.style.rate, s.style.tau, s.style.turn, s.style.mix] : ''}|${s.rest ?? ''}|${s.hover ? [s.hover.w, s.hover.pec, s.hover.caudal] : ''}|${s.dig ? [s.dig.k, s.dig.dark, s.dig.rest, s.dig.rate] : ''}|${s.band}|${s.group?.key}|${s.home.x},${s.home.y},${s.home.z},${s.home.yaw},${s.home.pitch},${s.home.roll}`).join(';') + '#' + wf.key;
     if (key !== this.key || !this.sim) {
       const t0 = performance.now();
       this.sim = makeSwimSim(specs, wf.field, this.seed); this.key = key;
@@ -49,7 +49,7 @@ export class Roam {
       let h = this.homes.get(m); if (!h) { h = { p: m.position.clone(), q: m.quaternion.clone(), sp: (m.userData.shadow as THREE.Object3D | undefined)?.position.clone() }; this.homes.set(m, h); }
       m.position.set(p.x, p.y, p.z); m.quaternion.setFromEuler(_e.set(p.roll * D2R, p.yaw * D2R, p.pitch * D2R, 'YXZ'));
       const sp = (m.userData.roam as RoamData).spec, fan = p.fan ?? 0;
-      m.userData.dig = p.dig ?? 0; m.userData.sub = p.sub; m.userData.fanA = fan; m.userData.calm = p.calm ?? 1; // the tail beat of this fish (swim.ts hookCalm)
+      m.userData.breath = p.breath ?? 0; m.userData.dig = p.dig ?? 0; m.userData.sub = p.sub; m.userData.fanA = fan; m.userData.calm = p.calm ?? 1; // the tail beat of this fish (swim.ts hookCalm)
       if (fan > 0.01 || m.userData.fanned) { // fanning pectorals: about 2.5-4 Hz, wider for a small fish's quick sculling
         fanPecs(m, fan * 0.42 * (sp.hover?.pec ?? 0), Math.min(4.2, Math.max(2.2, 3.4 * Math.pow(60 / Math.max(20, sp.len), 0.25))), this.t, sp.id);
         m.userData.fanned = fan > 0.01;
@@ -63,7 +63,7 @@ export class Roam {
   private home() {
     for (const m of this.moved) {
       const h = this.homes.get(m); if (!h) continue;
-      m.position.copy(h.p); m.quaternion.copy(h.q); m.userData.calm = 1; if (m.userData.fanned) { fanPecs(m, 0, 1, 0, 0); m.userData.fanned = false; } m.updateMatrix(); m.updateMatrixWorld(true);
+      m.position.copy(h.p); m.quaternion.copy(h.q); m.userData.calm = 1; m.userData.breath = 0; if (m.userData.fanned) { fanPecs(m, 0, 1, 0, 0); m.userData.fanned = false; } m.updateMatrix(); m.updateMatrixWorld(true);
       const sh = m.userData.shadow as THREE.Object3D | undefined; if (sh && h.sp) { sh.position.copy(h.sp); sh.updateMatrixWorld(true); }
     }
     this.moved.clear();
