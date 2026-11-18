@@ -195,3 +195,30 @@ export function dealSwaps(S: TankSetup, P: UserProfile, opts: DemandOpts & { uni
   }
   return out.filter(o => o.savingUsd > 1).sort((a, b) => b.savingUsd - a.savingUsd);
 }
+
+/**
+ * R136: one line per part the bundle swaps in, worded as a consequence (filter gph, light PAR, heater watts, lid, stand), for the Apply
+ * confirm. `S` is the build now, `B` the build with the bundle's gear (withDealGear). Better, worse and about-the-same are all said.
+ */
+export function dealPartLines(S: TankSetup, B: TankSetup, d: Deal): string[] {
+  const out: string[] = [], k = dealAsKit(d), gal = volume(S.tank).gallons, has = (p: string) => d.includes.includes(p as never);
+  if (has('light')) {
+    const a = lightOutCached(S), b = lightOutCached(B);
+    out.push(a && b
+      ? `Light: about ${Math.round(b.mean)} PAR at the substrate, against ${Math.round(a.mean)} now (${b.mean < a.mean * 0.85 ? 'worse: the light in this bundle may not perform as well as your current one' : b.mean > a.mean * 1.15 ? 'better' : 'about the same'})`
+      : `Light: the bundle's LED replaces yours; its output is not listed, so it may not perform as well as your current one`);
+  }
+  if (has('filter')) {
+    const cur = filterNow(S), m = k.filter ? matchFilter({ ...k.filter, gal })?.model ?? defaultFilter(gal) : defaultFilter(gal);
+    const now = cur.gph === 0 ? 'no filter now' : cur.gph === Infinity ? 'your sump now' : `${Math.round(cur.gph)} gph now`;
+    out.push(`Filter: ${k.filter?.name ? k.filter.name + ' ' : ''}moves ${m.gph} gph, against ${now}${cur.gph === Infinity || m.gph < cur.gph * FLOW_OK ? ' (worse)' : m.gph > cur.gph * 1.2 ? ' (better)' : ' (about the same)'}`);
+  }
+  if (has('heater')) {
+    const now = S.water.on ? heatLoss(S).units.reduce((a, u) => a + (u.watts ?? 0), 0) : 0, w = k.heater?.watts, need = S.water.on ? heatLoss(S).needW : 0;
+    out.push(w ? `Heater: ${w} W, against ${now ? Math.round(now) + ' W' : 'none'} now${S.fish.length && w < need * HEAT_OK ? ` (worse: small for this tank, about ${Math.round(need)} W needed on a cold night)` : w > now * 1.2 && now ? ' (more)' : ''}`
+      : `Heater: the bundle's, power not listed${now ? `; yours is ${Math.round(now)} W` : ''}`);
+  }
+  if (has('lid') && S.lid !== B.lid) out.push(`Lid: ${B.lid}, in place of your ${S.lid}`);
+  if (has('stand') && (S.stand.style !== B.stand.style || S.stand.finish !== B.stand.finish || !S.stand.show)) out.push(`Stand: the bundle's ${B.stand.finish ?? ''} ${B.stand.style ?? 'cabinet'}${S.stand.show ? ', in place of yours' : ''}`.replace('  ', ' '));
+  return out;
+}

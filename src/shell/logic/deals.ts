@@ -4,10 +4,14 @@
 // sweep marks its row `expired` or `gone` in the data file. No retailer photos; links are plain (no affiliate codes).
 // The engines keep their own 30-day rule for pricing (changing it would move every cost figure); this file adds no age rule.
 import { boxList } from './boxList';
-import { DEAL_NOTE, DEALS, type Deal } from '../../data/deals';
+import { DEAL_NOTE, DEALS, dealAsKit, type Deal } from '../../data/deals';
 import { GEAR_DEALS, gearPctOff, gearShip, gearTotalUsd, type GearDeal, type GearSlot } from '../../data/gearDeals';
 import { saleLive, type TankVariant } from '../../data/tanks';
-import { dealSwaps, MIN_SAVING_USD } from '../../demand/dealmatch';
+import { dealPartLines, dealSwaps, MIN_SAVING_USD, type DealSwap } from '../../demand/dealmatch';
+import { kitTech } from '../../demand/tech';
+import { pinTank } from '../../demand/pinned';
+import { lockKitParts, unlockObject } from '../../scene/locks';
+import type { Store } from '../../scene/store';
 import { gearFits, pinGear, pinnedGear, unpinGear } from '../../demand/gearDeals';
 import type { UserProfile } from '../../demand/types';
 import type { TankSetup } from '../../scene/types';
@@ -67,4 +71,39 @@ export function bundleLine(S: TankSetup, P: UserProfile, now = Date.now(), deals
 export function gearSaleCount(S: TankSetup, now = Date.now()): { n: number; first?: GearSale } {
   const all = SLOTS.flatMap(c => gearSales(S, c, now, 1));
   return { n: all.length, first: all.sort((a, b) => b.off - a.off)[0] };
+}
+
+// ---------- R136: Apply the bundle ----------
+export interface ApplyPlan { deal: Deal; title: string; price: string; saving: string; /** one line per part swapped in, better or worse in numbers */ lines: string[]; /** other consequences (stocking, tank, engine warnings) */ worse: string[]; /** what the user loses: a part they or a kit locked that the bundle replaces */ loses: string[]; swap: DealSwap }
+const LOCKED: [string, string][] = [['light', 'light'], ['filter', 'filter'], ['heater', 'heater']];
+/** What Apply on the bundle card would do, as lines for the confirm. Undefined when the bundle no longer fits the build. */
+export function applyPlan(S: TankSetup, P: UserProfile, id: string, now = Date.now(), deals: Deal[] = DEALS): ApplyPlan | undefined {
+  let w: DealSwap | undefined;
+  try { w = dealSwaps(S, P, { units: 'in', now }, deals.filter(d => showable(d.asOf, now, d))).find(x => x.deal.id === id); } catch { return undefined; }
+  if (!w) return undefined;
+  const d = w.deal, lines = dealPartLines(S, w.setup, d);
+  const loses = LOCKED.filter(([t]) => d.includes.includes(t as never) && S.locks?.objects.some(o => o.target === t))
+    .map(([t, n]) => `Your locked ${n} is replaced${S.locks!.objects.find(o => o.target === t)?.kit ? ' (it was locked by the kit you started from)' : ' (you locked it)'}`);
+  const worse = w.tradeoffs.filter(x => !/gph|PAR at the substrate|W heater/.test(x));
+  return { deal: d, title: `${d.retailer} ${d.name}`, price: usd(d.price.usd), saving: usd(w.savingUsd), lines, worse, loses, swap: w };
+}
+/** Put the bundle's parts into the active tank as kit parts, held like a kit start (lockKitParts) and priced as the bundle (pinTank). One undo step. */
+export function applyBundle(store: Store, plan: ApplyPlan) {
+  const d = plan.deal, has = (p: string) => d.includes.includes(p as never), i = store.scene.active;
+  // the replaced parts' old locks go first (a kit lock would make the store ask a second time)
+  store.editTank(i, t => { for (const [g] of LOCKED) if (has(g)) unlockObject(t, g); }, { history: false });
+  store.editTank(i, t => {
+    const T = structuredClone(plan.swap.setup), kit = dealAsKit(d), kt = kitTech(T, kit);
+    if (has('stand')) t.stand = T.stand;
+    if (has('lid')) t.lid = T.lid;
+    if (has('light')) t.light = T.light;
+    if (kt) {
+      const cur = structuredClone(t.tech ?? kt);
+      if (has('filter')) { cur.rows.filter = kt.rows.filter; cur.filters = kt.filters; delete cur.filterProduct; delete cur.filterModel; }
+      if (has('heater')) { cur.rows.heater = kt.rows.heater; cur.heaters = kt.heaters; delete cur.heaterProduct; delete cur.heaterW; }
+      t.tech = cur;
+    }
+    lockKitParts(t, d.includes);
+    pinTank(t, d);
+  });
 }
