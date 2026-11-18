@@ -3,6 +3,7 @@
 // the engine the stocking screen uses; nothing here scores a species on its own.
 import { aquariumOnly, kindInScope } from '../scope';
 import { CARE } from '../data/care';
+import { inContinent } from '../data/origin';
 import { GRAZE } from '../data/grazers';
 import type { Species } from '../data/species';
 import { type AnimalWhy } from './animalfit';
@@ -47,12 +48,15 @@ export function offeredIn(sp: Species, k: SetupKind): boolean {
   return sp.habitat === 'water' || sp.kind === 'snail';
 }
 
-export type Role = 'school' | 'glo' | 'centre' | 'community' | 'algae' | 'bottom' | 'invert' | 'herp' | 'arthropod';
+export type Role = 'school' | 'glo' | 'centre' | 'community' | 'cichAf' | 'cichSa' | 'cichCa' | 'algae' | 'bottom' | 'invert' | 'herp' | 'arthropod';
 export const ROLES: [Role, string, string][] = [
   ['school', 'Schooling fish', 'Fish kept in a group of five or more'],
   ['glo', 'GloFish', 'Fluorescent GloFish colours of the zebra danio, tiger barb and black skirt tetra: the same species and care'],
   ['centre', 'Centerpiece fish', 'The showpiece, large or solitary fish a tank is built around'],
   ['community', 'Community fish', 'Small and peaceful fish that do not need a big group'],
+  ['cichAf', 'African cichlids', 'Malawi mbuna and peacocks, Tanganyika and West African cichlids such as the kribensis'],
+  ['cichSa', 'South American cichlids', 'Angelfish, discus, oscars, rams and the dwarf apistos'],
+  ['cichCa', 'Central American cichlids', 'Convicts, firemouths and the other cichlids of Mexico and Central America'],
   ['algae', 'Algae eaters', 'Animals that graze algae'],
   ['bottom', 'Bottom & cleanup crew', 'Fish that live on the floor and sweep up what falls'],
   ['invert', 'Inverts', 'Shrimp, snails and other water invertebrates'],
@@ -62,12 +66,16 @@ export const ROLES: [Role, string, string][] = [
 if (aquariumOnly()) { const h = ROLES.find(r => r[0] === 'herp')!; h[1] = 'Aquatic amphibians'; h[2] = 'Fully aquatic frogs and salamanders'; }   // AQ1: only the fully aquatic ones (dwarf frog, axolotl) are in scope
 /** Grazers by diet: the species the grazer table (data/grazers.ts) knows plus the fish and shrimp keepers buy for algae. Not derivable from the data otherwise. */
 const ALGAE_EATERS = new Set([...Object.keys(GRAZE), 'oto', 'bristlenose', 'sae', 'cherryshrimp', 'amano', 'nerite', 'turbo']);
+/** R130: the cichlid genera we carry or may carry. A cichlid is listed ONLY in its cichlid group (by where it lives in the wild), not also under Centerpiece / Community, so the chip counts still add up to All. */
+const CICHLID_GENERA = new Set(['Pterophyllum', 'Symphysodon', 'Astronotus', 'Mikrogeophagus', 'Apistogramma', 'Pelvicachromis', 'Labidochromis', 'Aulonocara', 'Pseudotropheus', 'Copadichromis', 'Labeotropheus', 'Melanochromis', 'Nimbochromis', 'Cynotilapia', 'Maylandia', 'Metriaclima', 'Tropheus', 'Neolamprologus', 'Julidochromis', 'Altolamprologus', 'Cyphotilapia', 'Haplochromis', 'Protomelas', 'Sciaenochromis', 'Cichla', 'Heros', 'Geophagus', 'Laetacara', 'Hemichromis', 'Amatitlania', 'Archocentrus', 'Thorichthys', 'Amphilophus', 'Herichthys', 'Parachromis', 'Vieja', 'Hypselecara', 'Uaru', 'Satanoperca', 'Nannacara', 'Cleithracara']);
+export const isCichlid = (sp: Species) => CICHLID_GENERA.has(sp.sci.split(' ')[0]);
 /** Which role group a species is listed under, derived from its category, swim zone, group size and appeal tags. */
 export function roleOf(sp: Species): Role {
   if (sp.cat === 'amphibian' || sp.cat === 'reptile') return 'herp';
   if (sp.cat === 'land-invert') return 'arthropod';
   if (ALGAE_EATERS.has(sp.id)) return 'algae';
   if (sp.cat.endsWith('-invert')) return 'invert';
+  if (sp.cat === undefined || sp.cat === 'fw-fish') if (isCichlid(sp)) return inContinent(sp.id, 'africa') ? 'cichAf' : inContinent(sp.id, 'camerica') ? 'cichCa' : 'cichSa';
   const c = CARE[sp.id], tags = c?.appeal ?? [], zone = c?.zone;
   const school = !sp.pair && !c?.alone && !c?.solo && (tags.includes('shoal') || ((!!sp.group || (c?.bands?.ok ?? c?.group ?? 1) >= 5) && !tags.includes('showpiece') && sp.tl < 150)); // pairs, loners and big ones (goldfish) are not a school // a showpiece kept in a group (discus) is still the centerpiece
   if (zone === 'bottom' && (tags.includes('cleanup') || school || !tags.includes('showpiece'))) return 'bottom';

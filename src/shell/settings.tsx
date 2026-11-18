@@ -8,6 +8,7 @@ import { FX, onFx } from '../render/fx';
 import { chooseFx, lockedByUrl, restoreFxDefaults } from '../render/fxPrefs';
 import { sceneFile } from '../ui/logic/files';
 import { Group } from './ui';
+import { SpeciesListDialog, speciesCount } from './speciesList';
 import { Seg, Toggle } from './tank';
 import { KEYS } from './logic/view';
 import { setEdges } from './logic/tank';
@@ -71,7 +72,7 @@ import { oldUiHref } from '../uiChoice';
 export function SettingsSection({ store, getViewer }: { store: Store; getViewer: () => Viewer | undefined }) {
   const [open, setOpen] = useState(loadOpen);
   const flip = (k: string) => { const n = { ...open, [k]: !open[k] }; setOpen(n); try { localStorage.setItem(GROUPS_KEY, JSON.stringify(n)); } catch { /* lasts this visit */ } };
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState(false), [specList, setSpecList] = useState(false);
   const u = store.scene.units, rules = rulesNow(store);
   return (
     <>
@@ -79,6 +80,9 @@ export function SettingsSection({ store, getViewer }: { store: Store; getViewer:
         <Seg value={u} opts={UNIT_OPTS} label="Units" onPick={x => setUnits(store, x)} /><div class="hint">{UNIT_NOTE[u]}</div></div>
       <div class="sgroup"><h3>Rules</h3>
         <Seg value={rules} opts={RULE_OPTS} label="Rules" onPick={r => chooseRules(store, r)} /><div class="hint">{RULE_NOTE[rules]}</div></div>
+      <div class="sgroup"><h3>Species list</h3>
+        <div class="hint">Every animal we carry, with its size, care level and where it is from.</div>
+        <div class="acts-row"><button type="button" class="btn sm" onClick={() => setSpecList(true)}>See all {speciesCount()} species</button></div></div>
       <Group title="Graphics" sum={open.gfx ? undefined : 'quality, effects, picture'} open={open.gfx} onToggle={() => flip('gfx')}><Graphics store={store} getViewer={getViewer} /></Group>
       <Group title="Help" open={open.help} onToggle={() => flip('help')}>
         {HELP.map(h => <div class="helpblk"><b>{h.title}</b>{h.lines.map(l => <div class="hint">{l}</div>)}</div>)}
@@ -91,6 +95,7 @@ export function SettingsSection({ store, getViewer }: { store: Store; getViewer:
         </div>
       </Group>
       <div class="sgroup"><div class="hint">The old interface stays for two weeks. <a href={oldUiHref(location)}>Use the old interface</a></div></div>
+      {specList ? <SpeciesListDialog store={store} onClose={() => setSpecList(false)} /> : null}
     </>
   );
 }

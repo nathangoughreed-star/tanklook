@@ -19,6 +19,7 @@ import {
 import { wantsAlbino } from '../data/species';
 import { setForm } from './logic/animals';
 import { Icon } from './ui';
+import { SpeciesListDialog, speciesCount } from './speciesList';
 import { useFishSwimming } from './view';
 import { dragOut } from './drag';
 import { aqView, aqCheck, onAq } from './logic/aq';
@@ -39,7 +40,7 @@ const tone = (l: PickRow['level']) => (l === 'problem' ? 'bad' : 'warn');
 /** The species picture: the baked still (public/gallery/<look>.webp), else the painted card, else nothing. */
 const paint = new Map<string, string>();
 const speciesAspectOf = (art: string, dflt: number) => artMeta(art)?.aspect ?? dflt;
-function FishArt({ id, look, big, art }: { id: string; look: string; big?: boolean; art?: string }) {
+export function FishArt({ id, look, big, art }: { id: string; look: string; big?: boolean; art?: string }) {
   const baked = `${import.meta.env.BASE_URL}gallery/${encodeURIComponent(look)}.webp`;
   const [src, setSrc] = useState(baked);
   useEffect(() => { setSrc(baked); }, [baked]);
@@ -103,6 +104,7 @@ export function AnimalsSection({ store, getViewer, pending }: { store: Store; ge
   const [query, setQuery] = useState<PickQuery>({ ...DEFAULT_QUERY, fitsOnly: loadFits() });
   const [note, setNote] = useState<{ text: string; bad: boolean } | null>(null);
   const [pvId, setPvId] = useState<string | null>(null);
+  const [listOpen, setListOpen] = useState(false);   // R131: the full species list
   const albinoSearch = wantsAlbino(query.q);   // AL1 part 3: "albino cory": Add from the card puts the fish in with the albino form on
   const pct = 100;   // AT1 (R42): new animals come in at the default size; a placed one is resized in the Selection drawer
   useEffect(() => onAq(() => setN(n => n + 1)), []);
@@ -222,8 +224,10 @@ export function AnimalsSection({ store, getViewer, pending }: { store: Store; ge
           </div>
         </div>
       ))}
+      <div class="endnote hint"><button type="button" class="linkbtn" onClick={() => setListOpen(true)}>See all {speciesCount()} species</button> with sizes, levels and where they are from.</div>
       {pv.shown ? <div class="endnote hint">{pv.shown} {pv.shown === 1 ? 'animal' : 'animals'} shown{pv.hidden ? `, ${pv.hidden} held back by "Fits this tank"` : ''}.</div> : null}
       </>)}
+      {listOpen ? <SpeciesListDialog store={store} onClose={() => setListOpen(false)} onOpen={id => { setListOpen(false); setPvId(id); }} /> : null}
     </div>
   );
 }
