@@ -14,6 +14,7 @@ import { wattsOf } from '../scene/lightout';
 import { lightProduct, listedPrice } from '../data/gearCatalog';
 import { standOf, standLabel } from '../data/stands';
 import { hoodOf, withHoodLight, NO_HOOD_NOTE } from '../data/hoods';
+import { lidOf } from '../data/lids';
 import { growRate } from '../scene/growtime';
 import { LIBRARY } from '../scene/items';
 import { outcomeOf } from '../scene/plantfit';
@@ -130,10 +131,12 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   if (noHood && !opts.kit) warnings.push(NO_HOOD_NOTE); // a kit's own hood is the kit's (its price replaces these rows), so no note for a bundle
   const lidRow = lidKind === 'open' ? undefined : rowPrice(`gear:lid-${lidKind === 'glass' ? 'glass' : lidKind === 'mesh' ? 'mesh' : 'hood'}`), lidK = Math.min(2.5, Math.max(0.6, Math.sqrt(gal / 25)));
   const lid = (G.lid as Record<string, Rangeish>)[lidKind];
+  const lidProd = lidKind === 'glass' || lidKind === 'mesh' ? lidOf({ tank: S.tank, lid: lidKind, lidProduct: S.lidProduct }) : undefined; // TL1: a real glass lid / mesh top sold for this size
   if (hood) { // one line: the hood with its light; its watts are the light's power draw (no separate light row below unless a light was chosen as well)
     const hp = hood.priceUsd;
     add('lid', `Hood with light: ${hood.brand} ${hood.model} (${hood.light.type === 'led' ? 'LED' : hood.light.tech}, ${hood.light.watts} W)`, 'gear', { setup: price({ lo: hp * 0.9, mode: hp, hi: hp * 1.1 }), ...(hoodsLight ? { kwhMo: hood.light.watts * G.lightHoursPerDay * 30 / 1000 } : {}) });
   }
+  else if (lidProd) add('lid', `Lid: ${lidProd.brand} ${lidProd.model}`, 'gear', { setup: price({ lo: lidProd.priceUsd * 0.9, mode: lidProd.priceUsd, hi: lidProd.priceUsd * 1.1 }) });
   else if (lidRow) add('lid', noHood ? 'Lid (glass: no hood sold for this size)' : `Lid (${S.lid})`, 'gear', { setup: price(scale3(lidRow, lidK)) });
   else if (lid && r3(lid)!.mode > 0) add('lid', `Lid (${lidKind})`, 'gear', { setup: price(r3(lid)!) });
   const gv = S.substrate.show ? groundVolume(S, 24).litres : 0;

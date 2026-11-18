@@ -761,7 +761,7 @@
    },
    "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-4775-w-x-2389-h-55-gallons-3946432",
    "asOf": "2026-11-18",
-   "note": "Page read 2026-11-16 in a browser. Store pickup only (not shipped); stock depends on the store. Contents as the 40 gal size.",
+   "note": "Page read 2026-11-16 in a browser; contents re-read 2026-11-18 (TL1): aquarium hood with LED and feeding door, heater, hang-on-back power filter, thermometer strip, net. Store pickup only (not shipped); stock depends on the store.",
    "look": {
     "lid": "hood",
     "light": {
@@ -1215,7 +1215,7 @@
    },
    "url": "https://www.petsmart.com/fish/starter-kits/top-fin-essentials-all-in-one-aquarium-starter-kit---29-gallon-fish-tank-104184.html",
    "asOf": "2026-11-18",
-   "note": "Page read 2026-11-16 in a browser: save 20% on 20+ gal Essentials kits thru 11/19. Same kit line as the 20 gal (hood, LED, power filter, heater).",
+   "note": "Page read 2026-11-16 in a browser: save 20% on 20+ gal Essentials kits thru 11/19. Contents re-read 2026-11-18 (TL1): hood with feeding door, white LED, heater, filter, thermometer, 6 in net, test vial (no separate lid).",
    "look": {
     "lid": "hood",
     "light": {
@@ -1252,14 +1252,14 @@
    },
    "url": "https://www.petsmart.com/fish/starter-kits/top-fin-essentials-all-in-one-aquarium-starter-kit---55-gallon-fish-tank-104186.html",
    "asOf": "2026-11-18",
-   "note": "Page read 2026-11-16 in a browser: save 20% on 20+ gal Essentials kits thru 11/19. Same kit line as the 20 gal (hood, LED, power filter, heater).",
+   "note": "Page read 2026-11-16 in a browser: save 20% on 20+ gal Essentials kits thru 11/19. Contents re-read 2026-11-18 (TL1): hood with feeding door, white LED, heater, filter, thermometer, 6 in net, test vial (no separate lid).",
    "look": {
     "lid": "hood",
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     },
     "guessed": [
-     "contents and filter: assumed the same as the 20 gal Essentials kit (same product line); filter size not checked"
+     "filter size not checked (contents confirmed on the page 2026-11-18)"
     ]
    },
    "img": "https://s7d2.scene7.com/is/image/PetSmart/5262267",
