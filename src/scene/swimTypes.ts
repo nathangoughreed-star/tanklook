@@ -19,6 +19,8 @@ export interface SwimField {
    * `grad` (optional, written in place) = the unit direction pointing away from it. Capped: anything beyond `cap` mm returns `cap`.
    */
   clearance(x: number, y: number, z: number, grad?: V3, cap?: number): number;
+  /** FB3: what the solids are (one per placed item), so a fish can pick a rock, a host or a plant as its home; absent = unknown (the sim then picks any solid that is not the glass, floor or surface). x, z = centre; y0..y1 = bottom..top; r = bounding radius. */
+  anchors?: { kind: string; variant: string; x: number; z: number; y0: number; y1: number; r: number }[];
 }
 
 /** What the sim needs to know about one animal. */
@@ -40,6 +42,8 @@ export interface SwimmerSpec {
   rest?: number;
   /** FB1: digging / hiding habit (fishBehavior.ts DIG) already resolved for this tank: `k` = how well the bed suits it (0 = no dig, hides still), `dark` 0..1 = the tank is dark (more digging), `rest` = height of the body centre above the ground when it lies (mm). Bottom dwellers only. */
   dig?: { rate: number; depth: number; pitch: number; hold: [number, number]; hide: number; hideT: [number, number]; k: number; dark: number; rest: number };
+  /** FB3 (R118): home, range, posture and small actions (fishBehavior.ts HABIT). The sim picks a home spot in the tank (the species' rock, cave, bolt-hole, burrow, host or a patch; see swimHome.ts) and keeps the fish within `leash` body lengths of it. Absent = roams as before. */
+  habit?: { home: 'crevice' | 'bolt' | 'burrow' | 'host' | 'open'; post: 'mid' | 'perch' | 'hoverLow' | 'hug'; leash: number; gap: number; orient: number; hoverH: number; act: number; dart: number; peck: number; patrol: number; flick: number; hop: number; hold: [number, number] };
   /** Same school / shoal = same key (species id + split index); undefined = loner. `tight` = a school (aligned), else a shoal (loose). */
   group?: { key: string; tight: boolean };
   /** Where it was placed: its Reset pose. yaw/pitch/roll in degrees as in the scene's Fish. */

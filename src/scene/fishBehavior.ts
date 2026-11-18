@@ -31,6 +31,10 @@ export const HOVER: Record<string, HoverSpec> = {
   pandacory: { w: 0.35, pec: 0.5, caudal: 0.3 }, bronzecory: { w: 0.35, pec: 0.5, caudal: 0.3 }, sterbai: { w: 0.35, pec: 0.5, caudal: 0.3 },
   pepperedcory: { w: 0.35, pec: 0.5, caudal: 0.3 }, pygmycory: { w: 0.3, pec: 0.5, caudal: 0.3 }, clownloach: { w: 0.3, pec: 0.5, caudal: 0.3 },
   syno: { w: 0.3, pec: 0.5, caudal: 0.3 },
+  // FB3: marine fish hover between their actions (clownfish and mandarins on the pectorals, firefish and banggai hanging in the water)
+  royalgramma: { w: 0.35, pec: 0.6, caudal: 0.3 }, firefish: { w: 0.55, pec: 0.5, caudal: 0.2 }, banggai: { w: 0.6, pec: 0.9, caudal: 0.2 },
+  ocellaris: { w: 0.45, pec: 0.9, caudal: 0.25 }, mandarin: { w: 0.5, pec: 1, caudal: 0.2 }, coralbeauty: { w: 0.35, pec: 0.7, caudal: 0.3 },
+  chromis: { w: 0.2, pec: 0.6, caudal: 0.4 }, yellowtang: { w: 0.1, pec: 0.5, caudal: 0.5 }, bluetang: { w: 0.1, pec: 0.5, caudal: 0.5 }, sixline: { w: 0.1, pec: 0.5, caudal: 0.5 },
 };
 
 /** Digging in loose bottom: a burrower noses in and half buries itself, a sifter dips its snout in and out. Also hiding under rock, wood and plants. */
@@ -90,5 +94,60 @@ export const STYLE: Record<string, StyleSpec> = {
  */
 export const BENTHIC: Record<string, number> = {
   bronzecory: 0.85, pepperedcory: 0.85, pandacory: 0.85, sterbai: 0.85, pygmycory: 0.8, // corys: mostly still, the shoal goes foraging now and then
+  watchman: 0.88, // FB3: sits on its sand patch, hops now and then
   kuhli: 0.8, clownloach: 0.75, syno: 0.75, sae: 0.72, rainbowshark: 0.75, redtailshark: 0.75,
+};
+
+/**
+ * Home, range, posture and small repeated actions (FB3, R118, 2026-11-18; design in research/design/fish-habits.md). Fish listed here are
+ * tied to a place: the sim picks a home spot in the tank (a rock face, a cave mouth, a bolt-hole, a burrow mouth, a host, a patch) and keeps the
+ * fish within `leash` body lengths of it, doing the listed actions at the listed rates. A species not listed swims as before. Judgement from
+ * care sheets and field notes (FishBase, LiveAquaria / Reef Central profiles, Seriously Fish); the numbers set how often and how far.
+ */
+export type HabitHome = 'crevice' | 'bolt' | 'burrow' | 'host' | 'open';
+export type HabitPost = 'mid' | 'perch' | 'hoverLow' | 'hug';
+export interface HabitSpec {
+  /** Where it lives: a rock face / cave / overhang, a bolt-hole at a rock foot, a sand burrow, a host (anemone, coral, else a patch), or free water. */
+  home: HabitHome;
+  /** mid = free water; perch = sits on the bottom on its fins; hoverLow = hangs just above the bottom or home; hug = follows rock faces, belly toward them. */
+  post: HabitPost;
+  /** How far from home it goes, in body lengths (large = the whole tank). */
+  leash: number;
+  /** How close it holds to a rock face, in body radii of clearance (1.2 = snug). */
+  gap: number;
+  /** 0..1: how far the belly turns toward the nearest rock (1 = any roll, upside down under a ledge). */
+  orient: number;
+  /** Hover height above the home spot, body lengths (a firefish hangs over its bolt-hole). */
+  hoverH: number;
+  /** 0..1: activity; scales cruise speed. */
+  act: number;
+  /** Actions per minute: dart into the home and peek out, peck at a surface, patrol a short stretch, flick (still, dorsal / body), hop a short way then stop. */
+  dart: number; peck: number; patrol: number; flick: number; hop: number;
+  /** Seconds it stays tucked in the home after a dart, [min, max]. */
+  hold: [number, number];
+}
+const H = (home: HabitHome, post: HabitPost, leash: number, gap: number, orient: number, hoverH: number, act: number, dart: number, peck: number, patrol: number, flick: number, hop: number, hold: [number, number] = [3, 20]): HabitSpec =>
+  ({ home, post, leash, gap, orient, hoverH, act, dart, peck, patrol, flick, hop, hold });
+// rock-dwelling mbuna: a hole each, the rock pile is the pasture; graze it all day, dart in and out
+const MBUNA = H('crevice', 'hug', 10, 1.3, 0.5, 0, 0.8, 2, 12, 1.2, 0, 0.5);
+export const HABIT: Record<string, HabitSpec> = {
+  //                       home       post        leash gap  ori  hov  act   dart peck patr flick hop
+  royalgramma: H('crevice', 'hug',      4.5,   1.3, 0.85, 0,   0.5,  2.5, 1.5, 0.4, 0,   0.5, [3, 25]),  // holds a cave or overhang, belly to the rock (upside down under ledges), darts out and back
+  firefish:    H('bolt',    'hoverLow', 4,   1.2, 0,    3,   0.35, 0.5, 0,   0,   7,   2,   [4, 12]),  // hangs over its bolt-hole, flicks the dorsal, dives in when startled
+  watchman:    H('burrow',  'perch',    2.5, 1.2, 0,    0,   0.15, 0.25, 0,  0,   1.5, 2,   [8, 40]),  // on the sand at its burrow mouth, still, short hops, no cruising
+  ocellaris:   H('host',    'hoverLow', 2.5,  1.2, 0.2,  0,   0.4,  0.2, 2.5, 0.5, 4,   1.5, [3, 10]),  // a small patch (host or a spot), wiggles in place
+  yellowtang:  H('crevice', 'hug',      40,  2.2, 0.3,  0,   0.85, 0,   8,   1.5, 0,   0.5),         // grazes the rockwork all day
+  bluetang:    H('crevice', 'mid',      35,  2,   0,    1.5, 0.8,  0.5, 3,   0.5, 0,   0,   [3, 12]),
+  banggai:     H('host',    'hoverLow', 5,   1.5, 0,    1.5, 0.25, 0.1, 0,   0,   0,   0.6),         // hangs upright in slow drifts near a host or a rock arm
+  sixline:     H('crevice', 'hug',      30,  1.6, 0.5,  0,   0.9,  0.8, 10,  2,   0,   0),           // darts between rock faces, pecking
+  chromis:     H('host',    'mid',      10,  2,   0,    2.5, 0.65, 0.3, 0,   0.5, 0,   1,   [3, 10]), // hovers above its rock arm, drops into it when startled
+  coralbeauty: H('crevice', 'hug',      10,  1.5, 0.7,  0,   0.55, 1.2, 8,   0.4, 0,   0),
+  mandarin:    H('crevice', 'hoverLow', 10,  1.5, 0,    0.6, 0.4,  0.2, 8,   0,   0,   3),           // just over the rubble, short hops, pecking, no cruising
+  yellowlab: MBUNA, demasoni: MBUNA, auratus: MBUNA, labeo: MBUNA, afra: MBUNA,
+  kribensis:   H('crevice', 'hoverLow', 6,   1.5, 0,    0.8, 0.45, 1.5, 1,   1,   1,   0,   [4, 25]),  // a pair's cave, patrols a patch of floor
+  cockatoo:    H('crevice', 'hoverLow', 6,   1.5, 0,    0.8, 0.4,  1,   1,   1,   1,   0,   [4, 25]),
+  gbr:         H('host',    'hoverLow', 5,   1.4, 0,    0.8, 0.4,  0.3, 4,   1,   0,   2),           // a flat stone or a patch of sand, pecks at it
+  bolivianram: H('host',    'hoverLow', 5,   1.4, 0,    0.8, 0.4,  0.3, 4,   1,   0,   2),
+  rainbowshark: H('crevice', 'perch',   10,  1.4, 0,    0,   0.5,  1,   3,   2,   0,   1,   [8, 40]),  // a cave or log is its territory
+  redtailshark: H('crevice', 'perch',   10,  1.4, 0,    0,   0.5,  1,   3,   2,   0,   1,   [8, 40]),
 };
