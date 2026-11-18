@@ -74,11 +74,11 @@ export const digGrainK = (d: DigSpec, grain: Grain | undefined) => (grain ? d.gr
  * cichlids, rummynose and other station-holders, and every bottom dweller).
  * rate = pulses per second, tau = how fast the glide slows (s; the speed falls to 1/e in this time), turn = most heading change per pulse (+- degrees).
  */
-export interface StyleSpec { rate: number; tau: number; turn: number }
-const QUICK: StyleSpec = { rate: 1.7, tau: 0.32, turn: 20 };   // danios, small rasboras, tetras: quick, short pulses
-const SLOWER: StyleSpec = { rate: 1.1, tau: 0.45, turn: 14 };   // livebearers, pencilfish, barbs, pea puffer: longer glides
+export interface StyleSpec { rate: number; tau: number; turn: number; /** FB2: time shares [pulse-glide, slow cruise in a line, hover and scull] */ mix: [number, number, number] }
+const QUICK: StyleSpec = { rate: 1.7, tau: 0.32, turn: 20, mix: [0.6, 0.15, 0.25] };   // danios, small rasboras, tetras: quick, short pulses
+const SLOWER: StyleSpec = { rate: 1.1, tau: 0.45, turn: 14, mix: [0.45, 0.3, 0.25] };   // livebearers, pencilfish, barbs, pea puffer: longer glides
 export const STYLE: Record<string, StyleSpec> = {
-  danio: { rate: 2.0, tau: 0.3, turn: 22 }, cpd: QUICK, whitecloud: QUICK, neon: QUICK, cardinal: QUICK, greenneon: QUICK, ember: QUICK,
+  danio: { rate: 2.0, tau: 0.3, turn: 22, mix: [0.65, 0.15, 0.2] }, cpd: QUICK, whitecloud: QUICK, neon: QUICK, cardinal: QUICK, greenneon: QUICK, ember: QUICK,
   merah: QUICK, exclamation: QUICK, dwarfrasbora: QUICK, chili: QUICK, harlequin: SLOWER,
-  dwarfpencil: { rate: 0.9, tau: 0.5, turn: 12 }, guppy: SLOWER, cherrybarb: SLOWER, peapuffer: { rate: 1.0, tau: 0.4, turn: 25 },
+  dwarfpencil: { rate: 0.9, tau: 0.5, turn: 12, mix: [0.4, 0.3, 0.3] }, guppy: SLOWER, cherrybarb: SLOWER, peapuffer: { rate: 1.0, tau: 0.4, turn: 25, mix: [0.4, 0.2, 0.4] },
 };

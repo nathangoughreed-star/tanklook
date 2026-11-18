@@ -35,7 +35,7 @@ export interface SwimmerSpec {
   /** FB1: hovering habit (fishBehavior.ts HOVER): w = how much of its time, pec = how wide the pectorals fan, caudal = share of the tail beat kept while hovering. Absent = the old rest (no fanning). */
   hover?: { w: number; pec: number; caudal: number };
   /** FB1 part 2 (R106): burst-and-coast swimming (fishBehavior.ts STYLE): pulses per second, glide decay time constant (s), heading change per pulse (+- degrees). Absent = steady swimming. Water-column swimmers only. */
-  style?: { rate: number; tau: number; turn: number };
+  style?: { rate: number; tau: number; turn: number; /** FB2: share of time in [pulse-glide, slow steady cruise, hover with fin sculling]; the fish (a school together) switches between them every 5-15 s. Absent = all pulse-glide. */ mix?: [number, number, number] };
   /** FB1: digging / hiding habit (fishBehavior.ts DIG) already resolved for this tank: `k` = how well the bed suits it (0 = no dig, hides still), `dark` 0..1 = the tank is dark (more digging), `rest` = height of the body centre above the ground when it lies (mm). Bottom dwellers only. */
   dig?: { rate: number; depth: number; pitch: number; hold: [number, number]; hide: number; hideT: [number, number]; k: number; dark: number; rest: number };
   /** Same school / shoal = same key (species id + split index); undefined = loner. `tight` = a school (aligned), else a shoal (loose). */
@@ -47,7 +47,9 @@ export interface SwimmerSpec {
 /** One animal's pose this frame, same conventions as the scene (position mm; yaw about y, pitch about z, roll about x, degrees; applied 'YXZ' order roll, yaw, pitch as the build does). */
 export interface SwimPose { x: number; y: number; z: number; yaw: number; pitch: number; roll: number;
   /** FB1: pectoral fanning 0..1 (0 = folded, for swimming), tail-beat strength (1 = the usual beat, near 0 = still, above 1 = a wriggle) and how deep the body is sunk into the bed (mm, already taken off `y`). Absent = 0, 1, 0. */
-  fan?: number; calm?: number; dig?: number }
+  fan?: number; calm?: number; dig?: number;
+  /** FB2: for a burst-and-coast species, which style it is in now: 0 pulse-glide, 1 slow steady cruise, 2 hover. Absent for every other fish. */
+  sub?: number }
 
 export interface SwimSim {
   /** Advance by dt seconds (the caller clamps dt to about 0.1). Writes into the poses returned by `pose`. */

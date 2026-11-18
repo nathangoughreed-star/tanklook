@@ -190,3 +190,53 @@ describe('FB1 part 2: burst and coast', () => {
     expect(ds[Math.floor(ds.length * 0.99)]).toBeLessThan(8);   // degrees in one 1/30 s step: a smooth turn (the odd wall bounce aside)
   });
 });
+
+describe('FB2: pulse-glide, slow cruise and hover mix over time', () => {
+  const cv = (a: number[]) => { const m = a.reduce((x, y) => x + y, 0) / a.length; return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / a.length) / m; };
+  const sch = (style: SwimmerSpec['style'], n: number, tight = true, hover?: SwimmerSpec['hover']): SwimmerSpec[] => Array.from({ length: n }, (_, k) => ({ id: k + 1, len: 38, zone: 'water' as const, band: [0.3, 0.8] as [number, number], style, hover, group: n > 1 ? { key: 'neon', tight } : undefined, home: home(400 + (k % 4) * 25, 250 + Math.floor(k / 4) * 25, -150 - (k % 3) * 20, 20) }));
+  const shares = (specs: SwimmerSpec[], secs: number, seed: number) => {
+    const c = [0, 0, 0]; let tot = 0, bad = 0; run(specs, 30, secs, seed, p => { if (!finite(p)) bad++; if (p.sub !== undefined) { c[p.sub]++; tot++; } });
+    return { f: c.map(x => x / tot), bad, tot };
+  };
+  it('a darty tetra school visits all three styles, close to its weights', () => {
+    const w = STYLE.neon.mix, r = shares(sch(STYLE.neon, 1), 4000, 7);   // a loner, long run, so the time shares converge
+    expect(r.bad).toBe(0);
+    for (let k = 0; k < 3; k++) { expect(r.f[k]).toBeGreaterThan(0.03); expect(Math.abs(r.f[k] - w[k])).toBeLessThan(0.12); }
+    expect(r.f[0]).toBeGreaterThan(r.f[1]); expect(r.f[0]).toBeGreaterThan(r.f[2]);   // mostly pulse-glide
+  });
+  it('a school switches together, and many schools together keep the weights', () => {
+    const specs: SwimmerSpec[] = []; let id = 1;
+    for (let g = 0; g < 6; g++) for (let k = 0; k < 4; k++) specs.push({ id: id++, len: 38, zone: 'water', band: [0.3, 0.8], style: STYLE.neon, group: { key: 'neon' + g, tight: true }, home: home(150 + g * 110 + k * 12, 250, -120 - (k % 2) * 40, 20) });
+    const subs = new Map<number, number[]>(); const w = STYLE.neon.mix; const c = [0, 0, 0]; let tot = 0;
+    run(specs, 30, 1500, 3, (p, s) => { c[p.sub!]++; tot++; const a = subs.get(s.id) ?? []; a.push(p.sub!); subs.set(s.id, a); });
+    for (let k = 0; k < 3; k++) expect(Math.abs(c[k] / tot - w[k])).toBeLessThan(0.1);
+    const a = subs.get(1)!, b = subs.get(2)!; let same = 0; for (let i = 0; i < a.length; i++) if (a[i] === b[i]) same++;
+    expect(same / a.length).toBeGreaterThan(0.95);   // same school: same style (a hover starts with a small lag only through the rest rule)
+  });
+  it('the mix follows the data: a weight of 0 never happens, and a species with no style has no sub-mode', () => {
+    const r = shares(sch({ ...STYLE.neon, mix: [0.7, 0, 0.3] }, 1), 1500, 5); expect(r.f[1]).toBe(0);
+    const plain = shares(sch(undefined, 1), 200, 5); expect(plain.tot).toBe(0);
+  });
+  it('deterministic for a seed, and every swap is smooth: no speed or heading pops', () => {
+    const go = () => { const sim = makeSwimSim(sch(STYLE.danio, 6), bed(30), 11), dt = 1 / 30, out: SwimPose[] = []; const v: number[] = []; let prev = { ...sim.pose(1)! }, swaps = 0, lastSub = sim.pose(1)!.sub, worstDv = 0, worstYaw = 0, vPrev = 0, since = 99; const yaws: number[] = [];
+      for (let s = 0; s < 1800 / dt * 1 / 1; s++) { if (s > 40000) break; sim.step(dt); const p = sim.pose(1)!; const sp = Math.hypot(p.x - prev.x, p.y - prev.y, p.z - prev.z) / dt / 38; if (p.sub !== lastSub) { swaps++; lastSub = p.sub; since = 0; } else since++; if (s > 0 && since <= 3) worstDv = Math.max(worstDv, Math.abs(sp - vPrev)); let d = Math.abs(p.yaw - prev.yaw); if (d > 180) d = 360 - d; if (s > 30) yaws.push(d); vPrev = sp; prev = { ...p }; v.push(sp); if (s % 600 === 0) out.push({ ...p }); }
+      yaws.sort((x, y) => x - y); worstYaw = yaws[Math.floor(yaws.length * 0.999)];
+      return { out, swaps, worstDv, worstYaw }; };
+    const a = go(), b = go();
+    expect(a.out).toEqual(b.out);
+    expect(a.swaps).toBeGreaterThan(20);
+    expect(a.worstDv).toBeLessThan(1.2);     // body lengths per second, per 1/30 s step, at a swap (a burst starts in about 0.1 s)
+    expect(a.worstYaw).toBeLessThan(10);     // degrees per step at the 99.9th percentile (the odd bounce off the trunk aside, as for every fish)
+  });
+  it('hover inside the mix scull the fins and still the tail; the slow cruise is slower than the pulse-glide mean and steady', () => {
+    const sim = makeSwimSim(sch(STYLE.neon, 1), bed(30), 9), dt = 1 / 30; const vs: number[][] = [[], [], []]; const fan = [0, 0, 0], n = [0, 0, 0], calm = [0, 0, 0]; let prev = { ...sim.pose(1)! };
+    for (let s = 0; s < 4000 / dt; s++) { sim.step(dt); const p = sim.pose(1)!, k = p.sub!; vs[k].push(Math.hypot(p.x - prev.x, p.y - prev.y, p.z - prev.z) / dt / 38); fan[k] += p.fan ?? 0; calm[k] += p.calm ?? 1; n[k]++; prev = { ...p }; }
+    const mean = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length;
+    expect(mean(vs[1])).toBeLessThan(mean(vs[0]));
+    expect(cv(vs[1])).toBeLessThan(cv(vs[0]) * 0.7);       // steady vs jerky
+    expect(mean(vs[2])).toBeLessThan(0.2);                  // hover: nearly still
+    expect(fan[2] / n[2]).toBeGreaterThan(0.25); expect(fan[0] / n[0]).toBeLessThan(0.1);
+    expect(calm[2] / n[2]).toBeLessThan(0.6);
+  });
+});
+

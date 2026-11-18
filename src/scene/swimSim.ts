@@ -24,8 +24,11 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
   const dRate = F(), dDepth = F(), dPitch = F(), dH0 = F(), dH1 = F(), dHide = F(), dHT0 = F(), dHT1 = F(), dK = F(), dDark = F(), dRest = F();
   const digT = F(), digK = F(), digTgt = F(), digCd = F(), hgx = F(), hgz = F(), dgx = F(), dgz = F(), wig = F(), digHold = F(), sinkS = F();
   const sRate = F(), sTau = F(), sTurn = F(), pulseT = F(), pulseP = F(), burstLeft = F(), jitA = F(), pv0 = F(); // burst-and-coast
+  const subMode = new Uint8Array(n), subT = F(), mx0 = F(), mx1 = F(), mx2 = F(); // FB2: 0 pulse-glide, 1 slow cruise, 2 hover
   const restFlag = new Uint8Array(n), digSt = new Uint8Array(n), hasDig = new Uint8Array(n);
   const fanIdx = new Int8Array(n), mode = new Uint8Array(n), gi = new Int32Array(n).fill(-1), bottom = new Uint8Array(n), tight = new Uint8Array(n);
+  // FB2: which of pulse-glide / slow cruise / hover comes next (seeded, by the species' time shares; each lasts 5-15 s so the shares are time shares)
+  const pickSub = (i: number) => { const u = R(); return u < mx0[i] ? 0 : u < mx0[i] + mx1[i] ? 1 : 2; };
   const poses: SwimPose[] = [], idIndex = new Map<number, number>();
   const grad: V3 = [0, 0, 0];
 
@@ -39,7 +42,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
   const GF = () => new Float64Array(G);
   const gcx = GF(), gcy = GF(), gcz = GF(), ghx = GF(), ghy = GF(), ghz = GF(), gpol = GF(), gspread = GF();
   const ggx = GF(), ggy = GF(), ggz = GF(), ggT = GF(), gModeT = GF(), gSide = GF(), gPh = GF(), gSpeedW = GF();
-  const gHov = new Float64Array(G), gMode = new Uint8Array(G), gTight = new Uint8Array(G), gBottom = new Uint8Array(G);
+  const gSub = new Uint8Array(G), gSubT = new Float64Array(G), gHov = new Float64Array(G), gMode = new Uint8Array(G), gTight = new Uint8Array(G), gBottom = new Uint8Array(G);
 
   const FAN = [0, 0.6, -0.6, 1.2, -1.2, 1.9, -1.9, 2.6, -2.6]; // radians off the heading
   // clearance at a probe point; a bottom dweller probes above the ground so the ground itself never reads as an obstacle
@@ -77,6 +80,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
   };
 
   function setMode(i: number, m: number) {
+    if (sRate[i] > 0 && !bottom[i]) { mode[i] = MOVE; modeT[i] = 1e9; return; } // FB2: a burst-and-coast species stays in MOVE; its hovers are the sub-mode (subMode 2)
     mode[i] = m;
     if (bottom[i]) modeT[i] = m === REST ? 5 + R() * 20 : m === HOP ? 1.2 + R() * 0.5 : 3 + R() * 6;
     else if (hov[i] > 0) modeT[i] = m === REST ? (3 + R() * 8) * (0.6 + hov[i]) : (10 + R() * 30) * (1.5 - hov[i]);
@@ -94,6 +98,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
     hx[i] = Math.cos(p) * Math.cos(yaw); hy[i] = Math.sin(p); hz[i] = -Math.cos(p) * Math.sin(yaw);
     spd[i] = 0; vyB[i] = 0; yawRate[i] = 0; pitchS[i] = h.pitch; rollS[i] = h.roll; avK[i] = 0; c0[i] = 1e9; dsx[i] = 0; dsy[i] = 0; dsz[i] = 0; fanIdx[i] = 0; burstT[i] = 0; ownT[i] = 0; hopH[i] = 0;
     const P = poses[i]; P.x = h.x; P.y = h.y; P.z = h.z; P.yaw = h.yaw; P.pitch = h.pitch; P.roll = h.roll;
+    subMode[i] = sRate[i] > 0 ? pickSub(i) : 0; subT[i] = 5 + R() * 10; if (sRate[i] > 0 && gi[i] >= 0) subMode[i] = gSub[gi[i]];
     restFlag[i] = 0; nudgeT[i] = 0; kick[i] = 0; fanS[i] = 0; calmS[i] = 1; digSt[i] = 0; digK[i] = 0; digCd[i] = hasDig[i] ? 5 + R() * 40 : 0; wig[i] = 0; sinkS[i] = 0;
     if (gi[i] < 0 || !bottom[i]) setMode(i, bottom[i] ? REST : MOVE);
     else { mode[i] = gMode[gi[i]]; modeT[i] = 0; }
@@ -115,13 +120,14 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
     ph1[i] = R() * 6.28; ph2[i] = R() * 6.28; ph3[i] = R() * 6.28; w1[i] = 0.25 + R() * 0.3; w2[i] = 0.7 + R() * 0.6;
     side[i] = R() < 0.5 ? -1 : 1; indep[i] = R() < 0.3 ? 1 : 0;
     if (s.hover && s.hover.w > 0) { hov[i] = Math.min(1, s.hover.w); hovPec[i] = s.hover.pec; hovCau[i] = s.hover.caudal; }
-    if (s.style && !bottom[i]) { sRate[i] = s.style.rate; sTau[i] = s.style.tau; sTurn[i] = s.style.turn; pulseT[i] = R() / s.style.rate; }
+    if (s.style && !bottom[i]) { const m = s.style.mix ?? [1, 0, 0], tot = m[0] + m[1] + m[2] || 1; mx0[i] = m[0] / tot; mx1[i] = m[1] / tot; mx2[i] = m[2] / tot; if (!s.hover) { hovPec[i] = 0.6; hovCau[i] = 0.3; } sRate[i] = s.style.rate; sTau[i] = s.style.tau; sTurn[i] = s.style.turn; pulseT[i] = R() / s.style.rate; }
     if (s.dig && bottom[i]) {
       const d = s.dig; hasDig[i] = 1; dRate[i] = d.rate; dDepth[i] = d.depth; dPitch[i] = d.pitch; dH0[i] = d.hold[0]; dH1[i] = d.hold[1]; dHide[i] = d.hide; dHT0[i] = d.hideT[0]; dHT1[i] = d.hideT[1]; dK[i] = clamp(d.k, 0, 1); dDark[i] = clamp(d.dark, 0, 1); dRest[i] = d.rest;
     }
   }
   for (let g = 0; g < G; g++) {
     const f = gFirst[g]; gHov[g] = hov[f]; gTight[g] = tight[f]; gBottom[g] = bottom[f]; gSide[g] = R() < 0.5 ? -1 : 1; gPh[g] = R() * 6.28; gSpeedW[g] = 0.2 + R() * 0.3;
+    gSub[g] = sRate[f] > 0 && !bottom[f] ? pickSub(f) : 0; gSubT[g] = 5 + R() * 10;
     gcx[g] = gcy[g] = gcz[g] = 0;
     for (let m = gStart[g]; m < gStart[g + 1]; m++) { const i = gMem[m]; gcx[g] += fish[i].home.x; gcz[g] += fish[i].home.z; }
     gcx[g] /= gN[g]; gcz[g] /= gN[g]; ghx[g] = 1; ggx[g] = gcx[g]; ggy[g] = fish[f].home.y; ggz[g] = gcz[g];
@@ -196,6 +202,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       ggT[g] += dt;
       const f = gFirst[g], dd = Math.sqrt((ggx[g] - gcx[g]) ** 2 + (ggz[g] - gcz[g]) ** 2);
       if (dd < len[f] * 1.5 + gspread[g] * 0.5 || ggT[g] > 45) groupGoal(g);
+      if (sRate[gFirst[g]] > 0 && !gBottom[g]) { gSubT[g] -= dt; if (gSubT[g] <= 0) { gSub[g] = pickSub(gFirst[g]); gSubT[g] = 5 + R() * 10; } } // FB2: the school switches style together
       if (gBottom[g] || gHov[g] > 0) {
         gModeT[g] -= dt;
         if (gModeT[g] <= 0) setGroupMode(g, gMode[g] === REST ? MOVE : REST);
@@ -213,7 +220,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
           else if (g < 0) setMode(i, mode[i] === MOVE ? REST : MOVE);
           else modeT[i] = 20 + R() * 40; // shoal / school fish keep moving
         }
-        if (!isB && g < 0 && mode[i] === REST && R() < dt * 0.02) { mode[i] = MOVE; modeT[i] = 10 + R() * 30; }
+        if (!isB && g < 0 && sRate[i] === 0 && mode[i] === REST && R() < dt * 0.02) { mode[i] = MOVE; modeT[i] = 10 + R() * 30; }
       } else {
         const gm = gMode[g];
         if (mode[i] !== HOP) {
@@ -221,15 +228,20 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
           if (mode[i] !== gm) { modeT[i] -= dt; if (modeT[i] <= 0) { mode[i] = gm; modeT[i] = R() * 2.5 + (indep[i] ? 3 : 0); if (gm === MOVE && R() < 0.04) { mode[i] = HOP; modeT[i] = 1.2 + R() * 0.5; hopH[i] = L * (0.5 + R() * 0.7); } } }
         } else { modeT[i] -= dt; if (modeT[i] <= 0) { mode[i] = gMode[g]; modeT[i] = 1 + R() * 2; } }
       }
-      if (g >= 0 && !isB && gHov[g] > 0) mode[i] = gMode[g]; // a hovering shoal stops together
+      if (g >= 0 && !isB && gHov[g] > 0 && sRate[i] === 0) mode[i] = gMode[g]; // a hovering shoal stops together
       // digging / hiding (bottom dwellers with a DigSpec): a rare event, then a small state machine that overrides steering and speed
       if (hasDig[i] === 1 && mode[i] !== HOP) {
         if (digSt[i] === 0) { digCd[i] -= dt; if (digCd[i] <= 0 && R() < dt * dRate[i] / 60 * (1 + 1.5 * dDark[i])) startDig(i); }
         else digStep(i, dt, L, T);
       }
       const dst = digSt[i];
+      if (sRate[i] > 0) {
+        const was = subMode[i];
+        if (g >= 0) subMode[i] = gSub[g]; else { subT[i] -= dt; if (subT[i] <= 0) { subMode[i] = pickSub(i); subT[i] = 5 + R() * 10; } }
+        if (subMode[i] === 0 && was !== 0) pulseT[i] = 0.3 + R() * 0.7; // coming out of a hover or a cruise: the first pulse is a beat away, not at once
+      }
       // burst-and-coast: when a pulse is due, a short burst starts and the heading is nudged by a few degrees (toward the goal / school, which `wish` already is)
-      if (sRate[i] > 0 && mode[i] === MOVE && dst === 0) {
+      if (sRate[i] > 0 && mode[i] === MOVE && dst === 0 && subMode[i] === 0) {
         pulseT[i] -= dt;
         if (pulseT[i] <= 0) { pulseP[i] = (0.7 + R() * 0.6) / sRate[i]; pulseT[i] = pulseP[i]; burstLeft[i] = Math.min(0.2, pulseP[i] * 0.3); jitA[i] = (R() - 0.5) * 2 * sTurn[i] * D2R; pv0[i] = 0; }
       }
@@ -243,7 +255,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       if (useOwn) {
         tx = gx[i]; ty = gy[i]; tz = gz[i];
         const dd = Math.sqrt((tx - px[i]) ** 2 + (tz - pz[i]) ** 2 + (isB ? 0 : (ty - py[i]) ** 2));
-        if (dd < L * 2 || goalT[i] > 45) { fishGoal(i); if (!isB && g < 0 && R() < 0.35) { mode[i] = REST; modeT[i] = 2 + R() * 5; } }
+        if (dd < L * 2 || goalT[i] > 45) { fishGoal(i); if (!isB && g < 0 && sRate[i] === 0 && R() < 0.35) { mode[i] = REST; modeT[i] = 2 + R() * 5; } }
       } else { tx = ggx[g]; ty = ggy[g]; tz = ggz[g]; }
       let wx = tx - px[i], wy = isB ? 0 : ty - py[i], wz = tz - pz[i];
       let wm = Math.sqrt(wx * wx + wy * wy + wz * wz);
@@ -254,13 +266,13 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       if (dst > 0) {
         if (dst === 5) { wx = hgx[i] - px[i]; wz = hgz[i] - pz[i]; wy = 0; wm = Math.sqrt(wx * wx + wz * wz) || 1; wx /= wm; wz /= wm; } else { wx = dgx[i]; wz = dgz[i]; wy = 0; }
         held = true;
-      } else if (hov[i] > 0 && mode[i] === REST) {
+      } else if ((hov[i] > 0 && mode[i] === REST) || (sRate[i] > 0 && mode[i] === MOVE && subMode[i] === 2)) {
         if (!restFlag[i]) { restFlag[i] = 1; setHold(i, 0.4); nudgeT[i] = 1 + R() * 2.5; kick[i] = 0; }
         else { nudgeT[i] -= dt; if (nudgeT[i] <= 0) { setHold(i, 0.5); kick[i] = 0.35 + R() * 0.3; nudgeT[i] = 1.5 + R() * 4; } }
         wx = holdX[i]; wz = holdZ[i]; wy = 0; held = true;
       } else restFlag[i] = 0;
       if (kick[i] > 0) kick[i] -= dt;
-      if (sRate[i] > 0 && mode[i] === MOVE && dst === 0 && jitA[i] !== 0) { const c = Math.cos(jitA[i]), sn = Math.sin(jitA[i]), x2 = wx * c - wz * sn; wz = wx * sn + wz * c; wx = x2; }
+      if (sRate[i] > 0 && mode[i] === MOVE && dst === 0 && subMode[i] === 0 && jitA[i] !== 0) { const c = Math.cos(jitA[i]), sn = Math.sin(jitA[i]), x2 = wx * c - wz * sn; wz = wx * sn + wz * c; wx = x2; }
       // slow side-to-side meander so paths are not ruler straight
       const amp = held ? 0 : g < 0 ? 0.28 : tight[i] ? 0 : 0.15;
       if (amp > 0) { const a = amp * Math.sin(T * w1[i] + ph1[i]) + 0.4 * amp * Math.sin(T * w2[i] * 0.6 + ph2[i]), c = Math.cos(a), s = Math.sin(a); const x2 = wx * c - wz * s; wz = wx * s + wz * c; wx = x2; }
@@ -373,7 +385,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
 
       // ---- turn (limited rate, quicker when something is close)
       const cd = clamp(hx[i] * dx + hy[i] * dy + hz[i] * dz, -1, 1), ang = Math.acos(cd);
-      const pulsing = sRate[i] > 0 && mode[i] === MOVE && dst === 0;
+      const pulsing = sRate[i] > 0 && mode[i] === MOVE && dst === 0 && subMode[i] === 0;
       const maxStep = turn[i] * (1 + 0.5 * K) * dt * (isB ? 1.3 : 1) * (pulsing ? (burstLeft[i] > 0 ? 1.6 : 0.5) : 1);
       const yawBefore = Math.atan2(-hz[i], hx[i]);
       let nx: number, ny: number, nz: number;
@@ -398,6 +410,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
         if (g >= 0 && tight[i]) target *= 1 + 0.12 * Math.sin(T * gSpeedW[g] + gPh[g]);
         if (burstT[i] > 0) target *= pace[i] < 1 ? 1.5 : 2.6;
       }
+      if (sRate[i] > 0 && mode[i] === MOVE && dst === 0 && !isB) { if (subMode[i] === 1) target = cruise[i] * sv * boost * 0.5; else if (subMode[i] === 2) target = L * 0.04; } // FB2: slow steady cruise / hover
       if (held && kick[i] > 0 && dst === 0) target += L * 0.2; // a small shift in the water
       if (dst > 0) target = dst === 1 ? L * 0.12 : dst === 2 ? L * 0.05 : dst === 4 ? L * 0.28 : dst === 5 ? L * 0.4 : 0; // approach, push in, wriggle out, walk to cover, hold still
       target *= 1 - 0.5 * K;
@@ -453,14 +466,15 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       P.x = px[i]; P.y = py[i] - sk; P.z = pz[i];
       P.yaw = Math.atan2(-hz[i], hx[i]) * R2D + (wig[i] > 0 ? wig[i] * 11 * Math.sin(T * 9 + ph2[i]) * (dst === 2 ? 1 : 0.6) : 0);
       // pectoral fanning and tail beat: a hovering fish fans while it is slow, and its tail follows its speed; a digger wriggles in and out and lies still in between
-      { const pulsing2 = sRate[i] > 0 && mode[i] === MOVE && dst === 0 && pv0[i] > 0, rel = spd[i] / L, fanT = dst > 0 ? 0 : hovPec[i] * clamp(1 - rel / 0.3, 0, 1);
+      { const hover2 = sRate[i] > 0 && mode[i] === MOVE && dst === 0 && subMode[i] === 2, pulsing2 = sRate[i] > 0 && mode[i] === MOVE && dst === 0 && subMode[i] === 0 && pv0[i] > 0, rel = spd[i] / L, fanT = dst > 0 ? 0 : hovPec[i] * clamp(1 - rel / 0.3, 0, 1);
         fanS[i] += (fanT - fanS[i]) * Math.min(1, dt * 1.5);
         let calmT = 1;
         if (dst > 0) calmT = dst === 2 || dst === 4 ? 1.6 : dst === 1 || dst === 5 ? 0.9 : 0.12;
         else if (pulsing2) calmT = 0.1 + 1.3 * clamp((spd[i] / Math.max(pv0[i], 1e-3) - 0.3) / 0.7, 0, 1); // beating in the burst, nearly still in the glide
-        else if (hov[i] > 0) calmT = hovCau[i] + (1 - hovCau[i]) * clamp(rel / 0.35, 0, 1);
+        else if (sRate[i] > 0 && mode[i] === MOVE && subMode[i] === 1) calmT = 0.4 + 0.6 * clamp(rel / 0.8, 0, 1);
+        else if (hov[i] > 0 || hover2) calmT = hovCau[i] + (1 - hovCau[i]) * clamp(rel / 0.35, 0, 1);
         calmS[i] += (calmT - calmS[i]) * Math.min(1, dt * (pulsing2 ? 14 : 3));
-        P.fan = fanS[i]; P.calm = calmS[i]; P.dig = sk; }
+        P.fan = fanS[i]; P.calm = calmS[i]; P.dig = sk; if (sRate[i] > 0) P.sub = mode[i] === MOVE ? subMode[i] : 2; }
       pitchS[i] += (pt - pitchS[i]) * Math.min(1, dt * 4);
       rollS[i] += (clamp(-yawRate[i] * R2D * 0.12, -12, 12) - rollS[i]) * Math.min(1, dt * 4);
       P.pitch = pitchS[i]; P.roll = rollS[i];
