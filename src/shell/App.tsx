@@ -277,7 +277,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
         view={<ViewCluster store={store} getViewer={viewer} phone={phone} compare={<CompareButtons store={store} phone={phone} say={files.say} />} />} />
       {phone ? null : <Rail open={section} onPick={pick} />}
       <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); setPicker(false); }} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} disc={{ scope, onScope: setScope, say: files.say }} s5={{ onSurprise: () => { setScope(undefined); setSection('discover'); } }} />
-      {ws && section && section !== 'scape' ? <SectionWorkspace key={section} id={section} store={store} phone={phone} onDone={() => { setSection(null); setPicker(false); }} onIdeas={() => ideas(section)}><WsBody id={section} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} /></SectionWorkspace> : null}
+      {ws && section && section !== 'scape' ? <SectionWorkspace key={section} id={section} store={store} profile={profile} phone={phone} onDone={() => { setSection(null); setPicker(false); }} onIdeas={() => ideas(section)}><WsBody id={section} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} /></SectionWorkspace> : null}
       {ws && section === 'scape' ? <ScapeWorkspace store={store} getViewer={viewer} phone={phone} onDone={() => setSection(null)} onIdeas={() => ideas('scape')} /> : null}
       <IdeasButton section={more || ws ? null : section} onIdeas={ideas} />
       {split && panelOpen && !phone ? <EditingBar store={store} /> : null}

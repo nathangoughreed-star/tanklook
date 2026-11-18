@@ -841,3 +841,21 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .dealcard .itemkind { display: block; text-align: center; color: var(--tx-3, #8a94a6); font-size: 1.1rem; }
 .itemcard .dealpic .dealfb { width: 100%; height: 100%; display: grid; place-items: center; } .itemcard .dealpic .dealfb[hidden] { display: none; } .itemcard .dealpic .dealfb > img { width: auto; max-width: 100%; max-height: 100%; }
 @media (max-width: 640px) { .kitwrap .seg.full button { padding-inline: 4px; font-size: 0.82rem; white-space: nowrap; } }
+
+/* PL2: the Plants workspace's per-species needs card */
+.pncard { display: grid; gap: var(--s2); }
+.pnsum { display: grid; gap: 2px; padding: var(--s2) var(--s3); border-radius: 8px; font-size: var(--fs-sm); }
+.pnsum.ok { background: var(--ok-weak); color: var(--ok); } .pnsum.warn { background: var(--warn-weak); color: var(--text); }
+.pnsum.warn b { color: var(--warn); } .pntank { color: var(--text-2); }
+.pnrows { display: grid; gap: var(--s2); }
+.pnrow { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: var(--s3); align-items: center; padding: var(--s2); border: 1px solid var(--line); border-radius: 8px; background: var(--bg-app); }
+.pnrow.unmet { border-color: var(--warn); }
+.pnpic { width: 52px; height: 52px; padding: 0; border: 0; background: transparent; border-radius: 6px; display: grid; place-items: center; cursor: pointer; }
+.pnpic { overflow: hidden; background: #dde3de; } .pnpic .plantart { width: 52px; height: 52px; max-width: 52px; max-height: 52px; object-fit: contain; }
+.pnname { display: flex; align-items: baseline; gap: var(--s2); } .pnname b { font-weight: 600; }
+.pnmark { margin-left: auto; font-size: var(--fs-sm); font-weight: 600; white-space: nowrap; } .pnmark.met { color: var(--ok); } .pnmark.unmet { color: var(--warn); }
+.pncells { display: flex; flex-wrap: wrap; gap: 2px var(--s3); font-size: var(--fs-sm); margin-top: 2px; }
+.pncell { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 4px; } .pncell.met b { color: var(--ok); } .pncell.unmet b { color: var(--warn); }
+.pnk { color: var(--text-2); } .pnneed { font-weight: 600; } .pnhave { color: var(--text-2); } .pnhave::before { content: "· "; }
+.pnplain { margin: 0; } .pnacts { display: flex; flex-wrap: wrap; gap: var(--s2); } .pnswaps { display: grid; gap: 2px; margin: 0; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }

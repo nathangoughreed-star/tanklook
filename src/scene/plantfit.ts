@@ -67,7 +67,7 @@ export function outcomeOf(variant: string, par: number, care: GrowFeed): Outcome
 export const fits = (variant: string, par: number, care: GrowFeed): boolean => !whyNot(variant, par, care);
 
 /** Swap-ins for each variant, most similar first (a shape-alike that fits the light and care, then the safe ones). */
-const SWAP: Record<string, string[]> = {
+export const SWAP: Record<string, string[]> = {
   stem: ['hornwort', 'anacharis', 'grass', 'balansae', 'sword'], stemred: ['ludwigia', 'rotala', 'hornwort', 'anacharis', 'grass', 'balansae'],
   rotala: ['ludwigia', 'hornwort', 'anacharis', 'grass', 'balansae'], ludwigia: ['stem', 'hornwort', 'anacharis', 'grass', 'balansae'],
   carpet: ['hairgrass', 'sagittaria', 'moss', 'crypt'], hairgrass: ['sagittaria', 'moss', 'crypt'], sagittaria: ['moss', 'crypt', 'hairgrass'],

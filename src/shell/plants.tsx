@@ -14,7 +14,7 @@ import { dragPiece } from './drag';
 
 /** The plant's picture: the baked still (public/gallery/plants/<id>.webp), else drawn live from the 3D model, else nothing. */
 const live = new Map<string, string>();
-function PlantArt({ id, big }: { id: string; big?: boolean }) {
+export function PlantArt({ id, big }: { id: string; big?: boolean }) {
   const baked = `${import.meta.env.BASE_URL}gallery/plants/${id}.webp`;
   const [src, setSrc] = useState(baked);
   useEffect(() => { setSrc(baked); }, [baked]);

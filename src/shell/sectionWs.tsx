@@ -10,8 +10,10 @@ import { ideasLabel } from './logic/discover';
 import { WS_META, wsSide, enterVisit, revertVisit, visitDirty, tankFraming, type Visit } from './logic/workspace';
 import { Icon } from './ui';
 import { WorkspaceFrame, Tray } from './workspace';
+import { PlantNeedsCard } from './plantNeedsCard';
+import type { UserProfile } from '../demand';
 
-export function SectionWorkspace({ id, store, phone, onDone, onIdeas, children }: { id: SectionId; store: Store; phone: boolean; onDone: () => void; onIdeas?: () => void; children: ComponentChildren }) {
+export function SectionWorkspace({ id, store, profile, phone, onDone, onIdeas, children }: { id: SectionId; store: Store; profile?: () => UserProfile; phone: boolean; onDone: () => void; onIdeas?: () => void; children: ComponentChildren }) {
   const visit = useRef<Visit>();
   if (!visit.current) visit.current = enterVisit(store);
   const S = store.tank, meta = WS_META[id]!;
@@ -21,7 +23,7 @@ export function SectionWorkspace({ id, store, phone, onDone, onIdeas, children }
   const side = wsSide(S, id), ideas = ideasLabel(id);
   const sidebody = (
     <div class="wsside-in">
-      {side.lines.length ? <div class="wsfacts card" aria-label="In this tank">{side.lines.map(([k, v]) => <div class="drow"><span>{k}</span><b>{v}</b></div>)}</div>
+      {id === 'plants' && profile ? <PlantNeedsCard store={store} profile={profile} /> : side.lines.length ? <div class="wsfacts card" aria-label="In this tank">{side.lines.map(([k, v]) => <div class="drow"><span>{k}</span><b>{v}</b></div>)}</div>
         : <Tray sub={side.sub} chips={side.chips} empty={side.empty} onPick={sp => { if (id === 'animals') { const f = S.fish.find(x => x.species === sp); if (f) store.select(f.id); } else { const it = S.items.find(x => x.variant === sp); if (it) store.selectItem(it.id); } }} />}
     </div>
   );

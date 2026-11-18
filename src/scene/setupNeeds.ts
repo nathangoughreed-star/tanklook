@@ -180,7 +180,7 @@ export function applySetupNeeds(scene: TankSetup, opts: NeedOpts = {}): SetupNee
 
 /** The cheapest CO2 that still does the job (Nathan 2026-11-03): the DIY bottle (yeast, or citric acid and baking soda, about $15) up to the 30 gal the tech note says it holds; a pressurized kit above. */
 export const DIY_CO2_MAX_GAL = 30;
-const co2Option = (S: TankSetup) => (volume(S.tank).gallons <= DIY_CO2_MAX_GAL ? 'diy' : 'pressurized');
+export const co2Option = (S: TankSetup) => (volume(S.tank).gallons <= DIY_CO2_MAX_GAL ? 'diy' : 'pressurized');
 
 /** A catalogue light that no longer fits the tank's length (a tank swapped after the light was chosen). */
 function badFit(S: TankSetup): boolean {
