@@ -1,5 +1,5 @@
 {
- "asOf": "2026-11-16",
+ "asOf": "2026-11-18",
  "note": "Retailer bundle deals: tank + stand sets and starter kits (tank, hood, light, filter, heater). Every shown price was read on the retailer's page on its asOf date; prices change often, so the app shows 'as of <date>, check current price'. est rows (out of stock, unconfirmed) price the demand panel only.",
  "deals": [
   {
@@ -24,7 +24,7 @@
     "regularUsd": 399.99
    },
    "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/top-fin-aquarium-and-stand-ensemble---36-gallon-fish-tank-78697.html",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-11-16 in a browser: save $150 thru 11/25 ($249.99, was $399.99). Bow-front tank, hood with LED, stand.",
    "look": {
     "style": "cabinet",
@@ -61,7 +61,7 @@
     "usd": 549.99
    },
    "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-aquarium-and-stand-ensemble---45-gallon-led-fish-tank-kit-94286.html",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Extra-tall tank, glass canopy, LED, black stand. Page read 2026-11-16: $549.99, no sale (was $349.99 on 2026-10-19). Catalog tank n_g45_tall is this tank.",
    "look": {
     "style": "cabinet",
@@ -96,7 +96,7 @@
     "regularUsd": 649.99
    },
    "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-modern-led-aquarium-and-stand-ensemble---60-gallon-led-fish-tank-kit-34998.html",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Glass canopy, hidden LED, modern stand; no sale end date shown. Tank 48.5x12.75x25 in (maker spec): a tall 60, not a breeder.",
    "look": {
     "style": "cabinet",
@@ -133,7 +133,7 @@
     "regularUsd": 799.99
    },
    "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-ensemble---75-gallon-fish-tank-kit-with-led-62017.html",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "look": {
     "style": "cabinet",
     "finish": "black",
@@ -173,12 +173,12 @@
     "_nameSrc": "PetSmart kit contents graphic (item 9), seen by Nathan 2026-10-20"
    },
    "price": {
-    "usd": 119.99,
+    "usd": 108,
     "regularUsd": 149.99
    },
    "url": "https://www.petsmart.com/fish/starter-kits/top-fin-essentials-aquarium-starter-kit-5262265.html",
-   "asOf": "2026-11-16",
-   "note": "Item 5262265, page read live. Tank 24x12.7x16 in; hood with feeding door, white LED, power filter, heater, thermometer, net. Page says 20% off 20+ gal Essentials kits, thru 11/19 (page read 2026-11-16).",
+   "asOf": "2026-11-18",
+   "note": "Item 5262265, page read live. Tank 24x12.7x16 in; hood with feeding door, white LED, power filter, heater, thermometer, net. Page says 20% off 20+ gal Essentials kits, thru 11/19 (page read 2026-11-16). Re-read 2026-11-18: now $108.00 (was $149.99), same 20% off 20+ gal Essentials kits thru 11/19.",
    "look": {
     "lid": "hood",
     "light": {
@@ -212,7 +212,7 @@
     "regularUsd": 149.99
    },
    "url": "https://www.petsmart.com/fish/starter-kits/top-fin-captivate-aquarium-starter-kit-49928.html",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Item 5277168, page read live. Hexagon tank (no catalog hex this size, so it prices in the demand panel but is not a one-click start); Silenstream PF20, 100 W heater.",
    "look": {
     "lid": "hood",
@@ -254,7 +254,7 @@
     "regularUsd": 179.99
    },
    "url": "https://www.petsmart.com/fish/starter-kits/top-fin-bow-front-aquarium-starter-kit----36-gallon-51163.html",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read live. Tank 30.7x15.7x22.2 in (PetSmart.ca listing; the .com page redirects); hood, white LED, Silenstream 40 filter, 200 W heater, thermometer, net. No stand.",
    "look": {
     "lid": "hood",
@@ -297,7 +297,7 @@
     "regularUsd": 89.99
    },
    "url": "https://www.petsmart.com/fish/starter-kits/top-fin-cube-aquarium-essentials-starter-kit---10-gallon-100213.html",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read live, half price. Sold as 10 gallon, but the glass is a 14.09 in cube (about 11.4 gal measured inside, catalogue g8c cube). Tank 14.09 in cube; hood, white LED, Silenstream PF10, 50 W heater, thermometer, 4 in net, test vial. Lane U5 re-read 2026-10-28: $44.99 / $89.99; no end date on the page (Nathan: sale through 2026-11-01), so treat the price as sale-limited.",
    "look": {
     "lid": "hood",
@@ -333,7 +333,7 @@
     "usd": 149.99
    },
    "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/top-fin-led-bubble-wall-aquarium-kit---fish-tank-starter-kit---10-20-gallon-64706.html",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Item 5308097, page read live. Tank 24.2x13.1x16.6 in; internal filter, air pump and LED bubble wand. No heater.",
    "look": {
     "lid": "hood",
@@ -370,7 +370,7 @@
     "regularUsd": 89.99
    },
    "url": "https://www.petsmart.com/fish/starter-kits/top-fin-led-black-glass-aquarium-58620.html",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Item 5300979, page read live. Tank 20.1x10.1x12.8 in, blue and white LED hood, integrated filter. No heater.",
    "look": {
     "lid": "hood",
@@ -408,7 +408,7 @@
    },
    "url": "https://www.petsmart.com/fish/starter-kits/fluval-plant-fish-tank-aquarium-starter-kit---9-gallons--34-liters-100587.html",
    "img": "https://s7d2.scene7.com/is/image/PetSmart/5386296",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read live. Tank 14x13x12 in, 7000K plant LED, clear glass cover, AquaClear 20 filter. No heater.",
    "look": {
     "lid": "glass",
@@ -437,8 +437,8 @@
     "usd": 36.56
    },
    "url": "https://www.walmart.com/ip/Aqua-Culture-5-Gallon-Aquarium-Starter-Kit-With-LED-Lighting/20693704",
-   "asOf": "2026-11-16",
-   "note": "Out of stock when the page was read 2026-11-16 ($36.56). LED hood, Tetra internal filter, no heater.",
+   "asOf": "2026-11-18",
+   "note": "Out of stock when the page was read 2026-11-16 ($36.56). LED hood, Tetra internal filter, no heater. 2026-11-18: page shows $36.56 but OUT OF STOCK.",
    "look": {
     "lid": "hood",
     "guessed": [
@@ -472,7 +472,7 @@
     "usd": 52.97
    },
    "url": "https://www.walmart.com/ip/Vibrant-Life-10-Gallon-Aquarium-Starter-Kit-with-Blue-and-White-LED-Lights/15316464908",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-10-19 in a browser. In stock. 75 gph power filter, blue and white LED hood, no heater.",
    "look": {
     "lid": "hood",
@@ -509,7 +509,7 @@
     "usd": 119.14
    },
    "url": "https://www.walmart.com/ip/Tetra-Aquarium-20-Gallon-Complete-Tropical-Fish-Tank-Kit-with-LED-Lighting-and-Decor-for-Freshwater-Fish/51494060",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-10-19 in a browser. In stock. Tank 24x12x16 in; hinged LED hood, Whisper PF20, heater, thermometer.",
    "look": {
     "lid": "hood",
@@ -548,7 +548,7 @@
     "usd": 158.42
    },
    "url": "https://www.walmart.com/ip/Aqueon-Aquarium-Starter-Kit-with-LED-Lighting-20-High/424027537",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-10-19 in a browser. In stock. Low-profile LED hood, QuietFlow 10 filter, 100 W preset heater.",
    "look": {
     "lid": "hood",
@@ -577,11 +577,11 @@
     "filter"
    ],
    "price": {
-    "usd": 79.09
+    "usd": 189.97
    },
    "url": "https://www.walmart.com/ip/Tetra-10-Gallon-Glass-LED-Aquarium-Kit/1070285979",
-   "asOf": "2026-11-16",
-   "note": "Page read 2026-10-19 in a browser. In stock. Whisper PF10, LED hood, no heater. Tank 20 x 10 x 12 in: the Walmart listing says \"approximate dimensions\" (read 2026-10-20).",
+   "asOf": "2026-11-18",
+   "note": "Page read 2026-10-19 in a browser. In stock. Whisper PF10, LED hood, no heater. Tank 20 x 10 x 12 in: the Walmart listing says \"approximate dimensions\" (read 2026-10-20). Re-read 2026-11-18: price now $189.97, sold and shipped by Walmart.com, in stock (was $79.09 on 11-16; the jump is what the page shows).",
    "look": {
     "lid": "hood",
     "light": {
@@ -616,7 +616,7 @@
     "usd": 92.99
    },
    "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-2015-w-x-126-h-10-gallon-3946395",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-11-16 in a browser. Store pickup only (not shipped); stock depends on the store. LED hood, power filter, heater.",
    "look": {
     "lid": "hood",
@@ -653,7 +653,7 @@
     "usd": 147.99
    },
    "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-2417-w-x-1735-h-20-gallon-3946408",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-11-16 in a browser. Store pickup only (not shipped); stock depends on the store. 24.17 in wide, 17.35 in high; LED hood with feeding door, power filter, heater.",
    "look": {
     "lid": "hood",
@@ -690,7 +690,7 @@
     "usd": 179.99
    },
    "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-3633-w-x-159-h-40-gallons-3946424",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-11-16 in a browser. Store pickup only (not shipped); stock depends on the store. 36.33 in wide, 15.9 in high; LED hood, filter, heater.",
    "look": {
     "lid": "hood",
@@ -723,7 +723,7 @@
     "usd": 162.99
    },
    "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-3012-w-x-2082-h-29-gallon-3946416",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-11-16 in a browser. Store pickup only (not shipped); stock depends on the store. Contents as the 10 and 20 gal sizes.",
    "look": {
     "lid": "hood",
@@ -760,7 +760,7 @@
     "usd": 249.99
    },
    "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-4775-w-x-2389-h-55-gallons-3946432",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-11-16 in a browser. Store pickup only (not shipped); stock depends on the store. Contents as the 40 gal size.",
    "look": {
     "lid": "hood",
@@ -801,7 +801,7 @@
     "regularUsd": 92.39
    },
    "url": "https://www.chewy.com/tetra-complete-tropical-fish-aquarium/dp/1452806",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-10-19 in a browser. In stock. Tank 20x10x12 in; LED hood, Tetra internal filter. No heater (reviews confirm).",
    "look": {
     "lid": "hood",
@@ -834,12 +834,11 @@
     "name": "Aqueon SmartClean"
    },
    "price": {
-    "usd": 126.01,
-    "regularUsd": 129.99
+    "usd": 129.99
    },
    "url": "https://www.chewy.com/aqueon-smart-clean-filtration-led/dp/1720486",
-   "asOf": "2026-11-16",
-   "note": "Page read 2026-10-19 in a browser. In stock. LED hood, SmartClean filter, preset heater.",
+   "asOf": "2026-11-18",
+   "note": "Page read 2026-10-19 in a browser. In stock. LED hood, SmartClean filter, preset heater. Re-read 2026-11-18: $129.99, no list price shown (was $126.01), in stock.",
    "look": {
     "lid": "hood",
     "guessed": [],
@@ -875,7 +874,7 @@
     "usd": 190.69
    },
    "url": "https://www.chewy.com/tetra-complete-tropical-fish-aquarium/dp/1452814",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-10-19 in a browser. In stock. LED hood, Tetra filter and heater (reviews mention the heater). Tank 30.22 x 12.53 x 18.75 in from the listing photo (Nathan, 2026-10-20).",
    "look": {
     "lid": "hood",
@@ -912,7 +911,7 @@
     "regularUsd": 142.99
    },
    "url": "https://www.chewy.com/tetra-aquarium-led-lighting-decor/dp/696158",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-10-19 in a browser. LED hood, Whisper filter, Tetra mini heater (preset 78F), plants. Tank 24 x 12 x 16.5 in from the Chewy listing specs (read 2026-10-20).",
    "look": {
     "lid": "hood",
@@ -945,12 +944,12 @@
     "name": "Aqueon SmartClean"
    },
    "price": {
-    "usd": 121.51,
+    "usd": 121.02,
     "regularUsd": 129.99
    },
    "url": "https://www.amazon.com/dp/B0DT1VKK9S",
-   "asOf": "2026-10-19",
-   "note": "Page read 2026-10-19 in a browser. In stock, sold by Amazon.com. LED hood, SmartClean filter, preset heater.",
+   "asOf": "2026-11-18",
+   "note": "Page read 2026-10-19 in a browser. In stock, sold by Amazon.com. LED hood, SmartClean filter, preset heater. Re-read 2026-11-18: $121.02, in stock.",
    "look": {
     "lid": "hood",
     "guessed": [],
@@ -983,11 +982,11 @@
     "name": "Aqueon SmartClean"
    },
    "price": {
-    "usd": 186.02
+    "usd": 181.51
    },
    "url": "https://www.amazon.com/dp/B0DT1NMX61",
-   "asOf": "2026-10-19",
-   "note": "Page read 2026-10-19 in a browser. In stock, sold by Amazon.com. LED hood, SmartClean filter, preset heater.",
+   "asOf": "2026-11-18",
+   "note": "Page read 2026-10-19 in a browser. In stock, sold by Amazon.com. LED hood, SmartClean filter, preset heater. Re-read 2026-11-18: $181.51, in stock.",
    "look": {
     "lid": "hood",
     "guessed": [
@@ -1026,7 +1025,7 @@
    },
    "url": "https://www.amazon.com/dp/B0BJ1L73GR",
    "asOf": "2026-10-19",
-   "note": "Page read 2026-10-19 in a browser. Sold by Amazon.com, 8 left. Hinged LED hood, filter, heater, thermometer.",
+   "note": "Page read 2026-10-19 in a browser. Sold by Amazon.com, 8 left. Hinged LED hood, filter, heater, thermometer. 2026-11-18: page shows $173.01 but no Add to Cart / availability, so treated as unconfirmed; asOf left at the last confirmed read.",
    "look": {
     "lid": "hood",
     "guessed": [],
@@ -1034,7 +1033,8 @@
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
    },
-   "img": "https://m.media-amazon.com/images/I/81MlYD1+FdL._AC_SL500_.jpg"
+   "img": "https://m.media-amazon.com/images/I/81MlYD1+FdL._AC_SL500_.jpg",
+   "est": true
   },
   {
    "id": "petsmart-thrive-desert-40",
@@ -1061,7 +1061,7 @@
    },
    "url": "https://www.petsmart.com/reptile/habitats-and-decor/terrariums/thrive-andtrade-desert-essentials-kit---40g-87137.html",
    "img": "https://s7d2.scene7.com/is/image/PetSmart/5360732",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-10-27 (fetched through a page summarizer, not a browser): $129.99, struck-through $259.99, banner 'Save 50% on select Thrive reptile terrariums, price displayed', no end date shown (a report that this sale ended 2026-09-27 is contradicted by the page, but other PetSmart listings of the kit showed $124.99-$249.99, so re-check). Contents: 40 gal glass terrarium 36x18x18 in with front doors, screen lid with feeding door, 100 W Arcadia basking spot, 23 W desert UVB bulb, two 8.5 in dome lamps, two thermometer/hygrometers, one food/water dish. NOT included: thermostat, hides, substrate, supplements. The build's own thermostat, UVB (a 23 W compact is not a linear T5; the kit's is left unused and not credited) and hides stay priced. Credited against the kit: tank, lid, dome lamp, basking bulb, gauge.",
    "saleEnds": "2026-11-19"
   },
@@ -1089,7 +1089,7 @@
    },
    "url": "https://www.petsmart.com/reptile/habitats-and-decor/terrariums/zoo-med-20-gallon-leopard-gecko-reptihabitat-5351767.html",
    "img": "https://s7d2.scene7.com/is/image/PetSmart/5351767",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-10-27 (page summarizer): $199.99, struck-through $219.99, no end date; other PetSmart listings of the same kit showed $99.99 and $125.99 (both out of stock or an ended promotion). Contents: 20 gal glass terrarium with sliding screen top, 20 lb ReptiSand, Mini Combo Deep Dome fixture, 75 W basking spot, 75 W red infrared heat lamp, medium dish, Habba hut, digital thermometer (no hygrometer), calcium and vitamin samples. NOT included: thermostat, UVB, hygrometer. Credited: tank, lid, dome, basking bulb; the sand, hut and dish are worth under $30 and are not credited. Out of stock online when read 2026-11-16.",
    "est": true
   },
@@ -1114,7 +1114,8 @@
    },
    "url": "https://www.tractorsupply.com/tsc/product/zoo-med-40-gallon-reptihabitat-bearded-dragon-kit-1406699",
    "asOf": "2026-10-27",
-   "note": "Search snippet only, page not opened: $291.99 online only, 36x18x18 in. Contents not confirmed (a Zoo Med kit normally adds a dome fixture, bulbs and a thermometer); dearer than the Thrive kit, so recorded but not used."
+   "note": "Search snippet only, page not opened: $291.99 online only, 36x18x18 in. Contents not confirmed (a Zoo Med kit normally adds a dome fixture, bulbs and a thermometer); dearer than the Thrive kit, so recorded but not used. 2026-11-18: the product URL now redirects to the Tractor Supply reptile category page; listing gone.",
+   "expired": true
   },
   {
    "id": "petco-imagitarium-breeder-40",
@@ -1136,7 +1137,7 @@
     "regularUsd": 150
    },
    "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-40-gallon-breeder-open-glass-aquarium-tank",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-11-16 in a browser: $75.00 (was $150.00 on 2026-10-27), store pickup / same-day only. Open-top aquarium glass, not a front-opening terrarium: needs a screen lid (sold separately). No sale end shown."
   },
   {
@@ -1162,7 +1163,8 @@
    "url": "https://www.target.com/p/-/A-88867032",
    "img": "https://target.scene7.com/is/image/Target/GUEST_e6b62798-4b3d-4a5f-bea3-78a68203451e",
    "asOf": "2026-10-27",
-   "note": "Search snippet only: $205.99 against $249.99 (a second Target listing $249.99, was $299.99). Bare terrarium with screen top; dearer than the Thrive kit."
+   "note": "Search snippet only: $205.99 against $249.99 (a second Target listing $249.99, was $299.99). Bare terrarium with screen top; dearer than the Thrive kit. 2026-11-18: page opens (Repti Zoo 40 gal terrarium) but shows no price in the browser; price unconfirmed, asOf left at 10-27.",
+   "est": true
   },
   {
    "id": "joshsfrogs-beardie-24x18x18",
@@ -1188,7 +1190,7 @@
    },
    "url": "https://joshsfrogs.com/kp/bearded-dragon-complete-kit-24x18x18-kit0016",
    "img": "https://joshsfrogs.com/media/image/bearded_dragon_complete_kit-91c8abd3.png",
-   "asOf": "2026-10-28",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-10-28 by the deals sweep (agentC/sweep-terrarium.json): Exo Terra Pro glass terrarium 24x18x18 in, two 5.5 in reflector dome fixtures, 75 W basking bulb, 13 W desert UVB bulb, digital thermometer, liner, dish, manzanita wood. In stock. No regular price shown. NOT listed: thermostat, substrate. Rated gallons not stated (about 33 from the size). Shipping on dry goods is quoted in the cart, so none is added here."
   },
   {
@@ -1214,7 +1216,7 @@
     "regularUsd": 164.99
    },
    "url": "https://www.petsmart.com/fish/starter-kits/top-fin-essentials-all-in-one-aquarium-starter-kit---29-gallon-fish-tank-104184.html",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-11-16 in a browser: save 20% on 20+ gal Essentials kits thru 11/19. Same kit line as the 20 gal (hood, LED, power filter, heater).",
    "look": {
     "lid": "hood",
@@ -1251,7 +1253,7 @@
     "regularUsd": 249.99
    },
    "url": "https://www.petsmart.com/fish/starter-kits/top-fin-essentials-all-in-one-aquarium-starter-kit---55-gallon-fish-tank-104186.html",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-11-16 in a browser: save 20% on 20+ gal Essentials kits thru 11/19. Same kit line as the 20 gal (hood, LED, power filter, heater).",
    "look": {
     "lid": "hood",
@@ -1286,7 +1288,7 @@
     "usd": 108
    },
    "url": "https://www.walmart.com/ip/Vibrant-Life-20-Gallon-Aquarium-Starter-Kit-with-Blue-and-White-LED-Lights/15303758976",
-   "asOf": "2026-11-16",
+   "asOf": "2026-11-18",
    "note": "Page read 2026-11-16 in a browser. In stock, sold by Walmart. 125 gph power filter, blue and white LED clip light, hood with feeding door, no heater.",
    "look": {
     "lid": "hood",
