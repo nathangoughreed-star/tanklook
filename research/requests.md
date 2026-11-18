@@ -149,7 +149,9 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R132 | 11-18 | Where from: a "The Lab" origin chip for GloFish (cheeky) | PK1 | - | - | - | sent to PK1 with R130/R131 |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
-| R133 | 11-18 | Started from the 55 gal starter bundle, but Tank model reads "Custom 24 x 12 x 12 in / Custom tank" while Size shows 48.3 x 12.8 x 21 in, 56 gal: the kit's tank name/model is lost (stale default label). Also answers R124: Nathan used the 55 gal starter bundle | TL1 | - | - | - | sent to TL1 |
+| R133 | 11-18 | Started from the 55 gal starter bundle, but Tank model reads "Custom 24 x 12 x 12 in / Custom tank" while Size shows 48.3 x 12.8 x 21 in, 56 gal: the kit's tank name/model is lost (stale default label). Also answers R124: Nathan used the 55 gal starter bundle | TL1 | claude/tl1-rebased-2 eafe3fb8 (on f531dca6) | - | - | built: sceneFromDeal sets S.product, card reads the bundle tank; shot research/screens/R133/; C28 merges with TL1 |
+| R134 | 11-18 | (TL1 found) Bundle tank card note says it "comes with a glass top" while the bundle's hood is in the scene (matched variant is the bare Open-Glass tank) | TL1 | - | - | - | C28 to send to TL1 after R133 merges |
+| R135 | 11-18 | (TL1 found) Kit hood shows as the catalogue Aqueon hood and its price, not the kit's own hood; cost may be wrong | TL1 | - | - | - | C28 to send to TL1 after R133 merges |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
 | R16 | Notes pill per tank (single view seen; split per-side seen in HM3 shots) | 1901 | C24 leaf-1896-low.png ('Notes: 1 advice') |
 | R17 | Split tab differences: no change, Nathan 11-13 "Hover is fine" (the tab shows "N diffs", the list on hover) | - | - |
