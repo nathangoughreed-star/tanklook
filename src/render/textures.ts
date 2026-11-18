@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { BLEND_TILE_IDS, LECA, blendTile, drawBlendTile, drawFishCard, drawLook, drawPerson, drawSubstrate, substrateField, substrateFine, type BlendTileId, type PresetSubstrate } from '../art/placeholder';
 import { drawPairedFin, type PairedFin } from '../art/fishgen';
-import { drawScene, scenePhoto, type BgScene } from '../art/bgscenes';
+import { drawScene, isPainted, scenePhoto, type BgScene } from '../art/bgscenes';
+import { drawPainted } from '../art/bgpaint';
 import { FX } from './fx';
 import { SUBSTRATES } from '../art/placeholder';
 import { rng } from '../art/paint';
@@ -160,6 +161,7 @@ export function sceneTexture(kind: BgScene, aspect: number) {
   return cached(`bg-scene-${kind}-${a}`, () => {
     const c = document.createElement('canvas'); c.height = h; c.width = Math.round(h * a);
     const ctx = c.getContext('2d')!, t = finish(c);
+    if (isPainted(kind)) { c.height = 512; c.width = Math.round(512 * a); drawPainted(ctx, kind, c.width, 512); return t; }
     const paint = () => { drawScene(ctx, kind, c.width, h, img); t.needsUpdate = true; };
     const img = scenePhoto(kind, () => { paint(); for (const fn of pictureListeners) fn(); });
     paint();
