@@ -96,7 +96,6 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R78 | 11-15 | Albino search ("albino cory" finds bronze / peppered with albino on) + peppered cory added with albino form | AL1 | on main | 2164 | - | AL1 brief Part 3 |
 | R79 | 11-15 | Rainbow shark added too (with albino form; excludes red-tail) | FS1 | on main | 2164 | - | FS1 brief Part 2 |
 | R80 | 11-15 | Bug: a custom fish size reset on Another moment (shuffle re-rolled every size); now sizes stay, only spots and poses change | C24 | on main | 2153 | - | view.ts anotherMoment, panels.ts |
-| R81 | 11-15 | "Open a tank: the menu that comes up is too low" (first asked in PC1 chat ~16:44, never logged = lost); which menu TBD with Nathan | C24 | - | - | - | waiting on Nathan screenshot |
 | R82 | 11-15 | A flat shadow sheet projects outside the tank at substrate height, beside the side glass (white cloud 13.3 gal scene, hillstream terrain) | VF9 | on main | 2164 | - | scene research/visual/vf0/scenes/nathan-white-cloud-13g-2026-11-15.json |
 | R83 | 11-15 | Air pump (and other under-tank gear: CO2 cylinder, ATO reservoir, canister, external chiller/UV) sits INSIDE the cabinet when the stand has one, tube through the back cut-out; it was on the floor beside the stand | CB2 | - | - | - | picture research/screens/CB2/nathan-airpump-outside-2026-11-15.png |
 | R84 | 11-15 | Tank section: the Freshwater / Saltwater type moves from Tank model into Water look, renamed "Water" | C24 | - | - | - | tank.tsx WaterLook |
@@ -137,3 +136,4 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R4 | HOB filter box no longer clips through a 3D backdrop (Nathan's tank, rock) | 1879 | C24 scratchpad sw-R4-hob-rock.png (11-13) |
 | R1 | Habitat check tile starts minimized on every load | 1879 | C24 scratchpad live-R3-litter-low.png (stocked tank: tile shown as the minimized pill) |
 | C1 | FX1: Discover pill above the Water chip; Checks a compact closed pill; plain Graphics settings labels | 1869 | Coordinator 24 scratchpad live-deskT.png / live-phoneT.png (2026-11-12); labels read from the live bundle |
+| R81 | "Open a tank" menu too low: fixed by DG1 (dialogs centred); Open dialog sits centred at 1280x800 | 2314 | research/screens/R81/open-dialog-live-2314.jpg (C27, live 2026-11-18) |
