@@ -35,8 +35,6 @@ export interface Deal {
   img?: string;
   asOf: string;
   est?: boolean;
-  /** the re-check (KD2, 2026-11-18) found the listing gone or no longer on sale; `note` says what was seen. Nothing in the app reads it yet: the display lane (R112) hides only these. */
-  expired?: boolean;
   /** a land enclosure (terrarium) kit or tank: matched by `dims` to the build's terrarium, never offered for an aquarium (lane KT, 2026-10-27) */
   terrarium?: boolean;
   /** how sure the row is: 'low' = read from a search snippet, page not opened (such a row never prices a build, whether or not it is `est`) */
