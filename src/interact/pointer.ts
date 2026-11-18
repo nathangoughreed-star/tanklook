@@ -28,6 +28,7 @@ import { groupSize, moveGroup, settleFish, turnGroup, type Group } from '../scen
 import { gearGrab, gearLean, gearMove, pickGear, pickRow, nudgePlace, drawnPlace, withPlace, cycleSkip, cycleNote, rimFor, type GearDrag } from './gearDrag';
 import { cycle, gearSel, setGearSel } from '../render/gearSel';
 import { clickTarget, type ClickTarget } from './clickMenu';
+import { viewLocked } from './viewLock';
 import { MAX_PATCHES, addArea, placeSingle, erasable, erasePatches, extendPath, newPatch, patchAt } from '../scene/brush';
 
 type DragMode = 'front' | 'top' | 'side' | 'glass';
@@ -202,6 +203,12 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       }
       touches.set(e.pointerId, { x: e.clientX, y: e.clientY }); first = e.pointerId;
     }
+    if (viewLocked()) { // FS2: bare-tank Full screen is look-only: every press just orbits
+      const h = viewer.hitTest(e.clientX, e.clientY); if (!h) return;
+      try { canvas.setPointerCapture(e.pointerId); } catch { /* not all pointers can be captured */ }
+      const c = store.camOf(h.vp.i); orbit = { i: h.vp.i, x: e.clientX, y: e.clientY, az: c.az, el: c.el };
+      viewer.pinOrbit(e.clientX, e.clientY); return;
+    }
     patchPick = null;
     let hit = viewer.hitTest(e.clientX, e.clientY); if (!hit) return;
     const vi = hit.vp.i, editable = !viewer.pairShown && store.isEditing(vi);
@@ -309,7 +316,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       return;
     }
     if (e.pointerType === 'touch' && first != null && e.pointerId !== first) return;
-    if (!e.buttons && e.pointerType === 'mouse') canvas.style.cursor = viewer.handleAt(e.clientX, e.clientY) && viewer.standAt(e.clientX, e.clientY) ? 'pointer' : ''; // over a door's handle box
+    if (!e.buttons && e.pointerType === 'mouse') canvas.style.cursor = viewLocked() ? '' : viewer.handleAt(e.clientX, e.clientY) && viewer.standAt(e.clientX, e.clientY) ? 'pointer' : ''; // over a door's handle box
     if (pan) { viewer.setPan(pan.i, e.clientX - pan.x, e.clientY - pan.y); return; }
     if (stroke) { brushAt(e.clientX, e.clientY); return; }
     if (pdrag) {
@@ -433,7 +440,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     // a plain click on empty space (no orbit drag) clears the selection, so nothing is highlighted
     // a click on a cabinet stand opens or closes its doors (lane SF, Nathan 2026-10-26: "have the doors open on click to reveal beneath")
     // a click on an animal, piece, gear, the light, stand or lid opens its menu at its options (Nathan 2026-11-11)
-    if (orbit && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) {
+    if (orbit && !viewLocked() && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) {
       const hit = focus ? viewer.hitTest(e.clientX, e.clientY) : null, t = hit && store.isEditing(hit.vp.i) ? clickTarget(viewer, store, hit) : null;
       if (viewer.handleAt(e.clientX, e.clientY) && viewer.standAt(e.clientX, e.clientY) && (!t || t.kind === 'stand')) { tankView.standOpen = !tankView.standOpen; viewer.rebuild(); } // only from the handle box (CB1); the stand's options open on any other click
       else if (t) { if (t.kind === 'gear') { const gs = hit && pickRow(viewer, store, hit.vp.i, t.row); if (gs) setGearSel(gs); } else setGearSel(null); focus!(t); }
@@ -451,7 +458,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   // GD1: a picked piece of gear is nudged 0.25 in by the arrow keys along its surface (Up / Down: its height on glass, its depth on the floor or top); Esc lets go
   store.subscribe(k => { if (k === 'select' && (store.selId != null || store.selItem != null)) setGearSel(null); });
   addEventListener('keydown', e => {
-    const g = gearSel(); if (!g || e.ctrlKey || e.metaKey || e.altKey) return;
+    const g = gearSel(); if (!g || viewLocked() || e.ctrlKey || e.metaKey || e.altKey) return;
     const el = e.target as HTMLElement | null; if (el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))) return;
     if (e.key === 'Escape') { setGearSel(null); return; }
     const k = ({ ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] } as Record<string, [number, number]>)[e.key]; if (!k) return;
@@ -483,6 +490,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       store.cam(c => { c.zoom = z; }, i);
       return;
     }
+    if (viewLocked()) return; // FS2: Shift + wheel edits (lean, turn): not in the bare view
     const dir = Math.sign(e.deltaY || e.deltaX);
     if (canPick('gear') && gearLean(viewer, store, e.clientX, e.clientY, dir)) return; // Shift + wheel over a heater leans it (lane TG)
     if (store.groupCount > 1) { // turn the whole group 15° a notch about its centre

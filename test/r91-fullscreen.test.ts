@@ -1,6 +1,6 @@
 // Request R91 (2026-11-15): Full screen / Tank only state and decisions (src/shell/logic/fullscreen.ts).
 import { describe, expect, it } from 'vitest';
-import { FS_OFF, choose, fsAvailable, fsItems, isIphone, keyChoice, onFullscreenChange, exitVisible, type FsEnv, type FsState } from '../src/shell/logic/fullscreen';
+import { FS_OFF, choose, fsAvailable, fsItems, isIphone, keyChoice, onFullscreenChange, exitVisible, lookOnly, type FsEnv, type FsState } from '../src/shell/logic/fullscreen';
 
 const desk: FsEnv = { api: true, iphone: false }, iphone: FsEnv = { api: false, iphone: true }, noApi: FsEnv = { api: false, iphone: false };
 const labels = (s: FsState, e: FsEnv) => fsItems(s, e).map(i => i.label);
@@ -57,4 +57,16 @@ describe('F key', () => {
     expect(keyChoice(f, false, desk, { fullscreen: false, tankOnly: true, viaApi: false })).toBe('tank');
   });
   it('the exit button fades after 2 s', () => { expect(exitVisible(1999)).toBe(true); expect(exitVisible(2000)).toBe(false); });
+});
+
+describe('FS2: the bare tank is look-only', () => {
+  it('Full screen and Tank only lock editing; the normal app and leaving both unlock it', async () => {
+    const { viewLocked, setViewLocked } = await import('../src/interact/viewLock');
+    expect(lookOnly(FS_OFF)).toBe(false);
+    const a = choose(FS_OFF, desk, 'full').next; expect(lookOnly(a)).toBe(true);
+    expect(lookOnly(choose(FS_OFF, desk, 'tank').next)).toBe(true);
+    expect(lookOnly(choose(a, desk, 'full').next)).toBe(false);
+    expect(lookOnly(onFullscreenChange(a, false))).toBe(false);   // Esc out of browser fullscreen
+    expect(viewLocked()).toBe(false); setViewLocked(lookOnly(a)); expect(viewLocked()).toBe(true); setViewLocked(false);
+  });
 });

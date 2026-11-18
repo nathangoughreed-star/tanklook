@@ -1,7 +1,8 @@
 // UI2 shell (request R91): the Fullscreen API on the page, the shared Full screen / Tank only state, the F key and the floating exit button.
 import { useEffect, useState } from 'preact/hooks';
 import { Icon } from './ui';
-import { FS_OFF, choose, fsItems, isIphone, keyChoice, onFullscreenChange, EXIT_IDLE_MS, type FsEnv, type FsId, type FsState } from './logic/fullscreen';
+import { setViewLocked } from '../interact/viewLock';
+import { FS_OFF, lookOnly, choose, fsItems, isIphone, keyChoice, onFullscreenChange, EXIT_IDLE_MS, type FsEnv, type FsId, type FsState } from './logic/fullscreen';
 
 type FsEl = HTMLElement & { webkitRequestFullscreen?: () => Promise<void> };
 type FsDoc = Document & { webkitFullscreenElement?: Element | null; webkitExitFullscreen?: () => Promise<void> };
@@ -10,7 +11,7 @@ const isFull = () => !!(document.fullscreenElement || (document as FsDoc).webkit
 
 let state: FsState = { ...FS_OFF, fullscreen: isFull() };
 const subs = new Set<() => void>();
-const set = (s: FsState) => { state = s; subs.forEach(f => f()); setTimeout(() => dispatchEvent(new Event('resize')), 50); }; // the viewer follows the new size
+const set = (s: FsState) => { state = s; setViewLocked(lookOnly(s)); subs.forEach(f => f()); setTimeout(() => dispatchEvent(new Event('resize')), 50); }; // the viewer follows the new size
 
 export function chooseFs(id: FsId) {
   const r = choose(state, env(), id);

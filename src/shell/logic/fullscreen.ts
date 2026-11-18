@@ -48,3 +48,6 @@ export function keyChoice(e: { key: string; ctrlKey?: boolean; metaKey?: boolean
 /** The floating exit button shows right after a move and fades after this long without one. */
 export const EXIT_IDLE_MS = 2000;
 export const exitVisible = (sinceMoveMs: number) => sinceMoveMs < EXIT_IDLE_MS;
+
+/** FS2: the bare tank (Full screen, or Tank only) is look-only: the viewer allows orbit, pan and zoom and nothing that picks, moves or edits. */
+export const lookOnly = (s: FsState) => s.tankOnly;
