@@ -149,6 +149,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R132 | 11-18 | Where from: a "The Lab" origin chip for GloFish (cheeky) | PK1 | - | - | - | sent to PK1 with R130/R131 |
 | R12 | Map button off the viewer | 1901 | C24 leaf-1896-low.png (no Map button) |
 | R13 | Undo / Redo / Save off the viewer | 1901 | C24 leaf-1896-low.png (toolbar: arrow, View, Another moment only) |
+| R133 | 11-18 | Started from the 55 gal starter bundle, but Tank model reads "Custom 24 x 12 x 12 in / Custom tank" while Size shows 48.3 x 12.8 x 21 in, 56 gal: the kit's tank name/model is lost (stale default label). Also answers R124: Nathan used the 55 gal starter bundle | TL1 | - | - | - | sent to TL1 |
 | R14 | Discover pill off the viewer | 1901 | C24 leaf-1896-low.png |
 | R16 | Notes pill per tank (single view seen; split per-side seen in HM3 shots) | 1901 | C24 leaf-1896-low.png ('Notes: 1 advice') |
 | R17 | Split tab differences: no change, Nathan 11-13 "Hover is fine" (the tab shows "N diffs", the list on hover) | - | - |
