@@ -10,15 +10,11 @@ import pajamaGrid from '../data/fishart/pajamacardinal.grid.json';
 import kole from '../data/fishart/koletang.json';
 import koleGrid from '../data/fishart/koletang.grid.json';
 
-import j_orchiddottyback from '../data/fishart/orchiddottyback.json';
-import j_orchiddottybackGrid from '../data/fishart/orchiddottyback.grid.json';
 
-import j_lawnmowerblenny from '../data/fishart/lawnmowerblenny.json';
 
 import j_foxface from '../data/fishart/foxface.json';
 import j_foxfaceGrid from '../data/fishart/foxface.grid.json';
 
-import j_yellowtailblue from '../data/fishart/yellowtailblue.json';
 
 type Raw = (number | string)[];
 type CPt = [number, number] | [number, number, 'c'];
@@ -87,4 +83,4 @@ export function planFromJson(j: any, grid?: any): Plan {
 }
 
 /** The migrated species: art id -> plan built from its JSON. */
-export const JSON_PLANS: Record<string, Plan> = { flameangel: planFromJson(flameangel, flameangelGrid), pajamacardinal: planFromJson(pajama, pajamaGrid), koletang: planFromJson(kole, koleGrid), orchiddottyback: planFromJson(j_orchiddottyback, j_orchiddottybackGrid), lawnmowerblenny: planFromJson(j_lawnmowerblenny), foxface: planFromJson(j_foxface, j_foxfaceGrid), yellowtailblue: planFromJson(j_yellowtailblue) };
+export const JSON_PLANS: Record<string, Plan> = { flameangel: planFromJson(flameangel, flameangelGrid), pajamacardinal: planFromJson(pajama, pajamaGrid), koletang: planFromJson(kole, koleGrid), foxface: planFromJson(j_foxface, j_foxfaceGrid) };
