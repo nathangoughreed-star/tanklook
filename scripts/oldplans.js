@@ -1,0 +1,22 @@
+// The four marine fish's parameter plans as they were before experiment D (origin/main build 2402): the comparison baseline for the overlay pictures.
+export const OLD = {
+  orchiddottyback: { gape: 0.04, gapeDrop: 0.004, scale: 0, thick: 0.5, depth: 0.21, pedU: 0.2, ped: 0.05, peak: 0.72, snout: 0.7, mouth: -0.01, shade: ['#8a1ed0', '#9a2cdc', '#a844e0'], tail: { type: 'round', h: 0.14, tint: '#9a2cdc' }, fin: '#9a2cdc',
+    dorsal: { at: 0.82, len: 0.62, h: 0.06, spines: 0.3, nSp: 3, spineH: [0.03, 0.05], rake: 0.7, tip: 'point', trail: 0.03, drop: 0.5, tint: '#9020d4' },
+    anal: { at: 0.5, len: 0.34, h: 0.055, rake: 0.7, tip: 'point', trail: 0.03, tint: '#9020d4' }, pelvic: { u: 0.74, len: 0.1, tint: '#9a2cdc' }, pec: { s: 0.9, v: 0.58 },
+    marks: [{ k: 'band', u0: 0.86, u1: 0.97, v0: -0.085, v1: -0.07, c: '#10061a', a: 0.9, f: 0.004 }], finMarks: [], eye: { r: 0.03, iris: ['#a85ae0', '#10061a'], u: 0.89, dv: -0.075 } },
+  lawnmowerblenny: { gape: 0.045, gapeDrop: 0.008, scale: 0, thick: 0.62, depth: 0.2, pedU: 0.16, ped: 0.06, peak: 0.84, back: 0.55, snout: 0.9, mouth: 0.03, shade: ['#6a5a34', '#8c7c58', '#c4b898'], tail: { type: 'round', h: 0.15, tint: '#8c7c58', a: 0.85 }, fin: '#8c7c58',
+    dorsal: { at: 0.86, len: 0.66, h: 0.09, spines: 0.4, nSp: 8, spineH: [0.05, 0.075], notch: 0.1, rake: 0.4, trail: 0.02, drop: 0.85, tint: '#7a6a44', a: 0.9 },
+    anal: { at: 0.5, len: 0.34, h: 0.06, rake: 0.5, trail: 0.02, tint: '#a09068', a: 0.85 }, pelvic: { u: 0.82, len: 0.07 }, pec: { s: 1.4, v: 0.6 },
+    marks: [{ k: 'bars', us: [0.7, 0.55, 0.4, 0.27], w: 0.05, c: '#2e2616', a: 0.55 }, { k: 'spots', n: 30, u0: 0.78, u1: 0.98, v0: -0.07, v1: 0.07, r: 0.008, c: '#a8d8e8', a: 0.9 }, { k: 'spots', n: 26, u0: 0.2, u1: 0.76, v0: -0.08, v1: 0.07, r: 0.01, c: '#e8e2cc', a: 0.7 }],
+    finMarks: [{ k: 'spots', n: 12, u0: 0.1, u1: 0.8, v0: -0.4, v1: 0.1, r: 0.012, c: '#d88a3a', a: 0.8 }], eye: { r: 0.04, iris: ['#c88a3a', '#14100c'], u: 0.9, dv: -0.06 } },
+  foxface: { gape: 0.02, gapeDrop: 0.004, scale: 0.012, thick: 0.3, depth: 0.42, pedU: 0.18, ped: 0.06, peak: 0.6, rostrum: { len: 0.09, h: 0.07 }, snout: 0.4, mouth: 0.02, shade: ['#f0a808', '#f4bc18', '#f4cc38'], tail: { type: 'notch', h: 0.26, tint: '#f2b410' }, fin: '#f2b410',
+    dorsal: { at: 0.8, len: 0.6, h: 0.09, spines: 0.65, nSp: 13, spineH: [0.045, 0.07], notch: 0.1, rake: 0.7, trail: 0.03, drop: 0.8, tint: '#f2b410', a: 0.9 },
+    anal: { at: 0.46, len: 0.28, h: 0.08, spines: 0.4, nSp: 7, spineH: [0.04, 0.06], notch: 0.1, rake: 0.7, trail: 0.03, tint: '#f2b410', a: 0.9 }, pelvic: { u: 0.64, len: 0.08 }, pec: { s: 1, v: 0.6 },
+    marks: [{ k: 'band', u0: 0.84, u1: 1, v0: -1, v1: 0.18, c: '#3a2218', a: 0.95, f: 0.012 }, { k: 'band', u0: 0.78, u1: 0.99, v0: -0.12, v1: -0.07, c: '#f4f0e4', a: 0.95, f: 0.008 }, { k: 'band', u0: 0.7, u1: 0.8, v0: -0.3, v1: 1, c: '#f6f2e8', a: 0.95, f: 0.012 }, { k: 'band', u0: 0.8, u1: 0.9, v0: 0.2, v1: 1, c: '#6a3a28', a: 0.85, f: 0.02 }],
+    finMarks: [], eye: { r: 0.035, iris: ['#c8582a', '#14100c'], u: 0.85, dv: -0.08 } },
+  yellowtailblue: { gape: 0.03, gapeDrop: 0.004, scale: 0.018, thick: 0.30, depth: 0.44, pedU: 0.22, ped: 0.065, peak: 0.55, snout: 0.5, mouth: 0.0, shade: ['#1670e4', '#1fa0f4', '#58d0fa'], tail: { type: 'notch', h: 0.2, tint: '#f4a812', edge: '#d8e8f0' }, fin: '#2a7ae0',
+    dorsal: { at: 0.8, len: 0.62, h: 0.15, spines: 0.55, nSp: 12, spineH: [0.07, 0.1], notch: 0.15, rake: 0.5, tip: 'point', trail: 0.06, drop: 0.7 },
+    anal: { at: 0.5, len: 0.3, h: 0.14, spines: 0.2, nSp: 2, spineH: [0.06, 0.1], notch: 0.15, rake: 0.5, tip: 'point', trail: 0.05, drop: 0.7 }, pelvic: { u: 0.66, len: 0.12, tint: '#2a7ae0' }, pec: { s: 1.1, v: 0.55 },
+    marks: [{ k: 'band', u0: 0.78, u1: 0.97, v0: -0.12, v1: -0.07, c: '#1a2a50', a: 0.6, f: 0.01 }, { k: 'blob', u: 0.7, v: 0.06, ru: 0.014, rv: 0.03, c: '#101828', a: 0.95 }],
+    finMarks: [], eye: { r: 0.045, iris: ['#7ac8f0', '#0a1220'], u: 0.84, dv: -0.1 } },
+};

@@ -10,6 +10,16 @@ import pajamaGrid from '../data/fishart/pajamacardinal.grid.json';
 import kole from '../data/fishart/koletang.json';
 import koleGrid from '../data/fishart/koletang.grid.json';
 
+import j_orchiddottyback from '../data/fishart/orchiddottyback.json';
+import j_orchiddottybackGrid from '../data/fishart/orchiddottyback.grid.json';
+
+import j_lawnmowerblenny from '../data/fishart/lawnmowerblenny.json';
+
+import j_foxface from '../data/fishart/foxface.json';
+import j_foxfaceGrid from '../data/fishart/foxface.grid.json';
+
+import j_yellowtailblue from '../data/fishart/yellowtailblue.json';
+
 type Raw = (number | string)[];
 type CPt = [number, number] | [number, number, 'c'];
 
@@ -45,14 +55,20 @@ export function planFromJson(j: any, grid?: any): Plan {
   const pelRoot = pel ? cv(need<Raw>(pel.root, 'fins.pelvic.root')) : undefined, pecRoot = pec ? cv(need<Raw>(pec.root, 'fins.pectoral.root')) : undefined;
   const th = an.thickness;
   // bar paths: photo px [x, y, w] -> body-relative [u, t, w as a share of the local depth] (path marks)
-  const bp = look.barPaths, barMarks: Plan['marks'] = !bp ? [] : need<Raw[][]>(bp.paths, 'look.barPaths.paths').map(pts => ({
-    k: 'path' as const, c: need<string>(bp.c, 'look.barPaths.c'), a: bp.a,
-    pts: pts.map(q => { const u = cu(Number(q[0])), v = (Number(q[1]) - yA) / W, a = at(top, u), b = at(bot, u); return [u, (v - a) / (b - a), cw(Number(q[2])) / (b - a)] as [number, number, number]; }),
-  }));
-  const marks = [...need<NonNullable<Plan['marks']>>(look.marks, 'look.marks')]; marks.splice(bp?.insert ?? 1, 0, ...barMarks!); // barPaths.insert: where among the marks the paths go (default after the first)
+  // look.barPaths: one group {c, a, paths, insert?} or a list of groups, each a set of body-relative ribbons in one colour (insert: where among the marks, default after the first)
+  const groups: any[] = Array.isArray(look.barPaths) ? look.barPaths : look.barPaths ? [look.barPaths] : [];
+  const marks = [...need<NonNullable<Plan['marks']>>(look.marks, 'look.marks')]; let at0 = 0;
+  groups.forEach((bp, gi) => {
+    const ribbons: NonNullable<Plan['marks']> = need<Raw[][]>(bp.paths, 'look.barPaths.paths').map(pts => ({
+      k: 'path' as const, c: need<string>(bp.c, 'look.barPaths.c'), a: bp.a, feather: bp.feather,
+      pts: pts.map(q => { const u = cu(Number(q[0])), v = (Number(q[1]) - yA) / W, a = at(top, u), b = at(bot, u); return [u, (v - a) / (b - a), cw(Number(q[2])) / (b - a)] as [number, number, number]; }),
+    }));
+    marks.splice((bp.insert ?? 1) + (gi ? at0 : 0), 0, ...ribbons); at0 += ribbons.length;
+  });
   const gc = (g: any) => { const [cw0, ch0] = need<number[]>(grid?.cell, 'grid.cell'); return { u0: cu(need<number>(g?.x0, 'grid.x0')), v0: (need<number>(g?.y0, 'grid.y0') - yA) / W, du: cw(cw0), dv: cw(ch0), rows: need<(string | null)[][]>(g.rows, 'grid.rows') }; };
-  const finGrid: NonNullable<Plan['finGrid']> = { tail: gc(grid?.caudal) };
-  for (const k of ['dorsal', 'dorsal2', 'anal'] as const) if (fins[k]) finGrid[k] = gc(grid?.[k]);
+  // grid is optional: without one the fins take their flat tints (a photo whose fins are lit a different colour)
+  const finGrid: NonNullable<Plan['finGrid']> | undefined = grid ? { tail: gc(grid.caudal) } : undefined;
+  if (grid) for (const k of ['dorsal', 'dorsal2', 'anal'] as const) if (fins[k]) finGrid![k] = gc(grid[k]);
   const p: Plan = {
     outline: body, depth, pedU, ped, mouth: (Number(snoutP[1]) - yA) / W,
     shade: need(look.shade, 'look.shade'), fin: need(look.fin, 'look.fin'),
@@ -71,4 +87,4 @@ export function planFromJson(j: any, grid?: any): Plan {
 }
 
 /** The migrated species: art id -> plan built from its JSON. */
-export const JSON_PLANS: Record<string, Plan> = { flameangel: planFromJson(flameangel, flameangelGrid), pajamacardinal: planFromJson(pajama, pajamaGrid), koletang: planFromJson(kole, koleGrid) };
+export const JSON_PLANS: Record<string, Plan> = { flameangel: planFromJson(flameangel, flameangelGrid), pajamacardinal: planFromJson(pajama, pajamaGrid), koletang: planFromJson(kole, koleGrid), orchiddottyback: planFromJson(j_orchiddottyback, j_orchiddottybackGrid), lawnmowerblenny: planFromJson(j_lawnmowerblenny), foxface: planFromJson(j_foxface, j_foxfaceGrid), yellowtailblue: planFromJson(j_yellowtailblue) };

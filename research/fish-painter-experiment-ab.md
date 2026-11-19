@@ -62,3 +62,18 @@ colour along the body). Loader now handles optional dorsal2, pectoral and pelvic
 - `bodyvolume.json` regenerated (koletang 106.8 to about 139 cm3, pajamacardinal 10.6 to 10.0 cm3). 3D side, 3/4, front and top views checked on the review page for both: no visible regression.
 - Weaknesses: single photo each, sex not distinguishable (no sexual dimorphism recorded for either, one look); thickness unmeasured; the pajama band is a flat dark ribbon, not the scale net of the photo; kole lines are statistical, not traced; kole peduncle and rear belly are guesses (dark photo); pectoral of the pajama is hidden in the photo and not drawn; pelvic fins are flat colour.
 - Commons rate limit note: batch downloads from commons.wikimedia.org (API and Special:FilePath) trigger HTTP 429 quickly; fetch one file at a time with a pause, or use iNaturalist (`api.inaturalist.org/v1/observations`, filter `photo_license=cc-by,cc-by-sa,cc0`, original-size URL by replacing `square` with `original`).
+
+## Experiment D addendum (2026-11-19): orchid dottyback, lawnmower blenny, foxface rabbitfish, yellowtail blue damselfish
+Branch `claude/fishpainter-d` (from origin/main build 2402). Same method as C; no new mark kinds. Loader changes: `look.barPaths` may be a list of coloured ribbon groups;
+the fin colour grid is optional (a photo whose fins are lit a different colour keeps the flat tints); `drawPlan` tolerates a fish with no paired fins drawn.
+Four TS plans removed; `scripts/oldplans.js` + `card.js oldCard` keep the previous plans as the overlay baseline. Photo working copies (mirror / levelling) are documented
+in each JSON `refs[0].note`; photos stay in the scratchpad.
+| fish | photo (Commons) | silhouette IoU new / previous | contour mean / p95 % of length, new | weaknesses |
+|---|---|---|---|---|
+| orchid dottyback | "Perca enana de Fridman (Pseudochromis fridmani)" file, mirrored, levelled 22 deg | 0.983 / 0.683 | 0.23 / 0.76 | photo colour-blown, so colour from the old plan; pectoral hidden |
+| lawnmower blenny | "Salarias fasciatus Marinepia.jpg", level | 0.980 / 0.630 | 0.20 / 0.84 | belly line hidden by sand; blue-lit, old colours; marks statistical |
+| foxface | "Siganus vulpinus 2.jpg" (black background), level | 0.993 / 0.838 | 0.23 / 0.34 | orange-lit; head pattern is four ribbons; pelvic hidden |
+| yellowtail blue damsel | "Hal - Chrysiptera parasema - 1.jpg", levelled 6.5 deg | 0.989 / 0.731 | 0.30 / 1.51 | slightly 3/4 view, blurred fins; no pelvic or pectoral drawn |
+Tailspot blenny baseline: 1024 px card pixel hash 8365491 unchanged through every step. bodyvolume.json regenerated.
+Volume vs FishBase length-weight mass (model mass = volume x 1.02 g/cm3 against a x TL^b): kole tang 0.90 (was 0.69), orchid dottyback 0.77, foxface 1.10,
+lawnmower blenny 1.65 and yellowtail blue 1.67 (both above the 1.6 flag, the thickness being unmeasured), pajama cardinal 0.63.

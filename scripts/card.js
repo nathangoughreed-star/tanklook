@@ -10,3 +10,12 @@ export async function card(art, name, W = 1024) {
   await fetch('/__shot?name=OVL-' + name, { method: 'POST', body: await c.convertToBlob({ type: 'image/png' }) });
   return [a, h];
 }
+
+/** The previous parameter plan of one of the four fish in scripts/oldplans.js, posted as shots/OVL-<name>.png; returns [aspect, mouth, pedU]. */
+export async function oldCard(art, name, W = 1024) {
+  const { OLD } = await import('/scripts/oldplans.js'), { FISH_ART } = await import('/src/art/placeholder.ts'), { drawPlan } = await import('/src/art/fishgen.ts');
+  const p = OLD[art], a = planMeta(p).aspect; FISH_ART['old_' + art] = (ctx, P, w) => drawPlan(p, ctx, P, w);
+  const c = new OffscreenCanvas(W, Math.round(W * a)), x = c.getContext('2d'); x.drawImage(drawFishCard('old_' + art, a, W), 0, 0);
+  await fetch('/__shot?name=OVL-' + name, { method: 'POST', body: await c.convertToBlob({ type: 'image/png' }) });
+  return [a, p.mouth ?? 0, p.pedU];
+}

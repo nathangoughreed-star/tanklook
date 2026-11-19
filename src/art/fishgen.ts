@@ -512,7 +512,7 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
   });
   if (p.bodyA !== undefined) { ctx.restore(); if (p.solid) paintMarks(ctx, P, W, p.solid, 11); }
   // pectoral fin: faint fan behind the gill cover
-  if (style.paired) drawPairedFin(paired[paired.length - 1], ctx, P, W, ray);
+  if (style.paired && paired.length) drawPairedFin(paired[paired.length - 1], ctx, P, W, ray);
   if (p.barbels && style.paired) { // style.paired off = painted for the 3D pipeline, which has its own barbels
     const nb = g.prof(0.975)[1]; ctx.strokeStyle = hexA('#8b7b63', 0.9); ctx.lineWidth = 0.005 * W;
     for (const k of [0, 1]) {
@@ -862,35 +862,16 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'band', u0: 0, u1: 1, v0: -1, v1: 1, c: '#b8643a', a: 0.15, f: 0.1 }], eye: { r: 0.042, iris: ['#f08a18', '#14100c'], u: 0.88, dv: -0.03 } },
   // yellowtail blue damselfish, https://en.wikipedia.org/wiki/Chrysiptera_parasema (Wikimedia Commons aquarium photo): a deep oval electric blue body with dark scale edges,
   // a dark streak and pale blue rings round the eye, a dark spot at the pectoral base, blue fins, and only the tail yellow-orange with a clear pale edge
-  yellowtailblue: { gape: 0.03, gapeDrop: 0.004, scale: 0.018, thick: 0.30, depth: 0.44, pedU: 0.22, ped: 0.065, peak: 0.55, snout: 0.5, mouth: 0.0, shade: ['#1670e4', '#1fa0f4', '#58d0fa'], tail: { type: 'notch', h: 0.2, tint: '#f4a812', edge: '#d8e8f0' }, fin: '#2a7ae0',
-    dorsal: { at: 0.8, len: 0.62, h: 0.15, spines: 0.55, nSp: 12, spineH: [0.07, 0.1], notch: 0.15, rake: 0.5, tip: 'point', trail: 0.06, drop: 0.7 },
-    anal: { at: 0.5, len: 0.3, h: 0.14, spines: 0.2, nSp: 2, spineH: [0.06, 0.1], notch: 0.15, rake: 0.5, tip: 'point', trail: 0.05, drop: 0.7 }, pelvic: { u: 0.66, len: 0.12, tint: '#2a7ae0' }, pec: { s: 1.1, v: 0.55 },
-    marks: [{ k: 'band', u0: 0.78, u1: 0.97, v0: -0.12, v1: -0.07, c: '#1a2a50', a: 0.6, f: 0.01 }, { k: 'blob', u: 0.7, v: 0.06, ru: 0.014, rv: 0.03, c: '#101828', a: 0.95 }],
-    finMarks: [], eye: { r: 0.045, iris: ['#7ac8f0', '#0a1220'], u: 0.84, dv: -0.1 } },
   // pajama cardinalfish, https://en.wikipedia.org/wiki/Sphaeramia_nematoptera (Wikimedia Commons aquarium photo): silvery-yellow head and front, a wide band of black-edged scales behind the head,
   // red-brown spots on a pale rear body, a red-orange eye, a yellowish first dorsal and pelvics, a long trailing second dorsal and a translucent lilac tail
   // orchid dottyback, Commons photo of Pseudochromis fridmani (Yeda, 2025-05-19, "Perca enana de Fridman", via https://en.wikipedia.org/wiki/Pseudochromis_fridmani): slender, the whole fish a flat vivid magenta-violet,
   // a thin dark line through the eye, one long dorsal and a long anal reaching the tail, a rounded tail with a pointed lower lobe, small pelvics
-  orchiddottyback: { gape: 0.04, gapeDrop: 0.004, scale: 0, thick: 0.5, depth: 0.21, pedU: 0.2, ped: 0.05, peak: 0.72, snout: 0.7, mouth: -0.01, shade: ['#8a1ed0', '#9a2cdc', '#a844e0'], tail: { type: 'round', h: 0.14, tint: '#9a2cdc' }, fin: '#9a2cdc',
-    dorsal: { at: 0.82, len: 0.62, h: 0.06, spines: 0.3, nSp: 3, spineH: [0.03, 0.05], rake: 0.7, tip: 'point', trail: 0.03, drop: 0.5, tint: '#9020d4' },
-    anal: { at: 0.5, len: 0.34, h: 0.055, rake: 0.7, tip: 'point', trail: 0.03, tint: '#9020d4' }, pelvic: { u: 0.74, len: 0.1, tint: '#9a2cdc' }, pec: { s: 0.9, v: 0.58 },
-    marks: [{ k: 'band', u0: 0.86, u1: 0.97, v0: -0.085, v1: -0.07, c: '#10061a', a: 0.9, f: 0.004 }], finMarks: [], eye: { r: 0.03, iris: ['#a85ae0', '#10061a'], u: 0.89, dv: -0.075 } },
   // lawnmower blenny, Commons photos of Salarias fasciatus (https://en.wikipedia.org/wiki/Salarias_fasciatus: "Algae blenny.jpg", "Salarias fasciatus Aquarium DG.jpg"): a blunt, high-browed head with a few branched cirri over the eye and a thick-lipped
   // mouth, olive-brown body mottled with dark bars and many pale blue-white spots (densest on the head), one tall dorsal with orange blotches, a ringed eye
-  lawnmowerblenny: { gape: 0.045, gapeDrop: 0.008, scale: 0, thick: 0.62, depth: 0.2, pedU: 0.16, ped: 0.06, peak: 0.84, back: 0.55, snout: 0.9, mouth: 0.03, shade: ['#6a5a34', '#8c7c58', '#c4b898'], tail: { type: 'round', h: 0.15, tint: '#8c7c58', a: 0.85 }, fin: '#8c7c58',
-    dorsal: { at: 0.86, len: 0.66, h: 0.09, spines: 0.4, nSp: 8, spineH: [0.05, 0.075], notch: 0.1, rake: 0.4, trail: 0.02, drop: 0.85, tint: '#7a6a44', a: 0.9 },
-    anal: { at: 0.5, len: 0.34, h: 0.06, rake: 0.5, trail: 0.02, tint: '#a09068', a: 0.85 }, pelvic: { u: 0.82, len: 0.07 }, pec: { s: 1.4, v: 0.6 },
-    marks: [{ k: 'bars', us: [0.7, 0.55, 0.4, 0.27], w: 0.05, c: '#2e2616', a: 0.55 }, { k: 'spots', n: 30, u0: 0.78, u1: 0.98, v0: -0.07, v1: 0.07, r: 0.008, c: '#a8d8e8', a: 0.9 }, { k: 'spots', n: 26, u0: 0.2, u1: 0.76, v0: -0.08, v1: 0.07, r: 0.01, c: '#e8e2cc', a: 0.7 }],
-    finMarks: [{ k: 'spots', n: 12, u0: 0.1, u1: 0.8, v0: -0.4, v1: 0.1, r: 0.012, c: '#d88a3a', a: 0.8 }], eye: { r: 0.04, iris: ['#c88a3a', '#14100c'], u: 0.9, dv: -0.06 } },
   // flame angelfish, Commons photo "Flame angelfish (Centropyge loricula).jpg" (https://en.wikipedia.org/wiki/Flame_angelfish): an oval, bright orange-red body that is yellower mid-flank, four or five broad black bars running down from the back
   // (slightly curved, the first through the pectoral base), a red head and belly, a deep blue rear dorsal and anal fin crossed by black bars, a translucent yellow-orange tail, a small gill spine
   // foxface rabbitfish, Commons photo "Siganus vulpinus 2.jpg" (https://en.wikipedia.org/wiki/Foxface_rabbitfish): an oval, side-flattened bright yellow body, a tapering tubular snout, a dark brown-black head mask with a white stripe along the forehead
   // and cheek, a white patch behind the head and a brown chest, small rear-set dorsal and anal fins, a slightly lunate yellow tail with a darker edge
-  foxface: { gape: 0.02, gapeDrop: 0.004, scale: 0.012, thick: 0.3, depth: 0.42, pedU: 0.18, ped: 0.06, peak: 0.6, rostrum: { len: 0.09, h: 0.07 }, snout: 0.4, mouth: 0.02, shade: ['#f0a808', '#f4bc18', '#f4cc38'], tail: { type: 'notch', h: 0.26, tint: '#f2b410' }, fin: '#f2b410',
-    dorsal: { at: 0.8, len: 0.6, h: 0.09, spines: 0.65, nSp: 13, spineH: [0.045, 0.07], notch: 0.1, rake: 0.7, trail: 0.03, drop: 0.8, tint: '#f2b410', a: 0.9 },
-    anal: { at: 0.46, len: 0.28, h: 0.08, spines: 0.4, nSp: 7, spineH: [0.04, 0.06], notch: 0.1, rake: 0.7, trail: 0.03, tint: '#f2b410', a: 0.9 }, pelvic: { u: 0.64, len: 0.08 }, pec: { s: 1, v: 0.6 },
-    marks: [{ k: 'band', u0: 0.84, u1: 1, v0: -1, v1: 0.18, c: '#3a2218', a: 0.95, f: 0.012 }, { k: 'band', u0: 0.78, u1: 0.99, v0: -0.12, v1: -0.07, c: '#f4f0e4', a: 0.95, f: 0.008 }, { k: 'band', u0: 0.7, u1: 0.8, v0: -0.3, v1: 1, c: '#f6f2e8', a: 0.95, f: 0.012 }, { k: 'band', u0: 0.8, u1: 0.9, v0: 0.2, v1: 1, c: '#6a3a28', a: 0.85, f: 0.02 }],
-    finMarks: [], eye: { r: 0.035, iris: ['#c8582a', '#14100c'], u: 0.85, dv: -0.08 } },
   // kole tang (yelloweye), Commons photo "Ctenochaetus strigosus 1.jpg" (https://en.wikipedia.org/wiki/Ctenochaetus_strigosus): an oval brown-olive body drawn over with fine, wavy pale blue-green lines along the flank, pale dots on the head, a bright yellow ring round the eye,
   // a small blue-edged snout, dark brown dorsal and anal fins edged blue below, a slightly lunate dark tail, an orange-red pectoral and pelvic
   // firefish: slender, white with a yellow head, the rear turning orange-red to a dark red tail; tall front dorsal spike

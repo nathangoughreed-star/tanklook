@@ -1,0 +1,34 @@
+{
+  "art": "orchiddottyback",
+  "refs": [{"id":"p1","view":"side","sex":"unknown","title":"Perca enana de Fridman (Pseudochromis fridmani) (Commons file; see the page)","author":"see Commons file page","licence":"see page (Commons, open licence)","page":"https://commons.wikimedia.org/wiki/File:Perca_enana_de_Fridman_(Pseudochromis_fridmani),_Yeda,_Arabia_Saudita,_2025-05-19,_DD_41.jpg","opened":"2026-11-19","note":"Working copy mirrored left-right (the fish faces left) and rotated 22.4 deg clockwise about the peduncle centre (the fish is pitched nose-up). All px are in that levelled 1920x1280 copy. By-eye annotation, about +-12 px (1% of length). The colour is saturated beyond the true magenta-purple (photo is blown), so colour comes from the previous plan; the dorsal base is placed 22 px inside the fin edge; pectoral fin hidden, not drawn."}],
+  "frame": {"ref": "p1", "xTail": 119, "xSnout": 1497, "yAxis": 857, "note": "px -> card: u = (x - xTail)/W, v = (y - yAxis)/W, W = xSnout - xTail (total length)."},
+  "anatomy": {
+    "landmarks": {"snout": [1497, 869], "eye": [1405, 863], "eyeR": 20},
+    "pedU": 0.239,
+    "body": [[1497,869],[1494,843],[1465,809],[1423,779],[1322,762],[1221,744],[1184,757],[1082,715],[1017,716],[905,724],[794,732],[681,742],[571,747],[465,770],[447,786],[448,927],[536,938],[630,946],[725,951],[823,950],[922,945],[1033,939],[1123,931],[1209,931],[1293,911],[1375,896],[1444,887],[1484,882]],
+    "fins": {
+      "dorsal": {"outline": [[1192, 736], [1090, 695], [1026, 693], [915, 701], [803, 709], [690, 722], [580, 725], [463, 747], [440, 771], [465, 770], [571, 747], [681, 742], [794, 732], [905, 724], [1017, 716], [1082, 715], [1184, 757]], "base": [1184, 465]},
+      "anal": {"outline": [[494, 935], [536, 938], [630, 946], [725, 951], [812, 951], [789, 979], [704, 976], [608, 972], [524, 967], [482, 963, "c"]], "base": [812, 494]},
+      "caudal": {"outline": [[447, 786], [362, 782], [285, 772], [232, 809], [225, 839], [183, 902], [119, 965, "c"], [214, 958], [307, 943], [385, 937], [448, 927]], "type": "round"},
+      "pelvic": {"outline": [[1207, 935], [1155, 957], [1092, 1007], [1056, 1041, "c"], [1069, 970], [1069, 943], [1118, 942], [1167, 929]], "root": [1163, 939]}
+    },
+    "thickness": {"source": "unmeasured", "thick": 0.5, "note": "No front or top photo and no cited figure; the existing 0.5 is kept, 3D front and top views are NOT claimed validated."}
+  },
+  "look": {
+    "note": "Colours carried from the previous plan (the photo is colour-blown). Fin colour: grid file (mean photo colours).",
+    "shade": ["#8a1ed0","#9a2cdc","#a844e0"],
+    "fin": "#9a2cdc",
+    "tail": {"tint": "#9a2cdc"},
+    "dorsal": {"tint": "#9020d4"},
+    "anal": {"tint": "#9020d4"},
+    "pelvic": {"tint": "#9a2cdc"},
+    "marks": [],
+    "finMarks": [],
+    "barPaths": {"note": "the black stripe from the snout through the eye", "insert": 0, "c": "#10061a", "a": 0.9, "paths": [[[1484, 863, 14], [1428, 859, 17], [1358, 854, 14]]]},
+    "eyeIris": ["#a85ae0","#10061a"],
+    "gape": 0.04,
+    "gapeDrop": 0.004,
+    "scale": 0
+  },
+  "validation": {"G": {"date": null, "score": null, "by": null}}
+}

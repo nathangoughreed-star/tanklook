@@ -1,0 +1,34 @@
+{
+  "art": "foxface",
+  "refs": [{"id":"p1","view":"side","sex":"unknown","title":"Siganus vulpinus 2.jpg","author":"see Commons file page","licence":"see page (Commons, open licence)","page":"https://commons.wikimedia.org/wiki/File:Siganus_vulpinus_2.jpg","opened":"2026-11-19","note":"Aquarium photo on black, level, not mirrored; the best lateral view found. By-eye annotation about +-12 px (0.8% of length). The lit colours skew orange (the species is yellow): body colours come from the previous plan, fin colours from the colour grid (orange-yellow, green-tinted translucent fins). Where the soft dorsal overlaps the back the body contour is inferred; the pelvic fin is hidden and not drawn."}],
+  "frame": {"ref": "p1", "xTail": 142, "xSnout": 1625, "yAxis": 645, "note": "px -> card: u = (x - xTail)/W, v = (y - yAxis)/W, W = xSnout - xTail (total length)."},
+  "anatomy": {
+    "landmarks": {"snout": [1625, 435], "eye": [1352, 368], "eyeR": 48},
+    "pedU": 0.198,
+    "body": [[1625,435],[1625,410],[1580,385],[1500,350],[1380,300],[1280,245],[1200,208],[1130,202],[1030,205],[930,220],[830,250],[730,285],[640,335],[580,385],[520,450],[460,530],[415,597],[445,690],[510,685],[600,750],[680,810],[780,865],[880,872],[980,845],[1080,810],[1180,775],[1250,740],[1310,690],[1370,630],[1420,570],[1480,525],[1550,495],[1610,460]],
+    "fins": {
+      "dorsal": {"outline": [[1200, 195], [1080, 190], [980, 195], [880, 212], [780, 242], [680, 275], [610, 310], [500, 355], [380, 385], [325, 425], [318, 480], [335, 530], [380, 580], [415, 597], [460, 530], [520, 450], [580, 385], [640, 335], [730, 285], [830, 250], [930, 220], [1030, 205], [1130, 202]], "base": [1200, 415]},
+      "anal": {"outline": [[980, 845], [880, 872], [780, 865], [700, 862], [600, 872], [500, 872], [430, 850, "c"], [415, 805], [420, 750], [460, 710], [510, 685], [600, 750], [680, 810], [780, 865], [880, 872]], "base": [980, 445]},
+      "caudal": {"outline": [[430, 595], [360, 550], [260, 490], [180, 450], [142, 442, "c"], [165, 570], [190, 670], [220, 790], [270, 910], [285, 940, "c"], [340, 840], [410, 740], [445, 690]], "type": "lunate"},
+      "pectoral": {"outline": [[1200, 450], [1080, 410], [1030, 380, "c"], [1010, 450], [1020, 570], [1060, 670], [1160, 730], [1230, 690], [1200, 590]], "root": [1190, 530]}
+    },
+    "thickness": {"source": "unmeasured", "thick": 0.3, "note": "No front or top photo and no cited figure; the existing 0.3 is kept, 3D front and top views are NOT claimed validated."}
+  },
+  "look": {
+    "note": "Body colours from the previous plan; head pattern read off this photo as body-relative path ribbons (dark mask, white cheek stripe, white patch behind the head, brown chest).",
+    "shade": ["#f0a808","#f4bc18","#f4cc38"],
+    "fin": "#f2b410",
+    "tail": {"tint": "#f2b410"},
+    "dorsal": {"tint": "#f2b410", "a": 0.9},
+    "anal": {"tint": "#f2b410", "a": 0.9},
+    "marks": [],
+    "finMarks": [],
+    "barPaths": [{"note":"white patch behind the head","insert":0,"c":"#f6f2e8","a":0.95,"paths":[[[1150,300,150],[1150,450,170],[1160,600,170],[1170,750,150]]]},{"c":"#5a2e22","a":0.95,"insert":0,"paths":[[[1260,570,100],[1310,650,120],[1270,740,100]]]},{"c":"#241812","a":0.97,"insert":0,"paths":[[[1610,435,70],[1510,410,110],[1410,375,150],[1310,320,170],[1220,260,130]]]},{"c":"#f6f2e8","a":0.95,"insert":0,"paths":[[[1260,450,80],[1360,490,70],[1460,505,60],[1540,485,35]]]}],
+    "eyeIris": ["#c8582a","#14100c"],
+    "gape": 0.02,
+    "gapeDrop": 0.004,
+    "scale": 0.012,
+    "extra": {}
+  },
+  "validation": {"G": {"date": null, "score": null, "by": null}}
+}

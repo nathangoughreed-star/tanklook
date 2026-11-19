@@ -1,0 +1,35 @@
+{
+  "art": "lawnmowerblenny",
+  "refs": [{"id":"p1","view":"side","sex":"unknown","title":"Salarias fasciatus Marinepia.jpg","author":"see Commons file page","licence":"see page (Commons, open licence)","page":"https://commons.wikimedia.org/wiki/File:Salarias_fasciatus_Marinepia.jpg","opened":"2026-11-19","note":"Aquarium photo, level, not mirrored; fish lying on sand, the belly line is partly hidden by the sand and is the least certain edge; the dorsal base is placed along the visible back under the fin. By-eye annotation about +-12 px (0.9% of length). Lit blue by the tank lights, so the colours come from the previous plan, not this photo."}],
+  "frame": {"ref": "p1", "xTail": 125, "xSnout": 1535, "yAxis": 540, "note": "px -> card: u = (x - xTail)/W, v = (y - yAxis)/W, W = xSnout - xTail (total length)."},
+  "anatomy": {
+    "landmarks": {"snout": [1535, 420], "eye": [1425, 350], "eyeR": 45},
+    "pedU": 0.152,
+    "body": [[1535,420],[1525,380],[1500,330],[1450,300],[1380,292],[1300,300],[1200,308],[1100,318],[1000,325],[900,328],[800,330],[700,332],[600,352],[500,376],[400,402],[330,435],[290,470],[290,492],[300,590],[400,598],[500,610],[700,622],[900,630],[1100,625],[1300,610],[1400,580],[1470,540],[1500,490],[1520,450]],
+    "fins": {
+      "dorsal": {"outline": [[1300, 300], [1290, 262, "c"], [1230, 245], [1150, 238], [1050, 245], [950, 268], [880, 295], [800, 318], [700, 332], [800, 330], [900, 328], [1000, 325], [1100, 318], [1200, 308]], "base": [1300, 700]},
+      "anal": {"outline": [[900, 630], [800, 645], [650, 640], [520, 625], [420, 605], [430, 600], [520, 612], [650, 622], [800, 630]], "base": [900, 420]},
+      "caudal": {"outline": [[340, 490], [240, 488], [150, 505], [125, 535, "c"], [160, 570], [250, 585], [340, 592]], "type": "round"},
+      "pelvic": {"outline": [[1320, 590], [1350, 590], [1360, 680], [1345, 690], [1335, 640]], "root": [1335, 600]},
+      "pectoral": {"outline": [[1260, 455], [1170, 470], [1100, 520], [1040, 590], [1000, 630], [1100, 640], [1200, 610], [1260, 560]], "root": [1250, 500]}
+    },
+    "thickness": {"source": "unmeasured", "thick": 0.62, "note": "No front or top photo and no cited figure; the existing 0.62 is kept, 3D front and top views are NOT claimed validated."}
+  },
+  "look": {
+    "note": "Colours carried from the previous plan (the photo is blue-lit); marks are general body-relative marks placed by eye on this photo: red-pink blotches on the rear flank, fine dark vermiculate lines forward, dark speckles on the back and head. Fins keep flat tints (no colour grid: the photo tints them blue).",
+    "shade": ["#6a5a34","#8c7c58","#c4b898"],
+    "fin": "#8c7c58",
+    "tail": {"tint": "#8c7c58", "a": 0.85},
+    "dorsal": {"tint": "#7a6a44", "a": 0.9},
+    "anal": {"tint": "#a09068", "a": 0.85},
+    "pelvic": {"tint": "#a09068"},
+    "marks": [{"k":"scatter","u0":0.17,"u1":0.46,"t0":0.42,"t1":0.9,"n":14,"r":[0.012,0.02],"gap":0.045,"c":"#a8504c","a":0.6,"seed":2},{"k":"lines","u0":0.45,"u1":0.92,"t0":0.22,"t1":0.72,"n":11,"w":0.0026,"c":"#2e2a22","a":0.5,"wave":0.014,"len":0.09,"taper":0.1,"rim":true,"seed":4},{"k":"scatter","u0":0.5,"u1":0.98,"t0":0.02,"t1":0.45,"n":140,"r":[0.0022,0.004],"gap":0.0075,"c":"#241e16","a":0.6,"seed":6}],
+    "finMarks": [],
+    "eyeIris": ["#c88a3a","#14100c"],
+    "gape": 0.045,
+    "gapeDrop": 0.008,
+    "scale": 0,
+    "extra": {"pec": {"s": 1.0}}
+  },
+  "validation": {"G": {"date": null, "score": null, "by": null}}
+}
