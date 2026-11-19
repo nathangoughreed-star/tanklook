@@ -157,3 +157,14 @@ Notes on the numbers: `fishgen.ts` alone is ~45 k tokens to read, so every turn 
 1. OK to put species art data in `src/data/fishart/<art>.json` and let it override the TS plan for migrated species?
 2. Pass levels for the four scores (proposal: outline IoU >= 0.95, max contour error <= 4% SL; landmarks mean <= 2% SL; colour Delta-E <= 12 per region).
 3. For the flame angel, a second, truly side-on reference photo is wanted before annotating (the RX2 photo is slightly angled). Allowed to fetch one under the standing photo OK (scratchpad only)?
+
+## 8. Decisions recorded 2026-11-19 (supersede sections 6 and 7 where they differ)
+- **Approved:** species art data in `src/data/fishart/<art>.json`; reference-photo collection; a true lateral flame angelfish photo (scratchpad only, source recorded). Existing species keep their code-defined plans until deliberately migrated; a migrated species takes its JSON as the sole authority, and a missing field is an explicit error or documented default, never a silent mix with the TS plan.
+- **Not approved:** the 21-35 M plan, hard numeric pass/fail gates, a full scoring framework or new pattern engine up front. RX2's seven marine fish stay unmerged.
+- **Scores are diagnostics only** until calibrated against reference images and existing models. Definitions: silhouette overlap = IoU, body and fins separately, provisional target 0.90-0.95; contour error = mean and 95th-percentile distance, % of standard length; landmarks = a named list, mean and worst case reported (provisional mean <= 2%); colour = CIEDE2000 on CIELAB, per region, diagnostic, and reported apart from pattern fidelity (a kole tang with the right average colour and no lines fails on pattern).
+- **Success criteria for the experiment:** clearly better anatomy than RX2's flame angel; recognisably better pattern fidelity; no meaningful 3D regression; acceptable render performance; independent human approval by Nathan.
+- **Experiments (each its own commitment):**
+  - **A, measured geometry (budget target 3-5 M weighted tokens, not a promise; stop and report if it runs over):** true lateral photo; annotate landmarks, depth profile and fin bases into `flameangel.json`; minimal loader (`planFromJson`, `MedianFin.profile` only if needed); a simple overlay picture (photo, model, outline over photo). No scoring framework, no new marks.
+  - **B, appearance:** only the `path` mark and the body-relative frame, enough for the flame angel's curved bars; compare against RX2. Not lines, scatter, grad or image unless genuinely required.
+  - **C, generalisation:** kole tang and pajama cardinal (and tailspot blenny as regression baseline), only if A and B succeed.
+- **Gate:** after A, report with the overlay picture and actual tokens; continue only if geometry is visibly better.
