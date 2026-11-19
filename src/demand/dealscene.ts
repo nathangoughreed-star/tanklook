@@ -26,11 +26,11 @@ export function sceneFromDeal(d: Deal): Scene | undefined {
   S.lid = d.includes.includes('lid') ? d.look?.lid ?? (hoodExists(S.tank) ? 'hood' : 'glass') : 'open';
   const k = d.kit ? kitById(d.kit) : undefined;
   if (k) { S = applyKitLight(S, k as never); S.lid = k.lid; }
-  if (S.lid !== 'open') S.bundleLid = `${d.retailer} ${d.name}`; // R134/R135: the lid is this bundle's own
   else if (d.includes.includes('light')) { // a bundled LED (listings rarely give watts: the budget-tier default for this tank size stands in, flagged 'guess')
     S = applyKitLight(S, { light: { type: 'led', tech: 'led-white', count: 1, watts: d.look?.light?.watts ?? null, par: d.look?.light?.par, spec: d.look?.light?.par ? 'published' : d.look?.light?.watts ? 'listing' : 'guess' }, lid: S.lid, tier: 'budget', tankRatedGal: d.gal });
     if (d.look?.light?.kelvin) S.light = { ...S.light, kelvin: d.look.light.kelvin };
   }
+  if (S.lid !== 'open') S.bundleLid = `${d.retailer} ${d.name}`; // R134/R135: the lid is this bundle's own
   { // lane TG: the bundle's own filter and heater (drawn, and its gear rows); one it does not ship starts as 'none' for the user to add
     const t = kitTech(S, dealAsKit(d)) ?? (S.water.on ? { rows: { ...inferTech(S).rows } } : undefined);
     if (t) {
