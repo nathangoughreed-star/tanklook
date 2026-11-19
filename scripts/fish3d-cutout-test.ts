@@ -7,7 +7,7 @@
 // and write a 4-view sheet to shots/ORCH3D-<mode>.png through the dev server's /__shot.
 import * as THREE from 'three';
 import { speciesOf } from '/src/data/species.ts';
-import { PLANS } from '/src/art/fishgen.ts';
+import { PLANS, profile } from '/src/art/fishgen.ts';
 import { FISH_ART } from '/src/art/placeholder.ts';
 import { speciesModel } from '/src/render/preview3d.ts';
 import { OUTLINE } from '/src/render/fish3d.ts';
@@ -31,7 +31,17 @@ if (mode === 'measured') {
   P.anal = { ...P.anal, at: U(F.anal.baseStartPctSL), len: Wd(F.anal.baseEndPctSL - F.anal.baseStartPctSL), h: Wd(F.anal.maxHeightPctSL), rake: 0.85 };
   }
 }
-document.title += ' plan ok'; const W = 560, H = 350;
+document.title += ' plan ok'; // photo cards already carry the fish's own eye and paired fins: drop the plan's 3D pectoral/pelvic leaves (?paired=keep keeps them),
+// and either hide the 3D eye (default) or seat it on the photo's eye (?eye=place&ex=px&ey=px&er=px, sheet pixels, SL in sheet px = esl, axis y = eaxis)
+if (mode === 'measured' && q.get('paired') !== 'keep') { P.pectoral = false; delete P.pelvic; }
+if (mode !== 'current') {
+  if (q.get('eye') === 'place') {
+    const sl = +q.get('esl'), U1 = 1, SLc = 1 - P.pedU, u = U1 - (+q.get('sx') - +q.get('ex')) / sl * SLc, v = (+q.get('eaxis') - +q.get('ey')) / sl * -1 * SLc;
+    const [et, eb] = profile(P)(u);
+    P.eye = { ...P.eye, u, dv: (v - et) / (eb - et) - 0.38, r: +q.get('er') / sl * SLc, iris: ['#c8902a', '#0a0206'] };
+  } else P.eye = { ...P.eye, r: 0.0001 };
+}
+document.title += ' fixes ok'; const W = 560, H = 350;
 const gl = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 gl.setPixelRatio(1); gl.setSize(W, H, false); gl.outputColorSpace = THREE.SRGBColorSpace; gl.setClearColor(0x2c4a52, 1);
 OUTLINE.uPop.value = 0; OUTLINE.uVpH.value = H;
@@ -50,5 +60,5 @@ function shoot(yaw, pitch) {
 }
 const sheet = document.createElement('canvas'); sheet.width = W * 2; sheet.height = H * 2 + 0; const x = sheet.getContext('2d'); x.font = '16px sans-serif'; x.fillStyle = '#fff';
 VIEWS.forEach(([l, y, p], i) => { x.drawImage(shoot(y, p), (i % 2) * W, Math.floor(i / 2) * H); x.fillText(`${mode} | ${l}`, (i % 2) * W + 8, Math.floor(i / 2) * H + 20); });
-await new Promise(r => sheet.toBlob(async b => { await fetch('/__shot?name=ORCH3D' + suf + '-' + mode + (q.get('fins') === '0' ? '-nofins' : ''), { method: 'POST', body: b }); r(); }, 'image/png'));
+await new Promise(r => sheet.toBlob(async b => { await fetch('/__shot?name=ORCH3D' + suf + '-' + mode + (q.get('fins') === '0' ? '-nofins' : '') + (q.get('eye') === 'place' ? '-eye' : '') + (q.get('paired') === 'keep' ? '-pairs' : ''), { method: 'POST', body: b }); r(); }, 'image/png'));
 document.getElementById('s').textContent = 'done ' + mode; document.title = 'done ' + mode;
