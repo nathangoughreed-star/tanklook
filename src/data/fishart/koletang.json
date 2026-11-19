@@ -1,0 +1,37 @@
+{
+  "art": "koletang",
+  "refs": [
+    { "id": "p1", "view": "side", "sex": "unknown", "title": "iNaturalist observation 248985408, Ctenochaetus strigosus", "author": "robin_dive_diva", "licence": "CC BY 4.0 (iNaturalist licence code cc-by)",
+      "page": "https://www.inaturalist.org/observations/248985408", "opened": "2026-11-19",
+      "note": "Photo mirrored left-right (the fish faces left); px below are in that mirrored 2048x1155 copy (fish about 960 px long). Not levelled (snout to peduncle is within 1.5 deg of level). Photo stays in the scratchpad, never in git. By-eye annotation about +-12 px (1.3% of length). Dark photo: the peduncle and the rear belly are the least certain; the dorsal and anal fin edges follow the blue margin line, their base is placed 22 px inside it. Commons photos were unreachable (HTTP 429 rate limit) when this was annotated." }
+  ],
+  "frame": { "ref": "p1", "xTail": 555, "xSnout": 1510, "yAxis": 570, "note": "px -> card: u = (x - xTail)/W, v = (y - yAxis)/W, W = xSnout - xTail (total length)." },
+  "anatomy": {
+    "landmarks": { "snout": [1510, 585], "eye": [1390, 462], "eyeR": 38, "pecRoot": [1290, 640], "pelvicRoot": [1235, 725] },
+    "pedU": 0.257,
+    "body": [[1510,585],[1485,510],[1440,440],[1390,392],[1380,370],[1300,318],[1200,284],[1100,277],[1000,292],[900,322],[840,360],[805,420],[795,480],[790,495],[792,650],[800,690],[850,745],[950,780],[1050,783],[1100,768],[1200,735],[1300,712],[1330,650],[1400,640],[1470,615]],
+    "fins": {
+      "dorsal": { "base": [1290, 770], "outline": [[770,375],[830,330],[900,295],[1000,268],[1100,255],[1200,260],[1290,295],[1290,318],[1200,284],[1100,277],[1000,292],[900,322],[830,362],[770,410]] },
+      "anal": { "base": [1100, 800], "outline": [[765,720],[850,770],[950,805],[1050,805],[1100,790],[1100,768],[1050,783],[950,780],[850,745],[800,700]] },
+      "caudal": { "type": "lunate", "outline": [[800,495],[700,470],[620,455],[555,448,"c"],[570,520],[590,620],[610,770,"c"],[690,730],[760,690],[800,650]] },
+      "pelvic": { "root": [1235, 725], "outline": [[1230,715],[1290,725],[1280,790],[1230,845],[1190,840],[1195,780]] },
+      "pectoral": { "root": [1290, 640], "outline": [[1290,630],[1340,650],[1400,690],[1465,725],[1440,745],[1380,730],[1320,700],[1285,675]] }
+    },
+    "thickness": { "source": "unmeasured", "thick": 0.24, "note": "No front or top photo and no cited figure; the existing 0.24 is kept, 3D front and top views are NOT claimed validated." }
+  },
+  "look": {
+    "note": "Colours retuned by eye to p1 (dark red-brown body, fine pale lavender lines along the flank, yellow eye ring, blue chin and fin margins). Dorsal, anal and tail colour come from koletang.grid.json (scripts/fingrid.py).",
+    "shade": ["#3a2220", "#5a2e2a", "#6a3a30"], "fin": "#4a2c22",
+    "tail": { "tint": "#3a2a2c", "a": 1 },
+    "dorsal": { "tint": "#4a2c22", "a": 1 }, "anal": { "tint": "#4a2c22", "a": 1 },
+    "pelvic": { "tint": "#b03a2a" },
+    "marks": [
+      { "k": "grad", "u0": 0.6, "u1": 1, "stops": [[0, "#3a2a40", 0], [0.55, "#3a2a40", 0.15], [1, "#2c2a50", 0.55]] },
+      { "k": "lines", "u0": 0.2, "u1": 0.8, "t0": 0.14, "t1": 0.88, "n": 34, "w": 0.0022, "c": "#9a84b4", "a": 0.4, "wave": 0.004, "len": 0.2, "taper": 0.12, "rim": true, "seed": 5 }
+    ],
+    "finMarks": [],
+    "eyeIris": ["#f2e41c", "#14100c"],
+    "gape": 0.02, "gapeDrop": 0.004, "scale": 0.012,
+    "extra": { "pec": { "tint": "#c8702c" } }
+  }
+}

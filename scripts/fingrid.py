@@ -1,13 +1,13 @@
 """Fish painter: colour grid for the median fins. python scripts/fingrid.py <photo.jpg> <art-json> <out-json>
-For each fin (dorsal, anal, caudal) lays a grid of cw x ch photo-px cells over the annotated outline and stores the MEAN colour of the photo pixels
+For each median fin in the JSON (dorsal, dorsal2, anal, caudal) lays a grid of cells (1.9% x 0.75% of the total length) over the annotated outline and stores the MEAN colour of the photo pixels
 (inside the outline, shrunk 4 px so background does not leak in) of every cell that is mostly inside. A coarse colour map (a few hundred numbers per fin),
 not an image: the photo itself never enters the repo. Rows run top to bottom; null = cell outside the fin."""
 import json, sys, numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 photo, src, out = sys.argv[1:4]
 J = json.load(open(src)); ph = np.array(Image.open(photo).convert('RGB')).astype(float); H, W = ph.shape[:2]
-CW, CH = 30, 12; res = {'cell': [CW, CH]}
-for name, key in [('dorsal', 'dorsal'), ('anal', 'anal'), ('caudal', 'caudal')]:
+Wd = J['frame']['xSnout'] - J['frame']['xTail']; CW, CH = max(4, round(Wd * 0.019)), max(3, round(Wd * 0.0075)); res = {'cell': [CW, CH]}  # cell = 1.9% x 0.75% of the total length
+for name, key in [(k, k) for k in ('dorsal', 'dorsal2', 'anal', 'caudal') if k in J['anatomy']['fins']]:
     poly = [tuple(p[:2]) for p in J['anatomy']['fins'][key]['outline']]
     m = Image.new('L', (W, H), 0); ImageDraw.Draw(m).polygon(poly, fill=255)
     inner = np.array(m.filter(ImageFilter.MinFilter(9))) > 0   # 4 px inside

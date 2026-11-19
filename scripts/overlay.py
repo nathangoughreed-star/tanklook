@@ -1,14 +1,15 @@
 """Fish painter experiment A: reference overlay + diagnostics. Python (PIL, numpy, scipy), run by hand, not shipped.
-usage: python scripts/overlay.py <photo.jpg> <outdir>     (needs shots/OVL-json.png and shots/OVL-rx2.png from scripts/overlay.js)
+usage: python scripts/overlay.py <photo.jpg> <outdir> [art=flameangel] [old_mouth old_pedU]
+  needs shots/OVL-<art>-new.png and shots/OVL-<art>-old.png (scripts/card.js; flameangel: OVL-json.png / OVL-rx2.png from scripts/overlay.js); old_* = the old plan's mouth and pedU
 Aligns each model card to the photo with a similarity from two landmarks (snout tip, caudal peduncle centre).
-Writes <outdir>/OVL-compare.png (photo | JSON model | RX2 model) and <outdir>/OVL-outline.png (annotation green, model magenta), prints diagnostics."""
+Writes <outdir>/OVL-{ART}-compare.png (photo | JSON model | RX2 model) and <outdir>/OVL-{ART}-outline.png (annotation green, model magenta), prints diagnostics."""
 import json, sys, numpy as np
 from PIL import Image, ImageDraw
 from PIL import ImageFilter
-photo, out = sys.argv[1], sys.argv[2]
-J = json.load(open('src/data/fishart/flameangel.json')); A = J['anatomy']; L = A['landmarks']
+photo, out = sys.argv[1], sys.argv[2]; ART = sys.argv[3] if len(sys.argv) > 3 else 'flameangel'; OLDM, OLDP = (float(sys.argv[4]), float(sys.argv[5])) if len(sys.argv) > 5 else (0.01, 0.2)
+J = json.load(open(f'src/data/fishart/{ART}.json')); A = J['anatomy']; L = A['landmarks']
 ph = Image.open(photo).convert('RGB'); PW, PH = ph.size
-SNOUT = np.array(L['snout'], float); PED = np.array([585, 515], float)   # photo px: snout tip, peduncle centre (photo)
+FR = J['frame']; WD = FR['xSnout'] - FR['xTail']; SNOUT = np.array(L['snout'], float); PED = np.array([FR['xTail'] + A['pedU'] * WD, FR['yAxis']], float)   # photo px: snout tip, peduncle centre (photo)
 SL = np.linalg.norm(SNOUT - PED)
 def cpx(a): return complex(a[0], a[1])
 def fit(card_w, card_h, mouth, pedU):
@@ -32,14 +33,13 @@ def dist(a, b):
     A = np.argwhere(a)[::2].astype(np.float32); B = np.argwhere(b)[::2].astype(np.float32); out = []
     for i in range(0, len(A), 400): out.append(np.sqrt(((A[i:i + 400, None, :] - B[None]) ** 2).sum(-1)).min(1))
     return np.concatenate(out)
-polys = {'body': A['body'], 'dorsal': A['fins']['dorsal']['outline'], 'anal': A['fins']['anal']['outline'], 'caudal': A['fins']['caudal']['outline'],
-         'pectoral': A['fins']['pectoral']['outline'], 'pelvic': A['fins']['pelvic']['outline']}
+polys = {'body': A['body'], **{k: v['outline'] for k, v in A['fins'].items()}}
 M = {k: mask_poly(v) for k, v in polys.items()}; ann = np.zeros((PH, PW), bool)
 for v in M.values(): ann |= v
 models = {}
-for name, mouth, pedU in [('json', None, None), ('rx2', 0.01, 0.2)]:
-    card = Image.open(f'shots/OVL-{name}.png').convert('RGBA'); w, h = card.size
-    if name == 'json': mouth, pedU = (SNOUT[1] - 515) / 1590, 0.277
+for name, mouth, pedU in [('json', None, None), ('rx2', OLDM, OLDP)]:
+    card = Image.open('shots/OVL-json.png' if ART == 'flameangel' and name == 'json' else 'shots/OVL-rx2.png' if ART == 'flameangel' else f'shots/OVL-{ART}-{"new" if name == "json" else "old"}.png').convert('RGBA'); w, h = card.size
+    if name == 'json': mouth, pedU = (SNOUT[1] - FR['yAxis']) / WD, A['pedU']
     a, t = fit(w, h, mouth, pedU); models[name] = to_photo(card, a, t)
 rows, rep = [], {}
 for name, img in models.items():
@@ -55,9 +55,9 @@ bg = Image.new('RGB', (PW, PH), (44, 74, 82)); S = 0.5; tiles = [ph]
 for name in ('json', 'rx2'):
     t = bg.copy(); t.paste(models[name], (0, 0), models[name]); tiles.append(t)
 W2, H2 = int(PW * S), int(PH * S); sheet = Image.new('RGB', (W2 * 3, H2 + 26), 'white'); d = ImageDraw.Draw(sheet)
-for i, (t, cap) in enumerate(zip(tiles, ['photo p1 (Commons, CC BY 2.0, A. Maerz)', f'JSON model (measured geometry)  IoU {rep["json"]["IoU"]}', f'RX2 model (parameter plan)  IoU {rep["rx2"]["IoU"]}'])):
+for i, (t, cap) in enumerate(zip(tiles, [f'photo ({ART}; Commons, licence in the JSON refs)', f'JSON model (measured geometry)  IoU {rep["json"]["IoU"]}', f'previous plan  IoU {rep["rx2"]["IoU"]}'])):
     sheet.paste(t.resize((W2, H2)), (i * W2, 26)); d.text((i * W2 + 6, 8), cap, fill='black')
-sheet.save(f'{out}/OVL-compare.png')
+sheet.save(f'{out}/OVL-{ART}-compare.png')
 # picture 2: outline over photo: annotation green, model silhouette magenta; landmarks as dots
 tiles = []
 for name in ('json', 'rx2'):
@@ -65,9 +65,9 @@ for name in ('json', 'rx2'):
     for m, col in [(edge(ann), (40, 255, 60)), (edge(al), (255, 0, 220))]:
         for y, x in zip(*np.nonzero(dilate(m))): px[x, y] = col
     dd = ImageDraw.Draw(t)
-    for p in [L['snout'], L['eye'], L['pecRoot'], L['pelvicRoot']]: dd.ellipse([p[0] - 7, p[1] - 7, p[0] + 7, p[1] + 7], outline=(40, 255, 60), width=3)
+    for p in [L[k] for k in ('snout', 'eye', 'pecRoot', 'pelvicRoot') if k in L]: dd.ellipse([p[0] - 7, p[1] - 7, p[0] + 7, p[1] + 7], outline=(40, 255, 60), width=3)
     tiles.append(t)
 sheet = Image.new('RGB', (W2 * 2, H2 + 26), 'white'); d = ImageDraw.Draw(sheet)
-for i, (t, cap) in enumerate(zip(tiles, ['JSON model (magenta) vs annotation (green)', 'RX2 model (magenta) vs the same annotation (green)'])):
+for i, (t, cap) in enumerate(zip(tiles, ['JSON model (magenta) vs annotation (green)', 'previous plan (magenta) vs the same annotation (green)'])):
     sheet.paste(t.resize((W2, H2)), (i * W2, 26)); d.text((i * W2 + 6, 8), cap, fill='black')
-sheet.save(f'{out}/OVL-outline.png')
+sheet.save(f'{out}/OVL-{ART}-outline.png')

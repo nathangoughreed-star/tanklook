@@ -1,0 +1,38 @@
+{
+  "art": "pajamacardinal",
+  "refs": [
+    { "id": "p1", "view": "side", "sex": "unknown", "title": "Pajama cardinal fish Sphaeramia nematoptera (cropped).jpg", "author": "see Commons page (file credit)", "licence": "CC BY 2.0",
+      "page": "https://commons.wikimedia.org/wiki/File:Pajama_cardinal_fish_Sphaeramia_nematoptera_(cropped).jpg", "opened": "2026-11-19",
+      "note": "Working copy: photo mirrored left-right (the fish faces left) and rotated 11.8 deg counter-clockwise about (507, 350) so snout and peduncle centre sit level (the fish is pitched nose-down). All px below are in that mirrored, levelled 1920x791 copy. By-eye annotation, about +-15 px; tail rear and the fin trailing edges are the least certain. Second photo p6 (Sphaeramia nematoptera Marinepia.jpg, CC BY-SA 4.0, close-up) read for the spot and band pattern only." }
+  ],
+  "frame": { "ref": "p1", "xTail": 259, "xSnout": 1190, "yAxis": 350, "note": "px -> card: u = (x - xTail)/W, v = (y - yAxis)/W, W = xSnout - xTail (total length)." },
+  "anatomy": {
+    "landmarks": { "snout": [1190, 350], "eye": [1087, 333], "eyeR": 48 },
+    "pedU": 0.267,
+    "body": [[1190,350],[1175,328],[1135,285],[1060,219],[998,189],[943,172],[871,169],[793,186],[716,209],[639,236],[574,263],[517,287],[500,300],[523,413],[605,413],[705,452],[787,501],[882,517],[971,503],[1068,478],[1130,432],[1172,390],[1188,359]],
+    "fins": {
+      "dorsal": { "base": [909, 793], "outline": [[723,-2,"c"],[782,37],[833,88],[884,133],[909,159],[793,186],[763,143],[724,80],[708,27]] },
+      "dorsal2": { "base": [765, 629], "outline": [[765,179],[696,116],[637,78],[593,61],[530,54],[459,59],[392,78],[337,108],[305,125,"c"],[377,106],[468,98],[540,103],[586,150],[621,198],[668,226],[716,209]] },
+      "anal": { "base": [767, 657], "outline": [[657,419],[625,458],[603,524],[598,586],[619,638,"c"],[659,625],[698,565],[741,526],[767,505],[716,455],[680,431]] },
+      "caudal": { "type": "round", "outline": [[498,301],[423,274],[343,236],[278,216],[259,216,"c"],[284,294],[331,348],[312,427],[304,497,"c"],[362,472],[446,434],[521,410]] },
+      "pelvic": { "root": [892, 515], "outline": [[941,479],[920,453],[841,469],[788,531],[747,606],[723,662],[739,690,"c"],[795,686],[847,642],[896,585],[938,541]] }
+    },
+    "thickness": { "source": "unmeasured", "thick": 0.4, "note": "No front or top photo and no cited figure; the existing 0.4 is kept, 3D front and top views are NOT claimed validated. The pectoral fin is hidden in the photo and is not drawn." }
+  },
+  "look": {
+    "note": "Colours carried from the previous plan, retuned by eye to the photo. Dorsal, anal and tail colour come from pajamacardinal.grid.json (scripts/fingrid.py).",
+    "shade": ["#b8b8cc", "#e0e0ec", "#eceaf0"], "fin": "#a898c8",
+    "tail": { "tint": "#a898c8", "a": 0.75 },
+    "dorsal": { "tint": "#c8c060" }, "dorsal2": { "tint": "#a898c8", "a": 0.8 }, "anal": { "tint": "#a898c8", "a": 0.8 },
+    "pelvic": { "tint": "#d8b040" },
+    "marks": [
+      { "k": "grad", "u0": 0.2, "u1": 1, "stops": [[0, "#dcdcea", 0], [0.68, "#dcdcea", 0], [0.78, "#c4c868", 0.75], [1, "#98a438", 0.95]] },
+      { "k": "scatter", "u0": 0.25, "u1": 0.56, "t0": 0.08, "t1": 0.92, "n": 40, "r": [0.011, 0.019], "gap": 0.042, "c": "#b86a5a", "a": 0.78, "seed": 3 }
+    ],
+    "finMarks": [],
+    "barPaths": { "note": "the black scale-net band behind the gill cover, as a body-relative ribbon (photo px [x, y, width])", "insert": 1, "c": "#2c2c44", "a": 0.8,
+      "paths": [[[880, 120, 105], [872, 250, 118], [862, 350, 115], [855, 450, 108], [848, 600, 95]]] },
+    "eyeIris": ["#e8582a", "#1a0a06"],
+    "gape": 0.04, "gapeDrop": 0.005, "scale": 0.02
+  }
+}

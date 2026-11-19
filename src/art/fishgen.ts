@@ -50,6 +50,14 @@ type Mark =
   // contour, so the mark follows the body) and w the ribbon's full width as a share of that depth; Catmull-Rom through the points,
   // `feather` softens the edge (widths), round caps. Body marks only (needs the profile).
   | { k: 'path'; pts: [number, number, number][]; c: string; a?: number; feather?: number }
+  // experiment C, all body-relative like `path` ((u, t): t the share of local body depth, back 0 .. belly 1; body marks only):
+  // scatter: n spots in the box, radius r = [min, max] (card widths) growing by `grow` (share) from the u0 end to the u1 end, centres at least `gap` apart
+  // (dart throwing, seeded; fewer than n if the box fills up), colour `c`, optional `ring` outline; lines: n parallel lines at constant t from t0 to t1 running
+  // u0..u1, width w (widths), swaying `wave` (share of depth) with wavelength `len` (u) and per-line phase, ends tapering over `taper` (share of length), fading toward
+  // the t0/t1 edges when `rim`; grad: a multi-stop colour gradient along u over u0..u1 (stops [share, colour, alpha]).
+  | { k: 'scatter'; u0: number; u1: number; t0: number; t1: number; n: number; r: [number, number]; gap: number; grow?: number; c: string; a?: number; ring?: { c: string; w: number; a?: number }; seed?: number }
+  | { k: 'lines'; u0: number; u1: number; t0: number; t1: number; n: number; w: number; c: string; a?: number; wave?: number; len?: number; taper?: number; rim?: boolean; seed?: number }
+  | { k: 'grad'; u0: number; u1: number; stops: [number, string, number][] }
   | { k: 'maze'; u0: number; u1: number; v0: number; v1: number; c: string; a?: number; scale: number; w: number; lv?: number; seed?: number; stretch?: number; rim?: [number, number]; core?: number; above?: boolean };
 
 export interface Plan {
@@ -113,9 +121,9 @@ export interface Plan {
   pectoral?: boolean; // default true
   limbs?: Limb[];
   // measured fin outlines from species art JSON (fishartjson.ts); each replaces the generated outline of that fin. Roots: where the paired fins' rays fan from
-  fins?: { dorsal?: Pt[]; anal?: Pt[]; tail?: Pt[]; pelvic?: Pt[]; pectoral?: Pt[]; pelvicRoot?: [number, number]; pectoralRoot?: [number, number] };
+  fins?: { dorsal?: Pt[]; dorsal2?: Pt[]; anal?: Pt[]; tail?: Pt[]; pelvic?: Pt[]; pectoral?: Pt[]; pelvicRoot?: [number, number]; pectoralRoot?: [number, number] };
   // measured colour of the median fins (fishartjson.ts): a grid of mean colours, rows top to bottom from (u0, v0), cells du x dv card widths, null = outside the fin
-  finGrid?: Partial<Record<'dorsal' | 'anal' | 'tail', { u0: number; v0: number; du: number; dv: number; rows: (string | null)[][] }>>;
+  finGrid?: Partial<Record<'dorsal' | 'dorsal2' | 'anal' | 'tail', { u0: number; v0: number; du: number; dv: number; rows: (string | null)[][] }>>;
   drape?: number;     // 3D: the card's median fins ripple out of the card plane by this much (widths), so edge-on they read as fin, not board
   sharp?: boolean;    // 3D: keep the painted markings crisp where the surface turns away (large clean patches, not bars or spots)
 }
@@ -283,7 +291,7 @@ function geometry(p: Plan) {
       : [[u + 0.02, b], tip, ...(ext ? [[u - len * 0.62, b + len * 0.72] as Pt] : []), [u - len * (0.35 + 0.3 * (w - 1)), b + len * 0.25 * w], [u - 0.03 * w, b]];
   }
   const fo = p.fins; // measured outlines replace the generated ones (their rays are not drawn)
-  return { prof, bodyPts, tail: fo?.tail ?? tail, dorsal: fo?.dorsal ?? dorsalF?.pts, dorsal2: dorsal2F?.pts, anal: fo?.anal ?? analF?.pts, rays: { dorsal: fo?.dorsal ? undefined : dorsalF?.rays, dorsal2: dorsal2F?.rays, anal: fo?.anal ? undefined : analF?.rays }, pelvic: fo?.pelvic ?? pelvic, c };
+  return { prof, bodyPts, tail: fo?.tail ?? tail, dorsal: fo?.dorsal ?? dorsalF?.pts, dorsal2: fo?.dorsal2 ?? dorsal2F?.pts, anal: fo?.anal ?? analF?.pts, rays: { dorsal: fo?.dorsal ? undefined : dorsalF?.rays, dorsal2: fo?.dorsal2 ? undefined : dorsal2F?.rays, anal: fo?.anal ? undefined : analF?.rays }, pelvic: fo?.pelvic ?? pelvic, c };
 }
 
 /** Card aspect (height / width) and resting offset: v of the lowest body/pelvic point (bottom dwellers sit on it). */
@@ -352,10 +360,45 @@ function pathMark(c: Ctx, P: Proj, W: number, prof: (u: number) => [number, numb
   c.restore();
 }
 
+function bodyMark(c: Ctx, P: Proj, W: number, prof: (u: number) => [number, number], m: Extract<Mark, { k: 'scatter' | 'lines' | 'grad' }>, seed: number) {
+  const rr = rng((m as { seed?: number }).seed ?? seed);
+  if (m.k === 'grad') {
+    const [x0] = P(m.u0, 0), [x1] = P(m.u1, 0), g = c.createLinearGradient(x0, 0, x1, 0); for (const [k, col, a] of m.stops) g.addColorStop(Math.min(1, Math.max(0, k)), hexA(col, a));
+    c.fillStyle = g; c.fillRect(Math.min(x0, x1), 0, Math.abs(x1 - x0), 4 * W); return;
+  }
+  if (m.k === 'scatter') {
+    const pts: [number, number][] = [];
+    for (let tries = 0; pts.length < m.n && tries < m.n * 60; tries++) {
+      const u = m.u0 + rr() * (m.u1 - m.u0), t = m.t0 + rr() * (m.t1 - m.t0), [a, b] = prof(u), v = a + (b - a) * t;
+      if (pts.every(q => Math.hypot(q[0] - u, q[1] - v) >= m.gap)) pts.push([u, v]);
+    }
+    for (const [u, v] of pts) {
+      const k = (u - m.u0) / ((m.u1 - m.u0) || 1), r = (m.r[0] + (m.r[1] - m.r[0]) * rr()) * (1 + (m.grow ?? 0) * k);
+      if (m.ring) { const [x, y] = P(u, v); c.beginPath(); c.arc(x, y, r * W, 0, Math.PI * 2); c.strokeStyle = hexA(m.ring.c, m.ring.a ?? m.a ?? 0.85); c.lineWidth = m.ring.w * W; c.stroke(); }
+      blob(c, P, W, u, v, r, r, m.c, m.a ?? 0.85);
+    }
+    return;
+  }
+  c.save(); c.lineCap = 'round'; c.lineWidth = m.w * W; const S = 40;
+  for (let i = 0; i < m.n; i++) {
+    const t = m.n > 1 ? m.t0 + (m.t1 - m.t0) * i / (m.n - 1) : (m.t0 + m.t1) / 2, ph = rr() * 6.283, edge = Math.min(t - m.t0, m.t1 - t) / ((m.t1 - m.t0) || 1);
+    const al = (m.a ?? 0.8) * (m.rim ? Math.min(1, 0.35 + edge * 3) : 1), tp = m.taper ?? 0;
+    for (let j = 0; j < S; j++) { // short pieces so the width can taper at the ends
+      const k0 = j / S, k1 = (j + 1) / S, seg = (k: number): [number, number] => {
+        const u = m.u0 + (m.u1 - m.u0) * k, [a, b] = prof(u), tt = t + (m.wave ?? 0) * Math.sin(u / (m.len ?? 0.12) * 6.283 + ph); return P(u, a + (b - a) * tt);
+      };
+      const km = (k0 + k1) / 2, w = tp ? Math.min(1, km / tp, (1 - km) / tp) : 1, [xa, ya] = seg(k0), [xb, yb] = seg(k1);
+      c.globalAlpha = Math.max(0, Math.min(1, al * (0.4 + 0.6 * w))); c.strokeStyle = m.c; c.lineWidth = m.w * W * (0.3 + 0.7 * w); c.beginPath(); c.moveTo(xa, ya); c.lineTo(xb, yb); c.stroke();
+    }
+  }
+  c.restore();
+}
+
 function paintMarks(c: Ctx, P: Proj, W: number, marks: Mark[] | undefined, seed: number, prof?: (u: number) => [number, number]) {
   const r = rng(seed);
   for (const m of marks ?? []) {
     if (m.k === 'path') { if (prof) pathMark(c, P, W, prof, m); continue; }
+    if (m.k === 'scatter' || m.k === 'lines' || m.k === 'grad') { if (prof) bodyMark(c, P, W, prof, m, seed + 101); continue; }
     if (m.k === 'band' && m.wave) wavyBand(c, P, m.u0, m.u1, m.v0, m.v1, m.wave, m.c, m.a ?? 0.9, seed + Math.round(m.v0 * 1000));
     else if (m.k === 'band') { const f = m.f ?? 0.02; soft(c, P, m.u0, m.u1, m.v0, m.v1, m.c, m.a ?? 0.9, [f, f], [f * 0.6, f * 0.6]); }
     else if (m.k === 'bars') for (const u of m.us) soft(c, P, u - m.w / 2, u + m.w / 2, -1, 1, m.c, m.a ?? 0.85, [m.w * 0.3, m.w * 0.3], [0, 0]);
@@ -412,8 +455,8 @@ function finDrawer(p: Plan, ctx: Ctx, P: Proj, W: number) {
     if (!pts) return;
     const e = {
       a: f?.a, fade: p.finFade, rays: 14, extra: (c: Ctx) => {
-        const gr = p.finGrid?.[seed === 11 ? 'tail' : seed === 12 ? 'dorsal' : seed === 13 ? 'anal' : 'tail'];
-        if (gr && (seed === 11 || seed === 12 || seed === 13)) { // colour grid: cells a little oversize and softened so they melt together
+        const gr = p.finGrid?.[seed === 12 ? 'dorsal' : seed === 13 ? 'anal' : seed === 14 ? 'dorsal2' : 'tail'];
+        if (gr && (seed === 11 || seed === 12 || seed === 13 || seed === 14)) { // colour grid: cells a little oversize and softened so they melt together
           c.save(); c.filter = `blur(${0.004 * W}px)`; gr.rows.forEach((row, j) => row.forEach((col, i) => { if (!col) return; c.fillStyle = '#' + col; const [x, y] = P(gr.u0 + i * gr.du - gr.du * 0.1, gr.v0 + j * gr.dv - gr.dv * 0.1); c.fillRect(x, y, gr.du * 1.2 * W, gr.dv * 1.2 * W); })); c.restore();
         }
         paintMarks(c, P, W, p.finMarks, seed);
@@ -826,11 +869,6 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [], eye: { r: 0.045, iris: ['#7ac8f0', '#0a1220'], u: 0.84, dv: -0.1 } },
   // pajama cardinalfish, https://en.wikipedia.org/wiki/Sphaeramia_nematoptera (Wikimedia Commons aquarium photo): silvery-yellow head and front, a wide band of black-edged scales behind the head,
   // red-brown spots on a pale rear body, a red-orange eye, a yellowish first dorsal and pelvics, a long trailing second dorsal and a translucent lilac tail
-  pajamacardinal: { gape: 0.04, gapeDrop: 0.005, scale: 0.02, thick: 0.4, depth: 0.36, pedU: 0.22, ped: 0.05, peak: 0.66, snout: 0.5, mouth: -0.01, shade: ['#9aa878', '#d6d8b4', '#e8e4c8'], tail: { type: 'round', h: 0.2, tint: '#a898c8', a: 0.75 }, fin: '#a898c8',
-    dorsal: { at: 0.72, len: 0.14, h: 0.2, spines: 1, nSp: 6, spineH: [0.2, 0.12], notch: 0.3, tint: '#c8c060' }, dorsal2: { at: 0.54, len: 0.22, h: 0.22, rake: 0.1, tip: 'point', trail: 0.16, drop: 0.5, tint: '#a898c8', a: 0.8 },
-    anal: { at: 0.5, len: 0.2, h: 0.12, rake: 0.2, trail: 0.03, tint: '#a898c8', a: 0.8 }, pelvic: { u: 0.64, len: 0.14, tint: '#d8b040' },
-    marks: [{ k: 'band', u0: 0.54, u1: 0.72, v0: -1, v1: 0.7, c: '#1c1c2a', a: 0.82, f: 0.02 }, { k: 'spots', n: 7, u0: 0.55, u1: 0.72, v0: -0.12, v1: 0.12, r: 0.012, c: '#c8c8a0', a: 0.85 }, { k: 'spots', n: 22, u0: 0.1, u1: 0.46, v0: -0.12, v1: 0.12, r: 0.009, c: '#9a5a5a', a: 0.75 }],
-    finMarks: [], eye: { r: 0.045, iris: ['#e8582a', '#1a0a06'], u: 0.84, dv: -0.03 } },
   // orchid dottyback, Commons photo of Pseudochromis fridmani (Yeda, 2025-05-19, "Perca enana de Fridman", via https://en.wikipedia.org/wiki/Pseudochromis_fridmani): slender, the whole fish a flat vivid magenta-violet,
   // a thin dark line through the eye, one long dorsal and a long anal reaching the tail, a rounded tail with a pointed lower lobe, small pelvics
   orchiddottyback: { gape: 0.04, gapeDrop: 0.004, scale: 0, thick: 0.5, depth: 0.21, pedU: 0.2, ped: 0.05, peak: 0.72, snout: 0.7, mouth: -0.01, shade: ['#8a1ed0', '#9a2cdc', '#a844e0'], tail: { type: 'round', h: 0.14, tint: '#9a2cdc' }, fin: '#9a2cdc',
@@ -855,11 +893,6 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [], eye: { r: 0.035, iris: ['#c8582a', '#14100c'], u: 0.85, dv: -0.08 } },
   // kole tang (yelloweye), Commons photo "Ctenochaetus strigosus 1.jpg" (https://en.wikipedia.org/wiki/Ctenochaetus_strigosus): an oval brown-olive body drawn over with fine, wavy pale blue-green lines along the flank, pale dots on the head, a bright yellow ring round the eye,
   // a small blue-edged snout, dark brown dorsal and anal fins edged blue below, a slightly lunate dark tail, an orange-red pectoral and pelvic
-  koletang: { gape: 0.02, gapeDrop: 0.004, scale: 0.012, thick: 0.24, angular: 0.35, depth: 0.5, pedU: 0.2, ped: 0.05, peak: 0.55, rostrum: { len: 0.06, h: 0.07 }, snout: 0.35, mouth: 0.02, shade: ['#4a3028', '#6a4234', '#7a5440'], tail: { type: 'notch', h: 0.22, tint: '#4a2c22', a: 1 }, fin: '#4a2c22',
-    dorsal: { at: 0.76, len: 0.62, h: 0.08, spines: 0.3, nSp: 8, spineH: [0.05, 0.07], notch: 0.15, rake: 0.55, trail: 0.03, drop: 0.7, tint: '#4a2c22', a: 1, edge: '#3a6a8a' },
-    anal: { at: 0.6, len: 0.4, h: 0.08, spines: 0.12, nSp: 3, spineH: [0.05, 0.07], notch: 0.15, rake: 0.5, trail: 0.03, drop: 0.7, tint: '#4a2c22', a: 1, edge: '#3a6a8a' }, pelvic: { u: 0.64, len: 0.08, tint: '#c84a28' }, pec: { s: 1, v: 0.58, tint: '#b8602c' },
-    marks: [...[-0.17, -0.12, -0.07, -0.02, 0.03, 0.08, 0.13, 0.18].map(v => ({ k: 'band' as const, u0: 0.12, u1: 0.72, v0: v - 0.0045, v1: v + 0.0045, c: '#7ab8a8', a: 0.45, wave: 0.006 })), { k: 'spots', n: 24, u0: 0.76, u1: 0.96, v0: -0.12, v1: 0.1, r: 0.006, c: '#a8d0d8', a: 0.7 }],
-    finMarks: [], eye: { r: 0.045, iris: ['#f6d018', '#14100c'], u: 0.84, dv: -0.1 } },
   // firefish: slender, white with a yellow head, the rear turning orange-red to a dark red tail; tall front dorsal spike
   firefish: { thick: 0.45, depth: 0.17, pedU: 0.18, ped: 0.035, peak: 0.6, snout: 0.5, mouth: -0.02, shade: ['#d8d2c4', '#f0ece2', '#f6f3ec'], tail: { type: 'round', h: 0.09, tint: '#a8241c' }, fin: '#d8c8b0',
     // first dorsal a tall slender pennant raked back; second dorsal long and low; anal long, matching it

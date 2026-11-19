@@ -5,6 +5,10 @@
 import type { Plan, MedianFin } from './fishgen';
 import flameangel from '../data/fishart/flameangel.json';
 import flameangelGrid from '../data/fishart/flameangel.grid.json';
+import pajama from '../data/fishart/pajamacardinal.json';
+import pajamaGrid from '../data/fishart/pajamacardinal.grid.json';
+import kole from '../data/fishart/koletang.json';
+import koleGrid from '../data/fishart/koletang.grid.json';
 
 type Raw = (number | string)[];
 type CPt = [number, number] | [number, number, 'c'];
@@ -29,38 +33,42 @@ export function planFromJson(j: any, grid?: any): Plan {
   const ped = (at(bot, pedU) - at(top, pedU)) / 2;
   const lm = need(an.landmarks, 'anatomy.landmarks'), eyeP = need<Raw>(lm.eye, 'landmarks.eye'), snoutP = need<Raw>(lm.snout, 'landmarks.snout');
   const eu = cu(Number(eyeP[0])), ev = (Number(eyeP[1]) - yA) / W, et = at(top, eu), eb = at(bot, eu);
-  const med = (key: 'dorsal' | 'anal', h: number): MedianFin => {
-    const f = need(fins[key], `anatomy.fins.${key}`), l = need(look[key], `look.${key}`), b = need<number[]>(f.base, `fins.${key}.base`);
+  const med = (key: 'dorsal' | 'dorsal2' | 'anal', h: number): MedianFin | undefined => {
+    if (!fins[key]) return undefined;
+    const f = fins[key], l = look[key] ?? {}, b = need<number[]>(f.base, `fins.${key}.base`);
     return { at: cu(b[0]), len: cw(b[0] - b[1]), h, tint: l.tint, a: l.a, edge: l.edge };
   };
   const tailPts = need<Raw[]>(fins.caudal?.outline, 'fins.caudal.outline').map(cv);
   const tailExt = Math.max(...tailPts.map(q => Math.abs(q[1])));
-  const pel = need(fins.pelvic, 'fins.pelvic'), pec = need(fins.pectoral, 'fins.pectoral');
-  const pelPts = need<Raw[]>(pel.outline, 'fins.pelvic.outline').map(cv), pecPts = need<Raw[]>(pec.outline, 'fins.pectoral.outline').map(cv);
-  const pelRoot = cv(need<Raw>(pel.root, 'fins.pelvic.root')), pecRoot = cv(need<Raw>(pec.root, 'fins.pectoral.root'));
+  const pel = fins.pelvic, pec = fins.pectoral;
+  const pelPts = pel ? need<Raw[]>(pel.outline, 'fins.pelvic.outline').map(cv) : undefined, pecPts = pec ? need<Raw[]>(pec.outline, 'fins.pectoral.outline').map(cv) : undefined;
+  const pelRoot = pel ? cv(need<Raw>(pel.root, 'fins.pelvic.root')) : undefined, pecRoot = pec ? cv(need<Raw>(pec.root, 'fins.pectoral.root')) : undefined;
   const th = an.thickness;
   // bar paths: photo px [x, y, w] -> body-relative [u, t, w as a share of the local depth] (path marks)
-  const bp = need(look.barPaths, 'look.barPaths'), barMarks: Plan['marks'] = need<Raw[][]>(bp.paths, 'look.barPaths.paths').map(pts => ({
+  const bp = look.barPaths, barMarks: Plan['marks'] = !bp ? [] : need<Raw[][]>(bp.paths, 'look.barPaths.paths').map(pts => ({
     k: 'path' as const, c: need<string>(bp.c, 'look.barPaths.c'), a: bp.a,
     pts: pts.map(q => { const u = cu(Number(q[0])), v = (Number(q[1]) - yA) / W, a = at(top, u), b = at(bot, u); return [u, (v - a) / (b - a), cw(Number(q[2])) / (b - a)] as [number, number, number]; }),
   }));
-  const marks = [...need<NonNullable<Plan['marks']>>(look.marks, 'look.marks')]; marks.splice(1, 0, ...barMarks!);
+  const marks = [...need<NonNullable<Plan['marks']>>(look.marks, 'look.marks')]; marks.splice(bp?.insert ?? 1, 0, ...barMarks!); // barPaths.insert: where among the marks the paths go (default after the first)
   const gc = (g: any) => { const [cw0, ch0] = need<number[]>(grid?.cell, 'grid.cell'); return { u0: cu(need<number>(g?.x0, 'grid.x0')), v0: (need<number>(g?.y0, 'grid.y0') - yA) / W, du: cw(cw0), dv: cw(ch0), rows: need<(string | null)[][]>(g.rows, 'grid.rows') }; };
+  const finGrid: NonNullable<Plan['finGrid']> = { tail: gc(grid?.caudal) };
+  for (const k of ['dorsal', 'dorsal2', 'anal'] as const) if (fins[k]) finGrid[k] = gc(grid?.[k]);
   const p: Plan = {
     outline: body, depth, pedU, ped, mouth: (Number(snoutP[1]) - yA) / W,
     shade: need(look.shade, 'look.shade'), fin: need(look.fin, 'look.fin'),
     tail: { type: 'round', h: tailExt, tint: need(look.tail?.tint, 'look.tail.tint'), a: look.tail?.a },
-    dorsal: med('dorsal', 0.06), anal: med('anal', 0.1),
-    pelvic: { u: pelRoot[0], len: 0.2, tint: need(look.pelvic?.tint, 'look.pelvic.tint') }, pec: {},
+    dorsal: med('dorsal', 0.06), dorsal2: med('dorsal2', 0.06), anal: med('anal', 0.1),
+    pelvic: pel ? { u: pelRoot![0], len: 0.2, tint: need(look.pelvic?.tint, 'look.pelvic.tint') } : undefined, ...(pec ? { pec: {} } : { pectoral: false }),
     marks, finMarks: need(look.finMarks, 'look.finMarks'),
     eye: { r: cw(need<number>(lm.eyeR, 'landmarks.eyeR')), iris: need(look.eyeIris, 'look.eyeIris'), u: eu, dv: (ev - et) / (eb - et) - 0.38 },
     gape: need(look.gape, 'look.gape'), gapeDrop: need(look.gapeDrop, 'look.gapeDrop'), scale: need(look.scale, 'look.scale'),
     thick: th?.source === 'unmeasured' ? need<number>(th.thick, 'anatomy.thickness.thick') : th?.thick ?? DEFAULT_THICK,
-    finGrid: { dorsal: gc(grid?.dorsal), anal: gc(grid?.anal), tail: gc(grid?.caudal) },
-    fins: { dorsal: fins.dorsal.outline.map(cv), anal: fins.anal.outline.map(cv), tail: tailPts, pelvic: pelPts, pectoral: pecPts, pelvicRoot: [pelRoot[0], pelRoot[1]], pectoralRoot: [pecRoot[0], pecRoot[1]] },
+    finGrid: finGrid,
+    fins: { dorsal: fins.dorsal?.outline.map(cv), dorsal2: fins.dorsal2?.outline.map(cv), anal: fins.anal?.outline.map(cv), tail: tailPts, pelvic: pelPts, pectoral: pecPts, pelvicRoot: pelRoot && [pelRoot[0], pelRoot[1]], pectoralRoot: pecRoot && [pecRoot[0], pecRoot[1]] },
+    ...(look.extra ?? {}), // documented raw Plan fields (3D body shape knobs: sectionExp, headW, noseW ...)
   };
   return p;
 }
 
 /** The migrated species: art id -> plan built from its JSON. */
-export const JSON_PLANS: Record<string, Plan> = { flameangel: planFromJson(flameangel, flameangelGrid) };
+export const JSON_PLANS: Record<string, Plan> = { flameangel: planFromJson(flameangel, flameangelGrid), pajamacardinal: planFromJson(pajama, pajamaGrid), koletang: planFromJson(kole, koleGrid) };

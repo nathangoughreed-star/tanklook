@@ -50,3 +50,15 @@ Biggest single costs: reading the memo and `fishgen.ts` once (~40 K), the gridde
 ## Recommendation
 Go for Experiment C (kole tang, pajama cardinal, with the tailspot blenny as the regression baseline) using this process; budget per species should be well under the A+B total because loader, overlay and grid tooling now exist.
 Add: a flag in the loader for translucent fins (skip grid cells near the background), and an annotation tool page later if by-eye annotation proves the bottleneck.
+
+## Experiment C addendum (2026-11-19): pajama cardinalfish and kole tang
+Branch `claude/fishpainter-c` (cut from origin/main build 2401). Same process; new general marks only (all body-relative, no per-species code): `scatter`
+(irregular spots with minimum spacing, size trend, optional ring), `lines` (fine parallel lines at constant depth share, sway, taper, rim fade), `grad` (multi-stop
+colour along the body). Loader now handles optional dorsal2, pectoral and pelvic, a `look.extra` block of raw Plan fields, and a per-species fin colour grid
+(cell = 1.9% x 0.75% of total length). Both TS plans removed; `JSON_PLANS` holds flameangel, pajamacardinal, koletang.
+- **Pajama cardinal** (iNaturalist-free: Commons "Pajama cardinal fish Sphaeramia nematoptera (cropped).jpg", CC BY 2.0): photo mirrored and levelled 11.8 deg (fish pitched nose-down); IoU 0.98 vs 0.68 for the old plan, contour mean/p95 0.16/0.53 vs 4.8/13.7 % of SL. Band = body-relative path; spots = scatter.
+- **Kole tang** (iNaturalist observation 248985408, robin_dive_diva, CC BY; Commons photos were unreachable, HTTP 429 for 20+ minutes, and the two Commons photos in hand were too dark to annotate): IoU 0.985 vs 0.72, contour 0.31/0.89 vs 5.3/10.7. Fine flank lines = `lines`; yellow eye ring via iris colours.
+- **Regression baseline**: the tailspot blenny's 1024 px card pixel hash (scripts/card.js) is identical before and after (8365491). It was not migrated.
+- `bodyvolume.json` regenerated (koletang 106.8 to about 139 cm3, pajamacardinal 10.6 to 10.0 cm3). 3D side, 3/4, front and top views checked on the review page for both: no visible regression.
+- Weaknesses: single photo each, sex not distinguishable (no sexual dimorphism recorded for either, one look); thickness unmeasured; the pajama band is a flat dark ribbon, not the scale net of the photo; kole lines are statistical, not traced; kole peduncle and rear belly are guesses (dark photo); pectoral of the pajama is hidden in the photo and not drawn; pelvic fins are flat colour.
+- Commons rate limit note: batch downloads from commons.wikimedia.org (API and Special:FilePath) trigger HTTP 429 quickly; fetch one file at a time with a pause, or use iNaturalist (`api.inaturalist.org/v1/observations`, filter `photo_license=cc-by,cc-by-sa,cc0`, original-size URL by replacing `square` with `original`).
