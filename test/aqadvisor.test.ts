@@ -22,7 +22,7 @@ describe('AqAdvisor request', () => {
     const map = ids as Record<string, { standIn?: boolean }>;
     for (const sp of SPECIES) expect(sp.id in map, sp.id).toBe(sp.habitat !== 'land'); // marine ones: AqAdvisorMarine.php ids, kept for when it gives a % again
     for (const sp of SPECIES) expect(!!(map[sp.id] as { salt?: boolean } | undefined)?.salt, sp.id).toBe(!!sp.salt && sp.habitat !== 'land');
-    expect(Object.keys(map).filter(k => map[k].standIn).sort()).toEqual(['asellus', 'axolotl', 'cajundwarf', 'cleanershrimp', 'clownkilli', 'clownpleco', 'convict', 'cpo', 'croakinggourami', 'dwarfrasbora', 'electricblueacara', 'endler', 'exclamation', 'falsejulii', 'firemouth', 'firenewt', 'firetoad', 'glasscatfish', 'glowlight', 'greenneon', 'hermit', 'hillstream', 'merah', 'neonrainbow', 'peacockgudgeon', 'pleco', 'redclaw', 'rswcrayfish', 'saltpepper', 'syno', 'thaicrab', 'threespot', 'turbo', 'yoyoloach']);
+    expect(Object.keys(map).filter(k => map[k].standIn).sort()).toEqual(['asellus', 'axolotl', 'cajundwarf', 'cleanershrimp', 'clownkilli', 'clownpleco', 'convict', 'cpo', 'croakinggourami', 'dwarfrasbora', 'electricblueacara', 'endler', 'exclamation', 'falsejulii', 'firemouth', 'firenewt', 'firetoad', 'glasscatfish', 'glowlight', 'greenneon', 'hermit', 'hillstream', 'merah', 'neonrainbow', 'pajamacardinal', 'peacockgudgeon', 'pleco', 'redclaw', 'rswcrayfish', 'saltpepper', 'syno', 'thaicrab', 'threespot', 'turbo', 'yellowtailblue', 'yoyoloach']);
   });
 
   it('counts per species in a stable order, tank in inches', () => {

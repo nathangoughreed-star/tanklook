@@ -128,5 +128,8 @@
  "powderblueisopod": {"c": ["europe"], "r": "Mediterranean Europe (now found worldwide)", "s": "SeaLifeBase", "est": 1},
  "orchidmantis": {"c": ["asia"], "r": "Malaysia and Indonesia (rainforest)", "s": "SeaLifeBase", "est": 1},
  "indianstick": {"c": ["asia"], "r": "Southern India", "s": "SeaLifeBase", "est": 1},
- "purplepincher": {"c": ["caribbean"], "r": "Caribbean islands, southern Florida to Venezuela", "s": "SeaLifeBase"}
+ "purplepincher": {"c": ["caribbean"], "r": "Caribbean islands, southern Florida to Venezuela", "s": "SeaLifeBase"},
+ "tailspotblenny": {"c": ["indopacific"], "r": "Western Pacific: Philippines and Indonesia", "s": "FishBase"},
+ "yellowtailblue": {"c": ["indopacific"], "r": "Western Pacific: Solomon Islands, northern Papua New Guinea, Philippines and the Ryukyu Islands", "s": "FishBase"},
+ "pajamacardinal": {"c": ["indopacific"], "r": "Indo-Pacific: Java to Fiji, north to the Ryukyu Islands, south to the Great Barrier Reef", "s": "FishBase"}
 }

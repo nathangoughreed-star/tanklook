@@ -33,6 +33,7 @@ const REQUIRED: Record<string, SpeciesLid> = {
   sae: req('Siamese algae eaters leap when startled'),
   firefish: req('firefish are famous jumpers; an open top loses them overnight'),
   royalgramma: req('royal grammas jump out of open tanks'),
+  tailspotblenny: req("tailspot blennies are prone to jumping and can end up on the floor; Fantasea Aquariums advises a tight-fitting lid"),
   sixline: req('six line wrasses jump, often the first night'),
   watchman: req('gobies jump; many are lost from open tanks'),
   nerite: req('nerite snails climb out of the water and dry out on the floor'),

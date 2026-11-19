@@ -36,7 +36,8 @@ const CHECKS: Record<string, (s: Species) => string | null> = {
   'group-length': s => { const g = GROUPS[s.id], r = minDataOf(s.id)?.red; return g?.minLengthMm && (!r || g.minLengthMm >= r.L - 1) ? null : 'groups.ts minLengthMm is missing or shorter than the footprint length'; },
   // 3. specific needs
   care: s => { const c = CARE[s.id]; return c.care && c.minL && c.temp ? null : 'care.ts needs care, minL, temper and temp'; },
-  water: s => (CHEM[s.id]?.ph ? null : 'waterchem.ts needs pH (and GH)'),
+  // marine species share one band (MARINE_PH in waterchem.ts, natural seawater; no hardness check), so they need no CHEM row (RX2, 2026-11-19)
+  water: s => (s.salt || CHEM[s.id]?.ph ? null : 'waterchem.ts needs pH (and GH)'),
   climate: s => (WATER[s.id] ? null : 'climatedata.ts needs the comfortable and tolerable temperature'),
   substrate: s => (s.zone !== 'bottom' || DWELLER[s.id] ? null : 'a bottom dweller needs a DWELLER row (substrate.ts)'),
   // 4. checks and warnings

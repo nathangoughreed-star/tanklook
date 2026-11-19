@@ -51,6 +51,9 @@ export const SPACE_FACTOR: Record<string, [number, string]> = {
   pepperedcory: [0.63, 'same body and size class as the bronze cory, so its factor (no AqAdvisor row for the peppered cory to calibrate against yet)'],
   endler: [1.58, 'tiny body, fish under 2 g: the class median; no AqAdvisor row to fit it against yet (RX1, 2026-11-18)'],
   clownkilli: [1.58, 'tiny body, fish under 2 g: the class median; no AqAdvisor row to fit it against yet (RX1, 2026-11-18)'],
+  tailspotblenny: [0.83, 'mid body, fish 2 to 30 g: the class median; no AqAdvisor row to fit it against yet (RX2, 2026-11-19)'],
+  pajamacardinal: [0.83, "mid body, fish 2 to 30 g: the class median; no AqAdvisor row to fit it against yet (RX2, 2026-11-19)"],
+  yellowtailblue: [0.83, "mid body, fish 2 to 30 g: the class median; no AqAdvisor row to fit it against yet (RX2, 2026-11-19)"],
   glowlight: [1.58, 'tiny body, fish under 2 g: the class median; no AqAdvisor row to fit it against yet (RX1, 2026-11-18)'],
   glasscatfish: [1.58, 'tiny body, fish under 2 g: the class median; no AqAdvisor row to fit it against yet (RX1, 2026-11-18)'],
   saltpepper: [1.58, 'tiny body, fish under 2 g: the class median; no AqAdvisor row to fit it against yet (RX1, 2026-11-18)'],
@@ -96,6 +99,7 @@ export const FLOOR_FACTOR: Record<string, [number, string]> = {
   auratus: [0.5, 'rock dweller over every level, not a floor sitter: counts like an all-zone fish on the floor (zone audit 2026-10-22, Nathan: floor only); its zone bottom still sets its height curve'],
   afra: [0.5, 'rock dweller over every level, not a floor sitter: counts like an all-zone fish on the floor (zone audit 2026-10-22, Nathan: floor only); its zone bottom still sets its height curve'],
   coralbeauty: [0.5, 'rock dweller over every level, not a floor sitter: counts like an all-zone fish on the floor (zone audit 2026-10-22, Nathan: floor only); its zone bottom still sets its height curve'],
+  tailspotblenny: [0.5, "rock dweller over every level, not a floor sitter: counts like an all-zone fish on the floor (zone audit 2026-10-22, Nathan: floor only); its zone bottom still sets its height curve"],
   royalgramma: [0.5, 'rock dweller over every level, not a floor sitter: counts like an all-zone fish on the floor (zone audit 2026-10-22, Nathan: floor only); its zone bottom still sets its height curve'],
 };
 /** Room that GROWS with the group, per species (Nathan 2026-10-26, otocinclus): past `ref` animals of the species, each one's water and floor

@@ -268,7 +268,7 @@
    "kind": "reference",
    "note": "opened 2026-11-15 (AL1 part 3): peppered cory size, group, tank and temperature. CM3 2026-11-16: the black skirt tetra page (theaquariumguide.com/articles/black-skirt-tetra) was only read as a search-result summary, not opened"
   },
- "aquariadise.com": {
+  "aquariadise.com": {
    "title": "Aquariadise care sheets (Thai micro crab, dwarf crayfish)",
    "by": "Aquariadise",
    "url": "https://www.aquariadise.com",
@@ -835,6 +835,38 @@
    "accessed": "2026-11-13",
    "kind": "reference",
    "note": "opened 2026-11-13 (CL1): beginner to intermediate; hardy, 250+ L, aggressive to tankmates"
+  },
+  "petco.com": {
+   "title": "Petco care sheets and listings",
+   "by": "Petco",
+   "url": "https://www.petco.com",
+   "accessed": "2026-11-19",
+   "kind": "retailer",
+   "note": "RX2 (2026-11-19): page opened or searched; per-value quote in the provenance rule"
+  },
+  "saltwaterfish.com": {
+   "title": "SaltwaterFish.com listings",
+   "by": "SaltwaterFish.com",
+   "url": "https://www.saltwaterfish.com",
+   "accessed": "2026-11-19",
+   "kind": "retailer",
+   "note": "RX2 (2026-11-19): page opened or searched; per-value quote in the provenance rule"
+  },
+  "animal-world.com": {
+   "title": "Animal-World species profiles",
+   "by": "Animal-World",
+   "url": "https://animal-world.com",
+   "accessed": "2026-11-19",
+   "kind": "consensus",
+   "note": "RX2 (2026-11-19): page opened or searched; per-value quote in the provenance rule"
+  },
+  "fantaseaaquariums.com": {
+   "title": "Fantasea Aquariums care sheets",
+   "by": "Fantasea Aquariums",
+   "url": "https://www.fantaseaaquariums.com",
+   "accessed": "2026-11-19",
+   "kind": "consensus",
+   "note": "RX2 (2026-11-19): page opened or searched; per-value quote in the provenance rule"
   }
  }
 }

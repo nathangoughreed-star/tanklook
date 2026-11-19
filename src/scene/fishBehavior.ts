@@ -33,6 +33,9 @@ export const HOVER: Record<string, HoverSpec> = {
   syno: { w: 0.3, pec: 0.5, caudal: 0.3 },
   // FB3: marine fish hover between their actions (clownfish and mandarins on the pectorals, firefish and banggai hanging in the water)
   royalgramma: { w: 0.35, pec: 0.6, caudal: 0.3 }, firefish: { w: 0.55, pec: 0.5, caudal: 0.2 }, banggai: { w: 0.6, pec: 0.9, caudal: 0.2 },
+  pajamacardinal: { w: 0.2, pec: 0.6, caudal: 0.3 },
+  yellowtailblue: { w: 0.3, pec: 0.7, caudal: 0.35 },
+  tailspotblenny: { w: 0.5, pec: 1, caudal: 0.2 },
   ocellaris: { w: 0.45, pec: 0.9, caudal: 0.25 }, mandarin: { w: 0.5, pec: 1, caudal: 0.2 }, coralbeauty: { w: 0.35, pec: 0.7, caudal: 0.3 },
   chromis: { w: 0.2, pec: 0.6, caudal: 0.4 }, yellowtang: { w: 0.1, pec: 0.5, caudal: 0.5 }, bluetang: { w: 0.1, pec: 0.5, caudal: 0.5 }, sixline: { w: 0.1, pec: 0.5, caudal: 0.5 },
 };
@@ -136,6 +139,9 @@ const MBUNA = H('crevice', 'hug', 10, 1.3, 0.5, 0, 0.8, 2, 12, 1.2, 0, 0.5);
 export const HABIT: Record<string, HabitSpec> = {
   //                       home       post        leash gap  ori  hov  act   dart peck patr flick hop
   royalgramma: H('crevice', 'hug',      4.5,   1.3, 0.85, 0,   0.5,  2.5, 1.5, 0.4, 0,   0.5, [3, 25]),  // holds a cave or overhang, belly to the rock (upside down under ledges), darts out and back
+  pajamacardinal: H('host',    'mid',      8,   1.5, 0,    2,   0.3,  0.4, 0,   0.3, 0,   0.5, [4, 15]),
+  yellowtailblue: H('host',    'hoverLow', 6,   1.4, 0,    1.5, 0.55, 1,   2,   1.2, 1,   0.5, [3, 12]),
+  tailspotblenny: H('crevice', 'perch',    5,   1.2, 0.2,  0,   0.2,  1.5, 3,   0.3, 2,   2,   [4, 25]),
   firefish:    H('bolt',    'hoverLow', 4,   1.2, 0,    3,   0.35, 0.5, 0,   0,   7,   2,   [4, 12]),  // hangs over its bolt-hole, flicks the dorsal, dives in when startled
   watchman:    H('burrow',  'perch',    2.5, 1.2, 0,    0,   0.15, 0.25, 0,  0,   1.5, 2,   [8, 40]),  // on the sand at its burrow mouth, still, short hops, no cruising
   ocellaris:   H('host',    'hoverLow', 2.5,  1.2, 0.2,  0,   0.4,  0.2, 2.5, 0.5, 4,   1.5, [3, 10]),  // a small patch (host or a spot), wiggles in place

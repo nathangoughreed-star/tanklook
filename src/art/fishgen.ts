@@ -773,6 +773,28 @@ export const PLANS: Record<string, Plan> = {
     anal: { at: 0.6, len: 0.4, h: 0.15, spines: 0.12, nSp: 3, spineH: [0.07, 0.12], notch: 0.2, rake: 0.4, trail: 0.04, drop: 0.7 }, pelvic: { u: 0.66, len: 0.08 },
     marks: [{ k: 'blob', u: 0.2, v: 0, ru: 0.022, rv: 0.009, c: '#fbfaf2', a: 1 }, { k: 'blob', u: 0.62, v: -0.1, ru: 0.25, rv: 0.18, c: '#ffffff', a: 0.12 }],
     eye: { r: 0.03, iris: ['#3a3020', '#0a0806'], dv: -0.06, u: 0.8 } },
+  // RX2 (R139 phase 2) from reference photos, https://en.wikipedia.org/wiki/Ecsenius_stigmatura (Wikimedia Commons photo, aquarium): tailspot blenny, a slim tapering body,
+  // olive-green back and head grading to a tan-orange flank and peach belly, a bright orange line from the mouth under the eye, an orange-ringed yellow eye,
+  // short head cirri above the eye, one long low dorsal and a long anal, a translucent tan tail, and a black spot ringed with white at the tail base
+  tailspotblenny: { gape: 0.04, gapeDrop: 0.004, mouth: 0.02, scale: 0, thick: 0.6, depth: 0.2, pedU: 0.17, ped: 0.05, peak: 0.82, back: 0.56, snout: 0.8, shade: ['#8a8a3a', '#c8844a', '#e8b890'], tail: { type: 'round', h: 0.14, tint: '#d8a070', a: 0.85 }, fin: '#c07a5a',
+    dorsal: { at: 0.86, len: 0.68, h: 0.07, spines: 0.3, nSp: 6, spineH: [0.04, 0.06], notch: 0.12, rake: 0.4, trail: 0.02, drop: 0.8, tint: '#b06a4a', a: 0.8 },
+    anal: { at: 0.5, len: 0.34, h: 0.06, rake: 0.5, trail: 0.02, tint: '#c07a5a', a: 0.8 }, pelvic: { u: 0.84, len: 0.05 }, pec: { s: 1.3, v: 0.6 },
+    marks: [{ k: 'band', u0: 0.78, u1: 1, v0: -1, v1: -0.1, c: '#8a9a3a', a: 0.55, f: 0.05 }, { k: 'band', u0: 0.8, u1: 0.97, v0: 0.02, v1: 0.05, c: '#ee7a1c', a: 0.95, f: 0.004 }, { k: 'blob', u: 0.215, v: 0, ru: 0.05, rv: 0.06, c: '#f6f2e8', a: 1 }, { k: 'blob', u: 0.215, v: 0, ru: 0.032, rv: 0.04, c: '#14100c', a: 1 }],
+    finMarks: [{ k: 'band', u0: 0, u1: 1, v0: -1, v1: 1, c: '#b8643a', a: 0.15, f: 0.1 }], eye: { r: 0.042, iris: ['#f08a18', '#14100c'], u: 0.88, dv: -0.03 } },
+  // yellowtail blue damselfish, https://en.wikipedia.org/wiki/Chrysiptera_parasema (Wikimedia Commons aquarium photo): a deep oval electric blue body with dark scale edges,
+  // a dark streak and pale blue rings round the eye, a dark spot at the pectoral base, blue fins, and only the tail yellow-orange with a clear pale edge
+  yellowtailblue: { gape: 0.03, gapeDrop: 0.004, scale: 0.018, thick: 0.36, depth: 0.46, pedU: 0.22, ped: 0.065, peak: 0.55, snout: 0.5, mouth: 0.0, shade: ['#1670e4', '#1fa0f4', '#58d0fa'], tail: { type: 'notch', h: 0.2, tint: '#f4a812', edge: '#d8e8f0' }, fin: '#2a7ae0',
+    dorsal: { at: 0.8, len: 0.62, h: 0.15, spines: 0.55, nSp: 12, spineH: [0.07, 0.1], notch: 0.15, rake: 0.5, tip: 'point', trail: 0.06, drop: 0.7 },
+    anal: { at: 0.5, len: 0.3, h: 0.14, spines: 0.2, nSp: 2, spineH: [0.06, 0.1], notch: 0.15, rake: 0.5, tip: 'point', trail: 0.05, drop: 0.7 }, pelvic: { u: 0.66, len: 0.12, tint: '#2a7ae0' }, pec: { s: 1.1, v: 0.55 },
+    marks: [{ k: 'band', u0: 0.78, u1: 0.97, v0: -0.12, v1: -0.07, c: '#1a2a50', a: 0.6, f: 0.01 }, { k: 'blob', u: 0.7, v: 0.06, ru: 0.014, rv: 0.03, c: '#101828', a: 0.95 }],
+    finMarks: [], eye: { r: 0.045, iris: ['#7ac8f0', '#0a1220'], u: 0.84, dv: -0.1 } },
+  // pajama cardinalfish, https://en.wikipedia.org/wiki/Sphaeramia_nematoptera (Wikimedia Commons aquarium photo): silvery-yellow head and front, a wide band of black-edged scales behind the head,
+  // red-brown spots on a pale rear body, a red-orange eye, a yellowish first dorsal and pelvics, a long trailing second dorsal and a translucent lilac tail
+  pajamacardinal: { gape: 0.04, gapeDrop: 0.005, scale: 0.02, thick: 0.4, depth: 0.36, pedU: 0.22, ped: 0.05, peak: 0.66, snout: 0.5, mouth: -0.01, shade: ['#9aa878', '#d6d8b4', '#e8e4c8'], tail: { type: 'round', h: 0.2, tint: '#a898c8', a: 0.75 }, fin: '#a898c8',
+    dorsal: { at: 0.72, len: 0.14, h: 0.2, spines: 1, nSp: 6, spineH: [0.2, 0.12], notch: 0.3, tint: '#c8c060' }, dorsal2: { at: 0.54, len: 0.22, h: 0.22, rake: 0.1, tip: 'point', trail: 0.16, drop: 0.5, tint: '#a898c8', a: 0.8 },
+    anal: { at: 0.5, len: 0.2, h: 0.12, rake: 0.2, trail: 0.03, tint: '#a898c8', a: 0.8 }, pelvic: { u: 0.64, len: 0.14, tint: '#d8b040' },
+    marks: [{ k: 'band', u0: 0.54, u1: 0.72, v0: -1, v1: 0.7, c: '#1c1c2a', a: 0.82, f: 0.02 }, { k: 'spots', n: 7, u0: 0.55, u1: 0.72, v0: -0.12, v1: 0.12, r: 0.012, c: '#c8c8a0', a: 0.85 }, { k: 'spots', n: 22, u0: 0.1, u1: 0.46, v0: -0.12, v1: 0.12, r: 0.009, c: '#9a5a5a', a: 0.75 }],
+    finMarks: [], eye: { r: 0.045, iris: ['#e8582a', '#1a0a06'], u: 0.84, dv: -0.03 } },
   // firefish: slender, white with a yellow head, the rear turning orange-red to a dark red tail; tall front dorsal spike
   firefish: { thick: 0.45, depth: 0.17, pedU: 0.18, ped: 0.035, peak: 0.6, snout: 0.5, mouth: -0.02, shade: ['#d8d2c4', '#f0ece2', '#f6f3ec'], tail: { type: 'round', h: 0.09, tint: '#a8241c' }, fin: '#d8c8b0',
     // first dorsal a tall slender pennant raked back; second dorsal long and low; anal long, matching it

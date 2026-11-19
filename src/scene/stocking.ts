@@ -52,7 +52,7 @@ const MET_BY_ID: Record<string, MetClass> = {
   danio: 'active', balashark: 'active', redtailshark: 'active', sparklinggourami: 'sedentary', croakinggourami: 'sedentary', rainbowshark: 'active', cpd: 'active', tigerbarb: 'active', hatchet: 'active', boesemani: 'active', labeo: 'active', auratus: 'active', demasoni: 'active',
   yellowtang: 'active', bluetang: 'active', chromis: 'active', sae: 'active', swordtail: 'active',
   cpo: 'sedentary', cajundwarf: 'sedentary', rswcrayfish: 'active', redclaw: 'active', thaicrab: 'sedentary', asellus: 'sedentary',
-  bronzecory: 'sedentary', sterbai: 'sedentary', pandacory: 'sedentary', pepperedcory: 'sedentary', yoyoloach: 'active', clownpleco: 'grazer', saltpepper: 'sedentary', falsejulii: 'sedentary', pleco: 'messy', pygmycory: 'sedentary', betta: 'sedentary', bristlenose: 'grazer', oto: 'grazer', hillstream: 'grazer', mandarin: 'sedentary', banggai: 'sedentary', royalgramma: 'sedentary',
+  bronzecory: 'sedentary', sterbai: 'sedentary', pandacory: 'sedentary', pepperedcory: 'sedentary', yoyoloach: 'active', clownpleco: 'grazer', saltpepper: 'sedentary', falsejulii: 'sedentary', pleco: 'messy', pygmycory: 'sedentary', betta: 'sedentary', bristlenose: 'grazer', oto: 'grazer', hillstream: 'grazer', mandarin: 'sedentary', banggai: 'sedentary', royalgramma: 'sedentary', pajamacardinal: 'sedentary', tailspotblenny: 'sedentary',
   watchman: 'sedentary', discus: 'sedentary', gbr: 'sedentary', angel: 'sedentary', kuhli: 'sedentary', peapuffer: 'sedentary', firefish: 'sedentary',
   axolotl: 'herp', firenewt: 'herp', adf: 'herp', firetoad: 'herp',
   hermit: 'shell',

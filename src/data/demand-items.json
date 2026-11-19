@@ -2111,6 +2111,27 @@
    "hi": 15,
    "unit": "each; Coastgem $6.67, iFish Store $10.99, Nuaqua $12.27, Dan's Fish and Aquatic Unlimited $14.99 (RX1 search 2026-11-18)",
    "url": "https://reach.dog/shop/the-ifish-store/products/catfish-glass-catfish"
+  },
+  "animal:tailspotblenny": {
+   "lo": 24,
+   "mode": 35,
+   "hi": 40,
+   "unit": "each; LiveAquaria $23.99, Reef Chasers $34.99, Reef Exclusive $35.00, Salty Underground $39.99 (a $70-100 listing ignored) (RX2 search 2026-11-19)",
+   "url": "https://www.liveaquaria.com/products/tail-spot-blenny"
+  },
+  "animal:yellowtailblue": {
+   "lo": 9,
+   "mode": 15,
+   "hi": 25,
+   "unit": "each; AquariumFishSale $9.29, Reef Chasers $14.99, LiveAquaria from $24.99 (RX2 search 2026-11-19)",
+   "url": "https://reefchasers.com/products/yellowtail-blue-damselfish"
+  },
+  "animal:pajamacardinal": {
+   "lo": 29,
+   "mode": 35,
+   "hi": 40,
+   "unit": "each; AquariumFish.com $29.49, LiveAquaria $34.99, Reef Chasers $34.99, CB Aquatics $39.99 (RX2 search 2026-11-19)",
+   "url": "https://www.liveaquaria.com/products/pajama-cardinalfish"
   }
  }
 }

@@ -634,5 +634,23 @@
   "b": 3,
   "src": "estimate",
   "note": "typical adult mass 0.02 g (judgement from a 12 mm adult; scales with length cubed)"
+ },
+ "tailspotblenny": {
+  "a": 0.0109,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 3 g (judgement from a 2.5 in blenny; FishBase LW row not opened)"
+ },
+ "yellowtailblue": {
+  "a": 0.0213,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 9 g (judgement from a 3 in damsel; FishBase LW row not opened)"
+ },
+ "pajamacardinal": {
+  "a": 0.0176,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 9 g (judgement from a 3.3 in cardinalfish; FishBase LW row not opened)"
  }
 }

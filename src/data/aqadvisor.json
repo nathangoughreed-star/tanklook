@@ -474,5 +474,22 @@
   "aq": "200909300045",
   "name": "Clown Loach (Chromobotia macracanthus)",
   "standIn": true
+ },
+ "tailspotblenny": {
+  "aq": "201005041424",
+  "name": "Tail Spot Blenny (Ecsenius stigmatura)",
+  "salt": true
+ },
+ "yellowtailblue": {
+  "aq": "201003260006",
+  "name": "Green Chromis (Chromis viridis)",
+  "standIn": true,
+  "salt": true
+ },
+ "pajamacardinal": {
+  "aq": "201005041430",
+  "name": "Bangaii Cardinal (Pterapogon kauderni)",
+  "standIn": true,
+  "salt": true
  }
 }

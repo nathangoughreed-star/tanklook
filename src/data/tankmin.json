@@ -2704,6 +2704,66 @@
     "url": "https://www.aquariumsource.com/clown-pleco/"
    },
    "why": "one care page: 20 gal for one fish; the footprint is the standard 20 gal long, because the page gives no base"
+  },
+  "tailspotblenny": {
+   "red": {
+    "L": 504,
+    "W": 257,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://liveaquaria.com/product/2229/tail-spot-blenny",
+    "states": "Minimum Tank Size: 10 Gallons",
+    "from": "volume",
+    "ref": "g10"
+   },
+   "vol": {
+    "gal": 10,
+    "mark": "sourced",
+    "site": "LiveAquaria",
+    "url": "https://liveaquaria.com/product/2229/tail-spot-blenny"
+   },
+   "why": "one retailer page: 10 gal; the footprint is the standard 10 gal tank because the page gives no base (other shops say 8-20 gal; one wants a long, low tank)"
+  },
+  "yellowtailblue": {
+   "red": {
+    "L": 902,
+    "W": 445,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://m.liveaquaria.com/product/134/?pcatid=134",
+    "states": "Minimum Tank Size 30 gallons",
+    "from": "volume",
+    "ref": "g30b"
+   },
+   "vol": {
+    "gal": 30,
+    "mark": "sourced",
+    "site": "LiveAquaria",
+    "url": "https://m.liveaquaria.com/product/134/?pcatid=134"
+   },
+   "why": "one retailer page: 30 gal; the footprint is the standard 30 gal breeder because the page gives no base (Animal-World: 20 gal for one fish or a pair)"
+  },
+  "pajamacardinal": {
+   "red": {
+    "L": 902,
+    "W": 445,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://liveaquaria.com/product/5199/pajama-cardinalfish-group",
+    "states": "Minimum tank size: 30 gallons (group listing); single listings 20 gallons",
+    "from": "volume",
+    "ref": "g30b"
+   },
+   "vol": {
+    "gal": 30,
+    "mark": "sourced",
+    "site": "LiveAquaria",
+    "url": "https://liveaquaria.com/product/5199/pajama-cardinalfish-group"
+   },
+   "why": "one retailer group page: 30 gal; the footprint is the standard 30 gal breeder because the page gives no base"
   }
  }
 }
