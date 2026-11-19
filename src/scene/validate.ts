@@ -344,6 +344,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       return h.length ? { on: bool(te.on, false), cols, rows, h, ...(radial ? { radial } : {}), ...(arc ? { arc } : {}), pools } : { on: false, cols, rows: 0, h: [], pools };
     })(),
     lid: pick(raw.lid, ['open', 'glass', 'hood', 'mesh'] as const, d.lid),
+    ...(typeof raw.bundleLid === 'string' && raw.lid !== 'open' ? { bundleLid: raw.bundleLid } : {}),
     ...(typeof raw.hoodProduct === 'string' && raw.lid === 'hood' ? { hoodProduct: raw.hoodProduct } : {}),
     ...(typeof raw.lidProduct === 'string' && (raw.lid === 'glass' || raw.lid === 'mesh') ? { lidProduct: raw.lidProduct } : {}),
     ...(raw.doors === 'hinged' || raw.doors === 'sliding' ? { doors: raw.doors } : {}),

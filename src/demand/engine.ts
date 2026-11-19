@@ -127,16 +127,17 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   if (sProd) add('stand', `Stand: ${standLabel(sProd)}`, 'gear', { setup: price({ lo: sProd.priceUsd * 0.9, mode: sProd.priceUsd, hi: sProd.priceUsd * 1.1 }) });
   else if (S.stand.show && S.stand.style !== 'table') add('stand', tStand ? 'Stand (terrarium)' : 'Stand' + (wet && S.stand.style !== 'custom' ? ' (typical, estimate)' : ''), 'gear', { setup: price(tStand ? scale3(tStand, terrariumStandK(S.tank)) : stand ? scale3(stand, gal > 55 ? Math.pow(gal / 55, 0.8) : 1) : add3(pick(G.stand.base), scale3(pick(G.stand.perGal), gal))) });
   // HD1: a hood is one product with its light built in; no product for this tank = priced as the glass lid (the scene keeps its hood; the user is told)
-  const noHood = S.lid === 'hood' && !hood, lidKind = noHood ? 'glass' : S.lid;
+  const ownLid = !!S.bundleLid && !S.hoodProduct && !S.lidProduct, noHood = S.lid === 'hood' && !hood && !ownLid, lidKind = noHood ? 'glass' : S.lid;
   if (noHood && !opts.kit) warnings.push(NO_HOOD_NOTE); // a kit's own hood is the kit's (its price replaces these rows), so no note for a bundle
   const lidRow = lidKind === 'open' ? undefined : rowPrice(`gear:lid-${lidKind === 'glass' ? 'glass' : lidKind === 'mesh' ? 'mesh' : 'hood'}`), lidK = Math.min(2.5, Math.max(0.6, Math.sqrt(gal / 25)));
   const lid = (G.lid as Record<string, Rangeish>)[lidKind];
-  const lidProd = lidKind === 'glass' || lidKind === 'mesh' ? lidOf({ tank: S.tank, lid: lidKind, lidProduct: S.lidProduct }) : undefined; // TL1: a real glass lid / mesh top sold for this size
+  const lidProd = lidKind === 'glass' || lidKind === 'mesh' ? lidOf({ tank: S.tank, lid: lidKind, lidProduct: S.lidProduct, bundleLid: S.bundleLid }) : undefined; // TL1: a real glass lid / mesh top sold for this size
   if (hood) { // one line: the hood with its light; its watts are the light's power draw (no separate light row below unless a light was chosen as well)
     const hp = hood.priceUsd;
     add('lid', `Hood with light: ${hood.brand} ${hood.model} (${hood.light.type === 'led' ? 'LED' : hood.light.tech}, ${hood.light.watts} W)`, 'gear', { setup: price({ lo: hp * 0.9, mode: hp, hi: hp * 1.1 }), ...(hoodsLight ? { kwhMo: hood.light.watts * G.lightHoursPerDay * 30 / 1000 } : {}) });
   }
   else if (lidProd) add('lid', `Lid: ${lidProd.brand} ${lidProd.model}`, 'gear', { setup: price({ lo: lidProd.priceUsd * 0.9, mode: lidProd.priceUsd, hi: lidProd.priceUsd * 1.1 }) });
+  else if (lidRow && ownLid) add('lid', `${S.lid === 'hood' ? 'Hood' : 'Lid'} that comes with the bundle (${S.bundleLid})`, 'gear', { setup: price(scale3(lidRow, lidK)) });
   else if (lidRow) add('lid', noHood ? 'Lid (glass: no hood sold for this size)' : `Lid (${S.lid})`, 'gear', { setup: price(scale3(lidRow, lidK)) });
   else if (lid && r3(lid)!.mode > 0) add('lid', `Lid (${lidKind})`, 'gear', { setup: price(r3(lid)!) });
   const gv = S.substrate.show ? groundVolume(S, 24).litres : 0;

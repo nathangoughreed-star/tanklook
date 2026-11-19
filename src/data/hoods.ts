@@ -51,7 +51,8 @@ export function hoodsFor(T: Tank): HoodProduct[] {
 }
 export const hoodExists = (T: Tank): boolean => hoodsFor(T).length > 0;
 /** The hood this setup has: its picked one when it still fits, else the cheapest that fits; undefined = none is sold for the tank. */
-export function hoodOf(S: Pick<TankSetup, 'tank'> & { hoodProduct?: string }): HoodProduct | undefined {
+export function hoodOf(S: Pick<TankSetup, 'tank'> & { hoodProduct?: string; bundleLid?: string }): HoodProduct | undefined {
+  if (S.bundleLid && !S.hoodProduct) return undefined; // R135: the bundle's own hood has no catalogue product (its price is the bundle's, its light the bundle's)
   const p = hoodProduct(S.hoodProduct);
   return p && hoodFits(p, S.tank) ? p : hoodsFor(S.tank)[0];
 }

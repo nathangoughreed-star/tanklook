@@ -26,6 +26,7 @@ export function sceneFromDeal(d: Deal): Scene | undefined {
   S.lid = d.includes.includes('lid') ? d.look?.lid ?? (hoodExists(S.tank) ? 'hood' : 'glass') : 'open';
   const k = d.kit ? kitById(d.kit) : undefined;
   if (k) { S = applyKitLight(S, k as never); S.lid = k.lid; }
+  if (S.lid !== 'open') S.bundleLid = `${d.retailer} ${d.name}`; // R134/R135: the lid is this bundle's own
   else if (d.includes.includes('light')) { // a bundled LED (listings rarely give watts: the budget-tier default for this tank size stands in, flagged 'guess')
     S = applyKitLight(S, { light: { type: 'led', tech: 'led-white', count: 1, watts: d.look?.light?.watts ?? null, par: d.look?.light?.par, spec: d.look?.light?.par ? 'published' : d.look?.light?.watts ? 'listing' : 'guess' }, lid: S.lid, tier: 'budget', tankRatedGal: d.gal });
     if (d.look?.light?.kelvin) S.light = { ...S.light, kelvin: d.look.light.kelvin };

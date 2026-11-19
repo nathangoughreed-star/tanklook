@@ -106,7 +106,7 @@ export function setRim(s: TankSetup, on: boolean): void { unhold(s, 'rim'); s.re
 
 /** A lid pick (the caller asked the product gate for 'lid'). A hood has no room for a metal halide pendant (too hot): it becomes LED. */
 export function setLid(s: TankSetup, lid: LidType): void {
-  unhold(s, 'lid'); s.lid = lid;
+  unhold(s, 'lid'); if (lid !== s.lid) delete s.bundleLid; s.lid = lid; // R134: changing the lid leaves the bundle's own
   if (lid !== 'glass' && lid !== 'mesh') delete s.lidProduct; else if (s.lidProduct && lidProduct(s.lidProduct)?.kind !== lid) delete s.lidProduct; // TL1: a picked lid product belongs to its own kind
   if (lid === 'hood') { const h = hoodOf(s); if (h) { s.hoodProduct = h.id; s.light = hoodLight(s, h); } } else delete s.hoodProduct; // HD1: the hood's own light (type, watts) is the scene's light
   if (lid === 'hood' && fixtureOf(s.light) === 'pendant') { s.light.tech = 'led-white'; fitK(s.light); fitFixture(s.light, s.tank, true); }

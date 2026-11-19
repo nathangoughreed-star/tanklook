@@ -54,3 +54,21 @@ describe('R133 a bundle start keeps its tank product', () => {
     }
   });
 });
+
+describe('R134 R135 a bundle keeps its own lid', () => {
+  it('the 55 bundle starts with its own hood: no catalogue hood, no glass-top claim, priced as the bundle hood', async () => {
+    const { DEALS } = await import('../src/data/deals');
+    const { sceneFromDeal } = await import('../src/demand/dealscene');
+    const { hoodOf } = await import('../src/data/hoods');
+    const { lockNote, includesNote } = await import('../src/scene/integrated');
+    const { chooseHood, lidDetail } = await import('../src/shell/logic/tank');
+    const S = sceneFromDeal(DEALS.find(x => x.id === 'petco-imagitarium-led-55')!)!.tanks[0];
+    expect(S.lid).toBe('hood'); expect(S.bundleLid).toContain('Imagitarium'); expect(hoodOf(S)).toBeUndefined();
+    expect(lockNote(S, 'lid')).toMatch(/This bundle comes with a hood/); expect(lockNote(S, 'lid')).not.toMatch(/glass top/);
+    expect(includesNote(S)).toMatch(/Comes with a hood/); expect(includesNote(S)).not.toMatch(/glass top/);
+    expect(lidDetail(S)).toMatch(/comes with the bundle/);
+    const d = demandOf(S, defaultProfile(), { now: Date.parse('2026-11-19') }).items.find(i => i.key === 'lid')!;
+    expect(d.label).toMatch(/comes with the bundle/); expect(d.kwhMo ?? 0).toBe(0); // the catalogue hood's tubes are not the bundle's light
+    chooseHood(S, 'aqueon-t8-hood-48'); expect(S.bundleLid).toBeUndefined(); expect(hoodOf(S)?.id).toBe('aqueon-t8-hood-48');
+  });
+});

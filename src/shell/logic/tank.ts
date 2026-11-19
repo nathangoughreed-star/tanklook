@@ -147,7 +147,7 @@ export function hoodView(S: TankSetup): HoodView {
 /** Pick a hood product: the lid becomes a hood, and the hood's own light replaces the lamp (setLid, HD1). */
 export function chooseHood(s: TankSetup, id: string): void {
   if (!hoodProduct(id)) return;
-  s.hoodProduct = id; setLid(s, 'hood');
+  delete s.bundleLid; s.hoodProduct = id; setLid(s, 'hood'); // a picked catalogue hood replaces the bundle's own
 }
 /** TL1 (R123): the glass lids / mesh tops sold for this setup's tank (the lid kind showing), as tiles like the hoods; the one in use marked. */
 export interface LidTile { id: string; brand: string; name: string; price: string; store: string; fits: string; on: boolean }
@@ -159,10 +159,11 @@ export function lidProductView(S: TankSetup): LidProductView {
 /** Pick a glass lid / mesh top product: the lid becomes that product's kind. */
 export function chooseLidProduct(s: TankSetup, id: string): void {
   const p = lidProduct(id); if (!p) return;
-  setLid(s, p.kind); s.lidProduct = id;
+  delete s.bundleLid; setLid(s, p.kind); s.lidProduct = id;
 }
 /** The lid as the summary card says it: "Hood: Aqueon LED hood, $65". */
 export function lidDetail(S: TankSetup): string {
+  if (S.bundleLid && S.lid !== 'open' && !lidOf(S) && (S.lid !== 'hood' || !hoodOf(S))) return `${S.lid === 'hood' ? 'Hood' : S.lid === 'mesh' ? 'Mesh' : 'Glass lid'}: comes with the bundle`;
   const lp = lidOf(S); if (lp) return `${S.lid === 'mesh' ? 'Mesh' : 'Glass lid'}: ${lp.brand} ${lp.model}, ${usd(lp.priceUsd)}`;
   const h = S.lid === 'hood' ? hoodOf(S) : undefined;
   return h ? `Hood: ${h.brand} ${(h.model.toLowerCase().startsWith(h.brand.toLowerCase() + ' ') ? h.model.slice(h.brand.length + 1) : h.model)}, ${usd(h.priceUsd)}` : lidSummary(S);
