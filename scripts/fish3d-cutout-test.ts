@@ -24,9 +24,12 @@ if (mode === 'measured') {
   const pedU = 1 - 1 / A.tlOverSl, SLc = 1 - pedU, U = s => pedU + SLc * (1 - s / 100), Wd = x => x / 100 * SLc;
   const top = d.stations.map((s, i) => [U(s), -Wd(d.top[i])]), bot = d.stations.map((s, i) => [U(s), Wd(d.bottom[i])]);
   Object.assign(P, { pedU, outline: [...top, ...bot.reverse()] });
+  if (A.thickness?.fit) { P.thick = A.thickness.fit.thick; P.pedT = A.thickness.fit.pedT; } // top-view widths (sheet photos)
   P.tail = { ...P.tail, h: Wd(Math.max(...F.caudal.outline.map(c => (c[1] + c[2]) / 2))) };
+  if (q.get('fins') !== '0') {
   P.dorsal = { ...P.dorsal, at: U(F.dorsal.baseStartPctSL), len: Wd(F.dorsal.baseEndPctSL - F.dorsal.baseStartPctSL), h: Wd(F.dorsal.maxHeightPctSL) };
   P.anal = { ...P.anal, at: U(F.anal.baseStartPctSL), len: Wd(F.anal.baseEndPctSL - F.anal.baseStartPctSL), h: Wd(F.anal.maxHeightPctSL), rake: 0.85 };
+  }
 }
 document.title += ' plan ok'; const W = 560, H = 350;
 const gl = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
@@ -47,5 +50,5 @@ function shoot(yaw, pitch) {
 }
 const sheet = document.createElement('canvas'); sheet.width = W * 2; sheet.height = H * 2 + 0; const x = sheet.getContext('2d'); x.font = '16px sans-serif'; x.fillStyle = '#fff';
 VIEWS.forEach(([l, y, p], i) => { x.drawImage(shoot(y, p), (i % 2) * W, Math.floor(i / 2) * H); x.fillText(`${mode} | ${l}`, (i % 2) * W + 8, Math.floor(i / 2) * H + 20); });
-await new Promise(r => sheet.toBlob(async b => { await fetch('/__shot?name=ORCH3D' + suf + '-' + mode, { method: 'POST', body: b }); r(); }, 'image/png'));
+await new Promise(r => sheet.toBlob(async b => { await fetch('/__shot?name=ORCH3D' + suf + '-' + mode + (q.get('fins') === '0' ? '-nofins' : ''), { method: 'POST', body: b }); r(); }, 'image/png'));
 document.getElementById('s').textContent = 'done ' + mode; document.title = 'done ' + mode;
