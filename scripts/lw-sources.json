@@ -35,10 +35,10 @@
   "src": "fishbase-bayes"
  },
  "endler": {
-  "a": 0.01288,
-  "b": 3.14,
-  "src": "estimate",
-  "note": "Poecilia genus: the guppy's FishBase Bayesian a, b used for Endler's livebearer (no species row read)"
+  "a": 0.00995,
+  "b": 2.992,
+  "src": "fishbase-congener",
+  "note": "FishBase length-weight page (fishbase.se/popdyn/LWRelationshipList.php) opened 2026-11-19: Poecilia wingei has NO length-weight row; geometric-mean a and mean b of the guppy P. reticulata TL rows (a 0.00900 and 0.01100, b 2.982 and 3.002); estimate flagged, rule not fully met"
  },
  "threespot": {
   "a": 0.01622,
@@ -59,10 +59,10 @@
   "note": "tetra estimate: the neon tetra's FishBase Bayesian a, b used (no species row read)"
  },
  "convict": {
-  "a": 0.01445,
-  "b": 2.99,
-  "src": "estimate",
-  "note": "cichlid estimate: the same FishBase Bayesian a, b the other cichlids here use (no species row read)"
+  "a": 0.02205,
+  "b": 3.0,
+  "src": "fishbase-measured",
+  "note": "FishBase length-weight page (fishbase.se/popdyn/LWRelationshipList.php) opened 2026-11-19: Amatitlania nigrofasciata, the one TL row (11.4-12.0 cm), a 0.02205, b 3.000; the two SL rows (a 0.049) not used (SL)"
  },
  "electricblueacara": {
   "a": 0.01445,
@@ -77,10 +77,10 @@
   "note": "small fish estimate: the chili rasbora's FishBase Bayesian a, b used (no species row read)"
  },
  "peacockgudgeon": {
-  "a": 0.0063,
-  "b": 3.1,
-  "src": "estimate",
-  "note": "slender small fish estimate: a lower a than the guppy's (a 9 cm gudgeon is slimmer), b 3.1; no species row read"
+  "a": 0.01153,
+  "b": 3.0,
+  "src": "fishbase-measured",
+  "note": "FishBase length-weight page (fishbase.se/popdyn/LWRelationshipList.php) opened 2026-11-19: Tateurndina ocellicauda has one SL row only (2.7-3.5 cm, a 0.01993, b 3.000); converted to TL with TL = 1.2 x SL: a_TL = 0.01993 / 1.2^3 = 0.01153"
  },
  "falsejulii": {
   "a": 0.02344,
@@ -342,9 +342,10 @@
   "src": "fishbase-bayes"
  },
  "rainbowshark": {
-  "a": 0.00794,
-  "b": 3.02,
-  "src": "fishbase-bayes"
+  "a": 0.0114,
+  "b": 2.844,
+  "src": "fishbase-measured",
+  "note": "FishBase length-weight page (fishbase.se/popdyn/LWRelationshipList.php) opened 2026-11-19: Epalzeorhynchos frenatum, TL row 6.0-12.0 cm, a 0.01140, b 2.844 (the one SL row not used)"
  },
  "sparklinggourami": {
   "a": 0.00977,
@@ -357,9 +358,10 @@
   "src": "fishbase-bayes"
  },
  "redtailshark": {
-  "a": 0.00871,
-  "b": 3.09,
-  "src": "fishbase-bayes"
+  "a": 0.004,
+  "b": 3.424,
+  "src": "fishbase-measured",
+  "note": "FishBase length-weight page (fishbase.se/popdyn/LWRelationshipList.php) opened 2026-11-19: Epalzeorhynchos bicolor, TL row 5.0-13.0 cm, a 0.00400, b 3.424 (the one SL row not used)"
  },
  "sae": {
   "a": 0.00813,

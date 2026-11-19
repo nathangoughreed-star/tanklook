@@ -49,6 +49,8 @@ export const NEEDS: Record<string, CareNeed[]> = {
   neonrainbow: [{ kind: 'environment', severity: 'S1', text: 'Group: does far better in a shoal of six to eight or more; males deepen and colour up with age' }],
   firemouth: [{ kind: 'environment', severity: 'S2', text: 'Breeding: territorial when spawning and may eat much smaller fish; best as a pair, gregarious only outside spawning' }],
   saltpepper: [{ kind: 'environment', severity: 'S1', text: 'Group: at least four to six, ideally ten or more; a small cory that stays close to the floor' }],
+  rainbowshark: [{ kind: 'environment', severity: 'S2', text: 'Territory: grows aggressive toward other fish of similar shape, red-tail sharks above all, and wants its own cave or wood; keep one, with plenty of cover' }],
+  redtailshark: [{ kind: 'environment', severity: 'S2', text: 'Territory: becomes aggressive toward similar-looking fish and is largely unsuited to a general community; keep one, with caves and wood to break sight lines' }],
   clownpleco: [{ kind: 'feeding', severity: 'S2', text: 'Feeding: eats wood as part of its diet; needs driftwood in the tank, plus algae wafers and vegetables' }],
   yoyoloach: [{ kind: 'environment', severity: 'S3', text: 'Lid: yoyo loaches jump; needs a tight lid' }, { kind: 'environment', severity: 'S2', text: 'Tankmates: boisterous and can nip long, slow fins (bettas, guppies, many cichlids are poor partners); needs a group of five or six or more' }],
   glasscatfish: [{ kind: 'environment', severity: 'S2', text: 'Light and cover: timid, prefers dim light with floating plants, and does not compete with large or boisterous fish; needs a group of six or more' }],

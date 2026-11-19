@@ -139,10 +139,6 @@
   "aq": "200909300012",
   "name": "Bala Shark (Balantiocheilos melanopterus)"
  },
- "rainbowshark": {
-  "aq": "200909300177",
-  "name": "Rainbow Shark (Epalzeorhynchos frenatum)"
- },
  "sparklinggourami": {
   "aq": "200909300059",
   "name": "Dwarf Croaking Gourami (Trichopsis pumila)"
@@ -151,10 +147,6 @@
   "aq": "200909300098",
   "name": "Honey Gourami (Trichogaster chuna)",
   "standIn": true
- },
- "redtailshark": {
-  "aq": "200909300186",
-  "name": "Red Tailed Black Shark (Epalzeorhynchos bicolor)"
  },
  "sae": {
   "aq": "200909300207",
@@ -400,11 +392,6 @@
   "name": "Red Cherry Shrimp (Neocaridina heteropoda)",
   "standIn": true
  },
- "endler": {
-  "aq": "200909300093",
-  "name": "Guppy (Poecilia reticulata)",
-  "standIn": true
- },
  "clownkilli": {
   "aq": "200909300065",
   "name": "Ember Tetra (Hyphessobrycon amandae)",
@@ -430,11 +417,6 @@
   "name": "Peppered Cory (Corydoras paleatus)",
   "standIn": true
  },
- "peacockgudgeon": {
-  "aq": "200909300041",
-  "name": "Cherry Barb (Puntius titteya)",
-  "standIn": true
- },
  "neonrainbow": {
   "aq": "200909300030",
   "name": "Boesemans Rainbowfish (Melanotaenia boesemani)",
@@ -453,11 +435,6 @@
  "pleco": {
   "aq": "200909300033",
   "name": "Bristlenose Pleco (Ancistrus sp.)",
-  "standIn": true
- },
- "convict": {
-  "aq": "200909300113",
-  "name": "Kribensis (Pelvicachromis pulcher)",
   "standIn": true
  },
  "electricblueacara": {
