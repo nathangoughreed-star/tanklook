@@ -35,7 +35,7 @@
     "note": "Appearance carried over from RX2's plan, except the bars and the dark flank patch, which are the annotated barPaths (read off p1).",
     "shade": ["#e8420c", "#f4781a", "#e8522a"], "fin": "#e8420c",
     "tail": { "tint": "#f0b040", "a": 0.8 },
-    "dorsal": { "tint": "#1a1ab8", "a": 1, "edge": "#2a40e8" }, "anal": { "tint": "#1a1ab8", "a": 1, "edge": "#2a40e8" },
+    "dorsal": { "tint": "#e8420c", "a": 1 }, "anal": { "tint": "#e8420c", "a": 1 }, "finGridNote": "dorsal, anal and tail colour come from flameangel.grid.json (mean photo colours, scripts/fingrid.py); the tints here are only the base under the grid",
     "pelvic": { "tint": "#e8522a" },
     "marks": [
       { "k": "band", "u0": 0.5, "u1": 0.78, "v0": -1, "v1": 1, "c": "#f8a018", "a": 0.7, "f": 0.1 },
@@ -53,7 +53,7 @@
         [[1195, 335, 90], [1195, 440, 130], [1195, 545, 90]]
       ]
     },
-    "finMarks": [{ "k": "bars", "us": [0.17, 0.2, 0.23, 0.26], "w": 0.02, "c": "#0a0a30", "a": 0.85 }],
+    "finMarks": [],
     "eyeIris": ["#2a1810", "#080402"],
     "gape": 0.03, "gapeDrop": 0.006, "scale": 0.016
   },

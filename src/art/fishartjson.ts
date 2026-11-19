@@ -4,6 +4,7 @@
 // the frame (xTail, xSnout, yAxis) turns them into card units (u 0 tail tip .. 1 snout tip, v down from the centre line).
 import type { Plan, MedianFin } from './fishgen';
 import flameangel from '../data/fishart/flameangel.json';
+import flameangelGrid from '../data/fishart/flameangel.grid.json';
 
 type Raw = (number | string)[];
 type CPt = [number, number] | [number, number, 'c'];
@@ -11,7 +12,8 @@ type CPt = [number, number] | [number, number, 'c'];
 /** Documented defaults (nothing else is defaulted): the 3D thickness when no front/top photo or cited figure exists. */
 const DEFAULT_THICK = 0.34;
 
-export function planFromJson(j: any): Plan {
+/** grid: the fin colour grids (scripts/fingrid.py output, photo px) */
+export function planFromJson(j: any, grid?: any): Plan {
   const name = String(j?.art ?? '?');
   const need = <T>(v: T | undefined | null, path: string): T => { if (v === undefined || v === null) throw new Error(`fishart/${name}.json: missing ${path}`); return v; };
   const fr = need(j.frame, 'frame'), x0 = need<number>(fr.xTail, 'frame.xTail'), x1 = need<number>(fr.xSnout, 'frame.xSnout'), yA = need<number>(fr.yAxis, 'frame.yAxis'), W = x1 - x0;
@@ -43,6 +45,7 @@ export function planFromJson(j: any): Plan {
     pts: pts.map(q => { const u = cu(Number(q[0])), v = (Number(q[1]) - yA) / W, a = at(top, u), b = at(bot, u); return [u, (v - a) / (b - a), cw(Number(q[2])) / (b - a)] as [number, number, number]; }),
   }));
   const marks = [...need<NonNullable<Plan['marks']>>(look.marks, 'look.marks')]; marks.splice(1, 0, ...barMarks!);
+  const gc = (g: any) => { const [cw0, ch0] = need<number[]>(grid?.cell, 'grid.cell'); return { u0: cu(need<number>(g?.x0, 'grid.x0')), v0: (need<number>(g?.y0, 'grid.y0') - yA) / W, du: cw(cw0), dv: cw(ch0), rows: need<(string | null)[][]>(g.rows, 'grid.rows') }; };
   const p: Plan = {
     outline: body, depth, pedU, ped, mouth: (Number(snoutP[1]) - yA) / W,
     shade: need(look.shade, 'look.shade'), fin: need(look.fin, 'look.fin'),
@@ -53,10 +56,11 @@ export function planFromJson(j: any): Plan {
     eye: { r: cw(need<number>(lm.eyeR, 'landmarks.eyeR')), iris: need(look.eyeIris, 'look.eyeIris'), u: eu, dv: (ev - et) / (eb - et) - 0.38 },
     gape: need(look.gape, 'look.gape'), gapeDrop: need(look.gapeDrop, 'look.gapeDrop'), scale: need(look.scale, 'look.scale'),
     thick: th?.source === 'unmeasured' ? need<number>(th.thick, 'anatomy.thickness.thick') : th?.thick ?? DEFAULT_THICK,
+    finGrid: { dorsal: gc(grid?.dorsal), anal: gc(grid?.anal), tail: gc(grid?.caudal) },
     fins: { dorsal: fins.dorsal.outline.map(cv), anal: fins.anal.outline.map(cv), tail: tailPts, pelvic: pelPts, pectoral: pecPts, pelvicRoot: [pelRoot[0], pelRoot[1]], pectoralRoot: [pecRoot[0], pecRoot[1]] },
   };
   return p;
 }
 
 /** The migrated species: art id -> plan built from its JSON. */
-export const JSON_PLANS: Record<string, Plan> = { flameangel: planFromJson(flameangel) };
+export const JSON_PLANS: Record<string, Plan> = { flameangel: planFromJson(flameangel, flameangelGrid) };

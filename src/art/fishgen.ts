@@ -114,6 +114,8 @@ export interface Plan {
   limbs?: Limb[];
   // measured fin outlines from species art JSON (fishartjson.ts); each replaces the generated outline of that fin. Roots: where the paired fins' rays fan from
   fins?: { dorsal?: Pt[]; anal?: Pt[]; tail?: Pt[]; pelvic?: Pt[]; pectoral?: Pt[]; pelvicRoot?: [number, number]; pectoralRoot?: [number, number] };
+  // measured colour of the median fins (fishartjson.ts): a grid of mean colours, rows top to bottom from (u0, v0), cells du x dv card widths, null = outside the fin
+  finGrid?: Partial<Record<'dorsal' | 'anal' | 'tail', { u0: number; v0: number; du: number; dv: number; rows: (string | null)[][] }>>;
   drape?: number;     // 3D: the card's median fins ripple out of the card plane by this much (widths), so edge-on they read as fin, not board
   sharp?: boolean;    // 3D: keep the painted markings crisp where the surface turns away (large clean patches, not bars or spots)
 }
@@ -410,6 +412,10 @@ function finDrawer(p: Plan, ctx: Ctx, P: Proj, W: number) {
     if (!pts) return;
     const e = {
       a: f?.a, fade: p.finFade, rays: 14, extra: (c: Ctx) => {
+        const gr = p.finGrid?.[seed === 11 ? 'tail' : seed === 12 ? 'dorsal' : seed === 13 ? 'anal' : 'tail'];
+        if (gr && (seed === 11 || seed === 12 || seed === 13)) { // colour grid: cells a little oversize and softened so they melt together
+          c.save(); c.filter = `blur(${0.004 * W}px)`; gr.rows.forEach((row, j) => row.forEach((col, i) => { if (!col) return; c.fillStyle = '#' + col; const [x, y] = P(gr.u0 + i * gr.du - gr.du * 0.1, gr.v0 + j * gr.dv - gr.dv * 0.1); c.fillRect(x, y, gr.du * 1.2 * W, gr.dv * 1.2 * W); })); c.restore();
+        }
         paintMarks(c, P, W, p.finMarks, seed);
         if (f?.edge) { shape(c, P, pts); c.strokeStyle = hexA(f.edge, 0.55); c.lineWidth = 0.014 * W; c.stroke(); }
       },
