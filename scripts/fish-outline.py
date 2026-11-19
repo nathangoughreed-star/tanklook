@@ -150,7 +150,7 @@ def main():
     body = rot_mask(body0)
     bodyB = rot_mask(bodyB0) if bodyB0 is not None else None
     tb, bb = col_edges(body)
-    tbB = col_edges(bodyB)[0] if bodyB is not None else tb
+    tbB, bbB = col_edges(bodyB) if bodyB is not None else (tb, bb)
     tf, bf = col_edges(fullr)
     # peduncle x again in the rotated frame (narrowest opened column in the same window)
     th = bb - tb
@@ -160,6 +160,12 @@ def main():
     if bodyB is not None:  # back (the dorsal-fin zone, u >= 35 % SL): top edge from the colour mask; head and belly from the shape mask
         xx = np.arange(W)
         tb = np.where((xx < sx - 0.35 * SL) & (xx > sx - 0.85 * SL), tbB, tb)
+        # belly: the shape mask swallows the anal / pelvic fin roots, the colour mask loses the red belly stripe. Measure the
+        # stripe (shape minus colour edge) where no fin hangs (45-65 % SL) and add it to the colour edge across the fin zone.
+        ref = (xx < sx - 0.45 * SL) & (xx > sx - 0.65 * SL)
+        delta = float(np.nanmedian((bb - bbB)[ref]))
+        zone = (xx < sx - 0.42 * SL) & (xx > sx - 0.97 * SL)
+        bb = np.where(zone & ~np.isnan(bbB), np.minimum(bb, bbB + delta), bb)
     TL = float(sx - tail_x)
 
     def pct(v):
