@@ -1,0 +1,51 @@
+{
+  "art": "flameangel",
+  "refs": [
+    { "id": "p1", "view": "side", "sex": "unknown", "px": [1920, 1080],
+      "title": "Centropyge loricula, 2010.jpg", "author": "Andreas Maerz", "licence": "CC BY 2.0",
+      "page": "https://commons.wikimedia.org/wiki/File:Centropyge_loricula,_2010.jpg", "opened": "2026-11-19",
+      "note": "Used width=1920 render of the Commons file. Photo stays in the scratchpad, never in git. Annotated BY EYE off a 50 px grid (experiment A): about +-10 px, i.e. +-0.6% of total length. Regions hidden behind fins (true back and belly contour under the dorsal and anal fins, rear of the body) are ESTIMATED." },
+    { "id": "p2", "view": "side", "title": "Flame Angelfish Centropyge loricula.jpg", "author": "Brian Gratwicke", "licence": "CC BY 2.0",
+      "page": "https://commons.wikimedia.org/wiki/File:Flame_Angelfish_Centropyge_loricula.jpg", "opened": "2026-11-19", "note": "Second lateral view, fetched but not annotated in experiment A (cross-check by eye only)." }
+  ],
+  "frame": { "ref": "p1", "xTail": 145, "xSnout": 1735, "yAxis": 515, "note": "px -> card: u = (x - xTail)/W, v = (y - yAxis)/W, W = xSnout - xTail (total length, the card width). Standard length is snout tip to x = 585 (the peduncle end): SL = 1150 px = 0.723 W." },
+  "anatomy": {
+    "annotation": "eye (by-eye px coordinates on p1)",
+    "landmarks": {
+      "snout": [1735, 490], "eye": [1545, 452], "eyeR": 55, "peduncleEnd": [585, 520], "caudalRearTip": [145, 515],
+      "pecRoot": [1375, 600], "pelvicRoot": [1385, 772]
+    },
+    "pedU": 0.277,
+    "body": [
+      [1735, 490], [1722, 450], [1690, 405], [1640, 350], [1560, 298], [1450, 215], [1350, 168], [1250, 132], [1150, 100], [1050, 90], [1000, 90],
+      [900, 98], [800, 115], [720, 140], [650, 190], [610, 260], [588, 350], [580, 440],
+      [582, 600], [620, 660], [700, 735], [800, 785], [950, 798], [1100, 795], [1250, 790], [1370, 770], [1450, 740], [1560, 680], [1640, 620], [1690, 560], [1722, 520]
+    ],
+    "bodyEstimated": "back contour from x = 1000 rearward and belly contour under the anal fin are estimated (hidden behind fin membranes)",
+    "fins": {
+      "dorsal": { "base": [1140, 580], "outline": [[1140, 98], [1050, 70, "c"], [960, 62], [900, 64], [800, 75], [700, 95], [600, 125], [520, 160], [450, 200], [405, 235], [385, 285, "c"], [390, 330], [420, 390], [470, 420], [540, 440], [580, 440], [588, 350], [610, 260], [650, 190], [720, 140], [800, 115], [900, 98], [1000, 90]] },
+      "anal": { "base": [1000, 585], "outline": [[1000, 800], [950, 835], [880, 870], [800, 890], [700, 888], [600, 872], [520, 850], [470, 825], [455, 790, "c"], [470, 730], [500, 670], [520, 630], [560, 605], [585, 600], [582, 600], [620, 660], [700, 735], [800, 785], [950, 798]] },
+      "caudal": { "type": "round", "outline": [[585, 440], [470, 425], [330, 385], [190, 362], [148, 375, "c"], [142, 450], [150, 560], [185, 640], [250, 690], [310, 712, "c"], [420, 650], [500, 620], [588, 600]] },
+      "pectoral": { "root": [1375, 600], "outline": [[1380, 590], [1340, 650], [1260, 715], [1130, 745, "c"], [1180, 715], [1290, 665], [1360, 610]] },
+      "pelvic": { "root": [1385, 772], "outline": [[1400, 775], [1330, 830], [1250, 920], [1150, 1005], [1075, 1045, "c"], [1125, 985], [1195, 900], [1265, 820], [1340, 775]] }
+    },
+    "thickness": { "source": "unmeasured", "thick": 0.34, "note": "No front or top photo and no cited figure. thick = RX2's value, kept so the 3D front and top views are NOT claimed validated." }
+  },
+  "look": {
+    "note": "Appearance carried over from RX2's plan, except the five bar positions and the dark flank patch, which are read off p1 (bars at px x = 610, 735, 860, 980, 1100; patch centre (1195, 440)). Straight bars, no new mark kinds (experiment B territory).",
+    "shade": ["#e8420c", "#f4781a", "#e8522a"], "fin": "#e8420c",
+    "tail": { "tint": "#f0b040", "a": 0.8 },
+    "dorsal": { "tint": "#1a1ab8", "a": 1, "edge": "#2a40e8" }, "anal": { "tint": "#1a1ab8", "a": 1, "edge": "#2a40e8" },
+    "pelvic": { "tint": "#e8522a" },
+    "marks": [
+      { "k": "band", "u0": 0.5, "u1": 0.78, "v0": -1, "v1": 1, "c": "#f8a018", "a": 0.7, "f": 0.1 },
+      { "k": "bars", "us": [0.292, 0.371, 0.45, 0.525, 0.6], "w": 0.033, "c": "#1a0c08", "a": 0.9 },
+      { "k": "blob", "u": 0.66, "v": -0.047, "ru": 0.044, "rv": 0.085, "c": "#1a0c08", "a": 0.9 },
+      { "k": "band", "u0": 0.84, "u1": 1, "v0": -1, "v1": 1, "c": "#e8300a", "a": 0.6, "f": 0.05 }
+    ],
+    "finMarks": [{ "k": "bars", "us": [0.17, 0.2, 0.23, 0.26], "w": 0.02, "c": "#0a0a30", "a": 0.85 }],
+    "eyeIris": ["#2a1810", "#080402"],
+    "gape": 0.03, "gapeDrop": 0.006, "scale": 0.016
+  },
+  "validation": { "G": { "date": null, "score": null, "by": null } }
+}

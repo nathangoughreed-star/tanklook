@@ -5,6 +5,7 @@
 import { albinoPlan } from './albino';
 import { FORMS, formArt, formPlan } from './forms';
 import { NEO_BODY, registerNeo } from './shrimps';
+import { JSON_PLANS } from './fishartjson';
 import albinoSpecies from '../data/species.json';
 import { type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, hexA, rng, scales, shimmer, shape, soft, style, wavyBand } from './paint';
 
@@ -107,6 +108,8 @@ export interface Plan {
   outline?: [number, number][];
   pectoral?: boolean; // default true
   limbs?: Limb[];
+  // measured fin outlines from species art JSON (fishartjson.ts); each replaces the generated outline of that fin. Roots: where the paired fins' rays fan from
+  fins?: { dorsal?: Pt[]; anal?: Pt[]; tail?: Pt[]; pelvic?: Pt[]; pectoral?: Pt[]; pelvicRoot?: [number, number]; pectoralRoot?: [number, number] };
   drape?: number;     // 3D: the card's median fins ripple out of the card plane by this much (widths), so edge-on they read as fin, not board
   sharp?: boolean;    // 3D: keep the painted markings crisp where the surface turns away (large clean patches, not bars or spots)
 }
@@ -252,7 +255,7 @@ function tailPts(t: Tail, pu: number, c: number, pd: number, th: number, cut = 0
 
 /** Every outline the plan draws, for extents. */
 function geometry(p: Plan) {
-  const prof = profile(p), n = 16, top: Pt[] = [], bot: Pt[] = [];
+  const prof = profile(p), n = p.outline ? 48 : 16, top: Pt[] = [], bot: Pt[] = [];
   for (let i = 1; i < n; i++) { const u = 1 - (1 - p.pedU) * i / (n - 1); const [a, b] = prof(u); top.push([u, a]); bot.unshift([u, b]); }
   const bodyPts: Pt[] = [[1, p.mouth ?? 0, 'c'], ...top, ...bot];
   const [pt, pb] = prof(p.pedU), c = (pt + pb) / 2, pd = (pb - pt) / 2;
@@ -273,7 +276,8 @@ function geometry(p: Plan) {
       : w === 1 && !ext ? [[u + 0.02, b], tip, [u - len * 0.35, b + len * 0.25], [u - 0.03, b]]
       : [[u + 0.02, b], tip, ...(ext ? [[u - len * 0.62, b + len * 0.72] as Pt] : []), [u - len * (0.35 + 0.3 * (w - 1)), b + len * 0.25 * w], [u - 0.03 * w, b]];
   }
-  return { prof, bodyPts, tail, dorsal: dorsalF?.pts, dorsal2: dorsal2F?.pts, anal: analF?.pts, rays: { dorsal: dorsalF?.rays, dorsal2: dorsal2F?.rays, anal: analF?.rays }, pelvic, c };
+  const fo = p.fins; // measured outlines replace the generated ones (their rays are not drawn)
+  return { prof, bodyPts, tail: fo?.tail ?? tail, dorsal: fo?.dorsal ?? dorsalF?.pts, dorsal2: dorsal2F?.pts, anal: fo?.anal ?? analF?.pts, rays: { dorsal: fo?.dorsal ? undefined : dorsalF?.rays, dorsal2: dorsal2F?.rays, anal: fo?.anal ? undefined : analF?.rays }, pelvic: fo?.pelvic ?? pelvic, c };
 }
 
 /** Card aspect (height / width) and resting offset: v of the lowest body/pelvic point (bottom dwellers sit on it). */
@@ -342,13 +346,13 @@ export interface PairedFin { kind: 'pelvic' | 'pectoral'; pts: Pt[]; root: [numb
 /** The paired fins (pelvic if the plan has one, then the pectoral), in card coordinates. */
 export function pairedFins(p: Plan): PairedFin[] {
   const g = geometry(p), out: PairedFin[] = [];
-  if (g.pelvic) out.push({ kind: 'pelvic', pts: g.pelvic, root: [p.pelvic!.u, g.prof(p.pelvic!.u)[1]], tint: p.pelvic!.tint ?? p.fin, a: p.pelvic!.thread || p.pelvic!.edge ? 0.85 : undefined, rays: p.pelvic!.thread ? 0 : 5, edge: p.pelvic!.edge, spots: p.pelvic!.spots, spread: p.pelvic!.spread });
+  if (g.pelvic) out.push({ kind: 'pelvic', pts: g.pelvic, root: p.fins?.pelvicRoot ?? [p.pelvic!.u, g.prof(p.pelvic!.u)[1]], tint: p.pelvic!.tint ?? p.fin, a: p.pelvic!.thread || p.pelvic!.edge ? 0.85 : undefined, rays: p.pelvic!.thread ? 0 : 5, edge: p.pelvic!.edge, spots: p.pelvic!.spots, spread: p.pelvic!.spread });
   if (p.pectoral === false) return out;
   const pu = p.pec?.u ?? 1 - (1 - p.pedU) * 0.24, [pt, pb] = g.prof(pu), pm = pt + (pb - pt) * (p.pec?.v ?? 0.62), pl = Math.min((1 - p.pedU) * 0.17, p.depth * 0.75) * (p.pec?.s ?? 1); // slender fish (loaches) keep small pectorals
   // w (off by default): a broad fan, the trailing edge this many times deeper (hillstream loach)
-  const w = p.pec?.w ?? 1, pts: Pt[] = w === 1 ? [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.7, pm + pl * 0.55], [pu + 0.005, pm + 0.015]]
+  const w = p.pec?.w ?? 1, pts: Pt[] = p.fins?.pectoral ? p.fins.pectoral : w === 1 ? [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.7, pm + pl * 0.55], [pu + 0.005, pm + 0.015]]
     : [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.8, pm + pl * (0.3 + 0.25 * w)], [pu - pl * 0.4, pm + pl * 0.3 * w], [pu + 0.005, pm + 0.015 * w]];
-  out.push({ kind: 'pectoral', pts, root: [pu, pm], tint: p.pec?.tint ?? mixHex(p.fin, p.shade[1], 0.35), a: p.pec?.tint ? 0.8 : 0.45, rays: 5, edge: p.pec?.edge, spots: p.pec?.spots, spread: p.pec?.spread }); // pectoral takes on some flank colour: it lies against the body
+  out.push({ kind: 'pectoral', pts, root: p.fins?.pectoralRoot ?? [pu, pm], tint: p.pec?.tint ?? mixHex(p.fin, p.shade[1], 0.35), a: p.pec?.tint ? 0.8 : 0.45, rays: 5, edge: p.pec?.edge, spots: p.pec?.spots, spread: p.pec?.spread }); // pectoral takes on some flank colour: it lies against the body
   return out;
 }
 export function drawPairedFin(f: PairedFin, ctx: Ctx, P: Proj, W: number, ray = '#7d7a70') {
@@ -810,11 +814,6 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'spots', n: 12, u0: 0.1, u1: 0.8, v0: -0.4, v1: 0.1, r: 0.012, c: '#d88a3a', a: 0.8 }], eye: { r: 0.04, iris: ['#c88a3a', '#14100c'], u: 0.9, dv: -0.06 } },
   // flame angelfish, Commons photo "Flame angelfish (Centropyge loricula).jpg" (https://en.wikipedia.org/wiki/Flame_angelfish): an oval, bright orange-red body that is yellower mid-flank, four or five broad black bars running down from the back
   // (slightly curved, the first through the pectoral base), a red head and belly, a deep blue rear dorsal and anal fin crossed by black bars, a translucent yellow-orange tail, a small gill spine
-  flameangel: { gape: 0.03, gapeDrop: 0.006, scale: 0.016, thick: 0.34, depth: 0.52, pedU: 0.2, ped: 0.07, peak: 0.55, snout: 0.6, mouth: 0.01, angular: 0.2, shade: ['#e8420c', '#f4781a', '#e8522a'], tail: { type: 'round', h: 0.22, tint: '#f0b040', a: 0.8 }, fin: '#e8420c',
-    dorsal: { at: 0.78, len: 0.6, h: 0.12, spines: 0.45, nSp: 14, spineH: [0.07, 0.09], notch: 0.1, rake: 0.8, tip: 'round', trail: 0.1, drop: 0.55, tint: '#1a1ab8', a: 1, edge: '#2a40e8' },
-    anal: { at: 0.6, len: 0.34, h: 0.12, spines: 0.2, nSp: 3, spineH: [0.07, 0.1], notch: 0.1, rake: 0.8, tip: 'round', trail: 0.1, drop: 0.55, tint: '#1a1ab8', a: 1, edge: '#2a40e8' }, pelvic: { u: 0.62, len: 0.12, tint: '#e8522a' }, pec: { s: 1, v: 0.55 },
-    marks: [{ k: 'band', u0: 0.5, u1: 0.78, v0: -1, v1: 1, c: '#f8a018', a: 0.7, f: 0.1 }, { k: 'bars', us: [0.73, 0.62, 0.51, 0.4, 0.29], w: 0.03, c: '#1a0c08', a: 0.9 }, { k: 'band', u0: 0.84, u1: 1, v0: -1, v1: 1, c: '#e8300a', a: 0.6, f: 0.05 }],
-    finMarks: [{ k: 'bars', us: [0.18, 0.28, 0.38, 0.48, 0.58, 0.68], w: 0.025, c: '#0a0a30', a: 0.85 }], eye: { r: 0.042, iris: ['#2a1810', '#080402'], u: 0.84, dv: -0.1 } },
   // foxface rabbitfish, Commons photo "Siganus vulpinus 2.jpg" (https://en.wikipedia.org/wiki/Foxface_rabbitfish): an oval, side-flattened bright yellow body, a tapering tubular snout, a dark brown-black head mask with a white stripe along the forehead
   // and cheek, a white patch behind the head and a brown chest, small rear-set dorsal and anal fins, a slightly lunate yellow tail with a darker edge
   foxface: { gape: 0.02, gapeDrop: 0.004, scale: 0.012, thick: 0.3, depth: 0.42, pedU: 0.18, ped: 0.06, peak: 0.6, rostrum: { len: 0.09, h: 0.07 }, snout: 0.4, mouth: 0.02, shade: ['#f0a808', '#f4bc18', '#f4cc38'], tail: { type: 'notch', h: 0.26, tint: '#f2b410' }, fin: '#f2b410',
@@ -1074,6 +1073,8 @@ export const PLANS: Record<string, Plan> = {
 // ---------- females of the dimorphic species (species.json `female`): the male's plan with the female's shape, fins and
 // colours. Females of these are shorter-finned and duller; livebearer females are larger, deeper bodied and carry a dark
 // gravid spot above the anal fin; dwarf cichlid females are smaller with a coloured belly.
+// species migrated to JSON art data: the JSON plan is the sole authority (no TS entry may exist for them)
+for (const [k, v] of Object.entries(JSON_PLANS)) { if (PLANS[k]) throw new Error('fishart: ' + k + ' is migrated to JSON but PLANS still defines it'); PLANS[k] = v; }
 const her = (male: string, o: Partial<Plan>): Plan => ({ ...PLANS[male], ...o });
 Object.assign(PLANS, {
   // short round tail and fins, deeper body, duller red with faint stress stripes, white egg spot behind the ventrals
