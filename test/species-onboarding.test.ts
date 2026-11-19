@@ -75,8 +75,8 @@ describe('species onboarding checklist (research/species-onboarding.md)', () => 
       expect(stale, 'these species now pass: take them off research/species-onboarding-baseline.json (GEN_ONBOARDING=1 rewrites it)').toEqual([]);
     });
   }
-  it('every Phase 1 species (RX1, R139) passes every check', () => {
-    const PHASE1 = ['endler', 'threespot', 'pleco', 'glowlight', 'convict', 'electricblueacara', 'clownkilli', 'peacockgudgeon', 'falsejulii', 'neonrainbow', 'firemouth', 'saltpepper', 'clownpleco', 'yoyoloach', 'glasscatfish'];
+  it('every Phase 1 species (RX1, R139) and Phase 2 marine batch 1 species (RX2) pass every check', () => {
+    const PHASE1 = ['endler', 'threespot', 'pleco', 'glowlight', 'convict', 'electricblueacara', 'clownkilli', 'peacockgudgeon', 'falsejulii', 'neonrainbow', 'firemouth', 'saltpepper', 'clownpleco', 'yoyoloach', 'glasscatfish', 'tailspotblenny', 'yellowtailblue', 'pajamacardinal', 'orchiddottyback', 'lawnmowerblenny', 'flameangel', 'foxface', 'koletang']; // + Phase 2 marine batch 1 (RX2)
     const miss = PHASE1.flatMap(id => Object.entries(CHECKS).filter(([, f]) => f(AQUATIC.find(s => s.id === id)!) !== null).map(([k]) => `${id}: ${k}`));
     expect(miss).toEqual([]);
   });

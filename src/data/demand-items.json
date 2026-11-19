@@ -2132,6 +2132,41 @@
    "hi": 40,
    "unit": "each; AquariumFish.com $29.49, LiveAquaria $34.99, Reef Chasers $34.99, CB Aquatics $39.99 (RX2 search 2026-11-19)",
    "url": "https://www.liveaquaria.com/products/pajama-cardinalfish"
+  },
+  "animal:orchiddottyback": {
+   "lo": 60,
+   "mode": 60,
+   "hi": 90,
+   "unit": "each; LiveAquaria captive-bred $59.99, another listing $89.99 (RX2 search 2026-11-19)",
+   "url": "https://liveaquaria.com/product/3465/proaquatix-captive-bred-orchid-dottyback"
+  },
+  "animal:lawnmowerblenny": {
+   "lo": 32,
+   "mode": 40,
+   "hi": 45,
+   "unit": "each; AquariumFish.com from $31.99, Reef Chasers large $44.99 (RX2 search 2026-11-19)",
+   "url": "https://aquariumfish.com/collections/blennies"
+  },
+  "animal:flameangel": {
+   "lo": 135,
+   "mode": 150,
+   "hi": 199,
+   "unit": "each; That Pet Place $134.99, SaltwaterFish $149.99, one other shop $199 (RX2 search 2026-11-19)",
+   "url": "https://www.saltwaterfish.com/product-flame-angelfish"
+  },
+  "animal:foxface": {
+   "lo": 80,
+   "mode": 90,
+   "hi": 209,
+   "unit": "each; LiveAquaria 9 in $79.99 (sold out), SaltwaterFish 3-4 in $208.99 on sale (RX2 search 2026-11-19; size and stock vary)",
+   "url": "https://m.liveaquaria.com/product/687/?pcatid=687"
+  },
+  "animal:koletang": {
+   "lo": 93,
+   "mode": 93,
+   "hi": 150,
+   "unit": "each; LiveAquaria $92.99, That Pet Place $149.99 (out of stock); a $600 premium listing ignored (RX2 search 2026-11-19)",
+   "url": "https://liveaquaria.com/product/345/?pcatid=345"
   }
  }
 }

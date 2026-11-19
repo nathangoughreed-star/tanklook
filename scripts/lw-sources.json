@@ -652,5 +652,35 @@
   "b": 3,
   "src": "estimate",
   "note": "typical adult mass 9 g (judgement from a 3.3 in cardinalfish; FishBase LW row not opened)"
+ },
+ "orchiddottyback": {
+  "a": 0.0126,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 5 g (judgement from a 3 in dottyback; FishBase LW row not opened)"
+ },
+ "lawnmowerblenny": {
+  "a": 0.0073,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 20 g (judgement from a 5-6 in blenny; FishBase LW row not opened)"
+ },
+ "flameangel": {
+  "a": 0.0293,
+  "b": 3,
+  "src": "estimate",
+  "note": "mass of a fish at the 15 cm FishBase maximum, about 100 g (a 4 in aquarium fish weighs about 25 g); FishBase LW row not opened"
+ },
+ "foxface": {
+  "a": 0.0153,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 150 g (judgement from a 9 in rabbitfish; FishBase LW row not opened)"
+ },
+ "koletang": {
+  "a": 0.0173,
+  "b": 3,
+  "src": "estimate",
+  "note": "typical adult mass 100 g (judgement from a 7 in tang; FishBase LW row not opened)"
  }
 }

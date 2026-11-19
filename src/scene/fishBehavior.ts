@@ -33,6 +33,11 @@ export const HOVER: Record<string, HoverSpec> = {
   syno: { w: 0.3, pec: 0.5, caudal: 0.3 },
   // FB3: marine fish hover between their actions (clownfish and mandarins on the pectorals, firefish and banggai hanging in the water)
   royalgramma: { w: 0.35, pec: 0.6, caudal: 0.3 }, firefish: { w: 0.55, pec: 0.5, caudal: 0.2 }, banggai: { w: 0.6, pec: 0.9, caudal: 0.2 },
+  koletang: { w: 0.1, pec: 0.5, caudal: 0.5 },
+  foxface: { w: 0.15, pec: 0.6, caudal: 0.4 },
+  flameangel: { w: 0.35, pec: 0.7, caudal: 0.3 },
+  lawnmowerblenny: { w: 0.4, pec: 1, caudal: 0.2 },
+  orchiddottyback: { w: 0.3, pec: 0.7, caudal: 0.3 },
   pajamacardinal: { w: 0.2, pec: 0.6, caudal: 0.3 },
   yellowtailblue: { w: 0.3, pec: 0.7, caudal: 0.35 },
   tailspotblenny: { w: 0.5, pec: 1, caudal: 0.2 },
@@ -139,6 +144,11 @@ const MBUNA = H('crevice', 'hug', 10, 1.3, 0.5, 0, 0.8, 2, 12, 1.2, 0, 0.5);
 export const HABIT: Record<string, HabitSpec> = {
   //                       home       post        leash gap  ori  hov  act   dart peck patr flick hop
   royalgramma: H('crevice', 'hug',      4.5,   1.3, 0.85, 0,   0.5,  2.5, 1.5, 0.4, 0,   0.5, [3, 25]),  // holds a cave or overhang, belly to the rock (upside down under ledges), darts out and back
+  koletang: H('crevice', 'hug',      35,  2,   0.3,  0,   0.85, 0,   8,   1.5, 0,   0.5),
+  foxface: H('crevice', 'mid',      30,  2,   0,    1.2, 0.7,  0.3, 6,   1.5, 0,   0,   [3, 12]),
+  flameangel: H('crevice', 'hug',      10,  1.5, 0.7,  0,   0.55, 1.2, 8,   0.4, 0,   0),
+  lawnmowerblenny: H('crevice', 'perch',    15,  1.2, 0.2,  0,   0.45, 0.6, 12,  0.8, 1,   3,   [3, 15]),
+  orchiddottyback: H('crevice', 'hoverLow', 8,   1.3, 0,    1,   0.6,  1.2, 2,   1,   1,   0,   [3, 12]),
   pajamacardinal: H('host',    'mid',      8,   1.5, 0,    2,   0.3,  0.4, 0,   0.3, 0,   0.5, [4, 15]),
   yellowtailblue: H('host',    'hoverLow', 6,   1.4, 0,    1.5, 0.55, 1,   2,   1.2, 1,   0.5, [3, 12]),
   tailspotblenny: H('crevice', 'perch',    5,   1.2, 0.2,  0,   0.2,  1.5, 3,   0.3, 2,   2,   [4, 25]),

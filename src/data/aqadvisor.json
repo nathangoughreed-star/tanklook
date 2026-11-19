@@ -491,5 +491,35 @@
   "name": "Bangaii Cardinal (Pterapogon kauderni)",
   "standIn": true,
   "salt": true
+ },
+ "orchiddottyback": {
+  "aq": "201005021931",
+  "name": "Royal Gramma Basslet (Gramma loreto)",
+  "standIn": true,
+  "salt": true
+ },
+ "lawnmowerblenny": {
+  "aq": "201005041424",
+  "name": "Tail Spot Blenny (Ecsenius stigmatura)",
+  "standIn": true,
+  "salt": true
+ },
+ "flameangel": {
+  "aq": "201003260020",
+  "name": "Coral Beauty Angelfish (Centropyge bispinosa)",
+  "standIn": true,
+  "salt": true
+ },
+ "foxface": {
+  "aq": "201003260001",
+  "name": "Yellow Tang (Zebrasoma flavescens)",
+  "standIn": true,
+  "salt": true
+ },
+ "koletang": {
+  "aq": "201003260001",
+  "name": "Yellow Tang (Zebrasoma flavescens)",
+  "standIn": true,
+  "salt": true
  }
 }

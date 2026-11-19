@@ -2764,6 +2764,106 @@
     "url": "https://liveaquaria.com/product/5199/pajama-cardinalfish-group"
    },
    "why": "one retailer group page: 30 gal; the footprint is the standard 30 gal breeder because the page gives no base"
+  },
+  "orchiddottyback": {
+   "red": {
+    "L": 902,
+    "W": 445,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/product/162/?pcatid=162",
+    "states": "Minimum Tank Size 30 gallons",
+    "from": "volume",
+    "ref": "g30b"
+   },
+   "vol": {
+    "gal": 30,
+    "mark": "sourced",
+    "site": "LiveAquaria",
+    "url": "https://www.liveaquaria.com/product/162/?pcatid=162"
+   },
+   "why": "one retailer page: 30 gal; the footprint is the standard 30 gal breeder because the page gives no base (other pages say 10, 20 and 50 gal)"
+  },
+  "lawnmowerblenny": {
+   "red": {
+    "L": 1220,
+    "W": 458,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Aquarium Source and other care guides",
+    "url": "https://www.aquariumsource.com/lawnmower-blenny/",
+    "states": "guides range from 30+ gal to 55 gal for a single fish (search summary 2026-11-19; the pages were not opened)",
+    "from": "volume",
+    "ref": "g60b"
+   },
+   "vol": {
+    "gal": 55,
+    "mark": "sourced",
+    "site": "Aquarium Source and other care guides",
+    "url": "https://www.aquariumsource.com/lawnmower-blenny/"
+   },
+   "why": "care guides give 30+ to 55 gal; we keep 55, the larger, with the 60 gal breeder footprint as the nearest standard tank (no page gives a base)"
+  },
+  "flameangel": {
+   "red": {
+    "L": 1220,
+    "W": 458,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://liveaquaria.com/product/7935/flame-angelfish",
+    "states": "Minimum Tank Size 70 gallons",
+    "from": "volume",
+    "ref": "g75"
+   },
+   "vol": {
+    "gal": 70,
+    "mark": "sourced",
+    "site": "LiveAquaria",
+    "url": "https://liveaquaria.com/product/7935/flame-angelfish"
+   },
+   "why": "one retailer page: 70 gal; the footprint is the standard 75 gal tank because the page gives no base (others say 30+, 45, 50)"
+  },
+  "foxface": {
+   "red": {
+    "L": 1809,
+    "W": 590,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://m.liveaquaria.com/product/687/?pcatid=687",
+    "states": "lists 125 gallons (search summary 2026-11-19; the page was not opened)",
+    "from": "volume",
+    "ref": "g180"
+   },
+   "vol": {
+    "gal": 125,
+    "mark": "sourced",
+    "site": "LiveAquaria",
+    "url": "https://m.liveaquaria.com/product/687/?pcatid=687"
+   },
+   "why": "one retailer: 125 gal; our nearest standard tank is the 180 gal (no 125 in the table), so the footprint is a derived estimate (other guides say 75-100 gal)"
+  },
+  "koletang": {
+   "red": {
+    "L": 1220,
+    "W": 458,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "LiveAquaria",
+    "url": "https://liveaquaria.com/product/345/?pcatid=345",
+    "states": "Minimum tank 70 gallons (search summary 2026-11-19; the page was not opened)",
+    "from": "volume",
+    "ref": "g75"
+   },
+   "vol": {
+    "gal": 70,
+    "mark": "sourced",
+    "site": "LiveAquaria",
+    "url": "https://liveaquaria.com/product/345/?pcatid=345"
+   },
+   "why": "one retailer: 70 gal (others 65-125); the footprint is the standard 75 gal tank because no page gives a base"
   }
  }
 }

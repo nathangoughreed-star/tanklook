@@ -11,24 +11,24 @@ when it carries the url of the listing it was read from and does not mark the fi
 
 | | values | cited | fitted | derived | researched | claimed | assumption | unsourced | strong |
 |---|---|---|---|---|---|---|---|---|---|
-| **all data** | 10090 | 5703 (57 %) | 79 (1 %) | 306 (3 %) | 1155 (11 %) | 1000 (10 %) | 1364 (14 %) | 483 (5 %) | 60 % |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 2094 | 354 |  | 80 | 654 | 674 | 331 | 1 | 21 % |
-| Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM) | 421 | 229 |  | 106 | 80 |  | 6 |  | 80 % |
-| Adult length per species (species.json tl) | 162 | 52 |  | 72 | 17 |  | 21 |  | 77 % |
+| **all data** | 10225 | 5728 (56 %) | 84 (1 %) | 316 (3 %) | 1175 (11 %) | 1010 (10 %) | 1429 (14 %) | 483 (5 %) | 60 % |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 2179 | 364 |  | 80 | 674 | 674 | 386 | 1 | 20 % |
+| Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM) | 436 | 234 |  | 116 | 80 |  | 6 |  | 80 % |
+| Adult length per species (species.json tl) | 167 | 57 |  | 72 | 17 |  | 21 |  | 77 % |
 | Marine pH band (data/waterchem.ts) | 2 | 2 |  |  |  |  |  |  | 100 % |
 | Reptile / amphibian floor area, height, groups, growth (data/herpstock.ts) | 224 |  |  |  | 224 |  |  |  | 0 % |
 | Terrarium air temperature and humidity (data/climate.ts AIR) | 208 | 28 |  | 18 | 162 |  |  |  | 22 % |
 | Plant and coral light, CO2, fertiliser, dosing (scene/lightneeds.ts) | 182 |  |  |  |  | 182 |  |  | 0 % |
 | Freshwater PAR tiers | 10 |  |  |  |  | 10 |  |  | 0 % |
 | Reef PAR tiers | 8 | 6 |  |  |  | 2 |  |  | 75 % |
-| Body mass (length-weight a, b) for the stocking engine | 266 | 138 |  |  |  | 128 |  |  | 52 % |
-| Per-species space factors | 74 |  | 74 |  |  |  |  |  | 100 % |
+| Body mass (length-weight a, b) for the stocking engine | 276 | 138 |  |  |  | 138 |  |  | 50 % |
+| Per-species space factors | 79 |  | 79 |  |  |  |  |  | 100 % |
 | Space factor classes | 5 |  | 5 |  |  |  |  |  | 100 % |
 | Biological media litres per filter (data/filtermedia.ts) | 18 | 13 |  | 5 |  |  |  |  | 100 % |
 | Gear sizing, minutes, watts, heat loss (tech.json) | 275 | 8 |  | 2 |  | 2 | 138 | 125 | 4 % |
 | Category cost / time defaults (demand-defaults.json) | 272 |  |  | 20 |  |  | 252 |  | 7 % |
 | Shared cost factors: kWh, water, salt, losses (factors.json) | 70 | 1 |  |  |  | 2 | 3 | 64 | 1 % |
-| Per-item retail prices (demand-items.json) | 906 | 287 |  |  |  |  | 609 | 10 | 32 % |
+| Per-item retail prices (demand-items.json) | 921 | 292 |  |  |  |  | 619 | 10 | 32 % |
 | Filter and heater specs (data/gear/) | 640 | 499 |  |  |  |  |  | 141 | 78 % |
 | Tank sizes and prices (tanks.json) | 3649 | 3490 |  | 3 | 18 |  | 4 | 134 | 96 % |
 | Kit specs and prices (kits.json) | 207 | 207 |  |  |  |  |  |  | 100 % |
@@ -43,24 +43,24 @@ when a page is cited beside it, and `says` in src/data/provenance.ts keeps the p
 
 | | measured | source-stated | TankLook interpretation | derived calculation | conservative default | unsourced |
 |---|---|---|---|---|---|---|
-| **all data** | 2 (0 %) | 5770 (57 %) | 3414 (34 %) | 385 (4 %) | 36 (0 %) | 483 (5 %) |
-| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) |  | 409 | 1570 | 80 | 34 | 1 |
-| Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM) |  | 229 | 86 | 106 |  |  |
-| Adult length per species (species.json tl) |  | 69 | 21 | 72 |  |  |
+| **all data** | 2 (0 %) | 5785 (57 %) | 3509 (34 %) | 400 (4 %) | 46 (0 %) | 483 (5 %) |
+| Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) |  | 409 | 1645 | 80 | 44 | 1 |
+| Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM) |  | 234 | 86 | 116 |  |  |
+| Adult length per species (species.json tl) |  | 74 | 21 | 72 |  |  |
 | Marine pH band (data/waterchem.ts) |  |  |  |  | 2 |  |
 | Reptile / amphibian floor area, height, groups, growth (data/herpstock.ts) |  |  | 224 |  |  |  |
 | Terrarium air temperature and humidity (data/climate.ts AIR) |  | 28 | 162 | 18 |  |  |
 | Plant and coral light, CO2, fertiliser, dosing (scene/lightneeds.ts) |  |  | 182 |  |  |  |
 | Freshwater PAR tiers |  |  | 10 |  |  |  |
 | Reef PAR tiers |  | 6 | 2 |  |  |  |
-| Body mass (length-weight a, b) for the stocking engine | 2 | 136 | 128 |  |  |  |
-| Per-species space factors |  |  |  | 74 |  |  |
+| Body mass (length-weight a, b) for the stocking engine | 2 | 136 | 138 |  |  |  |
+| Per-species space factors |  |  |  | 79 |  |  |
 | Space factor classes |  |  |  | 5 |  |  |
 | Biological media litres per filter (data/filtermedia.ts) |  | 13 |  | 5 |  |  |
 | Gear sizing, minutes, watts, heat loss (tech.json) |  | 8 | 140 | 2 |  | 125 |
 | Category cost / time defaults (demand-defaults.json) |  |  | 252 | 20 |  |  |
 | Shared cost factors: kWh, water, salt, losses (factors.json) |  |  | 6 |  |  | 64 |
-| Per-item retail prices (demand-items.json) |  | 287 | 609 |  |  | 10 |
+| Per-item retail prices (demand-items.json) |  | 292 | 619 |  |  | 10 |
 | Filter and heater specs (data/gear/) |  | 499 |  |  |  | 141 |
 | Tank sizes and prices (tanks.json) |  | 3490 | 22 | 3 |  | 134 |
 | Kit specs and prices (kits.json) |  | 207 |  |  |  |  |
@@ -193,8 +193,8 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | `NEEDS *.dosing` | 12 | band and dosing per coral after reef PAR charts; no per-coral page recorded |
 | `FRESH_TIERS *.{lo,mode,hi}` | 10 | Nathan's PAR tiers, following the planted-tank convention |
 | `REEF_TIERS *.{lo,mode,hi}` | 2 | fish-only tier from the PAR chart |
-| `BODYMASS *.a` | 64 | FishBase has no length-weight row (shrimp, snails, herps): a "keeper-reference" typical adult mass turned into a, b; the reference was not recorded |
-| `BODYMASS *.b` | 64 | FishBase has no length-weight row (shrimp, snails, herps): a "keeper-reference" typical adult mass turned into a, b; the reference was not recorded |
+| `BODYMASS *.a` | 69 | FishBase has no length-weight row (shrimp, snails, herps): a "keeper-reference" typical adult mass turned into a, b; the reference was not recorded |
+| `BODYMASS *.b` | 69 | FishBase has no length-weight row (shrimp, snails, herps): a "keeper-reference" typical adult mass turned into a, b; the reference was not recorded |
 | `TECH gear.*.monthly.months` | 2 | how long a pack lasts at the ref size, "researched 2026-10-19, step 2"; pages not recorded |
 | `FACTORS *.{lo,mode,hi}` | 2 | the lo / hi band is the cheapest and dearest US states, read by eye; not checked per state |
 
@@ -202,8 +202,8 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 
 | field | values |
 |---|---|
-| `CARE *.temp.*` | 220 |
-| `CARE *.tol.*` | 218 |
+| `CARE *.temp.*` | 230 |
+| `CARE *.tol.*` | 228 |
 | `CARE *.territory.at.*.*` | 32 |
 | `CARE *.bands.ok` | 29 |
 | `CARE *.bands.good` | 29 |

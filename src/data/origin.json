@@ -131,5 +131,10 @@
  "purplepincher": {"c": ["caribbean"], "r": "Caribbean islands, southern Florida to Venezuela", "s": "SeaLifeBase"},
  "tailspotblenny": {"c": ["indopacific"], "r": "Western Pacific: Philippines and Indonesia", "s": "FishBase"},
  "yellowtailblue": {"c": ["indopacific"], "r": "Western Pacific: Solomon Islands, northern Papua New Guinea, Philippines and the Ryukyu Islands", "s": "FishBase"},
- "pajamacardinal": {"c": ["indopacific"], "r": "Indo-Pacific: Java to Fiji, north to the Ryukyu Islands, south to the Great Barrier Reef", "s": "FishBase"}
+ "pajamacardinal": {"c": ["indopacific"], "r": "Indo-Pacific: Java to Fiji, north to the Ryukyu Islands, south to the Great Barrier Reef", "s": "FishBase"},
+ "orchiddottyback": {"c": ["redsea"], "r": "Western Indian Ocean: known only from the Red Sea", "s": "FishBase"},
+ "lawnmowerblenny": {"c": ["indopacific"], "r": "Indo-Pacific: Red Sea and East Africa to Samoa, north to the Ryukyu Islands", "s": "FishBase"},
+ "flameangel": {"c": ["indopacific"], "r": "Pacific Ocean, mainly tropical waters (most common in the Marshall, Line and Cook Islands)", "s": "FishBase"},
+ "foxface": {"c": ["indopacific"], "r": "Western Pacific: western Philippines, Indonesia, New Guinea, Great Barrier Reef, east to Kiribati and Tonga", "s": "FishBase"},
+ "koletang": {"c": ["indopacific"], "r": "Eastern Central Pacific: endemic to the Hawaiian Islands and Johnston Island", "s": "FishBase"}
 }

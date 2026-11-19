@@ -85,6 +85,11 @@ export const CARE: Record<string, AnimalCare> = {
   cherryshrimp: A(1, 20, 0, [18, 26]), amano: A(1, 40, 0, [18, 26]), nerite: A(1, 8, 0, [22, 28]), mystery: A(1, 19, 0, [20, 26]),
   ramshorn: A(1, 5, 0, [18, 28]), trumpet: A(1, 20, 0, [18, 28]),
   ocellaris: A(1, 57, 1, [24, 27]), royalgramma: A(1, 115, 0, [24, 27], { solo: true }), yellowtang: A(1, 379, 1, [24, 27], { solo: true, fam: 'tang' }),
+  koletang: A(1, 265, 1, [24, 26], { solo: true, fam: 'bristletooth', preyChecked: true }), // RX2 (R139 phase 2, 2026-11-19)
+  foxface: A(1, 473, 0, [24, 26], { solo: true, fam: 'rabbitfish', preyChecked: true }), // RX2 (R139 phase 2, 2026-11-19)
+  flameangel: A(2, 265, 1, [22, 26], { solo: true, fam: 'dwarfangel', preyChecked: true }), // RX2 (R139 phase 2, 2026-11-19)
+  lawnmowerblenny: A(2, 208, 0, [24, 26], { solo: true, fam: 'blenny', preyChecked: true }), // RX2 (R139 phase 2, 2026-11-19)
+  orchiddottyback: A(1, 114, 1, [24, 26], { solo: true, fam: 'dottyback', preyChecked: true }), // RX2 (R139 phase 2, 2026-11-19)
   pajamacardinal: A(1, 114, 0, [22, 26], { preyChecked: true }), // RX2 (R139 phase 2, 2026-11-19)
   yellowtailblue: A(1, 114, 1, [22, 26], { preyChecked: true }), // RX2 (R139 phase 2, 2026-11-19)
   tailspotblenny: A(1, 38, 0, [24, 26], { solo: true, fam: 'blenny', preyChecked: true }), // RX2 (R139 phase 2, 2026-11-19)
