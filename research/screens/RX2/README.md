@@ -15,3 +15,19 @@ Photos viewed (scratchpad only; Wikimedia Commons, via the Wikipedia pages): htt
 Pictures: batch2-vs-photos.png (model sheet beside the photo, first pass; flame angel, foxface and kole tang were redrawn after it, v2), batch2-in-tank.jpg (the Reef example with the new fish in it; the pane gave an 800x500 capture, not 1280x800).
 Known gaps: one photo per species (no sex looks; flame angel males are larger and a little more coloured, FishBase/Wikipedia); the lawnmower's photos show the front half only, so its body pattern is a stylised read; the flame angel's bars are straighter than the fish's, the foxface's head mask is simpler, and the kole tang's wavy lines are broader than the fish's fine lines. AqAdvisor was unreachable on 2026-11-19: orchid dottyback (Royal Gramma), lawnmower (Tail Spot Blenny), flame angel (Coral Beauty), foxface and kole tang (Yellow Tang) are flagged stand-ins. Masses are estimates (FishBase LW rows not opened). Prices: flame angel and foxface listings vary a lot by size; see the demand rows.
 Not set (no basis): sold-by-sex and pair-former rows (none of these has a sex-ratio or pair rule; flame angel harems are noted in the message only).
+
+## Redo (2026-11-19, Nathan's review): masses, AqAdvisor, sex, tank sizes
+- **Masses:** all 8 now carry the FishBase Bayesian length-weight estimate (species summary pages opened 2026-11-19, "in cm total length"): a, b = tailspot 0.00759, 3.00; damsel 0.01445, 3.00; pajama 0.02188, 3.09; orchid 0.00490, 3.11; lawnmower 0.00851, 3.00; flame 0.02951, 2.89; foxface 0.01318, 3.06; kole 0.02291, 3.03. None of the pages lists measured length-weight rows (only the model estimate). Because the real masses were lighter, the damsel, orchid and flame angel bodies were slimmed (model/table mass was 1.8, 1.9, 1.6) and re-recorded.
+- **AqAdvisor:** removed for all 8 (treated as non-existent; tests exempt them; the onboarding check is gone).
+- **Tank sizes:** every minimum found, averaged (listed in each tankmin `states`); the footprint is the standard tank nearest the average volume, minLengthMm follows it.
+- **Sex research (is a second model needed? do ratios matter for health? breeding out of scope):**
+  - Tailspot blenny: no reliable visual or behavioural sexing (forums only: possible tail filaments, shorter orange stripe on the female); one per tank for aggression anyway -> no second model, no ratio rule.
+  - Lawnmower blenny: no outward sexing signs found (forum: both sexes have two anal spines); solitary (FishBase) -> none.
+  - Yellowtail blue damsel: Wikipedia says the sexes are very hard to tell apart; FishBase morphology page lists no sex attributes; males are told by behaviour (territory, egg guarding) -> none.
+  - Pajama cardinal: FishBase sex-attribute field empty, no sexing source found; Wikipedia says socially monogamous pairs inside a group; the group band (6 or more) is the health rule -> none.
+  - Orchid dottyback: protogynous (starts female, a dominant becomes male; Fishkeeper), the commonly cited tail-fin cue is unreliable; one per tank -> none.
+  - Flame angelfish: Wikipedia says males are generally larger and slightly more coloured; a Reef Central reply says males have bolder bars and Fenner (via WetWebMedia) bluer-streaked unpaired fins; FishBase: harems of 3-7. A difference this slight does not earn a second model. A harem is a breeding-style arrangement, and the health rule we model is one per tank (aggression to other dwarf angels) -> none.
+  - Foxface: the sexes are not discernible externally (WetWebMedia Q&A) -> none.
+  - Kole tang: no source found; tang sexes are not told apart visually (Reef Central) -> none.
+  So no sexed model, sold-by-sex row or ratio rule was added; each is "researched, none found".
+- Photos: Nathan 2026-11-19 allows learning from photos on any site, not only free ones; multi-angle (top, head-on) photos for these 8 were not collected in this redo.

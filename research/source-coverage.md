@@ -11,7 +11,7 @@ when it carries the url of the listing it was read from and does not mark the fi
 
 | | values | cited | fitted | derived | researched | claimed | assumption | unsourced | strong |
 |---|---|---|---|---|---|---|---|---|---|
-| **all data** | 10225 | 5728 (56 %) | 84 (1 %) | 316 (3 %) | 1175 (11 %) | 1010 (10 %) | 1429 (14 %) | 483 (5 %) | 60 % |
+| **all data** | 10225 | 5744 (56 %) | 84 (1 %) | 316 (3 %) | 1175 (11 %) | 994 (10 %) | 1429 (14 %) | 483 (5 %) | 60 % |
 | Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) | 2179 | 364 |  | 80 | 674 | 674 | 386 | 1 | 20 % |
 | Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM) | 436 | 234 |  | 116 | 80 |  | 6 |  | 80 % |
 | Adult length per species (species.json tl) | 167 | 57 |  | 72 | 17 |  | 21 |  | 77 % |
@@ -21,7 +21,7 @@ when it carries the url of the listing it was read from and does not mark the fi
 | Plant and coral light, CO2, fertiliser, dosing (scene/lightneeds.ts) | 182 |  |  |  |  | 182 |  |  | 0 % |
 | Freshwater PAR tiers | 10 |  |  |  |  | 10 |  |  | 0 % |
 | Reef PAR tiers | 8 | 6 |  |  |  | 2 |  |  | 75 % |
-| Body mass (length-weight a, b) for the stocking engine | 276 | 138 |  |  |  | 138 |  |  | 50 % |
+| Body mass (length-weight a, b) for the stocking engine | 276 | 154 |  |  |  | 122 |  |  | 56 % |
 | Per-species space factors | 79 |  | 79 |  |  |  |  |  | 100 % |
 | Space factor classes | 5 |  | 5 |  |  |  |  |  | 100 % |
 | Biological media litres per filter (data/filtermedia.ts) | 18 | 13 |  | 5 |  |  |  |  | 100 % |
@@ -43,7 +43,7 @@ when a page is cited beside it, and `says` in src/data/provenance.ts keeps the p
 
 | | measured | source-stated | TankLook interpretation | derived calculation | conservative default | unsourced |
 |---|---|---|---|---|---|---|
-| **all data** | 2 (0 %) | 5785 (57 %) | 3509 (34 %) | 400 (4 %) | 46 (0 %) | 483 (5 %) |
+| **all data** | 2 (0 %) | 5801 (57 %) | 3493 (34 %) | 400 (4 %) | 46 (0 %) | 483 (5 %) |
 | Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts) |  | 409 | 1645 | 80 | 44 | 1 |
 | Tank minimum red / green lines, heights, depth notes, advisory gallons (tankmin.json, lane MM) |  | 234 | 86 | 116 |  |  |
 | Adult length per species (species.json tl) |  | 74 | 21 | 72 |  |  |
@@ -53,7 +53,7 @@ when a page is cited beside it, and `says` in src/data/provenance.ts keeps the p
 | Plant and coral light, CO2, fertiliser, dosing (scene/lightneeds.ts) |  |  | 182 |  |  |  |
 | Freshwater PAR tiers |  |  | 10 |  |  |  |
 | Reef PAR tiers |  | 6 | 2 |  |  |  |
-| Body mass (length-weight a, b) for the stocking engine | 2 | 136 | 138 |  |  |  |
+| Body mass (length-weight a, b) for the stocking engine | 2 | 152 | 122 |  |  |  |
 | Per-species space factors |  |  |  | 79 |  |  |
 | Space factor classes |  |  |  | 5 |  |  |
 | Biological media litres per filter (data/filtermedia.ts) |  | 13 |  | 5 |  |  |
@@ -193,8 +193,8 @@ Numbers written inline in those files' functions (not counted above, a by-hand r
 | `NEEDS *.dosing` | 12 | band and dosing per coral after reef PAR charts; no per-coral page recorded |
 | `FRESH_TIERS *.{lo,mode,hi}` | 10 | Nathan's PAR tiers, following the planted-tank convention |
 | `REEF_TIERS *.{lo,mode,hi}` | 2 | fish-only tier from the PAR chart |
-| `BODYMASS *.a` | 69 | FishBase has no length-weight row (shrimp, snails, herps): a "keeper-reference" typical adult mass turned into a, b; the reference was not recorded |
-| `BODYMASS *.b` | 69 | FishBase has no length-weight row (shrimp, snails, herps): a "keeper-reference" typical adult mass turned into a, b; the reference was not recorded |
+| `BODYMASS *.a` | 61 | FishBase has no length-weight row (shrimp, snails, herps): a "keeper-reference" typical adult mass turned into a, b; the reference was not recorded |
+| `BODYMASS *.b` | 61 | FishBase has no length-weight row (shrimp, snails, herps): a "keeper-reference" typical adult mass turned into a, b; the reference was not recorded |
 | `TECH gear.*.monthly.months` | 2 | how long a pack lasts at the ref size, "researched 2026-10-19, step 2"; pages not recorded |
 | `FACTORS *.{lo,mode,hi}` | 2 | the lo / hi band is the cheapest and dearest US states, read by eye; not checked per state |
 

@@ -636,51 +636,43 @@
   "note": "typical adult mass 0.02 g (judgement from a 12 mm adult; scales with length cubed)"
  },
  "tailspotblenny": {
-  "a": 0.0109,
-  "b": 3,
-  "src": "estimate",
-  "note": "typical adult mass 3 g (judgement from a 2.5 in blenny; FishBase LW row not opened)"
+  "a": 0.00759,
+  "b": 3.0,
+  "src": "fishbase-bayes"
  },
  "yellowtailblue": {
-  "a": 0.0213,
-  "b": 3,
-  "src": "estimate",
-  "note": "typical adult mass 9 g (judgement from a 3 in damsel; FishBase LW row not opened)"
+  "a": 0.01445,
+  "b": 3.0,
+  "src": "fishbase-bayes"
  },
  "pajamacardinal": {
-  "a": 0.0176,
-  "b": 3,
-  "src": "estimate",
-  "note": "typical adult mass 9 g (judgement from a 3.3 in cardinalfish; FishBase LW row not opened)"
+  "a": 0.02188,
+  "b": 3.09,
+  "src": "fishbase-bayes"
  },
  "orchiddottyback": {
-  "a": 0.0126,
-  "b": 3,
-  "src": "estimate",
-  "note": "typical adult mass 5 g (judgement from a 3 in dottyback; FishBase LW row not opened)"
+  "a": 0.0049,
+  "b": 3.11,
+  "src": "fishbase-bayes"
  },
  "lawnmowerblenny": {
-  "a": 0.0073,
-  "b": 3,
-  "src": "estimate",
-  "note": "typical adult mass 20 g (judgement from a 5-6 in blenny; FishBase LW row not opened)"
+  "a": 0.00851,
+  "b": 3.0,
+  "src": "fishbase-bayes"
  },
  "flameangel": {
-  "a": 0.0293,
-  "b": 3,
-  "src": "estimate",
-  "note": "mass of a fish at the 15 cm FishBase maximum, about 100 g (a 4 in aquarium fish weighs about 25 g); FishBase LW row not opened"
+  "a": 0.02951,
+  "b": 2.89,
+  "src": "fishbase-bayes"
  },
  "foxface": {
-  "a": 0.0153,
-  "b": 3,
-  "src": "estimate",
-  "note": "typical adult mass 150 g (judgement from a 9 in rabbitfish; FishBase LW row not opened)"
+  "a": 0.01318,
+  "b": 3.06,
+  "src": "fishbase-bayes"
  },
  "koletang": {
-  "a": 0.0173,
-  "b": 3,
-  "src": "estimate",
-  "note": "typical adult mass 100 g (judgement from a 7 in tang; FishBase LW row not opened)"
+  "a": 0.02291,
+  "b": 3.03,
+  "src": "fishbase-bayes"
  }
 }

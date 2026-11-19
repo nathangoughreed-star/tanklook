@@ -15,7 +15,6 @@ import { NEEDS } from '../src/data/careNeeds';
 import { HOVER } from '../src/scene/fishBehavior';
 import { minDataOf } from '../src/scene/tankMin';
 import bodymass from '../src/data/bodymass.json';
-import aqadvisor from '../src/data/aqadvisor.json';
 import demand from '../src/data/demand-items.json';
 import versions from '../src/data/model-versions.json';
 
@@ -50,7 +49,7 @@ const CHECKS: Record<string, (s: Species) => string | null> = {
   bodymass: s => ((bodymass as any).species[s.id] ? null : 'bodymass.json needs a row'),
   behaviour: s => (HOVER[s.id] ? null : 'fishBehavior.ts HOVER needs a row'),
   'space-factor': s => (SPACE_FACTOR[s.id] ? null : 'spacefactor.ts needs a row (a class-matched factor with its note)'),
-  aqadvisor: s => ((aqadvisor as any)[s.id] ? null : 'aqadvisor.json needs an id (a stand-in is allowed, flagged standIn)'),
+  // (AqAdvisor is not a data touch point any more: Nathan 2026-11-19, treat it as if it does not exist)
   demand: s => ((demand as any).rows['animal:' + s.id] ? null : 'demand-items.json needs an animal:<id> cost row'),
   gallery: s => { return existsSync(`public/gallery/${s.look}.webp`) ? null : 'no baked gallery picture (node scripts/bake-gallery.mjs)'; },
   'model-record': s => { const miss = looksOf(s).filter(l => !(versions as any).models[l]); return miss.length ? 'no model-versions record for ' + miss.join(', ') : null; },

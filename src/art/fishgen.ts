@@ -783,7 +783,7 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'band', u0: 0, u1: 1, v0: -1, v1: 1, c: '#b8643a', a: 0.15, f: 0.1 }], eye: { r: 0.042, iris: ['#f08a18', '#14100c'], u: 0.88, dv: -0.03 } },
   // yellowtail blue damselfish, https://en.wikipedia.org/wiki/Chrysiptera_parasema (Wikimedia Commons aquarium photo): a deep oval electric blue body with dark scale edges,
   // a dark streak and pale blue rings round the eye, a dark spot at the pectoral base, blue fins, and only the tail yellow-orange with a clear pale edge
-  yellowtailblue: { gape: 0.03, gapeDrop: 0.004, scale: 0.018, thick: 0.36, depth: 0.46, pedU: 0.22, ped: 0.065, peak: 0.55, snout: 0.5, mouth: 0.0, shade: ['#1670e4', '#1fa0f4', '#58d0fa'], tail: { type: 'notch', h: 0.2, tint: '#f4a812', edge: '#d8e8f0' }, fin: '#2a7ae0',
+  yellowtailblue: { gape: 0.03, gapeDrop: 0.004, scale: 0.018, thick: 0.30, depth: 0.44, pedU: 0.22, ped: 0.065, peak: 0.55, snout: 0.5, mouth: 0.0, shade: ['#1670e4', '#1fa0f4', '#58d0fa'], tail: { type: 'notch', h: 0.2, tint: '#f4a812', edge: '#d8e8f0' }, fin: '#2a7ae0',
     dorsal: { at: 0.8, len: 0.62, h: 0.15, spines: 0.55, nSp: 12, spineH: [0.07, 0.1], notch: 0.15, rake: 0.5, tip: 'point', trail: 0.06, drop: 0.7 },
     anal: { at: 0.5, len: 0.3, h: 0.14, spines: 0.2, nSp: 2, spineH: [0.06, 0.1], notch: 0.15, rake: 0.5, tip: 'point', trail: 0.05, drop: 0.7 }, pelvic: { u: 0.66, len: 0.12, tint: '#2a7ae0' }, pec: { s: 1.1, v: 0.55 },
     marks: [{ k: 'band', u0: 0.78, u1: 0.97, v0: -0.12, v1: -0.07, c: '#1a2a50', a: 0.6, f: 0.01 }, { k: 'blob', u: 0.7, v: 0.06, ru: 0.014, rv: 0.03, c: '#101828', a: 0.95 }],
@@ -797,7 +797,7 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [], eye: { r: 0.045, iris: ['#e8582a', '#1a0a06'], u: 0.84, dv: -0.03 } },
   // orchid dottyback, Commons photo of Pseudochromis fridmani (Yeda, 2025-05-19, "Perca enana de Fridman", via https://en.wikipedia.org/wiki/Pseudochromis_fridmani): slender, the whole fish a flat vivid magenta-violet,
   // a thin dark line through the eye, one long dorsal and a long anal reaching the tail, a rounded tail with a pointed lower lobe, small pelvics
-  orchiddottyback: { gape: 0.04, gapeDrop: 0.004, scale: 0, thick: 0.6, depth: 0.23, pedU: 0.2, ped: 0.05, peak: 0.72, snout: 0.7, mouth: -0.01, shade: ['#8a1ed0', '#9a2cdc', '#a844e0'], tail: { type: 'round', h: 0.14, tint: '#9a2cdc' }, fin: '#9a2cdc',
+  orchiddottyback: { gape: 0.04, gapeDrop: 0.004, scale: 0, thick: 0.5, depth: 0.21, pedU: 0.2, ped: 0.05, peak: 0.72, snout: 0.7, mouth: -0.01, shade: ['#8a1ed0', '#9a2cdc', '#a844e0'], tail: { type: 'round', h: 0.14, tint: '#9a2cdc' }, fin: '#9a2cdc',
     dorsal: { at: 0.82, len: 0.62, h: 0.06, spines: 0.3, nSp: 3, spineH: [0.03, 0.05], rake: 0.7, tip: 'point', trail: 0.03, drop: 0.5, tint: '#9020d4' },
     anal: { at: 0.5, len: 0.34, h: 0.055, rake: 0.7, tip: 'point', trail: 0.03, tint: '#9020d4' }, pelvic: { u: 0.74, len: 0.1, tint: '#9a2cdc' }, pec: { s: 0.9, v: 0.58 },
     marks: [{ k: 'band', u0: 0.86, u1: 0.97, v0: -0.085, v1: -0.07, c: '#10061a', a: 0.9, f: 0.004 }], finMarks: [], eye: { r: 0.03, iris: ['#a85ae0', '#10061a'], u: 0.89, dv: -0.075 } },
@@ -810,7 +810,7 @@ export const PLANS: Record<string, Plan> = {
     finMarks: [{ k: 'spots', n: 12, u0: 0.1, u1: 0.8, v0: -0.4, v1: 0.1, r: 0.012, c: '#d88a3a', a: 0.8 }], eye: { r: 0.04, iris: ['#c88a3a', '#14100c'], u: 0.9, dv: -0.06 } },
   // flame angelfish, Commons photo "Flame angelfish (Centropyge loricula).jpg" (https://en.wikipedia.org/wiki/Flame_angelfish): an oval, bright orange-red body that is yellower mid-flank, four or five broad black bars running down from the back
   // (slightly curved, the first through the pectoral base), a red head and belly, a deep blue rear dorsal and anal fin crossed by black bars, a translucent yellow-orange tail, a small gill spine
-  flameangel: { gape: 0.03, gapeDrop: 0.006, scale: 0.016, thick: 0.38, depth: 0.52, pedU: 0.2, ped: 0.07, peak: 0.55, snout: 0.6, mouth: 0.01, angular: 0.2, shade: ['#e8420c', '#f4781a', '#e8522a'], tail: { type: 'round', h: 0.22, tint: '#f0b040', a: 0.8 }, fin: '#e8420c',
+  flameangel: { gape: 0.03, gapeDrop: 0.006, scale: 0.016, thick: 0.34, depth: 0.52, pedU: 0.2, ped: 0.07, peak: 0.55, snout: 0.6, mouth: 0.01, angular: 0.2, shade: ['#e8420c', '#f4781a', '#e8522a'], tail: { type: 'round', h: 0.22, tint: '#f0b040', a: 0.8 }, fin: '#e8420c',
     dorsal: { at: 0.78, len: 0.6, h: 0.12, spines: 0.45, nSp: 14, spineH: [0.07, 0.09], notch: 0.1, rake: 0.8, tip: 'round', trail: 0.1, drop: 0.55, tint: '#1a1ab8', a: 1, edge: '#2a40e8' },
     anal: { at: 0.6, len: 0.34, h: 0.12, spines: 0.2, nSp: 3, spineH: [0.07, 0.1], notch: 0.1, rake: 0.8, tip: 'round', trail: 0.1, drop: 0.55, tint: '#1a1ab8', a: 1, edge: '#2a40e8' }, pelvic: { u: 0.62, len: 0.12, tint: '#e8522a' }, pec: { s: 1, v: 0.55 },
     marks: [{ k: 'band', u0: 0.5, u1: 0.78, v0: -1, v1: 1, c: '#f8a018', a: 0.7, f: 0.1 }, { k: 'bars', us: [0.73, 0.62, 0.51, 0.4, 0.29], w: 0.03, c: '#1a0c08', a: 0.9 }, { k: 'band', u0: 0.84, u1: 1, v0: -1, v1: 1, c: '#e8300a', a: 0.6, f: 0.05 }],

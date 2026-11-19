@@ -3,11 +3,11 @@
  "constUnsourced": 0,
  "total": 10225,
  "byStatus": {
-  "cited": 5728,
+  "cited": 5744,
   "fitted": 84,
   "derived": 316,
   "researched": 1175,
-  "claimed": 1010,
+  "claimed": 994,
   "assumption": 1429,
   "unsourced": 483
  }

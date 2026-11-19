@@ -2713,97 +2713,97 @@
     "est": true,
     "site": "LiveAquaria",
     "url": "https://liveaquaria.com/product/2229/tail-spot-blenny",
-    "states": "Minimum Tank Size: 10 Gallons",
+    "states": "every figure found, averaged: LiveAquaria 10 gal; Quality Marine 10 gal; SaltwaterFish 10 gal; a care guide 8 gal; Fantasea Aquariums 15 gal; Aquarium Domain 20 gal = 12.2 gal",
     "from": "volume",
     "ref": "g10"
    },
    "vol": {
-    "gal": 10,
-    "mark": "sourced",
-    "site": "LiveAquaria",
+    "gal": 12,
+    "mark": "derived (est)",
+    "site": "averaged retail and care pages",
     "url": "https://liveaquaria.com/product/2229/tail-spot-blenny"
    },
-   "why": "one retailer page: 10 gal; the footprint is the standard 10 gal tank because the page gives no base (other shops say 8-20 gal; one wants a long, low tank)"
+   "why": "the mean of every minimum found (6 figures: LiveAquaria 10 gal; Quality Marine 10 gal; SaltwaterFish 10 gal; a care guide 8 gal; Fantasea Aquariums 15 gal; Aquarium Domain 20 gal), 12 gal; the footprint is the standard g10 tank (504 x 257 mm) nearest that volume, because the pages give no base"
   },
   "yellowtailblue": {
    "red": {
-    "L": 902,
-    "W": 445,
+    "L": 756,
+    "W": 306,
     "mark": "derived (est)",
     "est": true,
     "site": "LiveAquaria",
     "url": "https://m.liveaquaria.com/product/134/?pcatid=134",
-    "states": "Minimum Tank Size 30 gallons",
+    "states": "every figure found, averaged: LiveAquaria 30 gal; Wikipedia 30 gal; SaltwaterFish 30 gal; Reefs.com 30 gal; Animal-World 20 gal = 28.0 gal",
     "from": "volume",
-    "ref": "g30b"
+    "ref": "g29"
    },
    "vol": {
-    "gal": 30,
-    "mark": "sourced",
-    "site": "LiveAquaria",
+    "gal": 28,
+    "mark": "derived (est)",
+    "site": "averaged retail and care pages",
     "url": "https://m.liveaquaria.com/product/134/?pcatid=134"
    },
-   "why": "one retailer page: 30 gal; the footprint is the standard 30 gal breeder because the page gives no base (Animal-World: 20 gal for one fish or a pair)"
+   "why": "the mean of every minimum found (5 figures: LiveAquaria 30 gal; Wikipedia 30 gal; SaltwaterFish 30 gal; Reefs.com 30 gal; Animal-World 20 gal), 28 gal; the footprint is the standard g29 tank (756 x 306 mm) nearest that volume, because the pages give no base"
   },
   "pajamacardinal": {
    "red": {
-    "L": 902,
-    "W": 445,
+    "L": 756,
+    "W": 306,
     "mark": "derived (est)",
     "est": true,
-    "site": "LiveAquaria",
+    "site": "averaged retail and care pages",
     "url": "https://liveaquaria.com/product/5199/pajama-cardinalfish-group",
-    "states": "Minimum tank size: 30 gallons (group listing); single listings 20 gallons",
+    "states": "every figure found, averaged: LiveAquaria group 30 gal; LiveAquaria single 20 gal; Petco 30 gal; ORA 20 gal; Reefapp 26 gal; a care guide 30 gal = 26.0 gal",
     "from": "volume",
-    "ref": "g30b"
+    "ref": "g29"
    },
    "vol": {
-    "gal": 30,
-    "mark": "sourced",
-    "site": "LiveAquaria",
+    "gal": 26,
+    "mark": "derived (est)",
+    "site": "averaged retail and care pages",
     "url": "https://liveaquaria.com/product/5199/pajama-cardinalfish-group"
    },
-   "why": "one retailer group page: 30 gal; the footprint is the standard 30 gal breeder because the page gives no base"
+   "why": "the mean of every minimum found (6 figures: LiveAquaria group 30 gal; LiveAquaria single 20 gal; Petco 30 gal; ORA 20 gal; Reefapp 26 gal; a care guide 30 gal), 26 gal; the footprint is the standard g29 tank (756 x 306 mm) nearest that volume, because the pages give no base"
   },
   "orchiddottyback": {
    "red": {
-    "L": 902,
-    "W": 445,
+    "L": 756,
+    "W": 306,
     "mark": "derived (est)",
     "est": true,
     "site": "LiveAquaria",
     "url": "https://www.liveaquaria.com/product/162/?pcatid=162",
-    "states": "Minimum Tank Size 30 gallons",
+    "states": "every figure found, averaged: LiveAquaria 30 gal; Bulk Reef Supply 20 gal; Reefs.com 50 gal; Microcosm 10 gal = 27.5 gal",
+    "from": "volume",
+    "ref": "g29"
+   },
+   "vol": {
+    "gal": 28,
+    "mark": "derived (est)",
+    "site": "averaged retail and care pages",
+    "url": "https://www.liveaquaria.com/product/162/?pcatid=162"
+   },
+   "why": "the mean of every minimum found (4 figures: LiveAquaria 30 gal; Bulk Reef Supply 20 gal; Reefs.com 50 gal; Microcosm 10 gal), 28 gal; the footprint is the standard g29 tank (756 x 306 mm) nearest that volume, because the pages give no base"
+  },
+  "lawnmowerblenny": {
+   "red": {
+    "L": 902,
+    "W": 445,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged retail and care pages",
+    "url": "https://www.aquariumsource.com/lawnmower-blenny/",
+    "states": "every figure found, averaged: retail pages, low end 30 gal; several guides 40 gal; single-fish high end 55 gal = 41.7 gal",
     "from": "volume",
     "ref": "g30b"
    },
    "vol": {
-    "gal": 30,
-    "mark": "sourced",
-    "site": "LiveAquaria",
-    "url": "https://www.liveaquaria.com/product/162/?pcatid=162"
-   },
-   "why": "one retailer page: 30 gal; the footprint is the standard 30 gal breeder because the page gives no base (other pages say 10, 20 and 50 gal)"
-  },
-  "lawnmowerblenny": {
-   "red": {
-    "L": 1220,
-    "W": 458,
+    "gal": 42,
     "mark": "derived (est)",
-    "est": true,
-    "site": "Aquarium Source and other care guides",
-    "url": "https://www.aquariumsource.com/lawnmower-blenny/",
-    "states": "guides range from 30+ gal to 55 gal for a single fish (search summary 2026-11-19; the pages were not opened)",
-    "from": "volume",
-    "ref": "g60b"
-   },
-   "vol": {
-    "gal": 55,
-    "mark": "sourced",
-    "site": "Aquarium Source and other care guides",
+    "site": "averaged retail and care pages",
     "url": "https://www.aquariumsource.com/lawnmower-blenny/"
    },
-   "why": "care guides give 30+ to 55 gal; we keep 55, the larger, with the 60 gal breeder footprint as the nearest standard tank (no page gives a base)"
+   "why": "the mean of every minimum found (3 figures: retail pages, low end 30 gal; several guides 40 gal; single-fish high end 55 gal), 42 gal; the footprint is the standard g30b tank (902 x 445 mm) nearest that volume, because the pages give no base"
   },
   "flameangel": {
    "red": {
@@ -2813,37 +2813,37 @@
     "est": true,
     "site": "LiveAquaria",
     "url": "https://liveaquaria.com/product/7935/flame-angelfish",
-    "states": "Minimum Tank Size 70 gallons",
+    "states": "every figure found, averaged: LiveAquaria 70 gal; Fish Laboratory 70 gal; SaltwaterFish (30+ table, 50 text) 40 gal; That Pet Place 45 gal; a guide (220 L) 58 gal = 56.6 gal",
     "from": "volume",
-    "ref": "g75"
+    "ref": "g60b"
    },
    "vol": {
-    "gal": 70,
-    "mark": "sourced",
-    "site": "LiveAquaria",
+    "gal": 57,
+    "mark": "derived (est)",
+    "site": "averaged retail and care pages",
     "url": "https://liveaquaria.com/product/7935/flame-angelfish"
    },
-   "why": "one retailer page: 70 gal; the footprint is the standard 75 gal tank because the page gives no base (others say 30+, 45, 50)"
+   "why": "the mean of every minimum found (5 figures: LiveAquaria 70 gal; Fish Laboratory 70 gal; SaltwaterFish (30+ table, 50 text) 40 gal; That Pet Place 45 gal; a guide (220 L) 58 gal), 57 gal; the footprint is the standard g60b tank (1220 x 458 mm) nearest that volume, because the pages give no base"
   },
   "foxface": {
    "red": {
-    "L": 1809,
-    "W": 590,
+    "L": 1216,
+    "W": 454,
     "mark": "derived (est)",
     "est": true,
-    "site": "LiveAquaria",
+    "site": "averaged retail and care pages",
     "url": "https://m.liveaquaria.com/product/687/?pcatid=687",
-    "states": "lists 125 gallons (search summary 2026-11-19; the page was not opened)",
+    "states": "every figure found, averaged: SaltwaterFish juvenile 40 gal; guides 75 gal; guides 100 gal; LiveAquaria 125 gal = 85.0 gal",
     "from": "volume",
-    "ref": "g180"
+    "ref": "g90"
    },
    "vol": {
-    "gal": 125,
-    "mark": "sourced",
-    "site": "LiveAquaria",
+    "gal": 85,
+    "mark": "derived (est)",
+    "site": "averaged retail and care pages",
     "url": "https://m.liveaquaria.com/product/687/?pcatid=687"
    },
-   "why": "one retailer: 125 gal; our nearest standard tank is the 180 gal (no 125 in the table), so the footprint is a derived estimate (other guides say 75-100 gal)"
+   "why": "the mean of every minimum found (4 figures: SaltwaterFish juvenile 40 gal; guides 75 gal; guides 100 gal; LiveAquaria 125 gal), 85 gal; the footprint is the standard g90 tank (1216 x 454 mm) nearest that volume, because the pages give no base"
   },
   "koletang": {
    "red": {
@@ -2851,19 +2851,19 @@
     "W": 458,
     "mark": "derived (est)",
     "est": true,
-    "site": "LiveAquaria",
+    "site": "averaged retail and care pages",
     "url": "https://liveaquaria.com/product/345/?pcatid=345",
-    "states": "Minimum tank 70 gallons (search summary 2026-11-19; the page was not opened)",
+    "states": "every figure found, averaged: Aquarium Domain 65 gal; LiveAquaria 70 gal; Reefs.com 70 gal; SaltwaterFish 120 gal = 81.2 gal",
     "from": "volume",
     "ref": "g75"
    },
    "vol": {
-    "gal": 70,
-    "mark": "sourced",
-    "site": "LiveAquaria",
+    "gal": 81,
+    "mark": "derived (est)",
+    "site": "averaged retail and care pages",
     "url": "https://liveaquaria.com/product/345/?pcatid=345"
    },
-   "why": "one retailer: 70 gal (others 65-125); the footprint is the standard 75 gal tank because no page gives a base"
+   "why": "the mean of every minimum found (4 figures: Aquarium Domain 65 gal; LiveAquaria 70 gal; Reefs.com 70 gal; SaltwaterFish 120 gal), 81 gal; the footprint is the standard g75 tank (1220 x 458 mm) nearest that volume, because the pages give no base"
   }
  }
 }
