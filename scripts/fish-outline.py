@@ -45,13 +45,16 @@ def shift_reduce(m, r, op):
     return out
 
 
-def blue_body(a, full, thr, r_close, r_open):
+def blue_body(a, full, thr, r_close, r_open, bright=0):
     """Body = mask pixels whose blue share B/(R+B) is high (the body is blue-purple, the fins pink-red), blurred a little,
     closed over scale gaps, then opened to drop thin leftovers. Photo-specific: only valid when body and fin hues differ."""
     r, b = a[..., 0].astype(float), a[..., 2].astype(float)
     q = np.where(full, b / (r + b + 1e-6), 0.0)
     qb = np.asarray(Image.fromarray((q * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(2.5))).astype(float) / 255.0
     m = full & (qb > thr)
+    if bright:  # fins are darker than the flank in some photos (translucent): also keep bright pixels
+        mx = np.asarray(Image.fromarray(a.max(2).astype(np.uint8)).filter(ImageFilter.GaussianBlur(2.5))).astype(float)
+        m = m | (full & (mx > bright))
     m = shift_reduce(shift_reduce(m, r_close, np.logical_or), r_close, np.logical_and)  # closing
     m = opening(m, r_open)
     return largest_blob(m)
@@ -129,6 +132,8 @@ def main():
     BT = float(opts.get('--blue', 0.0))
     body0 = opening(full, R)
     bodyB0 = blue_body(a, full, BT, 5, 6) if BT else None
+    BR = int(opts.get('--bright', 0))
+    bodyBr0 = blue_body(a, full, BT, 5, 6, BR) if (BT and BR) else None  # bottom edge only: fins are darker than the flank
     tb0, bb0 = col_edges(body0)
     th_b = bb0 - tb0
     lo, hi = int(xs_min + 0.12 * (xs_max - xs_min)), int(xs_min + 0.40 * (xs_max - xs_min))
@@ -149,8 +154,17 @@ def main():
     tail_x = xs_.min()
     body = rot_mask(body0)
     bodyB = rot_mask(bodyB0) if bodyB0 is not None else None
+    bodyBr = rot_mask(bodyBr0) if bodyBr0 is not None else None
     tb, bb = col_edges(body)
     tbB, bbB = col_edges(bodyB) if bodyB is not None else (tb, bb)
+    if bodyBr is not None:
+        # first dark row below the axis (a fin hangs below the belly, often with a dark gap or a darker membrane)
+        r0 = int(round(sy)); bbB = np.full(W, np.nan)
+        for x_ in range(W):
+            col = bodyBr[r0:, x_]
+            if col.size and col[0]:
+                k_ = np.argmin(col) if (~col).any() else col.size
+                bbB[x_] = r0 + k_ - 1
     tf, bf = col_edges(fullr)
     # peduncle x again in the rotated frame (narrowest opened column in the same window)
     th = bb - tb
@@ -159,7 +173,7 @@ def main():
     SL = float(sx - pedx)
     if bodyB is not None:  # back (the dorsal-fin zone, u >= 35 % SL): top edge from the colour mask; head and belly from the shape mask
         xx = np.arange(W)
-        tb = np.where((xx < sx - 0.35 * SL) & (xx > sx - 0.85 * SL), tbB, tb)
+        tb = np.where((xx < sx - 0.35 * SL) & (xx > sx - float(opts.get("--topend", 0.85)) * SL), tbB, tb)
         # belly: the shape mask swallows the anal / pelvic fin roots, the colour mask loses the red belly stripe. Measure the
         # stripe (shape minus colour edge) where no fin hangs (45-65 % SL) and add it to the colour edge across the fin zone.
         ref = (xx < sx - 0.45 * SL) & (xx > sx - 0.65 * SL)
@@ -185,8 +199,12 @@ def main():
     # a fin root (pelvic) merged into the belly shows as a one-station spike: replace it by its neighbours' mean
     for i in range(1, len(bot_prof) - 1):
         m_ = (bot_prof[i - 1] + bot_prof[i + 1]) / 2
-        if bot_prof[i] - m_ > 3.0:
+        if bot_prof[i] - m_ > 3.0 or bot_prof[i] > max(bot_prof[i - 1], bot_prof[i + 1]) + 1.5:
             bot_prof[i] = round(m_, 2)
+    # a 2-3 station lump (pelvic fin root) survives the neighbour test: cap each belly value at the 5-station median + 1
+    med5 = [sorted(bot_prof[j - 2:j + 3])[2] for j in range(2, len(bot_prof) - 2)]
+    for j in range(2, len(bot_prof) - 2):
+        bot_prof[j] = round(min(bot_prof[j], med5[j - 2] + 1.0), 2)
     # --- fins: where the full mask sticks out of the body mask
     def sticks(sign):
         """x ranges where the full mask extends >=3 px beyond the body edge (sign -1 top, +1 bottom)."""

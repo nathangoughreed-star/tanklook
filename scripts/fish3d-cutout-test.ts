@@ -12,15 +12,15 @@ import { FISH_ART } from '/src/art/placeholder.ts';
 import { speciesModel } from '/src/render/preview3d.ts';
 import { OUTLINE } from '/src/render/fish3d.ts';
 import { LU, applyLighting } from '/src/render/lighting.ts';
-const mode = new URLSearchParams(location.search).get('mode') ?? 'current';
+const q = new URLSearchParams(location.search), mode = q.get('mode') ?? 'current', ph = q.get('photo') ?? '', suf = ph;
 const sp = speciesOf({ species: 'orchiddottyback' });
 const P = PLANS.orchiddottyback;
 if (mode !== 'current') {
-  const img = new Image(); await new Promise((r, j) => { img.onload = r; img.onerror = j; img.src = '/shots/ORCH-cutout-card.png'; }); document.title = 'img ok';
+  const img = new Image(); await new Promise((r, j) => { img.onload = r; img.onerror = j; img.src = '/shots/ORCH-cutout-card' + suf + '.png'; }); document.title = 'img ok';
   FISH_ART.orchiddottyback = (ctx, _P, W) => ctx.drawImage(img, 0, 0, W, W * sp.aspect);
 }
 if (mode === 'measured') {
-  const j = await (await fetch('/src/data/fishart/orchiddottyback.anatomy.json')).json(); const A = j.anatomy, d = A.depthProfile, F = A.fins;
+  const j = await (await fetch('/src/data/fishart/orchiddottyback' + suf + '.anatomy.json')).json(); const A = j.anatomy, d = A.depthProfile, F = A.fins;
   const pedU = 1 - 1 / A.tlOverSl, SLc = 1 - pedU, U = s => pedU + SLc * (1 - s / 100), Wd = x => x / 100 * SLc;
   const top = d.stations.map((s, i) => [U(s), -Wd(d.top[i])]), bot = d.stations.map((s, i) => [U(s), Wd(d.bottom[i])]);
   Object.assign(P, { pedU, outline: [...top, ...bot.reverse()] });
@@ -47,5 +47,5 @@ function shoot(yaw, pitch) {
 }
 const sheet = document.createElement('canvas'); sheet.width = W * 2; sheet.height = H * 2 + 0; const x = sheet.getContext('2d'); x.font = '16px sans-serif'; x.fillStyle = '#fff';
 VIEWS.forEach(([l, y, p], i) => { x.drawImage(shoot(y, p), (i % 2) * W, Math.floor(i / 2) * H); x.fillText(`${mode} | ${l}`, (i % 2) * W + 8, Math.floor(i / 2) * H + 20); });
-await new Promise(r => sheet.toBlob(async b => { await fetch('/__shot?name=ORCH3D-' + mode, { method: 'POST', body: b }); r(); }, 'image/png'));
+await new Promise(r => sheet.toBlob(async b => { await fetch('/__shot?name=ORCH3D' + suf + '-' + mode, { method: 'POST', body: b }); r(); }, 'image/png'));
 document.getElementById('s').textContent = 'done ' + mode; document.title = 'done ' + mode;
