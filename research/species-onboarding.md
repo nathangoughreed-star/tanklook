@@ -7,12 +7,14 @@ Nathan's emphasis: do the research including pictures, and focus on the species'
 ## 1. Research and sources
 - Read at least one species profile that states numbers (Seriously Fish first; FishBase; a hobby care page). Record the URL, the date opened, and the figure it states. Never put a source on a number it does not state.
 - Standard length (SL) vs total length: the species `tl` is total length; Seriously Fish gives SL, which we multiply by 1.2 unless a source gives total length. Say so in the provenance rule.
-- Males and females: if the sexes differ in size or look, give both (`female` in species.json, a `_f` art plan).
-- Look for conflicts between pages (gallons, adult size, "peaceful" vs "aggressive"), keep the safer figure, and write the conflict in the provenance `why`.
+- **Sex step (Nathan 2026-11-19, every species):** research and record (a) whether the sexes look different enough to need two models (colour, fins, size; give `female` in species.json and a `_f` art plan if yes) and (b) whether sex ratio matters for a healthy tank (harassment, pairing, need for several females per male; `groups.ts` `sexed`). Breeding is out of scope. Write the answer even when it is "no, not needed", with the source.
+- **AqAdvisor does not exist for us (Nathan 2026-11-19):** no AqAdvisor ids or stand-ins for any species.
+- **Body mass:** open the FishBase length-weight rows (a, b) and use them; never estimate to save effort.
+- Look for conflicts between pages (gallons, adult size, "peaceful" vs "aggressive"), keep every figure from a reputable source and combine them (average), not just the larger one (Nathan 2026-11-19), and write the conflicts and the method in the provenance `why`.
 - Captive colour forms and hybrids: say whether the animal sold is a hobby form and what the wild fish is (origin.json `form: "captive-bred"`).
 
 ## 2. Reference photos and the look
-Follow `research/species-art-method.md`: two or more real photos per look, one per sex, written look, render beside the photo, record the URLs in `research/screens/<lane>/README.md`. Photos stay in the scratchpad, never in the repo. If the only photo is unusable, say so and get another before sign-off.
+Follow `research/species-art-method.md`: two or more real photos per look, several angles where they can be found (top-down, side, head-on), one per sex, written look, render beside the photo, record the URLs in `research/screens/<lane>/README.md`. Photos stay in the scratchpad, never in the repo. If the only photo is unusable, say so and get another before sign-off.
 
 ## 3. Specific needs (what the animal needs whatever the group count)
 Record each of these, or write "none found" in the provenance:
