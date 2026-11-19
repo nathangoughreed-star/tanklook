@@ -37,13 +37,19 @@ export function planFromJson(j: any): Plan {
   const pelPts = need<Raw[]>(pel.outline, 'fins.pelvic.outline').map(cv), pecPts = need<Raw[]>(pec.outline, 'fins.pectoral.outline').map(cv);
   const pelRoot = cv(need<Raw>(pel.root, 'fins.pelvic.root')), pecRoot = cv(need<Raw>(pec.root, 'fins.pectoral.root'));
   const th = an.thickness;
+  // bar paths: photo px [x, y, w] -> body-relative [u, t, w as a share of the local depth] (path marks)
+  const bp = need(look.barPaths, 'look.barPaths'), barMarks: Plan['marks'] = need<Raw[][]>(bp.paths, 'look.barPaths.paths').map(pts => ({
+    k: 'path' as const, c: need<string>(bp.c, 'look.barPaths.c'), a: bp.a,
+    pts: pts.map(q => { const u = cu(Number(q[0])), v = (Number(q[1]) - yA) / W, a = at(top, u), b = at(bot, u); return [u, (v - a) / (b - a), cw(Number(q[2])) / (b - a)] as [number, number, number]; }),
+  }));
+  const marks = [...need<NonNullable<Plan['marks']>>(look.marks, 'look.marks')]; marks.splice(1, 0, ...barMarks!);
   const p: Plan = {
     outline: body, depth, pedU, ped, mouth: (Number(snoutP[1]) - yA) / W,
     shade: need(look.shade, 'look.shade'), fin: need(look.fin, 'look.fin'),
     tail: { type: 'round', h: tailExt, tint: need(look.tail?.tint, 'look.tail.tint'), a: look.tail?.a },
     dorsal: med('dorsal', 0.06), anal: med('anal', 0.1),
     pelvic: { u: pelRoot[0], len: 0.2, tint: need(look.pelvic?.tint, 'look.pelvic.tint') }, pec: {},
-    marks: need(look.marks, 'look.marks'), finMarks: need(look.finMarks, 'look.finMarks'),
+    marks, finMarks: need(look.finMarks, 'look.finMarks'),
     eye: { r: cw(need<number>(lm.eyeR, 'landmarks.eyeR')), iris: need(look.eyeIris, 'look.eyeIris'), u: eu, dv: (ev - et) / (eb - et) - 0.38 },
     gape: need(look.gape, 'look.gape'), gapeDrop: need(look.gapeDrop, 'look.gapeDrop'), scale: need(look.scale, 'look.scale'),
     thick: th?.source === 'unmeasured' ? need<number>(th.thick, 'anatomy.thickness.thick') : th?.thick ?? DEFAULT_THICK,

@@ -46,6 +46,10 @@ type Mark =
   // CM3 'maze': winding contour lines of a seeded wave field (the vermiculated net of a discus, the marbling of a koi): wherever
   // |field - lv| < w the colour is laid down. scale = wavelength (widths); stretch > 1 runs the lines lengthways; rim = [r0, r1]
   // fades the pattern in between those fractions of the box's ellipse radius (rim-only patterns); core = the weight kept inside r0.
+  // body-relative ribbon (experiment B): pts are [u, t, w] with t the share of the local body depth (0 back contour .. 1 belly
+  // contour, so the mark follows the body) and w the ribbon's full width as a share of that depth; Catmull-Rom through the points,
+  // `feather` softens the edge (widths), round caps. Body marks only (needs the profile).
+  | { k: 'path'; pts: [number, number, number][]; c: string; a?: number; feather?: number }
   | { k: 'maze'; u0: number; u1: number; v0: number; v1: number; c: string; a?: number; scale: number; w: number; lv?: number; seed?: number; stretch?: number; rim?: [number, number]; core?: number; above?: boolean };
 
 export interface Plan {
@@ -325,9 +329,31 @@ function maze(c: Ctx, P: Proj, m: Extract<Mark, { k: 'maze' }>) {
   c.drawImage(tmp, X0, Y0);
 }
 
-function paintMarks(c: Ctx, P: Proj, W: number, marks: Mark[] | undefined, seed: number) {
+/** Body-relative frame: (u, t) -> card (u, v), t = share of the local body depth from the back (0) to the belly (1). */
+const bodyPt = (prof: (u: number) => [number, number], u: number, t: number): [number, number] => { const [a, b] = prof(u); return [u, a + (b - a) * t]; };
+function pathMark(c: Ctx, P: Proj, W: number, prof: (u: number) => [number, number], m: Extract<Mark, { k: 'path' }>) {
+  const n = m.pts.length, g = (i: number) => m.pts[Math.max(0, Math.min(n - 1, i))], S = 10, L: [number, number][] = [], R: [number, number][] = [], ctr: [number, number, number][] = [];
+  const cr = (a: number, b: number, c2: number, d: number, k: number) => 0.5 * (2 * b + (-a + c2) * k + (2 * a - 5 * b + 4 * c2 - d) * k * k + (-a + 3 * b - 3 * c2 + d) * k ** 3);
+  for (let i = 0; i < n - 1; i++) for (let j = 0; j < S + (i === n - 2 ? 1 : 0); j++) {
+    const k = j / S, [p0, p1, p2, p3] = [g(i - 1), g(i), g(i + 1), g(i + 2)], u = cr(p0[0], p1[0], p2[0], p3[0], k), t = cr(p0[1], p1[1], p2[1], p3[1], k), w = cr(p0[2], p1[2], p2[2], p3[2], k);
+    const [, v] = bodyPt(prof, u, t), [a, b] = prof(u); ctr.push([u, v, Math.max(0, w) * (b - a)]);
+  }
+  for (let i = 0; i < ctr.length; i++) { // offset along the normal of the centre line, in card units
+    const a = ctr[Math.max(0, i - 1)], b = ctr[Math.min(ctr.length - 1, i + 1)], dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1, nx = -dy / l, ny = dx / l, h = ctr[i][2] / 2;
+    L.push([ctr[i][0] + nx * h, ctr[i][1] + ny * h]); R.push([ctr[i][0] - nx * h, ctr[i][1] - ny * h]);
+  }
+  c.save(); const f = (m.feather ?? 0.003) * W; if (f > 0.5) c.filter = `blur(${f}px)`;
+  c.fillStyle = hexA(m.c, m.a ?? 0.9); c.beginPath();
+  [...L, ...R.reverse()].forEach((q, i) => { const [x, y] = P(q[0], q[1]); i ? c.lineTo(x, y) : c.moveTo(x, y); });
+  c.closePath(); c.fill();
+  for (const e of [ctr[0], ctr[ctr.length - 1]]) { const [x, y] = P(e[0], e[1]); c.beginPath(); c.arc(x, y, e[2] / 2 * W, 0, Math.PI * 2); c.fill(); } // round caps
+  c.restore();
+}
+
+function paintMarks(c: Ctx, P: Proj, W: number, marks: Mark[] | undefined, seed: number, prof?: (u: number) => [number, number]) {
   const r = rng(seed);
   for (const m of marks ?? []) {
+    if (m.k === 'path') { if (prof) pathMark(c, P, W, prof, m); continue; }
     if (m.k === 'band' && m.wave) wavyBand(c, P, m.u0, m.u1, m.v0, m.v1, m.wave, m.c, m.a ?? 0.9, seed + Math.round(m.v0 * 1000));
     else if (m.k === 'band') { const f = m.f ?? 0.02; soft(c, P, m.u0, m.u1, m.v0, m.v1, m.c, m.a ?? 0.9, [f, f], [f * 0.6, f * 0.6]); }
     else if (m.k === 'bars') for (const u of m.us) soft(c, P, u - m.w / 2, u + m.w / 2, -1, 1, m.c, m.a ?? 0.85, [m.w * 0.3, m.w * 0.3], [0, 0]);
@@ -421,7 +447,7 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
   const [t0, b0] = [Math.min(...g.bodyPts.map(q => q[1])), Math.max(...g.bodyPts.map(q => q[1]))];
   if (p.bodyA !== undefined) { ctx.save(); ctx.globalAlpha *= p.bodyA; }
   body(ctx, P, W, g.bodyPts, t0, b0, [[0, p.shade[0]], [0.4, p.shade[1]], [0.65, p.shade[1]], [1, p.shade[2]]], p.rim ?? 0.035, l => {
-    paintMarks(l, P, W, p.marks, 7);
+    paintMarks(l, P, W, p.marks, 7, g.prof);
     if (p.shimmer) shimmer(l, P, W, p.pedU + 0.025, 1 - (1 - p.pedU) * 0.14, g.prof, p.shimmer, p.shimmerRgb);
     const gu = 1 - (1 - p.pedU) * 0.2, [gt, gb] = g.prof(gu);
     if (style.features) gill(l, P, W, gu, gt + (gb - gt) * 0.2, gt + (gb - gt) * 0.85, 0.02);
