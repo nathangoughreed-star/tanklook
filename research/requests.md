@@ -165,5 +165,6 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R6 | Split view: each side its own Habitat check, cost pill, Water chip | 1879 | Nathan's own live screenshot images/4.webp (11-13) |
 | R4 | HOB filter box no longer clips through a 3D backdrop (Nathan's tank, rock) | 1879 | C24 scratchpad sw-R4-hob-rock.png (11-13) |
 | R1 | Habitat check tile starts minimized on every load | 1879 | C24 scratchpad live-R3-litter-low.png (stocked tank: tile shown as the minimized pill) |
+| R142 | 11-19 | Backfill species-onboarding gaps for the ~100 older species (research/species-onboarding-baseline.json: 76 needs lines, 42 behaviour rows, 33 space factors, 18 tank footprints, 11 gallery pictures, 7 model records); also replace the 15 Phase 1 AqAdvisor stand-in ids with real ones. Nathan: yes, after the RX1 merge | C28 lane | - | - | - | C28 starts it after merging RX1 0ec473ad; measure one batch first |
 | C1 | FX1: Discover pill above the Water chip; Checks a compact closed pill; plain Graphics settings labels | 1869 | Coordinator 24 scratchpad live-deskT.png / live-phoneT.png (2026-11-12); labels read from the live bundle |
 | R81 | "Open a tank" menu too low: fixed by DG1 (dialogs centred); Open dialog sits centred at 1280x800 | 2314 | research/screens/R81/open-dialog-live-2314.jpg (C27, live 2026-11-18) |
