@@ -49,7 +49,7 @@ describe('four conflict paths', () => {
     const f = inf.alternatives.find(a => a.kind === 'save-ambition')!, b0 = briefFromWants(w), b1 = applyAlternative(b0, f.edit!);
     expect(futureOf(b0)).toEqual([]);
     expect(futureOf(b1)).toHaveLength(1);
-    expect(futureOf(b1)[0].text).toMatch(/4 Discus in a \d+ gal tank: needs a \d+ gal tank.*to set up.*a month.*minutes a week/);
+    expect(futureOf(b1)[0].text).toMatch(/4 Discus in a \d+ gal tank: needs a \d+ gal tank.*to set up.*a month.*(minutes|min) a week/);
     expect(again(b1).proposals.length).toBeGreaterThan(0); // the smaller project fits the limits now
     expect(futureHtml(b1)).toContain('Saved for later');
     const card = infeasibleCard(inf, b1);

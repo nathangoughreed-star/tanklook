@@ -65,7 +65,7 @@ export type GroupBand = 'avoid' | 'ok' | 'good' | 'great' | 'unknown';
 /** Species whose advice for two animals assumes a FORMED pair (a bonded or breeding pair in their lines below; the Bolivian ram per the
  *  rules-spec benchmark "two unpaired cichlids / rams"). Two of them are judged as a pair only when the owner says it is established.
  *  test/path1Rules.test.ts keeps it in step: every species whose lines say "bonded" or "male/female pair" must be here. */
-export const PAIR_FORMERS = new Set(['gbr', 'bolivianram', 'kribensis', 'angel', 'discus', 'ocellaris', 'banggai', 'firefish', 'watchman']);
+export const PAIR_FORMERS = new Set(['gbr', 'bolivianram', 'kribensis', 'angel', 'discus', 'convict', 'ocellaris', 'banggai', 'firefish', 'watchman']);
 export const pairRule = (id: string) => PAIR_FORMERS.has(id);
 /** Recommended minimum group: bands.ok, else the older CARE.group, else 1. */
 export const recommendedMin = (g: GroupCare | undefined, careGroup?: number) => g?.bands?.ok ?? careGroup ?? 1;

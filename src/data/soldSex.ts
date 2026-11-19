@@ -16,6 +16,12 @@ export const SOLD_BY: Record<string, SoldBy> = {
   boesemani: S('unsexed', true, 'sold almost only as drab juveniles; listings say "unsexed juvenile"; Aquatic Arts and iFISH list no sex choice'),
   // livebearers (Nathan kept the livebearer ratio warning at DA3)
   guppy: S('sexed', true, 'male, female, pair and trio listings (PlantedAquaria, Flip Aquatics, Light.fish); males are sold apart because they are the colourful ones'),
+  endler: S('sexed', false, 'C28: not checked against shop listings yet; kept as sexed like the other livebearers (males are the coloured ones and are sold apart); to confirm in R142'),
+  convict: S('unsexed', false, 'C28 provisional, not checked against shop listings: sold as small juveniles or mixed groups; sexing is by adult colour and fins; to confirm in R142'),
+  firemouth: S('unsexed', false, 'C28 provisional, not checked against shop listings: sold as small juveniles; the sexes are told apart only as adults; to confirm in R142'),
+  electricblueacara: S('unsexed', false, 'C28 provisional, not checked against shop listings: sold as small juveniles; the sexes are told apart only as adults; to confirm in R142'),
+  peacockgudgeon: S('unsexed', false, 'C28 provisional, not checked against shop listings: sold as groups; males are the colourful ones but listings rarely split them; to confirm in R142'),
+  threespot: S('unsexed', false, 'C28 provisional, not checked against shop listings: sold as juveniles of mixed sex; adults can be sexed by dorsal fin shape; to confirm in R142'),
   platy: S('sexed', false, 'no male / female split listing found in the 2026-11-06 search; kept as sexed because shops sort livebearers by sex and Nathan kept the livebearer ratio amber (DA3)'),
   molly: S('sexed', false, 'no male / female split listing found in the 2026-11-06 search; kept as sexed because shops sort livebearers by sex and Nathan kept the livebearer ratio amber (DA3)'),
   swordtail: S('sexed', false, 'no male / female split listing found in the 2026-11-06 search; kept as sexed because shops sort livebearers by sex and Nathan kept the livebearer ratio amber (DA3)'),
