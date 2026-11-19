@@ -135,7 +135,7 @@ Outline, fin and landmark scores need no browser, so they become a cheap per-spe
 
 ## 5. Risks to name now
 1. **Annotation accuracy is the weakest link.** Estimating landmark pixels from a photo by eye (model or human) is noisy, roughly 3-5% of SL. Mitigation: draw the landmarks on the photo, review picture 3, correct, cap at two correction rounds; later a click tool replaces the guessing.
-2. **One photo per species** (RX2 README). The method wants two or more and a true side-on shot; flame angel and kole tang photos are three-quarter views in busy reef. A foreshortened photo gives a wrong depth profile. Stage 2 must say which photo is side-on or fetch another before annotating.
+2. **One photo per species** (RX2 README). The method wants two or more and a true side-on shot; the flame angel and kole tang photos are slightly angled shots in busy reef. A foreshortened photo gives a wrong depth profile. Stage 2 must say which photo is side-on or fetch another before annotating.
 3. **Front/top views stay unvalidated** without measured thickness. Say so on the review sheet rather than implying they are checked.
 4. **Image overlays and copyright:** only our own artwork; photos never committed.
 5. **Scope creep:** the `image` mark, a click tool and top-view validation are explicitly deferred; the three target species need only the first five mark kinds.
@@ -156,4 +156,4 @@ Notes on the numbers: `fishgen.ts` alone is ~45 k tokens to read, so every turn 
 ## 7. Decisions needed from Nathan before Stage 2
 1. OK to put species art data in `src/data/fishart/<art>.json` and let it override the TS plan for migrated species?
 2. Pass levels for the four scores (proposal: outline IoU >= 0.95, max contour error <= 4% SL; landmarks mean <= 2% SL; colour Delta-E <= 12 per region).
-3. For the flame angel, a second, truly side-on reference photo is wanted before annotating (the RX2 photo is three-quarter). Allowed to fetch one under the standing photo OK (scratchpad only)?
+3. For the flame angel, a second, truly side-on reference photo is wanted before annotating (the RX2 photo is slightly angled). Allowed to fetch one under the standing photo OK (scratchpad only)?
