@@ -1,0 +1,70 @@
+{
+ "oscar": {
+  "size": [
+   384,
+   true,
+   0.5
+  ],
+  "pectoral_iou": 0.65,
+  "pelvic_iou": 0.0,
+  "eye_px": 3.9,
+  "dorsal_base_px": 15.2,
+  "dorsal_cover": 0.78,
+  "classes_px": {
+   "bg": 291603,
+   "dorsal": 22297,
+   "caudal": 24171,
+   "anal": 8287,
+   "pectoral": 22894,
+   "head": 64619,
+   "eye": 3514,
+   "alt spine": 115575
+  }
+ },
+ "clownfish": {
+  "size": [
+   768,
+   true,
+   1.0
+  ],
+  "pectoral_iou": 0.35,
+  "pelvic_iou": 0.56,
+  "eye_px": 2.8,
+  "dorsal_base_px": 3.3,
+  "dorsal_cover": 0.77,
+  "classes_px": {
+   "bg": 459855,
+   "dorsal": 32785,
+   "caudal": 46128,
+   "anal": 17118,
+   "pelvic": 6665,
+   "pectoral": 7406,
+   "head": 15870,
+   "eye": 2124,
+   "alt spine": 99537
+  }
+ },
+ "pleco": {
+  "size": [
+   768,
+   true,
+   1.0
+  ],
+  "pectoral_iou": 0.72,
+  "pelvic_iou": 0.75,
+  "eye_px": 2.0,
+  "dorsal_base_px": 26.7,
+  "dorsal_cover": 0.93,
+  "classes_px": {
+   "bg": 331170,
+   "dorsal": 39536,
+   "caudal": 56266,
+   "anal": 7506,
+   "pelvic": 9552,
+   "pectoral": 14804,
+   "head": 36968,
+   "eye": 308,
+   "alt spine": 138258
+  }
+ }
+}
