@@ -89,6 +89,12 @@ Run every script with `python -I` (numpy + PIL; untrusted images).
 | G. 3D check | Side, 3/4, front and top renders, next to the sheet. | `scripts/fish3d-cutout-test.html` + `.ts` (harness: `fins`, eye and thickness options) |
 | H. Wire | Plan overrides plus card behind the flag. | `src/art/photoart.ts`, one line in `src/main.ts`, `public/art/fish/<id>.webp` (dottyback: 82 KB) |
 
+**Fin check (required, step G2; added 2026-11-20 after the flame angel skipped it).** The 3D body has no real pectoral or pelvic fins unless you add them: the card paints the pectoral flat on the flank, and the plan's own leaves are dropped for photo cards. Tail, dorsal and anal fins are flat sheets in the side plane, so they are edge-on from the front and top. Before showing Nathan, do this and say in the report which of the three results each fin got:
+1. **Measure the roots** in the gridded side crop (`side_full` px): pectoral root (x,y), pelvic root (x,y) and pelvic length. Also note whether the sheet's top view shows the pectoral (folded) and the front view shows it fanned.
+2. **Render with `?paired=photo`** and pass the numbers: `&sx=<snout x>&esl=<SL px>&eaxis=<axis y>&pecx&pecy&pelx&pely&pell` (+ `&pectint=#rrggbb&peltint=#rrggbb` from the sheet's fin colour; `&pecs` scales the pectoral, `&pecspread` fans it).
+3. **Erase from the card** only a fin the 3D one replaces (the pelvic), never to hide a symptom.
+4. **Pass/fail, every fin:** attached to the body in the 3/4 and front renders; right colour and size against the sheet; no loose card fragment. A fin that fails is listed as an open problem in the fish's JSON `render` block, not silently dropped.
+
 **Tuning knobs** (each one is a sign the sheet could be better; see section 2):
 - `--blue`: the colour split between body and fins.
 - `--bright`: fin darkness used for the belly edge. Sweep 120-205 and pick the value with no lump.
@@ -109,7 +115,7 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 | 4 | Front view thin, a ribbon | Thickness guessed | Top-view widths + thickfit (D, E) | Front render: body height ÷ width ≈ the sheet's front panel |
 | 5 | Two eyes | 3D eye drawn over the photo's eye | Seat the 3D eye on the photo eye (keeps the 3/4 bulge) or hide it | 3/4 render: one eye |
 | 6 | Extra purple fin "leaves" | The plan's own pectoral and pelvic still drawn | Drop the plan leaves for photo cards | No fin that the sheet doesn't have |
-| 7 | Pectoral fins not attached | 3D fins placed from old plan numbers | Root the 3D pectoral and pelvic at the sheet's measured positions; erase the pelvic from the card | 3/4 and top: fins touch the body |
+| 7 | Pectoral fins not attached (**mandatory: step G2**) | 3D fins placed from old plan numbers | Root the 3D pectoral and pelvic at the sheet's measured positions; erase the pelvic from the card | 3/4 and top: fins touch the body |
 | 8 | Bulge near the anal fin, then flat fin | Anal fin base measured as belly and lofted into the body | Cap the rear belly to a straight line to the peduncle (15% → ~10% SL at 85% SL) | Side/3/4: belly runs smoothly into the fin |
 | 9 | Belly lumps | Pelvic fin roots in the belly line | Cap lumps at the 5-station median + 1 | Bottom edge smooth |
 | 10 | Sharp corners at the rear, top view | `pedT` fit too wide at the peduncle (5% vs 2.8% measured) | `--pedt-max 0.3`; 0.15-0.2 if still blunt | Top render tapers into the tail |
@@ -156,3 +162,4 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 - 2026-11-20: Flame angel run (sha on `claude/flameangel-photoart`): rows 13-18 added; scripts gain `--level`, `--fullbody`, `--clip-head`, and the harness takes `?sp=`. Run the dev server on its own (`npx vite --port 5174`), not alongside other chats' servers; on a loaded machine its first page load stalled for 10+ minutes.
 - 2026-11-20: Front shape rule (row 19) added; front face texture design recorded in section 5.
 - 2026-11-20 (later): projection layers for the top and front views (rows 20-23), `fish-projcards.py`, `--sat`. The strict sheet (top view directly under the side view, pectorals folded, front view below) needed no mirroring or rescaling beyond 1.2%. Still behind the test harness only: not yet wired into `?photoart`.
+- 2026-11-20 (fin check): step G2 made a required step; the harness `?paired=photo` takes the roots as parameters instead of the dottyback's typed-in numbers. The flame angel (`f86cb8bd`) predates this and has NO rooted pectoral or pelvic fins yet.

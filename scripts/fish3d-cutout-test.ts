@@ -38,10 +38,12 @@ if (mode === 'measured') {
 document.title += ' plan ok'; // photo cards already carry the fish's own eye and paired fins: drop the plan's 3D pectoral/pelvic leaves (?paired=keep keeps them),
 // and either hide the 3D eye (default) or seat it on the photo's eye (?eye=place&ex=px&ey=px&er=px, sheet pixels, SL in sheet px = esl, axis y = eaxis)
 if (mode === 'measured' && q.get('paired') === 'photo') {
-  // 3D pectoral and pelvic rooted where the sheet's side view roots them (sheet px: snout 1275, axis 207, SL 896; pectoral root 1010,233; pelvic root 1005,295, 120 px long)
-  const sl = 896, SLc = 1 - P.pedU, pu = 1 - (1275 - 1010) / sl * SLc, [pt, pb] = profile(P)(pu), pv = (26 / sl * SLc - pt) / (pb - pt);
-  P.pectoral = true; P.pec = { u: pu, v: pv, s: +(q.get('pecs') ?? 1), tint: '#b848c8', ...(q.get('pecspread') ? { spread: +q.get('pecspread') } : {}) };
-  P.pelvic = { u: 1 - (1275 - 1005) / sl * SLc, len: 120 / sl * SLc, tint: '#c050e0' };
+  // 3D pectoral and pelvic rooted where the sheet's side view roots them. Sheet (side_full) px, any species: ?sx=snout x &esl=SL px &eaxis=axis y
+  // &pecx=&pecy= pectoral root &pelx=&pely= pelvic root &pell=pelvic length px (defaults = the orchid dottyback sheet: 1275, 896, 207, 1010,233, 1005,295, 120)
+  const n = (k: string, d: number) => +(q.get(k) ?? d), sx = n('sx', 1275), sl = n('esl', 896), ax = n('eaxis', 207);
+  const SLc = 1 - P.pedU, pu = 1 - (sx - n('pecx', 1010)) / sl * SLc, [pt, pb] = profile(P)(pu), pv = ((n('pecy', 233) - ax) / sl * SLc - pt) / (pb - pt);
+  P.pectoral = true; P.pec = { u: pu, v: pv, s: +(q.get('pecs') ?? 1), tint: q.get('pectint') ?? '#b848c8', ...(q.get('pecspread') ? { spread: +q.get('pecspread') } : {}) };
+  P.pelvic = { u: 1 - (sx - n('pelx', 1005)) / sl * SLc, len: n('pell', 120) / sl * SLc, tint: q.get('peltint') ?? '#c050e0' };
 } else if (mode === 'measured' && q.get('paired') !== 'keep') { P.pectoral = false; delete P.pelvic; }
 if (mode !== 'current' && q.get('nogape')) { delete P.gape; delete P.gapeDrop; P.gillLine = 0; }   // photo cards carry their own mouth and gill
 if (mode !== 'current' && q.get('thickx')) P.thick *= +q.get('thickx');   // sheet views disagree (front panel thicker than the top view): scale the fitted thickness
