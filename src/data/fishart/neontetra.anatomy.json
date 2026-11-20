@@ -1,0 +1,572 @@
+{
+ "art": "neontetra",
+ "source": {
+  "file": "side.png (input image; sheet and photos are not in the repo)",
+  "px": [
+   512,
+   512
+  ],
+  "view": "side, nose right, black background",
+  "sex": "unknown"
+ },
+ "method": {
+  "threshold": 8,
+  "openRadiusPx": 9,
+  "script": "scripts/fish-outline.py",
+  "rotationDeg": 0.0
+ },
+ "anatomy": {
+  "slPx": 421.0,
+  "tlPx": 498.0,
+  "tlOverSl": 1.183,
+  "caudalTipBeyondSlPctSL": 18.29,
+  "depthProfile": {
+   "stations": [
+    0,
+    5,
+    10,
+    15,
+    20,
+    25,
+    30,
+    35,
+    40,
+    45,
+    50,
+    55,
+    60,
+    65,
+    70,
+    75,
+    80,
+    85,
+    90,
+    95,
+    100
+   ],
+   "top": [
+    0.83,
+    4.41,
+    6.53,
+    7.99,
+    9.86,
+    11.28,
+    12.3,
+    13.03,
+    13.42,
+    13.9,
+    13.36,
+    12.51,
+    11.49,
+    26.25,
+    9.69,
+    8.91,
+    8.62,
+    10.33,
+    5.84,
+    6.29,
+    8.19
+   ],
+   "bottom": [
+    3.21,
+    7.72,
+    9.64,
+    11.32,
+    12.47,
+    13.42,
+    15.15,
+    14.76,
+    14.37,
+    14.13,
+    15.37,
+    15.02,
+    12.47,
+    11.98,
+    10.99,
+    9.06,
+    6.88,
+    5.11,
+    3.92,
+    4.86,
+    7.72
+   ],
+   "axis": "snout tip to peduncle centre, level; values are distance from the axis in % SL; BODY ONLY (opened mask)"
+  },
+  "landmarks": {
+   "snoutPx": [
+    505.0,
+    139.5
+   ],
+   "pedunclePx": [
+    84,
+    139.5
+   ],
+   "snoutPxOriginal": [
+    505.0,
+    139.5
+   ],
+   "pedunclePxOriginal": [
+    84.0,
+    139.5
+   ],
+   "eye": {
+    "uPctSL": 48.01,
+    "tPctSL": -4.92,
+    "rPctSL": 3.29,
+    "note": "blue iris pixels only (the dark pupil is excluded)"
+   }
+  },
+  "fins": {
+   "dorsal": {
+    "baseStartPctSL": 48.69,
+    "baseEndPctSL": 61.76,
+    "maxHeightPctSL": 14.61,
+    "heightProfile": [
+     [
+      61.76,
+      14.61
+     ],
+     [
+      60.81,
+      13.59
+     ],
+     [
+      59.86,
+      12.57
+     ],
+     [
+      58.91,
+      11.55
+     ],
+     [
+      57.96,
+      10.55
+     ],
+     [
+      57.01,
+      9.72
+     ],
+     [
+      56.06,
+      8.89
+     ],
+     [
+      55.11,
+      7.82
+     ],
+     [
+      54.16,
+      6.98
+     ],
+     [
+      53.21,
+      5.91
+     ],
+     [
+      52.26,
+      5.06
+     ],
+     [
+      51.31,
+      3.9
+     ],
+     [
+      50.36,
+      2.75
+     ],
+     [
+      49.41,
+      1.6
+     ]
+    ],
+    "note": "fin spines are dark/translucent: heights are lower bounds"
+   },
+   "anal": {
+    "baseStartPctSL": 65.56,
+    "baseEndPctSL": 87.89,
+    "maxHeightPctSL": 15.1,
+    "heightProfile": [
+     [
+      87.89,
+      0.95
+     ],
+     [
+      86.94,
+      2.14
+     ],
+     [
+      85.99,
+      3.56
+     ],
+     [
+      85.04,
+      4.51
+     ],
+     [
+      84.09,
+      5.94
+     ],
+     [
+      83.14,
+      6.63
+     ],
+     [
+      82.19,
+      7.01
+     ],
+     [
+      81.24,
+      7.89
+     ],
+     [
+      80.29,
+      8.59
+     ],
+     [
+      79.33,
+      11.43
+     ],
+     [
+      78.38,
+      14.98
+     ],
+     [
+      77.43,
+      14.52
+     ],
+     [
+      76.48,
+      13.7
+     ],
+     [
+      75.53,
+      13.11
+     ],
+     [
+      74.58,
+      12.05
+     ],
+     [
+      73.63,
+      10.97
+     ],
+     [
+      72.68,
+      9.87
+     ],
+     [
+      71.73,
+      8.77
+     ],
+     [
+      70.78,
+      7.44
+     ],
+     [
+      69.83,
+      6.2
+     ],
+     [
+      68.88,
+      4.82
+     ],
+     [
+      67.93,
+      3.92
+     ],
+     [
+      66.98,
+      2.54
+     ],
+     [
+      66.03,
+      1.4
+     ]
+    ]
+   },
+   "pelvicOrPectoral": {
+    "rootPctSL": 36.1,
+    "tipPctSL": 39.19,
+    "maxDropPctSL": 5.7,
+    "note": "any fin material under the belly in the head half; pelvic and pectoral are not separable in a side photo"
+   },
+   "caudal": {
+    "type": "round",
+    "tipUPctSL": -18.29,
+    "outline": [
+     [
+      1.19,
+      8.91,
+      8.67
+     ],
+     [
+      2.61,
+      9.86,
+      10.1
+     ],
+     [
+      4.04,
+      10.81,
+      11.28
+     ],
+     [
+      5.46,
+      11.76,
+      12.47
+     ],
+     [
+      6.89,
+      12.71,
+      13.9
+     ],
+     [
+      8.31,
+      13.66,
+      15.08
+     ],
+     [
+      9.74,
+      14.37,
+      16.27
+     ],
+     [
+      11.16,
+      15.32,
+      17.22
+     ],
+     [
+      12.59,
+      16.03,
+      18.17
+     ],
+     [
+      14.01,
+      16.51,
+      18.88
+     ],
+     [
+      15.44,
+      16.98,
+      19.36
+     ],
+     [
+      16.86,
+      17.46,
+      19.36
+     ],
+     [
+      18.29,
+      16.75,
+      -15.08
+     ]
+    ],
+    "outlineCols": "[u % SL from the peduncle (negative = behind), top, bottom] distance from the axis in % SL; full mask"
+   }
+  },
+  "thickness": {
+   "stations": [
+    0,
+    5,
+    10,
+    15,
+    20,
+    25,
+    30,
+    35,
+    40,
+    45,
+    50,
+    55,
+    60,
+    65,
+    70,
+    75,
+    80,
+    85,
+    90,
+    95,
+    100
+   ],
+   "halfWidthPctSL": [
+    0.77,
+    5.14,
+    7.83,
+    7.78,
+    8.8,
+    8.76,
+    8.72,
+    8.69,
+    8.65,
+    8.61,
+    8.14,
+    7.68,
+    7.16,
+    6.59,
+    5.88,
+    5.12,
+    4.33,
+    3.48,
+    2.51,
+    1.6,
+    1.63
+   ],
+   "source": "top panel of the generated sheet, blue-share mask (thr 0.60); the narrower side of the centre line",
+   "fit": {
+    "thick": 0.67,
+    "pedT": 0.156,
+    "rmsPctSL": 0.61,
+    "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
+   }
+  },
+  "render": {
+   "note": "built by scripts/fish-build.py from neontetra.json",
+   "photo": {
+    "art": "neontetra",
+    "plan": "oscar",
+    "sx": 1010.0,
+    "sl": 842.0,
+    "ax": 279.0,
+    "eye": [
+     934,
+     290,
+     34
+    ],
+    "pec": {
+     "root": [
+      809,
+      360
+     ],
+     "poly": [
+      [
+       809,
+       360
+      ],
+      [
+       786,
+       361
+      ],
+      [
+       755,
+       361
+      ],
+      [
+       723,
+       366
+      ],
+      [
+       701,
+       363
+      ],
+      [
+       703,
+       380
+      ],
+      [
+       700,
+       398
+      ],
+      [
+       691,
+       420
+      ],
+      [
+       681,
+       452
+      ],
+      [
+       703,
+       442
+      ],
+      [
+       733,
+       427
+      ],
+      [
+       758,
+       409
+      ],
+      [
+       776,
+       387
+      ],
+      [
+       807,
+       368
+      ]
+     ],
+     "spread": 1
+    },
+    "pelvic": {
+     "root": [
+      579,
+      393
+     ],
+     "len": 96,
+     "poly": [
+      [
+       579,
+       393
+      ],
+      [
+       613,
+       397
+      ],
+      [
+       568,
+       393
+      ],
+      [
+       542,
+       397
+      ],
+      [
+       522,
+       409
+      ],
+      [
+       524,
+       426
+      ],
+      [
+       529,
+       448
+      ],
+      [
+       531,
+       476
+      ],
+      [
+       569,
+       452
+      ],
+      [
+       581,
+       437
+      ],
+      [
+       596,
+       417
+      ],
+      [
+       609,
+       402
+      ]
+     ]
+    },
+    "proj": {
+     "fk": 996.0,
+     "y0": -0.011
+    },
+    "thickx": null,
+    "noTail": false,
+    "measuredWidth": true,
+    "aspect": 0.472,
+    "finImg": true
+   },
+   "fit": "{'thick': 0.67, 'pedT': 0.156, 'rmsPctSL': 0.61, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
+  }
+ },
+ "reliability": {
+  "note": "Per-species reliability is not assessed. Body edge = the opened mask at the stated threshold (about +-1-2 px); fin heights are lower bounds and fin base starts/ends are +-3 % SL unless set by --landmarks; see render.fit for the thickness fit."
+ }
+}
