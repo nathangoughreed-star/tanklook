@@ -128,6 +128,14 @@ def envelope(edge, outward, use, tol, deg=4, iters=30):
     return out, fin
 
 
+def open_mask(m, r):
+    """Binary opening (min then max filter, radius r): strips fins thinner than ~2r."""
+    from PIL import ImageFilter
+    im = Image.fromarray((m * 255).astype(np.uint8))
+    k = 2 * r + 1
+    return np.asarray(im.filter(ImageFilter.MinFilter(k)).filter(ImageFilter.MaxFilter(k))) > 127
+
+
 def measure(path, stations, real_w, out, mirror):
     im = Image.open(path).convert("RGB")
     if mirror:
@@ -273,10 +281,21 @@ def measure(path, stations, real_w, out, mirror):
     print(f"INFO  front height {fhei:.0f} px should equal the side panel's deepest body (fins excluded); "
           f"check by eye (side depth at stations: {', '.join(str(r[1]) for r in st_rows)} px)")
 
+    # peduncle from the side view (px from the snout): narrowest opened column 68-88% of the length from the snout (as fish-sheet-e6.py)
+    so = open_mask(side, max(3, int(0.012 * Ls)))
+    dep = np.zeros(Ls)
+    for x in range(Ls):                                  # column i = px from the snout end
+        r = longest_run(so[:, sx1 - 1 - x])
+        dep[x] = (r[1] - r[0] + 1) if r else 0
+    lo, hi = int(0.68 * Ls), int(0.88 * Ls)
+    xp = lo + int(np.argmin(dep[lo:hi]))
+    xp_top = int(round(xp / k)) if k else xp               # same place in the top panel's own px
     # like for like: greatest body width / total length in the top view, narrow bulges (eyes, fin tips) opened away
     wprof = np.full(Lt, np.nan)
     mid = (ty1 - ty0) // 2
     for x in range(Lt):
+        if x < Lt - 1 - xp_top:                           # behind the peduncle: a fanned tail must not count as body width
+            continue
         rt = run_containing(top[:, tx0 + x], mid) if top[:, tx0 + x].any() else None
         if rt:
             wprof[x] = rt[1] - rt[0] + 1
@@ -297,22 +316,43 @@ def measure(path, stations, real_w, out, mirror):
         line("width vs real", True if abs(d) <= 0.15 else ("warn" if abs(d) <= 0.30 else False),
              f"top max width / length {mwl:.3f} vs real {real_w:.3f} ({d:+.1%}; PASS within 15%, WARN within 30%)")
 
-    # edge-on tail in the top view: last 8% of the length
-    tail_t = []
-    tail_s = []
-    for f in np.linspace(0.93, 0.99, 7):
-        xs = int(round(sx1 - 1 - f * Ls))
-        xt = int(round(tx1 - 1 - f * Lt))
-        rs = longest_run(side[:, xs])
-        rt = longest_run(top[:, xt])
-        if rs and rt:
-            tail_s.append(rs[1] - rs[0] + 1)
-            tail_t.append((rt[1] - rt[0] + 1) * k)
-    if tail_s:
-        tr = float(np.median(tail_t) / np.median(tail_s))
-        line("tail edge-on", True if tr <= 0.15 else ("warn" if tr <= 0.25 else False),
-             f"top-view tail width / side tail height over 93-99% SL = {tr:.2f} "
-             f"(PASS <= 0.15 edge-on line, WARN <= 0.25, FAIL above; ~1 = fanned flat)")
+    # edge-on tail in the top view, anchored at the peduncle (tail rescue, 2026-11-20)
+    # The loft, the thickness profile and the top projection layer all stop at the peduncle (fish3d.ts: u runs pedU..1; the tail is the side
+    # card), so what the top view does BEHIND the peduncle cannot change the body. The old reading (last 8% of the length, over the side
+    # view's height in the same span) misfired on tapered or forked tails (pleco: 0.21-0.34 on tails that are plainly edge-on lines).
+    # Now: peduncle = narrowest opened side-view column 68-88% of the length from the snout (as fish-sheet-e6.py); tail zone = peduncle to
+    # 2% short of the tip; ratio = median top-view width over the zone / side-view tail height (deepest opened column in the zone).
+    # Edge-on tails read 0.07-0.20, a fanned one reads 0.4 and up (test: scripts/fish-sheet-tailtest.py). PASS <= 0.15; above that is a WARN
+    # naming the rescue (the card builder cuts the top card at the peduncle); FAIL only when no peduncle can be found.
+    tip = int(0.98 * Ls)
+    tw = []
+    for x in range(xp, tip):
+        xt = int(round(tx1 - 1 - x / k))
+        rt = longest_run(top[:, xt]) if tx0 <= xt < tx1 else None
+        tw.append((rt[1] - rt[0] + 1) * k if rt else 0)
+    th = float(dep[xp:tip].max()) if tip > xp else 0.0
+    if tw and th > 0:
+        tr = float(np.median(tw) / th)
+        wped = tw[0]
+        old = []
+        for f in np.linspace(0.93, 0.99, 7):
+            xs = int(round(sx1 - 1 - f * Ls)); xt = int(round(tx1 - 1 - f * Lt))
+            rs = longest_run(side[:, xs]); rt = longest_run(top[:, xt])
+            if rs and rt:
+                old.append(((rt[1] - rt[0] + 1) * k) / (rs[1] - rs[0] + 1))
+        msg = (f"top-view tail width / side tail height behind the peduncle ({1 - xp / Ls:.2f} from the tail tip, tail zone {tip - xp} px) = {tr:.2f} "
+               f"(PASS <= 0.15 edge-on; a fanned tail reads 0.4+). Peduncle top width {wped:.0f} px, widest in the zone "
+               f"{max(tw):.0f} px")
+        if tr <= 0.15:
+            line("tail edge-on", True, msg)
+        else:
+            line("tail edge-on", "warn", msg + f". RESCUE: loft, thickness and the top projection layer stop at the peduncle (x={sx1 - 1 - xp} in the "
+                 f"side panel); fish-projcards.py cuts the top card there, so the side card's tail is used")
+        print(f"INFO  tail, old reading (last 8% of the length, side height over the same span; misfires on tapered tails): "
+              f"{float(np.median(old)):.2f}" if old else "INFO  tail, old reading: n/a")
+        res["ped_frac"] = xp / Ls
+    else:
+        line("tail edge-on", False, "no peduncle or tail found")
 
     word = "FAIL" if res["fail"] else ("WARN" if res["warn"] else "PASS")
     print(f"RESULT  {word}  ({res['fail']} failed, {res['warn']} warn); width/depth {ratio:.3f}, front {fratio:.3f}, maxwidth/length {mwl:.3f}")

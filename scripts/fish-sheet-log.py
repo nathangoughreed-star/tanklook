@@ -65,11 +65,11 @@ def main():
         if len(hit) != 1: sys.exit(f'--update: {len(hit)} rows for {f}')
         r = hit[0]
         for k in AUD: r[k] = row[k]
-        note = 'rescored 2026-11-20 with audit v2 (E6)' + (f'; panels touched, split at {split}' if split else '')
+        note = 'rescored 2026-11-20 with audit v3 (tail rescue; v2 was E6)' + (f'; panels touched, split at {split}' if split else '')
         r['notes'] = re.sub(r'; ?panels touched, audit split.*$', '', r['notes'])
         r['notes'] = re.sub(r'; panels 2-3 touched \(front dorsal spine[^)]*\), audited on a copy with a 5-px black cut at the narrowest row; sheet \S+', '', r['notes'])
         r['notes'] = re.sub(r'; panels 2-3 touched \(front dorsal spine[^)]*\), audited on a copy with a 5-px black cut at the narrowest row', '', r['notes'])
-        r['notes'] = re.sub(r'; rescored 2026-11-20 with audit v2.*$', '', r['notes']) + ('; ' if r['notes'] else '') + note
+        r['notes'] = re.sub(r'; rescored 2026-11-20 with audit v\d.*$', '', r['notes']) + ('; ' if r['notes'] else '') + note
         with open(LOG, 'w', newline='', encoding='utf8') as fh:
             wr = csv.DictWriter(fh, COLS, lineterminator='\n', restval='n/a'); wr.writeheader(); wr.writerows(rows)
     elif not a.no_write:
