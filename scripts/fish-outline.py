@@ -198,7 +198,7 @@ def main():
             if len(pts) >= 2:
                 px_, py_ = [p_[0] for p_ in pts], [p_[1] for p_ in pts]
                 xs_ = np.arange(int(px_[0]), int(px_[-1]) + 1)
-                if len(pts) >= 3 and '--nosmooth' not in sys.argv:  # cubic Hermite through the points (finite-difference slopes): no corners at the hand-placed points
+                if len(pts) >= 3 and '--smooth' in sys.argv:  # cubic Hermite through the points (finite-difference slopes): opt-in: --smooth; the flame angel test preferred straight segments
                     px, py = np.array(px_, float), np.array(py_, float)
                     m = np.gradient(py, px)
                     i = np.clip(np.searchsorted(px, xs_, side='right') - 1, 0, len(px) - 2)
