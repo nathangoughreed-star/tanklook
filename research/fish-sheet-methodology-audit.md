@@ -225,3 +225,28 @@ On 3 fish with passing sheets, compare three ways to get the landmarks:
 - **After E3:** if photos don't help, drop them and save Nathan the photo hunt for each species.
 
 **Out of scope here:** a renderer for slender, flattened fish (sharks, eels). That decision is pending with Nathan separately.
+
+## 5. Results
+
+### E1: draw-to-draw variance (2026-11-20, text-only)
+
+**Setup.** Prompt version `B-noref`, no photos (Nathan's choice; see `research/fish-sheets/E1-instructions.md`). ChatGPT, a new chat for every draw. There are 9 rows in `research/fish-sheets/log.csv`. Where the top and front panels touched, the sheet was audited on a copy with a 5-px black cut at the narrowest row; the original sheets are unchanged.
+
+| Species | Layout | Side vs top length | Tail edge-on | Width/depth, top view | Width/depth, front view |
+|---|---|---|---|---|---|
+| oscar | 3/3 portrait | 0.6, 2.0, 1.4% | 0.08, 0.15, 0.10 | 0.635, 0.659, 0.617 | 0.590, 0.592, 0.671 (−7, −10, +9%) |
+| clownfish | 1 portrait, 2 landscape touching | 2.0, 0.0, 0.8% | 0.05, 0.13, **0.29** | 0.589, 0.591, 0.618 | 0.694, 0.663, 0.707 (+18, +12, +14%) |
+| pleco | 3/3 landscape touching | 1.8, 0.7, 0.0% | **0.34**, 0.21, 0.21 | 1.395, 1.387, 1.390 | 1.57, 1.97, 1.66 (+33 to +79%) |
+
+**Findings**
+
+1. **The side and top views repeat closely.** Length agreed within 2% in all 9 draws. Width/depth from the top view varied by ±3% for the oscar, ±2.5% for the clownfish and ±0.3% for the pleco. For the body measurements the model is built from, one draw is enough; "draw 3, keep the best" is not needed for thickness.
+2. **The front view is not a measurement.** The error was random for the oscar (±10%) and biased for the clownfish (+12 to +18%). For the pleco it was meaningless (+33 to +79%), because its spread pectoral fins merge into the outline. **Decision:** the front panel is used for texture only. In the audit, front-vs-top thickness becomes an information line and stops being a pass criterion.
+3. **Layout follows the fish's shape, not the prompt.** The deep oscar came back portrait every time. The long pleco came back landscape with touching panels every time, and the clownfish 2 times out of 3. For E2, try an explicit canvas shape and gap (for example "tall 2:3 canvas, at least 40 px of black between panels"). Alternatively, the audit could do the narrow-row cut itself.
+4. **Tail edge-on is the one random failure:** 2 of 9 draws (clownfish d3 0.29, pleco d1 0.34). That is the only reason left to make more than one draw.
+5. **Consistent does not mean correct.** The clownfish top view gave 0.59–0.62 every time, while earlier notes expected about 0.5 (not yet checked against measured specimens). Text-only sheets may be consistently wrong. The next question is accuracy against real numbers, not variance.
+
+**Consequences for the plan**
+- Shrink E2 to 2 draws per arm.
+- E2 tests the prompt with layout and numeric-proportion lines added, still text-only.
+- Real width/depth values are needed for the test species, so E6's real-numbers check moves ahead of E2.
