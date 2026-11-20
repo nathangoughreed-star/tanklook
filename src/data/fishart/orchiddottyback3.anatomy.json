@@ -84,10 +84,10 @@
     10.8,
     10.6,
     10.93,
-    11.27,
-    14.95,
-    14.95,
-    13.95,
+    10.19,
+    9.46,
+    8.72,
+    7.99,
     7.25
    ],
    "axis": "snout tip to peduncle centre, level; values are distance from the axis in % SL; BODY ONLY (opened mask)"
@@ -597,9 +597,9 @@
    ],
    "source": "top panel of the generated sheet, blue-share mask (thr 0.60); the narrower side of the centre line",
    "fit": {
-    "thick": 0.67,
-    "pedT": 0.61,
-    "rmsPctSL": 0.52,
+    "thick": 0.63,
+    "pedT": 0.86,
+    "rmsPctSL": 0.35,
     "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
    }
   }

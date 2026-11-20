@@ -33,7 +33,13 @@ if (mode === 'measured') {
 }
 document.title += ' plan ok'; // photo cards already carry the fish's own eye and paired fins: drop the plan's 3D pectoral/pelvic leaves (?paired=keep keeps them),
 // and either hide the 3D eye (default) or seat it on the photo's eye (?eye=place&ex=px&ey=px&er=px, sheet pixels, SL in sheet px = esl, axis y = eaxis)
-if (mode === 'measured' && q.get('paired') !== 'keep') { P.pectoral = false; delete P.pelvic; }
+if (mode === 'measured' && q.get('paired') === 'photo') {
+  // 3D pectoral and pelvic rooted where the sheet's side view roots them (sheet px: snout 1275, axis 207, SL 896; pectoral root 1010,233; pelvic root 1005,295, 120 px long)
+  const sl = 896, SLc = 1 - P.pedU, pu = 1 - (1275 - 1010) / sl * SLc, [pt, pb] = profile(P)(pu), pv = (26 / sl * SLc - pt) / (pb - pt);
+  P.pectoral = true; P.pec = { u: pu, v: pv, s: +(q.get('pecs') ?? 1), tint: '#b848c8', ...(q.get('pecspread') ? { spread: +q.get('pecspread') } : {}) };
+  P.pelvic = { u: 1 - (1275 - 1005) / sl * SLc, len: 120 / sl * SLc, tint: '#c050e0' };
+} else if (mode === 'measured' && q.get('paired') !== 'keep') { P.pectoral = false; delete P.pelvic; }
+if (mode !== 'current') { if (q.get('wide')) P.wide = +q.get('wide'); if (q.get('bulge')) P.eye = { ...P.eye, bulge: +q.get('bulge') }; if (q.get('belly')) P.belly = +q.get('belly'); }
 if (mode !== 'current') {
   if (q.get('eye') === 'place') {
     const sl = +q.get('esl'), U1 = 1, SLc = 1 - P.pedU, u = U1 - (+q.get('sx') - +q.get('ex')) / sl * SLc, v = (+q.get('eaxis') - +q.get('ey')) / sl * -1 * SLc;
@@ -60,5 +66,5 @@ function shoot(yaw, pitch) {
 }
 const sheet = document.createElement('canvas'); sheet.width = W * 2; sheet.height = H * 2 + 0; const x = sheet.getContext('2d'); x.font = '16px sans-serif'; x.fillStyle = '#fff';
 VIEWS.forEach(([l, y, p], i) => { x.drawImage(shoot(y, p), (i % 2) * W, Math.floor(i / 2) * H); x.fillText(`${mode} | ${l}`, (i % 2) * W + 8, Math.floor(i / 2) * H + 20); });
-await new Promise(r => sheet.toBlob(async b => { await fetch('/__shot?name=ORCH3D' + suf + '-' + mode + (q.get('fins') === '0' ? '-nofins' : '') + (q.get('eye') === 'place' ? '-eye' : '') + (q.get('paired') === 'keep' ? '-pairs' : ''), { method: 'POST', body: b }); r(); }, 'image/png'));
+await new Promise(r => sheet.toBlob(async b => { await fetch('/__shot?name=ORCH3D' + suf + '-' + mode + (q.get('fins') === '0' ? '-nofins' : '') + (q.get('eye') === 'place' ? '-eye' : '') + (q.get('paired') ? '-p' + q.get('paired') : '') + (q.get('pecs') ? '-s' + Math.round(+q.get('pecs') * 100) : '') + (q.get('wide') ? '-w' + Math.round(+q.get('wide') * 100) : ''), { method: 'POST', body: b }); r(); }, 'image/png'));
 document.getElementById('s').textContent = 'done ' + mode; document.title = 'done ' + mode;

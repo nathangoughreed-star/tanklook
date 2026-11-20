@@ -17,8 +17,13 @@ const top = d.stations.map((s, i) => [U(s), -Wd(d.top[i])] as [number, number]),
 Object.assign(P, { pedU, outline: [...top, ...bot.reverse()] });
 P.thick = A.thickness.fit.thick; P.pedT = A.thickness.fit.pedT;                       // from the top view's widths
 P.tail = { ...P.tail, h: Wd(Math.max(...A.fins.caudal.outline.map(c => (c[1] + c[2]) / 2))) };
-P.pectoral = false; delete P.pelvic;                                                    // the photo already carries both
+// paired fins: 3D ones rooted where the sheet's side view roots them (sheet px: snout 1275, axis 207, SL 896; pectoral root 1010,233; pelvic root 1005,295, 120 px long),
+// so the front and 3/4 views show fins attached to the body; the card image has the pelvic erased (the 3D one replaces it), the painted pectoral stays flat on the flank
+{ const sl = 896, pu = 1 - (1275 - 1010) / sl * SLc, [pt, pb] = profile(P)(pu);
+  P.pectoral = true; P.pec = { u: pu, v: (26 / sl * SLc - pt) / (pb - pt), s: 1.2, tint: '#b848c8', spread: 1.0 };
+  P.pelvic = { u: 1 - (1275 - 1005) / sl * SLc, len: 120 / sl * SLc, tint: '#c050e0' }; }
+P.wide = 0.3;                                                                           // head-on the sheet's body is widest low, a round chin
 // the photo's own eye (sheet px: eye centre 1190,177, ring radius 14, snout 1275, axis 207, SL 896) gets a 3D eye seated on it
 { const sl = 896, u = 1 - (1275 - 1190) / sl * SLc, v = -(207 - 177) / sl * SLc, [et, eb] = profile(P)(u);
-  P.eye = { ...P.eye, u, dv: (v - et) / (eb - et) - 0.38, r: 14 / sl * SLc, iris: ['#c8902a', '#0a0206'] }; }
+  P.eye = { ...P.eye, u, dv: (v - et) / (eb - et) - 0.38, r: 14 / sl * SLc, bulge: 0.6, iris: ['#c8902a', '#0a0206'] }; }
 FISH_ART.orchiddottyback = (ctx, _p, W) => ctx.drawImage(img, 0, 0, W, W * (ctx.canvas.height / ctx.canvas.width));

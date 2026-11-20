@@ -205,6 +205,11 @@ def main():
     med5 = [sorted(bot_prof[j - 2:j + 3])[2] for j in range(2, len(bot_prof) - 2)]
     for j in range(2, len(bot_prof) - 2):
         bot_prof[j] = round(min(bot_prof[j], med5[j - 2] + 1.0), 2)
+    # the anal fin's base hangs below the rear belly and survives as a bulge at 80-95 %: the belly there runs straight from the 75 % value to the peduncle
+    i75, i100 = stations.index(75), stations.index(100)
+    for j in range(i75 + 1, i100):
+        line = bot_prof[i75] + (bot_prof[i100] - bot_prof[i75]) * (stations[j] - 75) / 25.0
+        bot_prof[j] = round(min(bot_prof[j], line), 2)
     # --- fins: where the full mask sticks out of the body mask
     def sticks(sign):
         """x ranges where the full mask extends >=3 px beyond the body edge (sign -1 top, +1 bottom)."""

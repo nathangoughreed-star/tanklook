@@ -7,11 +7,14 @@ Alpha = brightness above a low threshold (black background photos only; for busy
 import json, sys
 import numpy as np
 from PIL import Image
-pos = [a for a in sys.argv[1:] if not a.startswith('--')]
+pos = [a for i, a in enumerate(sys.argv[1:]) if not a.startswith('--') and not (i > 0 and sys.argv[i].startswith('--'))]
 opt = {a: sys.argv[i + 2] for i, a in enumerate(sys.argv[1:-1]) if a.startswith('--')}
 src, js, out = pos
 asp = float(opt.get('--aspect', 0.369))
-J = json.load(open(js)); im = Image.open(src).convert('RGB'); a = np.asarray(im)
+J = json.load(open(js)); im = Image.open(src).convert('RGB')
+for e in [v for k, v in opt.items() if k == '--erase']:   # x0,y0,x1,y1 in source-photo px: blacked out before the cutout (a fin the 3D model draws itself)
+    x0, y0, x1, y1 = map(int, e.split(',')); im.paste((0, 0, 0), (x0, y0, x1, y1))
+a = np.asarray(im)
 k = im.width / J['source']['px'][0]
 sx, sy = [v * k for v in J['anatomy']['landmarks']['snoutPxOriginal']]
 TL = J['anatomy']['tlPx'] * k
