@@ -267,6 +267,20 @@ def main():
         return round(float((sx - x) / SL * 100), 2)
 
     fins = {}
+    if '--dorsals' in sys.argv:  # two dorsal fins (sharks): the two longest runs, front one = 'dorsal', rear one = 'dorsal2'
+        idx_ = di[(di >= pedx - 10) & (di <= sx)]
+        runs_, s0_, p_ = [], idx_[0], idx_[0]
+        for i_ in idx_[1:]:
+            if i_ - p_ > 6:
+                runs_.append((s0_, p_)); s0_ = i_
+            p_ = i_
+        runs_.append((s0_, p_))
+        two = sorted(sorted(runs_, key=lambda r_: r_[1] - r_[0])[-2:], key=lambda r_: -r_[1])
+        for name_, r_ in zip(('dorsal', 'dorsal2'), two):
+            xs_ = np.arange(r_[0], r_[1] + 1); h_ = np.nan_to_num(dd[xs_])
+            fins[name_] = {'baseStartPctSL': u_of(r_[1]), 'baseEndPctSL': u_of(r_[0]), 'maxHeightPctSL': round(float(pct(h_.max())), 2),
+                           'heightProfile': [[u_of(x), round(float(pct(v)), 2)] for x, v in zip(xs_[::4], h_[::4])]}
+        dr = None
     if dr:
         xs_d = np.arange(dr[0], dr[1] + 1)
         h = np.nan_to_num(dd[xs_d])
@@ -354,7 +368,7 @@ def main():
         Image.fromarray(dbg).save(opts['--debug'])
     # machine-readable edge dump for the overlay step
     print(json.dumps({'SLpx': SL, 'TLpx': TL, 'TL/SL': round(TL / SL, 3), 'rot': round(float(ang), 2), 'pedx': int(pedx), 'sx': int(sx), 'sy': float(sy),
-                      'top': top_prof, 'bot': bot_prof, 'dorsal': {k: fins['dorsal'][k] for k in ('baseStartPctSL', 'baseEndPctSL', 'maxHeightPctSL')} if dr else None,
+                      'top': top_prof, 'bot': bot_prof, 'dorsal': {k: fins['dorsal'][k] for k in ('baseStartPctSL', 'baseEndPctSL', 'maxHeightPctSL')} if 'dorsal' in fins else None,
                       'anal': {k: fins['anal'][k] for k in ('baseStartPctSL', 'baseEndPctSL', 'maxHeightPctSL')} if ar else None}))
 
 
