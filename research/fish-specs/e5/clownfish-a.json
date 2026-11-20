@@ -1,0 +1,108 @@
+{
+ "id": "e5clownfisha",
+ "sheet": "C:/Users/nreed/fish-sheets/e5/clownfish-d2.png",
+ "species": {
+  "name": "Clownfish",
+  "sci": "Amphiprion ocellaris",
+  "tl": 100
+ },
+ "landmarks": {
+  "ped": [
+   350,
+   268
+  ],
+  "dorsalBase": [
+   [
+    930,
+    100
+   ],
+   [
+    720,
+    85
+   ],
+   [
+    610,
+    92
+   ],
+   [
+    480,
+    150
+   ],
+   [
+    385,
+    188
+   ]
+  ],
+  "analBase": [
+   [
+    610,
+    400
+   ],
+   [
+    480,
+    405
+   ],
+   [
+    385,
+    345
+   ]
+  ]
+ },
+ "eye": [
+  1110,
+  218,
+  26
+ ],
+ "pectoral": {
+  "root": [
+   945,
+   290
+  ],
+  "poly": [
+   [
+    945,
+    290
+   ],
+   [
+    820,
+    232
+   ],
+   [
+    850,
+    380
+   ]
+  ],
+  "spread": 1.0
+ },
+ "pelvic": {
+  "root": [
+   880,
+   415
+  ],
+  "len": 100,
+  "poly": [
+   [
+    880,
+    415
+   ],
+   [
+    790,
+    510
+   ],
+   [
+    910,
+    440
+   ]
+  ]
+ },
+ "erase": [
+  [
+   755,
+   410,
+   915,
+   520
+  ]
+ ],
+ "measured_width": true,
+ "plan": "oscar"
+}

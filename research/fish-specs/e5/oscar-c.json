@@ -1,0 +1,98 @@
+{
+ "id": "e5oscarc",
+ "sheet": "C:/Users/nreed/fish-sheets/e5/oscar-d1.png",
+ "species": {
+  "name": "Oscar",
+  "sci": "",
+  "tl": 300.0
+ },
+ "landmarks": {
+  "ped": [
+   171,
+   250
+  ],
+  "dorsalBase": [
+   [
+    575,
+    54
+   ],
+   [
+    554,
+    71
+   ],
+   [
+    533,
+    74
+   ],
+   [
+    512,
+    61
+   ],
+   [
+    492,
+    55
+   ]
+  ],
+  "analBase": []
+ },
+ "measured_width": true,
+ "plan": "oscar",
+ "eye": [
+  796,
+  237,
+  16
+ ],
+ "pectoral": {
+  "root": [
+   693,
+   354
+  ],
+  "poly": [
+   [
+    693,
+    354
+   ],
+   [
+    597,
+    308
+   ],
+   [
+    630,
+    255
+   ]
+  ],
+  "spread": 1.0
+ },
+ "pelvic": {
+  "root": [
+   702,
+   428
+  ],
+  "len": 145,
+  "poly": [
+   [
+    702,
+    428
+   ],
+   [
+    595,
+    526
+   ],
+   [
+    647,
+    426
+   ]
+  ]
+ },
+ "erase": [
+  [
+   580,
+   411,
+   717,
+   541
+  ]
+ ],
+ "auto_failed": [
+  "anal"
+ ]
+}

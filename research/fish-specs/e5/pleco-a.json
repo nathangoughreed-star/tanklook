@@ -1,0 +1,100 @@
+{
+ "id": "e5plecoa",
+ "sheet": "C:/Users/nreed/fish-sheets/e5/pleco-d3.png",
+ "species": {
+  "name": "Pleco",
+  "sci": "Hypostomus plecostomus",
+  "tl": 380
+ },
+ "landmarks": {
+  "ped": [
+   400,
+   275
+  ],
+  "dorsalBase": [
+   [
+    1090,
+    153
+   ],
+   [
+    850,
+    178
+   ],
+   [
+    600,
+    195
+   ]
+  ],
+  "analBase": [
+   [
+    660,
+    330
+   ],
+   [
+    560,
+    327
+   ],
+   [
+    500,
+    327
+   ]
+  ]
+ },
+ "eye": [
+  1310,
+  227,
+  12
+ ],
+ "pectoral": {
+  "root": [
+   1215,
+   335
+  ],
+  "poly": [
+   [
+    1215,
+    335
+   ],
+   [
+    1000,
+    305
+   ],
+   [
+    950,
+    400
+   ]
+  ],
+  "spread": 1.0
+ },
+ "pelvic": {
+  "root": [
+   895,
+   340
+  ],
+  "len": 170,
+  "poly": [
+   [
+    895,
+    340
+   ],
+   [
+    730,
+    395
+   ],
+   [
+    780,
+    335
+   ]
+  ]
+ },
+ "erase": [
+  [
+   710,
+   335,
+   905,
+   410
+  ]
+ ],
+ "measured_width": true,
+ "plan": "oscar"
+}

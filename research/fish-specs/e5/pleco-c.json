@@ -1,0 +1,79 @@
+{
+ "id": "e5plecoc",
+ "sheet": "C:/Users/nreed/fish-sheets/e5/pleco-d3.png",
+ "species": {
+  "name": "Pleco",
+  "sci": "",
+  "tl": 380.0
+ },
+ "landmarks": {
+  "ped": [
+   428,
+   275
+  ],
+  "dorsalBase": [],
+  "analBase": []
+ },
+ "measured_width": true,
+ "plan": "oscar",
+ "eye": [
+  1376,
+  171,
+  45
+ ],
+ "pectoral": {
+  "root": [
+   1177,
+   347
+  ],
+  "poly": [
+   [
+    1177,
+    347
+   ],
+   [
+    969,
+    346
+   ],
+   [
+    1030,
+    294
+   ]
+  ],
+  "spread": 1.0
+ },
+ "pelvic": {
+  "root": [
+   1166,
+   344
+  ],
+  "len": 247,
+  "poly": [
+   [
+    1166,
+    344
+   ],
+   [
+    927,
+    406
+   ],
+   [
+    1017,
+    284
+   ]
+  ]
+ },
+ "erase": [
+  [
+   912,
+   269,
+   1181,
+   421
+  ]
+ ],
+ "auto_failed": [
+  "eye",
+  "dorsal",
+  "anal"
+ ]
+}

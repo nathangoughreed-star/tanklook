@@ -1,0 +1,100 @@
+{
+ "id": "e5oscara",
+ "sheet": "C:/Users/nreed/fish-sheets/e5/oscar-d1.png",
+ "species": {
+  "name": "Oscar",
+  "sci": "Astronotus ocellatus",
+  "tl": 300
+ },
+ "landmarks": {
+  "ped": [
+   235,
+   263
+  ],
+  "dorsalBase": [
+   [
+    720,
+    81
+   ],
+   [
+    500,
+    66
+   ],
+   [
+    300,
+    181
+   ]
+  ],
+  "analBase": [
+   [
+    490,
+    421
+   ],
+   [
+    380,
+    416
+   ],
+   [
+    260,
+    336
+   ]
+  ]
+ },
+ "eye": [
+  905,
+  234,
+  22
+ ],
+ "pectoral": {
+  "root": [
+   735,
+   299
+  ],
+  "poly": [
+   [
+    735,
+    299
+   ],
+   [
+    575,
+    251
+   ],
+   [
+    640,
+    391
+   ]
+  ],
+  "spread": 1.0
+ },
+ "pelvic": {
+  "root": [
+   715,
+   411
+  ],
+  "len": 130,
+  "poly": [
+   [
+    715,
+    411
+   ],
+   [
+    565,
+    541
+   ],
+   [
+    610,
+    431
+   ]
+  ]
+ },
+ "erase": [
+  [
+   540,
+   405,
+   730,
+   545
+  ]
+ ],
+ "measured_width": true,
+ "plan": "oscar"
+}
