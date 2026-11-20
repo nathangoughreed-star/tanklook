@@ -197,8 +197,18 @@ def main():
             pts = sorted(LM.get(key, []))
             if len(pts) >= 2:
                 px_, py_ = [p_[0] for p_ in pts], [p_[1] for p_ in pts]
-                for x_ in range(int(px_[0]), int(px_[-1]) + 1):
-                    arr[x_] = float(np.interp(x_, px_, py_))
+                xs_ = np.arange(int(px_[0]), int(px_[-1]) + 1)
+                if len(pts) >= 3 and '--nosmooth' not in sys.argv:  # cubic Hermite through the points (finite-difference slopes): no corners at the hand-placed points
+                    px, py = np.array(px_, float), np.array(py_, float)
+                    m = np.gradient(py, px)
+                    i = np.clip(np.searchsorted(px, xs_, side='right') - 1, 0, len(px) - 2)
+                    h = px[i + 1] - px[i]; t = (xs_ - px[i]) / h
+                    h00, h10, h01, h11 = 2*t**3 - 3*t**2 + 1, t**3 - 2*t**2 + t, -2*t**3 + 3*t**2, t**3 - t**2
+                    arr[xs_] = h00 * py[i] + h10 * h * m[i] + h01 * py[i + 1] + h11 * h * m[i + 1]
+                    ex_ = tf[xs_] if arr is tb else bf[xs_]   # the spline may not leave the fish mask (overshoot between sparse points)
+                    arr[xs_] = np.where(np.isnan(ex_), arr[xs_], np.maximum(arr[xs_], ex_) if arr is tb else np.minimum(arr[xs_], ex_))
+                else:
+                    arr[xs_] = np.interp(xs_, px_, py_)
     TL = float(sx - tail_x)
 
     def pct(v):
