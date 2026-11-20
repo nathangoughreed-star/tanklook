@@ -37,7 +37,7 @@ button{background:#2a3a4c;color:var(--ink);border:1px solid #3b4f66;border-radiu
 // Steps: kind 'pt' (one click), 'poly' (several clicks, Enter), diag = target position in the diagram.
 const STEPS=[
  {k:'ped',t:'Tail base',h:'Click the CENTRE of the tail stalk where it meets the tail fin (the base of the tail fin, where the body ends).',kind:'pt',d:[[62,62]]},
- {k:'dorsal',t:'Dorsal fin base',h:'Click along the line where the dorsal fin meets the back, FRONT to BACK, and keep going until the last click is on the top edge of the body right at the tail base, under the fin's rear end (5-12 clicks). Enter when done.',kind:'poly',min:2,d:[[190,26],[150,22],[110,24],[80,40]]},
+ {k:'dorsal',t:'Dorsal fin base',h:'Click along the line where the dorsal fin meets the back, FRONT to BACK, and keep going until the last click is on the top edge of the body right at the tail base, under the rear end of the fin (5-12 clicks). Enter when done.',kind:'poly',min:2,d:[[190,26],[150,22],[110,24],[80,40]]},
  {k:'anal',t:'Anal fin base',h:'Click along where the anal fin meets the belly, FRONT to BACK, and keep going until the last click is on the bottom edge of the body right at the tail base (3-8 clicks). Enter when done.',kind:'poly',min:2,d:[[130,92],[105,94],[80,84]]},
  {k:'eyec',t:'Eye centre',h:'Click the centre of the eye.',kind:'pt',d:[[218,56]]},
  {k:'eyer',t:'Eye edge',h:'Click the edge of the eye (any side) to set its size.',kind:'pt',d:[[226,56]]},
@@ -71,7 +71,7 @@ function bands(im){const c=document.createElement('canvas');c.width=im.width;c.h
  let x0=1e9,x1=0;for(let yy=y0;yy<=p;yy++)for(let x=0;x<c.width;x++){const i=(yy*c.width+x)*4;if(Math.max(d[i],d[i+1],d[i+2])>40){if(x<x0)x0=x;if(x>x1)x1=x}}
  return{x0:Math.max(0,x0-10),y0:Math.max(0,y0-10),x1:Math.min(im.width,x1+10),y1:Math.min(im.height,p+10)}}
 function loadNext(){if(!queue.length)return;const f=queue.shift();fileName=f.name;const u=URL.createObjectURL(f);const im=new Image();im.onload=()=>{img=im;bbox=bands(im);pts={};cur=[];hist=[];step=0;clickLog=[];t0=0;
-  const base=f.name.replace(/\.[^.]+$/,'');$('fid').value=$('fid').value&&queue.length===0&&false?$('fid').value:base.replace(/[^a-z0-9]/gi,'');$('fname').value=base.split('-')[0];$('fpath').value='C:/Users/nreed/fish-sheets/e1/'+f.name;resize();fit();ui()};im.src=u}
+  const base=f.name.replace(/\.[^.]+$/,'');$('fid').value=$('fid').value&&queue.length===0&&false?$('fid').value:base.split('-')[0].replace(/[^a-z0-9]/gi,'');$('fname').value=base.split('-')[0];$('fpath').value='C:/Users/nreed/fish-sheets/shapes/'+f.name;resize();fit();ui()};im.src=u}
 $('file').onchange=e=>{queue=[...e.target.files];loadNext()};
 function setPt(k,p){pts[k]=[p]}
 function advance(){step++;while(STEPS[step]&&false)step++;cur=[];if(step>=STEPS.length){finish()}ui()}
