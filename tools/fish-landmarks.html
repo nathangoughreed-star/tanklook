@@ -42,11 +42,9 @@ const STEPS=[
  {k:'eyec',t:'Eye centre',h:'Click the centre of the eye.',kind:'pt',d:[[218,56]]},
  {k:'eyer',t:'Eye edge',h:'Click the edge of the eye (any side) to set its size.',kind:'pt',d:[[226,56]]},
  {k:'pec0',t:'Pectoral: root',h:'Click where the pectoral (side) fin attaches to the body.',kind:'pt',d:[[188,74]]},
- {k:'pec1',t:'Pectoral: top corner',h:'The pectoral is a fan. Click the TOP outer corner of the fan (where its upper edge ends at the back).',kind:'pt',d:[[162,62]]},
- {k:'pec2',t:'Pectoral: bottom corner',h:'Click the BOTTOM outer corner of the same fan (where its lower edge ends at the back).',kind:'pt',d:[[150,84]]},
+ {k:'pecO',t:'Pectoral: outline',h:'Trace the OUTER EDGE of the fin: click 4-6 points around it (any shape, round is fine), going from near the root at the top, round the back, to near the root at the bottom. Enter when done.',kind:'poly',min:3,d:[[170,64],[152,70],[148,80],[160,88],[176,82]]},
  {k:'pel0',t:'Pelvic: root',h:'Click where the pelvic (belly) fin attaches to the body.',kind:'pt',d:[[180,92]]},
- {k:'pel1',t:'Pelvic: back tip',h:'The pelvic is a small fan under the belly. Click its BACK tip (the end of the longest ray, toward the tail).',kind:'pt',d:[[150,114]]},
- {k:'pel2',t:'Pelvic: front corner',h:'Click the pelvic fan's FRONT lower corner (the edge nearest the head).',kind:'pt',d:[[168,108]]},
+ {k:'pelO',t:'Pelvic: outline',h:'Trace the OUTER EDGE of the fin: click 4-6 points around it, from near the root at the front, round the tip, back to near the root. Enter when done.',kind:'poly',min:3,d:[[172,100],[160,112],[148,116],[160,100]]}
 ];
 const $=id=>document.getElementById(id);const cv=$('cv'),cx=cv.getContext('2d');
 let queue=[],img=null,fileName='',view={s:1,x:0,y:0},pts={},step=0,cur=[],hist=[],bbox=null,t0=0,clickLog=[],mouse=null;
@@ -61,7 +59,7 @@ const toS=(px,py)=>[(px-view.x)/view.s,(py-view.y)/view.s],toC=(x,y)=>[x*view.s+
 function draw(){cx.fillStyle='#000';cx.fillRect(0,0,cv.width,cv.height);if(!img)return;cx.imageSmoothingEnabled=view.s<3;cx.drawImage(img,view.x,view.y,img.width*view.s,img.height*view.s);
  const dot=(p,c)=>{const r=5;const[a,b]=toC(p[0],p[1]);cx.beginPath();cx.arc(a,b,r,0,7);cx.strokeStyle=c;cx.lineWidth=2;cx.stroke();cx.beginPath();cx.arc(a,b,1.5,0,7);cx.fillStyle=c;cx.fill()};
  const line=(a,c)=>{if(a.length<2)return;cx.beginPath();a.forEach((p,i)=>{const[x,y]=toC(p[0],p[1]);i?cx.lineTo(x,y):cx.moveTo(x,y)});cx.strokeStyle=c;cx.lineWidth=2;cx.stroke()};
- const col={ped:'#f0f',dorsal:'#ff0',anal:'#0f0',eyec:'#0ff',eyer:'#0ff',pec0:'#f44',pec1:'#f44',pec2:'#f44',pel0:'#48f',pel1:'#48f',pel2:'#48f'};
+ const col={ped:'#f0f',dorsal:'#ff0',anal:'#0f0',eyec:'#0ff',eyer:'#0ff',pec0:'#f44',pecO:'#f44',pel0:'#48f',pelO:'#48f'};
  for(const k in pts){pts[k].forEach(p=>dot(p,col[k]));if(pts[k].length>1)line(pts[k],col[k])}
  const s=STEPS[step];if(s&&s.kind=='poly'){cur.forEach(p=>dot(p,col[s.k]));line(cur,col[s.k])}
  if(pts.eyec&&pts.eyer){const[a,b]=toC(...pts.eyec[0]);const r=Math.hypot(pts.eyer[0][0]-pts.eyec[0][0],pts.eyer[0][1]-pts.eyec[0][1])*view.s;cx.beginPath();cx.arc(a,b,r,0,7);cx.strokeStyle='#0ff';cx.stroke()}
@@ -80,8 +78,8 @@ function advance(){step++;while(STEPS[step]&&false)step++;cur=[];if(step>=STEPS.
 function finish(){const P=pts,g=k=>P[k]&&P[k][0];const r=a=>a.map(p=>[Math.round(p[0]),Math.round(p[1])]);const spec={id:$('fid').value||'fish',sheet:$('fpath').value,species:{name:$('fname').value,sci:$('fsci').value,tl:+$('ftl').value},
   landmarks:{ped:r([g('ped')])[0],dorsalBase:r(P.dorsal||[]),analBase:r(P.anal||[])}};
  if(g('eyec')){const e=g('eyec'),q=g('eyer')||[e[0]+14,e[1]];spec.eye=[Math.round(e[0]),Math.round(e[1]),Math.round(Math.hypot(q[0]-e[0],q[1]-e[1]))]}
- if(g('pec0')){const poly=r([g('pec0'),g('pec1')||g('pec0'),g('pec2')||g('pec0')]);spec.pectoral={root:poly[0],poly,spread:1.0}}
- if(g('pel0')){const poly=r([g('pel0'),g('pel1')||g('pel0'),g('pel2')||g('pel0')]);const len=Math.max(...poly.map(p=>Math.hypot(p[0]-poly[0][0],p[1]-poly[0][1])));const xs=poly.map(p=>p[0]),ys=poly.map(p=>p[1]);
+ if(g('pec0')){const poly=r([g('pec0'),...(P.pecO||[])]);spec.pectoral={root:poly[0],poly,spread:1.0}}
+ if(g('pel0')){const poly=r([g('pel0'),...(P.pelO||[])]);const len=Math.max(...poly.map(p=>Math.hypot(p[0]-poly[0][0],p[1]-poly[0][1])));const xs=poly.map(p=>p[0]),ys=poly.map(p=>p[1]);
   spec.pelvic={root:poly[0],len:Math.round(len),poly};spec.erase=[[Math.min(...xs)-15,Math.min(...ys)-15,Math.max(...xs)+15,Math.max(...ys)+15]]}
  spec.measured_width=true;spec.plan='oscar';
  const secs=t0?Math.round((performance.now()-t0)/1000):0;spec._meta={tool:'fish-landmarks.html',seconds:secs,clicks:clickLog.length,undos:clickLog.filter(c=>c.u).length,stepSeconds:clickLog.filter(c=>!c.u).map(c=>[c.k,+(c.t/1000).toFixed(1)])};
