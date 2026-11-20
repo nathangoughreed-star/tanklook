@@ -214,7 +214,9 @@ def main():
     def pct(v):
         return v / SL * 100.0
 
-    stations = list(range(0, 101, 5))
+    base_st = list(range(0, 101, 5))
+    # --dense: extra stations at the snout and tail tip (a 5 % step turns a blunt snout into a point); the lump-capping below runs on the 5 % stations only
+    stations = sorted(set(base_st) | ({0.5, 1, 1.5, 2, 3, 4, 6, 7, 8, 97, 98.5} if '--dense' in sys.argv else set()))
     ts, bs = smooth(tb, 3), smooth(bb, 3)
     top_prof, bot_prof = [], []
     for s in stations:
@@ -225,6 +227,12 @@ def main():
         top_prof.append(round(float(pct(sy - t)), 2))
         bot_prof.append(round(float(pct(b - sy)), 2))
 
+    if len(stations) != len(base_st):  # run the 5 %-grid cleanups on the base stations, then merge back
+        ix = [stations.index(b_) for b_ in base_st]
+        top_x, bot_x, st_x = top_prof, bot_prof, stations
+        top_prof, bot_prof, stations = [top_x[i] for i in ix], [bot_x[i] for i in ix], base_st
+    else:
+        top_x = bot_x = st_x = None
     # a fin root (pelvic) merged into the belly shows as a one-station spike: replace it by its neighbours' mean
     for i in range(1, len(bot_prof) - 1):
         m_ = (bot_prof[i - 1] + bot_prof[i + 1]) / 2
@@ -239,6 +247,10 @@ def main():
     for j in range(i75 + 1, i100):
         line = bot_prof[i75] + (bot_prof[i100] - bot_prof[i75]) * (stations[j] - 75) / 25.0
         bot_prof[j] = round(min(bot_prof[j], line), 2)
+    if st_x is not None:
+        for k_, b_ in enumerate(base_st):
+            top_x[st_x.index(b_)] = top_prof[k_]; bot_x[st_x.index(b_)] = bot_prof[k_]
+        top_prof, bot_prof, stations = top_x, bot_x, st_x
     # --- fins: where the full mask sticks out of the body mask
     def sticks(sign):
         """x ranges where the full mask extends >=3 px beyond the body edge (sign -1 top, +1 bottom)."""

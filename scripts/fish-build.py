@@ -62,7 +62,7 @@ json.dump({'ped': [LM['ped'][0] / 2, LM['ped'][1] / 2], 'dorsalBase': half(LM.ge
           open(os.path.join(work, 'lm.json'), 'w'))
 anat = os.path.join(work, 'a.json')
 at = os.path.join(work, 'a.t.json')
-extra = (['--dorsals', '2'] if spec.get('dorsals') == 2 else []) + (['--smooth'] if spec.get('smooth') else []) + (['--warm', '--blue', str(spec['warm'])] if spec.get('warm') else [])
+extra = (['--dense'] if spec.get('dense') else []) + (['--dorsals', '2'] if spec.get('dorsals') == 2 else []) + (['--smooth'] if spec.get('smooth') else []) + (['--warm', '--blue', str(spec['warm'])] if spec.get('warm') else [])
 run(S('fish-outline.py'), os.path.join(work, 'side.png'), anat, *spec.get('outline', '--level --thr 8 --open 9').split(), '--landmarks', os.path.join(work, 'lm.json'), *extra)
 pw = spec.get('pec_window', [22, 44])
 run(S('fish-topview.py'), os.path.join(work, 'sheet.png'), anat, at, ty0 - 6, ty1 + 6, '--x0', 0, '--fullbody', '--pec0', pw[0], '--pec1', pw[1])
@@ -93,7 +93,7 @@ if er:
 e = spec['eye']
 photo = {'art': ID, 'plan': spec.get('plan', 'oscar'), 'sx': round(sx, 1), 'sl': round(sl, 1), 'ax': round(ax, 1), 'eye': e,
          'pec': spec.get('pectoral'), 'pelvic': spec.get('pelvic'),
-         'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', round((ax - e[1]) / TL, 4))}, 'thickx': spec.get('thickx'), 'aspect': asp, 'finImg': bool(er)}
+         'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', round((ax - e[1]) / TL, 4))}, 'thickx': spec.get('thickx'), 'measuredWidth': bool(spec.get('measured_width')), 'aspect': asp, 'finImg': bool(er)}
 A['render'] = {'note': 'built by scripts/fish-build.py from ' + os.path.basename(sys.argv[1]), 'photo': photo, 'fit': fit}
 J['art'] = ID
 json.dump(J, open(os.path.join(ROOT, 'src', 'data', 'fishart', ID + '.anatomy.json'), 'w', encoding='utf8'), indent=1)

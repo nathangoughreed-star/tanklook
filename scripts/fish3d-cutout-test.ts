@@ -29,6 +29,7 @@ if (mode === 'measured') {
   const pedU = 1 - 1 / A.tlOverSl, SLc = 1 - pedU, U = s => pedU + SLc * (1 - s / 100), Wd = x => x / 100 * SLc;
   const top = d.stations.map((s, i) => [U(s), -Wd(d.top[i])]), bot = d.stations.map((s, i) => [U(s), Wd(d.bottom[i])]);
   Object.assign(P, { pedU, outline: [...top, ...bot.reverse()] });
+  if (q.get('mw') && A.thickness?.halfWidthPctSL) P.halfWidth = d.stations.map((s, i) => [U(s), Wd(A.thickness.halfWidthPctSL[i]) * +(q.get('thickx') ?? 1)]).sort((a, b) => a[0] - b[0]);   // ?mw=1: measured top-view widths
   if (A.thickness?.fit) { P.thick = A.thickness.fit.thick; P.pedT = A.thickness.fit.pedT; } // top-view widths (sheet photos)
   P.tail = { ...P.tail, h: Wd(Math.max(...F.caudal.outline.map(c => (c[1] + c[2]) / 2))) };
   if (q.get('fins') !== '0') {

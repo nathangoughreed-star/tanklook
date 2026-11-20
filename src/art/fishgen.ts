@@ -100,6 +100,7 @@ export interface Plan {
   headW?: number;     // 3D: the head (from the gill cover forward) this much wider than the trunk tapering to the tail (pleco: broad flat head)
   keel?: string;      // 3D: a raised row of bony scutes along each flank in this colour (armoured catfish)
   rim?: number;
+  halfWidth?: [number, number][]; // 3D: measured half-width of the body (card units) at u, from a sheet's top view; replaces the thick / pedT model
   thick?: number;     // 3D: max body thickness / max body depth (laterally compressed < 0.5 < rounder)
   sectionExp?: number; // 3D: cross-section exponent (2 = elliptical; >2 = boxier); default 2.4
   gillLine?: number;   // 3D: faint raised operculum seam opacity (0..1); opt-in to avoid extra meshes for other species

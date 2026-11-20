@@ -211,5 +211,7 @@
  "sat": 0.72,
  "fy0": 0.0055,
  "dorsals": 2,
- "thickx": 1.4
+ "thickx": 1.0,
+ "dense": true,
+ "measured_width": true
 }

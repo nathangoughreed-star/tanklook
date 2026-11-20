@@ -28,6 +28,7 @@ for (const J of Object.values(files)) {
     const topPts = d.stations.map((s: number, i: number) => [U(s), -Wd(d.top[i])] as [number, number]), botPts = d.stations.map((s: number, i: number) => [U(s), Wd(d.bottom[i])] as [number, number]);
     Object.assign(P, { pedU, outline: [...topPts, ...botPts.reverse()] });
     P.thick = A.thickness.fit.thick * (R.thickx ?? 1); P.pedT = A.thickness.fit.pedT;
+    if (R.measuredWidth) P.halfWidth = d.stations.map((s: number, i: number) => [U(s), Wd(A.thickness.halfWidthPctSL[i]) * (R.thickx ?? 1)] as [number, number]).sort((a: number[], b: number[]) => a[0] - b[0]);
     P.tail = { ...P.tail, h: Wd(Math.max(...F.caudal.outline.map((c: number[]) => (c[1] + c[2]) / 2))) };
     if (F.dorsal) P.dorsal = { ...P.dorsal, at: U(F.dorsal.baseStartPctSL), len: Wd(F.dorsal.baseEndPctSL - F.dorsal.baseStartPctSL), h: Wd(F.dorsal.maxHeightPctSL) };
     if (F.dorsal2) P.dorsal2 = { ...P.dorsal2, at: U(F.dorsal2.baseStartPctSL), len: Wd(F.dorsal2.baseEndPctSL - F.dorsal2.baseStartPctSL), h: Wd(F.dorsal2.maxHeightPctSL) };

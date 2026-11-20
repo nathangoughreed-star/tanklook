@@ -33,6 +33,10 @@ function sections(p: Plan) {
     const [a, b] = prof(u), s = (u - p.pedU) / (1 - p.pedU), vc = (a + b) / 2, hv = Math.max(0, (b - a) / 2 - INSET);
     // thickness follows depth but stays fuller toward the head (fish are widest behind the gills)
     let t = thick * (0.35 * hv + 0.65 * maxHv * Math.sin(Math.min(1, hv / maxHv) * Math.PI / 2)) * (pedT + (1 - pedT) * Math.sqrt(s));
+    if (p.halfWidth) { // measured top-view widths: the body is as wide as the sheet's top view at every station (not tied to the depth)
+      const h = p.halfWidth; let j = 0; while (j < h.length - 2 && h[j + 1][0] < u) j++;
+      const [u0, w0] = h[j], [u1, w1] = h[j + 1], k = Math.min(1, Math.max(0, (u - u0) / (u1 - u0 || 1))); t = Math.max(0, w0 + (w1 - w0) * k - INSET * 0.5);
+    } else
     if (p.headW) t *= 1 + p.headW * smooth(0.5, 0.82, s); // a broad flat head (pleco), the trunk tapering behind it
     // armoured heads sit a step narrower than the trunk; a flat snout keeps its width to the tip (shovel)
     if (p.step) t *= 1 - p.step * smooth(gu - 0.015, gu + 0.02, u);
