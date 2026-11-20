@@ -11,16 +11,26 @@ What it measures (all deterministic, no tuning per sheet):
   3. Thickness: at stations (fraction of length from the snout, default 0.15 / 0.20 = just behind the head on a
      clownfish, clear of the dorsal and pelvic fins), top-panel width / side-panel depth. The top width is rescaled
      by the side/top length ratio first.
-  4. Front panel: body width / body height. Fins only ever stick OUT of the body, so each outline (left, right, top,
+  4. Front panel (INFORMATION ONLY since E1/E6, 2026-11-20: the front view is texture, never a measurement): body width / body height. Fins only ever stick OUT of the body, so each outline (left, right, top,
      bottom) is fitted with its inner envelope: fit, drop points outside, refit. That trims solid pectorals (clownfish),
      fanned translucent pectorals that hole filling welds on (oscar), a dorsal spike and edge-on pelvic/anal fins.
-     PASS if front width/height is within 5% of the top/side station ratio. Front width vs the top panel's widest is
-     printed as INFO: it tests scale registration between panels, which image models don't keep (both sheets ~8% off).
+     Printed as INFO against the top/side station ratio (E1: random +-10% on the oscar, +12..18% on the clownfish, meaningless on the
+     pleco). Front width vs the top panel's widest is INFO too (scale registration between panels, not kept by image models).
   5. Edge-on tail in the top view: top-panel width over the last 8% of length / side-panel tail height over the same
-     span. An edge-on tail is a thin line (well under 0.25); a fanned tail reads near 1.
-  6. Optional --real R: compare the sheet's width/depth with a real value (photo or morphometrics), accept within 10%.
+     span. An edge-on tail is a thin line; a fanned tail reads near 1. PASS <= 0.15, WARN 0.15-0.25, FAIL > 0.25 (the plan's
+     numbers; E1 draws: 0.05-0.34, the two fanned ones read 0.29 and 0.34).
+  6. Like for like width (added 2026-11-20): the top view's greatest body width / total length ("max width / length"), found on a
+     width profile opened by 4% of the length, which removes narrow bulges (eyes, a fin tip) but keeps the body. Fins are edge-on in a
+     good top view, so they add nothing. This is the number to compare with published max-width figures, NOT the station
+     width/depth above (that is taken just behind the head and is not comparable). Optional --real R = real max width / total length;
+     or --real-width-sl W --tl-sl K gives R = W/100/K (W = max body width in % of standard length, K = total / standard length).
+     PASS within 15%, WARN 15-30%, FAIL beyond (real values are themselves good to ~10-15%).
 
-Prints one PASS / FAIL / INFO line per check and writes a debug picture (panel boxes, station lines, front body
+Touching panels: when fewer than 3 bands are found, the tallest band is cut at the row with the fewest lit pixels in its middle 20-80%
+(a thin spine or fin tip joining two panels), a 5-row black cut, and the audit goes on. It says so on a PASS panels line; the gaps check
+is then skipped (the gap is the cut).
+
+Prints one PASS / WARN / FAIL / INFO line per check and writes a debug picture (panel boxes, station lines, front body
 outline). By-eye items (cartoon face, exaggerated spines, flat-lying dorsal, pattern continuity) stay by eye.
 """
 import argparse
@@ -118,23 +128,38 @@ def envelope(edge, outward, use, tol, deg=4, iters=30):
     return out, fin
 
 
-def measure(path, stations, real, out, mirror):
+def measure(path, stations, real_w, out, mirror):
     im = Image.open(path).convert("RGB")
     if mirror:
         im = im.transpose(Image.FLIP_LEFT_RIGHT)
     a = np.asarray(im).astype(np.int16)
     lit = a.max(2) > THRESH
     H, W = lit.shape
-    res = {"fail": 0}
+    res = {"fail": 0, "warn": 0}
 
     def line(tag, ok, msg):
-        word = {True: "PASS", False: "FAIL", None: "INFO"}[ok]
+        word = {True: "PASS", False: "FAIL", None: "INFO", "warn": "WARN"}[ok]
         if ok is False:
             res["fail"] += 1
+        elif ok == "warn":
+            res["warn"] += 1
         print(f"{word}  {tag}: {msg}")
 
     print(f"sheet {path}  {W} x {H} px{'  (mirrored)' if mirror else ''}")
     pb = bands(lit.sum(1))
+    cuts = []
+    while len(pb) < 3 and pb:
+        i = max(range(len(pb)), key=lambda q: pb[q][1] - pb[q][0])
+        y0, y1 = pb[i]
+        lo, hi = y0 + (y1 - y0) // 5, y1 - (y1 - y0) // 5
+        cnt = lit.sum(1)
+        r = lo + int(np.argmin(cnt[lo:hi]))
+        cuts.append((r, int(cnt[r])))
+        lit[r - 2:r + 3] = False
+        pb = bands(lit.sum(1))
+    if cuts:
+        line("panels", True, "panels touched; split at the narrowest row(s) "
+             + ", ".join(f"y={r} ({n} lit px)" for r, n in cuts) + " (5-row black cut)")
     if len(pb) != 3:
         line("panels", False, f"found {len(pb)} bands {pb}; expected 3 (side, top, front). Panels touching, or text on the sheet.")
         return res
@@ -146,7 +171,10 @@ def measure(path, stations, real, out, mirror):
         lit[y0:y1] = fill_holes(lit[y0:y1])
         print(f"INFO  panel {name}: x {x0}-{x1} ({x1 - x0} px long), y {y0}-{y1} ({y1 - y0} px tall)")
     gaps = [pb[1][0] - pb[0][1], pb[2][0] - pb[1][1]]
-    line("gaps", min(gaps) >= 10, f"black gap side/top {gaps[0]} px, top/front {gaps[1]} px (need >= 10)")
+    if cuts:
+        print(f"INFO  gaps: skipped, the panels touched and were split (gap = the cut)")
+    else:
+        line("gaps", min(gaps) >= 10, f"black gap side/top {gaps[0]} px, top/front {gaps[1]} px (need >= 10)")
 
     sx0, sy0, sx1, sy1 = panels["side"]
     tx0, ty0, tx1, ty1 = panels["top"]
@@ -237,15 +265,37 @@ def measure(path, stations, real, out, mirror):
         if rt:
             tw.append(((rt[1] - rt[0] + 1) * k, f))
     tmax, tf = max(tw)
-    line("thickness agree", abs(fratio - ratio) / ratio <= 0.05,
-         f"front width/height {fratio:.3f} vs top/side width/depth {ratio:.3f} ({(fratio - ratio) / ratio:+.1%}; accept within 5%)")
+    line("front vs top", None,
+         f"front width/height {fratio:.3f} vs top/side width/depth {ratio:.3f} ({(fratio - ratio) / ratio:+.1%}); information only, "
+         f"the front view is texture, not a measurement (E1)")
     print(f"INFO  front body width {fwid:.0f} px vs top panel's widest {tmax:.0f} px at {tf:.2f} SL ({(fwid - tmax) / tmax:+.1%}); "
           f"panel scale registration, not thickness")
     print(f"INFO  front height {fhei:.0f} px should equal the side panel's deepest body (fins excluded); "
           f"check by eye (side depth at stations: {', '.join(str(r[1]) for r in st_rows)} px)")
-    if real:
-        d = (ratio - real) / real
-        line("thickness vs real", abs(d) <= 0.10, f"sheet {ratio:.3f} vs real {real:.3f} ({d:+.1%}; accept within 10%)")
+
+    # like for like: greatest body width / total length in the top view, narrow bulges (eyes, fin tips) opened away
+    wprof = np.full(Lt, np.nan)
+    mid = (ty1 - ty0) // 2
+    for x in range(Lt):
+        rt = run_containing(top[:, tx0 + x], mid) if top[:, tx0 + x].any() else None
+        if rt:
+            wprof[x] = rt[1] - rt[0] + 1
+    wprof = np.nan_to_num(wprof)
+    win = max(3, int(round(0.04 * Lt)))
+    pad = np.pad(wprof, win, mode="edge")
+    mn = np.array([pad[i:i + 2 * win + 1].min() for i in range(Lt + 2 * win)])
+    mnp = np.pad(mn, win, mode="edge")
+    opened = np.array([mnp[i:i + 2 * win + 1].max() for i in range(Lt + 2 * win)])[win:win + Lt]
+    mxw = float(opened.max())
+    xm = int(np.argmax(opened))
+    fm = 1 - xm / Lt                                 # fraction of length from the snout (nose right)
+    mwl = mxw / Lt
+    print(f"INFO  top max width / length: {mwl:.3f} ({mxw:.0f} px of {Lt} px) at {fm:.2f} from the snout; "
+          f"raw max {wprof.max() / Lt:.3f} before opening away bulges; this is the number to compare with published max widths")
+    if real_w:
+        d = (mwl - real_w) / real_w
+        line("width vs real", True if abs(d) <= 0.15 else ("warn" if abs(d) <= 0.30 else False),
+             f"top max width / length {mwl:.3f} vs real {real_w:.3f} ({d:+.1%}; PASS within 15%, WARN within 30%)")
 
     # edge-on tail in the top view: last 8% of the length
     tail_t = []
@@ -260,11 +310,13 @@ def measure(path, stations, real, out, mirror):
             tail_t.append((rt[1] - rt[0] + 1) * k)
     if tail_s:
         tr = float(np.median(tail_t) / np.median(tail_s))
-        line("tail edge-on", tr < 0.25, f"top-view tail width / side tail height over 93-99% SL = {tr:.2f} "
-             f"(edge-on line < 0.25; ~1 = fanned flat)")
+        line("tail edge-on", True if tr <= 0.15 else ("warn" if tr <= 0.25 else False),
+             f"top-view tail width / side tail height over 93-99% SL = {tr:.2f} "
+             f"(PASS <= 0.15 edge-on line, WARN <= 0.25, FAIL above; ~1 = fanned flat)")
 
-    print(f"RESULT  {'PASS' if res['fail'] == 0 else 'FAIL'}  ({res['fail']} failed); width/depth {ratio:.3f}, front {fratio:.3f}")
-    res.update(ratio=ratio, front=fratio, side_len=Ls, top_len=Lt)
+    word = "FAIL" if res["fail"] else ("WARN" if res["warn"] else "PASS")
+    print(f"RESULT  {word}  ({res['fail']} failed, {res['warn']} warn); width/depth {ratio:.3f}, front {fratio:.3f}, maxwidth/length {mwl:.3f}")
+    res.update(ratio=ratio, front=fratio, side_len=Ls, top_len=Lt, maxw_len=mwl)
 
     if out:
         dbg = im.copy()
@@ -294,12 +346,17 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("sheet")
     ap.add_argument("--stations", default="0.15,0.20", help="fractions of length from the snout, clear of fins")
-    ap.add_argument("--real", type=float, default=None, help="real width/depth to compare (e.g. from a top photo)")
+    ap.add_argument("--real", type=float, default=None, help="real max body width / total length (like for like with 'top max width / length')")
+    ap.add_argument("--real-width-sl", type=float, default=None, help="real max body width in %% of standard length (needs --tl-sl)")
+    ap.add_argument("--tl-sl", type=float, default=None, help="real total length / standard length, to convert --real-width-sl")
     ap.add_argument("--mirror", action="store_true", help="sheet faces left: mirror it first")
     ap.add_argument("--out", default=None, help="debug picture path (PNG)")
     a = ap.parse_args()
     st = [float(s) for s in a.stations.split(",") if s.strip()]
-    r = measure(a.sheet, st, a.real, a.out, a.mirror)
+    real = a.real
+    if real is None and a.real_width_sl and a.tl_sl:
+        real = a.real_width_sl / 100 / a.tl_sl
+    r = measure(a.sheet, st, real, a.out, a.mirror)
     sys.exit(1 if r["fail"] else 0)
 
 

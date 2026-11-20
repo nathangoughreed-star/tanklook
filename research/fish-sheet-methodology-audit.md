@@ -274,3 +274,43 @@ On 3 fish with passing sheets, compare three ways to get the landmarks:
 - Generations are scarce, so the next experiments are the ones that need no new sheets: E6, then E5, run on the 14 E1/E2 sheets. The three species replicate each other, so no extra draws of the same species are needed.
 - E2 tests the prompt with layout and numeric-proportion lines added, still text-only.
 - Real width/depth values are needed for the test species, so E6's real-numbers check moves ahead of E2.
+
+
+### E6: thickness source (2026-11-20, no new sheets)
+
+**Audit script v2 (done first).** The front-vs-top check is information only. Touching panels are split at the narrowest row (tallest band, middle 20-80%, 5-row cut) and the audit says so on a PASS line; the gaps check is skipped for those sheets. A new like-for-like line, "top max width / length" (greatest body width of the top view, narrow bulges opened away over 4% of the length, fins edge-on), is what `--real` compares: `--real R` is real max body width / total length, or `--real-width-sl W --tl-sl K` converts from % SL. Tail edge-on follows the plan: PASS <= 0.15, WARN <= 0.25, FAIL above (E1's two fanned tails read 0.29 and 0.34, good ones 0.05-0.15, so 0.15-0.25 is a grey zone that deserves a warning, not a pass). The log has 11 sheets (E1 9 + E2 2), not 14. Re-scored:
+
+| Sheet | Panels | Max width / length | Tail edge-on | Result |
+|---|---|---|---|---|
+| oscar E1 d1 | clean | 0.199 | 0.08 | PASS |
+| oscar E1 d2 | clean | 0.204 | 0.15 | FAIL (snout/tail ends 2.0% apart; tail on the WARN line) |
+| oscar E1 d3 | clean | 0.188 | 0.10 | PASS |
+| oscar E2 d1 | clean | 0.200 | 0.08 | PASS |
+| oscar E2 d2 | clean | 0.188 | 0.08 | PASS |
+| clownfish E1 d1 | split | 0.157 | 0.05 | PASS |
+| clownfish E1 d2 | clean | 0.176 | 0.13 | PASS |
+| clownfish E1 d3 | split | 0.161 | 0.29 | FAIL (tail fanned) |
+| pleco E1 d1 | split | 0.165 | 0.34 | FAIL (tail fanned) |
+| pleco E1 d2 | split | 0.172 | 0.21 | WARN (tail) |
+| pleco E1 d3 | split | 0.169 | 0.21 | WARN (tail) |
+
+Front-vs-top thickness was the only failure on 8 of the 11 sheets before and fails nothing now. Real max width / total length: oscar 21.5 %SL (range 20-23) with TL/SL about 1.2 (assumed) gives about 0.18, so the sheets are about 10% wide, inside the real value's own uncertainty; pleco 30 %SL (27.5-33) with TL/SL about 1.3 (assumed) gives about 0.23 against 0.165-0.172 on the sheets, so the pleco top views are about 25% narrow; the clownfish has no published width.
+
+**Method.** `scripts/fish-sheet-e6.py` measures each sheet (side depth with fins opened away, peduncle, top-panel widths), lofts the body with the app's cross-section (`fish3d.ts` sections(): superellipse 2.4, no belly/wide/headW options) and computes body mass (volume x 1.02 g/cm3, fins excluded, as `body-volume.ts`) against FishBase `a x TL^b` (TL: oscar 300 mm, clownfish 100, pleco 380). Rules: (a) `thickfit`; (b) `measured_width` as drawn; (c) the top profile rescaled to the real max width % SL (oscar 21.5, pleco 30; the clownfish has none, so depth x 0.5 was tried); (d) the (b) profile scaled to 1.00 x FishBase. Data: `research/fish-sheets/e6-thickness.csv`.
+
+| Mass / FishBase | (a) thickfit | (b) as drawn | (c) rescaled to real width | (d) mass-matched |
+|---|---|---|---|---|
+| oscar (5 draws) | 1.02 (0.93-1.12) | 0.98 (0.90-1.07) | **0.88 (0.82-0.98)** | 1.00 |
+| clownfish (3 draws) | 1.54 (1.34-1.81) | 1.48 (1.28-1.75) | 1.85 (1.59-2.26), width = depth x 0.5 | **0.98** |
+| pleco (3 draws) | 0.77 (0.72-0.81) | 0.72 (0.68-0.75) | **0.97 (0.90-1.02)** | 1.01 |
+| Spread across draws, max / min (oscar, clownfish, pleco) | 1.20, 1.35, 1.12 | 1.19, 1.37, 1.11 | 1.19, 1.42, 1.14 | about 1.0 by construction |
+
+**Findings**
+1. The sheets' own thickness (a, b) lands inside the 0.6-1.6x gate for the oscar and pleco but not the clownfish (1.34-1.81x, one draw over). The pleco runs light (0.68-0.81x).
+2. Rescaling to the real max width fixes the pleco (0.90-1.02x) and keeps the oscar near 0.9x. The remaining spread across draws (about 1.15-1.2x) comes from the side-view depth, not thickness, so no thickness rule removes it.
+3. Absolute masses carry about +-20% from the side depth, which includes broad soft fins (oscar depth reads 57-60 %SL against 46 real). On the sheet the shipped oscar was built from this script gives 1.07x (a) against 0.89x in the repo, which uses hand-placed fin bases. Compare rules with each other, not the absolute numbers.
+4. Where no width is published (clownfish), depth x a class prior is worse than the sheet (1.59-2.26x). Mass-matching to FishBase needs no width data, only the length-weight row every species already has. Its implied clownfish width is 14-16 %SL, thin against the 20-24 %SL guess, so check it against a top-down photo.
+
+**Decision.** One rule (method doc section 3, step E): rescale the top-panel width profile so its maximum equals the real max body width in % SL and loft it as `measured_width`. With no published width, scale the same profile to 1.0 x FishBase mass and note it. `thickfit` is dropped from the final thickness. No renderer change needed: `?mw=1` / `R.measuredWidth` exist, and `R.thickx` multiplies the measured widths in `photofish.ts`.
+
+**Not done.** The clownfish width is still unknown (needs a top-down photo or a specimen table). The rescale was not rebuilt and viewed in the 3D harness, since `fish-build.py` needs hand landmarks per sheet. TL/SL for the audit's `--real` conversion is assumed (oscar 1.2, pleco 1.3), not looked up.
