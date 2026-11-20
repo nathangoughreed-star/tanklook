@@ -1243,7 +1243,6 @@ Object.assign(PLANS, {
     finMarks: [{ k: 'spots', n: 40, u0: 0, u1: 0.4, v0: -0.25, v1: 0.25, r: 0.01, c: '#e8cf6a', a: 0.7 }],
     eye: { r: 0.03, iris: ['#e0c070', '#3a3020'] } }),
   // Common pleco (reference: Aquarium Source photo, 2026-11-18): brown body netted with dark blotches, armoured, a tall sail dorsal, paddle pectorals; no bristles
-  clownknife: her('oscar', { shade: ['#7a7368', '#4d473f', '#c9c2b4'], fin: '#6b6354', tail: { type: 'round', h: 0.03, tint: '#6b6354', a: 0.9 } }), // placeholder plan: the ?photoart sheet build (art/photoknife.ts) supplies the body, fins, eye and card
   pleco: her('bristlenose', { bristles: false, shade: ['#3a2c1c', '#6b573d', '#a08c68'], keel: '#2a2014', tail: { type: 'fork', h: 0.13, tint: '#2e2418', a: 0.9 }, fin: '#2e2418',
     pec: { s: 2.7, v: 0.86, w: 1.5, flat: true, spread: 1.3, edge: '#6b573d', spots: '#14100a', tint: '#2e2418' },
     dorsal: { at: 0.66, len: 0.26, h: 0.2, spines: 0.1, nSp: 1, spineH: 0.18, rake: 0.3, drop: 0.55, tint: '#2e2418', a: 0.9 }, pelvic: { u: 0.58, len: 0.16, w: 1.5, spread: 0.95, edge: '#6b573d', spots: '#14100a', tint: '#2e2418' },

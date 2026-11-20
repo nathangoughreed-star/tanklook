@@ -9,7 +9,7 @@ st = np.array(d['stations'], float); top = np.array(d['top']); bot = np.array(d[
 pedU = 1 - 1 / A['tlOverSl']; SLc = 1 - pedU
 hv = (top + bot) / 2 / 100 * SLc; maxHv = hv.max(); s = 1 - st / 100; tm = hw / 100 * SLc
 best = None
-for thick in np.linspace(0.2, 1.6, 141):
+for thick in np.linspace(0.2, 3.2, 301):
     for pedT in np.linspace(0, PMAX, 101):
         t = thick * (0.35 * hv + 0.65 * maxHv * np.sin(np.minimum(1, hv / maxHv) * np.pi / 2)) * (pedT + (1 - pedT) * np.sqrt(np.clip(s, 0, 1)))
         e = np.sqrt(np.mean((t - tm)[1:-1] ** 2))

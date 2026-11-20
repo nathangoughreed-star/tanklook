@@ -672,6 +672,64 @@
     "rmsPctSL": 0.35,
     "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
    }
+  },
+  "render": {
+   "note": "built by scripts/fish-build.py from clownknife.json",
+   "photo": {
+    "art": "clownknife",
+    "plan": "oscar",
+    "sx": 1406.0,
+    "sl": 1222.0,
+    "ax": 200.0,
+    "eye": [
+     1338,
+     208,
+     18
+    ],
+    "pec": {
+     "root": [
+      1160,
+      268
+     ],
+     "poly": [
+      [
+       1160,
+       268
+      ],
+      [
+       1100,
+       252
+      ],
+      [
+       1040,
+       258
+      ],
+      [
+       1046,
+       275
+      ],
+      [
+       1095,
+       290
+      ],
+      [
+       1150,
+       285
+      ]
+     ],
+     "spread": 1.0,
+     "tint": "#6b6354"
+    },
+    "pelvic": null,
+    "proj": {
+     "fk": 1278.0,
+     "y0": 0.004
+    },
+    "thickx": null,
+    "aspect": 0.299,
+    "finImg": false
+   },
+   "fit": "{'thick': 0.48, 'pedT': 0.21, 'rmsPctSL': 0.35, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }
  },
  "reliability": {
@@ -680,71 +738,5 @@
   "caudal": "fair: bright magenta fan is solid, but the black-white tuft above it (an upper-lobe marking) is partly lost",
   "analPelvic": "fair: membrane is solid red-magenta but the base is merged with the body by the opening",
   "eyeSnout": "good"
- },
- "render": {
-  "note": "clown knifefish from the single-image prompt v2 sheet A (knife-A.webp, 1536x1024), 2026-11-20; 17 hand points; WIP",
-  "landmarks_side_full_px": {
-   "ped": [
-    185,
-    200
-   ],
-   "dorsalBase": [
-    [
-     800,
-     58
-    ],
-    [
-     755,
-     64
-    ],
-    [
-     715,
-     72
-    ]
-   ],
-   "analBase": [
-    [
-     1010,
-     328
-    ],
-    [
-     900,
-     306
-    ],
-    [
-     700,
-     278
-    ],
-    [
-     500,
-     246
-    ],
-    [
-     300,
-     221
-    ],
-    [
-     190,
-     206
-    ]
-   ],
-   "eye": [
-    1338,
-    208,
-    18
-   ],
-   "pecPoly": "1160,268;1100,252;1040,258;1046,275;1095,290;1150,285"
-  },
-  "outline": "fish-outline.py side.png (side_full 1536 sq, halved) --level --thr 8 --open 9 --landmarks lm.json",
-  "topview": "--x0 0 --fullbody rows 458-652 --pec0 18 --pec1 32; thickfit thick 0.48 pedT 0.21 rms 0.35",
-  "card": "--aspect 0.30 --clip-head 25 --alo 4 --aw 14 --sat 0.9",
-  "projcards": "--top 458,652 --front 600,705,935,1000",
-  "harness": "?sp=oscar(stand-in plan)&mode=measured&anat=clownknife&card=KNF-card&aspect=0.30&clearfins=1&nogape=1&eye=place&sx=1405&esl=1220&eaxis=200&ex=1338&ey=208&er=18&paired=photo&nopelvic=1&pecx=1160&pecy=268&fincard=KNF-card&pecpoly=..&proj=KNF-proj&fk=1276&fy0=0.004&pecspread=1.0",
-  "open": [
-   "no species plan yet (rendered on the oscar plan)",
-   "3D eye has no pale ring",
-   "anal fin is one stiff sheet",
-   "top view: pectoral shows as thin spikes"
-  ]
  }
 }
