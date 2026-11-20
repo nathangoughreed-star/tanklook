@@ -44,6 +44,8 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R32 | 11-13 | Hoods are real products with their built-in light: one price, light type and wattage known, only offered where a product fits; custom tanks get glass lids | HD1 | - | - | - | brief prompts/lane-HD1-hood-products.md; picture research/screens/HD1/nathan-before.webp ; HD1 9ec37e75 merged after fix (cause: no-hood note on a kit's own hood); 7 tests green |
 | R33 | 11-13 | Bottom dwellers rest below the embed berm (substrate mound around rocks) | BD2 | - | - | - | brief prompts/lane-BD2-bottom-dwellers-berm.md ; BD2 49dcadcf merged (fish rise 6-8.5 mm onto the berm; plants not shot) |
 | R34 | 11-13 | Second style: colorful decorative recipe (castle, tinted artificial plants, colored gravel, bubbler); Discover first pool includes a decorative family. DS1 P3 style cards go into new shell step 5 (Preferences) | DS3 | - | - | - | brief prompts/lane-DS3-decorative-recipe.md; stop 1 = look sheet for Nathan; stop 1 20f571f3 APPROVED by Nathan 11-13; stop 2 started; stop 2 merged 57190fb6 (colored-gravel premium dropped: no retail markup); locked example numbers unchanged |
+| R144 | 11-20 | Fish art style: refine toward a stylized look between photo and cartoon. Nathan (relayed by the build-5-species chat): "The point was never to be photo-realistic"; the photo-wrapped 3-view models look out of place next to the substrate, equipment and plants. Constraint kept: not cartoony (painted fish rejected twice). | build-5-species (local_e216c190) | - | - | - | that chat is sending stylized 2D card options for Nathan to pick a level; flag-gated only, default app unchanged |
+
 ## Closed (seen on live)
 
 | # | Ask | Live build | Screenshot |
