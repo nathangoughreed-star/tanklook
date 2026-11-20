@@ -397,3 +397,15 @@ Shared (not per fish): the picker bug, two render passes of all five, the compar
 **Failures by type:** (1) tool: a syntax error killed the landmark page (fixed, checklist row 31); (2) card erase box too big for the angelfish pelvic, it ate the belly and left a black block (keep the box to the hanging filaments); (3) harness labels betta and neon "(a) Claude read grid" because the id ends in a letter (cosmetic).
 
 **Not done / open:** front and top views not rendered or checked (checklist rows 4, 12, 19-21); neon, cory and puffer not zoomed against the sheet; the new ids angelfish, neontetra, corydoras are not species-list entries (the app already has `angel`, `neon`, `bronzecory`; betta and peapuffer exist), so they render only in the harness, and showing them behind `?photoart` means pointing each spec's `art` at the existing species id; betta dorsal dark block; angelfish pelvic filaments; real widths not looked up.
+
+**E7 control: clicks vs auto landmarks vs none (same sheets, same builder, 2026-11-20).** Picture: `research/fish-sheets/e7/clicks-vs-auto-vs-none.png` (rows = the five fish; columns = Nathan's clicks | `fish-autolandmarks.py` plus the eye from the clicks (the auto eye failed on all five) | only the peduncle and the eye, no fin bases, no paired fins). Specs: `research/fish-specs/e7-<fish>-n1.json` and `-n0.json`.
+
+| Fish | Auto (n1) vs clicks | No landmarks (n0) vs clicks |
+|---|---|---|
+| angelfish | much worse: a black block behind the back, hump on the dorsal, misshapen head, pelvic card fragments | much worse: same black block and a deep fin-merged body |
+| betta | worse: the dorsal and anal fins read as body, a fat fan-shaped body instead of the slim one; black erase patch | same fat body |
+| neon tetra | body about the same; a black rectangle on the belly where auto erased the wrong box | body about the same; a loose pelvic flap |
+| bronze cory | body about the same; black rectangle again | body about the same; loose flap by the head |
+| pea puffer | body about the same; a flat belly sliver | body about the same; loose flap |
+
+**Reading it:** the clicks matter most on deep-bodied or big-finned fish (angelfish, betta): without the dorsal and anal base lines the fins are measured as body. On slim or round-bodied fish (neon, cory, puffer) the body is nearly the same without them; what the clicks buy there is clean paired fins and no stray erase boxes (auto's pelvic erase boxes were wrong on 3 of 5). Auto never found the eye. So clicks do help, and the lighter option is clicks only for the fin base lines on the deep-bodied fish, plus the eye and paired fins for all. Not tested: no-click arms with Claude grid reading (E5 arm a) on these five.

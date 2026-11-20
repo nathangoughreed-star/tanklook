@@ -1,0 +1,53 @@
+{
+ "id": "bettan1",
+ "sheet": "C:/Users/nreed/fish-sheets/shapes/betta-d1.webp",
+ "species": {
+  "name": "Betta (veiltail)",
+  "sci": "Betta splendens",
+  "tl": 65
+ },
+ "landmarks": {
+  "ped": [
+   367,
+   285
+  ],
+  "dorsalBase": [],
+  "analBase": []
+ },
+ "measured_width": true,
+ "plan": "oscar",
+ "eye": [
+  917,
+  176,
+  16
+ ],
+ "pelvic": {
+  "root": [
+   657,
+   321
+  ],
+  "len": 120,
+  "poly": [
+   [
+    657,
+    321
+   ],
+   [
+    596,
+    424
+   ],
+   [
+    630,
+    308
+   ]
+  ]
+ },
+ "erase": [
+  [
+   581,
+   293,
+   672,
+   439
+  ]
+ ]
+}

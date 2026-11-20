@@ -1,0 +1,116 @@
+{
+ "id": "angelfishn1",
+ "sheet": "C:/Users/nreed/fish-sheets/shapes/angelfish-d1.webp",
+ "species": {
+  "name": "Angelfish",
+  "sci": "Pterophyllum scalare",
+  "tl": 150
+ },
+ "landmarks": {
+  "ped": [
+   276,
+   359
+  ],
+  "dorsalBase": [
+   [
+    736,
+    254
+   ],
+   [
+    657,
+    447
+   ],
+   [
+    578,
+    291
+   ],
+   [
+    499,
+    126
+   ],
+   [
+    420,
+    90
+   ]
+  ],
+  "analBase": [
+   [
+    591,
+    487
+   ],
+   [
+    536,
+    514
+   ],
+   [
+    482,
+    539
+   ],
+   [
+    428,
+    397
+   ],
+   [
+    374,
+    617
+   ]
+  ]
+ },
+ "measured_width": true,
+ "plan": "oscar",
+ "eye": [
+  775,
+  299,
+  20
+ ],
+ "pectoral": {
+  "root": [
+   716,
+   457
+  ],
+  "poly": [
+   [
+    716,
+    457
+   ],
+   [
+    665,
+    529
+   ],
+   [
+    680,
+    539
+   ]
+  ],
+  "spread": 1.0
+ },
+ "pelvic": {
+  "root": [
+   696,
+   502
+  ],
+  "len": 49,
+  "poly": [
+   [
+    696,
+    502
+   ],
+   [
+    664,
+    539
+   ],
+   [
+    680,
+    483
+   ]
+  ]
+ },
+ "erase": [
+  [
+   649,
+   468,
+   711,
+   554
+  ]
+ ]
+}

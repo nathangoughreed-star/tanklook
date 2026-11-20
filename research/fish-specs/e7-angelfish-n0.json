@@ -1,0 +1,22 @@
+{
+ "id": "angelfishn0",
+ "sheet": "C:/Users/nreed/fish-sheets/shapes/angelfish-d1.webp",
+ "species": {
+  "name": "Angelfish",
+  "sci": "Pterophyllum scalare",
+  "tl": 150
+ },
+ "landmarks": {
+  "ped": [
+   276,
+   359
+  ]
+ },
+ "eye": [
+  775,
+  299,
+  20
+ ],
+ "measured_width": true,
+ "plan": "oscar"
+}

@@ -1,0 +1,22 @@
+{
+ "id": "peapuffern0",
+ "sheet": "C:/Users/nreed/fish-sheets/shapes/peapuffer-d1.webp",
+ "species": {
+  "name": "Pea puffer",
+  "sci": "Carinotetraodon travancoricus",
+  "tl": 25
+ },
+ "landmarks": {
+  "ped": [
+   253,
+   262
+  ]
+ },
+ "eye": [
+  858,
+  205,
+  45
+ ],
+ "measured_width": true,
+ "plan": "oscar"
+}

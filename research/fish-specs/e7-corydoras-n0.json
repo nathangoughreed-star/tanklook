@@ -1,0 +1,22 @@
+{
+ "id": "corydorasn0",
+ "sheet": "C:/Users/nreed/fish-sheets/shapes/corydoras-d1.webp",
+ "species": {
+  "name": "Bronze cory",
+  "sci": "Corydoras aeneus",
+  "tl": 70
+ },
+ "landmarks": {
+  "ped": [
+   235,
+   303
+  ]
+ },
+ "eye": [
+  867,
+  277,
+  26
+ ],
+ "measured_width": true,
+ "plan": "oscar"
+}

@@ -1,0 +1,95 @@
+{
+ "id": "neontetran1",
+ "sheet": "C:/Users/nreed/fish-sheets/shapes/neontetra-d1.webp",
+ "species": {
+  "name": "Neon tetra",
+  "sci": "Paracheirodon innesi",
+  "tl": 40
+ },
+ "landmarks": {
+  "ped": [
+   243,
+   272
+  ],
+  "dorsalBase": [],
+  "analBase": [
+   [
+    257,
+    284
+   ],
+   [
+    236,
+    279
+   ],
+   [
+    215,
+    279
+   ],
+   [
+    194,
+    284
+   ],
+   [
+    174,
+    304
+   ]
+  ]
+ },
+ "measured_width": true,
+ "plan": "oscar",
+ "eye": [
+  934,
+  290,
+  34
+ ],
+ "pectoral": {
+  "root": [
+   849,
+   358
+  ],
+  "poly": [
+   [
+    849,
+    358
+   ],
+   [
+    634,
+    392
+   ],
+   [
+    817,
+    301
+   ]
+  ],
+  "spread": 1.0
+ },
+ "pelvic": {
+  "root": [
+   796,
+   360
+  ],
+  "len": 262,
+  "poly": [
+   [
+    796,
+    360
+   ],
+   [
+    535,
+    382
+   ],
+   [
+    789,
+    314
+   ]
+  ]
+ },
+ "erase": [
+  [
+   520,
+   299,
+   811,
+   397
+  ]
+ ]
+}
