@@ -256,6 +256,11 @@ On 3 fish with passing sheets, compare three ways to get the landmarks:
   | clownfish | ~0.45-0.55 | 42-48 | ~20-24 | 0.59-0.62, likely too fat | FishBase 6509 for depth. No published width: weakest number. |
   | pleco | ~1.41-1.54 (congeners) | 18-23 | 27.5-33 (cleithral) | 1.39, plausible, slightly low | Four *Hypostomus* descriptions (Zenodo 15866191, 17101351, 17162073, 15986026) and Zawadzki et al. 2008. No data for *H. plecostomus* itself. |
 
+  Follow-up research (2026-11-20):
+  - Total length ÷ standard length (TL/SL): oscar 1.193 (FishBase LL table, ID 3612, no statistics given); clownfish 1.26 (FishBase ID 6509, r² 0.995, TL 4.1-8.2 cm). Pleco: no source; 1.2-1.3 is typical for loricariids.
+  - Clownfish width: still unpublished for *A. ocellaris* and its congeners. The best guess is 16-20 %SL, confidence low. E6's mass-match fallback (about 14-16 %SL) stays until a measured photo or calipers settle it.
+  - Possible width sources not yet read: Fisher & Hogan 2007, and the supplement of a 2025 pomacentrid bioRxiv preprint.
+
   Text-only sheets draw the side-to-side flattened fish (oscar, clownfish) about 30% too thick, every time. That is a bias, so it can be corrected, which makes the numeric-proportions arm of E2 the main test.
 - E2 uses 1 draw per species per arm.
 
