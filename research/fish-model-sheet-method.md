@@ -130,18 +130,26 @@ Species: adult [scientific name] ([common name]), [sex if the sexes differ], [co
 |---|---|---|
 | Orchid dottyback | not recorded | built and approved; prompt lost |
 | Flame angel | not recorded | built; top view 6% long, front and top ratios disagreed (rows 13, 19) |
-| Ocellaris clownfish (sheet 1) | C: full anatomy (old template + body %, fin shapes, band placement, "Nemo"-pattern) | Side and top 965 / 966 px long (0.1%, no rescale); gaps fine; black fin edges help the body/fin split. Wrong: top view shows the tail fanned and the dorsal lying flat; thickness ~0.77 of depth behind the head (asked ~0.5; front panel agrees at ~0.8, so check a real top photo); exaggerated dorsal spines; cartoonish pouty mouth. Head band seen as a ring round the face in the front view is correct (the band wraps behind the eyes). |
-| Ocellaris clownfish (sheet 2) | B: the template above | pending |
+| Ocellaris clownfish (sheet 1, `clownfish-sheet1-variantC.webp`) | C: full anatomy (old template + body %, fin shapes, band placement, "Nemo"-pattern) | Audit: side 966 / top 967 px (0.1%, no rescale), ends within 5 px, gaps 56 / 31 px; width ÷ depth 0.733 / 0.732 at 0.15 / 0.20 SL (asked ~0.5); front body 240 × 310 px = 0.77; front width vs top's widest 257 px: −6.5% (FAIL); tail edge-on 0.60 (FAIL, fanned). By eye: dorsal lying flat in the top view; exaggerated dorsal spines; cartoonish pouty mouth. Black fin edges help the body/fin split. Head band seen as a ring round the face in the front view is correct (the band wraps behind the eyes). |
+| Ocellaris clownfish (sheet A) | A: method block + species name only | pending |
+| Ocellaris clownfish (sheet B) | B: the template above | pending |
 
 Second request, after you approve the sheet (label map): "Edit panel (1) only: recolour it as a flat segmentation map, same geometry and framing: body mid-grey,
 dorsal fin red, anal fin green, tail fin blue, pectoral fin yellow, pelvic fin cyan, eye white; no texture, no shading, no outlines."
 
-**Sheet audit (agent, before any building).** Measure, then look:
-- Panels: split the sheet into horizontal bands of non-black rows (threshold max(R,G,B) > 40); report each panel's x extent. Side and top lengths
-  within ~1% (rescale up to ~6%, regenerate beyond).
-- Thickness: at several stations clear of fins (e.g. just behind the head), top-panel width ÷ side-panel depth; compare with the front panel's
-  width ÷ height and with a real top photo. The clownfish check was a 20-line inline script (`python -I`, numpy + PIL); a saved script is in section 5.
-- By eye: the projection items in the checklist below (edge-on fins, no cartoon face, no exaggerated features, pattern continuous across panels).
+**Sheet audit (agent, before any building).** Run `python -I scripts/fish-sheet-audit.py SHEET --out debug.png [--stations 0.15,0.20] [--real R] [--mirror]`
+(numpy + PIL). It prints one PASS / FAIL / INFO line per check and exits 1 on any FAIL. Then look at the debug picture and do the by-eye items.
+- Panels: horizontal bands of non-black rows (max(R,G,B) > 40), dark holes inside the fish filled (black band edges and pupils would split the
+  columns otherwise). Gaps ≥ 10 px; side ≥ ~900 px long; side and top lengths within 1% (rescale up to 6%, regenerate beyond); snout and tail ends within 2%.
+- Thickness: top-panel width ÷ side-panel depth at `--stations` (fraction of length from the snout). Pick stations **clear of the fins**: on the
+  clownfish the dorsal spines start at ~0.22 SL, so 0.25 read 0.64 (spines counted as depth); 0.15 and 0.20 are clean. The red/green lines on the
+  debug picture show where it measured. `--real R` compares the median with a real value (accept within 10%).
+- Front panel: pectorals sticking out sideways are found as outward jumps in the edge profile and bridged (magenta on the debug picture); height = rows
+  at least 40% of the widest, which drops a dorsal spike (cyan lines). The **like-for-like** check is front body width = top panel's widest body (both
+  are the max breadth; within 5%). Front width ÷ height is printed but is max breadth over max depth, so it differs from a station ratio.
+- Edge-on tail: top-view width ÷ side-view tail height over 93-99% SL; below 0.25 is a thin line, ~1 is a fanned tail.
+- By eye: the projection items in the checklist below (flat-lying dorsal in the top view, no cartoon face, no exaggerated features, pattern
+  continuous across panels, eyes and mouth at the same height in the side and front panels).
 
 **Accept the sheet only if** side depth ÷ top width ≈ front height ÷ front width (within ~5%; the dottyback sheet was ~10%), and the
 side view matches the real photo's depth-to-length (or FishBase's). A generated fish is plausible, not measured, so check it against a
@@ -265,8 +273,6 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 - **Prompt variants A / B / C** (clownfish): A = method block + species name only; B = the template in section 2; C = full anatomy (sheet 1).
   Expected: B beats C on common species, A ≈ B, and photos matter more for obscure species. Score each sheet with the sheet audit (length match,
   thickness against a real top photo, edge-on fins, exaggeration), not by how good it looks. Then make the winner the template.
-- **Sheet audit script.** The audit in section 2 is still an inline snippet; save it as `scripts/fish-sheet-audit.py` (panels, lengths, width ÷ depth
-  at stations, PASS/FAIL lines) the next time a sheet is audited.
 - **Generated sheets run thick.** Clownfish sheet 1: ~0.77 width ÷ depth behind the head, self-consistent across top and front panels. Real value not checked yet.
 - **Label map** still untested; the clownfish (one hue for body and fins) is its test case.
 
@@ -311,3 +317,6 @@ Still useful from it:
 - **Regression baseline:** the tailspot blenny's 1024 px card pixel hash (`scripts/card.js`) was 8365491 through every painter step; re-check it after loader changes.
 - **Mass check:** model mass (volume x 1.02 g/cm3) against FishBase length-weight `a x TL^b`; flag above 1.6x or below 0.6x. After changing a fish's
   shape, regenerate volumes with `GEN_BODYVOLUME=1 npx vitest run test/bodymass.test.ts`.
+- 2026-11-20 (sheet audit script): `scripts/fish-sheet-audit.py` replaces the inline snippet (section 2): panels, gaps, length and end match, width ÷ depth at
+  stations, front panel with pectorals bridged, front width vs top's widest, edge-on tail, optional `--real`. Clownfish sheet 1: 0.73 at 0.15-0.20 SL
+  (the earlier ~0.77 was read nearer the dorsal start), front 0.77, two FAILs (front vs top width −6.5%, tail fanned 0.60).
