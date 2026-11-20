@@ -8,6 +8,21 @@ Origin: chat "Pixel-measured outline test: orchid dottyback" (2026-11-19, worktr
 result: "that model looks pretty great", "Side view very strong". It is the first fish he was happy with.
 This method sits under `research/species-art-method.md` (reference first) and `research/species-onboarding.md`.
 
+**This is the only fish-model document.** The earlier fish painter (hand-annotated JSON plans, still drawing four fish in the app) is
+summarised in section 7; its two memos and the separate sheet guide were folded in here and deleted (2026-11-20).
+
+## 0. The pipeline at a glance (who does what)
+
+| Stage | Who | What | Section |
+|---|---|---|---|
+| 1. Reference photos | agent (or Nathan) | Find 1-3 real photos of the species: a true side view and, if one exists, a top-down view (the only real check on thickness). They go to the image model as reference only; they never ship and never enter the repo. | 2 |
+| 2. Sheet | Nathan, in ChatGPT | Photos + the prompt template → one 3-view sheet (side, top, front) on black. | 2 |
+| 3. Sheet audit | agent | Measure the sheet before building: panel lengths, gaps, width ÷ depth across panels and against the real photo. Then check by eye for the projection errors in the sheet checklist. A failed sheet is regenerated; fixing it in 3D costs more. | 2 |
+| 4. Label map | Nathan, same ChatGPT chat | Second request: the side panel as a flat colour map of body and fins. | 2 |
+| 5. Build | agent | **Measure, don't model**: scripts read the outline, fins, eye and thickness from the sheet; the numbers drive the app's lofted body; the side panel is the texture, the top and front panels are projected on as layers. | 3 |
+| 6. Self-check | agent | Fin check (G2) and every row of the section 4 checklist, on side, 3/4, front and top renders beside the sheet, **before** Nathan sees it. | 3, 4 |
+| 7. Review | Nathan | Corrections become new section 4 rows in the same commit as the fix (the ratchet). | 6 |
+
 ## 1. How the orchid dottyback was actually made
 
 Nathan's summary was close. Here is what happened, in order, with the corrections to it.
@@ -40,8 +55,27 @@ That is why it came out right.
 
 ## 2. Step A: the reference sheet (Nathan, in an image model)
 
-Give the image model one or two **real photos** of the species (and the sex or variety wanted) and the species name, and ask for this
-sheet. The rules come from what made measuring hard on the dottyback:
+Give the image model one to three **real photos** of the species (and the sex or variety wanted) and the species name, and ask for this
+sheet. The rules come from what made measuring hard on the dottyback, flame angel and clownfish.
+
+**Prompt principle (clownfish, 2026-11-20): describe the method exhaustively, the species selectively.**
+- The method part (panels, projection, alignment, lighting, fin poses, spacing) is the same for every species and does the real work: the
+  sheet's failures were projection errors, which only method text fixes.
+- Species anatomy in prose is ignored or exaggerated. The clownfish prompt asked for thickness about half the depth and got 0.77; it asked for
+  "the spiny front" of the dorsal and got sawtooth spines. Give numbers only through the attached photos, and name only the features that must
+  be right (the diagnostic marks).
+- Never name a film or cartoon character ("Nemo"-pattern pulled the face toward animation: pouty, down-turned mouth). Ask for photorealistic,
+  no stylization, no exaggeration.
+- Whether some species prose (variant B) beats none (A) or full anatomy (C) is not settled: section 5.
+
+| Panel | What the pipeline takes from it | Needed |
+|---|---|---|
+| Side (one flank) | outline, fin extents, the colour texture wrapped on the body, eye and fin positions | yes |
+| Top (dorsal) | body width at every station (thickness) and, now, the back's texture | yes |
+| Front (head-on) | cross-section, head width, eye pair, and now the face's texture | yes |
+| Label map (side view, flat colours) | fin vs body regions without colour tricks | strongly wanted (untested) |
+| Bottom | belly colour, pelvic positions | optional |
+| Back / rear, other flank | nothing the others don't give (other flank only if the pattern differs left to right) | skip |
 
 | Panel | What the pipeline takes from it | Needed |
 |---|---|---|
@@ -54,11 +88,14 @@ sheet. The rules come from what made measuring hard on the dottyback:
 
 - **Layout:** side view on top, facing right. Top view directly under it, with snout and tail tip lined up in x and the same length.
   Front view below, at the same scale, so its height equals the side view's body depth.
-- **Separation and size:** panels must not touch or overlap (a fin tip touching the next panel merged them); at least 1200 px across the fish's length; no text, scale bar, water or props inside a panel; a few degrees of tilt is handled, more is not.
+- **Separation and size:** panels must not touch or overlap (a fin tip touching the next panel merged them); at least ~900 px across the fish's length (the dottyback built well at 896 px SL; ChatGPT's portrait canvas, three panels stacked, caps a fish near 1000 px, so 1200 px cannot be met); no text, scale bar, water or props inside a panel; a few degrees of tilt is handled, more is not.
 - **Projection:** strict orthographic: no perspective, no tilt, fish level, mouth closed.
 - **Lighting:** flat, no shadows or reflections, plain black background.
 - **Same fish:** the same individual, pattern and proportions in every panel.
 - **Top view:** pectoral fins folded flat against the body. If they stick out, the width can't be read over about 22-44% of the length.
+  The dorsal, anal and tail fins are vertical, so from above they are thin edge-on lines on the midline. Image models draw them spread flat
+  (clownfish: a full tail fan and a sawtooth dorsal lying on the back); the top panel is painted onto the body, so those fins would be painted on the back.
+- **Front view:** the tail is hidden behind the body; the dorsal and anal fins are edge-on lines.
 - **Side view:**
   - every fin fully spread and visible;
   - the pelvic and anal fins hanging clearly away from the belly, so they aren't measured as body;
@@ -84,19 +121,36 @@ sheet. The rules come from what made measuring hard on the dottyback:
   - a fourth panel with the side view as a solid white silhouette on black (a cheaper form of the same idea);
   - a scale bar along the length.
 
-Prompt used for the orchid dottyback: *(not recorded yet; Nathan to paste.)*
+**Prompt template (variant B, 2026-11-20).** The method block is fixed; change only the `Species:` paragraph. Attach the photos.
+```text
+Create a single orthographic reference sheet of one fish on a pure black background, for building a 3D model. Three panels stacked vertically, with clear black space between them so that no fin touches another panel.
 
-Prompt template (from the dottyback chat's sheet guide; adapt per species, and record the version that works for each fish):
-> Create a single reference sheet of an adult [male/female] **[species, common and scientific name]** on a pure black background, three panels: (1) a pure
-> side view, nose pointing right, fish perfectly level; (2) directly below it, a pure top-down view of the same fish, nose at the same horizontal position
-> as in (1) and the same length, pectoral fins folded flat against the body; (3) below that, a head-on front view of the same fish, same scale, with the
-> eyes and mouth at the same height as in the side view. Orthographic, no perspective, flat even studio light, no shadows, no reflections, no glow, no text.
-> All fins fully visible, mouth closed, eye clearly visible with the pupil distinct from any stripe. The pelvic and anal fins hang clear of the belly with
-> a visible dark gap. Same individual, same colours and pattern in every panel, true but slightly muted colours. Anatomically accurate [add: body depth about x% of
-> length, thickness about y% of depth, from the reference]. Leave clear black space between the panels.
+(1) SIDE: the left flank, a true side elevation. Nose pointing right, body axis perfectly horizontal. All fins spread at their natural resting extent, not flared. The pelvic and anal fins hang clear of the belly with a visible dark gap.
+(2) TOP: directly below panel 1, seen straight down from above. The snout and tail tip line up horizontally with panel 1, and the fish is exactly the same length. In this view the dorsal fin, anal fin and tail fin are seen edge-on: each is only a thin line along the midline, never spread flat. Pectoral fins folded flat against the body. The back's colour pattern is fully visible and evenly lit.
+(3) FRONT: below panel 2, seen straight on from the snout at the same scale as panel 1. The eyes and mouth are at the same height as in panel 1. The tail is hidden behind the body; the dorsal and anal fins are seen edge-on as thin lines.
+
+All three panels show the same individual, with identical proportions, colours and pattern, and the pattern wraps continuously around the body. Strict orthographic projection: no perspective, no tilt. Flat, even studio light with no shadows, reflections, rim light or glow. No text, labels or props. Mouth closed. The eye has a clearly separate pupil and iris. True but slightly muted colours. Photorealistic and anatomically faithful: no stylization, cartoon or film-character features, and no exaggeration of any feature. Make the fish as large as the canvas allows.
+
+Species: adult [scientific name] ([common name]), [sex if the sexes differ], [colour form, e.g. "standard wild-type colouring, not a designer morph"]. Match the attached photos for body proportions, body thickness and fin shapes; where the photos and your own knowledge disagree, follow the photos. Features that must be right: [only the diagnostic marks and anything image models get wrong for this fish].
+```
+
+**Prompts used, per species** (record every sheet's prompt here, with what it got right and wrong):
+| Species | Variant | Result |
+|---|---|---|
+| Orchid dottyback | not recorded | built and approved; prompt lost |
+| Flame angel | not recorded | built; top view 6% long, front and top ratios disagreed (rows 13, 19) |
+| Ocellaris clownfish (sheet 1) | C: full anatomy (old template + body %, fin shapes, band placement, "Nemo"-pattern) | Side and top 965 / 966 px long (0.1%, no rescale); gaps fine; black fin edges help the body/fin split. Wrong: top view shows the tail fanned and the dorsal lying flat; thickness ~0.77 of depth behind the head (asked ~0.5; front panel agrees at ~0.8, so check a real top photo); exaggerated dorsal spines; cartoonish pouty mouth. Head band seen as a ring round the face in the front view is correct (the band wraps behind the eyes). |
+| Ocellaris clownfish (sheet 2) | B: the template above | pending |
 
 Second request, after you approve the sheet (label map): "Edit panel (1) only: recolour it as a flat segmentation map, same geometry and framing: body mid-grey,
 dorsal fin red, anal fin green, tail fin blue, pectoral fin yellow, pelvic fin cyan, eye white; no texture, no shading, no outlines."
+
+**Sheet audit (agent, before any building).** Measure, then look:
+- Panels: split the sheet into horizontal bands of non-black rows (threshold max(R,G,B) > 40); report each panel's x extent. Side and top lengths
+  within ~1% (rescale up to ~6%, regenerate beyond).
+- Thickness: at several stations clear of fins (e.g. just behind the head), top-panel width ÷ side-panel depth; compare with the front panel's
+  width ÷ height and with a real top photo. The clownfish check was a 20-line inline script (`python -I`, numpy + PIL); a saved script is in section 5.
+- By eye: the projection items in the checklist below (edge-on fins, no cartoon face, no exaggerated features, pattern continuous across panels).
 
 **Accept the sheet only if** side depth ÷ top width ≈ front height ÷ front width (within ~5%; the dottyback sheet was ~10%), and the
 side view matches the real photo's depth-to-length (or FishBase's). A generated fish is plausible, not measured, so check it against a
@@ -110,6 +164,10 @@ for the thickness scaling in row 19.
 - [ ] Side and top panels have the same left and right ends (snout, tail tip); the nose points right.
 - [ ] Panels do not touch each other; black gaps all round.
 - [ ] Pectorals folded in the top view; pelvic and anal fins clear of the belly in the side view.
+- [ ] Dorsal, anal and tail fins edge-on (thin midline lines) in the top view; tail hidden in the front view.
+- [ ] Photorealistic face and fins: no cartoon expression, no exaggerated spines or fin shapes compared with the real photo.
+- [ ] Pattern (bands, bars, spots) continuous between panels.
+- [ ] Prompt and result recorded in the "Prompts used" table.
 - [ ] Eyes and mouth at the same height in the side and front panels.
 - [ ] Back pattern visible and evenly lit in the top panel.
 - [ ] No rim glow or soft halo (it reads as fin).
@@ -127,6 +185,7 @@ for the thickness scaling in row 19.
 | Translucent fins | A dark gap between fin and body, or a stronger hue/brightness difference. Cause of most tuning on the dottyback. |
 | Barbels, spines, filaments | Show them clearly in the side and front views. The plan format cannot model them yet. [expected] |
 | Pattern differs male / female | One sheet per sex. |
+| Stout fusiform, same hue body and fins (clownfish) | No blue share: expect `--fullbody` (row 15) and rely on the label map. Black fin edges help the split. Generated sheets come out too thick; check against a real top photo. Large rounded pectorals: the G2 fin check is the real test. Not yet built. |
 
 Keep the sheet and all photos **out of the repo** (scratchpad or the side-session notes folder). Only the finished card (WebP) ships.
 
@@ -212,6 +271,13 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 - **Deep fish (angelfish) median fins.** The dorsal and anal fins are broad and merge into the body, so the script measured only their rear tips (85-103% SL). The card still draws them, so they look right from the side. Measure real base and height before relying on them in motion.
 - **Colour drift.** The flame angel renders more saturated red than the sheet's orange. Cause not checked (lighting or the card tint).
 - **Not yet verified:** a tank of ~20 photo-card species against the current art (alternate A/B frames), and phone texture memory (~4 MB a species).
+- **Prompt variants A / B / C** (clownfish): A = method block + species name only; B = the template in section 2; C = full anatomy (sheet 1).
+  Expected: B beats C on common species, A ≈ B, and photos matter more for obscure species. Score each sheet with the sheet audit (length match,
+  thickness against a real top photo, edge-on fins, exaggeration), not by how good it looks. Then make the winner the template.
+- **Sheet audit script.** The audit in section 2 is still an inline snippet; save it as `scripts/fish-sheet-audit.py` (panels, lengths, width ÷ depth
+  at stations, PASS/FAIL lines) the next time a sheet is audited.
+- **Generated sheets run thick.** Clownfish sheet 1: ~0.77 width ÷ depth behind the head, self-consistent across top and front panels. Real value not checked yet.
+- **Label map** still untested; the clownfish (one hue for body and fins) is its test case.
 
 ## 6. How to improve this method (the ratchet)
 
@@ -230,3 +296,27 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 - 2026-11-20 (merged with the sheet guide from the dottyback chat): section 2 gains orientation/scale, front-to-side registration, top-panel pattern, colour,
   body/fin hue, the label-map panel, the ratio comparison, a sheet checklist and a body-type table; section 3 gains the dottyback reference values.
 - 2026-11-20 (merge): the dottyback chat's separate sheet guide (`research/fish-sheet-guide.md`, branch `claude/inspiring-mendeleev-e8f95e`) is folded into this doc (panel table, layout rules, prompt template and label-map request, sheet checklist, body-type table, dottyback reference values). Drop that guide; this is the single source.
+- 2026-11-20 (clownfish sheet 1, one doc): section 0 pipeline table; section 2 gains the prompt principle (method exhaustive, species selective;
+  no character names), the variant B template, the per-species prompt table, the sheet audit, edge-on fin rules for the top and front views, four checklist
+  lines and the clownfish body type; size rule 1200 → ~900 px (the canvas can't do 1200; the dottyback built at 896). Section 5 gains the A/B/C test, the audit
+  script, thick sheets and the label-map test. Section 7 summarises the fish painter; `research/fish-painter-design.md` and `research/fish-painter-experiment-ab.md`
+  are deleted (git history keeps them) so this is the only fish-model doc.
+
+## 7. The earlier method still live in the app: the fish painter (JSON plans)
+
+Four fish are drawn on origin/main by the painter, not by this method: `flameangel`, `pajamacardinal`, `koletang`, `foxface` (`JSON_PLANS`; files in
+`src/data/fishart/<art>.json` + `<art>.grid.json`, loaded by `planFromJson` in `src/art/fishartjson.ts`). Experiment D also did the orchid dottyback, lawnmower
+blenny and yellowtail blue damsel on branch `claude/fishpainter-d`; only the foxface is merged.
+Every other fish is still a hand-written `PLANS` entry in `src/art/fishgen.ts`. A fish built by this method replaces its painter or code plan when it ships.
+
+How the painter worked (2026-11-19, experiments A-D): one Commons/iNaturalist photo per fish, annotated **by eye** on a 50 px grid (body polygon, fin outlines,
+roots, eye, bar paths), written to the JSON; the loader drew it with body-relative marks (`path`, `lines`, `scatter`, `grad`) and a fin colour grid sampled
+from the photo. Overlay scripts (`scripts/overlay.js` + `overlay.py`) scored silhouette IoU 0.98-0.99 and contour error ~0.2-0.3% SL against the annotation.
+
+Why this method replaced it: the annotation was by eye on one photo, so the 0.99 only proved the loader lost nothing (row 1: never hand-type outlines);
+thickness was unmeasured (two fish came out ~1.65x FishBase mass); fins were flat sheets and marks statistical, not the real pattern (row 2).
+
+Still useful from it:
+- **Regression baseline:** the tailspot blenny's 1024 px card pixel hash (`scripts/card.js`) was 8365491 through every painter step; re-check it after loader changes.
+- **Mass check:** model mass (volume x 1.02 g/cm3) against FishBase length-weight `a x TL^b`; flag above 1.6x or below 0.6x. After changing a fish's
+  shape, regenerate volumes with `GEN_BODYVOLUME=1 npx vitest run test/bodymass.test.ts`.

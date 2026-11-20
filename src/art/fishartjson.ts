@@ -1,4 +1,4 @@
-// Species art from JSON (fish painter experiment A, research/fish-painter-design.md sections 3 and 8).
+// Species art from JSON (the fish painter; history and status: research/fish-model-sheet-method.md section 7).
 // A migrated species takes its JSON as the SOLE authority: every field below is required and a missing one throws
 // (message names the file and the path), except the documented defaults. Annotation coordinates are source-photo pixels;
 // the frame (xTail, xSnout, yAxis) turns them into card units (u 0 tail tip .. 1 snout tip, v down from the centre line).
