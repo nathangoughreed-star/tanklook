@@ -69,6 +69,13 @@ run(S('fish-topview.py'), os.path.join(work, 'sheet.png'), anat, at, ty0 - 6, ty
 fit = run(S('fish-thickfit.py'), at, '--pedt-max', spec.get('pedt_max', 0.3)).strip()
 J = json.load(open(at, encoding='utf8'))
 A = J['anatomy']
+if spec.get('taper'):  # [start % SL, end factor]: the rear half-widths ease down so the body tapers into the flat tail instead of ending in a blunt cut
+    t0, tf = spec['taper']
+    st, hw = A['depthProfile']['stations'], A['thickness']['halfWidthPctSL']
+    for i, sx_ in enumerate(st):
+        if sx_ > t0:
+            u = min(1.0, (sx_ - t0) / (100 - t0))
+            hw[i] = round(hw[i] * (1 - (1 - tf) * (u * u * (3 - 2 * u))), 3)
 sx, sl = A['landmarks']['snoutPxOriginal'][0] * 2, A['slPx'] * 2
 ax = A['landmarks']['snoutPxOriginal'][1] * 2
 TL = A['tlPx'] * 2

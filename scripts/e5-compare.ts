@@ -17,7 +17,7 @@ const camera = new THREE.PerspectiveCamera(28, W / H, 0.01, 5000);
 const sheet = document.createElement('canvas'); sheet.width = W * ids.length; sheet.height = H * 2; const x = sheet.getContext('2d'); x.font = '18px sans-serif'; x.fillStyle = '#fff';
 ids.forEach((id, i) => {
   const scene = new THREE.Scene(), model = speciesModel(speciesOf({ species: id })); scene.add(model); window.__m = model; { const ms0 = []; model.traverse(o => { if (o.isMesh) ms0.push(o); }); if (Q0.get('nocard')) ms0[0].material = new THREE.MeshBasicMaterial({ visible: false }); if (Q0.get('plain')) ms0[1].material = new THREE.MeshNormalMaterial(); } { const hide = (Q0.get('hide') ?? '').split(',').filter(Boolean).map(Number); let k = 0; model.traverse(o => { if (o.isMesh) { if (hide.includes(k)) o.visible = false; k++; } }); } applyLighting(scene); LU.uMode.value = 0; LU.uWater.value.w = 0;
-  [[0.55, 0.18], Q0.get('front') ? [Math.PI / 2, 0.05] : [0, 0]].forEach(([yaw, pitch], r) => {
+  [[0.55, 0.18], Q0.get('front') ? [Math.PI / 2, 0.05] : Q0.get('top') ? [0, 1.45] : [0, 0]].forEach(([yaw, pitch], r) => {
     const box = new THREE.Box3().setFromObject(model), c = box.getCenter(new THREE.Vector3()), cp = Math.cos(pitch);
     const dir = new THREE.Vector3(Math.sin(yaw) * cp, Math.sin(pitch), Math.cos(yaw) * cp);
     camera.position.copy(c).addScaledVector(dir, 1); camera.lookAt(c); camera.updateMatrixWorld();
