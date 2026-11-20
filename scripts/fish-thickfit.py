@@ -3,13 +3,14 @@
   python -I scripts/fish-thickfit.py anatomy.json"""
 import json, sys
 import numpy as np
-p = sys.argv[1]; J = json.load(open(p)); A = J['anatomy']; d = A['depthProfile']
+p = sys.argv[1]; PMAX = float(sys.argv[sys.argv.index('--pedt-max') + 1]) if '--pedt-max' in sys.argv else 1.0  # pedT cap: lower pinches the body toward the peduncle
+J = json.load(open(p)); A = J['anatomy']; d = A['depthProfile']
 st = np.array(d['stations'], float); top = np.array(d['top']); bot = np.array(d['bottom']); hw = np.array(A['thickness']['halfWidthPctSL'])
 pedU = 1 - 1 / A['tlOverSl']; SLc = 1 - pedU
 hv = (top + bot) / 2 / 100 * SLc; maxHv = hv.max(); s = 1 - st / 100; tm = hw / 100 * SLc
 best = None
 for thick in np.linspace(0.2, 1.6, 141):
-    for pedT in np.linspace(0, 1, 101):
+    for pedT in np.linspace(0, PMAX, 101):
         t = thick * (0.35 * hv + 0.65 * maxHv * np.sin(np.minimum(1, hv / maxHv) * np.pi / 2)) * (pedT + (1 - pedT) * np.sqrt(np.clip(s, 0, 1)))
         e = np.sqrt(np.mean((t - tm)[1:-1] ** 2))
         if best is None or e < best[0]: best = (e, thick, pedT)

@@ -597,9 +597,9 @@
    ],
    "source": "top panel of the generated sheet, blue-share mask (thr 0.60); the narrower side of the centre line",
    "fit": {
-    "thick": 0.63,
-    "pedT": 0.86,
-    "rmsPctSL": 0.35,
+    "thick": 0.76,
+    "pedT": 0.3,
+    "rmsPctSL": 1.05,
     "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
    }
   }
