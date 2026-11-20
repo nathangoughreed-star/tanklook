@@ -257,6 +257,20 @@ On 3 fish with passing sheets, compare three ways to get the landmarks:
   | pleco | ~1.41-1.54 (congeners) | 18-23 | 27.5-33 (cleithral) | 1.39, plausible, slightly low | Four *Hypostomus* descriptions (Zenodo 15866191, 17101351, 17162073, 15986026) and Zawadzki et al. 2008. No data for *H. plecostomus* itself. |
 
   Text-only sheets draw the side-to-side flattened fish (oscar, clownfish) about 30% too thick, every time. That is a bias, so it can be corrected, which makes the numeric-proportions arm of E2 the main test.
-- E2 uses 1 draw per species per arm. The three species replicate each other, so no extra draws of the same species are needed.
+- E2 uses 1 draw per species per arm.
+
+### E2: numeric proportions in the prompt (2026-11-20; stopped after the oscar to save generations)
+
+**Setup.** Prompt version `B-num`. Two oscar draws only; the clownfish and pleco were not drawn. Nathan's call: assume they follow the same pattern.
+
+**Results**
+- Thickness did not move. The station width/depth was 0.645 and 0.598, against 0.617-0.659 in E1. Top-view max width ÷ length was 0.203 and 0.189, against 0.191-0.206.
+- ChatGPT ignores numeric proportions, as it did for the shark earlier.
+- **Correction to the E1 finding.** The audit's width/depth is measured just behind the head, and that is not comparable to the published max-width/max-depth ratio. Measured like for like (top-view width ÷ total length, about 0.19-0.20, against a real value of about 0.17, assuming total length ≈ 1.25 × standard length), the oscar sheets are about 10-20% too wide, not 30%. That is close to the uncertainty in the real value itself.
+
+**Decisions**
+- Thickness is corrected on Claude's side (E6), not in the prompt.
+- The prompt stays `B-noref` plus the layout line, which still needs testing on a long fish; that rides along with the next generation that is needed.
+- Generations are scarce, so the next experiments are the ones that need no new sheets: E6, then E5, run on the 14 E1/E2 sheets. The three species replicate each other, so no extra draws of the same species are needed.
 - E2 tests the prompt with layout and numeric-proportion lines added, still text-only.
 - Real width/depth values are needed for the test species, so E6's real-numbers check moves ahead of E2.
