@@ -248,6 +248,15 @@ On 3 fish with passing sheets, compare three ways to get the landmarks:
 
 **Consequences for the plan**
 - **Production stays at one generation per species** (Nathan's rule). E1 supports it: body measurements repeat within 2-3%. A sheet is redrawn only when the audit fails it, which E1 suggests happens about 1 time in 5 (tail not edge-on).
+- Real proportions (researched 2026-11-20). Width and depth are measured at different points on the fish, so treat the ratios as approximate:
+
+  | Species | Real width/depth | Depth %SL | Width %SL | E1 top view | Source, confidence |
+  |---|---|---|---|---|---|
+  | oscar | ~0.43-0.50 | 46.2 | ~20-23 (head width 19.6) | 0.62-0.66, too fat | ZooKeys 1113 (2022) Table 1, *A. ocellatus* n=16 (PMC9848875). Depth and head width measured; max width estimated. |
+  | clownfish | ~0.45-0.55 | 42-48 | ~20-24 | 0.59-0.62, likely too fat | FishBase 6509 for depth. No published width: weakest number. |
+  | pleco | ~1.41-1.54 (congeners) | 18-23 | 27.5-33 (cleithral) | 1.39, plausible, slightly low | Four *Hypostomus* descriptions (Zenodo 15866191, 17101351, 17162073, 15986026) and Zawadzki et al. 2008. No data for *H. plecostomus* itself. |
+
+  Text-only sheets draw the side-to-side flattened fish (oscar, clownfish) about 30% too thick, every time. That is a bias, so it can be corrected, which makes the numeric-proportions arm of E2 the main test.
 - E2 uses 1 draw per species per arm. The three species replicate each other, so no extra draws of the same species are needed.
 - E2 tests the prompt with layout and numeric-proportion lines added, still text-only.
 - Real width/depth values are needed for the test species, so E6's real-numbers check moves ahead of E2.
