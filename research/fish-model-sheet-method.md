@@ -43,8 +43,18 @@ That is why it came out right.
 Give the image model one or two **real photos** of the species (and the sex or variety wanted) and the species name, and ask for this
 sheet. The rules come from what made measuring hard on the dottyback:
 
+| Panel | What the pipeline takes from it | Needed |
+|---|---|---|
+| Side (one flank) | outline, fin extents, the colour texture wrapped on the body, eye and fin positions | yes |
+| Top (dorsal) | body width at every station (thickness) and, now, the back's texture | yes |
+| Front (head-on) | cross-section, head width, eye pair, and now the face's texture | yes |
+| Label map (side view, flat colours) | fin vs body regions without colour tricks | strongly wanted (untested) |
+| Bottom | belly colour, pelvic positions | optional |
+| Back / rear, other flank | nothing the others don't give (other flank only if the pattern differs left to right) | skip |
+
 - **Layout:** side view on top, facing right. Top view directly under it, with snout and tail tip lined up in x and the same length.
   Front view below, at the same scale, so its height equals the side view's body depth.
+- **Separation and size:** panels must not touch or overlap (a fin tip touching the next panel merged them); at least 1200 px across the fish's length; no text, scale bar, water or props inside a panel; a few degrees of tilt is handled, more is not.
 - **Projection:** strict orthographic: no perspective, no tilt, fish level, mouth closed.
 - **Lighting:** flat, no shadows or reflections, plain black background.
 - **Same fish:** the same individual, pattern and proportions in every panel.
@@ -54,22 +64,69 @@ sheet. The rules come from what made measuring hard on the dottyback:
   - the pelvic and anal fins hanging clearly away from the belly, so they aren't measured as body;
   - the fins visibly more translucent or a different hue than the body, so the body/fin split needs no per-photo tuning;
   - the eye's pupil and iris clearly separate from any eye stripe.
+- **Orientation and scale (ask for it, then verify):** nose pointing right in every panel, and the top panel exactly as long as the side panel.
+  Image models still flip the fish or stretch the top view (row 13). If a sheet comes back that way, mirror it or rescale the top panel
+  uniformly before measuring; do not ask the model again unless the error is above ~6%.
+- **Front panel registered to the side view:** the eyes and the mouth must sit at the same height in the front panel as in the side panel.
+  The front and top panels are now painted onto the 3D body (rows 20-21), so a front face whose mouth sits lower than the side view's lands
+  on the chin (flame angel).
+- **Top panel shows the back pattern:** the dorsal ridge, bars and spots must be visible and evenly lit, because the top panel is also a
+  texture now.
+- **Colour:** the app's lighting boosts fish saturation about 1.35x (row 22, `--sat 0.72`). Ask for true but slightly muted colours,
+  especially orange and red; do not add extra saturation in the prompt.
+- **Body/fin hue:** a fish whose body and fins share a hue (orange, red) has no blue share to split them (row 15). The label map below is the fix.
 - **Optional extras that remove most tuning:**
-  - a fourth panel with the side view as a solid white silhouette on black;
+  - **Label map (second request, strongly wanted):** after you approve the sheet, ask the model to *edit panel 1 only* into a flat
+    segmentation map, same geometry and framing: body mid-grey, dorsal fin red, anal green, tail blue, pectoral yellow, pelvic cyan,
+    eye white, mouth line black or one more colour; no texture, shading or outlines. Overlay it on the clean side view; if edges drift more than
+    about 1% of the length, discard it. Body and fin regions then come from colour masks, so `--blue`, `--bright` and `--topend` stop mattering.
+    The clean art is never marked up, so nothing has to be erased afterwards. Untested so far (as of 2026-11-20).
+  - a fourth panel with the side view as a solid white silhouette on black (a cheaper form of the same idea);
   - a scale bar along the length.
 
 Prompt used for the orchid dottyback: *(not recorded yet; Nathan to paste.)*
 
-Draft prompt (refine and record whichever version works):
-> Scientific reference sheet of a single [species, sex/variety], based on the attached photo(s). Three orthographic views on a pure black
-> background, flat even lighting, no shadows: (1) left-to-right side view facing right, all fins fully spread, pelvic and anal fins clearly
-> separated from the belly; (2) top (dorsal) view directly below it, the same length and aligned so snout and tail tip line up vertically,
-> pectoral fins folded flat against the body; (3) front (head-on) view below, at the same scale. The same individual in every view, true
-> colours and pattern, photorealistic, not stylised, no text, no labels.
+Prompt template (from the dottyback chat's sheet guide; adapt per species, and record the version that works for each fish):
+> Create a single reference sheet of an adult [male/female] **[species, common and scientific name]** on a pure black background, three panels: (1) a pure
+> side view, nose pointing right, fish perfectly level; (2) directly below it, a pure top-down view of the same fish, nose at the same horizontal position
+> as in (1) and the same length, pectoral fins folded flat against the body; (3) below that, a head-on front view of the same fish, same scale, with the
+> eyes and mouth at the same height as in the side view. Orthographic, no perspective, flat even studio light, no shadows, no reflections, no glow, no text.
+> All fins fully visible, mouth closed, eye clearly visible with the pupil distinct from any stripe. The pelvic and anal fins hang clear of the belly with
+> a visible dark gap. Same individual, same colours and pattern in every panel, true but slightly muted colours. Anatomically accurate [add: body depth about x% of
+> length, thickness about y% of depth, from the reference]. Leave clear black space between the panels.
+
+Second request, after you approve the sheet (label map): "Edit panel (1) only: recolour it as a flat segmentation map, same geometry and framing: body mid-grey,
+dorsal fin red, anal fin green, tail fin blue, pectoral fin yellow, pelvic fin cyan, eye white; no texture, no shading, no outlines."
 
 **Accept the sheet only if** side depth ÷ top width ≈ front height ÷ front width (within ~5%; the dottyback sheet was ~10%), and the
 side view matches the real photo's depth-to-length (or FishBase's). A generated fish is plausible, not measured, so check it against a
 real photo. Check the image tool's licence terms for use in the app.
+
+**Compare the three panels' ratios before measuring anything.** Work out top width ÷ side depth and front width ÷ front height. When the
+sheet's top view and front view disagree (flame angel: top-view ratio 2.8:1 against 1.8:1 in the front panel), either regenerate or plan
+for the thickness scaling in row 19.
+
+**Sheet checklist (tick every line before sending a sheet on):**
+- [ ] Side and top panels have the same left and right ends (snout, tail tip); the nose points right.
+- [ ] Panels do not touch each other; black gaps all round.
+- [ ] Pectorals folded in the top view; pelvic and anal fins clear of the belly in the side view.
+- [ ] Eyes and mouth at the same height in the side and front panels.
+- [ ] Back pattern visible and evenly lit in the top panel.
+- [ ] No rim glow or soft halo (it reads as fin).
+- [ ] Depth, width and height agree within about 5% across panels, and against a real photo or FishBase.
+- [ ] Label map made, and its edges match the clean side view (or noted as skipped).
+- [ ] The image tool's licence terms recorded for this sheet.
+
+### Body types: what to add or watch *([expected] = reasoned, not yet tested on a second species)*
+| Body type | Add / watch |
+|---|---|
+| Deep, laterally compressed (angelfish, tang, discus) | The front view matters more (the fish is very thin). Long dorsal and anal tips often leave the frame, so leave room. Median fins merge into the body in measurement (section 5). Pitch: use `--level` (row 14). |
+| Elongate (eel, pipefish, needlefish, loach) | The sheet gets very wide; allow a wider canvas or the side view comes out too small. Top-view widths are small and noisy. [expected] |
+| Flatfish, rays | Belly-down geometry. This pipeline does not fit them and needs its own design. |
+| Long or trailing fins (betta, angelfish, gourami, lyretail) | Ask for the fins relaxed, not flared, at natural length; the top view will not show them. [expected] |
+| Translucent fins | A dark gap between fin and body, or a stronger hue/brightness difference. Cause of most tuning on the dottyback. |
+| Barbels, spines, filaments | Show them clearly in the side and front views. The plan format cannot model them yet. [expected] |
+| Pattern differs male / female | One sheet per sex. |
 
 Keep the sheet and all photos **out of the repo** (scratchpad or the side-session notes folder). Only the finished card (WebP) ships.
 
@@ -94,6 +151,13 @@ Run every script with `python -I` (numpy + PIL; untrusted images).
 2. **Render with `?paired=photo`** and pass the numbers: `&sx=<snout x>&esl=<SL px>&eaxis=<axis y>&pecx&pecy&pelx&pely&pell` (+ `&pectint=#rrggbb&peltint=#rrggbb` from the sheet's fin colour; `&pecs` scales the pectoral, `&pecspread` fans it).
 3. **Erase from the card** only a fin the 3D one replaces (the pelvic), never to hide a symptom.
 4. **Pass/fail, every fin:** attached to the body in the 3/4 and front renders; right colour and size against the sheet; no loose card fragment. A fin that fails is listed as an open problem in the fish's JSON `render` block, not silently dropped.
+
+**Reference values, orchid dottyback** (what shipped behind `?photoart`; a starting point, not a rule). Sheet px: snout x 1275, axis y 207, SL 896.
+- Cheeks `wide` 0.3; eye `bulge` 0.6; 3D eye seated at (1190,177), radius 14 px, iris `#c8902a` / `#0a0206`.
+- Pectoral: root (1010,233), scale 1.2, spread 1.0, tint `#b848c8`. Pelvic: root (1005,295), 120 px long, tint `#c050e0`.
+- Pelvic erased from the card with `--erase 755,697,895,790` (side_full px). Thickness fit with `--pedt-max 0.3` (thick 0.76, pedT 0.3, rms 1.05% SL).
+- Photo 2 (a different image of the same species) needed `--blue 0.58 --bright 140 --topend 0.95`; the sheet needed `--blue 0.55 --bright 160 --topend 0.97`:
+  the same species needs different knobs per image, which is why the label map is wanted.
 
 **Tuning knobs** (each one is a sign the sheet could be better; see section 2):
 - `--blue`: the colour split between body and fins.
@@ -163,3 +227,6 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 - 2026-11-20: Front shape rule (row 19) added; front face texture design recorded in section 5.
 - 2026-11-20 (later): projection layers for the top and front views (rows 20-23), `fish-projcards.py`, `--sat`. The strict sheet (top view directly under the side view, pectorals folded, front view below) needed no mirroring or rescaling beyond 1.2%. Still behind the test harness only: not yet wired into `?photoart`.
 - 2026-11-20 (fin check): step G2 made a required step; the harness `?paired=photo` takes the roots as parameters instead of the dottyback's typed-in numbers. The flame angel (`f86cb8bd`) predates this and has NO rooted pectoral or pelvic fins yet.
+- 2026-11-20 (merged with the sheet guide from the dottyback chat): section 2 gains orientation/scale, front-to-side registration, top-panel pattern, colour,
+  body/fin hue, the label-map panel, the ratio comparison, a sheet checklist and a body-type table; section 3 gains the dottyback reference values.
+- 2026-11-20 (merge): the dottyback chat's separate sheet guide (`research/fish-sheet-guide.md`, branch `claude/inspiring-mendeleev-e8f95e`) is folded into this doc (panel table, layout rules, prompt template and label-map request, sheet checklist, body-type table, dottyback reference values). Drop that guide; this is the single source.
