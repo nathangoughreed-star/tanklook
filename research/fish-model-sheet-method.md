@@ -18,10 +18,9 @@ summarised in section 7; its two memos and the separate sheet guide were folded 
 | 1. Reference photos | agent (or Nathan) | Find 1-3 real photos of the species: a true side view and, if one exists, a top-down view (the only real check on thickness). They go to the image model as reference only; they never ship and never enter the repo. | 2 |
 | 2. Sheet | Nathan, in ChatGPT | Photos + the prompt template → one 3-view sheet (side, top, front) on black. | 2 |
 | 3. Sheet audit | agent | Measure the sheet before building: panel lengths, gaps, width ÷ depth across panels and against the real photo. Then check by eye for the projection errors in the sheet checklist. A failed sheet is regenerated; fixing it in 3D costs more. | 2 |
-| 4. Label map | Nathan, same ChatGPT chat | Second request: the side panel as a flat colour map of body and fins. **Oscar tests: 1 redrew the fish; 2 kept the outline but invented the fin boundaries and eye.** Use it for the outer silhouette only. | 2 |
-| 5. Build | agent | **Measure, don't model**: scripts read the outline, fins, eye and thickness from the sheet; the numbers drive the app's lofted body; the side panel is the texture, the top and front panels are projected on as layers. | 3 |
-| 6. Self-check | agent | Fin check (G2) and every row of the section 4 checklist, on side, 3/4, front and top renders beside the sheet, **before** Nathan sees it. | 3, 4 |
-| 7. Review | Nathan | Corrections become new section 4 rows in the same commit as the fix (the ratchet). | 6 |
+| 4. Build | agent | **Measure, don't model**: scripts read the outline, fins, eye and thickness from the sheet; the numbers drive the app's lofted body; the side panel is the texture, the top and front panels are projected on as layers. | 3 |
+| 5. Self-check | agent | Fin check (G2) and every row of the section 4 checklist, on side, 3/4, front and top renders beside the sheet, **before** Nathan sees it. | 3, 4 |
+| 6. Review | Nathan | Corrections become new section 4 rows in the same commit as the fix (the ratchet). | 6 |
 
 ## 1. How the orchid dottyback was actually made
 
@@ -73,7 +72,6 @@ sheet. The rules come from what made measuring hard on the dottyback, flame ange
 | Side (one flank) | outline, fin extents, the colour texture wrapped on the body, eye and fin positions | yes |
 | Top (dorsal) | body width at every station (thickness) and, now, the back's texture | yes |
 | Front (head-on) | cross-section, head width, eye pair, and now the face's texture | yes |
-| Label map (side view, flat colours) | fin vs body regions without colour tricks | silhouette only: fin boundaries and eye invented (oscar tests 1-2, 2026-11-20) |
 | Bottom | belly colour, pelvic positions | optional |
 | Back / rear, other flank | nothing the others don't give (other flank only if the pattern differs left to right) | skip |
 
@@ -102,25 +100,17 @@ sheet. The rules come from what made measuring hard on the dottyback, flame ange
   texture now.
 - **Colour:** the app's lighting boosts fish saturation about 1.35x (row 22, `--sat 0.72`). Ask for true but slightly muted colours,
   especially orange and red; do not add extra saturation in the prompt.
-- **Body/fin hue:** a fish whose body and fins share a hue (orange, red) has no blue share to split them (row 15). The label map below was meant to fix this but failed its first test (oscar); the silhouette panel or one click per fin base remain (section 5).
+- **Body/fin hue:** a fish whose body and fins share a hue (orange, red) has no blue share to split them (row 15). An image-model label map does not fix it (tested on the oscar, below); the split stays an open problem (section 5).
 - **Optional extras that remove most tuning:**
-  - **Label map (second request; silhouette only, see the two tests below):** after you approve the sheet, ask the model to *edit panel 1 only* into a flat
-    segmentation map, same geometry and framing: body mid-grey, dorsal fin red, anal green, tail blue, pectoral yellow, pelvic cyan,
-    eye white, mouth line black or one more colour; no texture, shading or outlines. Overlay it on the clean side view; if edges drift more than
-    about 1% of the length, discard it. Body and fin regions then come from colour masks, so `--blue`, `--bright` and `--topend` stop mattering.
-    The clean art is never marked up, so nothing has to be erased afterwards.
-    **Test 1 failed (oscar, 2026-11-20, ChatGPT):** asked to edit panel 1 only, it redrew the whole image: canvas 1086 × 1448 → 1218 × 1292,
-    top and front panels re-rendered with a different pattern, and the label fish is a different, slimmer fish (length ÷ height 2.07 vs the
-    sheet's 1.76; silhouette IoU 0.75 at the best alignment; edge drift 2-3% of length mean, ~5% at the 90th percentile, against the 1% rule).
-    An image model's "edit" is a regeneration, so a label map from it cannot be trusted to register to the clean art.
-    **Test 2 (oscar, 2026-11-20, a different request; prompt to be recorded here):** the outline is now right, the regions are not. Canvas kept
-    (1086 × 1448); top and front panels pixel-identical to the sheet (mean difference 0.8/255, none over 30); side silhouette bounding box within
-    1 px, top and bottom edge drift 0.1% mean / 0.2% at the 90th percentile (IoU 0.84 only because the sheet's dark fins fall under the
-    threshold of 40). But the body/fin boundaries are invented, not traced: straight cuts (a vertical tail line, a step at the dorsal and anal
-    bases, a trapezoid pectoral); the eye ~20 px (~2% SL) behind the real eye and smaller; a belly strip (x 500-775) labelled pelvic.
-    **Verdict:** an image-model label map can supply a clean outer silhouette (useful where dark fins sit on black), not the body/fin split or
-    landmarks. Keep the colour knobs, or one click per fin base, for those.
-  - a fourth panel with the side view as a solid white silhouette on black (a cheaper form of the same idea);
+  - ~~Label map~~ **dropped 2026-11-20** (oscar, two tries, same request: "Edit panel (1) only, keeping its geometry and framing
+    pixel-identical. Recolour it as a flat segmentation map: body mid-grey; dorsal fin red; anal fin green; tail fin blue; pectoral fin yellow;
+    pelvic fin cyan; eye white; mouth line black. No texture, no shading, no outlines, no markings, and nothing else changed. Leave panels (2) and
+    (3) untouched."). Try 1 used generative editing and redrew the whole sheet (canvas 1086 × 1448 → 1218 × 1292, other panels re-rendered, a
+    slimmer fish: edge drift 2-5% of length against a 1% rule). Try 2, after Nathan said try 1 failed, ChatGPT switched to code: it thresholded
+    the original pixels at 8/255 for the silhouette (outline right to 0.1%) and filled hand-approximated polygons for the regions (straight-cut
+    fin bases, a trapezoid pectoral, the eye ~2% SL too far back, a belly strip labelled pelvic). So an image model cannot supply body/fin labels,
+    and the silhouette it gave is only a low-threshold mask our own scripts can make (section 5).
+  - a fourth panel with the side view as a solid white silhouette on black: not needed, a low-threshold mask of the side panel gives the same (section 5);
   - a scale bar along the length.
 
 **Prompt template (variant B, 2026-11-20).** The method block is fixed; change only the `Species:` paragraph. Attach the photos.
@@ -144,10 +134,8 @@ Species: adult [scientific name] ([common name]), [sex if the sexes differ], [co
 | Ocellaris clownfish (sheet 1, `clownfish-sheet1-variantC.webp`) | C: full anatomy (old template + body %, fin shapes, band placement, "Nemo"-pattern) | Audit: side 966 / top 967 px (0.1%, no rescale), ends within 5 px, gaps 56 / 31 px; width ÷ depth 0.733 / 0.732 at 0.15 / 0.20 SL (asked ~0.5); front body 235 × 312 px = 0.755 (+3.1% vs the stations: PASS); tail edge-on 0.60 (FAIL, fanned). By eye: dorsal lying flat in the top view; exaggerated dorsal spines; cartoonish pouty mouth. Black fin edges help the body/fin split. Head band seen as a ring round the face in the front view is correct (the band wraps behind the eyes). |
 | Ocellaris clownfish (sheet A) | A: method block + species name only | pending |
 | Ocellaris clownfish (sheet B) | B: the template above | pending |
-| Tiger oscar (sheet 1, `oscar-sheet1-variantB.webp`) | B on a second species | **Method held.** Audit all PASS: side 1071 / top 1065 px (0.6%), ends within 4 px, gaps 26 / 28 px; width ÷ depth 0.617 / 0.600 at 0.15 / 0.20 SL; front 243 × 396 px = 0.613 (+0.8%); tail edge-on 0.09 (variant B fixed the top-view fins). **Label map:** test 1 redrawn, not recoloured; test 2 outline right (0.1% drift) but fin boundaries and eye invented (section 2). |
+| Tiger oscar (sheet 1, `oscar-sheet1-variantB.webp`) | B on a second species | **Method held.** Audit all PASS: side 1071 / top 1065 px (0.6%), ends within 4 px, gaps 26 / 28 px; width ÷ depth 0.617 / 0.600 at 0.15 / 0.20 SL; front 243 × 396 px = 0.613 (+0.8%); tail edge-on 0.09 (variant B fixed the top-view fins). **Label map:** two tries, both unusable for regions (try 1 redrawn; try 2 ChatGPT's code: 8/255 silhouette + guessed polygons); request dropped (section 2). |
 
-Second request, after you approve the sheet (label map): "Edit panel (1) only: recolour it as a flat segmentation map, same geometry and framing: body mid-grey,
-dorsal fin red, anal fin green, tail fin blue, pectoral fin yellow, pelvic fin cyan, eye white; no texture, no shading, no outlines."
 
 **Sheet audit (agent, before any building).** Run `python -I scripts/fish-sheet-audit.py SHEET --out debug.png [--stations 0.15,0.20] [--real R] [--mirror]`
 (numpy + PIL). It prints one PASS / FAIL / INFO line per check and exits 1 on any FAIL. Then look at the debug picture and do the by-eye items.
@@ -186,7 +174,6 @@ for the thickness scaling in row 19.
 - [ ] Back pattern visible and evenly lit in the top panel.
 - [ ] No rim glow or soft halo (it reads as fin).
 - [ ] Depth, width and height agree within about 5% across panels, and against a real photo or FishBase.
-- [ ] Label map made, and its edges match the clean side view (or noted as skipped).
 - [ ] The image tool's licence terms recorded for this sheet.
 
 ### Body types: what to add or watch *([expected] = reasoned, not yet tested on a second species)*
@@ -199,7 +186,7 @@ for the thickness scaling in row 19.
 | Translucent fins | A dark gap between fin and body, or a stronger hue/brightness difference. Cause of most tuning on the dottyback. |
 | Barbels, spines, filaments | Show them clearly in the side and front views. The plan format cannot model them yet. [expected] |
 | Pattern differs male / female | One sheet per sex. |
-| Stout fusiform, same hue body and fins (clownfish) | No blue share: expect `--fullbody` (row 15) and rely on the label map. Black fin edges help the split. Generated sheets come out too thick; check against a real top photo. Large rounded pectorals: the G2 fin check is the real test. Not yet built. |
+| Stout fusiform, same hue body and fins (clownfish) | No blue share: expect `--fullbody` (row 15); the body/fin split needs the colour knobs (section 5). Black fin edges help the split. Generated sheets come out too thick; check against a real top photo. Large rounded pectorals: the G2 fin check is the real test. Not yet built. |
 
 Keep the sheet and all photos **out of the repo** (scratchpad or the side-session notes folder). Only the finished card (WebP) ships.
 
@@ -230,7 +217,7 @@ Run every script with `python -I` (numpy + PIL; untrusted images).
 - Pectoral: root (1010,233), scale 1.2, spread 1.0, tint `#b848c8`. Pelvic: root (1005,295), 120 px long, tint `#c050e0`.
 - Pelvic erased from the card with `--erase 755,697,895,790` (side_full px). Thickness fit with `--pedt-max 0.3` (thick 0.76, pedT 0.3, rms 1.05% SL).
 - Photo 2 (a different image of the same species) needed `--blue 0.58 --bright 140 --topend 0.95`; the sheet needed `--blue 0.55 --bright 160 --topend 0.97`:
-  the same species needs different knobs per image, which is why the label map is wanted.
+  the same species needs different knobs per image (the body/fin split is still open: section 5).
 
 **Tuning knobs** (each one is a sign the sheet could be better; see section 2):
 - `--blue`: the colour split between body and fins.
@@ -289,8 +276,10 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
   Expected: B beats C on common species, A ≈ B, and photos matter more for obscure species. Score each sheet with the sheet audit (length match,
   thickness against a real top photo, edge-on fins, exaggeration), not by how good it looks. Then make the winner the template.
 - **Generated sheets run thick.** Clownfish sheet 1: ~0.77 width ÷ depth behind the head, self-consistent across top and front panels. Real value not checked yet.
-- **Label map: silhouette only** (oscar tests 1-2, 2026-11-20; section 2): test 1 redrew the fish; test 2 kept the outline to 0.1% but invented
-  straight-cut fin boundaries and moved the eye ~2% SL. It can give a clean outer silhouette, not the body/fin split or landmarks. The body/fin split item above stays open; next candidates are the silhouette panel (same risk: check its registration) or one click per fin base.
+- **Body/fin split, after the label map was dropped** (2026-11-20; section 2): an image model cannot label regions. Candidates: the colour knobs,
+  one click per fin base, or a point-prompted segmentation model; benchmark any of them against the current colour extraction before investing.
+- **Outline mask at a low threshold (~8/255) catches dark fins** (the oscar's dark fins fall under 40, which is what ChatGPT's "label map" silhouette
+  did right). Check the outline script's threshold (`fish-outline.py`, on branch `claude/flameangel-photoart`); the audit keeps 40 for panel bands.
 
 ## 6. How to improve this method (the ratchet)
 
@@ -341,3 +330,6 @@ Still useful from it:
   Label map's first test failed (redrawn, not recoloured); recorded in sections 0, 2 and 5. Oscar added to the prompts table: variant B held on a second species.
 - 2026-11-20 (oscar label map test 2): outline right (0.1% edge drift, other panels untouched), fin boundaries and eye invented. Verdict recorded in
   sections 0, 2 and 5: label map = outer silhouette only; body/fin split stays with the colour knobs or a click per fin base.
+- 2026-11-20 (label map dropped): both oscar tries used the same request; try 1 was generative (redrawn), try 2 was ChatGPT's own code (8/255 threshold
+  silhouette + hand-drawn polygons). Image models can't supply body/fin labels, so the label-map request is removed from section 0, the panel table,
+  section 2 and the sheet checklist. Section 5: the body/fin split stays open; a low-threshold (~8/255) outline mask is noted for dark fins.
