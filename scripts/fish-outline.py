@@ -143,7 +143,11 @@ def main():
     # peduncle = the narrowest OPENED-mask column that still has body on both sides of it
     cand = np.where(np.isnan(th_b[lo:hi]), 1e9, th_b[lo:hi])
     ped_x = lo + int(np.argmin(cand))
-    ped = np.array([ped_x, (tb0[ped_x] + bb0[ped_x]) / 2])
+    LMK = json.load(open(opts['--landmarks'])) if '--landmarks' in opts else {}
+    if 'ped' in LMK:  # hand-placed peduncle centre [x, y] (when blue fins or a tail tuft fool the narrowest-column search)
+        ped_x = int(LMK['ped'][0]); ped = np.array([ped_x, float(LMK['ped'][1])])
+    else:
+        ped = np.array([ped_x, (tb0[ped_x] + bb0[ped_x]) / 2])
 
     ang = np.degrees(np.arctan2(snout[1] - ped[1], snout[0] - ped[0]))  # image y points down
     if '--level' in sys.argv:  # sheet already level (deep-bodied fish whose mouth sits low: snout-to-peduncle would pitch the fish): axis = horizontal line through the peduncle centre
@@ -175,6 +179,7 @@ def main():
     th = bb - tb
     lo2, hi2 = int(tail_x + 0.12 * (sx - tail_x)), int(tail_x + 0.40 * (sx - tail_x))
     pedx = lo2 + int(np.argmin(np.where(np.isnan(th[lo2:hi2]), 1e9, th[lo2:hi2])))
+    if 'ped' in LMK: pedx = int(LMK['ped'][0])
     SL = float(sx - pedx)
     if bodyB is not None:  # back (the dorsal-fin zone, u >= 35 % SL): top edge from the colour mask; head and belly from the shape mask
         xx = np.arange(W)
