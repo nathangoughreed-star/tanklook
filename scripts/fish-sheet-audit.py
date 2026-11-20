@@ -11,8 +11,11 @@ What it measures (all deterministic, no tuning per sheet):
   3. Thickness: at stations (fraction of length from the snout, default 0.15 / 0.20 = just behind the head on a
      clownfish, clear of the dorsal and pelvic fins), top-panel width / side-panel depth. The top width is rescaled
      by the side/top length ratio first.
-  4. Front panel: body width / body height, with fins removed as bumps in the edge profile (pectorals sticking out
-     sideways, dorsal spike, pelvic fins) and the body edge bridged across them by a parabola.
+  4. Front panel: body width / body height. Fins only ever stick OUT of the body, so each outline (left, right, top,
+     bottom) is fitted with its inner envelope: fit, drop points outside, refit. That trims solid pectorals (clownfish),
+     fanned translucent pectorals that hole filling welds on (oscar), a dorsal spike and edge-on pelvic/anal fins.
+     PASS if front width/height is within 5% of the top/side station ratio. Front width vs the top panel's widest is
+     printed as INFO: it tests scale registration between panels, which image models don't keep (both sheets ~8% off).
   5. Edge-on tail in the top view: top-panel width over the last 8% of length / side-panel tail height over the same
      span. An edge-on tail is a thin line (well under 0.25); a fanned tail reads near 1.
   6. Optional --real R: compare the sheet's width/depth with a real value (photo or morphometrics), accept within 10%.
@@ -89,46 +92,30 @@ def longest_run(line, gap=2):
     return best
 
 
-def debump(edge, outward, jump):
-    """edge: 1-D array of an outline coordinate (NaN = none). outward: +1 if larger = further out, -1 if smaller.
-    Fins show as segments that jump outward and later jump back. Returns (bridged edge, fin mask)."""
-    e = edge.copy()
-    n = len(e)
-    ok = ~np.isnan(e)
-    idx = np.flatnonzero(ok)
+def envelope(edge, outward, use, tol, deg=4, iters=30):
+    """Inner envelope of a body outline. edge: 1-D outline coordinate per row (NaN = none); outward: +1 if larger is
+    further out, -1 if smaller; use: rows to fit (body rows, not a dorsal spike). Fins only ever stick OUT of the body,
+    so fit a polynomial, drop rows lying more than tol outside it, refit, until stable. Works for solid fins that jump
+    out (clownfish pectorals) and for fanned, translucent fins that hole filling welds onto the body (oscar).
+    Returns (body edge: raw where clean, fit where fin; fin mask)."""
+    n = len(edge)
+    rows = np.flatnonzero(use & ~np.isnan(edge))
     fin = np.zeros(n, bool)
-    if idx.size < 5:
-        return e, fin
-    # split into segments at jumps
-    cuts = [0]
-    for k in range(1, idx.size):
-        if abs(e[idx[k]] - e[idx[k - 1]]) > jump:
-            cuts.append(k)
-    cuts.append(idx.size)
-    segs = [idx[cuts[i]:cuts[i + 1]] for i in range(len(cuts) - 1)]
-    off = [outward * np.median(e[s]) for s in segs]
-    for i, s in enumerate(segs):
-        left = off[i - 1] if i > 0 else None
-        right = off[i + 1] if i < len(segs) - 1 else None
-        # a fin segment sits further out than the body on both sides (or on its one side at an end)
-        outs = [off[i] - o > jump for o in (left, right) if o is not None]
-        if outs and all(outs) and len(segs) > 1:
-            fin[s] = True
-    clean = ok & ~fin
-    if fin.any() and clean.sum() >= 6:
-        ci = np.flatnonzero(clean)
-        # bridge each fin stretch with a parabola fitted to clean rows on both sides
-        fi = np.flatnonzero(fin)
-        groups = np.split(fi, np.flatnonzero(np.diff(fi) > 1) + 1)
-        for g in groups:
-            span = g[-1] - g[0] + 1
-            near = ci[(ci >= g[0] - span) & (ci <= g[-1] + span)]
-            if near.size < 4:
-                near = ci
-            deg = 2 if near.size >= 6 and (near < g[0]).any() and (near > g[-1]).any() else 1
-            p = np.polyfit(near, e[near], deg)
-            e[g] = np.polyval(p, g)
-    return e, fin
+    if rows.size < deg + 3:
+        return edge.copy(), fin
+    t = (rows - rows.mean()) / max(1.0, rows.std())
+    keep = np.ones(rows.size, bool)
+    for _ in range(iters):
+        p = np.polyfit(t[keep], edge[rows][keep], deg)
+        fit = np.polyval(p, t)
+        new = outward * (edge[rows] - fit) <= tol
+        if (new == keep).all():
+            break
+        keep = new
+    out = edge.copy()
+    fin[rows[~keep]] = True
+    out[rows[~keep]] = fit[~keep]
+    return out, fin
 
 
 def measure(path, stations, real, out, mirror):
@@ -210,28 +197,38 @@ def measure(path, stations, real, out, mirror):
         r = run_containing(fr[y], cx) if fr[y, cx] or fr[y, max(0, cx - 3):cx + 4].any() else None
         if r:
             L[y], R[y] = r
-    T = np.full(fw, np.nan)
-    B = np.full(fw, np.nan)
-    for x in range(fw):
-        r = run_containing(fr[:, x], cy) if fr[cy, x] or fr[max(0, cy - 3):cy + 4, x].any() else None
-        if r:
-            T[x], B[x] = r
-    jump = max(4.0, 0.02 * max(fw, fh))
-    Lb, Lf = debump(L, -1, jump)
-    Rb, Rf = debump(R, +1, jump)
+    raw = R - L + 1
+    use = raw >= 0.3 * np.nanmedian(raw)          # body rows; drops a thin dorsal spike or edge-on fin line
+    tol = max(3.0, 0.01 * fw)
+    Lb, Lf = envelope(L, -1, use, tol)
+    Rb, Rf = envelope(R, +1, use, tol)
     widths = Rb - Lb + 1
     fwid = float(np.nanmax(widths))
-    # Height: a dorsal spike has a smooth outline (no jump to detect), so the body is the rows where the bridged width
-    # is at least 40% of its widest. Not ellipse-corrected: clownfish sheet 1 measured 310 px this way against ~304 px
-    # by eye; the ellipse correction gave 338. On a truly elliptical section this reads up to ~8% short.
-    rows40 = np.flatnonzero(widths >= 0.4 * fwid)
-    fhei = float(rows40[-1] - rows40[0] + 1)
-    ftop = float(rows40[0])
+    ymax = int(np.nanargmax(widths))
+    xl, xr = int(round(Lb[ymax])), int(round(Rb[ymax]))
+    # Height: the same envelope fit on the top and bottom outlines across the body's columns. A dorsal spike and
+    # edge-on pelvic/anal fins stick out up/down and are trimmed like the pectorals (the 40%-width rule this replaced
+    # cut off the oscar's pointed top: 356 px against ~410).
+    T = np.full(fw, np.nan)
+    B = np.full(fw, np.nan)
+    for x in range(xl, xr + 1):
+        r = run_containing(fr[:, x], ymax) if fr[ymax, x] else None
+        if r:
+            T[x], B[x] = r
+    colsok = np.zeros(fw, bool)
+    colsok[xl:xr + 1] = True
+    Tb, Tf = envelope(T, -1, colsok, tol)
+    Bb, Bf = envelope(B, +1, colsok, tol)
+    mid = slice(max(xl, cx - (xr - xl) // 10), min(xr, cx + (xr - xl) // 10) + 1)
+    hts = Bb[mid] - Tb[mid] + 1
+    fhei = float(np.nanmax(hts))
+    xh = mid.start + int(np.nanargmax(hts))
+    ftop, fbot = float(Tb[xh]), float(Bb[xh])
     fratio = fwid / fhei
     raw_w = float(np.nanmax(R - L)) + 1
-    raw_h = float(np.nanmax(B - T)) + 1
+    raw_h = float(np.nanmax(np.where(fr.any(1))[0]) - np.nanmin(np.where(fr.any(1))[0]) + 1)
     print(f"INFO  front: body {fwid:.0f} x {fhei:.0f} px (w x h) after removing fins, width/height {fratio:.3f}; "
-          f"raw {raw_w:.0f} x {raw_h:.0f} with fins; pectoral rows bridged {int(Lf.sum() + Rf.sum())}")
+          f"raw {raw_w:.0f} x {raw_h:.0f} with fins; fin rows bridged {int(Lf.sum())} left / {int(Rf.sum())} right")
     # Like-for-like: the front panel's widest body = the top panel's widest body (both are the max breadth).
     tw = []
     for f in np.linspace(0.05, 0.60, 56):
@@ -240,9 +237,10 @@ def measure(path, stations, real, out, mirror):
         if rt:
             tw.append(((rt[1] - rt[0] + 1) * k, f))
     tmax, tf = max(tw)
-    line("thickness agree", abs(fwid - tmax) / tmax <= 0.05,
-         f"front body width {fwid:.0f} px vs top panel's widest {tmax:.0f} px at {tf:.2f} SL "
-         f"({(fwid - tmax) / tmax:+.1%}; accept within 5%)")
+    line("thickness agree", abs(fratio - ratio) / ratio <= 0.05,
+         f"front width/height {fratio:.3f} vs top/side width/depth {ratio:.3f} ({(fratio - ratio) / ratio:+.1%}; accept within 5%)")
+    print(f"INFO  front body width {fwid:.0f} px vs top panel's widest {tmax:.0f} px at {tf:.2f} SL ({(fwid - tmax) / tmax:+.1%}); "
+          f"panel scale registration, not thickness")
     print(f"INFO  front height {fhei:.0f} px should equal the side panel's deepest body (fins excluded); "
           f"check by eye (side depth at stations: {', '.join(str(r[1]) for r in st_rows)} px)")
     if real:
@@ -277,9 +275,9 @@ def measure(path, stations, real, out, mirror):
         for xs, a0, a1, xt, b0, b1 in marks:
             d.line((xs, a0, xs, a1), fill=(255, 0, 0), width=3)
             d.line((xt, b0, xt, b1), fill=(0, 255, 0), width=3)
-        for yy in (ftop, ftop + fhei):
+        for yy in (ftop, fbot):
             d.line((fx0, fy0 + yy, fx1, fy0 + yy), fill=(0, 255, 255), width=1)
-        for arr, fin, horiz in ((Lb, Lf, True), (Rb, Rf, True)):
+        for arr, fin, horiz in ((Lb, Lf, True), (Rb, Rf, True), (Tb, Tf, False), (Bb, Bf, False)):
             for i in range(len(arr)):
                 if np.isnan(arr[i]):
                     continue

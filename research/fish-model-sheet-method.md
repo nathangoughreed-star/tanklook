@@ -18,7 +18,7 @@ summarised in section 7; its two memos and the separate sheet guide were folded 
 | 1. Reference photos | agent (or Nathan) | Find 1-3 real photos of the species: a true side view and, if one exists, a top-down view (the only real check on thickness). They go to the image model as reference only; they never ship and never enter the repo. | 2 |
 | 2. Sheet | Nathan, in ChatGPT | Photos + the prompt template → one 3-view sheet (side, top, front) on black. | 2 |
 | 3. Sheet audit | agent | Measure the sheet before building: panel lengths, gaps, width ÷ depth across panels and against the real photo. Then check by eye for the projection errors in the sheet checklist. A failed sheet is regenerated; fixing it in 3D costs more. | 2 |
-| 4. Label map | Nathan, same ChatGPT chat | Second request: the side panel as a flat colour map of body and fins. | 2 |
+| 4. Label map | Nathan, same ChatGPT chat | Second request: the side panel as a flat colour map of body and fins. **Failed its first test (oscar): the image model redraws the fish instead of recolouring it.** Use only if a later test passes. | 2 |
 | 5. Build | agent | **Measure, don't model**: scripts read the outline, fins, eye and thickness from the sheet; the numbers drive the app's lofted body; the side panel is the texture, the top and front panels are projected on as layers. | 3 |
 | 6. Self-check | agent | Fin check (G2) and every row of the section 4 checklist, on side, 3/4, front and top renders beside the sheet, **before** Nathan sees it. | 3, 4 |
 | 7. Review | Nathan | Corrections become new section 4 rows in the same commit as the fix (the ratchet). | 6 |
@@ -73,7 +73,7 @@ sheet. The rules come from what made measuring hard on the dottyback, flame ange
 | Side (one flank) | outline, fin extents, the colour texture wrapped on the body, eye and fin positions | yes |
 | Top (dorsal) | body width at every station (thickness) and, now, the back's texture | yes |
 | Front (head-on) | cross-section, head width, eye pair, and now the face's texture | yes |
-| Label map (side view, flat colours) | fin vs body regions without colour tricks | strongly wanted (untested) |
+| Label map (side view, flat colours) | fin vs body regions without colour tricks | failed first test (oscar, 2026-11-20): redrawn, not recoloured |
 | Bottom | belly colour, pelvic positions | optional |
 | Back / rear, other flank | nothing the others don't give (other flank only if the pattern differs left to right) | skip |
 
@@ -102,13 +102,17 @@ sheet. The rules come from what made measuring hard on the dottyback, flame ange
   texture now.
 - **Colour:** the app's lighting boosts fish saturation about 1.35x (row 22, `--sat 0.72`). Ask for true but slightly muted colours,
   especially orange and red; do not add extra saturation in the prompt.
-- **Body/fin hue:** a fish whose body and fins share a hue (orange, red) has no blue share to split them (row 15). The label map below is the fix.
+- **Body/fin hue:** a fish whose body and fins share a hue (orange, red) has no blue share to split them (row 15). The label map below was meant to fix this but failed its first test (oscar); the silhouette panel or one click per fin base remain (section 5).
 - **Optional extras that remove most tuning:**
-  - **Label map (second request, strongly wanted):** after you approve the sheet, ask the model to *edit panel 1 only* into a flat
+  - **Label map (second request; FAILED first test, see below):** after you approve the sheet, ask the model to *edit panel 1 only* into a flat
     segmentation map, same geometry and framing: body mid-grey, dorsal fin red, anal green, tail blue, pectoral yellow, pelvic cyan,
     eye white, mouth line black or one more colour; no texture, shading or outlines. Overlay it on the clean side view; if edges drift more than
     about 1% of the length, discard it. Body and fin regions then come from colour masks, so `--blue`, `--bright` and `--topend` stop mattering.
-    The clean art is never marked up, so nothing has to be erased afterwards. Untested so far (as of 2026-11-20).
+    The clean art is never marked up, so nothing has to be erased afterwards.
+    **Test 1 failed (oscar, 2026-11-20, ChatGPT):** asked to edit panel 1 only, it redrew the whole image: canvas 1086 × 1448 → 1218 × 1292,
+    top and front panels re-rendered with a different pattern, and the label fish is a different, slimmer fish (length ÷ height 2.07 vs the
+    sheet's 1.76; silhouette IoU 0.75 at the best alignment; edge drift 2-3% of length mean, ~5% at the 90th percentile, against the 1% rule).
+    An image model's "edit" is a regeneration, so a label map from it cannot be trusted to register to the clean art.
   - a fourth panel with the side view as a solid white silhouette on black (a cheaper form of the same idea);
   - a scale bar along the length.
 
@@ -130,9 +134,10 @@ Species: adult [scientific name] ([common name]), [sex if the sexes differ], [co
 |---|---|---|
 | Orchid dottyback | not recorded | built and approved; prompt lost |
 | Flame angel | not recorded | built; top view 6% long, front and top ratios disagreed (rows 13, 19) |
-| Ocellaris clownfish (sheet 1, `clownfish-sheet1-variantC.webp`) | C: full anatomy (old template + body %, fin shapes, band placement, "Nemo"-pattern) | Audit: side 966 / top 967 px (0.1%, no rescale), ends within 5 px, gaps 56 / 31 px; width ÷ depth 0.733 / 0.732 at 0.15 / 0.20 SL (asked ~0.5); front body 240 × 310 px = 0.77; front width vs top's widest 257 px: −6.5% (FAIL); tail edge-on 0.60 (FAIL, fanned). By eye: dorsal lying flat in the top view; exaggerated dorsal spines; cartoonish pouty mouth. Black fin edges help the body/fin split. Head band seen as a ring round the face in the front view is correct (the band wraps behind the eyes). |
+| Ocellaris clownfish (sheet 1, `clownfish-sheet1-variantC.webp`) | C: full anatomy (old template + body %, fin shapes, band placement, "Nemo"-pattern) | Audit: side 966 / top 967 px (0.1%, no rescale), ends within 5 px, gaps 56 / 31 px; width ÷ depth 0.733 / 0.732 at 0.15 / 0.20 SL (asked ~0.5); front body 235 × 312 px = 0.755 (+3.1% vs the stations: PASS); tail edge-on 0.60 (FAIL, fanned). By eye: dorsal lying flat in the top view; exaggerated dorsal spines; cartoonish pouty mouth. Black fin edges help the body/fin split. Head band seen as a ring round the face in the front view is correct (the band wraps behind the eyes). |
 | Ocellaris clownfish (sheet A) | A: method block + species name only | pending |
 | Ocellaris clownfish (sheet B) | B: the template above | pending |
+| Tiger oscar (sheet 1, `oscar-sheet1-variantB.webp`) | B on a second species | **Method held.** Audit all PASS: side 1071 / top 1065 px (0.6%), ends within 4 px, gaps 26 / 28 px; width ÷ depth 0.617 / 0.600 at 0.15 / 0.20 SL; front 243 × 396 px = 0.613 (+0.8%); tail edge-on 0.09 (variant B fixed the top-view fins). **Label map failed:** redrawn, not recoloured (section 2). |
 
 Second request, after you approve the sheet (label map): "Edit panel (1) only: recolour it as a flat segmentation map, same geometry and framing: body mid-grey,
 dorsal fin red, anal fin green, tail fin blue, pectoral fin yellow, pelvic fin cyan, eye white; no texture, no shading, no outlines."
@@ -144,9 +149,12 @@ dorsal fin red, anal fin green, tail fin blue, pectoral fin yellow, pelvic fin c
 - Thickness: top-panel width ÷ side-panel depth at `--stations` (fraction of length from the snout). Pick stations **clear of the fins**: on the
   clownfish the dorsal spines start at ~0.22 SL, so 0.25 read 0.64 (spines counted as depth); 0.15 and 0.20 are clean. The red/green lines on the
   debug picture show where it measured. `--real R` compares the median with a real value (accept within 10%).
-- Front panel: pectorals sticking out sideways are found as outward jumps in the edge profile and bridged (magenta on the debug picture); height = rows
-  at least 40% of the widest, which drops a dorsal spike (cyan lines). The **like-for-like** check is front body width = top panel's widest body (both
-  are the max breadth; within 5%). Front width ÷ height is printed but is max breadth over max depth, so it differs from a station ratio.
+- Front panel: fins only ever stick *out* of the body, so each outline (left, right, top, bottom) is fitted with its inner envelope (fit, drop
+  points outside it, refit). That trims solid pectorals (clownfish), fanned translucent pectorals that hole filling welds onto the body (oscar),
+  a dorsal spike and edge-on pelvic/anal fins (magenta = trimmed, cyan = kept, on the debug picture). PASS if front width ÷ height is within 5% of
+  the station ratio (clownfish +3.1%, oscar +0.8%). Front width vs the top panel's widest is printed as INFO only: it tests scale registration
+  between panels, which image models don't keep (both sheets ~8% off). A first version bridged pectorals at outward jumps and took height from
+  rows ≥ 40% of the widest; it read the oscar as 472 × 236 (false FAIL +110%) and cut off its pointed top.
 - Edge-on tail: top-view width ÷ side-view tail height over 93-99% SL; below 0.25 is a thin line, ~1 is a fanned tail.
 - By eye: the projection items in the checklist below (flat-lying dorsal in the top view, no cartoon face, no exaggerated features, pattern
   continuous across panels, eyes and mouth at the same height in the side and front panels).
@@ -264,7 +272,7 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
   - the silhouette panel from section 2;
   - fin-ray texture detection;
   - one click per fin base.
-- **Front panel isn't measured**, only checked by eye.
+- **Front panel isn't measured**, only checked by eye. Partly solved 2026-11-20: `fish-sheet-audit.py` measures its body width ÷ height (fins trimmed); the front's eye and mouth height against the side panel are still by eye.
 - **Busy backgrounds** (real reef photos): `rembg` (U²-Net, 176 MB model, offline, pip) gave IoU 0.84 on a synthetic busy background.
   The measuring script still needs hardening for that. Not needed while sheets are on black.
 - **Deep fish (angelfish) median fins.** The dorsal and anal fins are broad and merge into the body, so the script measured only their rear tips (85-103% SL). The card still draws them, so they look right from the side. Measure real base and height before relying on them in motion.
@@ -274,7 +282,8 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
   Expected: B beats C on common species, A ≈ B, and photos matter more for obscure species. Score each sheet with the sheet audit (length match,
   thickness against a real top photo, edge-on fins, exaggeration), not by how good it looks. Then make the winner the template.
 - **Generated sheets run thick.** Clownfish sheet 1: ~0.77 width ÷ depth behind the head, self-consistent across top and front panels. Real value not checked yet.
-- **Label map** still untested; the clownfish (one hue for body and fins) is its test case.
+- **Label map failed its first test** (oscar, 2026-11-20; section 2): the image model redraws instead of recolouring. Not worth retrying as a
+  free-form edit. The body/fin split item above stays open; next candidates are the silhouette panel (same risk: check its registration) or one click per fin base.
 
 ## 6. How to improve this method (the ratchet)
 
@@ -320,3 +329,6 @@ Still useful from it:
 - 2026-11-20 (sheet audit script): `scripts/fish-sheet-audit.py` replaces the inline snippet (section 2): panels, gaps, length and end match, width ÷ depth at
   stations, front panel with pectorals bridged, front width vs top's widest, edge-on tail, optional `--real`. Clownfish sheet 1: 0.73 at 0.15-0.20 SL
   (the earlier ~0.77 was read nearer the dorsal start), front 0.77, two FAILs (front vs top width −6.5%, tail fanned 0.60).
+- 2026-11-20 (oscar, from the fish-model fork chat): the audit's front panel read the oscar as 472 × 236 px (false FAIL); front measurement rewritten as an
+  inner-envelope fit on all four outlines, and the thickness PASS is now front ratio vs station ratio (front width vs top's widest is INFO: registration).
+  Label map's first test failed (redrawn, not recoloured); recorded in sections 0, 2 and 5. Oscar added to the prompts table: variant B held on a second species.
