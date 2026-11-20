@@ -120,35 +120,37 @@ try:
     bodym = fa > 40
     xs_b = np.nonzero(bodym.sum(0) > hh * 0.15)[0]
     cxf = (xs_b.min() + xs_b.max()) / 2
-    dk = (fa < 60) & np.pad(np.ones((hh - 20, ww - 20), bool), 10)
-    inside = np.zeros_like(dk)
-    for r_ in range(hh):
-        c_ = np.nonzero(bodym[r_])[0]
-        if len(c_) > 20: inside[r_, c_.min() + 8:c_.max() - 7] = True
-    dk &= inside & (np.abs(np.arange(ww) - cxf) < ww * .25)[None, :]   # dark pixels inside the fish, not the black background
-    dk[: int(hh * .08)] = False
-    dk[int(hh * .65):] = False
-    lab_ = np.zeros(dk.shape, int); n_ = 0; blobs_ = []
-    for y_, x_ in zip(*np.nonzero(dk)):
-        if lab_[y_, x_]: continue
-        n_ += 1; st_ = [(y_, x_)]; lab_[y_, x_] = n_; pix = []
-        while st_:
-            cy_, cx_ = st_.pop(); pix.append((cy_, cx_))
-            for dy_, dx_ in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                yy_, xx_ = cy_ + dy_, cx_ + dx_
-                if 0 <= yy_ < hh and 0 <= xx_ < ww and dk[yy_, xx_] and not lab_[yy_, xx_]:
-                    lab_[yy_, xx_] = n_; st_.append((yy_, xx_))
-        if len(pix) > 40:
-            py_ = np.array(pix); h_, w_ = np.ptp(py_[:, 0]) + 1, np.ptp(py_[:, 1]) + 1
-            if min(h_, w_) / max(h_, w_) > .6 and len(pix) / (np.pi / 4 * h_ * w_) > .6:
-                blobs_.append((py_[:, 0].mean(), py_[:, 1].mean(), len(pix)))
     best_ = None
-    for i_ in range(len(blobs_)):
-        for j_ in range(i_ + 1, len(blobs_)):
-            b1, b2 = blobs_[i_], blobs_[j_]
-            if abs(b1[0] - b2[0]) < hh * .05 and (b1[1] - cxf) * (b2[1] - cxf) < 0 and abs((b1[1] + b2[1]) / 2 - cxf) < ww * .06:
-                sc_ = -(b1[0] + b2[0])   # the topmost symmetric pair: eyes sit above the mouth corners and the fin shadows
-                if best_ is None or sc_ > best_[0]: best_ = (sc_, (b1[0] + b2[0]) / 2)
+    for thr_, amin_, rnd_ in ((60, 40, .6), (75, 100, .5)):   # strict pass first (small black pupils), then a relaxed one for big dark eyes with a highlight
+        if best_: break
+        dk = (fa < thr_) & np.pad(np.ones((hh - 20, ww - 20), bool), 10)
+        inside = np.zeros_like(dk)
+        for r_ in range(hh):
+            c_ = np.nonzero(bodym[r_])[0]
+            if len(c_) > 20: inside[r_, c_.min() + 8:c_.max() - 7] = True
+        dk &= inside & (np.abs(np.arange(ww) - cxf) < ww * .25)[None, :]   # dark pixels inside the fish, not the black background
+        dk[: int(hh * .08)] = False
+        dk[int(hh * .65):] = False
+        lab_ = np.zeros(dk.shape, int); n_ = 0; blobs_ = []
+        for y_, x_ in zip(*np.nonzero(dk)):
+            if lab_[y_, x_]: continue
+            n_ += 1; st_ = [(y_, x_)]; lab_[y_, x_] = n_; pix = []
+            while st_:
+                cy_, cx_ = st_.pop(); pix.append((cy_, cx_))
+                for dy_, dx_ in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    yy_, xx_ = cy_ + dy_, cx_ + dx_
+                    if 0 <= yy_ < hh and 0 <= xx_ < ww and dk[yy_, xx_] and not lab_[yy_, xx_]:
+                        lab_[yy_, xx_] = n_; st_.append((yy_, xx_))
+            if len(pix) > amin_:
+                py_ = np.array(pix); h_, w_ = np.ptp(py_[:, 0]) + 1, np.ptp(py_[:, 1]) + 1
+                if min(h_, w_) / max(h_, w_) > rnd_ and len(pix) / (np.pi / 4 * h_ * w_) > rnd_:
+                    blobs_.append((py_[:, 0].mean(), py_[:, 1].mean(), len(pix)))
+        for i_ in range(len(blobs_)):
+            for j_ in range(i_ + 1, len(blobs_)):
+                b1, b2 = blobs_[i_], blobs_[j_]
+                if abs(b1[0] - b2[0]) < hh * .05 and (b1[1] - cxf) * (b2[1] - cxf) < 0 and abs((b1[1] + b2[1]) / 2 - cxf) < ww * .06:
+                    sc_ = -(b1[0] + b2[0])   # the topmost symmetric pair: eyes sit above the mouth corners and the fin shadows
+                    if best_ is None or sc_ > best_[0]: best_ = (sc_, (b1[0] + b2[0]) / 2)
     if best_:
         FY0 = round((ax - e[1]) / TL - (hh / 2 - best_[1]) / TL, 4)
         print('front eyes found: row %.0f of %d -> fy0 %.4f' % (best_[1], hh, FY0))
