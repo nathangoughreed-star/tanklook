@@ -42,11 +42,11 @@ const STEPS=[
  {k:'eyec',t:'Eye centre',h:'Click the centre of the eye.',kind:'pt',d:[[218,56]]},
  {k:'eyer',t:'Eye edge',h:'Click the edge of the eye (any side) to set its size.',kind:'pt',d:[[226,56]]},
  {k:'pec0',t:'Pectoral: root',h:'Click where the pectoral (side) fin attaches to the body.',kind:'pt',d:[[188,74]]},
- {k:'pec1',t:'Pectoral: far tip',h:'Click the outer tip of the pectoral fin farthest from the root.',kind:'pt',d:[[150,84]]},
- {k:'pec2',t:'Pectoral: other corner',h:'Click the pectoral fin\'s other outer corner (top or bottom edge).',kind:'pt',d:[[162,62]]},
+ {k:'pec1',t:'Pectoral: top corner',h:'The pectoral is a fan. Click the TOP outer corner of the fan (where its upper edge ends at the back).',kind:'pt',d:[[162,62]]},
+ {k:'pec2',t:'Pectoral: bottom corner',h:'Click the BOTTOM outer corner of the same fan (where its lower edge ends at the back).',kind:'pt',d:[[150,84]]},
  {k:'pel0',t:'Pelvic: root',h:'Click where the pelvic (belly) fin attaches to the body.',kind:'pt',d:[[180,92]]},
- {k:'pel1',t:'Pelvic: far tip',h:'Click the pelvic fin\'s tip farthest from the root.',kind:'pt',d:[[150,114]]},
- {k:'pel2',t:'Pelvic: other corner',h:'Click the pelvic fin\'s other outer corner.',kind:'pt',d:[[168,108]]},
+ {k:'pel1',t:'Pelvic: back tip',h:'The pelvic is a small fan under the belly. Click its BACK tip (the end of the longest ray, toward the tail).',kind:'pt',d:[[150,114]]},
+ {k:'pel2',t:'Pelvic: front corner',h:'Click the pelvic fan's FRONT lower corner (the edge nearest the head).',kind:'pt',d:[[168,108]]},
 ];
 const $=id=>document.getElementById(id);const cv=$('cv'),cx=cv.getContext('2d');
 let queue=[],img=null,fileName='',view={s:1,x:0,y:0},pts={},step=0,cur=[],hist=[],bbox=null,t0=0,clickLog=[],mouse=null;
