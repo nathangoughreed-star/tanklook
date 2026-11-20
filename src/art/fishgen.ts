@@ -86,7 +86,7 @@ export interface Plan {
   // ext: the leading ray runs on past the membrane by this much (widths); w: membrane width x the default
   // flat (3D, pelvic and pec, off by default): the fins held out flat to the sides all the time, as on the glass (hillstream loach)
   pelvic?: { u: number; len: number; tint?: string; thread?: boolean; angle?: number; ext?: number; w?: number; flat?: boolean; spread?: number; edge?: string; spots?: string }; // angle: degrees below horizontal (thread)
-  pec?: { s?: number; v?: number; u?: number; flat?: boolean; w?: number; tint?: string; spread?: number; edge?: string; spots?: string }; // pectoral: size x the default, root height (0 top .. 1 belly, default 0.62), root u (default behind the gill), w: fan width x the default, tint: own colour (default: fin mixed with the flank)
+  pec?: { s?: number; v?: number; u?: number; flat?: boolean; w?: number; tint?: string; spread?: number; sweep?: number; edge?: string; spots?: string }; // pectoral: size x the default, root height (0 top .. 1 belly, default 0.62), root u (default behind the gill), w: fan width x the default, tint: own colour (default: fin mixed with the flank)
   fin: string;        // default membrane tint
   ray?: string;
   marks?: Mark[];     // painted inside the body
@@ -100,6 +100,7 @@ export interface Plan {
   headW?: number;     // 3D: the head (from the gill cover forward) this much wider than the trunk tapering to the tail (pleco: broad flat head)
   keel?: string;      // 3D: a raised row of bony scutes along each flank in this colour (armoured catfish)
   rim?: number;
+  halfWidth?: [number, number][]; // 3D: measured half-width of the body (card units) at u, from a sheet's top view; replaces the thick / pedT model
   thick?: number;     // 3D: max body thickness / max body depth (laterally compressed < 0.5 < rounder)
   sectionExp?: number; // 3D: cross-section exponent (2 = elliptical; >2 = boxier); default 2.4
   gillLine?: number;   // 3D: faint raised operculum seam opacity (0..1); opt-in to avoid extra meshes for other species
@@ -413,7 +414,7 @@ function paintMarks(c: Ctx, P: Proj, W: number, marks: Mark[] | undefined, seed:
 }
 
 const mixHex = (a: string, b: string, k: number) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - k) + parseInt(b.slice(i, i + 2), 16) * k).toString(16).padStart(2, '0')).join('');
-export interface PairedFin { kind: 'pelvic' | 'pectoral'; pts: Pt[]; root: [number, number]; tint: string; a?: number; rays: number; edge?: string; spots?: string; spread?: number }
+export interface PairedFin { kind: 'pelvic' | 'pectoral'; pts: Pt[]; root: [number, number]; tint: string; a?: number; rays: number; edge?: string; spots?: string; spread?: number; sweep?: number }
 /** The paired fins (pelvic if the plan has one, then the pectoral), in card coordinates. */
 export function pairedFins(p: Plan): PairedFin[] {
   const g = geometry(p), out: PairedFin[] = [];
@@ -423,7 +424,7 @@ export function pairedFins(p: Plan): PairedFin[] {
   // w (off by default): a broad fan, the trailing edge this many times deeper (hillstream loach)
   const w = p.pec?.w ?? 1, pts: Pt[] = p.fins?.pectoral ? p.fins.pectoral : w === 1 ? [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.7, pm + pl * 0.55], [pu + 0.005, pm + 0.015]]
     : [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.8, pm + pl * (0.3 + 0.25 * w)], [pu - pl * 0.4, pm + pl * 0.3 * w], [pu + 0.005, pm + 0.015 * w]];
-  out.push({ kind: 'pectoral', pts, root: p.fins?.pectoralRoot ?? [pu, pm], tint: p.pec?.tint ?? mixHex(p.fin, p.shade[1], 0.35), a: p.pec?.tint ? 0.8 : 0.45, rays: 5, edge: p.pec?.edge, spots: p.pec?.spots, spread: p.pec?.spread }); // pectoral takes on some flank colour: it lies against the body
+  out.push({ kind: 'pectoral', pts, root: p.fins?.pectoralRoot ?? [pu, pm], tint: p.pec?.tint ?? mixHex(p.fin, p.shade[1], 0.35), a: p.pec?.tint ? 0.8 : 0.45, rays: 5, edge: p.pec?.edge, spots: p.pec?.spots, spread: p.pec?.spread, sweep: p.pec?.sweep }); // pectoral takes on some flank colour: it lies against the body
   return out;
 }
 export function drawPairedFin(f: PairedFin, ctx: Ctx, P: Proj, W: number, ray = '#7d7a70') {

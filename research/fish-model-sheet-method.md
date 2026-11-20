@@ -77,13 +77,22 @@ sheet. The rules come from what made measuring hard on the dottyback, flame ange
 | Bottom | belly colour, pelvic positions | optional |
 | Back / rear, other flank | nothing the others don't give (other flank only if the pattern differs left to right) | skip |
 
+| Panel | What the pipeline takes from it | Needed |
+|---|---|---|
+| Side (one flank) | outline, fin extents, the colour texture wrapped on the body, eye and fin positions | yes |
+| Top (dorsal) | body width at every station (thickness) and, now, the back's texture | yes |
+| Front (head-on) | cross-section, head width, eye pair, and now the face's texture | yes |
+| Label map (side view, flat colours) | fin vs body regions without colour tricks | strongly wanted (untested) |
+| Bottom | belly colour, pelvic positions | optional |
+| Back / rear, other flank | nothing the others don't give (other flank only if the pattern differs left to right) | skip |
+
 - **Layout:** side view on top, facing right. Top view directly under it, with snout and tail tip lined up in x and the same length.
   Front view below, at the same scale, so its height equals the side view's body depth.
 - **Separation and size:** panels must not touch or overlap (a fin tip touching the next panel merged them); at least ~900 px across the fish's length (the dottyback built well at 896 px SL; ChatGPT's portrait canvas, three panels stacked, caps a fish near 1000 px, so 1200 px cannot be met); no text, scale bar, water or props inside a panel; a few degrees of tilt is handled, more is not.
 - **Projection:** strict orthographic: no perspective, no tilt, fish level, mouth closed.
 - **Lighting:** flat, no shadows or reflections, plain black background.
 - **Same fish:** the same individual, pattern and proportions in every panel.
-- **Top view:** pectoral fins folded flat against the body. If they stick out, the width can't be read over about 22-44% of the length.
+- **Top view:** pectoral fins folded flat against the body. If they stick out, the width can't be read over about 22-44% of the length. **Caveat (bottom dweller test):** a fin folded in the top view and spread in the side and front views means the three panels are not one pose, and the generated head came out 250 px wide from above and 340 px from the front. For fish with large pectorals use the same fin pose in every view, or generate body and fins on separate sheets (experiment pending).
   The dorsal, anal and tail fins are vertical, so from above they are thin edge-on lines on the midline. Image models draw them spread flat
   (clownfish: a full tail fan and a sawtooth dorsal lying on the back); the top panel is painted onto the body, so those fins would be painted on the back.
 - **Front view:** the tail is hidden behind the body; the dorsal and anal fins are edge-on lines.
@@ -246,12 +255,19 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 | 21 | Face features land on the chin or throat in the front view | The sheet's front panel stretches the face against its own side view (mouth lower under the eyes) | Register to the side view: front layer `k` for width, `ky` for height (flame angel 600 / 820), `fy0` = card y of the panel's centre row | Lips sit at the 3D mouth, eyes at the 3D eyes |
 | 22 | Orange renders red | The app's lighting boosts fish saturation about 1.35x | `--sat 0.72` on the side, top and front cards | Render beside the sheet: the same orange |
 | 23 | Dark slit above the mouth | The plan's own mouth gape mesh, on top of a photo mouth | Harness `?nogape=1` (drops `gape`, `gapeDrop`, `gillLine`) | No slit |
+| 24 | Hump on the back, bulging belly (oscar: top edge 28% SL, real ~22%) | Dark dorsal and anal fins are the same hue and brightness as the body; no colour knob separates them (`--warm --blue 0.07` found internal edges on dark bars) | Hand-place the fin bases from a gridded side crop (`fish-outline.py --landmarks f.json`, `dorsalBase` / `analBase` polylines in side_full px); the body edge across each base follows the polyline. Pectoral, pelvic, eye roots go to the harness | Side and 3/4: smooth back, no hump; build A vs B was the test |
+| 25 | Dark fins look pale blue and lacy in the tank | Card alpha ramp (max channel 12..52) makes fin pixels of ~45 half transparent | `fish-cutout-card.py --alo 4 --aw 14` for dark-fin fish | Fins as dark as the sheet's |
+| 26 | 3D pectoral and pelvic pale grey, pelvic a thin stick, pectoral points down-back | The paired fins were painted from plan outlines; `pectint` barely affects them | **Photo fins:** `PHOTO_FINS` (`src/render/textures.ts`) cuts each paired fin from the sheet's own unerased side card inside a hand-placed polygon: harness `?fincard=<card>&pecpoly=x,y;..&pelpoly=..` (side_full px, first point = root). Oscar: dark, right shape and direction, attached | 3/4 and front renders: fins attached, sheet colour and shape |
+| 27 | Axis or peduncle wrong, SL short (flame angel: blue fins merged into the mask, narrowest column found in the fins) | The peduncle search runs on the full mask | `--landmarks` key `"ped":[x,y]` (half-scale px) sets the peduncle centre, hence the level axis and SL | Debug mask: axis through the peduncle; SL = snout x minus ped x |
+| 28 | Black ray gaps in a blue or striped fin render as grey speckle | Card alpha keys on brightness, black gaps between rays go transparent | `fish-cutout-card.py --alo 2 --aw 6` for fish whose fins have true black | Fin colour solid in the 3D render |
+| 29 | Front layer vertically off | `fy0` was unit-less guesswork | `fy0` = (eye height above the axis, in TL units) minus (eye's offset above the front crop's centre row, in TL units); `fk` = TL in sheet px. Oscar 0.015 / 1070, flame angel -0.038 / 847; both landed first try | Lips and eyes line up |
 
 ## 5. Open problems (not solved yet; whoever solves one moves it into sections 3-4)
 
 - **Front face texture.** SOLVED 2026-11-20 by projection layers (rows 20-21); the text below is the original problem note. (Flame angel: shape fixed by row 19; what remains is the flat red face, no lips or eye patches, and no fanned pectorals.) Design for the fix: a vertex-alpha duplicate of the body's front rings (stations past ~90% SL, offset 0.0005 along the normal), UV = (z, y) into the sheet's front head crop, alpha = smoothstep on normal.x. Needs the crop carried with the card, so a larger card canvas or a second texture. Not built. The front shows stretched side-texture streaks, not the sheet's face (eye patches, mouth). Proposed fix:
   project the front panel onto the snout. That is a shader change in `lighting.ts` / `fish3d.ts`, not attempted yet.
 - **3D pectoral and pelvic fins** look paler and thinner than the sheet's. Make them more opaque and fan-shaped.
+- **Body/fin split: hand-placed fin bases TESTED 2026-11-20 (oscar, rows 24-26): they beat the automatic pipeline** (smooth back and belly, 3D fins rooted; automatic build had a back hump and a floating pelvic). Cost: ~12 coordinate reads from one gridded crop. A segmentation model is only needed if hand placement is unwanted. Colour-only split fails when fins and body share hue (R-B `--warm` found only some edges).
 - **Body/fin split needs per-sheet knobs** (`--bright`, `--topend`). Possible fixes:
   - the silhouette panel from section 2;
   - fin-ray texture detection;
@@ -279,6 +295,12 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 - **Open problem solved:** move it from section 5 into section 3 or 4.
 
 ### Change log
+- 2026-11-20 (build chain): `scripts/fish-build.py research/fish-specs/<id>.json` runs steps B-H from one spec (landmarks, eye, fin polygons) and writes the anatomy JSON with a `render.photo` block, the WebPs and the species.json entry; `src/art/photofish.ts` loads every such JSON (`?photoart`), replacing the per-species photoknife.ts. `scripts/fish-sheet-audit.py` is now a real script (panels, lengths, width checks; PASS/FAIL, top vs front width within 10 %). `fish-thickfit.py` thickness range raised to 3.2 (flat fish). Specs: clownknife, bambooshark.
+- 2026-11-20 (fin pose): `pec.sweep` (plan) / harness `?pecsweep` and `?pecflat`; `?pecspread` is the swing of the fin about the vertical (spreads a wide pectoral outward, pleco 1.2 rad). Pectoral/pelvic fin orientation is a general capability, not per species.
+- 2026-11-20 (smoothing test, flame angel): `--landmarks` base polylines can be a cubic spline clamped to the fish mask (`--smooth`, off by default: Nathan judged the straight-segment build better). Result: almost no visible change; the sharp rear angles are not the straight segments. Two causes found: (1) base points placed on a chord cut diagonally into the body, the real body/fin boundary at the rear is near-vertical (x 345 vs the fin lobe 250-345); moving the points onto it gave a better shape but thin dark slivers where fin and body meet; (2) the loft has only 21 stations (5% SL), so a near-vertical rear edge is drawn as a 5%-SL diagonal. Open: denser stations near the rear (or a rear-edge fix in `bodyGeometry`), and the body/fin boundary points belong ON the true boundary, not inside the body.
+- 2026-11-20 (flame angel as the generalization test, strict sheet): the oscar's shared fixes (landmark fin bases, photo fins, projection layers) built a good flame angel with no new rendering code, only `--landmarks ped` (row 27). 28 hand points (build X) and 14 points (build Y: 3-point bases, triangle fins, one eye point) look the same in 3D; 14 is enough. Hand time: ~17 tool calls end to end, one gridded crop. Rows 27-29. Body/fin automatic: `--warm` plus the landmarks worked for blue fins on an orange body.
+- 2026-11-20 (oscar, later): photo-textured paired fins (`PHOTO_FINS`, harness `?fincard/pecpoly/pelpoly`) fix row 26; top and front projection layers built for the oscar (`fish-projcards.py --top 640,878 --front 285,896,800,1440`, `?fk=1070&fy0=0.015`), lips, eye patches and top pattern show.
+- 2026-11-20 (oscar, first full run + landmark test): build A (automatic) vs B (hand-placed fin bases/roots) on the oscar sheet; B wins. New: `fish-outline.py --warm` and `--landmarks`, `fish-cutout-card.py --alo/--aw`, harness `?aspect=`; rows 24-26 (row 26 solved by photo fins). ~50 tool calls (target 6-10), mostly new-script work.
 - 2026-11-19: Method written from the orchid dottyback chat (sha `47ae7a24`, branch `claude/inspiring-mendeleev-e8f95e`).
 - 2026-11-20: Flame angel run (sha on `claude/flameangel-photoart`): rows 13-18 added; scripts gain `--level`, `--fullbody`, `--clip-head`, and the harness takes `?sp=`. Run the dev server on its own (`npx vite --port 5174`), not alongside other chats' servers; on a loaded machine its first page load stalled for 10+ minutes.
 - 2026-11-20: Front shape rule (row 19) added; front face texture design recorded in section 5.
