@@ -7,6 +7,10 @@ Alpha = brightness above a low threshold (black background photos only; for busy
 import json, sys
 import numpy as np
 from PIL import Image
+
+def desat(a, f):   # --sat f: the app's lighting boosts fish saturation ~1.35x, so orange reads red; pre-desaturate the photo by f (0.72 for the flame angel)
+    a = a.astype(float); l = (0.2126 * a[..., 0] + 0.7152 * a[..., 1] + 0.0722 * a[..., 2])[..., None]
+    return np.clip(l + (a - l) * f, 0, 255).astype(np.uint8)
 pos = [a for i, a in enumerate(sys.argv[1:]) if not a.startswith('--') and not (i > 0 and sys.argv[i].startswith('--'))]
 opt = {a: sys.argv[i + 2] for i, a in enumerate(sys.argv[1:-1]) if a.startswith('--')}
 src, js, out = pos
@@ -15,6 +19,7 @@ J = json.load(open(js)); im = Image.open(src).convert('RGB')
 for e in [v for k, v in opt.items() if k == '--erase']:   # x0,y0,x1,y1 in source-photo px: blacked out before the cutout (a fin the 3D model draws itself)
     x0, y0, x1, y1 = map(int, e.split(',')); im.paste((0, 0, 0), (x0, y0, x1, y1))
 a = np.asarray(im)
+if '--sat' in opt: a = desat(a, float(opt['--sat']))
 k = im.width / J['source']['px'][0]
 sx, sy = [v * k for v in J['anatomy']['landmarks']['snoutPxOriginal']]
 TL = J['anatomy']['tlPx'] * k

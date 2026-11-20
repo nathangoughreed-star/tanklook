@@ -12,6 +12,7 @@ import { FISH_ART } from '/src/art/placeholder.ts';
 import { speciesModel } from '/src/render/preview3d.ts';
 import { OUTLINE } from '/src/render/fish3d.ts';
 import { LU, applyLighting } from '/src/render/lighting.ts';
+import { PROJ_ART } from '/src/art/projart.ts';
 const q = new URLSearchParams(location.search), mode = q.get('mode') ?? 'current', ph = q.get('photo') ?? '', suf = ph;
 const ID = q.get('sp') ?? 'orchiddottyback';   // ?sp=flameangel&card=<shots/ file>: any species (a JSON-migrated plan keeps its measured fin outlines unless ?clearfins=1)
 const sp = speciesOf({ species: ID });
@@ -42,6 +43,7 @@ if (mode === 'measured' && q.get('paired') === 'photo') {
   P.pectoral = true; P.pec = { u: pu, v: pv, s: +(q.get('pecs') ?? 1), tint: '#b848c8', ...(q.get('pecspread') ? { spread: +q.get('pecspread') } : {}) };
   P.pelvic = { u: 1 - (1275 - 1005) / sl * SLc, len: 120 / sl * SLc, tint: '#c050e0' };
 } else if (mode === 'measured' && q.get('paired') !== 'keep') { P.pectoral = false; delete P.pelvic; }
+if (mode !== 'current' && q.get('nogape')) { delete P.gape; delete P.gapeDrop; P.gillLine = 0; }   // photo cards carry their own mouth and gill
 if (mode !== 'current' && q.get('thickx')) P.thick *= +q.get('thickx');   // sheet views disagree (front panel thicker than the top view): scale the fitted thickness
 if (mode !== 'current') { if (q.get('wide')) P.wide = +q.get('wide'); if (q.get('bulge')) P.eye = { ...P.eye, bulge: +q.get('bulge') }; if (q.get('belly')) P.belly = +q.get('belly'); }
 if (mode !== 'current') {
@@ -50,6 +52,14 @@ if (mode !== 'current') {
     const [et, eb] = profile(P)(u);
     P.eye = { ...P.eye, u, dv: (v - et) / (eb - et) - 0.38, r: +q.get('er') / sl * SLc, iris: ['#c8902a', '#0a0206'] };
   } else P.eye = { ...P.eye, r: 0.0001 };
+}
+// ?proj=<prefix in shots/>&fk=<front px per card unit>&fy0=<card y of the front image centre>&ramp=<top ramp lo,hi>: top + front projection layers (src/art/projart.ts)
+if (q.get('proj')) {
+  const load = (u: string) => new Promise<HTMLCanvasElement>((r, j) => { const im = new Image(); im.onload = () => { const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; c.getContext('2d').drawImage(im, 0, 0); r(c); }; im.onerror = j; im.src = u; });
+  const pre = q.get('proj'), L: any = {};
+  if (q.get('top') !== '0') L.top = { img: await load('/shots/' + pre + '-top.png'), ...(q.get('tramp') ? { ramp: q.get('tramp').split(',').map(Number) } : {}) };
+  if (q.get('front') !== '0') L.front = { img: await load('/shots/' + pre + '-front.png'), k: +(q.get('fk') ?? 600), y0: +(q.get('fy0') ?? 0), ...(q.get('fky') ? { ky: +q.get('fky') } : {}), ...(q.get('framp') ? { ramp: q.get('framp').split(',').map(Number) } : {}) };
+  PROJ_ART[ID] = L;
 }
 document.title += ' fixes ok'; const W = 560, H = 350;
 const gl = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
@@ -70,5 +80,5 @@ function shoot(yaw, pitch) {
 }
 const sheet = document.createElement('canvas'); sheet.width = W * 2; sheet.height = H * 2 + 0; const x = sheet.getContext('2d'); x.font = '16px sans-serif'; x.fillStyle = '#fff';
 VIEWS.forEach(([l, y, p], i) => { x.drawImage(shoot(y, p), (i % 2) * W, Math.floor(i / 2) * H); x.fillText(`${mode} | ${l}`, (i % 2) * W + 8, Math.floor(i / 2) * H + 20); });
-await new Promise(r => sheet.toBlob(async b => { await fetch('/__shot?name=' + (ID === 'orchiddottyback' ? 'ORCH3D' : ID + '3D') + suf + '-' + mode + (q.get('fins') === '0' ? '-nofins' : '') + (q.get('eye') === 'place' ? '-eye' : '') + (q.get('paired') ? '-p' + q.get('paired') : '') + (q.get('pecs') ? '-s' + Math.round(+q.get('pecs') * 100) : '') + (q.get('wide') ? '-w' + Math.round(+q.get('wide') * 100) : '') + (q.get('thickx') ? '-t' + Math.round(+q.get('thickx') * 100) : ''), { method: 'POST', body: b }); r(); }, 'image/png'));
+await new Promise(r => sheet.toBlob(async b => { await fetch('/__shot?name=' + (ID === 'orchiddottyback' ? 'ORCH3D' : ID + '3D') + suf + '-' + mode + (q.get('fins') === '0' ? '-nofins' : '') + (q.get('eye') === 'place' ? '-eye' : '') + (q.get('paired') ? '-p' + q.get('paired') : '') + (q.get('pecs') ? '-s' + Math.round(+q.get('pecs') * 100) : '') + (q.get('wide') ? '-w' + Math.round(+q.get('wide') * 100) : '') + (q.get('thickx') ? '-t' + Math.round(+q.get('thickx') * 100) : '') + (q.get('proj') ? '-proj' : ''), { method: 'POST', body: b }); r(); }, 'image/png'));
 document.getElementById('s').textContent = 'done ' + mode; document.title = 'done ' + mode;

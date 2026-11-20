@@ -8,6 +8,7 @@ import { analBox, bodyPlan, finRange, drawAnal, drawTail, eyeSpot, pairedFins, p
 import { FIN_A, FIN_A2C, rng, style } from '../art/paint';
 import type { EdgeMode } from '../scene/types';
 import { cardMaterial, pairedFinTexture } from './textures';
+import { PROJ_ART, type ProjLayer } from '../art/projart';
 import { isShrimp3D, shrimpBody } from './shrimp3d';
 
 /** Switches for before/after pictures (every species is drawn in 3D; the flat whole-fish card was removed 2026-10-15). `fade` = the session-10 fixes (turned-away paint fades, card body cut out, body-shape fields, barbels); off = session 9, for pictures. `wrap` = the turned-away paint is smeared lengthwise (bars and spots don't close into hoops over the back and throat); off = session 11's round blur. `merge` = a fish's parts that share a material are one mesh (lane FM: fewer draw calls, same picture); off = one mesh per part, for A/B timing. */
@@ -617,6 +618,30 @@ void main() {
 // the line thins on a fish that is small on screen (a 40 px ember wore a 2.5 px ring: ~4 % of its size, at most): d is the vertex depth, modelMatrix[0] the fish's width
 const outlineMat = hullMaterial('clamp(length(modelMatrix[0].xyz) * projectionMatrix[1][1] * uVpH / (2.0 * d) * 0.04, 1.0, max(2.5 * uPop, 1.0))', new THREE.Color(0.05, 0.04, 0.035), true, true);
 
+/**
+ * Projected face layer (projart.ts): a copy of the body that shares its positions, normals and swim attribute but has its own UVs
+ * (top: x along the card, z across it; front: z across, y up) and a vertex alpha that fades in where the surface faces up / forward.
+ */
+function projGeometry(g: THREE.BufferGeometry, kind: 'top' | 'front', L: ProjLayer) {
+  const pos = g.attributes.position, nor = g.attributes.normal, col = g.attributes.color, n = pos.count;
+  const uv = new Float32Array(n * 2), c4 = new Float32Array(n * 4);
+  const [a0, a1] = L.ramp ?? (kind === 'top' ? [0.45, 0.8] : [0.35, 0.75]);
+  const iw = (L.img as HTMLCanvasElement).width, ih = (L.img as HTMLCanvasElement).height;
+  for (let i = 0; i < n; i++) {
+    const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+    if (kind === 'top') { uv[2 * i] = x + 0.5; uv[2 * i + 1] = 0.5 - z * iw / ih; }
+    else { const k = L.k ?? 500; uv[2 * i] = 0.5 + z * k / iw; uv[2 * i + 1] = 0.5 + (y - (L.y0 ?? 0)) * (L.ky ?? k) / ih; }
+    const f = kind === 'top' ? nor.getY(i) : nor.getX(i), t = Math.min(1, Math.max(0, (f - a0) / (a1 - a0)));
+    c4[4 * i] = c4[4 * i + 1] = c4[4 * i + 2] = col.getX(i); c4[4 * i + 3] = t * t * (3 - 2 * t);
+  }
+  const o = new THREE.BufferGeometry();
+  o.setAttribute('position', pos); o.setAttribute('normal', nor); o.setAttribute('aSwL', g.attributes.aSwL);
+  o.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); o.setAttribute('color', new THREE.BufferAttribute(c4, 4));
+  o.setIndex(g.index); o.userData.keep = true;
+  return o;
+}
+const projGeoCache = new Map<string, THREE.BufferGeometry>();
+
 const fishMat = (key: string, make: () => THREE.MeshBasicMaterial) => {
   let m = matCache.get(key);
   if (!m) { m = make(); m.userData.cached = true; m.userData.fish = true; matCache.set(key, m); }
@@ -637,6 +662,17 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); m.userData.swim = true; if (p.bodyA !== undefined) { m.transparent = true; m.opacity = Math.min(1, p.bodyA + 0.15); m.depthWrite = false; } if (fish3d.fade) { m.userData.plain = p.sharp ? t.map : t.plain; m.userData.side = p.sharp ? SIDE_SHARP : fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
   })));
   if (p.bodyA === undefined) { const o = new THREE.Mesh(g, outlineMat); o.userData.nolight = true; grp.add(o); }
+  const pa = PROJ_ART[art];
+  if (pa) for (const kind of ['top', 'front'] as const) {
+    const L = pa[kind]; if (!L) continue;
+    const gk = `${key}|proj|${kind}`; let pg = projGeoCache.get(gk); if (!pg) { pg = projGeometry(g, kind, L); projGeoCache.set(gk, pg); }
+    const m = new THREE.Mesh(pg, fishMat(`proj:${kind}:${art}`, () => {
+      const t = new THREE.CanvasTexture(L.img as HTMLCanvasElement); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+      const pm = new THREE.MeshBasicMaterial({ map: t, vertexColors: true, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
+      pm.userData.swim = true; return pm;
+    }));
+    m.renderOrder = 1; grp.add(m);
+  }
   for (const e of eyePlacements(p, b)) {
     const m = new THREE.Mesh(dome(e.bulge), fishMat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e.iris, e.pupil) })));
     m.scale.setScalar(e.r); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), e.n);
