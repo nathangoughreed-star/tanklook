@@ -46,6 +46,15 @@ if (mode === 'measured' && q.get('paired') === 'photo') {
   P.pectoral = true; P.pec = { u: pu, v: pv, s: +(q.get('pecs') ?? 1), tint: q.get('pectint') ?? '#b848c8', ...(q.get('pecspread') ? { spread: +q.get('pecspread') } : {}) };
   P.pelvic = { u: 1 - (sx - n('pelx', 1005)) / sl * SLc, len: n('pell', 120) / sl * SLc, tint: q.get('peltint') ?? '#c050e0' };
 } else if (mode === 'measured' && q.get('paired') !== 'keep') { P.pectoral = false; delete P.pelvic; }
+// ?fincard=<unerased card in shots/>&pecpoly=x,y;x,y..&pelpoly=..: the paired fins are cut from the sheet's own side card inside hand-placed polygons (side_full px), not painted (method row 26)
+if (mode === 'measured' && q.get('fincard')) {
+  const { PHOTO_FINS } = await import('/src/render/textures.ts');
+  const im = new Image(); await new Promise((r, j) => { im.onload = r; im.onerror = j; im.src = '/shots/' + q.get('fincard') + '.png'; }); PHOTO_FINS[ID] = { img: im };
+  const sx = +q.get('sx')!, sl = +q.get('esl')!, ax = +q.get('eaxis')!, SLc = 1 - P.pedU, cv = (t: string) => t.split(';').map(s => { const [x, y] = s.split(',').map(Number); return [1 - (sx - x) / sl * SLc, (y - ax) / sl * SLc] as [number, number]; });
+  P.fins = { ...(P.fins ?? {}) };
+  if (q.get('pecpoly')) { P.fins.pectoral = cv(q.get('pecpoly')!); P.fins.pectoralRoot = P.fins.pectoral[0]; }
+  if (q.get('pelpoly')) { P.fins.pelvic = cv(q.get('pelpoly')!); P.fins.pelvicRoot = P.fins.pelvic[0]; }
+}
 if (mode !== 'current' && q.get('nogape')) { delete P.gape; delete P.gapeDrop; P.gillLine = 0; }   // photo cards carry their own mouth and gill
 if (mode !== 'current' && q.get('thickx')) P.thick *= +q.get('thickx');   // sheet views disagree (front panel thicker than the top view): scale the fitted thickness
 if (mode !== 'current') { if (q.get('wide')) P.wide = +q.get('wide'); if (q.get('bulge')) P.eye = { ...P.eye, bulge: +q.get('bulge') }; if (q.get('belly')) P.belly = +q.get('belly'); }

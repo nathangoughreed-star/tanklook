@@ -38,10 +38,19 @@ export const fishBodyTexture = (sp: Species) => cached(`fishbody:${sp.look}`, ()
   return finish(drawFishCard(sp.art, sp.aspect, 1024, undefined, false, false));
 });
 /** A 3D fish's paired fin as its own small texture (drawn at the card's resolution); `box` = its extent in card units. */
+/** Photo-fin species (fish model method, row 26): the paired fins are cut out of the sheet's own side card (the unerased one, axis on the card's middle row) inside the plan's fin polygon, instead of being painted. */
+export const PHOTO_FINS: Record<string, { img: CanvasImageSource & { width: number; height: number } }> = {};
 export const pairedFinTexture = (art: string, f: PairedFin, box: { u0: number; v0: number; w: number; h: number }, edge: EdgeMode) =>
   cached(`fin:${art}:${f.kind}:${edge}`, () => {
     const R = 1024, c = document.createElement('canvas'); c.width = Math.ceil(box.w * R); c.height = Math.ceil(box.h * R);
     const ctx = c.getContext('2d')!; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    const ph = PHOTO_FINS[art];
+    if (ph) {
+      const k = R / ph.img.width, X = (u: number) => (u - box.u0) * R, Y = (v: number) => (v - box.v0) * R;
+      ctx.save(); ctx.beginPath(); f.pts.forEach((q, i) => i ? ctx.lineTo(X(q[0]), Y(q[1])) : ctx.moveTo(X(q[0]), Y(q[1]))); ctx.closePath(); ctx.clip();
+      ctx.drawImage(ph.img, -box.u0 * R, -box.v0 * R - ph.img.height * k / 2, R, ph.img.height * k); ctx.restore();
+      return finish(c);
+    }
     style.finA = edge === 'a2c' ? FIN_A2C : FIN_A;
     drawPairedFin({ ...f, a: f.kind === 'pectoral' && !f.edge ? undefined : f.a }, ctx, (u, v) => [(u - box.u0) * R, (v - box.v0) * R], R);
     style.finA = FIN_A;

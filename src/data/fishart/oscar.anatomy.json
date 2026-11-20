@@ -821,11 +821,11 @@
   },
   "topview": "fish-topview.py --x0 0 --fullbody, rows 640-878",
   "card": "fish-cutout-card.py side_full.png json card.png --aspect 0.64 --clip-head 25 --sat 0.72 --alo 4 --aw 14 --erase 515,468,765,620",
-  "harness": "?sp=oscar&mode=measured&card=<card>&aspect=0.64&clearfins=1&nogape=1&eye=place&sx=1077&esl=937&eaxis=292.5&ex=958&ey=258&er=22&paired=photo&pecx=790&pecy=345&pelx=715&pely=465&pell=165&pectint=%23332a22&peltint=%23332a22&pecs=1.3",
+  "harness": "?sp=oscar&mode=measured&photo=B&anat=oscar&card=<card>&aspect=0.64&clearfins=1&nogape=1&eye=place&sx=1077&esl=937&eaxis=292.5&ex=958&ey=258&er=22&paired=photo&pecx=790&pecy=345&pelx=715&pely=465&pell=165&pecs=1&fincard=<unerased card>&pecpoly=790,340;700,285;600,248;625,310;660,375;700,420;760,385;795,355&pelpoly=715,462;640,520;525,586;600,560;608,615;690,540;755,470&proj=<prefix>&fk=1070&fy0=0.015",
   "open": [
-   "3D pectoral and pelvic render pale grey (tint barely applies) and the pectoral points down-back, the sheet's up-back",
-   "pelvic is a thin stick",
-   "not wired into the app (species aspect would be 0.64)"
-  ]
+   "pectoral looks smaller than the sheet's after the 0.75 rad swing; pelvic shorter than the sheet's; white fish-outline hairline round the fins",
+   "not wired into the app"
+  ],
+  "projcards": "fish-projcards.py sheet.png sheet.png json prefix --top 640,878 --front 285,896,800,1440 --sat 0.72"
  }
 }
