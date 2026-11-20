@@ -255,12 +255,16 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 | 21 | Face features land on the chin or throat in the front view | The sheet's front panel stretches the face against its own side view (mouth lower under the eyes) | Register to the side view: front layer `k` for width, `ky` for height (flame angel 600 / 820), `fy0` = card y of the panel's centre row | Lips sit at the 3D mouth, eyes at the 3D eyes |
 | 22 | Orange renders red | The app's lighting boosts fish saturation about 1.35x | `--sat 0.72` on the side, top and front cards | Render beside the sheet: the same orange |
 | 23 | Dark slit above the mouth | The plan's own mouth gape mesh, on top of a photo mouth | Harness `?nogape=1` (drops `gape`, `gapeDrop`, `gillLine`) | No slit |
+| 24 | Hump on the back, bulging belly (oscar: top edge 28% SL, real ~22%) | Dark dorsal and anal fins are the same hue and brightness as the body; no colour knob separates them (`--warm --blue 0.07` found internal edges on dark bars) | Hand-place the fin bases from a gridded side crop (`fish-outline.py --landmarks f.json`, `dorsalBase` / `analBase` polylines in side_full px); the body edge across each base follows the polyline. Pectoral, pelvic, eye roots go to the harness | Side and 3/4: smooth back, no hump; build A vs B was the test |
+| 25 | Dark fins look pale blue and lacy in the tank | Card alpha ramp (max channel 12..52) makes fin pixels of ~45 half transparent | `fish-cutout-card.py --alo 4 --aw 14` for dark-fin fish | Fins as dark as the sheet's |
+| 26 | 3D pectoral and pelvic pale grey, pelvic a thin stick, pectoral points down-back (sheet: up-back) | `pectint` / `peltint` barely affect the fin material; no fin-angle parameter | **Open.** Attached and sized right; colour and angle fail the G2 check | 3/4 and front renders |
 
 ## 5. Open problems (not solved yet; whoever solves one moves it into sections 3-4)
 
 - **Front face texture.** SOLVED 2026-11-20 by projection layers (rows 20-21); the text below is the original problem note. (Flame angel: shape fixed by row 19; what remains is the flat red face, no lips or eye patches, and no fanned pectorals.) Design for the fix: a vertex-alpha duplicate of the body's front rings (stations past ~90% SL, offset 0.0005 along the normal), UV = (z, y) into the sheet's front head crop, alpha = smoothstep on normal.x. Needs the crop carried with the card, so a larger card canvas or a second texture. Not built. The front shows stretched side-texture streaks, not the sheet's face (eye patches, mouth). Proposed fix:
   project the front panel onto the snout. That is a shader change in `lighting.ts` / `fish3d.ts`, not attempted yet.
 - **3D pectoral and pelvic fins** look paler and thinner than the sheet's. Make them more opaque and fan-shaped.
+- **Body/fin split: hand-placed fin bases TESTED 2026-11-20 (oscar, rows 24-26): they beat the automatic pipeline** (smooth back and belly, 3D fins rooted; automatic build had a back hump and a floating pelvic). Cost: ~12 coordinate reads from one gridded crop. A segmentation model is only needed if hand placement is unwanted. Colour-only split fails when fins and body share hue (R-B `--warm` found only some edges).
 - **Body/fin split needs per-sheet knobs** (`--bright`, `--topend`). Possible fixes:
   - the silhouette panel from section 2;
   - fin-ray texture detection;
@@ -288,6 +292,7 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 - **Open problem solved:** move it from section 5 into section 3 or 4.
 
 ### Change log
+- 2026-11-20 (oscar, first full run + landmark test): build A (automatic) vs B (hand-placed fin bases/roots) on the oscar sheet; B wins. New: `fish-outline.py --warm` and `--landmarks`, `fish-cutout-card.py --alo/--aw`, harness `?aspect=`; rows 24-26. ~50 tool calls (target 6-10), mostly new-script work.
 - 2026-11-19: Method written from the orchid dottyback chat (sha `47ae7a24`, branch `claude/inspiring-mendeleev-e8f95e`).
 - 2026-11-20: Flame angel run (sha on `claude/flameangel-photoart`): rows 13-18 added; scripts gain `--level`, `--fullbody`, `--clip-head`, and the harness takes `?sp=`. Run the dev server on its own (`npx vite --port 5174`), not alongside other chats' servers; on a loaded machine its first page load stalled for 10+ minutes.
 - 2026-11-20: Front shape rule (row 19) added; front face texture design recorded in section 5.

@@ -23,7 +23,8 @@ if '--sat' in opt: a = desat(a, float(opt['--sat']))
 k = im.width / J['source']['px'][0]
 sx, sy = [v * k for v in J['anatomy']['landmarks']['snoutPxOriginal']]
 TL = J['anatomy']['tlPx'] * k
-al = np.clip((a.max(2).astype(float) - 12) / 40, 0, 1)
+ALO, AW = float(opt.get('--alo', 12)), float(opt.get('--aw', 40))   # alpha ramp: dark fins (oscar, max channel ~45) came out half transparent and blue against the tank at 12/40: use --alo 4 --aw 14
+al = np.clip((a.max(2).astype(float) - ALO) / AW, 0, 1)
 rgba = Image.fromarray(np.dstack([a, (al * 255).astype(np.uint8)]), 'RGBA').rotate(J['method']['rotationDeg'], resample=Image.BICUBIC, center=(sx, sy))
 s = 1022 / TL; H = round(1024 * asp)
 card = Image.new('RGBA', (1024, H), (0, 0, 0, 0))

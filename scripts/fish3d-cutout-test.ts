@@ -18,6 +18,7 @@ const ID = q.get('sp') ?? 'orchiddottyback';   // ?sp=flameangel&card=<shots/ fi
 const sp = speciesOf({ species: ID });
 const P = PLANS[ID];
 if (q.get('clearfins')) { delete P.fins; delete P.finGrid; }
+if (q.get('aspect')) sp.aspect = +q.get('aspect');   // ?aspect=0.64: the card's height / width when the species is not wired yet
 document.title = 'aspect ' + sp.aspect;
 if (mode !== 'current') {
   const img = new Image(); await new Promise((r, j) => { img.onload = r; img.onerror = j; img.src = '/shots/' + (q.get('card') ?? 'ORCH-cutout-card' + suf) + '.png'; }); document.title = 'img ok';

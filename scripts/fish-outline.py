@@ -45,11 +45,13 @@ def shift_reduce(m, r, op):
     return out
 
 
-def blue_body(a, full, thr, r_close, r_open, bright=0):
+def blue_body(a, full, thr, r_close, r_open, bright=0, warm=False):
     """Body = mask pixels whose blue share B/(R+B) is high (the body is blue-purple, the fins pink-red), blurred a little,
     closed over scale gaps, then opened to drop thin leftovers. Photo-specific: only valid when body and fin hues differ."""
     r, b = a[..., 0].astype(float), a[..., 2].astype(float)
     q = np.where(full, b / (r + b + 1e-6), 0.0)
+    if warm:  # --warm: body is warmer (R-B) than grey fins (oscar: fins R-B ~10, body >= 22); --blue is then the R-B threshold / 255
+        q = np.where(full, np.clip(r - b, 0, 255) / 255.0, 0.0)
     qb = np.asarray(Image.fromarray((q * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(2.5))).astype(float) / 255.0
     m = full & (qb > thr)
     if bright:  # fins are darker than the flank in some photos (translucent): also keep bright pixels
@@ -131,9 +133,10 @@ def main():
     # peduncle: narrowest column of the OPENED mask in the rear third of the body (stable against fin tufts)
     BT = float(opts.get('--blue', 0.0))
     body0 = opening(full, R)
-    bodyB0 = blue_body(a, full, BT, 5, 6) if BT else None
+    WARM = '--warm' in sys.argv
+    bodyB0 = blue_body(a, full, BT, 5, 6, 0, WARM) if BT else None
     BR = int(opts.get('--bright', 0))
-    bodyBr0 = blue_body(a, full, BT, 5, 6, BR) if (BT and BR) else None  # bottom edge only: fins are darker than the flank
+    bodyBr0 = blue_body(a, full, BT, 5, 6, BR, WARM) if (BT and BR) else None  # bottom edge only: fins are darker than the flank
     tb0, bb0 = col_edges(body0)
     th_b = bb0 - tb0
     lo, hi = int(xs_min + 0.12 * (xs_max - xs_min)), int(xs_min + 0.40 * (xs_max - xs_min))
@@ -182,6 +185,15 @@ def main():
         delta = float(np.nanmedian((bb - bbB)[ref]))
         zone = (xx < sx - 0.42 * SL) & (xx > sx - 0.97 * SL)
         bb = np.where(zone & ~np.isnan(bbB), np.minimum(bb, bbB + delta), bb)
+    if '--landmarks' in opts:  # hand-placed fin bases (side_full px, sheet already level): {"dorsalBase": [[x,y],...], "analBase": [[x,y],...]}
+        # the body edge across each median fin's base is the polyline through the points, not whatever the colour or shape mask found
+        LM = json.load(open(opts['--landmarks']))
+        for key, arr in (('dorsalBase', tb), ('analBase', bb)):
+            pts = sorted(LM.get(key, []))
+            if len(pts) >= 2:
+                px_, py_ = [p_[0] for p_ in pts], [p_[1] for p_ in pts]
+                for x_ in range(int(px_[0]), int(px_[-1]) + 1):
+                    arr[x_] = float(np.interp(x_, px_, py_))
     TL = float(sx - tail_x)
 
     def pct(v):
