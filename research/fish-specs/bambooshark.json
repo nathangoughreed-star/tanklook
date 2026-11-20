@@ -107,7 +107,7 @@
  "eye": [
   1407,
   156,
-  14
+  9
  ],
  "pectoral": {
   "root": [
@@ -202,6 +202,18 @@
    222,
    960,
    258
+  ],
+  [
+   685,
+   214,
+   778,
+   258
+  ],
+  [
+   498,
+   204,
+   578,
+   238
   ]
  ],
  "pec_window": [
@@ -213,5 +225,6 @@
  "dorsals": 2,
  "thickx": 1.0,
  "dense": true,
- "measured_width": true
+ "measured_width": true,
+ "no_tail": true
 }

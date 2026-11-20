@@ -437,7 +437,7 @@
     "eye": [
      1407,
      156,
-     14
+     9
     ],
     "pec": {
      "root": [
@@ -531,6 +531,7 @@
      "y0": 0.0055
     },
     "thickx": 1.0,
+    "noTail": true,
     "measuredWidth": true,
     "aspect": 0.155,
     "finImg": true

@@ -26,10 +26,23 @@ for (const J of Object.values(files)) {
     delete P.fins; delete P.finGrid;
     const pedU = 1 - 1 / A.tlOverSl, SLc = 1 - pedU, U = (s: number) => pedU + SLc * (1 - s / 100), Wd = (x: number) => x / 100 * SLc;
     const topPts = d.stations.map((s: number, i: number) => [U(s), -Wd(d.top[i])] as [number, number]), botPts = d.stations.map((s: number, i: number) => [U(s), Wd(d.bottom[i])] as [number, number]);
-    Object.assign(P, { pedU, outline: [...topPts, ...botPts.reverse()] });
+    // measured stations are sparse: smooth them lightly and resample with a clamped cubic so the head and tail are curves, not facets
+    const smoothCurve = (pts: [number, number][], n = 120) => {
+      const pp = pts.map((q, i) => i > 1 && i < pts.length - 2 ? [q[0], (pts[i - 1][1] + 2 * q[1] + pts[i + 1][1]) / 4] as [number, number] : q).sort((a, b) => a[0] - b[0]);
+      const m = pp.map((_q, i) => { const a0 = pp[Math.max(0, i - 1)], b0 = pp[Math.min(pp.length - 1, i + 1)]; return (b0[1] - a0[1]) / ((b0[0] - a0[0]) || 1); });
+      const out: [number, number][] = [];
+      for (let k = 0; k < n; k++) {
+        const u = pp[0][0] + (pp[pp.length - 1][0] - pp[0][0]) * k / (n - 1); let i = 0; while (i < pp.length - 2 && pp[i + 1][0] < u) i++;
+        const h = pp[i + 1][0] - pp[i][0] || 1, t = (u - pp[i][0]) / h, t2 = t * t, t3 = t2 * t;
+        out.push([u, (2 * t3 - 3 * t2 + 1) * pp[i][1] + (t3 - 2 * t2 + t) * h * m[i] + (-2 * t3 + 3 * t2) * pp[i + 1][1] + (t3 - t2) * h * m[i + 1]]);
+      }
+      return out;
+    };
+    const topS = smoothCurve(topPts), botS = smoothCurve(botPts);
+    Object.assign(P, { pedU, outline: [...topS, ...botS.reverse()] });
     P.thick = A.thickness.fit.thick * (R.thickx ?? 1); P.pedT = A.thickness.fit.pedT;
     if (R.measuredWidth) P.halfWidth = d.stations.map((s: number, i: number) => [U(s), Wd(A.thickness.halfWidthPctSL[i]) * (R.thickx ?? 1)] as [number, number]).sort((a: number[], b: number[]) => a[0] - b[0]);
-    P.tail = { ...P.tail, h: Wd(Math.max(...F.caudal.outline.map((c: number[]) => (c[1] + c[2]) / 2))) };
+    P.tail = { ...P.tail, h: R.noTail ? 0.0005 : Wd(Math.max(...F.caudal.outline.map((c: number[]) => (c[1] + c[2]) / 2))) };
     if (F.dorsal) P.dorsal = { ...P.dorsal, at: U(F.dorsal.baseStartPctSL), len: Wd(F.dorsal.baseEndPctSL - F.dorsal.baseStartPctSL), h: Wd(F.dorsal.maxHeightPctSL) };
     if (F.dorsal2) P.dorsal2 = { ...P.dorsal2, at: U(F.dorsal2.baseStartPctSL), len: Wd(F.dorsal2.baseEndPctSL - F.dorsal2.baseStartPctSL), h: Wd(F.dorsal2.maxHeightPctSL) };
     if (F.anal) P.anal = { ...P.anal, at: U(F.anal.baseStartPctSL), len: Wd(F.anal.baseEndPctSL - F.anal.baseStartPctSL), h: Wd(F.anal.maxHeightPctSL), rake: 0.85 };

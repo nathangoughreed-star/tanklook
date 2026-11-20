@@ -93,7 +93,7 @@ if er:
 e = spec['eye']
 photo = {'art': ID, 'plan': spec.get('plan', 'oscar'), 'sx': round(sx, 1), 'sl': round(sl, 1), 'ax': round(ax, 1), 'eye': e,
          'pec': spec.get('pectoral'), 'pelvic': spec.get('pelvic'),
-         'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', round((ax - e[1]) / TL, 4))}, 'thickx': spec.get('thickx'), 'measuredWidth': bool(spec.get('measured_width')), 'aspect': asp, 'finImg': bool(er)}
+         'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', round((ax - e[1]) / TL, 4))}, 'thickx': spec.get('thickx'), 'noTail': bool(spec.get('no_tail')), 'measuredWidth': bool(spec.get('measured_width')), 'aspect': asp, 'finImg': bool(er)}
 A['render'] = {'note': 'built by scripts/fish-build.py from ' + os.path.basename(sys.argv[1]), 'photo': photo, 'fit': fit}
 J['art'] = ID
 json.dump(J, open(os.path.join(ROOT, 'src', 'data', 'fishart', ID + '.anatomy.json'), 'w', encoding='utf8'), indent=1)
