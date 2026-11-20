@@ -45,6 +45,7 @@ if (mode === 'measured' && q.get('paired') === 'photo') {
   const SLc = 1 - P.pedU, pu = 1 - (sx - n('pecx', 1010)) / sl * SLc, [pt, pb] = profile(P)(pu), pv = ((n('pecy', 233) - ax) / sl * SLc - pt) / (pb - pt);
   P.pectoral = true; P.pec = { u: pu, v: pv, s: +(q.get('pecs') ?? 1), tint: q.get('pectint') ?? '#b848c8', ...(q.get('pecspread') ? { spread: +q.get('pecspread') } : {}) };
   P.pelvic = { u: 1 - (sx - n('pelx', 1005)) / sl * SLc, len: n('pell', 120) / sl * SLc, tint: q.get('peltint') ?? '#c050e0' };
+  if (q.get('pecflat')) P.pec.flat = true;   // ?pecflat=1: pectorals held out flat to the sides (bottom dwellers: pleco, loach)
 } else if (mode === 'measured' && q.get('paired') !== 'keep') { P.pectoral = false; delete P.pelvic; }
 // ?fincard=<unerased card in shots/>&pecpoly=x,y;x,y..&pelpoly=..: the paired fins are cut from the sheet's own side card inside hand-placed polygons (side_full px), not painted (method row 26)
 if (mode === 'measured' && q.get('fincard')) {
