@@ -58,12 +58,6 @@ That is why it came out right.
 Give the image model one to three **real photos** of the species (and the sex or variety wanted) and the species name, and ask for this
 sheet. The rules come from what made measuring hard on the dottyback, flame angel and clownfish.
 
-**Finding the photos** (from the fish painter runs, section 7):
-- Wikimedia Commons API search (`generator=search`, `iiprop=extmetadata`) lists files with licence and author; download one at a time from
-  `Special:FilePath/<name>?width=1400` into the scratchpad. Commons rate-limits batches quickly (HTTP 429 for 20+ minutes); pause between files.
-- iNaturalist as the fallback: `api.inaturalist.org/v1/observations`, filter `photo_license=cc-by,cc-by-sa,cc0`; original size by replacing `square` with `original` in the URL.
-- Want: a true lateral shot (level, fins spread) and, if any exists, a top-down shot. Record URL, author and licence with the sheet. Photos stay in the scratchpad.
-
 **Prompt principle (clownfish, 2026-11-20): describe the method exhaustively, the species selectively.**
 - The method part (panels, projection, alignment, lighting, fin poses, spacing) is the same for every species and does the real work: the
   sheet's failures were projection errors, which only method text fixes.
@@ -293,7 +287,7 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 - 2026-11-20 (merged with the sheet guide from the dottyback chat): section 2 gains orientation/scale, front-to-side registration, top-panel pattern, colour,
   body/fin hue, the label-map panel, the ratio comparison, a sheet checklist and a body-type table; section 3 gains the dottyback reference values.
 - 2026-11-20 (merge): the dottyback chat's separate sheet guide (`research/fish-sheet-guide.md`, branch `claude/inspiring-mendeleev-e8f95e`) is folded into this doc (panel table, layout rules, prompt template and label-map request, sheet checklist, body-type table, dottyback reference values). Drop that guide; this is the single source.
-- 2026-11-20 (clownfish sheet 1, one doc): section 0 pipeline table; section 2 gains photo sourcing, the prompt principle (method exhaustive, species selective;
+- 2026-11-20 (clownfish sheet 1, one doc): section 0 pipeline table; section 2 gains the prompt principle (method exhaustive, species selective;
   no character names), the variant B template, the per-species prompt table, the sheet audit, edge-on fin rules for the top and front views, four checklist
   lines and the clownfish body type; size rule 1200 → ~900 px (the canvas can't do 1200; the dottyback built at 896). Section 5 gains the A/B/C test, the audit
   script, thick sheets and the label-map test. Section 7 summarises the fish painter; `research/fish-painter-design.md` and `research/fish-painter-experiment-ab.md`
@@ -317,4 +311,3 @@ Still useful from it:
 - **Regression baseline:** the tailspot blenny's 1024 px card pixel hash (`scripts/card.js`) was 8365491 through every painter step; re-check it after loader changes.
 - **Mass check:** model mass (volume x 1.02 g/cm3) against FishBase length-weight `a x TL^b`; flag above 1.6x or below 0.6x. After changing a fish's
   shape, regenerate volumes with `GEN_BODYVOLUME=1 npx vitest run test/bodymass.test.ts`.
-- Photo sourcing notes are in section 2.
