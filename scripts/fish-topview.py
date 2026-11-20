@@ -16,7 +16,7 @@ a = np.asarray(Image.open(sheet).convert('RGB')).astype(float)[y0:y1]
 full = a.max(2) > 30
 q = np.where(full, a[..., 2] / (a[..., 0] + a[..., 2] + 1e-6), 0)
 qb = np.asarray(Image.fromarray((q * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(2))).astype(float) / 255
-body = full & (qb > thr)
+body = full if '--fullbody' in sys.argv else full & (qb > thr)   # --fullbody: bodies that aren't bluer than their fins (orange fish)
 H, W = body.shape
 SL = A['slPx'] * 2; sxs = A['landmarks']['snoutPxOriginal'][0] * 2 + x0
 cy = None

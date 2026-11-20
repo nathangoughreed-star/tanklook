@@ -143,6 +143,8 @@ def main():
     ped = np.array([ped_x, (tb0[ped_x] + bb0[ped_x]) / 2])
 
     ang = np.degrees(np.arctan2(snout[1] - ped[1], snout[0] - ped[0]))  # image y points down
+    if '--level' in sys.argv:  # sheet already level (deep-bodied fish whose mouth sits low: snout-to-peduncle would pitch the fish): axis = horizontal line through the peduncle centre
+        ang = 0.0; snout[1] = ped[1]
     # rotate about the snout so the axis is level (PIL rotates counter-clockwise for positive angles)
     def rot_mask(m):
         img = Image.fromarray((m * 255).astype(np.uint8)).rotate(ang, resample=Image.BILINEAR, center=tuple(snout), fillcolor=0)
