@@ -45,6 +45,7 @@ if (mode === 'measured' && q.get('paired') === 'photo') {
   const SLc = 1 - P.pedU, pu = 1 - (sx - n('pecx', 1010)) / sl * SLc, [pt, pb] = profile(P)(pu), pv = ((n('pecy', 233) - ax) / sl * SLc - pt) / (pb - pt);
   P.pectoral = true; P.pec = { u: pu, v: pv, s: +(q.get('pecs') ?? 1), tint: q.get('pectint') ?? '#b848c8', ...(q.get('pecspread') ? { spread: +q.get('pecspread') } : {}) };
   P.pelvic = { u: 1 - (sx - n('pelx', 1005)) / sl * SLc, len: n('pell', 120) / sl * SLc, tint: q.get('peltint') ?? '#c050e0' };
+  if (q.get('nopelvic')) delete P.pelvic;   // ?nopelvic=1: the fish has no pelvic fins (knifefish)
   if (q.get('pecflat')) P.pec.flat = true;
   if (q.get('pecsweep')) P.pec.sweep = +q.get('pecsweep')!;   // flat fin sweep back, radians (default 0.35); ?pecspread = span swing out (pitch/roll)   // ?pecflat=1: pectorals held out flat to the sides (bottom dwellers: pleco, loach)
 } else if (mode === 'measured' && q.get('paired') !== 'keep') { P.pectoral = false; delete P.pelvic; }
