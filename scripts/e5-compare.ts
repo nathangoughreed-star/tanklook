@@ -9,7 +9,7 @@ await import('/src/art/photofish.ts'); if (new URLSearchParams(location.search).
 const { PROJ_ART } = await import('/src/art/projart.ts'), { PLANS } = await import('/src/art/fishgen.ts');
 const Q0 = new URLSearchParams(location.search);
 for (const id of (Q0.get('ids') ?? '').split(',')) { for (const k of (Q0.get('del') ?? '').split(',').filter(Boolean)) if (PLANS[id]) delete PLANS[id][k]; if (Q0.get('noproj')) delete PROJ_ART[id]; if (Q0.get('nodorsal') && PLANS[id]) { delete PLANS[id].dorsal; delete PLANS[id].dorsal2; } if (Q0.get('noanal') && PLANS[id]) delete PLANS[id].anal; if (Q0.get('nofins') && PLANS[id]) { delete PLANS[id].fins; } }
-const q = new URLSearchParams(location.search), ids = (q.get('ids') ?? '').split(','), W = 520, H = 340;
+const q = new URLSearchParams(location.search), ids = (q.get('ids') ?? '').split(','), W = +(q.get('w') ?? 520), H = +(q.get('h') ?? 340);
 const gl = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 gl.setPixelRatio(1); gl.setSize(W, H, false); gl.outputColorSpace = THREE.SRGBColorSpace; gl.setClearColor(0x2c4a52, 1);
 OUTLINE.uPop.value = 0; OUTLINE.uVpH.value = H;
