@@ -1,5 +1,9 @@
 # E1: seed variance (Nathan's part)
 
+> **Changed 2026-11-20 (Nathan): E1 runs TEXT-ONLY.** No photos are attached. Prompt version `B-noref`: in each species paragraph below, replace the sentence "Match the attached photos ... follow the photos." with "Draw it from your knowledge of the real species, as a typical aquarium specimen." Ignore rule 3.
+>
+> **Why:** if text-only sheets pass the audit often enough, the photo hunt for each species goes away. Photos are tested later, in E3, only if text-only falls short.
+
 **Question:** with the prompt and photos held fixed, how much do three sheets from the same prompt differ when audited?
 
 **Why it matters:** if draws differ more than prompts do, the method becomes "draw 3, keep the best by audit", and E2-E4 get smaller. The plan is in `research/fish-sheet-methodology-audit.md`, section 4.
