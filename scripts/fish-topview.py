@@ -19,6 +19,13 @@ qb = np.asarray(Image.fromarray((q * 255).astype(np.uint8)).filter(ImageFilter.G
 body = full if '--fullbody' in sys.argv else full & (qb > thr)   # --fullbody: bodies that aren't bluer than their fins (orange fish)
 H, W = body.shape
 SL = A['slPx'] * 2; sxs = A['landmarks']['snoutPxOriginal'][0] * 2 + x0
+ANCH = '--anchor' in sys.argv   # --anchor: stations are laid on the top panel's OWN snout tip and tail tip (the panel is often 1-2 % longer than the side view)
+if ANCH:
+    cx_ = np.nonzero(full.any(0))[0]; tip_, tail_ = float(cx_.max()), float(cx_.min())
+    fscale = min(1.1, max(0.9, (tip_ - tail_) / (A['tlPx'] * 2)))
+    sxs = tip_; SLs = SL * fscale
+else:
+    SLs = SL
 cy = None
 ext = {}
 for x in range(W):
@@ -28,11 +35,11 @@ for x in range(W):
 mid = np.median([(e[0] + e[1]) / 2 for x, e in ext.items() if sxs - 0.9 * SL < x < sxs - 0.2 * SL])
 st = A['depthProfile']['stations']; hw = []
 for s in st:
-    x = int(round(sxs - s / 100 * SL)); x = min(max(x, 0), W - 1)
+    x = int(round(sxs - s / 100 * SLs)); x = min(max(x, 0), W - 1)
     cols = [ext[k] for k in range(x - 2, x + 3) if k in ext]
     if not cols: hw.append(0.0); continue
     t = np.mean([c[0] for c in cols]); b = np.mean([c[1] for c in cols])
-    hw.append(round(float(min(mid - t, b - mid) / SL * 100), 2))   # the narrower side: a fin on one side cannot inflate it
+    hw.append(round(float(((b - t) / 2 if (ANCH and s < 12) else min(mid - t, b - mid)) / SL * 100), 2))   # the narrower side: a fin on one side cannot inflate it
 # plain mask everywhere (the blue test loses the pink rim of the flank, measured 30 % too thin); the pectoral fins stick out at the
 # stations in P0..P1, which are filled in linearly from their neighbours
 P0, P1 = float(opt.get('--pec0', 22)), float(opt.get('--pec1', 44))
@@ -41,9 +48,9 @@ for x in range(W):
     ys = np.nonzero(full[:, x])[0]
     if len(ys): fx[x] = (ys.min(), ys.max())
 for i, s in enumerate(st):
-    x = min(max(int(round(sxs - s / 100 * SL)), 0), W - 1)
+    x = min(max(int(round(sxs - s / 100 * SLs)), 0), W - 1)
     c = [fx[k] for k in range(x - 2, x + 3) if k in fx]
-    if c: hw[i] = round(float(min(mid - np.mean([e[0] for e in c]), np.mean([e[1] for e in c]) - mid) / SL * 100), 2)
+    if c: hw[i] = round(float(((np.mean([e[1] for e in c]) - np.mean([e[0] for e in c])) / 2 if (ANCH and s < 12) else min(mid - np.mean([e[0] for e in c]), np.mean([e[1] for e in c]) - mid)) / SL * 100), 2)
 keep = [(s, h) for s, h in zip(st, hw) if not (P0 <= s <= P1)]
 hw = [round(float(np.interp(s, [k[0] for k in keep], [k[1] for k in keep])), 2) if P0 <= s <= P1 else h for s, h in zip(st, hw)]
 A['thickness'] = {'stations': st, 'halfWidthPctSL': hw, 'source': 'top panel of the generated sheet, blue-share mask (thr %.2f); the narrower side of the centre line' % thr}
@@ -52,6 +59,6 @@ print(hw)
 if '--debug' in opt:
     im = Image.fromarray(a.astype(np.uint8)); d = ImageDraw.Draw(im)
     for s, h in zip(st, hw):
-        x = sxs - s / 100 * SL
+        x = sxs - s / 100 * SLs
         d.line([(x, mid - h / 100 * SL), (x, mid + h / 100 * SL)], fill=(0, 255, 0), width=2)
     d.line([(0, mid), (W, mid)], fill=(255, 0, 0)); im.save(opt['--debug'])
