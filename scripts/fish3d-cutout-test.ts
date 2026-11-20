@@ -42,6 +42,7 @@ if (mode === 'measured' && q.get('paired') === 'photo') {
   P.pectoral = true; P.pec = { u: pu, v: pv, s: +(q.get('pecs') ?? 1), tint: '#b848c8', ...(q.get('pecspread') ? { spread: +q.get('pecspread') } : {}) };
   P.pelvic = { u: 1 - (1275 - 1005) / sl * SLc, len: 120 / sl * SLc, tint: '#c050e0' };
 } else if (mode === 'measured' && q.get('paired') !== 'keep') { P.pectoral = false; delete P.pelvic; }
+if (mode !== 'current' && q.get('thickx')) P.thick *= +q.get('thickx');   // sheet views disagree (front panel thicker than the top view): scale the fitted thickness
 if (mode !== 'current') { if (q.get('wide')) P.wide = +q.get('wide'); if (q.get('bulge')) P.eye = { ...P.eye, bulge: +q.get('bulge') }; if (q.get('belly')) P.belly = +q.get('belly'); }
 if (mode !== 'current') {
   if (q.get('eye') === 'place') {
@@ -69,5 +70,5 @@ function shoot(yaw, pitch) {
 }
 const sheet = document.createElement('canvas'); sheet.width = W * 2; sheet.height = H * 2 + 0; const x = sheet.getContext('2d'); x.font = '16px sans-serif'; x.fillStyle = '#fff';
 VIEWS.forEach(([l, y, p], i) => { x.drawImage(shoot(y, p), (i % 2) * W, Math.floor(i / 2) * H); x.fillText(`${mode} | ${l}`, (i % 2) * W + 8, Math.floor(i / 2) * H + 20); });
-await new Promise(r => sheet.toBlob(async b => { await fetch('/__shot?name=' + (ID === 'orchiddottyback' ? 'ORCH3D' : ID + '3D') + suf + '-' + mode + (q.get('fins') === '0' ? '-nofins' : '') + (q.get('eye') === 'place' ? '-eye' : '') + (q.get('paired') ? '-p' + q.get('paired') : '') + (q.get('pecs') ? '-s' + Math.round(+q.get('pecs') * 100) : '') + (q.get('wide') ? '-w' + Math.round(+q.get('wide') * 100) : ''), { method: 'POST', body: b }); r(); }, 'image/png'));
+await new Promise(r => sheet.toBlob(async b => { await fetch('/__shot?name=' + (ID === 'orchiddottyback' ? 'ORCH3D' : ID + '3D') + suf + '-' + mode + (q.get('fins') === '0' ? '-nofins' : '') + (q.get('eye') === 'place' ? '-eye' : '') + (q.get('paired') ? '-p' + q.get('paired') : '') + (q.get('pecs') ? '-s' + Math.round(+q.get('pecs') * 100) : '') + (q.get('wide') ? '-w' + Math.round(+q.get('wide') * 100) : '') + (q.get('thickx') ? '-t' + Math.round(+q.get('thickx') * 100) : ''), { method: 'POST', body: b }); r(); }, 'image/png'));
 document.getElementById('s').textContent = 'done ' + mode; document.title = 'done ' + mode;

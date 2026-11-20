@@ -387,5 +387,14 @@
   "caudal": "fair: bright magenta fan is solid, but the black-white tuft above it (an upper-lobe marking) is partly lost",
   "analPelvic": "fair: membrane is solid red-magenta but the base is merged with the body by the opening",
   "eyeSnout": "good"
+ },
+ "render": {
+  "note": "harness / photoart settings that gave the accepted flame angel render (2026-11-20)",
+  "card": "fish-cutout-card.py side_full.png <json> card.png --aspect 0.697 --clip-head 25 --erase 670,790,820,870",
+  "harness": "?sp=flameangel&mode=measured&clearfins=1&eye=place&sx=1014&ex=955&ey=647&er=28&esl=612&eaxis=611&thickx=1.3&wide=0.4&bulge=0.7",
+  "thickx": 1.3,
+  "wide": 0.4,
+  "bulge": 0.7,
+  "why": "the sheet front panel body is ~1.8x taller than wide but its top view gave 2.8x; thickness scaled x1.3 and cheeks widened so the front reads as the sheet front"
  }
 }

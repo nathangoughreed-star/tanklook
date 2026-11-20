@@ -121,10 +121,11 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 | 16 | Eye not found | Auto-detect looks for blue iris pixels | Place by hand from a gridded head crop: `?eye=place&sx&ex&ey&er&esl&eaxis` (side_full px) | One eye, on the photo's eye |
 | 17 | Thin flat sliver at the forehead | 5% stations undercut a rounded head; the card sticks out of the loft | `fish-cutout-card.py --clip-head 25` removes card pixels outside the outline for stations 0-25% | Zoom on the head: no sliver |
 | 18 | Pelvic fin floats under the belly | The card keeps it as a flat sheet that doesn't touch the body | `--erase x0,y0,x1,y1` (side_full px) over the pelvic; add a rooted 3D pelvic later | Nothing hangs free below the belly |
+| 19 | Front view a thin pill, not the sheet's egg | The sheet's top view and front view disagree (flame angel: 2.8:1 vs 1.8:1) | Compare ratios; scale thickness (`?thickx`, 1.3) and widen the cheeks (`?wide` 0.4, `?bulge` 0.7). Record the values in the species JSON `render` block | Front render beside the sheet's front panel: same width-to-height and cheek shape |
 
 ## 5. Open problems (not solved yet; whoever solves one moves it into sections 3-4)
 
-- **Front face texture.** The front shows stretched side-texture streaks, not the sheet's face (eye patches, mouth). Proposed fix:
+- **Front face texture.** (Flame angel 2026-11-20: shape now fixed by row 19; what remains is the flat red face, no lips or eye patches, and no fanned pectorals.) Design for the fix: a vertex-alpha duplicate of the body's front rings (stations past ~90% SL, offset 0.0005 along the normal), UV = (z, y) into the sheet's front head crop, alpha = smoothstep on normal.x. Needs the crop carried with the card, so a larger card canvas or a second texture. Not built. The front shows stretched side-texture streaks, not the sheet's face (eye patches, mouth). Proposed fix:
   project the front panel onto the snout. That is a shader change in `lighting.ts` / `fish3d.ts`, not attempted yet.
 - **3D pectoral and pelvic fins** look paler and thinner than the sheet's. Make them more opaque and fan-shaped.
 - **Body/fin split needs per-sheet knobs** (`--bright`, `--topend`). Possible fixes:
@@ -149,3 +150,4 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 ### Change log
 - 2026-11-19: Method written from the orchid dottyback chat (sha `47ae7a24`, branch `claude/inspiring-mendeleev-e8f95e`).
 - 2026-11-20: Flame angel run (sha on `claude/flameangel-photoart`): rows 13-18 added; scripts gain `--level`, `--fullbody`, `--clip-head`, and the harness takes `?sp=`. Run the dev server on its own (`npx vite --port 5174`), not alongside other chats' servers; on a loaded machine its first page load stalled for 10+ minutes.
+- 2026-11-20: Front shape rule (row 19) added; front face texture design recorded in section 5.
