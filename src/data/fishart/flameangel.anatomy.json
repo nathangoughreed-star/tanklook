@@ -1,7 +1,7 @@
 {
  "art": "flameangel",
  "source": {
-  "file": "dottyback-ref.png (supplied by Nathan; not in repo)",
+  "file": "flame-sheet.png (ChatGPT 3-view sheet, strict rules; not in repo)",
   "px": [
    561,
    561
@@ -622,88 +622,76 @@
     "rmsPctSL": 1.15,
     "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
    }
+  },
+  "render": {
+   "note": "built by scripts/fish-build.py from flameangel.json",
+   "photo": {
+    "art": "flameangel",
+    "plan": "oscar",
+    "sx": 976.0,
+    "sl": 676.0,
+    "ax": 266.0,
+    "eye": [
+     910,
+     300,
+     30
+    ],
+    "pec": {
+     "root": [
+      770,
+      345
+     ],
+     "poly": [
+      [
+       770,
+       345
+      ],
+      [
+       695,
+       262
+      ],
+      [
+       740,
+       392
+      ]
+     ],
+     "spread": 1.0
+    },
+    "pelvic": {
+     "root": [
+      700,
+      466
+     ],
+     "len": 140,
+     "poly": [
+      [
+       700,
+       466
+      ],
+      [
+       595,
+       550
+      ],
+      [
+       745,
+       470
+      ]
+     ]
+    },
+    "proj": {
+     "fk": 848.0,
+     "y0": -0.0401
+    },
+    "thickx": null,
+    "noTail": false,
+    "measuredWidth": false,
+    "aspect": 0.702,
+    "finImg": true
+   },
+   "fit": "{'thick': 0.44, 'pedT': 0.3, 'rmsPctSL': 1.15, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }
  },
  "reliability": {
-  "body": "good: the fish is bright magenta on pure black; body edge is the opened mask, +-1-2 px (~0.4 % SL)",
-  "dorsalFin": "poor: spines are dark/white and read as holes or thin streaks; heights are lower bounds, the base start/end are +-3 % SL",
-  "caudal": "fair: bright magenta fan is solid, but the black-white tuft above it (an upper-lobe marking) is partly lost",
-  "analPelvic": "fair: membrane is solid red-magenta but the base is merged with the body by the opening",
-  "eyeSnout": "good"
- },
- "render": {
-  "note": "flame angel from the strict sheet (Downloads/Flame Angelfish Orthographic Study.png, 1122x1402), pipeline generalization test 2026-11-20, 14 landmark points",
-  "landmarks_side_full_px": {
-   "ped": [
-    300,
-    266
-   ],
-   "dorsalBase": [
-    [
-     760,
-     95
-    ],
-    [
-     480,
-     50
-    ],
-    [
-     300,
-     228
-    ]
-   ],
-   "analBase": [
-    [
-     640,
-     468
-    ],
-    [
-     440,
-     470
-    ],
-    [
-     300,
-     305
-    ]
-   ],
-   "eye": [
-    910,
-    300,
-    30
-   ],
-   "pecTriangle": [
-    [
-     770,
-     345
-    ],
-    [
-     695,
-     262
-    ],
-    [
-     740,
-     392
-    ]
-   ],
-   "pelTriangle": [
-    [
-     700,
-     466
-    ],
-    [
-     595,
-     550
-    ],
-    [
-     745,
-     470
-    ]
-   ]
-  },
-  "outline": "fish-outline.py side.png --level --thr 8 --warm --blue 0.3 --topend 0.97 --open 9 --landmarks lm.json (side_full = sheet rows 0-566 padded to 1122 square, halved)",
-  "topview": "fish-topview.py --x0 0 --fullbody, rows 600-788; thickfit --pedt-max 0.3 (thick 0.44, pedT 0.3)",
-  "card": "fish-cutout-card.py --aspect 0.70 --clip-head 25 --sat 0.72 --alo 2 --aw 6 --erase 580,455,760,560",
-  "projcards": "fish-projcards.py --top 600,788 --front 395,820,715,1370 --sat 0.72",
-  "harness": "?sp=flameangel&mode=measured&photo=Y&anat=<json>&card=<card>&aspect=0.70&clearfins=1&nogape=1&eye=place&sx=976&esl=676&eaxis=266&ex=910&ey=300&er=30&paired=photo&pecx=770&pecy=345&pelx=700&pely=466&pell=140&fincard=<unerased card>&pecpoly=770,345;695,262;740,392&pelpoly=700,466;595,550;745,470&proj=<prefix>&fk=847&fy0=-0.038"
+  "note": "Per-species reliability is not assessed. Body edge = the opened mask at the stated threshold (about +-1-2 px); fin heights are lower bounds and fin base starts/ends are +-3 % SL unless set by --landmarks; see render.fit for the thickness fit."
  }
 }

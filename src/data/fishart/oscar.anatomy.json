@@ -738,11 +738,7 @@
   }
  },
  "reliability": {
-  "body": "good: the fish is bright magenta on pure black; body edge is the opened mask, +-1-2 px (~0.4 % SL)",
-  "dorsalFin": "poor: spines are dark/white and read as holes or thin streaks; heights are lower bounds, the base start/end are +-3 % SL",
-  "caudal": "fair: bright magenta fan is solid, but the black-white tuft above it (an upper-lobe marking) is partly lost",
-  "analPelvic": "fair: membrane is solid red-magenta but the base is merged with the body by the opening",
-  "eyeSnout": "good"
+  "note": "Per-species reliability is not assessed. Body edge = the opened mask at the stated threshold (about +-1-2 px); fin heights are lower bounds and fin base starts/ends are +-3 % SL unless set by --landmarks; see render.fit for the thickness fit."
  },
  "render": {
   "note": "oscar build B, 2026-11-20 (hand-placed fin bases and roots)",

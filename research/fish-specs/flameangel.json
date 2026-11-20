@@ -1,0 +1,103 @@
+{
+ "id": "flameangel",
+ "sheet": "C:/Users/nreed/fish-sheets/flame-sheet.png",
+ "species": {
+  "name": "Flame angelfish",
+  "sci": "Centropyge loricula",
+  "tl": 150
+ },
+ "landmarks": {
+  "ped": [
+   300,
+   266
+  ],
+  "dorsalBase": [
+   [
+    760,
+    95
+   ],
+   [
+    480,
+    50
+   ],
+   [
+    300,
+    228
+   ]
+  ],
+  "analBase": [
+   [
+    640,
+    468
+   ],
+   [
+    440,
+    470
+   ],
+   [
+    300,
+    305
+   ]
+  ]
+ },
+ "eye": [
+  910,
+  300,
+  30
+ ],
+ "pectoral": {
+  "root": [
+   770,
+   345
+  ],
+  "poly": [
+   [
+    770,
+    345
+   ],
+   [
+    695,
+    262
+   ],
+   [
+    740,
+    392
+   ]
+  ],
+  "spread": 1.0
+ },
+ "pelvic": {
+  "root": [
+   700,
+   466
+  ],
+  "len": 140,
+  "poly": [
+   [
+    700,
+    466
+   ],
+   [
+    595,
+    550
+   ],
+   [
+    745,
+    470
+   ]
+  ]
+ },
+ "erase": [
+  [
+   580,
+   455,
+   760,
+   560
+  ]
+ ],
+ "warm": 0.3,
+ "alo": 2,
+ "aw": 6,
+ "sat": 0.72,
+ "plan": "oscar"
+}

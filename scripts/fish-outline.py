@@ -21,9 +21,13 @@ Honest limits (also written into the JSON under `reliability`)
     the belly edge there reads slightly deep.
   * Needs a clean black background and a level-ish side view. Busy reef backgrounds need a segmentation step first.
 """
-import json, sys
+import json, os, sys
 import numpy as np
 from PIL import Image, ImageFilter
+
+
+RELIABILITY = ('Per-species reliability is not assessed. Body edge = the opened mask at the stated threshold (about +-1-2 px); fin heights are lower bounds '
+               'and fin base starts/ends are +-3 % SL unless set by --landmarks; see render.fit for the thickness fit.')
 
 
 def disk(r):
@@ -339,7 +343,7 @@ def main():
 
     out = {
         'art': 'orchiddottyback',
-        'source': {'file': 'dottyback-ref.png (supplied by Nathan; not in repo)', 'px': [W, H], 'view': 'side, nose right, black background', 'sex': 'unknown'},
+        'source': {'file': os.path.basename(sys.argv[1]) + ' (input image; sheet and photos are not in the repo)', 'px': [W, H], 'view': 'side, nose right, black background', 'sex': 'unknown'},
         'method': {'threshold': thr, 'openRadiusPx': R, 'script': 'scripts/fish-outline.py', 'rotationDeg': round(float(ang), 2)},
         'anatomy': {
             'slPx': round(SL, 1), 'tlPx': round(TL, 1), 'tlOverSl': round(TL / SL, 3),
@@ -355,13 +359,7 @@ def main():
                                 'outline': cau, 'outlineCols': '[u % SL from the peduncle (negative = behind), top, bottom] distance from the axis in % SL; full mask',
                                 }},
         },
-        'reliability': {
-            'body': 'good: the fish is bright magenta on pure black; body edge is the opened mask, +-1-2 px (~0.4 % SL)',
-            'dorsalFin': 'poor: spines are dark/white and read as holes or thin streaks; heights are lower bounds, the base start/end are +-3 % SL',
-            'caudal': 'fair: bright magenta fan is solid, but the black-white tuft above it (an upper-lobe marking) is partly lost',
-            'analPelvic': 'fair: membrane is solid red-magenta but the base is merged with the body by the opening',
-            'eyeSnout': 'good',
-        },
+        'reliability': {'note': RELIABILITY},
     }
     json.dump(out, open(outp, 'w'), indent=1)
 

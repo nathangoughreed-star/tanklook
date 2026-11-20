@@ -46,7 +46,7 @@ Nathan's summary was close. Here is what happened, in order, with the correction
 
 Steps 1 and 2 used real photos. The model that shipped (flag `?photoart`) uses only the generated sheet, so its art has no
 third-party copyright. Nathan says the image model was given a reference photo plus the species name. **The prompt itself was not
-recorded; paste it into section 2 the next time you make a sheet.**
+recorded** (lost). From now on every sheet's prompt goes in `research/fish-sheets/prompts/` and its audit numbers in `research/fish-sheets/log.csv`.
 
 One correction to "Claude generates the model": no Claude model draws the 3D shape freehand. The agent **measures** the sheet with
 deterministic scripts (section 3). Those numbers drive the app's existing lofted body, and the sheet's side view becomes its texture.
@@ -72,15 +72,6 @@ sheet. The rules come from what made measuring hard on the dottyback, flame ange
 | Side (one flank) | outline, fin extents, the colour texture wrapped on the body, eye and fin positions | yes |
 | Top (dorsal) | body width at every station (thickness) and, now, the back's texture | yes |
 | Front (head-on) | cross-section, head width, eye pair, and now the face's texture | yes |
-| Bottom | belly colour, pelvic positions | optional |
-| Back / rear, other flank | nothing the others don't give (other flank only if the pattern differs left to right) | skip |
-
-| Panel | What the pipeline takes from it | Needed |
-|---|---|---|
-| Side (one flank) | outline, fin extents, the colour texture wrapped on the body, eye and fin positions | yes |
-| Top (dorsal) | body width at every station (thickness) and, now, the back's texture | yes |
-| Front (head-on) | cross-section, head width, eye pair, and now the face's texture | yes |
-| Label map (side view, flat colours) | fin vs body regions without colour tricks | strongly wanted (untested) |
 | Bottom | belly colour, pelvic positions | optional |
 | Back / rear, other flank | nothing the others don't give (other flank only if the pattern differs left to right) | skip |
 
@@ -201,8 +192,8 @@ Keep the sheet and all photos **out of the repo** (scratchpad or the side-sessio
 
 ## 3. Steps B-G: from sheet to model (agent)
 
-The scripts are on branch `claude/inspiring-mendeleev-e8f95e`. As of 2026-11-19 the last sha is `47ae7a24`, approved by Nathan
-but **not yet on origin/main**. Check `git log origin/main -- scripts/fish-outline.py` first. If it's empty, work from that branch.
+The scripts (`scripts/fish-*.py`), the one-shot chain `scripts/fish-build.py research/fish-specs/<id>.json`, the loader `src/art/photofish.ts`
+and the species specs are on main (merged as the E0 baseline, 2026-11-20). Use `fish-build.py` for a new fish; the table below is what it runs.
 Run every script with `python -I` (numpy + PIL; untrusted images).
 
 | Step | What | Command (dottyback values) |
@@ -279,7 +270,6 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 - **3D pectoral and pelvic fins** look paler and thinner than the sheet's. Make them more opaque and fan-shaped.
 - **Body/fin split: hand-placed fin bases TESTED 2026-11-20 (oscar, rows 24-26): they beat the automatic pipeline** (smooth back and belly, 3D fins rooted; automatic build had a back hump and a floating pelvic). Cost: ~12 coordinate reads from one gridded crop. A segmentation model is only needed if hand placement is unwanted. Colour-only split fails when fins and body share hue (R-B `--warm` found only some edges).
 - **Body/fin split needs per-sheet knobs** (`--bright`, `--topend`). Possible fixes:
-  - the silhouette panel from section 2;
   - fin-ray texture detection;
   - one click per fin base.
 - **Front panel isn't measured**, only checked by eye. Partly solved 2026-11-20: `fish-sheet-audit.py` measures its body width ÷ height (fins trimmed); the front's eye and mouth height against the side panel are still by eye.
@@ -295,7 +285,7 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 - **Body/fin split, after the label map was dropped** (2026-11-20; section 2): an image model cannot label regions. Candidates: the colour knobs,
   one click per fin base, or a point-prompted segmentation model; benchmark any of them against the current colour extraction before investing.
 - **Outline mask at a low threshold (~8/255) catches dark fins** (the oscar's dark fins fall under 40, which is what ChatGPT's "label map" silhouette
-  did right). Check the outline script's threshold (`fish-outline.py`, on branch `claude/flameangel-photoart`); the audit keeps 40 for panel bands.
+  did right). Check the outline script's threshold (`fish-outline.py`; builds use `--thr 8`); the audit keeps 40 for panel bands.
 
 ## 6. How to improve this method (the ratchet)
 
@@ -306,7 +296,7 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 - **Open problem solved:** move it from section 5 into section 3 or 4.
 
 ### Change log
-- 2026-11-20 (build chain): `scripts/fish-build.py research/fish-specs/<id>.json` runs steps B-H from one spec (landmarks, eye, fin polygons) and writes the anatomy JSON with a `render.photo` block, the WebPs and the species.json entry; `src/art/photofish.ts` loads every such JSON (`?photoart`), replacing the per-species photoknife.ts. `scripts/fish-sheet-audit.py` is now a real script (panels, lengths, width checks; PASS/FAIL, top vs front width within 10 %). `fish-thickfit.py` thickness range raised to 3.2 (flat fish). Specs: clownknife, bambooshark.
+- 2026-11-20 (build chain): `scripts/fish-build.py research/fish-specs/<id>.json` runs steps B-H from one spec (landmarks, eye, fin polygons) and writes the anatomy JSON with a `render.photo` block, the WebPs and the species.json entry; `src/art/photofish.ts` loads every such JSON (`?photoart`), replacing the per-species photoknife.ts. `scripts/fish-sheet-audit.py` is now a real script (panels, lengths, width checks; PASS/FAIL). `fish-thickfit.py` thickness range raised to 3.2 (flat fish). Specs: clownknife, bambooshark.
 - 2026-11-20 (fin pose): `pec.sweep` (plan) / harness `?pecsweep` and `?pecflat`; `?pecspread` is the swing of the fin about the vertical (spreads a wide pectoral outward, pleco 1.2 rad). Pectoral/pelvic fin orientation is a general capability, not per species.
 - 2026-11-20 (smoothing test, flame angel): `--landmarks` base polylines can be a cubic spline clamped to the fish mask (`--smooth`, off by default: Nathan judged the straight-segment build better). Result: almost no visible change; the sharp rear angles are not the straight segments. Two causes found: (1) base points placed on a chord cut diagonally into the body, the real body/fin boundary at the rear is near-vertical (x 345 vs the fin lobe 250-345); moving the points onto it gave a better shape but thin dark slivers where fin and body meet; (2) the loft has only 21 stations (5% SL), so a near-vertical rear edge is drawn as a 5%-SL diagonal. Open: denser stations near the rear (or a rear-edge fix in `bodyGeometry`), and the body/fin boundary points belong ON the true boundary, not inside the body.
 - 2026-11-20 (flame angel as the generalization test, strict sheet): the oscar's shared fixes (landmark fin bases, photo fins, projection layers) built a good flame angel with no new rendering code, only `--landmarks ped` (row 27). 28 hand points (build X) and 14 points (build Y: 3-point bases, triangle fins, one eye point) look the same in 3D; 14 is enough. Hand time: ~17 tool calls end to end, one gridded crop. Rows 27-29. Body/fin automatic: `--warm` plus the landmarks worked for blue fins on an orange body.
@@ -325,6 +315,18 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
   lines and the clownfish body type; size rule 1200 → ~900 px (the canvas can't do 1200; the dottyback built at 896). Section 5 gains the A/B/C test, the audit
   script, thick sheets and the label-map test. Section 7 summarises the fish painter; `research/fish-painter-design.md` and `research/fish-painter-experiment-ab.md`
   are deleted (git history keeps them) so this is the only fish-model doc.
+- 2026-11-20 (sheet audit script): `scripts/fish-sheet-audit.py` replaces the inline snippet (section 2): panels, gaps, length and end match, width ÷ depth at
+  stations, front panel with pectorals bridged, front width vs top's widest, edge-on tail, optional `--real`. Clownfish sheet 1: 0.73 at 0.15-0.20 SL
+  (the earlier ~0.77 was read nearer the dorsal start), front 0.77, two FAILs (front vs top width −6.5%, tail fanned 0.60).
+- 2026-11-20 (oscar, from the fish-model fork chat): the audit's front panel read the oscar as 472 × 236 px (false FAIL); front measurement rewritten as an
+  inner-envelope fit on all four outlines, and the thickness PASS is now front ratio vs station ratio (front width vs top's widest is INFO: registration).
+  Label map's first test failed (redrawn, not recoloured); recorded in sections 0, 2 and 5. Oscar added to the prompts table: variant B held on a second species.
+- 2026-11-20 (oscar label map test 2): outline right (0.1% edge drift, other panels untouched), fin boundaries and eye invented. Verdict recorded in
+  sections 0, 2 and 5: label map = outer silhouette only; body/fin split stays with the colour knobs or a click per fin base.
+- 2026-11-20 (label map dropped): both oscar tries used the same request; try 1 was generative (redrawn), try 2 was ChatGPT's own code (8/255 threshold
+  silhouette + hand-drawn polygons). Image models can't supply body/fin labels, so the label-map request is removed from section 0, the panel table,
+  section 2 and the sheet checklist. Section 5: the body/fin split stays open; a low-threshold (~8/255) outline mask is noted for dark fins.
+- 2026-11-20 (E0 baseline): trusting-borg (code, specs, build chain) and charming-tesla (audit script, label map dropped) merged into one doc; duplicate pipeline/panel tables removed; audit script = tesla's (front vs top width INFO only); flame angel has one projection set; `research/fish-sheets/log.csv` and `prompts/` added (see section 2).
 
 ## 7. The earlier method still live in the app: the fish painter (JSON plans)
 
@@ -344,14 +346,3 @@ Still useful from it:
 - **Regression baseline:** the tailspot blenny's 1024 px card pixel hash (`scripts/card.js`) was 8365491 through every painter step; re-check it after loader changes.
 - **Mass check:** model mass (volume x 1.02 g/cm3) against FishBase length-weight `a x TL^b`; flag above 1.6x or below 0.6x. After changing a fish's
   shape, regenerate volumes with `GEN_BODYVOLUME=1 npx vitest run test/bodymass.test.ts`.
-- 2026-11-20 (sheet audit script): `scripts/fish-sheet-audit.py` replaces the inline snippet (section 2): panels, gaps, length and end match, width ÷ depth at
-  stations, front panel with pectorals bridged, front width vs top's widest, edge-on tail, optional `--real`. Clownfish sheet 1: 0.73 at 0.15-0.20 SL
-  (the earlier ~0.77 was read nearer the dorsal start), front 0.77, two FAILs (front vs top width −6.5%, tail fanned 0.60).
-- 2026-11-20 (oscar, from the fish-model fork chat): the audit's front panel read the oscar as 472 × 236 px (false FAIL); front measurement rewritten as an
-  inner-envelope fit on all four outlines, and the thickness PASS is now front ratio vs station ratio (front width vs top's widest is INFO: registration).
-  Label map's first test failed (redrawn, not recoloured); recorded in sections 0, 2 and 5. Oscar added to the prompts table: variant B held on a second species.
-- 2026-11-20 (oscar label map test 2): outline right (0.1% edge drift, other panels untouched), fin boundaries and eye invented. Verdict recorded in
-  sections 0, 2 and 5: label map = outer silhouette only; body/fin split stays with the colour knobs or a click per fin base.
-- 2026-11-20 (label map dropped): both oscar tries used the same request; try 1 was generative (redrawn), try 2 was ChatGPT's own code (8/255 threshold
-  silhouette + hand-drawn polygons). Image models can't supply body/fin labels, so the label-map request is removed from section 0, the panel table,
-  section 2 and the sheet checklist. Section 5: the body/fin split stays open; a low-threshold (~8/255) outline mask is noted for dark fins.
