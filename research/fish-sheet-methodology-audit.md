@@ -338,3 +338,32 @@ Front-vs-top thickness was the only failure on 8 of the 11 sheets before and fai
 **Siblings (E6 mass / FishBase, rule b as drawn, d width %SL).** Clownfish d1 / d2 / d3: 1.28 / 1.75 / 1.40, width 15.4 / 13.7 / 15.5. Pleco d1 / d2 / d3: 0.74 / 0.75 / 0.68, rule c 1.02 / 0.99 / 0.90. The rescued draws sit inside their siblings' spread (the rescue does not change thickness, since the tail never fed it). Clownfish d3 built with `fish-build.py` (scratch spec, not committed) and viewed in the harness: tail a thin line from above, side card tail in side and 3/4. Picture: `research/fish-sheets/tail-rescue/clownfish-d3-before-after.png`.
 
 **Not tested:** a truly fanned sheet from the image model (none exists); only the synthetic one.
+
+### E5: landmark input (2026-11-20, no new sheets)
+
+**Setup.** Sheets: oscar E1 d1, clownfish E1 d2, pleco E1 d3 (panel-split copies in `C:\Users\nreed\fish-sheets\e5\`). Arm (a): Claude reads a gridded side crop (`scripts/e5-specs-a.py`). Arm (b): Nathan clicks in `tools/fish-landmarks.html` (the reference). Arm (c): `scripts/fish-autolandmarks.py` (mask, thickness minimum, dark-blob eye, structure-tensor ray coherence for fin bases and paired fins). Scoring: `scripts/e5-score.py`; errors in % SL against (b); specs in `research/fish-specs/e5/`. All arms built with `fish-build.py` (`measured_width`, same thickness handling, so only the landmarks differ) and drawn side by side in `scripts/e5-compare.ts`; pictures in `research/fish-sheets/e5/`.
+
+**Error against Nathan's clicks (% SL; dorsal and anal = mean vertical gap between the two base lines over their shared x-range; IoU = overlap of the fin outlines)**
+
+| Fish, arm | tail base | eye | dorsal | anal | pectoral root | pelvic root | pec / pel IoU | worst |
+|---|---|---|---|---|---|---|---|---|
+| oscar (a) | 7.9 | 0.4 | 1.5 | 1.6 | 2.4 | 0.3 | 0.53 / 0.33 | 7.9 |
+| oscar (c) | 1.1 | 13.3 (wrong patch) | 0.8 | missed | 6.3 | 2.8 | 0.19 / 0.40 | 13.3 |
+| clownfish (a) | 6.2 | 0.2 | 1.1 | 1.9 | 3.4 | 2.1 | 0.41 / 0.23 | 6.2 |
+| clownfish (c) | 3.2 | missed | 0.4 | 1.1 | 5.8 | 9.1 | 0.12 / 0.00 | 9.1 |
+| pleco (a) | 7.7 | 0.2 | 0.4 | 0.2 | 3.5 | 1.6 | 0.57 / 0.28 | 7.7 |
+| pleco (c) | 10.1 | missed | missed | missed | 2.4 | 21.1 | 0.28 / 0.00 | 21.1 |
+
+The tail-base gap in (a) is partly a definition: I clicked the narrowest point of the stalk, Nathan clicked where the body meets the tail fin, further back (standard length ends there). The tool now asks for the tail base. The base-line errors in (a) are small but its x-ends differ by 4-9% SL, and the fin outlines were three-point triangles against Nathan's 15-20 point traces.
+
+**Cost per fish**
+
+| Arm | Claude tool calls | Nathan | Result |
+|---|---|---|---|
+| (a) grid read | 3-4 (grid, view, overlay check, spec; plus one reusable helper script for all) | 0 | good bases, eye and roots; rough fin outlines; tail base uncertain |
+| (b) clicks | 0.3 (one command to build) after a one-time tool build | 58, 67, 73 s (45, 62, 49 clicks) | reference |
+| (c) automatic | 0.3 (one command) | 0 | misses: eye 2 of 3, fin bases 3 of 6; the paired-fin blobs are not fins |
+
+**3D check.** The three-quarter pictures (a / b / c per fish) show (a) and (b) almost the same, and (c) clearly worse: no dorsal base on the pleco, a blank pelvic erase box on the clownfish, the eye at its prior position. The harness shows the same flat-sheet gap along the back on every arm and on the shipped clownknife, so that artefact is the harness, not a landmark effect; it was not diagnosed here.
+
+**Decision.** One method: Nathan clicks (step B0 in the method doc). It is as accurate as anything else, takes about a minute per fish and costs the agent about nothing. No hybrid: the automatic points are too poor to pre-fill, and Nathan's time is already small. Not tested: an auto pre-fill of only the tail base and eye (the tool would then need 2 fewer prompts); not worth it at one minute per fish.
