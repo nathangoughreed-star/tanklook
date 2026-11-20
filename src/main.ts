@@ -21,7 +21,7 @@ import { isShareHash } from './scene/share';
 import { chooseUi } from './uiChoice';
 import { applyScopeToDom } from './ui/scopeDom';
 // dogfood: ?photoart swaps the orchid dottyback for the photo-cutout art (src/art/photoart.ts); without the flag nothing changes
-if (new URLSearchParams(location.search).has('photoart')) await import('./art/photoart').catch(e => console.warn(e));
+if (new URLSearchParams(location.search).has('photoart')) { await import('./art/photoart').catch(e => console.warn(e)); await import('./art/photoknife').catch(e => console.warn(e)); }
 applyScopeToDom();   // AQ1: aquarium-only wording (src/scope.ts)
 
 function webglAvailable() {
