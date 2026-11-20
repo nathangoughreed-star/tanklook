@@ -376,3 +376,24 @@ The tail-base gap in (a) is partly a definition: I clicked the narrowest point o
 **Fix.** `photofish.ts`: `outline: [...topS.reverse(), ...botS]`. Pictures: `research/fish-sheets/e7/gap-bug-before.png`, `gap-bug-after.png` (3/4 and side: dottyback, knifefish, flame angel, bamboo shark). Harness: `scripts/e5-compare.ts` gained `?pa=1` (dottyback via photoart), `?del=`, `?hide=`, `?nocard=1`, `?plain=1`.
 
 **So the E5 3D verdict needs redoing:** its pictures were built on the broken loft. Rebuilt arms should be re-viewed before "no arm yields a good 3D fish" is believed.
+
+
+### E7 part 2: 5 new species from B-layout sheets (2026-11-20)
+
+Sheets: angelfish, neon tetra, betta, bronze cory, pea puffer (`C:/Users/nreed/fish-sheets/shapes/<fish>-d1.webp`). Landmarks: Nathan's clicks in `tools/fish-landmarks.html` (specs in `research/fish-specs/<fish>.json`). Thickness: top-panel widths as drawn (`measured_width`); the drawn max width is within the range I expect for every species (angelfish 20 %SL, neon 17.6, betta 16.2, cory 28.0, puffer 31.3, against rough estimates of about 16 / 17 / 18 / 28-30 / 30-35, **not looked up in a table**), so no rescale and no FishBase mass match was done. Pictures: `research/fish-sheets/e7/<fish>-compare.png` (sheet side view above, 3/4 and side renders below).
+
+| Fish | Nathan | Claude calls | Result |
+|---|---|---|---|
+| angelfish | 129 s, 48 clicks | 3 (build, erase fix, rebuild) | good; body, stripes, tail match; long pelvic filaments partly broken |
+| neon tetra | 80 s, 39 clicks | 1 | good (not compared zoomed) |
+| betta | 36 s, 38 clicks | 1 | good; dark flat block above the dorsal fin (open) |
+| bronze cory | 46 s, 33 clicks | 1 | good (not compared zoomed) |
+| pea puffer | 56 s, 37 clicks | 1 | good; round belly, eye ok |
+
+Shared (not per fish): the picker bug, two render passes of all five, the comparison pictures. About 2-3 calls per fish, under the 10 target. Nathan: about 6 minutes of clicking in all.
+
+**What worked:** clicks then `fish-build.py` with no tuning knobs for 4 of 5; the level-axis handling took the betta's tilt and the tail rescue the fanned top-view tails without changes; the part-1 outline fix was the missing piece.
+
+**Failures by type:** (1) tool: a syntax error killed the landmark page (fixed, checklist row 31); (2) card erase box too big for the angelfish pelvic, it ate the belly and left a black block (keep the box to the hanging filaments); (3) harness labels betta and neon "(a) Claude read grid" because the id ends in a letter (cosmetic).
+
+**Not done / open:** front and top views not rendered or checked (checklist rows 4, 12, 19-21); neon, cory and puffer not zoomed against the sheet; the new ids angelfish, neontetra, corydoras are not species-list entries (the app already has `angel`, `neon`, `bronzecory`; betta and peapuffer exist), so they render only in the harness, and showing them behind `?photoart` means pointing each spec's `art` at the existing species id; betta dorsal dark block; angelfish pelvic filaments; real widths not looked up.
