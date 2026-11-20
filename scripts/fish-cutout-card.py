@@ -24,4 +24,13 @@ s = 1022 / TL; H = round(1024 * asp)
 card = Image.new('RGBA', (1024, H), (0, 0, 0, 0))
 big = rgba.resize((round(im.width * s), round(im.height * s)), Image.LANCZOS)
 card.paste(big, (round(1022 - sx * s), round(H / 2 - sy * s)), big)
+if '--clip-head' in opt:   # --clip-head 30: head stations (0..30 % SL) have no free fins, so card pixels outside the measured body outline there are slivers the lofted body doesn't cover: remove them
+    c = float(opt['--clip-head']); d = J['anatomy']['depthProfile']; SLc = 1022 / J['anatomy']['tlOverSl']
+    c_a = np.asarray(card).copy()
+    for x in range(1024):
+        sp = (1022 - x) / SLc * 100
+        if 0 <= sp <= c:
+            t = np.interp(sp, d['stations'], d['top']) / 100 * SLc; b = np.interp(sp, d['stations'], d['bottom']) / 100 * SLc
+            ys = np.arange(H); c_a[(ys < H / 2 - t - 2) | (ys > H / 2 + b + 2), x, 3] = 0
+    card = Image.fromarray(c_a, 'RGBA')
 card.save(out); print(card.size)

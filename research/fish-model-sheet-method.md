@@ -115,6 +115,12 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 | 10 | Sharp corners at the rear, top view | `pedT` fit too wide at the peduncle (5% vs 2.8% measured) | `--pedt-max 0.3`; 0.15-0.2 if still blunt | Top render tapers into the tail |
 | 11 | Stray loop under the belly | Anal fin extent mismeasured (57-78% SL vs ~60-92%) | Check fin start and end against the picture | Debug mask: fin bases match |
 | 12 | Front face looks wrong | Side texture stretched over the snout | **Open**: see section 5 | Front render vs the front panel |
+| 13 | Sheet faces left, or the top view is longer than the side view | Image models don't keep one orientation or scale across panels | Mirror the sheet so the nose points right; rescale the top panel uniformly so its snout and tail tip match the side's (flame angel: 6% longer) | Snout and tail tip of both panels line up |
+| 14 | Fish pitched nose-down about 8° | Axis was snout to peduncle, and a deep-bodied fish's mouth sits low | `fish-outline.py --level`: axis = horizontal through the peduncle centre; the mouth lands below it | Side render: the fish swims level |
+| 15 | Top-view widths are empty or NaN | `fish-topview.py` finds the body by blue share, and orange fish have none | `--fullbody` | Debug picture: green width lines sit on the body edge |
+| 16 | Eye not found | Auto-detect looks for blue iris pixels | Place by hand from a gridded head crop: `?eye=place&sx&ex&ey&er&esl&eaxis` (side_full px) | One eye, on the photo's eye |
+| 17 | Thin flat sliver at the forehead | 5% stations undercut a rounded head; the card sticks out of the loft | `fish-cutout-card.py --clip-head 25` removes card pixels outside the outline for stations 0-25% | Zoom on the head: no sliver |
+| 18 | Pelvic fin floats under the belly | The card keeps it as a flat sheet that doesn't touch the body | `--erase x0,y0,x1,y1` (side_full px) over the pelvic; add a rooted 3D pelvic later | Nothing hangs free below the belly |
 
 ## 5. Open problems (not solved yet; whoever solves one moves it into sections 3-4)
 
@@ -128,6 +134,8 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 - **Front panel isn't measured**, only checked by eye.
 - **Busy backgrounds** (real reef photos): `rembg` (U²-Net, 176 MB model, offline, pip) gave IoU 0.84 on a synthetic busy background.
   The measuring script still needs hardening for that. Not needed while sheets are on black.
+- **Deep fish (angelfish) median fins.** The dorsal and anal fins are broad and merge into the body, so the script measured only their rear tips (85-103% SL). The card still draws them, so they look right from the side. Measure real base and height before relying on them in motion.
+- **Colour drift.** The flame angel renders more saturated red than the sheet's orange. Cause not checked (lighting or the card tint).
 - **Not yet verified:** a tank of ~20 photo-card species against the current art (alternate A/B frames), and phone texture memory (~4 MB a species).
 
 ## 6. How to improve this method (the ratchet)
@@ -140,3 +148,4 @@ Each line was a mistake that reached Nathan once. Look for it in the step G rend
 
 ### Change log
 - 2026-11-19: Method written from the orchid dottyback chat (sha `47ae7a24`, branch `claude/inspiring-mendeleev-e8f95e`).
+- 2026-11-20: Flame angel run (sha on `claude/flameangel-photoart`): rows 13-18 added; scripts gain `--level`, `--fullbody`, `--clip-head`, and the harness takes `?sp=`. Run the dev server on its own (`npx vite --port 5174`), not alongside other chats' servers; on a loaded machine its first page load stalled for 10+ minutes.
