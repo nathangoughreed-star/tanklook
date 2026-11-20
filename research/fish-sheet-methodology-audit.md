@@ -247,6 +247,7 @@ On 3 fish with passing sheets, compare three ways to get the landmarks:
 5. **Consistent does not mean correct.** The clownfish top view gave 0.59–0.62 every time, while earlier notes expected about 0.5 (not yet checked against measured specimens). Text-only sheets may be consistently wrong. The next question is accuracy against real numbers, not variance.
 
 **Consequences for the plan**
-- Shrink E2 to 2 draws per arm.
+- **Production stays at one generation per species** (Nathan's rule). E1 supports it: body measurements repeat within 2-3%. A sheet is redrawn only when the audit fails it, which E1 suggests happens about 1 time in 5 (tail not edge-on).
+- E2 uses 1 draw per species per arm. The three species replicate each other, so no extra draws of the same species are needed.
 - E2 tests the prompt with layout and numeric-proportion lines added, still text-only.
 - Real width/depth values are needed for the test species, so E6's real-numbers check moves ahead of E2.
