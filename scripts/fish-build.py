@@ -52,6 +52,14 @@ sq.paste(sheet.crop((0, 0, sheet.width, sy1 + 8)), (0, 0))
 sq.save(os.path.join(work, 'side_full.png'))
 sq.resize((N // 2, N // 2), Image.LANCZOS).save(os.path.join(work, 'side.png'))
 LM = spec['landmarks']
+for k_ in ('dorsalBase', 'analBase'):  # the fins overhang the tail stalk: a base line that stops short lets the rear outline read fin lobes as body (E5), so run it to the tail base
+    pl_ = LM.get(k_) or []
+    if pl_:
+        lx_, ly_ = min(pl_, key=lambda p_: p_[0])   # the tail end, whichever order the points were clicked in
+        if lx_ > LM['ped'][0] + 25:
+            sgn_ = 1 if k_ == 'dorsalBase' else -1   # toward the tail the top edge sinks and the belly edge rises into the stalk
+            pl_.append([max(LM['ped'][0] + 66, lx_ - 20), ly_ + sgn_ * 4])
+            pl_.append([LM['ped'][0] + 21, ly_ + sgn_ * 11])
 
 
 def half(pts):
@@ -65,12 +73,17 @@ at = os.path.join(work, 'a.t.json')
 extra = (['--dense'] if spec.get('dense') else []) + (['--dorsals', '2'] if spec.get('dorsals') == 2 else []) + (['--smooth'] if spec.get('smooth') else []) + (['--warm', '--blue', str(spec['warm'])] if spec.get('warm') else [])
 run(S('fish-outline.py'), os.path.join(work, 'side.png'), anat, *spec.get('outline', '--level --thr 8 --open 9').split(), '--landmarks', os.path.join(work, 'lm.json'), *extra)
 pw = spec.get('pec_window', [22, 44])
-run(S('fish-topview.py'), os.path.join(work, 'sheet.png'), anat, at, ty0 - 6, ty1 + 6, '--x0', 0, '--fullbody', *(['--anchor'] if spec.get('anchor_top') else []), '--pec0', pw[0], '--pec1', pw[1])
+run(S('fish-topview.py'), os.path.join(work, 'sheet.png'), anat, at, ty0 - 6, ty1 + 6, '--x0', 0, '--fullbody', *(['--anchor'] if spec.get('anchor_top', True) else []), '--pec0', pw[0], '--pec1', pw[1])
 fit = run(S('fish-thickfit.py'), at, '--pedt-max', spec.get('pedt_max', 0.3)).strip()
 J = json.load(open(at, encoding='utf8'))
 A = J['anatomy']
-if spec.get('taper'):  # [start % SL, end factor]: the rear half-widths ease down so the body tapers into the flat tail instead of ending in a blunt cut
-    t0, tf = spec['taper']
+dp_ = A['depthProfile']   # the last station sits on the tail-fin root, where the mask reads the fin: keep the stalk depth of the station before it
+for k_ in ('top', 'bottom'):
+    if len(dp_[k_]) > 3 and abs(dp_[k_][-1]) > 1.3 * abs(dp_[k_][-2]):
+        dp_[k_][-1] = dp_[k_][-2]
+TAPER = spec.get('taper', [92, 0.5] if spec.get('measured_width') else None)   # default on for measured widths; 'taper': false turns it off
+if TAPER:  # [start % SL, end factor]: the rear half-widths ease down so the body tapers into the flat tail instead of ending in a blunt cut
+    t0, tf = TAPER
     st, hw = A['depthProfile']['stations'], A['thickness']['halfWidthPctSL']
     for i, sx_ in enumerate(st):
         if sx_ > t0:
@@ -98,9 +111,54 @@ for src, dst in ((card, ID), (os.path.join(shots, ID + '-proj-top.png'), ID + '-
 if er:
     Image.open(fincard).save(os.path.join(out, ID + '-fin.webp'), quality=85)
 e = spec['eye']
+# front-layer registration (checklist row 29): fy0 = eye height above the axis minus the front eyes' offset above the front crop's centre row, in TL units.
+# The front eyes are found as the two darkest round blobs of similar height in the upper-middle of the front panel; fall back to the old default.
+FY0 = round((ax - e[1]) / TL, 4)
+try:
+    fa = np.asarray(sheet).astype(int)[fy0_ - 4:fy1_ + 5, fx0:fx1 + 1].max(2)
+    hh, ww = fa.shape
+    bodym = fa > 40
+    xs_b = np.nonzero(bodym.sum(0) > hh * 0.15)[0]
+    cxf = (xs_b.min() + xs_b.max()) / 2
+    dk = (fa < 60) & np.pad(np.ones((hh - 20, ww - 20), bool), 10)
+    inside = np.zeros_like(dk)
+    for r_ in range(hh):
+        c_ = np.nonzero(bodym[r_])[0]
+        if len(c_) > 20: inside[r_, c_.min() + 8:c_.max() - 7] = True
+    dk &= inside & (np.abs(np.arange(ww) - cxf) < ww * .25)[None, :]   # dark pixels inside the fish, not the black background
+    dk[: int(hh * .08)] = False
+    dk[int(hh * .65):] = False
+    lab_ = np.zeros(dk.shape, int); n_ = 0; blobs_ = []
+    for y_, x_ in zip(*np.nonzero(dk)):
+        if lab_[y_, x_]: continue
+        n_ += 1; st_ = [(y_, x_)]; lab_[y_, x_] = n_; pix = []
+        while st_:
+            cy_, cx_ = st_.pop(); pix.append((cy_, cx_))
+            for dy_, dx_ in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                yy_, xx_ = cy_ + dy_, cx_ + dx_
+                if 0 <= yy_ < hh and 0 <= xx_ < ww and dk[yy_, xx_] and not lab_[yy_, xx_]:
+                    lab_[yy_, xx_] = n_; st_.append((yy_, xx_))
+        if len(pix) > 40:
+            py_ = np.array(pix); h_, w_ = np.ptp(py_[:, 0]) + 1, np.ptp(py_[:, 1]) + 1
+            if min(h_, w_) / max(h_, w_) > .6 and len(pix) / (np.pi / 4 * h_ * w_) > .6:
+                blobs_.append((py_[:, 0].mean(), py_[:, 1].mean(), len(pix)))
+    best_ = None
+    for i_ in range(len(blobs_)):
+        for j_ in range(i_ + 1, len(blobs_)):
+            b1, b2 = blobs_[i_], blobs_[j_]
+            if abs(b1[0] - b2[0]) < hh * .05 and (b1[1] - cxf) * (b2[1] - cxf) < 0 and abs((b1[1] + b2[1]) / 2 - cxf) < ww * .06:
+                sc_ = -(b1[0] + b2[0])   # the topmost symmetric pair: eyes sit above the mouth corners and the fin shadows
+                if best_ is None or sc_ > best_[0]: best_ = (sc_, (b1[0] + b2[0]) / 2)
+    if best_:
+        FY0 = round((ax - e[1]) / TL - (hh / 2 - best_[1]) / TL, 4)
+        print('front eyes found: row %.0f of %d -> fy0 %.4f' % (best_[1], hh, FY0))
+    else:
+        print('front eyes NOT found: fy0 left at the default %.4f (set fy0 in the spec)' % FY0)
+except Exception as ex_:
+    print('front eye detection failed (%s): fy0 default %.4f' % (ex_, FY0))
 photo = {'art': ID, 'plan': spec.get('plan', 'oscar'), 'sx': round(sx, 1), 'sl': round(sl, 1), 'ax': round(ax, 1), 'eye': e,
          'pec': spec.get('pectoral'), 'pelvic': spec.get('pelvic'),
-         'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', round((ax - e[1]) / TL, 4))}, 'thickx': spec.get('thickx'), 'noTail': bool(spec.get('no_tail')), 'measuredWidth': bool(spec.get('measured_width')), 'aspect': asp, 'finImg': bool(er)}
+         'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', FY0)}, 'thickx': spec.get('thickx'), 'noTail': bool(spec.get('no_tail')), 'measuredWidth': bool(spec.get('measured_width')), 'aspect': asp, 'finImg': bool(er)}
 A['render'] = {'note': 'built by scripts/fish-build.py from ' + os.path.basename(sys.argv[1]), 'photo': photo, 'fit': fit}
 J['art'] = ID
 json.dump(J, open(os.path.join(ROOT, 'src', 'data', 'fishart', ID + '.anatomy.json'), 'w', encoding='utf8'), indent=1)
