@@ -408,7 +408,7 @@ function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = f
       const s = surfaceAt(p, f.root[0], f.root[1], side, bend), z0 = bendZ(bend, s.x);
       mesh.position.set(s.x, s.y, z0 + (s.z - z0) * 0.85);
       if (f.kind === 'pelvic') mesh.rotation.x = -side * a;
-      else if (flat) mesh.rotation.set(-side * a, side * 0.35, 0, 'YXZ');
+      else if (flat) mesh.rotation.set(-side * a, side * (f.sweep ?? 0.35), 0, 'YXZ'); // flat fin: a = swing of its span out about the body axis (pitch/roll), sweep = swing back about the vertical
       else mesh.rotation.set(-side * 0.25, side * a, 0, 'YXZ');
       if (f.kind === 'pectoral' && !flat) mesh.userData.pec = { side, a, rx: -side * 0.25 }; // fanned by the swim sim (render/roam.ts)
       out.push(mesh);
