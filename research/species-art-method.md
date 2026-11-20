@@ -14,3 +14,5 @@ Origin: Endler's female was drawn from memory and came out flat; Nathan: "why no
 Size and behaviour come from cited pages (species.json `tl` with provenance rules, FB3 tables); the common pleco carries its true adult size. See `research/roster-expansion-plan.md` for the build list.
 
 The full onboarding checklist for a new species (research, needs, warnings, social needs, minimum tank dimensions, and every data touch point, with a test) is `research/species-onboarding.md`; this document is its step 2.
+
+For a fish built from a generated 3-view sheet (side, top, front), measured with scripts and textured from the sheet, follow `research/fish-model-sheet-method.md`. The sheet still starts from real photos (step 1 here), and its checklist records every correction Nathan has made, so they aren't repeated.
