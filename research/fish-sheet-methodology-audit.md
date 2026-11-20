@@ -314,3 +314,22 @@ Front-vs-top thickness was the only failure on 8 of the 11 sheets before and fai
 **Decision.** One rule (method doc section 3, step E): rescale the top-panel width profile so its maximum equals the real max body width in % SL and loft it as `measured_width`. With no published width, scale the same profile to 1.0 x FishBase mass and note it. `thickfit` is dropped from the final thickness. No renderer change needed: `?mw=1` / `R.measuredWidth` exist, and `R.thickx` multiplies the measured widths in `photofish.ts`.
 
 **Not done.** The clownfish width is still unknown (needs a top-down photo or a specimen table). The rescale was not rebuilt and viewed in the 3D harness, since `fish-build.py` needs hand landmarks per sheet. TL/SL for the audit's `--real` conversion is assumed (oscar 1.2, pleco 1.3), not looked up.
+
+
+### Tail rescue: fanned top-view tail (2026-11-20, no new sheets)
+
+**Finding.** The four sheets were not fanned. Pleco d1-d3 and clownfish d3 are edge-on in the top view (looked at: thin tapering line, clownfish d3 a small flag at the tip). The old check divided the top width by the side height over the last 8% of the length, where a forked or tapered tail's side height collapses (pleco 104 to 27 px), so it read 0.21-0.34. Anchored at the peduncle (narrowest opened side column 68-88% from the snout) with the median top width over the tail zone over the deepest tail height, the same sheets read 0.20 (clownfish d3), 0.11 / 0.13 / 0.08 (pleco), the good ones 0.07-0.13.
+
+**What a fanned tail would break.** Nothing in the loft: it runs from the peduncle to the snout (fish3d.ts `pedU..1`), thickness stations lie inside SL, and the top projection layer is painted on that body only. Real effects were (1) the audit's like-for-like max width, which would take the fan (synthetic fan: 0.176 became 0.220) and (2) the top card's height in `fish-projcards.py`. Both now stop at the peduncle.
+
+**Changes.** `fish-sheet-audit.py` v3: tail PASS <= 0.15, WARN above with the rescue named, FAIL only if no peduncle is found; old reading kept as an INFO line; max width excludes the tail. `fish-projcards.py` cuts the top card at the peduncle. `fish-sheet-tailtest.py` pastes the side tail into the top view: a synthetic fan reads 0.85-0.86, so the check separates fanned from edge-on by about 4x.
+
+| Sheet | Old tail | New tail | Result |
+|---|---|---|---|
+| clownfish E1 d1 / d2 / d3 | 0.05 / 0.13 / 0.29 | 0.09 / 0.13 / **0.20** | PASS / PASS / WARN (rescue) |
+| pleco E1 d1 / d2 / d3 | 0.34 / 0.21 / 0.21 | 0.11 / 0.13 / 0.08 | PASS x3 |
+| oscar E1 d1-d3, E2 d1-d2 | 0.08-0.15 | 0.07-0.12 | PASS (E1 d2 still FAIL on ends 2.0%) |
+
+**Siblings (E6 mass / FishBase, rule b as drawn, d width %SL).** Clownfish d1 / d2 / d3: 1.28 / 1.75 / 1.40, width 15.4 / 13.7 / 15.5. Pleco d1 / d2 / d3: 0.74 / 0.75 / 0.68, rule c 1.02 / 0.99 / 0.90. The rescued draws sit inside their siblings' spread (the rescue does not change thickness, since the tail never fed it). Clownfish d3 built with `fish-build.py` (scratch spec, not committed) and viewed in the harness: tail a thin line from above, side card tail in side and 3/4. Picture: `research/fish-sheets/tail-rescue/clownfish-d3-before-after.png`.
+
+**Not tested:** a truly fanned sheet from the image model (none exists); only the synthetic one.

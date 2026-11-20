@@ -3,6 +3,9 @@
   python -I scripts/fish-projcards.py aligned_sheet.png sheet.png anatomy.json out_prefix --top y0,y1 --front x0,y0,x1,y1
 aligned_sheet.png: the sheet with the TOP panel rescaled to the side panel's length and snout-aligned (same x as side_full.png), rows y0..y1 = the top panel.
 sheet.png: the original sheet, for the front panel (box x0,y0,x1,y1).
+Tail rescue (2026-11-20): the card is cut at the peduncle (snout x minus SL, from anatomy.json; --tail-margin F keeps F x TL more, default 0.01;
+       --no-tail-cut turns it off). The 3D body, its thickness and this layer all stop at the peduncle and the side card carries the tail, so a tail
+       drawn fanned flat in the top view must not widen the card or paint anything. Cut columns are transparent and ignored for the card height.
 Writes out_prefix-top.png: top panel on a 1024-wide card at the SAME x scale as the side card (snout at x = 1022), centre line on the middle row;
        out_prefix-front.png: the front panel crop (alpha = brightness); prints its size and the body-width rows used to choose --fk in the harness."""
 import json, sys
@@ -21,9 +24,12 @@ sx = A['landmarks']['snoutPxOriginal'][0] * k; TL = A['tlPx'] * k; s = 1022 / TL
 y0, y1 = map(int, opt['--top'].split(','))
 a = np.asarray(Image.open(aligned).convert('RGB'))[y0:y1]
 SAT = float(opt['--sat']) if '--sat' in opt else 1.0
-m = a.max(2) > 30; rows = np.nonzero(m.any(1))[0]
+m = a.max(2) > 30
 cols = np.nonzero(m.any(0))[0]
+xcut = 0 if '--no-tail-cut' in sys.argv else int(round(sx - A['slPx'] * k - float(opt.get('--tail-margin', 0.01)) * TL))   # first column kept (x grows toward the snout)
+# centre line from the uncut panel, then cut: rows (card height) and alpha come from the body only
 mid = float(np.median([(np.nonzero(m[:, x])[0].min() + np.nonzero(m[:, x])[0].max()) / 2 for x in range(int(sx - 0.8 * (sx - cols.min())), int(sx - 0.3 * (sx - cols.min()))) if m[:, x].any()]))
+a = a.copy(); a[:, :max(0, xcut)] = 0; m = a.max(2) > 30; rows = np.nonzero(m.any(1))[0]
 half = max(mid - rows.min(), rows.max() - mid); Ht = 2 * int(np.ceil(half * s)) + 16
 al = np.clip((a.max(2).astype(float) - 12) / 40, 0, 1)
 rgba = Image.fromarray(np.dstack([desat(a, SAT), (al * 255).astype(np.uint8)]), 'RGBA')

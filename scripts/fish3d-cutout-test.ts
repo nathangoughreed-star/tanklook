@@ -15,6 +15,7 @@ import { LU, applyLighting } from '/src/render/lighting.ts';
 import { PROJ_ART } from '/src/art/projart.ts';
 const q = new URLSearchParams(location.search), mode = q.get('mode') ?? 'current', ph = q.get('photo') ?? '', suf = ph;
 const ID = q.get('sp') ?? 'orchiddottyback';   // ?sp=flameangel&card=<shots/ file>: any species (a JSON-migrated plan keeps its measured fin outlines unless ?clearfins=1)
+if (q.get('photofish')) await import('/src/art/photofish.ts');   // ?photofish=1: register every fish-build.py species (render.photo JSONs) as a plan, so ?sp=<id> works for a just-built fish
 const sp = speciesOf({ species: ID });
 const P = PLANS[ID];
 if (q.get('clearfins')) { delete P.fins; delete P.finGrid; }
