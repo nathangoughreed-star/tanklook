@@ -39,7 +39,7 @@ for (const J of Object.values(files)) {
       return out;
     };
     const topS = smoothCurve(topPts), botS = smoothCurve(botPts);
-    Object.assign(P, { pedU, outline: [...topS, ...botS.reverse()] });
+    Object.assign(P, { pedU, outline: [...topS.reverse(), ...botS] }); // outlineProfile (fishgen.ts) wants the snout first: top snout to tail, then bottom tail to snout
     P.thick = A.thickness.fit.thick * (R.thickx ?? 1); P.pedT = A.thickness.fit.pedT;
     if (R.measuredWidth) P.halfWidth = d.stations.map((s: number, i: number) => [U(s), Wd(A.thickness.halfWidthPctSL[i]) * (R.thickx ?? 1)] as [number, number]).sort((a: number[], b: number[]) => a[0] - b[0]);
     P.tail = { ...P.tail, h: R.noTail ? 0.0005 : Wd(Math.max(...F.caudal.outline.map((c: number[]) => (c[1] + c[2]) / 2))) };
