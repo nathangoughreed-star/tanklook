@@ -15,4 +15,4 @@ Size and behaviour come from cited pages (species.json `tl` with provenance rule
 
 The full onboarding checklist for a new species (research, needs, warnings, social needs, minimum tank dimensions, and every data touch point, with a test) is `research/species-onboarding.md`; this document is its step 2.
 
-For a fish built from a generated 3-view sheet (side, top, front), measured with scripts and textured from the sheet, follow `research/fish-model-sheet-method.md`. The sheet still starts from real photos (step 1 here), and its checklist records every correction Nathan has made, so they aren't repeated.
+**Fish: `research/fish-model-sheet-method.md` is the one method for building or rebuilding a fish model** (3-view sheet, measured with scripts, textured from the sheet). Steps 1-5 here still apply to every species: reference photos, the written look and the side-by-side check. The sheet still starts from real photos (step 1 here), and its checklist records every correction Nathan has made, so they aren't repeated.
