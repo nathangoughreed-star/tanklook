@@ -130,3 +130,42 @@ A tank usually has either a few large fish or many small ones. Proposal:
 3. **Step down by on-screen size each frame,** using three.js `LOD` by distance, so a big fish far back uses a lighter mesh.
 4. **Cap the whole tank** at a fish triangle budget (e.g. ~300k on phones). If it is exceeded, every fish drops one level, smallest first.
 5. **Draw a school as one instanced draw per species.** Many small fish then cost about as much as one.
+
+### E-GEN run 4: finless method on a new species, Boeseman's rainbowfish (2026-11-22)
+**Why:** on the oscar, the fins came out of the generator as thin slabs of the body, which gave ragged tips. The side projection also painted the sheet's pectoral onto the flank. Nathan's idea: give the generator a finless body and add the fins separately.
+
+**Editing the oscar sheet to remove the fins failed.** ChatGPT redrew the outline as an egg: the tail stalk filled in and the fin bases were absorbed into the body.
+
+**One generation with both versions worked much better.** Prompt: four panels.
+1. Side with fins.
+2. The same side "trimmed flush with scissors at each fin base".
+3. Top without fins.
+4. Front without fins.
+
+The prompt is in this chat (2026-11-22) and in `prompts/coordinator-egen.md` to follow.
+
+**Sheet audit:**
+- Finless side vs finned side: the head-region depths match to the pixel (86/86, 137/135, 228/229 px), with the same x position and scale. 98% of the finless body lies inside the finned silhouette.
+- **But** under the dorsal and anal fins, the finless body is deeper than the real body: the generator turned the fin bases into body. The tail stalk also runs about 80 px (8% of length) into where the tail fin starts.
+- The top panel came out 6% short and the front panel 36% over scale. Rescaled to match the side, the front gives width/length 0.133, exactly the 13% the prompt asked for.
+
+**Build** (`scripts/fish-glb-assemble.py`, branch `claude/glbfish-e5`):
+- Hunyuan3D-2mv took the finless side as `front` and the rescaled front as `left`, in one free run. Body depth came out within 4% of the sheet.
+- Fins:
+  - dorsal, tail and anal: finned panel minus finless panel, drawn as one flat card at the midline;
+  - pelvics: the same difference, as two hinged cut-outs;
+  - pectoral: it lies over the flank, so the difference can't find it, and it was **traced by hand** for this test.
+- Body texture is from the finless panels only.
+
+Picture: `research/fish-sheets/rainbow-finless-build.png`.
+
+**Result (Claude's read):**
+- The flank is clean, with no fin outlines painted on it.
+- The tail and pelvics are crisp.
+- **The dorsal and anal fins show only as thin strips,** because the too-deep finless body hides their bases.
+- It is far more realistic than the current app art next to it.
+
+**Next fixes**, to try in the coordinator:
+1. **Prompt:** "the back and belly line under each fin is the body's own edge, visible through the fin's base; do not raise it to the fin's base"; "the tail stalk ends where the tail fin's rays begin".
+2. **Or, in code:** clip the body mesh to panel 1's body line. This needs a body-vs-fin split of panel 1 (the label-map panel from B-4view v2 gives it, including the pectoral root dot).
+3. **Pectoral:** take its region from a label-map panel instead of hand tracing.
