@@ -87,3 +87,46 @@ Nathan, 2026-11-22: once the method is viable, the prompt for the reference imag
 3. **Flat, even, shadowless lighting**, so the baked colours carry no painted-in highlights that would fight the tank's lights.
 4. **Paired fins in one natural pose in every panel**, and in the side view **not covering the flank**. Otherwise the bake paints them with body colour (the bug above).
 5. Keep what already works: one rigid object seen by several cameras, and numeric proportions.
+
+### E-GEN run 3: triangle budgets and frame cost (2026-11-22)
+**Bake** (`scripts/fish-glb-bake.py` on branch `claude/glbfish-e5`, f2a24f9d):
+1. Drop the generator's zero-area triangles: 281k → 181k real, one watertight piece.
+2. Decimate.
+3. Unwrap UVs (xatlas).
+4. Project the sheet into a texture. Spread fins take the head-on panel's colour; a fin must also lie flat to count, which stopped run 2's eye-on-the-flank and orange-pectoral bugs.
+
+No hand landmarks were needed. Picture: `research/fish-sheets/hy2mv-lod-ladder.png`.
+
+| Version | Triangles | Texture | File |
+|---|---|---|---|
+| 20000 | 20,000 | 1024 px | 1.8 MB |
+| 8000 | 8,000 | 1024 px | 1.7 MB |
+| 3000 | 3,000 | 512 px | 0.5 MB |
+| 1200 | 1,200 | 256 px | 0.15 MB |
+| build B (loft) | ~10,300 per fish, in ~9 draws | photo layers | |
+
+**Look, with the fish about 300 px long on screen:** 20000 and 8000 can't be told apart. 3000 is nearly the same. 1200 shows faint facets on the fin edges and a softer texture. At schooling-fish sizes (under ~80 px on screen) 1200 should be indistinguishable.
+
+**Frame cost.** Laptop RTX 500, 2170x1315 canvas, 72x24x24 in tank, all oscars. Median ms per synced draw, 40 draws:
+
+| Oscars | build B | 20000 | 8000 | 3000 | 1200 |
+|---|---|---|---|---|---|
+| 1 | 2.8 / 4.8 | 7.2 | 7.1 | 4.4 | 4.8 |
+| 40 | 7.6 / 9.9 | 8.1 | 6.9 | 6.5 | 6.1 |
+| 100 | 11.7 / 17.8 | 11.4 | 9.4 | 8.1 | 7.5 |
+| draw calls at 100 | 953 | 253 | 253 | 253 | 253 |
+
+(Build B was run first and again last. The two figures show the run-to-run noise on this shared machine, which is large; see the perf A/B memory.)
+
+**Reading:**
+- On this GPU the cost follows **draw calls more than triangles**. 100 build-B oscars are about 1.0 M triangles in 953 draws. 100 generated 20000s are 2.0 M triangles in 253 draws, and cost the same or less.
+- The generated fish is one mesh and one material, about 1 draw. A whole school of one species could also be one instanced draw, which the loft's 9 parts per fish can't easily do.
+- **Caveats:** the generated fish don't swim yet (no swim shader cost) and have no outline pass, so they are a little cheaper than a finished version would be. Phone GPUs are more triangle-bound than this laptop. Repeat the runs on a phone before fixing budgets.
+
+### Detail by size (Nathan, 2026-11-22: big fish detailed, schooling fish light)
+A tank usually has either a few large fish or many small ones. Proposal:
+1. **Bake a ladder per species once:** 8000 / 3000 / 1200 / ~400 triangles, with textures to match.
+2. **Default level by adult length.** Over 8 in: 8000. 3-8 in: 3000. Under 3 in (tetras, rasboras): 1200, which looks the same at their on-screen size.
+3. **Step down by on-screen size each frame,** using three.js `LOD` by distance, so a big fish far back uses a lighter mesh.
+4. **Cap the whole tank** at a fish triangle budget (e.g. ~300k on phones). If it is exceeded, every fish drops one level, smallest first.
+5. **Draw a school as one instanced draw per species.** Many small fish then cost about as much as one.
