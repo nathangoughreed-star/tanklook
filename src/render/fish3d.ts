@@ -620,7 +620,7 @@ void main() {
   return m;
 }
 // the line thins on a fish that is small on screen (a 40 px ember wore a 2.5 px ring: ~4 % of its size, at most): d is the vertex depth, modelMatrix[0] the fish's width
-const outlineMat = hullMaterial('clamp(length(modelMatrix[0].xyz) * projectionMatrix[1][1] * uVpH / (2.0 * d) * 0.04, 1.0, max(2.5 * uPop, 1.0))', new THREE.Color(0.05, 0.04, 0.035), true, true);
+export const outlineMat = hullMaterial('clamp(length(modelMatrix[0].xyz) * projectionMatrix[1][1] * uVpH / (2.0 * d) * 0.04, 1.0, max(2.5 * uPop, 1.0))', new THREE.Color(0.05, 0.04, 0.035), true, true);
 
 /**
  * Projected face layer (projart.ts): a copy of the body that shares its positions, normals and swim attribute but has its own UVs

@@ -9,6 +9,7 @@
  */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { outlineMat } from './fish3d';
 
 const q = new URLSearchParams(location.search);
 export const GLB_ON = q.has('glbfish');
@@ -24,9 +25,15 @@ if (GLB_ON) {
     let mesh: THREE.Mesh | null = null; g?.scene.traverse(o => { if ((o as THREE.Mesh).isMesh && !mesh) mesh = o as THREE.Mesh; });
     if (!mesh) return;
     const geo = (mesh as THREE.Mesh).geometry, map = ((mesh as THREE.Mesh).material as THREE.MeshStandardMaterial).map;
-    geo.setAttribute('aSwL', new THREE.Float32BufferAttribute(new Float32Array(geo.attributes.position.count), 1)); // holds still
-    if (map) { map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 8; }
-    parts.set(t, { geo, mat: new THREE.MeshBasicMaterial({ map }) });
+    // swim (swim.ts) reads `uv.x` as the body axis (0 tail .. 1 nose) and `aSwL` 1 = the unit body moves: the texture's atlas
+    // UVs move to the second channel and `uv` becomes the body axis (the mesh is length 1 along +x, centred)
+    const pos = geo.attributes.position, n = pos.count, ax = new Float32Array(n * 2);
+    for (let i = 0; i < n; i++) { ax[i * 2] = pos.getX(i) + 0.5; ax[i * 2 + 1] = 0.5; }
+    geo.setAttribute('uv1', geo.attributes.uv); geo.setAttribute('uv', new THREE.Float32BufferAttribute(ax, 2));
+    geo.setAttribute('aSwL', new THREE.Float32BufferAttribute(new Float32Array(n).fill(1), 1));
+    if (map) { map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 8; map.channel = 1; }
+    const mat = new THREE.MeshBasicMaterial({ map }); mat.userData.fish = true; mat.userData.swim = true; mat.userData.cached = true; // lit like a fish body, swims with the card
+    parts.set(t, { geo, mat });
   }));
 }
 
@@ -36,7 +43,9 @@ export function glbSwap(art: string, card: THREE.Mesh, w: number): boolean {
   const t = order[n++ % order.length]; const p = t == null ? null : parts.get(t);
   if (!p) return false;
   const cm = (card.material as THREE.Material).clone(); cm.visible = false; card.material = cm; // the card's median fins: the mesh has its own
-  const m = new THREE.Mesh(p.geo, p.mat); m.scale.setScalar(w); m.userData.glbfish = t;
-  card.add(m);
+  const grp = new THREE.Group(); grp.scale.setScalar(w); grp.userData.glbfish = t;
+  grp.add(new THREE.Mesh(p.geo, p.mat));
+  const o = new THREE.Mesh(p.geo, outlineMat); o.userData.nolight = true; grp.add(o); // the same silhouette line as the loft bodies
+  card.add(grp);
   return true;
 }
