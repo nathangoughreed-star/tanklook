@@ -169,3 +169,25 @@ Picture: `research/fish-sheets/rainbow-finless-build.png`.
 1. **Prompt:** "the back and belly line under each fin is the body's own edge, visible through the fin's base; do not raise it to the fin's base"; "the tail stalk ends where the tail fin's rays begin".
 2. **Or, in code:** clip the body mesh to panel 1's body line. This needs a body-vs-fin split of panel 1 (the label-map panel from B-4view v2 gives it, including the pectoral root dot).
 3. **Pectoral:** take its region from a label-map panel instead of hand tracing.
+
+### E-GEN run 5: body cut to the real body line (2026-11-22)
+**Fix for run 4's hidden dorsal and anal fins, in code.** `scripts/fish-fin-line.py`:
+1. A random-forest pixel classifier (colour + local texture) learns *fin* from the finned-minus-finless pixels and *body* from deep inside the finless body.
+2. Per column it finds where the scales start under the dorsal and anal fins: the back drops up to 27 px, the belly rises up to 50 px.
+3. Outside the fin spans the generated outline is kept. The body may only shrink, never grow.
+4. The tail-fin base is the narrowest column of the finned side (x 211).
+
+`fish-glb-assemble.py` then reshapes the body to these lines: it scales each cross-section above and below its centre, and pulls the stalk forward from x 111 to 203. The texture is baked from the surface as generated, so the markings travel with the surface instead of smearing.
+
+Branch `claude/glbfish-e5`: 84277257 (assemble) and 3f924449 (fin-line script). Picture: `research/fish-sheets/rainbow-bodyline-fix.png`.
+
+**Result:**
+- Both dorsal fins and the anal fin show at full size, rooted on the body.
+- The tail stalk ends at the tail fin.
+- The flank stays clean.
+
+**Still open:**
+- The pectoral is hand-traced and barely visible, because it lies flat on the flank.
+- There is a faint dark seam along the anal-fin base.
+- The panel bands in the scripts are this sheet's, and need reading from the sheet for the next species.
+- None of this is checked on a second species yet.
