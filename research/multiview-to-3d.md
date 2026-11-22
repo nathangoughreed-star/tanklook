@@ -50,3 +50,24 @@ E-GEN, run on the **oscar** (best existing sheet, so it is a fair baseline):
 - [TRELLIS.2 vs Hunyuan3D](https://www.3daistudio.com/blog/trellis-2-vs-hunyuan-3d-differences-explained) and [Pixal3D vs TRELLIS.2 vs Hunyuan3D](https://www.3daistudio.com/blog/pixal3d-vs-trellis-2-vs-hunyuan-3d-comparison) (vendor blogs, not neutral)
 - [Meshy API pricing](https://docs.meshy.ai/en/api/pricing), [Meshy changelog](https://docs.meshy.ai/api/changelog), [Meshy multi-image on fal](https://fal.ai/models/meshy/v7.1/multi-image-to-3d), [Tripo on fal](https://fal.ai/models/tripo3d/tripo/v2.5/image-to-3d)
 - [Scenario: comparing generative 3D models](https://help.scenario.com/en/articles/comparing-generative-3d-models/)
+
+## 5. Results
+
+### E-GEN run 1: oscar, Hunyuan3D-2mv, free demo space (2026-11-22)
+**Input:** the variant B oscar sheet. Its side panel went in as `front` and its head-on panel as `left`. Backgrounds were cut out at 8/255. The **top panel was not given**, because the model has no top-view slot. Settings: 30 steps, octree 256, seed 1234. **Cost:** free, about 10 tool calls in all.
+
+**Output:** an untextured mesh, 90k vertices, `C:\Users\nreed\fish-sheets\oscar-gen\hy2mv_0.glb`. Picture: `research/fish-sheets/hy2mv-oscar-compare.png`.
+
+| View | Silhouette IoU vs sheet (same length scale) | Notes |
+|---|---|---|
+| Side | **0.93** | A thin, even rim all round: the model is about 2% larger, an alignment or scale effect rather than a shape error. Caudal, dorsal, anal and pelvic fins are all present and shaped like the sheet's. |
+| Top (**not an input**) | **0.87**, body alone matches closely | The body width and taper match the sheet's top panel almost exactly, although the model never saw it. The IoU loss is the spread pectorals (the sheet folds them in the top view) and a slightly fuller tail stalk. |
+| Front | 0.75 | Body outline good. The loss is mostly vertical alignment and the spread pectorals sitting slightly higher than on the sheet. |
+
+**Findings:**
+1. **Shape is solved by this model.** It gave in one call what the loft took about 50 calls to reach: a body consistent across all three views, rooted paired fins, eyes, lips and gill cover.
+2. **Fins are thin, not blobby.** Median fins are knife-edge in the top view and pectorals are flat plates, so the feared weakness did not show on the oscar.
+3. **There is no texture yet.** The demo's textured endpoint (`/generation_all`) failed server-side with a `.ply` load error. Our own photo projection (`projart.ts`, side panel plus top panel) is the natural texture step, and it keeps the sheet's exact markings.
+4. **The free quota is tiny.** Anonymous ZeroGPU allows about 2 minutes a day, shared across spaces. TRELLIS.2 was refused for quota (120 s requested, 45 s left). A free Hugging Face account token raises the quota, and Pro ($9/month) raises it a lot. Nathan has to create and set that token himself (`HF_TOKEN` env var).
+
+**Not done yet:** the side-by-side against build B **in the tank**. It needs the GLB loaded by the fish loader with the photo projected on, so it is the next step, not part of this run.
