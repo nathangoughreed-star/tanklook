@@ -34,6 +34,30 @@ s = (U(b2[1]) - U(b2[0])) / (hi[0] - lo[0])
 m.apply_translation(-(lo + hi) / 2); m.apply_scale(s)
 m.apply_translation([(U(b2[0]) + U(b2[1])) / 2, (V(b2[2]) + V(b2[3])) / 2, 0])
 print('body', len(m.faces), 'tris; depth model %.3f vs panel 2 %.3f' % (m.extents[1], (b2[3] - b2[2]) / L), flush=True)
+orig = m.vertices.copy()   # the texture is baked from these (the surface as generated), whatever the reshape below does
+
+# ---------- reshape to panel 1's real body line (fin_line step) ----------
+# The finless panel turns the fin bases into body: under the dorsal and anal fins it is too deep, and its tail stalk runs
+# into the tail fin. bodyline2.npy holds panel 1's body top / bottom per column (fin-vs-body pixel classifier, rows in
+# panel 1's frame); peduncle.npy the narrowest column of panel 1 (the tail-fin base).
+bl = os.path.join(F, 'bodyline2.npy')
+if os.path.exists(bl):
+    T_, B_ = np.load(bl); xp = int(np.load(os.path.join(F, 'peduncle.npy'))[0]) - 8; p1y = bands[0][0]
+    Mf = np.zeros_like(M); ys_ = np.arange(bands[1][0], bands[1][1]); Mf[ys_ + dy] = M[ys_]  # finless body in panel 1's frame
+    cols = np.arange(M.shape[1]); has = Mf.any(0)
+    t2 = np.interp(cols, cols[has], np.argmax(Mf, 0)[has]).astype(float); b2_ = np.interp(cols, cols[has], (M.shape[0] - 1 - np.argmax(Mf[::-1], 0))[has]).astype(float)  # edge columns: nearest outline
+    x_end, x_a = b2[0], xp + 200.0                              # finless stalk end -> the tail-fin base, eased over 200 px
+    V_ = m.vertices; px0 = V_[:, 0] * L + XC
+    px1 = np.where(px0 < x_a, x_a - (x_a - px0) * (x_a - xp) / (x_a - x_end), px0)
+    i0 = np.clip(px0.round().astype(int), 0, M.shape[1] - 1); i1 = np.clip(px1.round().astype(int), 0, M.shape[1] - 1)
+    tt, bb = t2[i0], b2_[i0]
+    TT = np.where(np.isnan(T_[i1]), tt, T_[i1] + p1y); BB = np.where(np.isnan(B_[i1]), bb, B_[i1] + p1y)
+    c = (tt + bb) / 2; py = -V_[:, 1] * L + YC
+    k = np.where(py < c, (c - TT) / np.maximum(c - tt, 1), (BB - c) / np.maximum(bb - c, 1))
+    k = np.where(np.isnan(k), 1, np.clip(k, 0.3, 1.0))
+    V_[:, 0] = (px1 - XC) / L; V_[:, 1] = -((c + (py - c) * k) - YC) / L
+    m.vertices = V_
+    print('reshaped: depth now %.3f; stalk end moved %d -> %d px' % (m.extents[1], x_end, xp), flush=True)
 
 def samp(px, py):
     px = np.clip(px.astype(int), 0, a.shape[1] - 1); py = np.clip(py.astype(int), 0, a.shape[0] - 1); return a[py, px].astype(np.float32), M[py, px]
@@ -52,9 +76,9 @@ def colour(P, N):
     wf = np.clip(N[:, 0], 0, None) ** 2 * 1.5 * mf * (nx > 0.8)
     return (cs * ws[:, None] + ct * wt[:, None] + cf * wf[:, None]) / (ws + wt + wf)[:, None]
 
-def bake(mesh, tex):
+def bake(mesh, tex, src_pos):
     vmap, idx, uv = xatlas.parametrize(mesh.vertices, mesh.faces)
-    Vv = mesh.vertices[vmap]; Nv = mesh.vertex_normals[vmap]
+    Vv = src_pos[vmap]; Nv = trimesh.Trimesh(src_pos, mesh.faces, process=False).vertex_normals[vmap]  # colours from the generated surface
     img = np.zeros((tex, tex, 3), np.float32); fill = np.zeros((tex, tex), bool)
     Uu = uv * (tex - 1); Uu[:, 1] = (tex - 1) - Uu[:, 1]; pts, nrm, at = [], [], []
     for t in range(len(idx)):
@@ -74,10 +98,10 @@ def bake(mesh, tex):
         sh = [np.roll(img, q, ax) for ax in (0, 1) for q in (1, -1)]; shf = [np.roll(fill, q, ax) for ax in (0, 1) for q in (1, -1)]
         acc = sum(si * fi[..., None] for si, fi in zip(sh, shf)); cnt = sum(fi.astype(np.float32) for fi in shf)
         new = ~fill & (cnt > 0); img[new] = acc[new] / cnt[new][:, None]; fill |= new
-    out = trimesh.Trimesh(Vv, idx, process=False)
+    out = trimesh.Trimesh(mesh.vertices[vmap], idx, process=False)
     out.visual = trimesh.visual.TextureVisuals(uv=uv, material=trimesh.visual.material.PBRMaterial(baseColorTexture=Image.fromarray(img.clip(0, 255).astype(np.uint8)), metallicFactor=0, roughnessFactor=1))
     return out
-body = bake(m, 1024)
+body = bake(m, 1024, orig)
 
 # ---------- fin cut-outs ----------
 def quad(px0, px1, py0, py1, rgba):
