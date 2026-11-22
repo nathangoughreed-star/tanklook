@@ -60,6 +60,9 @@ Gotcha: the dev server reads the build number at start-up; restart it after merg
 
 ## Lane sections (current)
 
+### E-GEN: generated fish models (2026-11-22; branch claude/glbfish-e5, not merged)
+Generative image-to-3D (Hunyuan3D-2mv) + finless body + fin cut-outs; Nathan: better than build B, worth pursuing. Evidence: `research/multiview-to-3d.md`. Next chat's brief: `prompts/coordinator-egen.md`.
+
 ### DM2: swap menu, same tank only, short text (2026-11-05, Nathan)
 Nathan: the "Swap for a kit or sale" block was way too wordy; only suggest when the tank does not change, but a rimmed 10 gal from another brand is fine. Done: `dealSwaps` (src/demand/dealmatch.ts) now skips every deal where `sameTank` is false (same shape, each side within 10 % or 1.5 in, unchanged tolerance), so a 15 gal never sees a 10 gal kit and no "different tank, link" entry exists. `src/ui/dealMatch.ts`: one line per swap ("Retailer Name: $45 (was $90), shipping, saves about $51 (estimated, tooltip has the guesses); changes light, filter"), a short "(worse: ...)" clause only when gear is worse, buttons "Show as Tank B" / "Not now", ONE footer ("Prices as of ...; Links are plain, no affiliate codes."). Dropped "You would change" numbers, "What you give up" block, "Guessed" paragraph. Heater/gear "On sale, your X: link at store, $ (was $), shipping." with "Price it", same footer (src/ui/demandPanel.ts). No cost numbers moved. Not shortened (own code, not touched): plant-pack lines and the pinned-bundle line in demandPanel.ts, "Guessed:" on featured deals. Tests: test/shipping.test.ts (same-tank only, cross-brand, 15 gal not offered a 10 gal kit). No live screenshot was taken (machine load, split-view app state): check the panel in the browser.
 
