@@ -5,6 +5,8 @@
  *   ?glbfish=3000       that triangle budget (20000 / 8000 / 3000 / 1200)
  *   ?glbfish=ladder     oscars cycle build B, 20000, 8000, 3000, 1200 (side-by-side look)
  *   ?glbfish=3000&glball  every oscar uses the mesh (performance runs)
+ *   ?glbfish=...&gen    also: every second Boeseman's rainbowfish uses the finless-body build (generated body + fin cut-outs,
+ *                       scripts/fish-glb-assemble.py)
  * The meshes are length 1 along +x (head), centred.
  */
 import * as THREE from 'three';
@@ -18,6 +20,37 @@ const want = q.get('glbfish') || '8000', all = q.has('glball');
 const order: (number | null)[] = want === 'ladder' ? [null, ...LODS] : all ? [+want] : [+want, null];
 const parts = new Map<number, { geo: THREE.BufferGeometry; mat: THREE.Material }>();
 let n = 0;
+/** Swim attributes for any part: atlas UVs to channel 1, `uv` = body axis (0 tail .. 1 nose), aSwL 1. */
+function swimReady(geo: THREE.BufferGeometry, map: THREE.Texture | null) {
+  const pos = geo.attributes.position, c = pos.count, ax = new Float32Array(c * 2);
+  for (let i = 0; i < c; i++) { ax[i * 2] = pos.getX(i) + 0.5; ax[i * 2 + 1] = 0.5; }
+  geo.setAttribute('uv1', geo.attributes.uv); geo.setAttribute('uv', new THREE.Float32BufferAttribute(ax, 2));
+  geo.setAttribute('aSwL', new THREE.Float32BufferAttribute(new Float32Array(c).fill(1), 1));
+  if (map) { map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 8; map.channel = 1; }
+}
+/** Multi-part builds (finless body + fin cut-outs) by species art. */
+const GEN: Record<string, string> = { boesemani: 'boesemani-gen' };
+const genParts = new Map<string, { name: string; geo: THREE.BufferGeometry; mat: THREE.Material }[]>();
+let gn = 0;
+if (GLB_ON && q.has('gen')) {
+  const loader = new GLTFLoader();
+  await Promise.all(Object.entries(GEN).map(async ([art, file]) => {
+    const g = await loader.loadAsync(`${import.meta.env.BASE_URL}art/fish/lod/${file}.glb`).catch(e => { console.warn('glbfish', file, e); return null; });
+    if (!g) return;
+    const list: { name: string; geo: THREE.BufferGeometry; mat: THREE.Material }[] = [];
+    g.scene.updateMatrixWorld(true);
+    g.scene.traverse(o => {
+      const m = o as THREE.Mesh; if (!m.isMesh) return;
+      const geo = m.geometry.clone(); geo.applyMatrix4(m.matrixWorld); // node transforms baked in (the fins are placed by their nodes)
+      const map = (m.material as THREE.MeshStandardMaterial).map; swimReady(geo, map);
+      const fin = m.name !== 'body';
+      const mat = new THREE.MeshBasicMaterial({ map, side: fin ? THREE.DoubleSide : THREE.FrontSide, alphaTest: fin ? 0.5 : 0 });
+      mat.userData.fish = true; mat.userData.swim = true; mat.userData.cached = true;
+      list.push({ name: m.name, geo, mat });
+    });
+    genParts.set(art, list);
+  }));
+}
 if (GLB_ON) {
   const loader = new GLTFLoader();
   await Promise.all([...new Set(order.filter((x): x is number => x != null))].map(async t => {
@@ -39,7 +72,20 @@ if (GLB_ON) {
 
 /** Swap this oscar to a generated mesh per the flag. Returns true when swapped. */
 export function glbSwap(art: string, card: THREE.Mesh, w: number): boolean {
-  if (!GLB_ON || art !== 'oscar') return false;
+  if (!GLB_ON) return false;
+  const gp = genParts.get(art);
+  if (gp) {
+    if (gn++ % 2 === 1) return false;
+    const cm = (card.material as THREE.Material).clone(); cm.visible = false; card.material = cm;
+    const grp = new THREE.Group(); grp.scale.setScalar(w); grp.userData.glbfish = 'gen';
+    for (const p of gp) {
+      grp.add(new THREE.Mesh(p.geo, p.mat));
+      if (p.name === 'body') { const o = new THREE.Mesh(p.geo, outlineMat); o.userData.nolight = true; grp.add(o); }
+    }
+    card.add(grp);
+    return true;
+  }
+  if (art !== 'oscar') return false;
   const t = order[n++ % order.length]; const p = t == null ? null : parts.get(t);
   if (!p) return false;
   const cm = (card.material as THREE.Material).clone(); cm.visible = false; card.material = cm; // the card's median fins: the mesh has its own
