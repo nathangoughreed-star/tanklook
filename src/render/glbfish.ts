@@ -1,32 +1,42 @@
 /**
  * DOGFOOD ONLY (`?glbfish`): test of the generative image-to-3D method (research/multiview-to-3d.md, E-GEN).
- * Every second oscar is drawn with the Hunyuan3D-2mv mesh (sheet colours baked into vertex colours) instead of the
- * measured loft, so the two sit side by side in one tank. The mesh is length 1 along +x (head), centred.
+ * Oscars are drawn with the Hunyuan3D-2mv mesh (sheet colours baked into a texture) instead of the measured loft.
+ *   ?glbfish            every second oscar uses the 8000-triangle mesh, the others stay build B
+ *   ?glbfish=3000       that triangle budget (20000 / 8000 / 3000 / 1200)
+ *   ?glbfish=ladder     oscars cycle build B, 20000, 8000, 3000, 1200 (side-by-side look)
+ *   ?glbfish=3000&glball  every oscar uses the mesh (performance runs)
+ * The meshes are length 1 along +x (head), centred.
  */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
-export const GLB_ON = new URLSearchParams(location.search).has('glbfish');
-let geo: THREE.BufferGeometry | null = null, mat: THREE.Material | null = null, n = 0;
+const q = new URLSearchParams(location.search);
+export const GLB_ON = q.has('glbfish');
+const LODS = [20000, 8000, 3000, 1200];
+const want = q.get('glbfish') || '8000', all = q.has('glball');
+const order: (number | null)[] = want === 'ladder' ? [null, ...LODS] : all ? [+want] : [+want, null];
+const parts = new Map<number, { geo: THREE.BufferGeometry; mat: THREE.Material }>();
+let n = 0;
 if (GLB_ON) {
-  const g = await new GLTFLoader().loadAsync(`${import.meta.env.BASE_URL}art/fish/oscar-hy2mv.glb`).catch(e => { console.warn('glbfish', e); return null; });
-  g?.scene.traverse(o => { const m = o as THREE.Mesh; if (m.isMesh && !geo) { geo = m.geometry; } });
-  if (geo) {
-    const c = (geo as THREE.BufferGeometry).attributes.position.count;
-    (geo as THREE.BufferGeometry).setAttribute('aSwL', new THREE.Float32BufferAttribute(new Float32Array(c), 1)); // holds still
-    // the bake wrote the sheet's sRGB bytes; glTF vertex colours are read as linear, so convert (else the fish washes out)
-    const col = (geo as THREE.BufferGeometry).attributes.color as THREE.BufferAttribute, lin = new Float32Array(c * 3), tmp = new THREE.Color();
-    for (let i = 0; i < c; i++) { tmp.setRGB(col.getX(i), col.getY(i), col.getZ(i)).convertSRGBToLinear(); lin[i * 3] = tmp.r; lin[i * 3 + 1] = tmp.g; lin[i * 3 + 2] = tmp.b; }
-    (geo as THREE.BufferGeometry).setAttribute('color', new THREE.Float32BufferAttribute(lin, 3));
-    mat = new THREE.MeshBasicMaterial({ vertexColors: true });
-  }
+  const loader = new GLTFLoader();
+  await Promise.all([...new Set(order.filter((x): x is number => x != null))].map(async t => {
+    const g = await loader.loadAsync(`${import.meta.env.BASE_URL}art/fish/lod/oscar-hy2mv-${t}.glb`).catch(e => { console.warn('glbfish', t, e); return null; });
+    let mesh: THREE.Mesh | null = null; g?.scene.traverse(o => { if ((o as THREE.Mesh).isMesh && !mesh) mesh = o as THREE.Mesh; });
+    if (!mesh) return;
+    const geo = (mesh as THREE.Mesh).geometry, map = ((mesh as THREE.Mesh).material as THREE.MeshStandardMaterial).map;
+    geo.setAttribute('aSwL', new THREE.Float32BufferAttribute(new Float32Array(geo.attributes.position.count), 1)); // holds still
+    if (map) { map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 8; }
+    parts.set(t, { geo, mat: new THREE.MeshBasicMaterial({ map }) });
+  }));
 }
 
-/** Swap this oscar to the generated mesh (every second one). Returns true when swapped. */
+/** Swap this oscar to a generated mesh per the flag. Returns true when swapped. */
 export function glbSwap(art: string, card: THREE.Mesh, w: number): boolean {
-  if (!GLB_ON || art !== 'oscar' || !geo || !mat || n++ % 2 === 1) return false;
+  if (!GLB_ON || art !== 'oscar') return false;
+  const t = order[n++ % order.length]; const p = t == null ? null : parts.get(t);
+  if (!p) return false;
   const cm = (card.material as THREE.Material).clone(); cm.visible = false; card.material = cm; // the card's median fins: the mesh has its own
-  const m = new THREE.Mesh(geo, mat); m.scale.setScalar(w); m.userData.glbfish = true;
+  const m = new THREE.Mesh(p.geo, p.mat); m.scale.setScalar(w); m.userData.glbfish = t;
   card.add(m);
   return true;
 }
