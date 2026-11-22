@@ -71,3 +71,19 @@ E-GEN, run on the **oscar** (best existing sheet, so it is a fair baseline):
 4. **The free quota is tiny.** Anonymous ZeroGPU allows about 2 minutes a day, shared across spaces. TRELLIS.2 was refused for quota (120 s requested, 45 s left). A free Hugging Face account token raises the quota, and Pro ($9/month) raises it a lot. Nathan has to create and set that token himself (`HF_TOKEN` env var).
 
 **Not done yet:** the side-by-side against build B **in the tank**. It needs the GLB loaded by the fish loader with the photo projected on, so it is the next step, not part of this run.
+
+### E-GEN run 2: the generated oscar in the tank beside build B (2026-11-22)
+**Setup:** the sheet's colours were baked onto the Hunyuan3D-2mv mesh as vertex colours. Side panel on the flanks, top panel on upward faces, front panel on the head, blended by surface direction; sRGB converted to linear at load. The mesh is drawn by a dogfood flag, `?photoart&glbfish`, on branch `claude/glbfish-e5` (6c11dab7). That branch is built on E5 because build B's oscar photo files only exist uncommitted in the E5 worktree. They were copied in for the run but not committed. Every second oscar uses the mesh. Picture: `research/fish-sheets/hy2mv-vs-buildB-tank.png`.
+
+**What it shows (Claude's read; Nathan judges):**
+- **Side:** the generated fish has the deeper oscar body, a real head (lips, gill cover, eye socket) and a pectoral that is a shaped fin rather than a card. Build B is slimmer and flatter in the face. Markings are similar in both, since both come from the same sheet.
+- **From above:** both bodies have a believable width. The generated pectorals stick out sideways, and are **coloured orange** because the side projection paints the body colour behind them onto them. That is a bake bug (a fin needs its own colour, not the flank behind it). Its back is slightly streaky where the top panel's projection meets the side's.
+- **Not tested yet:** the generated mesh **does not swim** (it holds still: no swim weights), has no outline pass, and at 90k vertices / 5.9 MB it is far over a phone budget. Each of these is solvable: decimate to about 5-10k triangles, add swim weights along x, and bake to a texture instead of vertex colours.
+
+### Next step if Nathan rates it viable: a sheet prompt made for this method
+Nathan, 2026-11-22: once the method is viable, the prompt for the reference image should be refined to suit it. What this method wants, compared with the current loft-oriented sheet:
+1. **Views around one vertical axis:** side (left flank), head-on, tail-on, and optionally the right flank. These map to the generator's `front` / `left` / `right` / `back` slots. The top view goes unused by Hunyuan3D-2mv, though it is still useful for baking colour onto the back.
+2. **Same scale and centre in every panel**, the fish filling the frame, on plain black (as now).
+3. **Flat, even, shadowless lighting**, so the baked colours carry no painted-in highlights that would fight the tank's lights.
+4. **Paired fins in one natural pose in every panel**, and in the side view **not covering the flank**. Otherwise the bake paints them with body colour (the bug above).
+5. Keep what already works: one rigid object seen by several cameras, and numeric proportions.
