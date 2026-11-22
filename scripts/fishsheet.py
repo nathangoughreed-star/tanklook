@@ -12,36 +12,60 @@ def load(path):
     return a, a.max(2) > 8
 
 
-def panel_bands(M, min_gap=6, min_h=40):
-    """Row ranges (y0, y1) of the panels, found by the empty black rows between them. Merges gaps under min_gap rows, drops runs under min_h."""
-    r = (M.sum(1) > 0); runs = []; s = None
-    for i, v in enumerate(r):
-        if v and s is None: s = i
-        if not v and s is not None: runs.append([s, i]); s = None
-    if s is not None: runs.append([s, len(r)])
+def _runs(v, min_gap, min_len):
+    runs = []; s = None
+    for i, x in enumerate(v):
+        if x and s is None: s = i
+        if not x and s is not None: runs.append([s, i]); s = None
+    if s is not None: runs.append([s, len(v)])
     merged = []
     for b in runs:                                   # a gap shorter than min_gap is inside one panel
         if merged and b[0] - merged[-1][1] < min_gap: merged[-1][1] = b[1]
         else: merged.append(b)
-    return [tuple(b) for b in merged if b[1] - b[0] >= min_h]
+    return [b for b in merged if b[1] - b[0] >= min_len]
 
 
-def box(M, y0, y1):
-    """(x0, x1, y0, y1) of the non-black pixels inside rows y0..y1, x1/y1 exclusive."""
-    c = np.where(M[y0:y1].any(0))[0]; r = np.where(M[y0:y1].any(1))[0]
-    return c[0], c[-1] + 1, y0 + r[0], y0 + r[-1] + 1
+def panel_bands(M, min_gap=6, min_h=40, min_col_gap=12):
+    """Panel rectangles (y0, y1, x0, x1) in reading order, found by the black gaps on both axes: first the row bands
+    (vertical stack, or the rows of a grid), then each row band split by column gaps (a 2x2 grid has two panels per row)."""
+    out = []
+    for y0, y1 in _runs(M.sum(1) > 0, min_gap, min_h):
+        cols = _runs(M[y0:y1].sum(0) > 0, min_col_gap, 40)
+        for x0, x1 in (cols or [[0, M.shape[1]]]):
+            r = np.where(M[y0:y1, x0:x1].any(1))[0]
+            out.append((y0 + r[0], y0 + r[-1] + 1, x0, x1))
+    return out
 
 
-def align_dy(M, band1, band2, box2, lo=0.05, hi=0.15):
-    """Vertical shift (rows) that puts panel 2 into panel 1's frame: the head columns (5-15 % of panel 2's length in from
-    the head end, +x) have the same top and bottom edge in both panels. Returns panel1_row - panel2_row, an int."""
-    d = []
-    xe = box2[1]; w = box2[1] - box2[0]
-    for x in range(int(xe - hi * w), int(xe - lo * w)):
-        c1 = np.where(M[band1[0]:band1[1], x])[0]; c2 = np.where(M[band2[0]:band2[1], x])[0]
+def mask(M, rect):
+    """M zeroed outside the panel rectangle (same shape as M)."""
+    o = np.zeros_like(M); y0, y1, x0, x1 = rect; o[y0:y1, x0:x1] = M[y0:y1, x0:x1]; return o
+
+
+def shift(m, dy, dx):
+    """m moved down by dy and right by dx, same shape, anything pushed off the edge dropped."""
+    o = np.zeros_like(m); H, W = m.shape
+    ys, xs = slice(max(0, -dy), min(H, H - dy)), slice(max(0, -dx), min(W, W - dx))
+    o[max(0, dy):max(0, dy) + (ys.stop - ys.start), max(0, dx):max(0, dx) + (xs.stop - xs.start)] = m[ys, xs]; return o
+
+
+def box(M, y0, y1, x0=0, x1=None):
+    """(x0, x1, y0, y1) of the non-black pixels inside the given rows (and columns), x1/y1 exclusive. A panel rectangle
+    from panel_bands can be passed as box(M, *rect)."""
+    S = M[y0:y1, x0:x1]; c = np.where(S.any(0))[0]; r = np.where(S.any(1))[0]
+    return x0 + c[0], x0 + c[-1] + 1, y0 + r[0], y0 + r[-1] + 1
+
+
+def align(M, r1, r2, lo=0.05, hi=0.15):
+    """(dy, dx) that put panel 2 into panel 1's frame (panel 1 = panel 2 + (dy, dx)). Both panels show the fish at one
+    scale with the head to +x: dx lines up the head tips, dy the top / bottom edges of the head columns (5-15 % of the
+    length in from the tip). Both are ints; a stacked sheet gives dx = 0."""
+    B1 = box(M, *r1); B2 = box(M, *r2); dx = int(B1[1] - B2[1]); w = B2[1] - B2[0]; d = []
+    for x in range(int(B2[1] - hi * w), int(B2[1] - lo * w)):
+        c1 = np.where(M[r1[0]:r1[1], x + dx])[0]; c2 = np.where(M[r2[0]:r2[1], x])[0]
         if len(c1) and len(c2):
-            d.append(((band1[0] + c1[0] - band2[0] - c2[0]) + (band1[0] + c1[-1] - band2[0] - c2[-1])) / 2)
-    return int(round(np.median(d)))
+            d.append(((r1[0] + c1[0] - r2[0] - c2[0]) + (r1[0] + c1[-1] - r2[0] - c2[-1])) / 2)
+    return int(round(np.median(d))), dx
 
 
 def label_map(a, M, bands, b1box):
@@ -49,7 +73,7 @@ def label_map(a, M, bands, b1box):
     The label map is a side view; it is scaled and shifted so its silhouette box matches panel 1's. Yellow = pectoral,
     the black dot inside it (a hole of the yellow region) = the root."""
     if len(bands) < 5: return None, None
-    y0, y1 = bands[4]; x0, x1, ty0, ty1 = box(M, y0, y1)
+    y0, y1 = bands[4][:2]; x0, x1, ty0, ty1 = box(M, *bands[4])
     yel = (a[..., 0] > 180) & (a[..., 1] > 160) & (a[..., 2] < 110); yel[:y0] = False; yel[y1:] = False
     yel = nd.binary_opening(yel, iterations=1)
     lab, n = nd.label(yel)

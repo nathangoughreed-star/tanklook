@@ -16,12 +16,13 @@ F, OUT = sys.argv[1], sys.argv[2]; TRIS = int(sys.argv[3]) if len(sys.argv) > 3 
 a, M = fs.load(os.path.join(F, 'sheet.webp'))
 bands = fs.panel_bands(M)
 FINS = json.load(open(os.path.join(F, 'fins.json')))
-dy = int(np.load(os.path.join(F, 'align.npy'))[0])
+dy, dx = (list(np.load(os.path.join(F, 'align.npy')).astype(int)) + [0])[:2]   # panel 1 = panel 2 + (dy, dx)
 B1, B2, B3, B4 = [fs.box(M, *b) for b in bands[:4]]
+Mp = [fs.mask(M, b) for b in bands[:4]]        # each panel's own mask (a grid sheet has neighbours in the same rows)
 L = B1[1] - B1[0]; XC = (B1[0] + B1[1]) / 2; YC = (B1[2] + B1[3]) / 2
 U = lambda px: (px - XC) / L; V = lambda py: -(py - YC) / L              # sheet px (absolute) -> model units
-# panel 2 in panel 1's frame: same x, y shifted by dy
-b2 = (B2[0], B2[1], B2[2] + dy, B2[3] + dy)
+# panel 2 in panel 1's frame: shifted by (dy, dx)
+b2 = (B2[0] + dx, B2[1] + dx, B2[2] + dy, B2[3] + dy)
 
 # ---------- body ----------
 raw = trimesh.load(os.path.join(F, 'hy_body.glb'), force='mesh', process=False)
@@ -44,7 +45,7 @@ orig = m.vertices.copy()   # the texture is baked from these (the surface as gen
 bl = os.path.join(F, 'bodyline2.npy')
 if os.path.exists(bl):
     T_, B_ = np.load(bl); xp = int(np.load(os.path.join(F, 'peduncle.npy'))[0]) - 8; p1y = bands[0][0]
-    Mf = np.zeros_like(M); ys_ = np.arange(bands[1][0], bands[1][1]); Mf[ys_ + dy] = M[ys_]  # finless body in panel 1's frame
+    Mf = fs.shift(Mp[1], dy, dx)  # finless body in panel 1's frame
     cols = np.arange(M.shape[1]); has = Mf.any(0)
     t2 = np.interp(cols, cols[has], np.argmax(Mf, 0)[has]).astype(float); b2_ = np.interp(cols, cols[has], (M.shape[0] - 1 - np.argmax(Mf[::-1], 0))[has]).astype(float)  # edge columns: nearest outline
     x_end, x_a = b2[0], xp + 200.0                              # finless stalk end -> the tail-fin base, eased over 200 px
@@ -60,17 +61,17 @@ if os.path.exists(bl):
     m.vertices = V_
     print('reshaped: depth now %.3f; stalk end moved %d -> %d px' % (m.extents[1], x_end, xp), flush=True)
 
-def samp(px, py):
-    px = np.clip(px.astype(int), 0, a.shape[1] - 1); py = np.clip(py.astype(int), 0, a.shape[0] - 1); return a[py, px].astype(np.float32), M[py, px]
+def samp(px, py, Mk):
+    px = np.clip(px.astype(int), 0, a.shape[1] - 1); py = np.clip(py.astype(int), 0, a.shape[0] - 1); return a[py, px].astype(np.float32), Mk[py, px]
 def colour(P, N):
     # side: panel 2 (same x as panel 1, y shifted back by dy)
-    cs, ms = samp(P[:, 0] * L + XC, -P[:, 1] * L + YC - dy)
+    cs, ms = samp(P[:, 0] * L + XC - dx, -P[:, 1] * L + YC - dy, Mp[1])
     # top: panel 3, its own length rescaled to panel 2's, snouts aligned, centred on its own midline
-    k3 = (B3[1] - B3[0]) / (B2[1] - B2[0]); x3 = B3[1] - (B2[1] - (P[:, 0] * L + XC)) * k3
-    ct, mt = samp(x3, (B3[2] + B3[3]) / 2 - P[:, 2] * L * k3)
+    k3 = (B3[1] - B3[0]) / (B2[1] - B2[0]); x3 = B3[1] - (B2[1] - (P[:, 0] * L + XC - dx)) * k3
+    ct, mt = samp(x3, (B3[2] + B3[3]) / 2 - P[:, 2] * L * k3, Mp[2])
     # front: panel 4, scaled so its height = panel 2's height
     k4 = (B4[3] - B4[2]) / (B2[3] - B2[2]); yb = -P[:, 1] * L + YC - dy   # y in panel 2 px
-    cf, mf = samp((B4[0] + B4[1]) / 2 - P[:, 2] * L * k4, B4[2] + (yb - B2[2]) * k4)
+    cf, mf = samp((B4[0] + B4[1]) / 2 - P[:, 2] * L * k4, B4[2] + (yb - B2[2]) * k4, Mp[3])
     nx = (P[:, 0] - U(b2[0])) / (U(b2[1]) - U(b2[0]))
     ws = (np.abs(N[:, 2]) + 0.15) * ms + 1e-3
     wt = np.clip(N[:, 1], 0, None) ** 2 * 1.5 * mt
@@ -125,7 +126,7 @@ pel = None; pk = [int(k) for k, v in FINS['components'].items() if v['role'] == 
 if pk:
     pel = np.zeros_like(M); pel[p1y:p1y + lab.shape[0]] = lab == pk[0]
 # card: panel 1's whole fish minus the paired fins
-card_mask = M.copy(); card_mask[:bands[0][0]] = False; card_mask[bands[0][1]:] = False
+card_mask = Mp[0].copy()
 for pm_ in (pec, pel):
     if pm_ is not None: card_mask &= ~pm_
 card = quad(B1[0], B1[1], B1[2], B1[3], rgba_of(card_mask, B1[0], B1[1], B1[2], B1[3]))

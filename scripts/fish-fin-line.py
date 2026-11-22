@@ -15,9 +15,9 @@ from sklearn.ensemble import RandomForestClassifier
 F = sys.argv[1]
 a = np.asarray(Image.open(os.path.join(F, 'sheet.webp')).convert('RGB')).astype(np.float32); M = a.max(2) > 8
 p1, p2 = fs.panel_bands(M)[:2]
-dy = int(np.load(os.path.join(F, 'align.npy'))[0]); lab = np.load(os.path.join(F, 'finlab.npy'))
-A = a[p1[0]:p1[1]]; M1 = M[p1[0]:p1[1]]; H, W = M1.shape
-M2 = np.zeros_like(M1); ys = np.arange(*p2) + dy - p1[0]; ok = (ys >= 0) & (ys < H); M2[ys[ok]] = M[p2[0]:p2[1]][ok]
+dy, dx = (list(np.load(os.path.join(F, 'align.npy')).astype(int)) + [0])[:2]; lab = np.load(os.path.join(F, 'finlab.npy'))
+A = a[p1[0]:p1[1]]; M1 = fs.mask(M, p1)[p1[0]:p1[1]]; H, W = M1.shape
+M2 = fs.shift(fs.mask(M, p2), dy, dx)[p1[0]:p1[1]]   # panel 2 in panel 1's frame
 
 g = A.mean(2); box = lambda x, r: nd.uniform_filter(x, 2 * r + 1); gx = nd.sobel(g, 1); gy = nd.sobel(g, 0)
 feat = [A[..., 0], A[..., 1], A[..., 2]]

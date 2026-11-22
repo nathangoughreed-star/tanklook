@@ -3,7 +3,7 @@
 Steps: panels -> generator (Hunyuan3D-2mv, skipped with --body) -> fish-fin-cut -> fish-fin-line -> fish-glb-assemble.
 Work folder: C:\\Users\\nreed\\fish-sheets\\<slug>-gen\\ (sheet.webp, side.png, front.png, hy_body.glb, finlab/align/fins/pec .npy/.json, bodyline2/peduncle .npy).
 The sheet: panels stacked on black, head to the right: 1 side + fins, 2 side, fins trimmed flush, 3 top, 4 front (both without fins),
-optional 5 label map (pectoral yellow, black root dot). Species that face left: --head left (the sheet is mirrored first).
+either stacked or as a 2x2 grid (1|2 over 3|4); optional 5th stacked panel: label map (pectoral yellow, black root dot). Species that face left: --head left (the sheet is mirrored first).
 A hand-traced pectoral can be given as <work>/pec.json {"poly": [[x, y], ...]} (absolute px of the work folder's sheet.webp) when there is no panel 5.
 The generator is limited to about 4 anonymous calls a day; a refused request costs nothing."""
 import sys, os, shutil, argparse, subprocess, numpy as np

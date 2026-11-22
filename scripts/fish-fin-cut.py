@@ -2,7 +2,7 @@
   panel 2 (finless side) is shifted into panel 1's frame by the head columns' top / bottom edges (fishsheet.align_dy);
   fins = panel 1 mask AND NOT (panel 2 mask dilated 2 px); connected components over 300 px are kept.
 Writes into the work folder:
-  align.npy   [dy]   rows to add to a panel 2 row to land in panel 1's frame
+  align.npy   [dy, dx] rows / columns to add to a panel 2 pixel to land in panel 1's frame (dx = 0 on a stacked sheet)
   finlab.npy  int32  panel 1 frame (rows from panel 1's top), 0 = not a fin, 1..n = components, largest first
   fins.json   role per component, by position against the finless body: above the back = dorsal (can be several),
               behind the tail-fin base = caudal, below the rear half = anal, below the front half = pelvic
@@ -24,16 +24,15 @@ def main(F, sheet=None):
     bands = fs.panel_bands(M)
     assert len(bands) in (4, 5), f'expected 4 or 5 panels on the sheet, found {len(bands)}: {bands}'
     B1 = fs.box(M, *bands[0]); B2 = fs.box(M, *bands[1])
-    dy = fs.align_dy(M, bands[0], bands[1], B2)
-    p1y, H = bands[0][0], bands[0][1] - bands[0][0]
-    M1 = M[bands[0][0]:bands[0][1]]; M2 = np.zeros_like(M1)
-    ys = np.arange(*bands[1]) + dy - p1y; ok = (ys >= 0) & (ys < H); M2[ys[ok]] = M[bands[1][0]:bands[1][1]][ok]
+    dy, dx = fs.align(M, bands[0], bands[1])
+    p1y = bands[0][0]
+    M1 = fs.mask(M, bands[0])[p1y:bands[0][1]]; M2 = fs.shift(fs.mask(M, bands[1]), dy, dx)[p1y:bands[0][1]]   # panel 2 in panel 1's frame
     fin = M1 & ~nd.binary_dilation(M2, iterations=DILATE)
     lab0, n0 = nd.label(fin); cnt = np.bincount(lab0.ravel()); cnt[0] = 0
     order = [i for i in np.argsort(-cnt) if cnt[i] > MIN_PX]
     lab = np.zeros(lab0.shape, np.int32)
     for new, old in enumerate(order, 1): lab[lab0 == old] = new
-    np.save(os.path.join(F, 'finlab.npy'), lab); np.save(os.path.join(F, 'align.npy'), np.array([dy]))
+    np.save(os.path.join(F, 'finlab.npy'), lab); np.save(os.path.join(F, 'align.npy'), np.array([dy, dx]))
 
     # ---- name the components against the finless body ----
     c2 = np.where(M2.any(0))[0]; bx0, bx1 = c2[0], c2[-1] + 1; bl = bx1 - bx0
@@ -52,7 +51,7 @@ def main(F, sheet=None):
     # one pelvic pair: the largest pelvic-position component; any further ones stay on the card
     pel = [k for k, v in roles.items() if v['role'] == 'pelvic']
     for k in pel[1:]: roles[k]['role'] = 'pelvic-extra'     # components are largest first
-    out = dict(panels=len(bands), bands=[list(map(int, b)) for b in bands], dy=int(dy), components=roles, pectoral=None)
+    out = dict(panels=len(bands), bands=[list(map(int, b)) for b in bands], dy=int(dy), dx=int(dx), components=roles, pectoral=None)
 
     # ---- pectoral ----
     pec, root = fs.label_map(a, M, bands, B1)
@@ -69,7 +68,7 @@ def main(F, sheet=None):
     json.dump(out, open(os.path.join(F, 'fins.json'), 'w'), indent=1)
     names = {}
     for v in roles.values(): names[v['role']] = names.get(v['role'], 0) + 1
-    print('panels %d, dy %d, fin components %d (%s); pectoral: %s' % (len(bands), dy, len(order), ', '.join(f'{n} {c}' for n, c in names.items()), src), flush=True)
+    print('panels %d, dy %d dx %d, fin components %d (%s); pectoral: %s' % (len(bands), dy, dx, len(order), ', '.join(f'{n} {c}' for n, c in names.items()), src), flush=True)
 
 
 if __name__ == '__main__':
