@@ -4,15 +4,17 @@ The finless panel turns fin bases into body. A small pixel classifier (random fo
 the body starts under the dorsal and anal fins. Outside the fin spans the finless outline is kept; the body only shrinks.
 Writes bodyline2.npy (top, bottom rows per column, panel 1 frame) and peduncle.npy (narrowest column of panel 1).
 Needs finlab.npy and align.npy from the fin-cut step. Usage: python -I fish-fin-line.py <folder>
-(Panel bands are the rainbowfish sheet's; read them from the sheet for the next species.)"""
+Panel bands come from the sheet (fishsheet.panel_bands)."""
 import sys, os, numpy as np
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import fishsheet as fs
 from PIL import Image
 from scipy import ndimage as nd
 from sklearn.ensemble import RandomForestClassifier
 
 F = sys.argv[1]
 a = np.asarray(Image.open(os.path.join(F, 'sheet.webp')).convert('RGB')).astype(np.float32); M = a.max(2) > 8
-p1, p2 = (32, 416), (479, 777)
+p1, p2 = fs.panel_bands(M)[:2]
 dy = int(np.load(os.path.join(F, 'align.npy'))[0]); lab = np.load(os.path.join(F, 'finlab.npy'))
 A = a[p1[0]:p1[1]]; M1 = M[p1[0]:p1[1]]; H, W = M1.shape
 M2 = np.zeros_like(M1); ys = np.arange(*p2) + dy - p1[0]; ok = (ys >= 0) & (ys < H); M2[ys[ok]] = M[p2[0]:p2[1]][ok]
@@ -50,6 +52,6 @@ def blend(line, base, span):
     return np.where(np.isnan(base), np.nan, base * (1 - w) + v * w)
 T = np.maximum(blend(top, t2, up), t2); B = np.minimum(blend(bot, b2, dn), b2)
 d1 = np.array([(np.where(M1[:, x])[0][-1] - np.where(M1[:, x])[0][0]) if M1[:, x].any() else 999 for x in range(W)])
-r = np.arange(120, 330); xp = r[np.argmin(d1[r])]
+cx_ = np.where(M1.any(0))[0]; r = np.arange(int(cx_[0] + 0.1 * (cx_[-1] - cx_[0])), int(cx_[0] + 0.32 * (cx_[-1] - cx_[0]))); xp = r[np.argmin(d1[r])]   # narrowest column in the rear third: the tail-fin base
 np.save(os.path.join(F, 'bodyline2.npy'), np.stack([T, B])); np.save(os.path.join(F, 'peduncle.npy'), np.array([xp]))
 print('body line: back lowered up to %.0f px, belly raised up to %.0f px; tail-fin base at x %d' % (np.nanmax(T - t2), np.nanmax(b2 - B), xp))

@@ -1,0 +1,76 @@
+"""E-GEN finless method, step 1 after the generator: cut the fins out of the sheet.
+  panel 2 (finless side) is shifted into panel 1's frame by the head columns' top / bottom edges (fishsheet.align_dy);
+  fins = panel 1 mask AND NOT (panel 2 mask dilated 2 px); connected components over 300 px are kept.
+Writes into the work folder:
+  align.npy   [dy]   rows to add to a panel 2 row to land in panel 1's frame
+  finlab.npy  int32  panel 1 frame (rows from panel 1's top), 0 = not a fin, 1..n = components, largest first
+  fins.json   role per component, by position against the finless body: above the back = dorsal (can be several),
+              behind the tail-fin base = caudal, below the rear half = anal, below the front half = pelvic
+              (the largest such component is the pelvic pair); plus the pectoral: from panel 5 (yellow region, black root dot)
+              when the sheet has one, else from pec.json ({"poly": [[x, y], ...]} absolute sheet px, hand trace), else none
+  pec.npy     bool, whole sheet, the pectoral region (only when there is one)
+Usage: python fish-fin-cut.py <work-folder> [sheet.webp]"""
+import sys, os, json, numpy as np
+from scipy import ndimage as nd
+from PIL import Image, ImageDraw
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import fishsheet as fs
+
+MIN_PX, DILATE = 300, 2
+
+
+def main(F, sheet=None):
+    a, M = fs.load(sheet or os.path.join(F, 'sheet.webp'))
+    bands = fs.panel_bands(M)
+    assert len(bands) in (4, 5), f'expected 4 or 5 panels on the sheet, found {len(bands)}: {bands}'
+    B1 = fs.box(M, *bands[0]); B2 = fs.box(M, *bands[1])
+    dy = fs.align_dy(M, bands[0], bands[1], B2)
+    p1y, H = bands[0][0], bands[0][1] - bands[0][0]
+    M1 = M[bands[0][0]:bands[0][1]]; M2 = np.zeros_like(M1)
+    ys = np.arange(*bands[1]) + dy - p1y; ok = (ys >= 0) & (ys < H); M2[ys[ok]] = M[bands[1][0]:bands[1][1]][ok]
+    fin = M1 & ~nd.binary_dilation(M2, iterations=DILATE)
+    lab0, n0 = nd.label(fin); cnt = np.bincount(lab0.ravel()); cnt[0] = 0
+    order = [i for i in np.argsort(-cnt) if cnt[i] > MIN_PX]
+    lab = np.zeros(lab0.shape, np.int32)
+    for new, old in enumerate(order, 1): lab[lab0 == old] = new
+    np.save(os.path.join(F, 'finlab.npy'), lab); np.save(os.path.join(F, 'align.npy'), np.array([dy]))
+
+    # ---- name the components against the finless body ----
+    c2 = np.where(M2.any(0))[0]; bx0, bx1 = c2[0], c2[-1] + 1; bl = bx1 - bx0
+    t2 = np.full(M1.shape[1], np.nan); b2 = t2.copy()
+    for x in c2: r = np.where(M2[:, x])[0]; t2[x], b2[x] = r[0], r[-1]
+    roles = {}
+    for k in range(1, len(order) + 1):
+        yy, xx = np.where(lab == k); cx, cy = xx.mean(), yy.mean()
+        xi = int(np.clip(round(cx), bx0, bx1 - 1))
+        mid = (t2[xi] + b2[xi]) / 2 if not np.isnan(t2[xi]) else (M2.any(1).nonzero()[0].mean())
+        if cx < bx0 + 0.12 * bl: role = 'caudal'
+        elif cy < mid: role = 'dorsal'
+        elif cx < bx0 + 0.5 * bl: role = 'anal'
+        else: role = 'pelvic'
+        roles[k] = dict(role=role, px=int(len(yy)), cx=round(float(cx), 1), cy=round(float(cy + p1y), 1))
+    # one pelvic pair: the largest pelvic-position component; any further ones stay on the card
+    pel = [k for k, v in roles.items() if v['role'] == 'pelvic']
+    for k in pel[1:]: roles[k]['role'] = 'pelvic-extra'     # components are largest first
+    out = dict(panels=len(bands), bands=[list(map(int, b)) for b in bands], dy=int(dy), components=roles, pectoral=None)
+
+    # ---- pectoral ----
+    pec, root = fs.label_map(a, M, bands, B1)
+    src = 'label map (panel 5)'
+    if pec is None:
+        pj = os.path.join(F, 'pec.json'); src = 'hand trace (pec.json)'
+        if os.path.exists(pj):
+            pm = Image.new('L', (a.shape[1], a.shape[0]), 0)
+            ImageDraw.Draw(pm).polygon([tuple(p) for p in json.load(open(pj))['poly']], fill=1); pec = np.asarray(pm) > 0
+    if pec is not None and pec.any():
+        yy, xx = np.where(pec); np.save(os.path.join(F, 'pec.npy'), pec)
+        out['pectoral'] = dict(source=src, px=int(pec.sum()), root=None if root is None else [round(float(root[0]), 1), round(float(root[1]), 1)])
+    else: src = 'none'
+    json.dump(out, open(os.path.join(F, 'fins.json'), 'w'), indent=1)
+    names = {}
+    for v in roles.values(): names[v['role']] = names.get(v['role'], 0) + 1
+    print('panels %d, dy %d, fin components %d (%s); pectoral: %s' % (len(bands), dy, len(order), ', '.join(f'{n} {c}' for n, c in names.items()), src), flush=True)
+
+
+if __name__ == '__main__':
+    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None)

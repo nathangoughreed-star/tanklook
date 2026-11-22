@@ -1,22 +1,23 @@
 """E-GEN finless method: a generated finless body + flat fin cut-outs from the finned side panel, as one GLB.
 Inputs (rainbow-gen folder): sheet.webp (panel 1 side with fins, 2 side without, 3 top without, 4 front without),
-hy_body.glb (Hunyuan3D-2mv from panels 2 + 4), finlab.npy / align.npy (fin_cut step).
+hy_body.glb (Hunyuan3D-2mv from panels 2 + 4), finlab.npy / align.npy / fins.json / pec.npy (fish-fin-cut), bodyline2.npy / peduncle.npy (fish-fin-line).
 Output parts, all length 1 = panel 1's full length (snout to tail tip), +x = head, centred on panel 1's box:
   body      the generated body, decimated, its texture baked from panels 2-4 (no fin pixels on it)
   card      a flat plane at z = 0 with panel 1's whole fish (median fins show where they stick out of the body)
   pec_l/r   pectoral cut-outs, hinged at the root and turned out from the flank
-  pel_l/r   pelvic cut-outs, hinged at the belly and turned out
+  pel_l/r   pelvic cut-outs, hinged at the belly and turned out (omitted when the sheet has none)
 Usage: python fish-glb-assemble.py <folder> <out.glb> [tris]"""
-import sys, os, numpy as np, trimesh, fast_simplification, xatlas
-from PIL import Image, ImageDraw
+import sys, os, json, numpy as np, trimesh, fast_simplification, xatlas
+from PIL import Image
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import fishsheet as fs
 
 F, OUT = sys.argv[1], sys.argv[2]; TRIS = int(sys.argv[3]) if len(sys.argv) > 3 else 8000
-a = np.asarray(Image.open(os.path.join(F, 'sheet.webp')).convert('RGB')); M = a.max(2) > 8
-bands = [(32, 416), (479, 777), (860, 1044), (1106, 1511)]
+a, M = fs.load(os.path.join(F, 'sheet.webp'))
+bands = fs.panel_bands(M)
+FINS = json.load(open(os.path.join(F, 'fins.json')))
 dy = int(np.load(os.path.join(F, 'align.npy'))[0])
-def box(y0, y1):
-    c = np.where(M[y0:y1].any(0))[0]; r = np.where(M[y0:y1].any(1))[0]; return c[0], c[-1] + 1, y0 + r[0], y0 + r[-1] + 1
-B1, B2, B3, B4 = [box(*b) for b in bands]
+B1, B2, B3, B4 = [fs.box(M, *b) for b in bands[:4]]
 L = B1[1] - B1[0]; XC = (B1[0] + B1[1]) / 2; YC = (B1[2] + B1[3]) / 2
 U = lambda px: (px - XC) / L; V = lambda py: -(py - YC) / L              # sheet px (absolute) -> model units
 # panel 2 in panel 1's frame: same x, y shifted by dy
@@ -116,16 +117,17 @@ def rgba_of(mask, x0, x1, y0, y1):
 
 lab = np.load(os.path.join(F, 'finlab.npy'))                       # panel 1 frame (rows from bands[0][0])
 p1y = bands[0][0]
-# pectoral: traced by hand on the zoomed sheet (it lies over the flank, so the difference can't find it)
-pec_poly = [(630, 202), (700, 199), (750, 206), (790, 216), (805, 225), (805, 258), (787, 265), (733, 264), (683, 249), (633, 222)]
-pm = Image.new('L', (a.shape[1], a.shape[0]), 0); ImageDraw.Draw(pm).polygon(pec_poly, fill=1); pec = np.asarray(pm) > 0
-# pelvic: the difference component hanging below the belly near x 612-696
-pel = np.zeros_like(M); sub = lab > 0; yy, xx = np.where(sub)
-comp = lab[(yy >= 327) & (yy <= 383) & (xx >= 612) & (xx <= 696)] if False else None
-k = lab[355, 650] if lab[355, 650] else np.bincount(lab[327:383, 612:696].ravel())[1:].argmax() + 1
-pel[p1y:p1y + lab.shape[0]] = lab == k
+# pectoral: it lies over the flank, so the difference can't find it: panel 5's yellow region, or pec.json's hand trace
+pec = np.load(os.path.join(F, 'pec.npy')) if FINS['pectoral'] else None
+pec_root = FINS['pectoral']['root'] if FINS['pectoral'] else None
+# pelvic: the largest difference component below the front half of the finless body (fish-fin-cut names them)
+pel = None; pk = [int(k) for k, v in FINS['components'].items() if v['role'] == 'pelvic']
+if pk:
+    pel = np.zeros_like(M); pel[p1y:p1y + lab.shape[0]] = lab == pk[0]
 # card: panel 1's whole fish minus the paired fins
-card_mask = M.copy(); card_mask[:bands[0][0]] = False; card_mask[bands[0][1]:] = False; card_mask &= ~pec & ~pel
+card_mask = M.copy(); card_mask[:bands[0][0]] = False; card_mask[bands[0][1]:] = False
+for pm_ in (pec, pel):
+    if pm_ is not None: card_mask &= ~pm_
 card = quad(B1[0], B1[1], B1[2], B1[3], rgba_of(card_mask, B1[0], B1[1], B1[2], B1[3]))
 
 def halfwidth(x, y):
@@ -135,9 +137,10 @@ def halfwidth(x, y):
 
 parts = {'body': body, 'card': card}
 for name, mask, hinge, ang in (('pec', pec, 'y', 28), ('pel', pel, 'x', 22)):
+    if mask is None or not mask.any(): continue
     ys_, xs_ = np.where(mask); x0, x1, y0, y1 = xs_.min(), xs_.max() + 1, ys_.min(), ys_.max() + 1
     rg = rgba_of(mask, x0, x1, y0, y1)
-    if hinge == 'y': rx, ry = U(x1), V((y0 + y1) / 2)         # pectoral: root at its front (head) end
+    if hinge == 'y': rx, ry = (U(pec_root[0]), V(pec_root[1])) if pec_root else (U(x1), V((y0 + y1) / 2))   # pectoral: at the label map's root dot, else its front (head) end
     else: rx, ry = U((x0 + x1) / 2), V(y0)                     # pelvic: root along its top edge
     hw = halfwidth(rx, ry) * 0.9
     for side, sg in (('l', 1), ('r', -1)):
