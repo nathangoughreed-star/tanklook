@@ -70,6 +70,7 @@
   {"id": "discusc", "name": "Discus", "sci": "Symphysodon aequifasciatus", "tl": 150, "art": "discusc", "aspect": 0.975},
   {"id": "cardinalb", "name": "Cardinal tetra", "sci": "Paracheirodon axelrodi", "tl": 45, "art": "cardinalb", "aspect": 0.382},
   {"id": "cardinalc", "name": "Cardinal tetra", "sci": "Paracheirodon axelrodi", "tl": 45, "art": "cardinalc", "aspect": 0.439},
+  {"id": "gbrb", "name": "German blue ram", "sci": "Mikrogeophagus ramirezi", "tl": 50, "art": "gbrb", "aspect": 0.707},
   {"id": "oscar", "albino": "https://link.springer.com/article/10.1007/s10750-022-04921-w", "name": "Oscar", "sci": "Astronotus ocellatus", "tl": 300, "art": "oscar"},
   {"id": "goldfish", "name": "Fancy goldfish", "sci": "Carassius auratus", "tl": 203, "group": "shoal", "art": "goldfish"},
   {"id": "comet", "name": "Comet goldfish", "sci": "Carassius auratus", "tl": 250, "group": "shoal", "art": "comet", "note": "Single-tailed goldfish; grows to 30 cm, best in a pond or a very large tank."},
