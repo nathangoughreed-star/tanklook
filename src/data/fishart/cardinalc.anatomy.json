@@ -1,0 +1,644 @@
+{
+ "art": "cardinalc",
+ "source": {
+  "file": "side.png (input image; sheet and photos are not in the repo)",
+  "px": [
+   512,
+   512
+  ],
+  "view": "side, nose right, black background",
+  "sex": "unknown"
+ },
+ "method": {
+  "threshold": 8,
+  "openRadiusPx": 9,
+  "script": "scripts/fish-outline.py",
+  "rotationDeg": 0.0
+ },
+ "anatomy": {
+  "slPx": 358.0,
+  "tlPx": 420.0,
+  "tlOverSl": 1.173,
+  "caudalTipBeyondSlPctSL": 17.32,
+  "depthProfile": {
+   "stations": [
+    0,
+    5,
+    10,
+    15,
+    20,
+    25,
+    30,
+    35,
+    40,
+    45,
+    50,
+    55,
+    60,
+    65,
+    70,
+    75,
+    80,
+    85,
+    90,
+    95,
+    100
+   ],
+   "top": [
+    0.42,
+    4.08,
+    6.65,
+    8.38,
+    10.06,
+    11.17,
+    12.29,
+    13.13,
+    13.41,
+    13.69,
+    13.72,
+    13.25,
+    12.51,
+    11.69,
+    11.21,
+    11.05,
+    10.89,
+    10.73,
+    10.56,
+    10.4,
+    8.1
+   ],
+   "bottom": [
+    4.33,
+    8.35,
+    10.84,
+    12.49,
+    13.69,
+    14.8,
+    15.36,
+    15.64,
+    15.64,
+    15.36,
+    16.64,
+    16.2,
+    14.25,
+    13.99,
+    13.04,
+    11.74,
+    10.39,
+    8.7,
+    7.52,
+    6.84,
+    6.84
+   ],
+   "axis": "snout tip to peduncle centre, level; values are distance from the axis in % SL; BODY ONLY (opened mask)"
+  },
+  "landmarks": {
+   "snoutPx": [
+    463.0,
+    97.0
+   ],
+   "pedunclePx": [
+    105,
+    97.0
+   ],
+   "snoutPxOriginal": [
+    463.0,
+    97.0
+   ],
+   "pedunclePxOriginal": [
+    105.0,
+    97.0
+   ],
+   "eye": null
+  },
+  "fins": {
+   "dorsal": {
+    "baseStartPctSL": 50.84,
+    "baseEndPctSL": 67.88,
+    "maxHeightPctSL": 13.46,
+    "heightProfile": [
+     [
+      67.88,
+      2.96
+     ],
+     [
+      66.76,
+      13.24
+     ],
+     [
+      65.64,
+      13.02
+     ],
+     [
+      64.53,
+      12.51
+     ],
+     [
+      63.41,
+      11.76
+     ],
+     [
+      62.29,
+      11.03
+     ],
+     [
+      61.17,
+      10.3
+     ],
+     [
+      60.06,
+      9.29
+     ],
+     [
+      58.94,
+      8.26
+     ],
+     [
+      57.82,
+      7.52
+     ],
+     [
+      56.7,
+      6.22
+     ],
+     [
+      55.59,
+      5.24
+     ],
+     [
+      54.47,
+      4.29
+     ],
+     [
+      53.35,
+      3.35
+     ],
+     [
+      52.23,
+      2.12
+     ],
+     [
+      51.12,
+      1.15
+     ]
+    ],
+    "note": "fin spines are dark/translucent: heights are lower bounds"
+   },
+   "anal": {
+    "baseStartPctSL": 62.57,
+    "baseEndPctSL": 87.43,
+    "maxHeightPctSL": 11.82,
+    "heightProfile": [
+     [
+      87.43,
+      0.92
+     ],
+     [
+      86.31,
+      1.47
+     ],
+     [
+      85.2,
+      1.97
+     ],
+     [
+      84.08,
+      2.47
+     ],
+     [
+      82.96,
+      3.25
+     ],
+     [
+      81.84,
+      3.69
+     ],
+     [
+      80.73,
+      4.12
+     ],
+     [
+      79.61,
+      4.55
+     ],
+     [
+      78.49,
+      5.27
+     ],
+     [
+      77.37,
+      6.41
+     ],
+     [
+      76.26,
+      9.78
+     ],
+     [
+      75.14,
+      11.76
+     ],
+     [
+      74.02,
+      11.2
+     ],
+     [
+      72.91,
+      10.62
+     ],
+     [
+      71.79,
+      9.77
+     ],
+     [
+      70.67,
+      8.91
+     ],
+     [
+      69.55,
+      8.1
+     ],
+     [
+      68.44,
+      7.04
+     ],
+     [
+      67.32,
+      5.98
+     ],
+     [
+      66.2,
+      4.92
+     ],
+     [
+      65.08,
+      3.9
+     ],
+     [
+      63.97,
+      2.89
+     ],
+     [
+      62.85,
+      1.88
+     ]
+    ]
+   },
+   "pelvicOrPectoral": null,
+   "caudal": {
+    "type": "round",
+    "tipUPctSL": -17.32,
+    "outline": [
+     [
+      0.56,
+      8.38,
+      10.34
+     ],
+     [
+      2.23,
+      9.5,
+      11.45
+     ],
+     [
+      3.91,
+      10.34,
+      12.85
+     ],
+     [
+      5.59,
+      11.45,
+      13.97
+     ],
+     [
+      7.26,
+      12.57,
+      15.08
+     ],
+     [
+      8.94,
+      13.41,
+      16.2
+     ],
+     [
+      10.61,
+      14.25,
+      17.04
+     ],
+     [
+      12.29,
+      15.08,
+      17.88
+     ],
+     [
+      13.97,
+      15.64,
+      18.72
+     ],
+     [
+      15.64,
+      16.2,
+      19.27
+     ],
+     [
+      17.32,
+      15.92,
+      -15.64
+     ]
+    ],
+    "outlineCols": "[u % SL from the peduncle (negative = behind), top, bottom] distance from the axis in % SL; full mask"
+   }
+  },
+  "thickness": {
+   "stations": [
+    0,
+    5,
+    10,
+    15,
+    20,
+    25,
+    30,
+    35,
+    40,
+    45,
+    50,
+    55,
+    60,
+    65,
+    70,
+    75,
+    80,
+    85,
+    90,
+    95,
+    100
+   ],
+   "halfWidthPctSL": [
+    1.0,
+    5.01,
+    7.05,
+    6.49,
+    7.05,
+    7.25,
+    7.44,
+    7.64,
+    7.83,
+    8.03,
+    7.75,
+    7.33,
+    6.86,
+    6.656,
+    6.077,
+    5.209,
+    4.185,
+    3.161,
+    2.293,
+    1.443,
+    0.755
+   ],
+   "source": "top panel of the generated sheet, blue-share mask (thr 0.60); the narrower side of the centre line",
+   "fit": {
+    "thick": 0.63,
+    "pedT": 0.168,
+    "rmsPctSL": 0.47,
+    "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
+   }
+  },
+  "render": {
+   "note": "built by scripts/fish-build.py from cardinalc.json",
+   "photo": {
+    "art": "cardinalc",
+    "plan": "oscar",
+    "sx": 926.0,
+    "sl": 716.0,
+    "ax": 194.0,
+    "eye": [
+     871,
+     203,
+     25
+    ],
+    "pec": {
+     "root": [
+      756,
+      249
+     ],
+     "poly": [
+      [
+       756,
+       249
+      ],
+      [
+       748,
+       266
+      ],
+      [
+       736,
+       267
+      ],
+      [
+       728,
+       268
+      ],
+      [
+       715,
+       268
+      ],
+      [
+       712,
+       268
+      ],
+      [
+       701,
+       265
+      ],
+      [
+       695,
+       261
+      ],
+      [
+       688,
+       256
+      ],
+      [
+       681,
+       248
+      ],
+      [
+       673,
+       237
+      ],
+      [
+       669,
+       223
+      ],
+      [
+       669,
+       222
+      ],
+      [
+       684,
+       216
+      ],
+      [
+       699,
+       217
+      ],
+      [
+       708,
+       218
+      ],
+      [
+       716,
+       220
+      ],
+      [
+       721,
+       221
+      ],
+      [
+       731,
+       224
+      ],
+      [
+       738,
+       227
+      ],
+      [
+       746,
+       230
+      ],
+      [
+       760,
+       237
+      ],
+      [
+       772,
+       248
+      ],
+      [
+       771,
+       250
+      ]
+     ],
+     "spread": 0.35
+    },
+    "pelvic": {
+     "root": [
+      590,
+      308
+     ],
+     "len": 89,
+     "poly": [
+      [
+       590,
+       308
+      ],
+      [
+       576,
+       320
+      ],
+      [
+       566,
+       327
+      ],
+      [
+       560,
+       331
+      ],
+      [
+       555,
+       334
+      ],
+      [
+       551,
+       337
+      ],
+      [
+       547,
+       339
+      ],
+      [
+       541,
+       342
+      ],
+      [
+       535,
+       345
+      ],
+      [
+       523,
+       351
+      ],
+      [
+       512,
+       352
+      ],
+      [
+       511,
+       348
+      ],
+      [
+       515,
+       335
+      ],
+      [
+       518,
+       326
+      ],
+      [
+       520,
+       317
+      ],
+      [
+       522,
+       311
+      ],
+      [
+       526,
+       306
+      ],
+      [
+       530,
+       303
+      ],
+      [
+       535,
+       303
+      ],
+      [
+       541,
+       303
+      ],
+      [
+       551,
+       304
+      ],
+      [
+       557,
+       305
+      ],
+      [
+       566,
+       306
+      ],
+      [
+       583,
+       307
+      ]
+     ]
+    },
+    "proj": {
+     "fk": 840.0,
+     "y0": -0.0151
+    },
+    "thickx": 0.96,
+    "noTail": false,
+    "measuredWidth": true,
+    "aspect": 0.439,
+    "finImg": true
+   },
+   "fit": "{'thick': 0.63, 'pedT': 0.168, 'rmsPctSL': 0.47, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
+  }
+ },
+ "reliability": {
+  "note": "Per-species reliability is not assessed. Body edge = the opened mask at the stated threshold (about +-1-2 px); fin heights are lower bounds and fin base starts/ends are +-3 % SL unless set by --landmarks; see render.fit for the thickness fit."
+ }
+}
