@@ -60,6 +60,7 @@ image instead, save it there yourself (the pasted image's path is in the message
 | `dwarfgouramib` | `gourami-gen` | mass 1.07-1.20x, sat 1.14 (none set); thread pelvic short from the side |
 | `pepperedcoryb` | `cory-gen` (stretched k 1.173) | `--body-from-map` (row 50), `sat` 0.73, plan `pepperedcory` (row 52), `plan_extra` barbels + `--snout-open 15` (row 53); mass 1.08-1.50x (one specimen looks wrong) |
 | `royalgrammac` | `gramma2-gen` | second gramma sheet (eyespot marked white in row 5: row 51); mass 1.09-1.27x |
+| `oscarb` | `oscar5-gen` (stretched k 1.093) | tiger oscar, `--body-from-map`; mass 0.97-1.34x; orange renders redder than the sheet, snout pointed (sheet: blunt, rounded lips). Not `oscar-gen` (an older experiment's folder) |
 
 ## The pipeline now (per species; scripted 2026-11-23, method row 44)
 1. **Numbers:** `python -I scripts/fishshapes.py "<Genus species>"` prints every FishShapes v1 specimen (depth, head, peduncle, width
