@@ -1,4 +1,4 @@
-# Build B 5-row sheet prompt: template (2026-11-23)
+# Build B 5-row sheet prompt: template (2026-11-23; width numbers removed the same day)
 
 Made from `bluetang3-chatgpt.md`, the prompt behind `bluetangd`. Nathan liked that fish, and the prompt won a blind A/B.
 The prompt has two parts:
@@ -11,20 +11,22 @@ The prompt has two parts:
 
 ## How to make a species prompt
 1. Copy part 2 and fill every slot, as for the blue tang worked example at the bottom. Sources:
-   - depth and width %SL: FishBase / Seriously Fish morphometrics, or measured off two or three good side and top photos;
-   - `WIDTH_OF_DEPTH` = width ÷ depth, said in words ("one-quarter", "about one-third", "about half");
+   - depth % SL: FishShapes v1 (`Max_body_depth` / `Standard_length`, museum specimens; https://zenodo.org/records/6642650), else FishBase / Seriously Fish morphometrics;
    - `SL_IN`: the adult standard length in inches, rounded.
 2. Save the filled block as `C:\Users\nreed\fish-sheets\<slug>-gen\species.txt`. Then run
    `python -I scripts/fish-prompt-fill.py <that file> <out.txt>`. It stops if a slot is missing.
-   - `--example` fills the tang block below. It reproduces `bluetang3-chatgpt.md` byte for byte (checked 2026-11-23).
+   - `--example` fills the tang block below. Before the width lines were removed it reproduced `bluetang3-chatgpt.md` byte for byte (checked 2026-11-23); now it differs from that prompt only by its width lines (three removed, the front-view sentence shortened).
 3. Save the filled prompt as `research/fish-sheets/prompts/<slug>-5row.md`, with a one-line header: species, date, values used.
 4. Nathan pastes it into a **new** ChatGPT chat, with no photos unless he chooses to add some (the tang prompt had none), and saves
    the sheet as `C:\Users\nreed\fish-sheets\<slug>-gen\sheet.webp`.
 5. Log the sheet and what it got right or wrong in `research/fish-model-sheet-method.md`, section 2, "Prompts used".
 
 ## Rules for the species block
-- **Geometry first.** Depth and width are the two numbers that set the build. The tang's sheet came out 1.28-1.38× too thick
-  even with them, so never leave them out. Build step 6 corrects thickness to FishBase mass anyway.
+- **Geometry first: depth is the one number.** The side outline is the body as drawn, so the depth must be right in the sheet.
+- **No width numbers (Nathan, 2026-11-23).** The sheets ignored them: the yellow tang was drawn 22% SL wide when asked 13% (+30%), the discus
+  22.8% when asked 17% (+34%), the blue tang 1.28-1.38x heavy. The build keeps only the top view's width *shape* and rescales its maximum to
+  the measured width (FishShapes), so a width number in the prompt can only add a constraint the model fights. The qualitative words
+  (`CROSS_SECTION_WORDS`, "do not inflate") stay.
 - **Name only the marks that must be right:** the diagnostic pattern and anything image models get wrong for this fish.
   Describe a pattern by its shape and where it starts and ends, and say how the parts connect (the tang: "curved and connected,
   not two straight parallel stripes").
@@ -85,8 +87,6 @@ Species proportions:
 
 * Adult {{COMMON}}, standard length {{SL_IN}} inches.
 * Maximum body depth = approximately {{DEPTH_PCT}}% of standard length.
-* Maximum body width = approximately {{WIDTH_PCT}}% of standard length.
-* Body width is approximately {{WIDTH_OF_DEPTH}} of body depth.
 {{BODY_BULLETS}}
 * Natural asymmetry of the head and body profile; do not substitute a perfect ellipse or pointed leaf shape.
 
@@ -133,8 +133,6 @@ A true orthographic dorsal projection of the same master finless body.
 
 Head pointing right, snout and peduncle aligned horizontally with row 2.
 
-Width constraint: Maximum top-view width must be approximately {{WIDTH_OF_DEPTH_PCT}}% of the maximum side-view body depth.
-
 Show a {{TOP_VIEW_SHAPE}}.
 
 Do not make the body spindle-shaped or excessively thick.
@@ -149,7 +147,7 @@ A true orthographic anterior projection of the same master finless body, viewed 
 
 At the same physical scale as all other views.
 
-The body must appear {{FRONT_VIEW_SHAPE}}, with maximum width approximately {{WIDTH_OF_DEPTH}} of its maximum depth.
+The body must appear {{FRONT_VIEW_SHAPE}}.
 
 Preserve the correct forehead, head, eye, and mouth positions. The silhouette must represent the projected three-dimensional body, not a pointed oval or symmetrical leaf.
 
@@ -222,9 +220,6 @@ COMMON              =
 SCI                 = 
 SL_IN               =      (adult standard length, inches)
 DEPTH_PCT           =      (max body depth, % SL)
-WIDTH_PCT           =      (max body width, % SL)
-WIDTH_OF_DEPTH      =      (width / depth in words: "one-quarter", "about one-third", "about half")
-WIDTH_OF_DEPTH_PCT  =      (same as a percent: 25, 33, 50)
 BODY_BULLETS        =      (4-8 "* " lines: overall shape and compression, snout/forehead, back and belly line,
                             where the greatest depth sits, the peduncle (and any spines or keels on it), eye position, mouth)
 CROSS_SECTION_WORDS =      ("thin, disc-like" / "moderately compressed" / "nearly round, slightly flattened below")
@@ -240,16 +235,13 @@ SCALES              =      (e.g. "The species has minute scales; skin should loo
 PATTERN_SHORT       =      (e.g. "black and blue coloration")
 ```
 
-## Worked example: blue tang (fills part 1 back to `bluetang3-chatgpt.md`)
+## Worked example: blue tang (`bluetang3-chatgpt.md` minus its width lines)
 
 ```text
 COMMON              = Pacific blue tang
 SCI                 = Paracanthurus hepatus
 SL_IN               = 6
 DEPTH_PCT           = 48
-WIDTH_PCT           = 12
-WIDTH_OF_DEPTH      = one-quarter
-WIDTH_OF_DEPTH_PCT  = 25
 BODY_BULLETS        =
 * Deep oval body, extremely compressed laterally.
 * Short, blunt snout with a steep, rounded forehead.
