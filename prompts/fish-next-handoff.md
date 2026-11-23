@@ -1,22 +1,50 @@
-# Fish models: handoff to the next chat (2026-11-23, second edition)
+# Fish models: handoff to the next chat (2026-11-23, third edition)
 
-**Your job:** keep building **new species** with the build-B (no clicks) method, and fix pipeline problems only when the fix
-helps every species. Nathan picks the species; he generates each sheet in ChatGPT and pastes it in.
+**Your job:** build **new species** with the scripted build-B pipeline, and fix pipeline problems only when the fix helps every
+species (and then put the fix in a script, not just a note: method row 44). Nathan picks the species and generates each sheet in
+ChatGPT.
+
+## First task: build the batch of three
+The prompts are written and Nathan generates the sheets. Each sheet goes to its work folder as `sheet.webp`. If Nathan pastes an
+image instead, save it there yourself (the pasted image's path is in the message). Then, per fish:
+
+| fish | work folder | build command (from the worktree) | watch for |
+|---|---|---|---|
+| Royal gramma | `C:/Users/nreed/fish-sheets/gramma-gen` | `python -I scripts/fish-new.py C:/Users/nreed/fish-sheets/gramma-gen royalgrammab "Royal gramma" "Gramma loreto" 80` | violet/yellow split at a slant, long pelvics (may be clipped or merge with the anal) |
+| Dwarf gourami | `C:/Users/nreed/fish-sheets/gourami-gen` | `python -I scripts/fish-new.py C:/Users/nreed/fish-sheets/gourami-gen dwarfgouramib "Dwarf gourami" "Trichogaster lalius" 80` | thread pelvics (a thin fin: the 300 px fin minimum in `fish-fin-cut.py` may drop it), dorsal/anal touching the caudal (row 49 split) |
+| Peppered cory | `C:/Users/nreed/fish-sheets/cory-gen` | `python -I scripts/fish-new.py C:/Users/nreed/fish-sheets/cory-gen pepperedcoryb "Peppered corydoras" "Corydoras paleatus" 70` | first bottom-dweller: flat belly and a flat-bottomed front view (the build may round the belly), adipose = `dorsal2` (row 46), barbels as thin fins or lost |
+
+- Each folder already holds `species.txt`, `prompt.txt` and `fishshapes.json` (the fish's own FishShapes numbers, n 3). Prompts:
+  `research/fish-sheets/prompts/{gramma,gourami,cory}-5row.md`.
+- Before building, look at the sheet. If row 2 kept the fins, or a fin role is missing, add `--body-from-map` (rows 36, 42).
+- After each build: take pictures (pipeline step 5), compare with the sheet's row 1 and send them. Measure colour (row 48): a
+  mid-body saturation ratio well above 1 means set `sat` = 1 / ratio in the spec, then rebuild (`fish-new.py` keeps it).
+- Log each sheet in the method doc's "Prompts used" table, add a checklist row for each correction, add the fish to the table
+  below, and commit.
+- The species.json ids already exist for the old builds (`royalgramma`, `dwarfgourami`, `pepperedcory`): the new ids end in `b`.
 
 ## Start here (read these, nothing else first)
 1. This file.
-2. `research/fish-model-sheet-method.md`: section 4 checklist **rows 33-41** (everything learned this session), and the
-   "Prompts used" table in section 2 (rows for yellow tang, discus, cardinal). Grep the rest when needed.
-3. `research/fish-sheets/prompts/B-5row-template.md`: the sheet prompt template (method block + species slots + rules).
-   Worked examples: `yellowtang-5row.md`, `discus-5row.md`, `cardinal-5row-v2.md` (latest template).
+2. `research/fish-model-sheet-method.md`: section 4 checklist **rows 42-49** (the latest lessons; rows 33-41 for the session
+   before), and the "Prompts used" table in section 2. Grep the rest when needed.
+3. `research/fish-sheets/prompts/B-5row-template.md` only when writing a new prompt.
 
 ## Where the work is
-- **Branch `claude/glbfish-e5`, worktree `.claude/worktrees/glbfish-e5`**, 47 commits ahead of origin/main. **Nothing is on main.**
-  Merge only with Nathan's yes (it needs a loader keyed by species art, not the `?photoart` dogfood flag).
+- **Branch `claude/glbfish-e5`, worktree `.claude/worktrees/glbfish-e5`**, 60 commits ahead of origin/main. **Nothing is on main.**
+  Work in the worktree. Merge only with Nathan's yes (it needs a loader keyed by species art, not the `?photoart` dogfood flag).
+  This file exists only on that branch.
 - Leave alone, not yours: uncommitted `public/art/fish/oscar*.webp`, `src/data/fishart/oscar.anatomy.json` and the e5 lines in
   `src/data/species.json` (E5 chat). Commit species.json rows hunk-only (see "Committing" below).
-- Sheets and work folders stay out of the repo: `C:\Users\nreed\fish-sheets\<slug>-gen\`.
+- Sheets and work folders stay out of the repo: `C:/Users/nreed/fish-sheets/<slug>-gen/`. FishShapes CSV cache:
+  `C:/Users/nreed/fish-sheets/_cache/`.
 - Dev server: `glbfish` in the shared `.claude/launch.json` (lands on 5201 when 5197 is busy). Stop it when done.
+  Quirk: the first navigate after a server start drops `?photoart` (lands on `/`). Navigate to `/?photoart` again and check
+  `location.search` before shooting, or build-B fish throw "reading 'outline'".
+
+## Waiting on Nathan (ask only if relevant)
+- Ram (`gbrb`): render saturation is 1.27x the sheet. Set `sat` 0.78 like the tailspot? He has not decided.
+- Cardinal (`cardinalc`): the row 49 range rule would stretch its sheet only to 27.2 % SL deep (range 27.2-31.8), not the
+  29.4 it has now. Not rebuilt.
 
 ## Fish built this session (all build B, `?photoart`)
 | id | sheet | notes |
@@ -73,6 +101,9 @@ helps every species. Nathan picks the species; he generates each sheet in ChatGP
 - Yellow tang: a 2 px sliver of the sheet's painted eye outline shows behind the 3D eye.
 - Leftover weight: disc fish run 1.1-1.4x the real mass at the right max width (width profile too flat / section too boxy).
 - Pelvics splay sideways from above on the discus.
+- Head-on, build-B fish show a dark slit at the mouth (row 23's gape).
+- The rear taper makes the last 20 % SL 1-1.6 points narrower than the sheet's top view (tailspot); small, not fixed.
+- Saturation can't be set at build time (it needs a render): measure it from the pictures per fish (row 48).
 - FishShapes head depth vs the audit's "depth at the eye": not the same measurement; don't compare them directly.
 
 ## Committing
