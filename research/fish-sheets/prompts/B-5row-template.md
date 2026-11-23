@@ -44,6 +44,8 @@ The prompt has two parts:
   for a fin that is not there.
 - **Pectoral pose:** "naturally folded close against the flank" stays the default. It keeps the top view readable (method doc
   section 2). Change it only for fish whose pectorals are never folded (plecos, gobies resting on them); note the change in the log.
+- **Body-plan warnings (`SHAPE_DONT`, `TOP_DONT`):** say what the wrong shape is for *this* body plan. The tang's "not a torpedo"
+  would fight a tetra, which is one (cardinal tetra, 2026-11-23).
 - **Scales:** say whether they are minute (velvety skin), small, or large and visible. Large scales drawn on a minute-scaled fish
   read as a different species.
 
@@ -90,7 +92,7 @@ Species proportions:
 {{BODY_BULLETS}}
 * Natural asymmetry of the head and body profile; do not substitute a perfect ellipse or pointed leaf shape.
 
-Important: The front and top views must reflect this {{CROSS_SECTION_WORDS}} anatomy. Do not inflate the body into a cylindrical or torpedo shape.
+Important: The front and top views must reflect this {{CROSS_SECTION_WORDS}} anatomy. {{SHAPE_DONT}}
 MASTER COLORATION
 {{COLORATION}}
 
@@ -135,7 +137,7 @@ Head pointing right, snout and peduncle aligned horizontally with row 2.
 
 Show a {{TOP_VIEW_SHAPE}}.
 
-Do not make the body spindle-shaped or excessively thick.
+{{TOP_DONT}}
 
 Eyes may be slightly visible along the sides of the head.
 
@@ -233,6 +235,8 @@ FRONT_VIEW_SHAPE    =      (e.g. "tall and extremely narrow")
 ROW5_EXTRA          =      (empty, or e.g. "* Adipose fin: red (#FF0000), like the dorsal.\n")
 SCALES              =      (e.g. "The species has minute scales; skin should look smooth and velvety rather than displaying large individual scales.")
 PATTERN_SHORT       =      (e.g. "black and blue coloration")
+SHAPE_DONT          =      (the wrong body the model tends to draw, e.g. "Do not inflate the body into a cylindrical or torpedo shape.")
+TOP_DONT            =      (the wrong top view, e.g. "Do not make the body spindle-shaped or excessively thick.")
 ```
 
 ## Worked example: blue tang (`bluetang3-chatgpt.md` minus its width lines)
@@ -274,4 +278,6 @@ FRONT_VIEW_SHAPE    = tall and extremely narrow
 ROW5_EXTRA          = (empty)
 SCALES              = The species has minute scales; skin should look smooth and velvety rather than displaying large individual scales.
 PATTERN_SHORT       = black and blue coloration
+SHAPE_DONT          = Do not inflate the body into a cylindrical or torpedo shape.
+TOP_DONT            = Do not make the body spindle-shaped or excessively thick.
 ```
