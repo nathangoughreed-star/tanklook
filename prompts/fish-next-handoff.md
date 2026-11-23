@@ -1,79 +1,90 @@
-# Fish models: handoff to the next chat (2026-11-23)
+# Fish models: handoff to the next chat (2026-11-23, second edition)
 
-**Your job:** build **new species** with the method that won on the blue tang. Nathan, 2026-11-23: "I like the way the tang looks
-now and would rather put resources into new models than continuing to split hairs with this one." Fix something on an existing
-fish only when the fix helps every future species.
+**Your job:** keep building **new species** with the build-B (no clicks) method, and fix pipeline problems only when the fix
+helps every species. Nathan picks the species; he generates each sheet in ChatGPT and pastes it in.
 
 ## Start here (read these, nothing else first)
 1. This file.
-2. `research/fish-model-sheet-method.md` section 4: checklist rows 1-34. Run it before showing Nathan anything. Grep the rest of the doc when you need it.
-3. `research/fish-sheets/prompts/bluetang3-chatgpt.md`: **the current best sheet prompt**, verbatim.
-4. `research/fish-model-history.md` (on main): the 6-week story, if you need context. Skim only.
+2. `research/fish-model-sheet-method.md`: section 4 checklist **rows 33-41** (everything learned this session), and the
+   "Prompts used" table in section 2 (rows for yellow tang, discus, cardinal). Grep the rest when needed.
+3. `research/fish-sheets/prompts/B-5row-template.md`: the sheet prompt template (method block + species slots + rules).
+   Worked examples: `yellowtang-5row.md`, `discus-5row.md`, `cardinal-5row-v2.md` (latest template).
 
 ## Where the work is
-- **Branch `claude/glbfish-e5`, worktree `.claude/worktrees/glbfish-e5`.** Nothing below is on main yet.
-  - Other chats commit here too: "E-GEN-P" and "Blue tang orthographic reference sheet". Commit only your own files, and leave `src/data/species.json`'s uncommitted e5 lines alone.
-  - Uncommitted oscar photo files (`public/art/fish/oscar-*.webp`, `oscar.anatomy.json`) belong to the E5 chat; don't commit them.
-- **Dev server:** `glbfish` in the shared `.claude/launch.json` (it may land on port 5200). Flags:
-  - `?photoart`: every build-B ("photo") fish;
-  - `?photoart&glbfish&gen`: every second `bluetangc` / `boesemani` swaps to the generated finless mesh.
-- **Sheets and work folders** stay out of the repo, in `C:\Users\nreed\fish-sheets\<slug>-gen\`.
+- **Branch `claude/glbfish-e5`, worktree `.claude/worktrees/glbfish-e5`**, 47 commits ahead of origin/main. **Nothing is on main.**
+  Merge only with Nathan's yes (it needs a loader keyed by species art, not the `?photoart` dogfood flag).
+- Leave alone, not yours: uncommitted `public/art/fish/oscar*.webp`, `src/data/fishart/oscar.anatomy.json` and the e5 lines in
+  `src/data/species.json` (E5 chat). Commit species.json rows hunk-only (see "Committing" below).
+- Sheets and work folders stay out of the repo: `C:\Users\nreed\fish-sheets\<slug>-gen\`.
+- Dev server: `glbfish` in the shared `.claude/launch.json` (lands on 5201 when 5197 is busy). Stop it when done.
 
-## The method that won (build B, no clicks)
-The blue tang `bluetangd` was built this way. Nathan likes it.
-1. **Prompt.** Take the blue tang prompt (`bluetang3-chatgpt.md`) and swap only the species content: name, the master-geometry proportions (depth %SL, width %SL), colours and fin descriptions.
-   - Keep its structure:
-     - a "master geometry" section;
-     - row 2 described as row 1 minus its fins;
-     - the consistency checklist;
-     - geometry ranked over looks.
-   - It is a 5-row sheet: side with fins, finless side, top, front plus front fin map, and side fin label map.
-   - First job: split that prompt into a fixed method block and a species block, save it as `research/fish-sheets/prompts/B-5row-template.md`, then hand Nathan a ready-to-paste prompt per species.
-2. **Sheet.** Nathan generates it in ChatGPT, in a new chat for each species, and saves it as `C:\Users\nreed\fish-sheets\<slug>-gen\sheet.webp`.
-3. **Fin cut:** `python -I scripts/fish-fin-cut.py <work>` writes `fins.json`, `finlab.npy`, `pec.npy` and `align.npy`.
-4. **Spec with no clicks:** `python -I scripts/fish-spec-from-fins.py <work> <id> "<name>" "<sci>" <tl_mm>`. Copy `<work>/<id>.json` to `research/fish-specs/`.
-5. **Build:** `python -I scripts/fish-build.py research/fish-specs/<id>.json` writes the anatomy JSON and WebPs. Add a species.json row like `bluetangd`'s.
-6. **Thickness (rows 33 and E6).** The sheet's own width ran 1.28-1.38× the FishBase mass on the tang.
-   - Set the spec's `thickx` = FishBase mass ÷ model mass, using FishBase `a·TL^b`, and rebuild.
-   - Compute the model mass from the anatomy JSON: superellipse 2.4 sections, half-width × half-depth per station, density 1.02 g/cm³. The tang's inline calculation is in this chat's log; a small script for it would pay off.
-   - Don't trust `scripts/fish-sheet-e6.py` on 5-row sheets: it misread the panels of one tang sheet (depth 31% SL).
-7. **Pectoral spread (row 32).** Judge it per species: try 0.2 / 0.35 / 0.5 rad with the body width held fixed. The tang kept 0.35; 0.2 buried the fin and 0.5 read as paddles.
-8. **Pelvic.** The fin cut can catch only the tip. Check that the traced pelvic covers the whole fin (tang: re-traced by hand in the spec).
-9. **Pictures.** Six matched views, one fish at a time, swim off: side, 3/4 from the head end, 3/4 from the tail end, head-on, from above, normal tank distance. Use this recipe in the page console:
-   ```js
-   __shot = async (sp, az, el, zoom, yf) => { __gb.viewer.swim = false; __gb.viewer.sway = false; __gb.viewer.drifters.length = 0;
-     __gb.store.update(s => { const t = s.tanks[s.active]; t.tank = { L: 72*25.4, H: 24*25.4, D: 24*25.4 };
-       t.fish = [{ id: 901, species: sp, x: .5*t.tank.L, y: yf*t.tank.H, depth: .5*t.tank.D, yaw: 0, pitch: 0, roll: 0, bend: 0 }];
-       t.camera = { ...t.camera, az, el, zoom }; }); await new Promise(r => setTimeout(r, 1800)); };
-   // views: (0,0,4,.5) (35,15,3,.35) (-35,15,3,.35) (90,0,5,.5) (0,80,4,.5) (15,8,1.3,.5)
-   ```
-   - Set the viewport to 1600×1000 and close the tank panel ("Done") first.
-   - For blind A/B sheets, assign A/B by coin flip and keep the key in a separate file (`research/fish-sheets/bluetang-blind-AB*`).
-   - Nathan gets second opinions from ChatGPT. Expect its notes back pasted in, and weigh them; they have been useful.
+## Fish built this session (all build B, `?photoart`)
+| id | sheet | notes |
+|---|---|---|
+| `yellowtangb` | `yellowtang-gen` | width 16.6% SL from FishShapes (`thickx` 0.76) |
+| `discusc` | `discus-map-gen` | row 2 kept the same-colour fins: body from row 5 (`fish-fin-cut.py --body-from-map`) |
+| `cardinalb` | `cardinal-gen/sheet.webp` | first non-disc fish; sheet depth 25% SL (real 29.4) |
+| `cardinalc` | `cardinal-v2s-gen` | v2 sheet stretched to FishShapes depth (`fish-sheet-stretch.py`, k 1.162), pectoral spread 0.35. **Preferred cardinal** |
+| `bluetangd` | (earlier chat) | rebuilt only for the new eyes |
+
+## The pipeline now (per species)
+1. **Numbers first:** FishShapes v1 CSV (Smithsonian specimens; https://zenodo.org/records/6642650, copy in the old scratchpad may be
+   gone: re-download). Per species: `Max_body_depth`, `Max_fish_width`, `Head_depth`, `Min_caudalpeduncle_depth`, `Total_weight`
+   over `Standard_length`. It covers most aquarium species (checked: ram, gramma, corys, guppy, danio, betta, angelfish, gobies,
+   chromis, clownfish, anthias, mandarin, swordtail, platy...). FishBase length-weight a/b are usually Bayesian estimates: fallback only.
+2. **Prompt:** fill the template's species block (`DEPTH_PCT`, `EXTRA_RATIOS` = head and peduncle depth, body bullets, colour, fins,
+   `SHAPE_DONT` / `TOP_DONT` for this body plan). **No width numbers, no size adjectives** (rows 37, template rules).
+   `python -I scripts/fish-prompt-fill.py <species.txt> <out.txt>`; save the prompt as `research/fish-sheets/prompts/<slug>-5row.md`.
+3. **Sheet** from Nathan -> `<work>/sheet.webp`. Audit: `python -I scripts/fish-sheet-audit5.py <sheet> --real depth,head,ped,width`.
+4. **Fin cut:** `python -I scripts/fish-fin-cut.py <work>` (fins named by row-5 colour). If row 2 kept fins (depth well above real or
+   a fin role missing): add `--body-from-map`.
+5. **Depth:** if the audited depth is off by more than ~8%: `python -I scripts/fish-sheet-stretch.py <sheet> <real/drawn> <new-work>/sheet.webp`
+   and continue in the new folder (row 39).
+6. **Spec:** `python -I scripts/fish-spec-from-fins.py <work> <id> "<name>" "<sci>" <tl_mm>` (also samples eye colours, size and pupil).
+   Copy `<work>/<id>.json` to `research/fish-specs/`, set `"dense": true`, check the pelvic covers the whole fin, pectoral `spread` 0.2-0.35.
+7. **Build:** `python -I scripts/fish-build.py research/fish-specs/<id>.json` (adds the species.json row).
+8. **Width:** read the drawn max width (`python -I scripts/fish-mass.py src/data/fishart/<id>.anatomy.json <tl_mm> 1 3`), set
+   `thickx` = FishShapes width / drawn width, rebuild. Check mass against FishShapes `Total_weight` at the same SL (pass tl = SL x tlOverSl).
+9. **Pictures:** six views (recipe below), one contact sheet, send with the sheet's row 1 beside them.
+
+## Screenshot recipe (works around the pane not drawing)
+Run a tiny POST receiver in the background (`python -I scripts/shot-recv.py <outdir>`, port 5299), then in the page:
+```js
+const v = __gb.viewer, c = v.renderer.domElement;
+const shot = async (sp, az, el, zoom, yf) => { v.swim = false; v.sway = false; v.drifters.length = 0;
+  __gb.store.update(s => { const t = s.tanks[s.active]; t.tank = { L: 72*25.4, H: 24*25.4, D: 24*25.4 };
+    t.fish = [{ id: 901, species: sp, x: .5*t.tank.L, y: yf*t.tank.H, depth: .5*t.tank.D, yaw: 0, pitch: 0, roll: 0, bend: 0 }];
+    t.camera = { ...t.camera, az, el, zoom }; }); await new Promise(r => setTimeout(r, 1800)); };
+const grab = async name => { for (let i = 0; i < 3; i++) { v.dirty = true; v.draw(); await new Promise(r => setTimeout(r, 300)); }
+  v.dirty = true; v.draw(); const d = c.toDataURL('image/png'); await fetch('http://127.0.0.1:5299/' + name, { method: 'POST', body: d }); };
+```
+- Call `v.draw()` yourself: the drawn-listener route times out whenever the pane isn't being captured. Wait ~4 s after a reload.
+- Zoom scales with fish size: 12 in fish: side 4-8; 1.8 in cardinal: side 24-40, head-on 30, 3/4 views zoom 8 with `yf` .22.
+- Close the tank panel first if it is open; set the viewport to 1600x1000 and back to desktop at the end.
 
 ## Decisions on record (2026-11-23)
-- The ChatGPT-revised prompt beat Claude's own prompt in a blind A/B. Write future prompts in its style.
-- The fin membrane is shared by every photo-built and generated fish: `MEMBRANE` in `src/render/textures.ts`, with the same numbers in `scripts/fish-glb-assemble.py` (row 34).
-- Not pursued, too fish-specific:
-  - fin root shaping;
-  - the black fin-edge alpha (`--alo 2 --aw 6` gave a fuzzy fringe on the tang).
-- **Performance, measured with 40 tangs per frame:**
-  - old procedural fish: 6.2k triangles and 8 draws each, 3.4 ms per frame;
-  - build B: 10.3k triangles and 9 draws, about 5.4 ms;
-  - generated: 16k triangles and 8 draws, about 5.4 ms.
+- Thickness = FishShapes measured max width, not FishBase mass (FishBase's yellow tang a/b ran ~1.6x light; row 35).
+- Width numbers out of the prompt: sheets overshot them by a third anyway (row 37). Depth stays as the one number.
+- ChatGPT draws cardinals ~25% SL deep in every layout (2 five-row + 3 side-only); the layout is not the cause. Fix depth at build (row 39).
+- ChatGPT's own critique: right about the cross-section wording and front-view scale (tetra front views 1.36-1.48x the side depth),
+  wrong that the segmentation rows misalign (IoU 0.97-0.98, stray < 1%). The build uses the front view only as a face texture.
+- Eyes: colours, size (1.35x the row-5 disc) and pupil come from the sheet; measured eyes face straight out (rows 40-41).
 
-  No lag expected on a desktop; phones are untested. Cheap wins if needed:
-  - a detail ladder by fish size;
-  - drawing the outline from a lower-detail copy;
-  - merging the generated fins into one mesh.
+## Open (pick up only if Nathan asks, or if it blocks a species)
+- Cardinal iris reads flat grey (sheet: bright silver with a gold inner rim): the eye texture is a two-tone ring.
+- Yellow tang: a 2 px sliver of the sheet's painted eye outline shows behind the 3D eye.
+- Forehead loses a few px near the snout tip (outline opening radius 9 + inset): visible on small fish.
+- Leftover weight: disc fish run 1.1-1.4x the real mass at the right max width (width profile too flat / section too boxy).
+- Pelvics splay sideways from above on the discus.
+- FishShapes head depth vs the audit's "depth at the eye": not the same measurement; don't compare them directly.
 
-## Open, but not your job unless Nathan asks
-- **Merge to main.** Nothing from `claude/glbfish-e5` is on main. It needs a loader keyed by species art, not dogfood flags, and the E5 oscar files resolved. Merge only with Nathan's yes.
-- **Build B or generated (finless) as the production method.** The tang decision was build B. The generated route needs Nathan's Hugging Face account and `HF_TOKEN`, with a quota of about 4 free calls a day.
-- **Head geometry** (mouth, jaw, gill cover) and **tail stalk**: build B can't model them. Only the generated body has them.
-- **Votes on the blind tang sheet** compare the *unfixed* B.
+## Committing
+- Worktree: commit on the branch, your own files only. species.json: add only your row to the index
+  (`git show HEAD:src/data/species.json` -> insert the row -> `git hash-object -w` -> `git update-index --cacheinfo`), so the E5 lines stay out.
+- `npx tsc --noEmit -p .` after any TS change. There are no tests for photofish/fish3d; verify on screen.
+- Every correction Nathan makes becomes a checklist row in the method doc, in the same commit.
 
 ## Rules
-- CLAUDE.md applies: Sonnet subagents; pictures with every question about a model; commit your own work on the branch; US units; end replies with "Build N".
+- CLAUDE.md applies: Sonnet subagents; pictures with every question about a model; US units; end replies with "Build N".
 - Look rule: not cartoony, not photographic. Nathan judges on screen; say merged vs live separately.
-- Every correction Nathan makes becomes a checklist row in the method doc, in the same commit as the fix.
+- Nathan often pastes ChatGPT's opinion of a sheet: weigh it against measurements before acting.
