@@ -58,7 +58,7 @@ export function drawFishCard(art: string, aspect: number, W = 1024, finA = FIN_A
   // it where one is, so the fin roots stay
   const p = bodyPlan(art);
   if (hollow && p) {
-    const prof = profile(p), N = 96, us = Array.from({ length: N + 1 }, (_, i) => p.pedU + (1.02 - p.pedU) * i / N);
+    const prof = profile(p), N = 96, u0 = p.pedU + 0.008, us = Array.from({ length: N + 1 }, (_, i) => u0 + (1.02 - u0) * i / N); // u0: the cut starts a hair inside the solid, so the card tucks under its tail end (cut and body ending on the same line left a hairline seam where the tail fin starts)
     const top = (u: number) => (u < p.pedU + 0.03 || finRooted(p, true, u) || (p.adipose && Math.abs(u - p.pedU - 0.07) < 0.05) ? HOLLOW : -HOLLOW_OUT);
     const bot = (u: number) => (u < p.pedU + 0.03 || finRooted(p, false, u) ? HOLLOW : -HOLLOW_OUT);
     const at = (u: number) => prof(Math.min(u, 1));

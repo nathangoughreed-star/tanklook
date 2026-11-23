@@ -85,13 +85,24 @@ function bodyGeometry(p: Plan, aspect: number, bend: number, swim = false) {
     idx.push(a, a + 1, b, a + 1, b + 1, b); // outward-facing (FrontSide)
   }
   // cap the cut at the peduncle (the tail fin on the card covers the joint)
-  const { vc } = ring(p.pedU), c = pos.length / 3, x0 = p.pedU - 0.5;
+  // its own copy of the first ring: shared vertices averaged the cap's backward normal into the body's last ring, which then
+  // shaded differently and showed as a line where the tail fin starts (E-GEN tang)
+  const { vc } = ring(p.pedU), r0 = pos.length / 3, x0 = p.pedU - 0.5;
+  for (let j = 0; j <= RING; j++) { pos.push(pos[j * 3], pos[j * 3 + 1], pos[j * 3 + 2]); uv.push(uv[j * 2], uv[j * 2 + 1]); }
+  const c = pos.length / 3;
   pos.push(x0, -vc, bendZ(bend, x0)); uv.push(p.pedU, 0.5 - vc / aspect);
-  for (let j = 0; j < RING; j++) idx.push(c, j + 1, j);
+  for (let j = 0; j < RING; j++) idx.push(c, r0 + j + 1, r0 + j);
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
   g.setIndex(idx); g.computeVertexNormals();
+  { // the cap takes the stalk ring's normals (its own face backward was read as turned away and faded dark: a dark sliver at the tail-fin joint seen at an angle)
+    const nn = g.attributes.normal as THREE.BufferAttribute;
+    for (let j = 0; j <= RING; j++) nn.setXYZ(r0 + j, nn.getX(j), nn.getY(j), nn.getZ(j));
+    nn.setXYZ(r0 + RING + 1, 0, 0, 1);
+  }
+  // aCap 1 = the stalk cap: the outline hull skips it (edge-on from the side its rim drew a dark vertical line where the tail fin starts)
+  g.setAttribute('aCap', new THREE.Float32BufferAttribute(Array.from({ length: pos.length / 3 }, (_, i) => (i >= r0 ? 1 : 0)), 1));
   // soft form shading: the belly and the underside of the flanks turn away from the light above
   const n = g.attributes.normal, col: number[] = [];
   for (let i = 0; i < n.count; i++) {
@@ -605,16 +616,16 @@ export const OUTLINE = { uPop: { value: 0 }, uVpH: { value: 1 } };
 export function hullMaterial(px: string, color: THREE.Color, gated = true, swim = false) {
   const m = new THREE.ShaderMaterial({
     uniforms: { ...OUTLINE, ...(swim ? SWIM : {}), uCol: { value: color } }, side: THREE.BackSide,
-    vertexShader: `${swim ? SWIM_DECL + ' ' : ''}uniform float uPop, uVpH;
+    vertexShader: `${swim ? SWIM_DECL + ' ' : ''}uniform float uPop, uVpH; varying float vCap;${swim ? ' attribute float aCap;' : ''}
 void main() {
-  vec3 transformed = position;
+  vec3 transformed = position; vCap = ${swim ? 'aCap' : '0.0'};
   ${swim ? SWIM_VERT : ''}
   vec4 p = modelMatrix * vec4(transformed, 1.0); vec3 n = normalize(mat3(modelMatrix) * normal);
   float d = max(-(viewMatrix * p).z, 1.0);
   p.xyz += n * (${px}) * 2.0 * d / (projectionMatrix[1][1] * uVpH);
   gl_Position = projectionMatrix * viewMatrix * p;
 }`,
-    fragmentShader: `uniform float uPop; uniform vec3 uCol; void main() { ${gated ? 'if (uPop < 0.01) discard; ' : ''}gl_FragColor = vec4(uCol, 1.0); }`,
+    fragmentShader: `uniform float uPop; uniform vec3 uCol; varying float vCap; void main() { ${gated ? 'if (uPop < 0.01) discard; ' : ''}if (vCap > 0.5) discard; gl_FragColor = vec4(uCol, 1.0); }`,
   });
   m.userData.cached = true;
   return m;

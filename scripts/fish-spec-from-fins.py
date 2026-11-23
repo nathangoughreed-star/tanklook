@@ -68,12 +68,25 @@ spec["eye"] = eye
 pec_deg, pel_deg = fs.front_fin_angles(a, M, bands, pec)
 if pec is not None:
     root = fins['pectoral']['root'] or [int(np.nonzero(pec.any(0))[0].max()), int(np.nonzero(pec)[0].mean())]
-    spec["pectoral"] = {"root": [int(root[0]), int(root[1])], "poly": [[int(root[0]), int(root[1])]] + outline(pec),
+    ol = outline(pec); k = int(np.argmin([np.hypot(x - root[0], y - root[1]) for x, y in ol]))
+    ol = ol[k + 1:] + ol[:k]   # the root takes the place of its nearest outline point, so the polygon runs round the edge (root first then the first point at -pi cut a wedge through the fin: the "split")
+    spec["pectoral"] = {"root": [int(root[0]), int(root[1])], "poly": [[int(root[0]), int(root[1])]] + ol,
                         "spread": round(np.radians(pec_deg), 2) if pec_deg else 0.45}
 if 'pelvic' in roles:
     pm = full == roles['pelvic']; px_, py_ = base('pelvic'); i = np.argmax(px_)
     proot = [int(px_[i]), int(py_[i])]; ys, xs = np.nonzero(pm)
-    spec["pelvic"] = {"root": proot, "len": int(np.max(np.hypot(xs - proot[0], ys - proot[1]))), "poly": [proot] + outline(pm)}
+    ol = outline(pm); k = int(np.argmin([np.hypot(x - proot[0], y - proot[1]) for x, y in ol])); ol = ol[k + 1:] + ol[:k]
+    spec["pelvic"] = {"root": proot, "len": int(np.max(np.hypot(xs - proot[0], ys - proot[1]))), "poly": [proot] + ol}
+# body card without the painted paired fins: panel 1's pectoral and pelvic pixels replaced by the finless flank of panel 2 (panel 1 = panel 2 + (dy, dx))
+dy0, dx0 = int(fins['dy']), int(fins['dx']); paint = np.zeros(M.shape, bool)
+if pec is not None: paint |= pec
+if 'pelvic' in roles: paint |= full == roles['pelvic']
+paint = nd.binary_dilation(paint, iterations=3) & (fs.mask(M, b1) > 0.5)
+src = np.array(Image.open(os.path.join(W, 'sheet.webp')).convert('RGB')); card = arr.copy()
+yy, xx = np.nonzero(paint); sy_, sx_ = yy - dy0, xx - dx0; ok = (sy_ >= 0) & (sy_ < M.shape[0]) & (sx_ >= 0) & (sx_ < M.shape[1])
+lit = src[sy_[ok], sx_[ok]].max(1) > 40   # only where panel 2 has body (the pelvic hangs below the belly: there the card stays black = cut out)
+card[yy[ok][lit], xx[ok][lit]] = src[sy_[ok][lit], sx_[ok][lit]]; card[yy[ok][~lit], xx[ok][~lit]] = 0
+Image.fromarray(card).save(os.path.join(W, 'sheet3card.png')); spec["card_sheet"] = os.path.join(W, 'sheet3card.png').replace(chr(92), '/')
 json.dump(spec, open(os.path.join(W, ID + '.json'), 'w'), indent=1)
 print('%s: ped %s, dorsal %d / anal %d base pts, eye %s, pectoral %s (swing %s deg), pelvic %s; front-map pelvic angle %s deg' % (
     ID, spec['landmarks']['ped'], len(spec['landmarks']['dorsalBase']), len(spec['landmarks']['analBase']), eye,

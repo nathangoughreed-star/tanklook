@@ -22,8 +22,10 @@ SL = A['slPx'] * 2; sxs = A['landmarks']['snoutPxOriginal'][0] * 2 + x0
 ANCH = '--anchor' in sys.argv   # --anchor: stations are laid on the top panel's OWN snout tip and tail tip (the panel is often 1-2 % longer than the side view)
 if ANCH:
     cx_ = np.nonzero(full.any(0))[0]; tip_, tail_ = float(cx_.max()), float(cx_.min())
-    fscale = min(1.1, max(0.9, (tip_ - tail_) / (A['tlPx'] * 2)))
-    sxs = tip_; SLs = SL * fscale
+    L_ = tip_ - tail_; ref_ = A['tlPx'] * 2 if abs(L_ - A['tlPx'] * 2) < abs(L_ - SL) else SL   # a top panel without its tail fin ends at the stalk: measure it against SL, not TL (else the rear stations fall off the end: E-GEN tang)
+    fscale = min(1.1, max(0.9, L_ / ref_))
+    if ref_ == SL: sxs = tip_; SLs = L_
+    if ref_ != SL: sxs = tip_; SLs = SL * fscale
 else:
     SLs = SL
 cy = None

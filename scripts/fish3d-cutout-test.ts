@@ -85,6 +85,7 @@ gl.setPixelRatio(1); gl.setSize(W, H, false); gl.outputColorSpace = THREE.SRGBCo
 OUTLINE.uPop.value = 0; OUTLINE.uVpH.value = H;
 const camera = new THREE.PerspectiveCamera(28, W / H, 0.01, 5000);
 document.title += ' gl ok'; const scene = new THREE.Scene(), model = speciesModel(sp); document.title += ' model ok'; scene.add(model); applyLighting(scene); LU.uMode.value = 0; LU.uWater.value.w = 0;
+Object.assign(window, { __h: { scene, model, shoot: (y, p) => shoot(y, p) } });   // debugging: hide parts and re-shoot from the console
 const VIEWS = [['Side', 0, 0], ['3/4', 0.55, 0.18], ['Front', Math.PI / 2, 0.05], ['Top', 0, 1.45]];
 function shoot(yaw, pitch) {
   const box = new THREE.Box3().setFromObject(model), c = box.getCenter(new THREE.Vector3()), cp = Math.cos(pitch);

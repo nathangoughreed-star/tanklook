@@ -81,6 +81,11 @@ dp_ = A['depthProfile']   # the last station sits on the tail-fin root, where th
 for k_ in ('top', 'bottom'):
     if len(dp_[k_]) > 3 and abs(dp_[k_][-1]) > 1.3 * abs(dp_[k_][-2]):
         dp_[k_][-1] = dp_[k_][-2]
+if spec.get('measured_width') and spec.get('smooth_tail', True):   # rear half-widths ease from 60 % SL down to the stalk's measured width (a sheet's top view often ends the body in a step: thick stub, then a thin stalk)
+    st_, hw_ = A['depthProfile']['stations'], A['thickness']['halfWidthPctSL']
+    i0_ = min(range(len(st_)), key=lambda i: abs(st_[i] - 60)); h0_ = hw_[i0_]; he_ = min(hw_[-5:])
+    for i in range(i0_, len(st_)):
+        u = (st_[i] - st_[i0_]) / max(1e-6, 100 - st_[i0_]); hw_[i] = round(he_ + (h0_ - he_) * 0.5 * (1 + np.cos(np.pi * u)), 3)
 TAPER = spec.get('taper', [92, 0.5] if spec.get('measured_width') else None)   # default on for measured widths; 'taper': false turns it off
 if TAPER:  # [start % SL, end factor]: the rear half-widths ease down so the body tapers into the flat tail instead of ending in a blunt cut
     t0, tf = TAPER
@@ -99,7 +104,11 @@ os.makedirs(shots, exist_ok=True)
 card = os.path.join(shots, ID + '-card.png')
 er = sum([['--erase', ','.join(map(str, e))] for e in spec.get('erase', [])], [])
 common = ['--aspect', asp, '--clip-head', spec.get('clip_head', 25), '--alo', alo, '--aw', aw, '--sat', sat]
-run(S('fish-cutout-card.py'), os.path.join(work, 'side_full.png'), anat, card, *common, *er)
+side_card = os.path.join(work, 'side_full.png')
+if spec.get('card_sheet'):   # the body card from a sheet whose panel 1 has the paired fins replaced by the finless flank (the 3D fins draw themselves); the fin card keeps them
+    cs_ = Image.open(spec['card_sheet']).convert('RGB'); sqc = Image.new('RGB', (N, N)); sqc.paste(cs_.crop((0, 0, cs_.width, sy1 + 8)), (0, 0))
+    side_card = os.path.join(work, 'side_full_card.png'); sqc.save(side_card)
+run(S('fish-cutout-card.py'), side_card, anat, card, *common, *er)
 fincard = os.path.join(shots, ID + '-fincard.png')
 run(S('fish-cutout-card.py'), os.path.join(work, 'side_full.png'), anat, fincard, *common)
 run(S('fish-projcards.py'), os.path.join(work, 'sheet.png'), os.path.join(work, 'sheet.png'), at, os.path.join(shots, ID + '-proj'),
@@ -108,7 +117,7 @@ out = os.path.join(ROOT, 'public', 'art', 'fish')
 os.makedirs(out, exist_ok=True)
 for src, dst in ((card, ID), (os.path.join(shots, ID + '-proj-top.png'), ID + '-top'), (os.path.join(shots, ID + '-proj-front.png'), ID + '-front')):
     Image.open(src).save(os.path.join(out, dst + '.webp'), quality=85)
-if er:
+if er or spec.get('card_sheet'):
     Image.open(fincard).save(os.path.join(out, ID + '-fin.webp'), quality=85)
 e = spec['eye']
 # front-layer registration (checklist row 29): fy0 = eye height above the axis minus the front eyes' offset above the front crop's centre row, in TL units.
@@ -155,12 +164,14 @@ try:
         FY0 = round((ax - e[1]) / TL - (hh / 2 - best_[1]) / TL, 4)
         print('front eyes found: row %.0f of %d -> fy0 %.4f' % (best_[1], hh, FY0))
     else:
-        print('front eyes NOT found: fy0 left at the default %.4f (set fy0 in the spec)' % FY0)
+        dpt_, dpb_ = A['depthProfile']['top'], A['depthProfile']['bottom']   # no eyes (dark-banded heads): the front crop's centre row sits halfway between the body's highest back and lowest belly
+        FY0 = round(((max(dpt_) - max(dpb_)) / 2 / 100 * sl) / TL, 4)
+        print('front eyes NOT found: fy0 %.4f from the body outline (centre of the deepest section)' % FY0)
 except Exception as ex_:
     print('front eye detection failed (%s): fy0 default %.4f' % (ex_, FY0))
 photo = {'art': ID, 'plan': spec.get('plan', 'oscar'), 'sx': round(sx, 1), 'sl': round(sl, 1), 'ax': round(ax, 1), 'eye': e,
          'pec': spec.get('pectoral'), 'pelvic': spec.get('pelvic'),
-         'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', FY0)}, 'thickx': spec.get('thickx'), 'noTail': bool(spec.get('no_tail')), 'measuredWidth': bool(spec.get('measured_width')), 'aspect': asp, 'finImg': bool(er)}
+         'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', FY0)}, 'thickx': spec.get('thickx'), 'noTail': bool(spec.get('no_tail')), 'measuredWidth': bool(spec.get('measured_width')), 'aspect': asp, 'finImg': bool(er or spec.get('card_sheet'))}
 A['render'] = {'note': 'built by scripts/fish-build.py from ' + os.path.basename(sys.argv[1]), 'photo': photo, 'fit': fit}
 J['art'] = ID
 json.dump(J, open(os.path.join(ROOT, 'src', 'data', 'fishart', ID + '.anatomy.json'), 'w', encoding='utf8'), indent=1)
