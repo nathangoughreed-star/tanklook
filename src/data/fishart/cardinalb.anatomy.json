@@ -78,16 +78,16 @@
     12.56,
     12.05,
     12.08,
-    11.56,
-    11.43,
-    11.29,
-    11.15,
-    11.02,
-    10.88,
-    10.74,
-    10.69,
-    5.36,
-    6.07
+    10.03,
+    8.67,
+    7.97,
+    7.39,
+    6.79,
+    5.15,
+    4.66,
+    4.8,
+    5.09,
+    5.359
    ],
    "bottom": [
     3.69,
@@ -117,11 +117,11 @@
     9.36,
     8.26,
     6.48,
-    5.34,
-    4.74,
-    4.58,
-    5.267,
-    5.267
+    4.75,
+    4.62,
+    4.62,
+    5.07,
+    5.313
    ],
    "axis": "snout tip to peduncle centre, level; values are distance from the axis in % SL; BODY ONLY (opened mask)"
   },
@@ -148,19 +148,19 @@
    "dorsal": {
     "baseStartPctSL": 47.76,
     "baseEndPctSL": 63.59,
-    "maxHeightPctSL": 10.03,
+    "maxHeightPctSL": 10.53,
     "heightProfile": [
      [
       63.59,
-      0.8
+      1.68
      ],
      [
       62.53,
-      9.87
+      10.4
      ],
      [
       61.48,
-      9.66
+      9.89
      ],
      [
       60.42,
@@ -214,113 +214,147 @@
       47.76,
       0.86
      ]
-    ],
-    "note": "fin spines are dark/translucent: heights are lower bounds"
+    ]
+   },
+   "dorsal2": {
+    "baseStartPctSL": 82.32,
+    "baseEndPctSL": 87.86,
+    "maxHeightPctSL": 2.65,
+    "heightProfile": [
+     [
+      87.86,
+      1.98
+     ],
+     [
+      86.81,
+      2.65
+     ],
+     [
+      85.75,
+      2.35
+     ],
+     [
+      84.7,
+      2.11
+     ],
+     [
+      83.64,
+      1.6
+     ],
+     [
+      82.59,
+      0.82
+     ]
+    ]
    },
    "anal": {
     "baseStartPctSL": 62.27,
-    "baseEndPctSL": 88.13,
+    "baseEndPctSL": 88.65,
     "maxHeightPctSL": 9.23,
     "heightProfile": [
      [
-      88.13,
-      0.92
+      88.65,
+      0.82
      ],
      [
-      87.07,
-      1.5
+      87.6,
+      1.22
      ],
      [
-      86.02,
-      2.01
+      86.54,
+      1.64
      ],
      [
-      84.96,
-      2.22
+      85.49,
+      2.11
      ],
      [
-      83.91,
-      2.43
+      84.43,
+      2.32
      ],
      [
-      82.85,
-      2.9
+      83.38,
+      2.8
      ],
      [
-      81.79,
-      3.27
+      82.32,
+      3.22
      ],
      [
-      80.74,
-      3.91
+      81.27,
+      3.59
      ],
      [
-      79.68,
-      4.54
-     ],
-     [
-      78.63,
-      6.29
-     ],
-     [
-      77.57,
-      9.01
-     ],
-     [
-      76.52,
-      8.84
-     ],
-     [
-      75.46,
-      8.66
-     ],
-     [
-      74.41,
-      7.92
-     ],
-     [
-      73.35,
-      7.41
-     ],
-     [
-      72.3,
-      6.9
-     ],
-     [
-      71.24,
-      6.39
-     ],
-     [
-      70.18,
-      5.7
-     ],
-     [
-      69.13,
-      5.29
-     ],
-     [
-      68.07,
-      4.89
-     ],
-     [
-      67.02,
+      80.21,
       4.22
      ],
      [
-      65.96,
-      3.55
+      79.16,
+      5.38
      ],
      [
-      64.91,
-      2.88
+      78.1,
+      8.31
      ],
      [
-      63.85,
-      1.95
+      77.04,
+      9.19
      ],
      [
-      62.8,
-      1.29
+      75.99,
+      8.75
+     ],
+     [
+      74.93,
+      8.31
+     ],
+     [
+      73.88,
+      7.8
+     ],
+     [
+      72.82,
+      7.29
+     ],
+     [
+      71.77,
+      6.52
+     ],
+     [
+      70.71,
+      6.03
+     ],
+     [
+      69.66,
+      5.63
+     ],
+     [
+      68.6,
+      4.96
+     ],
+     [
+      67.55,
+      4.56
+     ],
+     [
+      66.49,
+      3.89
+     ],
+     [
+      65.44,
+      3.22
+     ],
+     [
+      64.38,
+      2.55
+     ],
+     [
+      63.32,
+      1.62
+     ],
+     [
+      62.27,
+      0.96
      ]
     ]
    },
@@ -469,9 +503,9 @@
    ],
    "source": "top panel of the generated sheet, blue-share mask (thr 0.60); the narrower side of the centre line",
    "fit": {
-    "thick": 0.84,
+    "thick": 0.86,
     "pedT": 0.3,
-    "rmsPctSL": 0.53,
+    "rmsPctSL": 0.69,
     "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
    }
   },
@@ -715,7 +749,7 @@
     "aspect": 0.382,
     "finImg": true
    },
-   "fit": "{'thick': 0.84, 'pedT': 0.3, 'rmsPctSL': 0.53, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
+   "fit": "{'thick': 0.86, 'pedT': 0.3, 'rmsPctSL': 0.69, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }
  },
  "reliability": {

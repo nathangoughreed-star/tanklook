@@ -54,7 +54,22 @@ def outline(m, n=24):
 spec = {"id": ID, "sheet": os.path.join(W, 'sheet3.png').replace('\\', '/'), "species": {"name": NAME, "sci": SCI, "tl": TL},
         "measured_width": True, "plan": "oscar"}
 cx, cy = base('caudal'); dx_, dy_ = base('dorsal'); ax_, ay_ = base('anal')
-spec["landmarks"] = {"ped": [int(np.median(cx)), int(cy.mean())], "dorsalBase": binned(dx_, dy_), "analBase": binned(ax_, ay_)}
+ped_ = [int(np.median(cx)), int(cy.mean())]
+
+
+def to_tail(pts, top, step=30):
+    """Run a fin-base polyline on to the tail stalk along the real body edge (row 1 minus every fin, adipose included): first / last
+    body pixel per column from the stalk to the fin's rear end. Without it fish-build.py ran the line on at nearly the fin's height
+    (a 4-11 px drop, made for deep-bodied fish), and on the cardinal the solid kept that height over the adipose to the tail (method row 46)."""
+    if not pts: return pts
+    xend = min(p[0] for p in pts); out = []
+    for x in range(ped_[0] + 12, xend - step // 2, step):
+        col = np.nonzero(body[:, x])[0]
+        if len(col): out.append([int(x), int(col[0] if top else col[-1])])
+    return sorted(out + pts)
+
+
+spec["landmarks"] = {"ped": ped_, "dorsalBase": to_tail(binned(dx_, dy_), True), "analBase": to_tail(binned(ax_, ay_), False)}
 # eye: white disc of the label map, moved into panel 1 by the silhouette boxes; else the darkest disc in panel 1's head
 eye = None
 if len(bands) >= 5:
@@ -97,6 +112,8 @@ for k_ in range(1, n_ + 1):
     if (cm_ & near).sum() >= 0.5 * cm_.sum() and cm_.sum() < 0.01 * sizes[big]: card[cm_] = 0; gone += 1
 if gone: print('card: %d loose fin fragment(s) removed' % gone)
 Image.fromarray(card).save(os.path.join(W, 'sheet3card.png')); spec["card_sheet"] = os.path.join(W, 'sheet3card.png').replace(chr(92), '/')
+if sum(1 for v in fins['components'].values() if v['role'] == 'dorsal') >= 2:   # adipose or split dorsal: outline it as 'dorsal2' so the 3D card keeps it (cardinal: it floated as a fleck, method row 46)
+    spec['dorsals'] = 2
 spec['dense'] = True   # handoff step 6: every build-B fish so far is built dense
 json.dump(spec, open(os.path.join(W, ID + '.json'), 'w'), indent=1)
 import subprocess; subprocess.run([sys.executable, '-I', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fish-eye-colour.py'), os.path.join(W, ID + '.json')], check=True)   # iris / pupil colours from the sheet's eye
