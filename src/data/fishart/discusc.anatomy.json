@@ -45,7 +45,7 @@
     100
    ],
    "top": [
-    -1.03,
+    -0.69,
     11.07,
     21.81,
     28.4,
@@ -233,7 +233,7 @@
     "note": "fin spines are dark/translucent: heights are lower bounds"
    },
    "anal": {
-    "baseStartPctSL": 31.03,
+    "baseStartPctSL": 32.41,
     "baseEndPctSL": 93.79,
     "maxHeightPctSL": 22.07,
     "heightProfile": [
@@ -327,12 +327,12 @@
      ],
      [
       33.1,
-      2.76
+      1.38
      ]
     ]
    },
    "pelvicOrPectoral": {
-    "rootPctSL": 31.03,
+    "rootPctSL": 32.41,
     "tipPctSL": 45.52,
     "maxDropPctSL": 10.84,
     "note": "any fin material under the belly in the head half; pelvic and pectoral are not separable in a side photo"

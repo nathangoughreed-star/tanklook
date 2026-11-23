@@ -62,11 +62,11 @@
     0.77,
     1.75,
     3.25,
-    4.25,
-    5.25,
-    5.69,
-    5.76,
-    9.48,
+    4.74,
+    6.24,
+    7.73,
+    9.23,
+    10.31,
     12.76,
     17.1,
     20.23,
@@ -551,9 +551,9 @@
    ],
    "source": "top panel of the generated sheet, blue-share mask (thr 0.60); the narrower side of the centre line",
    "fit": {
-    "thick": 0.79,
+    "thick": 0.78,
     "pedT": 0.3,
-    "rmsPctSL": 1.77,
+    "rmsPctSL": 1.86,
     "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
    }
   },
@@ -797,7 +797,7 @@
     "aspect": 0.707,
     "finImg": true
    },
-   "fit": "{'thick': 0.79, 'pedT': 0.3, 'rmsPctSL': 1.77, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
+   "fit": "{'thick': 0.78, 'pedT': 0.3, 'rmsPctSL': 1.86, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }
  },
  "reliability": {

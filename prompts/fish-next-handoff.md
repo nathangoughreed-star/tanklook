@@ -26,6 +26,7 @@ helps every species. Nathan picks the species; he generates each sheet in ChatGP
 | `cardinalb` | `cardinal-gen/sheet.webp` | first non-disc fish; sheet depth 25% SL (real 29.4) |
 | `cardinalc` | `cardinal-v2s-gen` | v2 sheet stretched to FishShapes depth (`fish-sheet-stretch.py`, k 1.162), pectoral spread 0.35. **Preferred cardinal** |
 | `bluetangd` | (earlier chat) | rebuilt only for the new eyes |
+| `tailspotb` | `tailspot-gen` | tailspot blenny, E. bicolor proportions as proxy, stretched k 0.875, `sat` 0.78 |
 | `gbrb` | `ram-gen` | German blue ram, `--body-from-map`, `thickx` 0.56; mass 1.2-1.36x FishShapes |
 
 ## The pipeline now (per species; scripted 2026-11-23, method row 44)
@@ -70,7 +71,6 @@ helps every species. Nathan picks the species; he generates each sheet in ChatGP
 ## Open (pick up only if Nathan asks, or if it blocks a species)
 - Cardinal iris reads flat grey (sheet: bright silver with a gold inner rim): the eye texture is a two-tone ring.
 - Yellow tang: a 2 px sliver of the sheet's painted eye outline shows behind the 3D eye.
-- Forehead loses a few px near the snout tip (outline opening radius 9 + inset): visible on small fish.
 - Leftover weight: disc fish run 1.1-1.4x the real mass at the right max width (width profile too flat / section too boxy).
 - Pelvics splay sideways from above on the discus.
 - FishShapes head depth vs the audit's "depth at the eye": not the same measurement; don't compare them directly.

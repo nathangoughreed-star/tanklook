@@ -115,7 +115,8 @@ if spec.get('card_sheet'):   # the body card from a sheet whose panel 1 has the 
     side_card = os.path.join(work, 'side_full_card.png'); sqc.save(side_card)
 run(S('fish-cutout-card.py'), side_card, anat, card, *common, *er)
 fincard = os.path.join(shots, ID + '-fincard.png')
-run(S('fish-cutout-card.py'), os.path.join(work, 'side_full.png'), anat, fincard, *common)
+fincommon = [v for i, v in enumerate(common) if not (v == '--clip-head' or (i and common[i - 1] == '--clip-head'))]   # the fin card is read only inside the fin polygons: no head clip, which cut the tailspot blenny's throat pelvics (method row 47)
+run(S('fish-cutout-card.py'), os.path.join(work, 'side_full.png'), anat, fincard, *fincommon)
 run(S('fish-projcards.py'), os.path.join(work, 'sheet.png'), os.path.join(work, 'sheet.png'), at, os.path.join(shots, ID + '-proj'),
     '--top', '%d,%d' % (ty0 - 6, ty1 + 6), '--front', '%d,%d,%d,%d' % (fx0, fy0_ - 4, fx1, fy1_ + 4), '--sat', sat)
 out = os.path.join(ROOT, 'public', 'art', 'fish')

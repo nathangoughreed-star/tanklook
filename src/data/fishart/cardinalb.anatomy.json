@@ -61,11 +61,11 @@
     1.0,
     1.5,
     2.0,
-    2.9,
-    2.9,
-    2.9,
-    3.68,
-    4.89,
+    3.0,
+    3.47,
+    4.21,
+    4.49,
+    5.01,
     5.36,
     6.07,
     7.65,
@@ -505,7 +505,7 @@
    "fit": {
     "thick": 0.86,
     "pedT": 0.3,
-    "rmsPctSL": 0.69,
+    "rmsPctSL": 0.73,
     "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
    }
   },
@@ -749,7 +749,7 @@
     "aspect": 0.382,
     "finImg": true
    },
-   "fit": "{'thick': 0.86, 'pedT': 0.3, 'rmsPctSL': 0.69, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
+   "fit": "{'thick': 0.86, 'pedT': 0.3, 'rmsPctSL': 0.73, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }
  },
  "reliability": {

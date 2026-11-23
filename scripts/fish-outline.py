@@ -128,6 +128,13 @@ def main():
     full = largest_blob(a.max(2) > thr)
     H, W = full.shape
     ys, xs = np.nonzero(full)
+    # holes in the head (a dark eye rim below thr) left a thin strip of forehead over the eye, which the opening then cut: a dent in
+    # the forehead where the eye sits (tailspot blenny: top 4.6 vs 8.8 % SL at 6 % SL, method row 47). Fill holes in the front 35 %
+    # only, so enclosed gaps under fin tips near the tail stay open.
+    from scipy import ndimage as nd_
+    x35 = xs.max() - 0.35 * (xs.max() - xs.min())   # the snout points right (sheets are mirrored to face right, row 13)
+    filled_ = nd_.binary_fill_holes(full); head_ = np.zeros_like(full); head_[:, int(x35):] = True
+    full = full | (filled_ & head_)
 
     # --- first pass: rough axis from the unrotated mask
     xs_max, xs_min = xs.max(), xs.min()
