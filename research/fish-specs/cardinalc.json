@@ -285,8 +285,10 @@
  "thickx": 0.96,
  "dense": true,
  "eye_iris": [
-  "#928c78",
-  "#564038"
+  "#676558",
+  "#4b4b3b"
  ],
- "eye_pupil": "#030506"
+ "eye_pupil": "#050506",
+ "eye_full": 34,
+ "eye_pupil_frac": 0.385
 }

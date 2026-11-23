@@ -304,8 +304,10 @@
  "card_sheet": "C:/Users/nreed/fish-sheets/discus-map-gen/sheet3card.png",
  "thickx": 0.74,
  "eye_iris": [
-  "#872c1e",
-  "#731308"
+  "#8e220e",
+  "#722007"
  ],
- "eye_pupil": "#080908"
+ "eye_pupil": "#090908",
+ "eye_full": 15,
+ "eye_pupil_frac": 0.404
 }

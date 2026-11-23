@@ -129,7 +129,7 @@ function eyePlacements(p: Plan, bend: number) {
   // `eye.up` turns the eye from the flank toward the top of the head (flattened fish: plecos look upward)
   const th = th0 + (EYE_TOP - th0) * (p.eye.up ?? 0);
   return [1, -1].map(side => ({
-    pos: pointAt(p, e.u, th, side, bend), n: normalAtTh(p, e.u, th, side, bend).add(new THREE.Vector3(0.2, 0, 0)).normalize(), r: e.r, iris: e.iris, pupil: p.eye.pupil, bulge: p.eye.bulge ?? 0.38,
+    pos: pointAt(p, e.u, th, side, bend), n: normalAtTh(p, e.u, th, side, bend).add(new THREE.Vector3(p.eye.pupilFrac ? 0 : 0.2, 0, 0)).normalize(), /* measured (photo) eyes face straight out: the sheet's pupil is centred */ r: e.r, iris: e.iris, pupil: p.eye.pupil, bulge: p.eye.bulge ?? 0.38, pf: p.eye.pupilFrac,
   }));
 }
 /** Section angle of a fully raised eye (`eye.up` = 1): on the head's upper surface, a little off the midline. */
@@ -588,12 +588,18 @@ const SIDE = new THREE.Vector2(0.45, 0.9);
 const SIDE_SHARP = new THREE.Vector2(0, 0.05);
 
 /** Eye dome texture by angle from the pole (SphereGeometry: top pole = uv.y 1): pupil, iris, then dark rim. */
-function eyeTexture(iris: [string, string], pupil = '#050606') {
+function eyeTexture(iris: [string, string], pupil = '#050606', fit?: { fp: number; fv: number }) {
   const c = document.createElement('canvas'); c.width = 4; c.height = 128;
   const ctx = c.getContext('2d')!, g = ctx.createLinearGradient(0, 0, 0, 128);
+  if (fit) { // measured eye (photo-built fish): pupil to fp, the iris filling the visible cap up to fv, dark rim under the skin
+    const { fp, fv } = fit, m = (fp + fv) / 2;
+    g.addColorStop(0, pupil); g.addColorStop(fp, pupil); g.addColorStop(Math.min(fp + 0.012, m), iris[1]); g.addColorStop(m, iris[0]);
+    g.addColorStop(fv, iris[1]); g.addColorStop(Math.min(1, fv + 0.03), '#20221d'); g.addColorStop(1, '#20221d');
+  } else {
   // a big black pupil and a narrow, dark-edged iris: a pale wide ring reads as a cartoon eye
   g.addColorStop(0, pupil); g.addColorStop(0.2, pupil); g.addColorStop(0.23, iris[1]); g.addColorStop(0.27, iris[0]);
   g.addColorStop(0.33, iris[1]); g.addColorStop(0.38, '#20221d'); g.addColorStop(1, '#20221d');
+  }
   ctx.fillStyle = g; ctx.fillRect(0, 0, 4, 128);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
   return t;
@@ -689,7 +695,11 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     m.renderOrder = 1; grp.add(m);
   }
   for (const e of eyePlacements(p, b)) {
-    const m = new THREE.Mesh(dome(e.bulge), fishMat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e.iris, e.pupil) })));
+    // measured eye (pupilFrac set; Nathan 2026-11-23: eyes too small and nearly all pupil): e.r is the eye's radius on the sheet. The head curves
+    // away round the eye, so the dome shows almost to its equator and its outline is the eye; a point at polar angle th projects to r sin(th),
+    // so the pupil edge sits at asin(pupilFrac) and the iris runs to asin(0.95), the dark rim only at the very edge
+    const fit = e.pf ? { fp: Math.asin(Math.min(0.95, e.pf)) / Math.PI, fv: Math.asin(0.95) / Math.PI } : undefined;
+    const m = new THREE.Mesh(dome(e.bulge), fishMat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e.iris, e.pupil, fit) })));
     m.scale.setScalar(e.r); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), e.n);
     m.position.copy(e.pos).addScaledVector(e.n, -e.r * (0.3 - 0.5 * (e.bulge - 0.38))); // set into the head, bulging a little (rounder domes sit less deep)
     grp.add(m);
