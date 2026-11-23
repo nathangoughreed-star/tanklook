@@ -3,7 +3,7 @@
 <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
 <style>html,body{margin:0;height:100%;background:#d6d7cf;font:14px system-ui}model-viewer{width:100%;height:100%}
 .bar{position:fixed;top:8px;left:8px;display:flex;gap:6px}.bar a{background:#222;color:#fff;padding:6px 10px;border-radius:6px;text-decoration:none}</style></head>
-<body><div class="bar"><a href="?m=boesemani-gen">Rainbowfish</a><a href="?m=oscar-hy2mv-8000">Oscar</a><a href="?m=bluetang-gen">Blue tang</a></div>
+<body><div class="bar"><a href="?m=boesemani-gen">Rainbowfish</a><a href="?m=oscar-hy2mv-8000">Oscar</a><a href="?m=bluetang-gen">Blue tang</a><a href="?m=bluetang2-gen">Blue tang 2</a></div>
 <model-viewer id="mv" camera-controls auto-rotate auto-rotate-delay="0" rotation-per-second="20deg" shadow-intensity="0.6" exposure="1.1" interaction-prompt="none"></model-viewer>
 <script>const m=new URLSearchParams(location.search).get('m')||'boesemani-gen';document.getElementById('mv').src='art/fish/lod/'+m+'.glb';</script>
 </body></html>

@@ -16,7 +16,7 @@ ROOT = os.path.dirname(HERE)
 def panels(work):
     """Writes side.png (panel 2, RGBA cut-out, square 1024) and front.png (panel 4 rescaled so its height equals the side's, same canvas)."""
     a, M = fs.load(os.path.join(work, 'sheet.webp')); bands = fs.panel_bands(M)
-    assert len(bands) in (4, 5), f'expected 4 or 5 panels, found {len(bands)}: {bands}'
+    assert len(bands) in (4, 5, 6), f'expected 4 to 6 panels, found {len(bands)}: {bands}'
     S = 1024; fit = int(S * 0.875)
     def cut(i):
         x0, x1, y0, y1 = fs.box(M, *bands[i]); rgb = a[y0:y1, x0:x1]; al = (M[y0:y1, x0:x1] * 255).astype(np.uint8)

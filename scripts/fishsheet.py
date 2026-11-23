@@ -34,6 +34,10 @@ def panel_bands(M, min_gap=6, min_h=40, min_col_gap=12):
         for x0, x1 in (cols or [[0, M.shape[1]]]):
             r = np.where(M[y0:y1, x0:x1].any(1))[0]
             out.append((y0 + r[0], y0 + r[-1] + 1, x0, x1))
+    if len(out) == 6 and out[3][0] < out[4][1] and out[4][0] < out[3][1]:
+        # 5-row sheet whose row 4 is front | front fin map (pectoral angle): keep the stacked numbering
+        # (0 side, 1 finless side, 2 top, 3 front, 4 side label map) and put the front fin map last (5)
+        out = out[:4] + [out[5], out[4]]
     return out
 
 
@@ -91,3 +95,30 @@ def label_map(a, M, bands, b1box):
     out = np.zeros(M.shape, bool); out[np.clip(py.round().astype(int), 0, M.shape[0] - 1), np.clip(px.round().astype(int), 0, M.shape[1] - 1)] = True
     out = nd.binary_closing(out, iterations=2); out = nd.binary_fill_holes(out)
     return out, T(*root)
+
+
+def front_fin_angles(a, M, bands, pec_mask=None):
+    """If the sheet has a front fin map (6th rect, see panel_bands): (pectoral swing out from the flank, pelvic angle
+    from the vertical), degrees, either None when not found. Pectoral: a fin card of width W swung out by angle s shows
+    W*cos(s) wide in the side view and W*sin(s) wide from the front, so s = atan(front width / side width) at the same
+    scale (pec_mask = the pectoral in panel 1's frame). Pelvic: the cyan blob's long axis against the vertical."""
+    if len(bands) < 6: return None, None
+    y0, y1, x0, x1 = bands[5]; R = a[y0:y1, x0:x1].astype(int)
+    yel = (R[..., 0] > 180) & (R[..., 1] > 160) & (R[..., 2] < 110)
+    cya = (R[..., 0] < 110) & (R[..., 1] > 160) & (R[..., 2] > 180)
+    fb = box(M, *bands[3]); mh = box(M, *bands[5]); k =   (fb[3] - fb[2]) / max(1, (mh[3] - mh[2]))
+    pec = pel = None
+    lab, n = nd.label(yel)
+    if n and pec_mask is not None and pec_mask.any():
+        w = np.mean([np.ptp(np.where(lab == i)[1]) + 1 for i in range(1, n + 1) if (lab == i).sum() > 30]) * k
+        xs = np.where(pec_mask.any(0))[0]; ws = xs[-1] - xs[0] + 1
+        pec = float(np.degrees(np.arctan2(w, ws)))
+    lab, n = nd.label(cya)
+    angs = []
+    for i in range(1, n + 1):
+        yy, xx = np.where(lab == i)
+        if len(yy) < 20: continue
+        c = np.cov(np.vstack([xx - xx.mean(), yy - yy.mean()])); ev, vec = np.linalg.eigh(c); v = vec[:, -1]
+        angs.append(np.degrees(np.arctan2(abs(v[0]), abs(v[1]))))
+    if angs: pel = float(np.mean(angs))
+    return pec, pel

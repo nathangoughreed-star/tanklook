@@ -18,6 +18,8 @@ bands = fs.panel_bands(M)
 FINS = json.load(open(os.path.join(F, 'fins.json')))
 dy, dx = (list(np.load(os.path.join(F, 'align.npy')).astype(int)) + [0])[:2]   # panel 1 = panel 2 + (dy, dx)
 B1, B2, B3, B4 = [fs.box(M, *b) for b in bands[:4]]
+if (B3[1] - B3[0]) > 1.05 * (B2[1] - B2[0]):   # the top panel kept the tail fin: measure it from the snout over panel 2's length only
+    B3 = (B3[1] - (B2[1] - B2[0]), B3[1], B3[2], B3[3]); print('top panel longer than the finless side: tail fin clipped off the top view', flush=True)
 Mp = [fs.mask(M, b) for b in bands[:4]]        # each panel's own mask (a grid sheet has neighbours in the same rows)
 L = B1[1] - B1[0]; XC = (B1[0] + B1[1]) / 2; YC = (B1[2] + B1[3]) / 2
 U = lambda px: (px - XC) / L; V = lambda py: -(py - YC) / L              # sheet px (absolute) -> model units
@@ -110,7 +112,7 @@ def quad(px0, px1, py0, py1, rgba):
     """A plane in z = 0 covering sheet box (absolute px), textured with rgba (H x W x 4, same box)."""
     x0, x1, y0, y1 = U(px0), U(px1), V(py0), V(py1)
     q = trimesh.Trimesh([[x0, y1, 0], [x1, y1, 0], [x1, y0, 0], [x0, y0, 0]], [[0, 1, 2], [0, 2, 3]], process=False)
-    q.visual = trimesh.visual.TextureVisuals(uv=np.array([[0, 0], [1, 0], [1, 1], [0, 1]], float), material=trimesh.visual.material.PBRMaterial(baseColorTexture=Image.fromarray(rgba, 'RGBA'), metallicFactor=0, roughnessFactor=1, alphaMode='MASK', alphaCutoff=0.5))
+    q.visual = trimesh.visual.TextureVisuals(uv=np.array([[0, 0], [1, 0], [1, 1], [0, 1]], float), material=trimesh.visual.material.PBRMaterial(baseColorTexture=Image.fromarray(rgba, 'RGBA'), metallicFactor=0, roughnessFactor=1, alphaMode='MASK', alphaCutoff=0.5, doubleSided=True))   # fins seen from both sides (the app sets DoubleSide itself; viewers need the flag)
     return q
 def rgba_of(mask, x0, x1, y0, y1):
     al = (mask[y0:y1, x0:x1] * 255).astype(np.uint8)
@@ -137,7 +139,10 @@ def halfwidth(x, y):
     return np.abs(m.vertices[near, 2]).max() if near.any() else 0.05
 
 parts = {'body': body, 'card': card}
-for name, mask, hinge, ang in (('pec', pec, 'y', 28), ('pel', pel, 'x', 22)):
+fa_pec, fa_pel = fs.front_fin_angles(a, M, bands, pec)
+PEC_A, PEL_A = round(fa_pec or 28), round(fa_pel or 22)
+print('paired-fin angles: pectoral %d deg, pelvic %d deg (%s)' % (PEC_A, PEL_A, 'front fin map' if fa_pec else 'defaults'), flush=True)
+for name, mask, hinge, ang in (('pec', pec, 'y', PEC_A), ('pel', pel, 'x', PEL_A)):
     if mask is None or not mask.any(): continue
     ys_, xs_ = np.where(mask); x0, x1, y0, y1 = xs_.min(), xs_.max() + 1, ys_.min(), ys_.max() + 1
     rg = rgba_of(mask, x0, x1, y0, y1)
@@ -147,7 +152,7 @@ for name, mask, hinge, ang in (('pec', pec, 'y', 28), ('pel', pel, 'x', 22)):
     for side, sg in (('l', 1), ('r', -1)):
         q = quad(x0, x1, y0, y1, rg)
         T = trimesh.transformations
-        R = T.rotation_matrix(np.radians(-ang * sg if hinge == 'y' else ang * sg), [0, 1, 0] if hinge == 'y' else [1, 0, 0], [rx, ry, 0])
+        R = T.rotation_matrix(np.radians(ang * sg), [0, 1, 0] if hinge == 'y' else [1, 0, 0], [rx, ry, 0])   # + swings the pectoral's tail end OUT from the flank (- buried it in the body: E-GEN tang)
         q.apply_transform(R); q.apply_translation([0, 0, sg * hw])
         parts[f'{name}_{side}'] = q
 sc = trimesh.Scene()

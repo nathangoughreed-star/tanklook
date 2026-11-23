@@ -22,7 +22,7 @@ MIN_PX, DILATE = 300, 2
 def main(F, sheet=None):
     a, M = fs.load(sheet or os.path.join(F, 'sheet.webp'))
     bands = fs.panel_bands(M)
-    assert len(bands) in (4, 5), f'expected 4 or 5 panels on the sheet, found {len(bands)}: {bands}'
+    assert len(bands) in (4, 5, 6), f'expected 4 to 6 panels on the sheet, found {len(bands)}: {bands}'
     B1 = fs.box(M, *bands[0]); B2 = fs.box(M, *bands[1])
     dy, dx = fs.align(M, bands[0], bands[1])
     p1y = bands[0][0]
