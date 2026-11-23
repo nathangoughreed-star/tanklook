@@ -24,6 +24,7 @@ SP = {
     'oscar': dict(tl=300, a=0.03162, b=3.02, w=21.5, wr=(20, 23), prior=0.46),
     'clownfish': dict(tl=100, a=0.01445, b=3.0, w=None, wr=None, prior=0.50),
     'pleco': dict(tl=380, a=0.01479, b=2.98, w=30.0, wr=(27.5, 33), prior=1.45),
+    'bluetang': dict(tl=310, a=0.02291, b=2.96, w=None, wr=None, prior=0.35),   # FishBase 6017 Bayesian LWR (family-body-shape estimate, TL cm); no published width
 }
 
 
