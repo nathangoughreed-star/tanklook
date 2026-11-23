@@ -286,5 +286,6 @@
   ]
  },
  "card_sheet": "C:/Users/nreed/fish-sheets/cardinal-gen/sheet3card.png",
- "thickx": 0.83
+ "thickx": 0.83,
+ "dense": true
 }

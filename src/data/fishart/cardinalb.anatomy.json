@@ -23,7 +23,16 @@
   "depthProfile": {
    "stations": [
     0,
+    0.5,
+    1,
+    1.5,
+    2,
+    3,
+    4,
     5,
+    6,
+    7,
+    8,
     10,
     15,
     20,
@@ -42,11 +51,22 @@
     85,
     90,
     95,
+    97,
+    98.5,
     100
    ],
    "top": [
     0.26,
+    0.51,
+    1.0,
+    1.5,
+    2.0,
     2.9,
+    2.9,
+    2.9,
+    3.68,
+    4.89,
+    5.36,
     6.07,
     7.65,
     9.18,
@@ -65,11 +85,22 @@
     11.02,
     10.88,
     10.74,
+    10.69,
+    5.36,
     6.07
    ],
    "bottom": [
     3.69,
+    3.94,
+    4.19,
+    4.67,
+    5.01,
+    5.64,
+    6.11,
     6.6,
+    7.06,
+    7.39,
+    7.92,
     8.44,
     9.76,
     10.77,
@@ -88,7 +119,9 @@
     6.48,
     5.34,
     4.74,
-    4.74
+    4.58,
+    5.89,
+    6.86
    ],
    "axis": "snout tip to peduncle centre, level; values are distance from the axis in % SL; BODY ONLY (opened mask)"
   },
@@ -368,7 +401,16 @@
   "thickness": {
    "stations": [
     0,
+    0.5,
+    1,
+    1.5,
+    2,
+    3,
+    4,
     5,
+    6,
+    7,
+    8,
     10,
     15,
     20,
@@ -387,11 +429,22 @@
     85,
     90,
     95,
+    97,
+    98.5,
     100
    ],
    "halfWidthPctSL": [
     1.08,
+    1.85,
+    2.51,
+    2.85,
+    3.22,
+    3.98,
+    4.55,
     4.75,
+    5.38,
+    6.13,
+    6.78,
     7.43,
     7.27,
     8.11,
@@ -410,13 +463,15 @@
     4.435,
     3.523,
     2.453,
+    1.828,
+    1.485,
     1.35
    ],
    "source": "top panel of the generated sheet, blue-share mask (thr 0.60); the narrower side of the centre line",
    "fit": {
-    "thick": 0.86,
+    "thick": 0.84,
     "pedT": 0.3,
-    "rmsPctSL": 0.52,
+    "rmsPctSL": 0.53,
     "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
    }
   },
@@ -653,7 +708,7 @@
     "aspect": 0.382,
     "finImg": true
    },
-   "fit": "{'thick': 0.86, 'pedT': 0.3, 'rmsPctSL': 0.52, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
+   "fit": "{'thick': 0.84, 'pedT': 0.3, 'rmsPctSL': 0.53, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }
  },
  "reliability": {
