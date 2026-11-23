@@ -44,6 +44,7 @@ def main(argv):
         rows = []
         for v in opt.get('--views', 'tail').split(','):
             ims = [Image.open(os.path.join(D, f'{ID}-{v}-{t}.png')).convert('RGB') for t in (A, B)]
+            if v != 'tail': ims = [crop(im) for im in ims]
             rows.append([(f'{v}: {A}', fit(ims[0], H)), (f'{v}: {B}', fit(ims[1], H))])
         return lay(rows, f'{ID}: {A} (left) vs {B} (right)', H, opt.get('--out', os.path.join(D, f'{ID}-{A}-vs-{B}.jpg')))
     tag = ('-' + opt['--tag']) if '--tag' in opt else ''

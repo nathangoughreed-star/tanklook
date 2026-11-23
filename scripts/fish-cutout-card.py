@@ -25,6 +25,24 @@ sx, sy = [v * k for v in J['anatomy']['landmarks']['snoutPxOriginal']]
 TL = J['anatomy']['tlPx'] * k
 ALO, AW = float(opt.get('--alo', 12)), float(opt.get('--aw', 40))   # alpha ramp: dark fins (oscar, max channel ~45) came out half transparent and blue against the tank at 12/40: use --alo 4 --aw 14
 al = np.clip((a.max(2).astype(float) - ALO) / AW, 0, 1)
+if '--solid' in opt:   # --solid T (method row 45): the background is near-black (< T) pixels connected to the image edge, plus enclosed black
+    # pockets within --solid-near px of it (a gap under an overhanging fin tip, closed off by the thin fin edge: 3-6.4 px on the ram and
+    # discus sheets) or over --solid-pocket px (an erased fin). Deeper pockets (pupils, dark marks: 30-43 px in) and everything else is
+    # fish, fully opaque; the brightness ramp still sets the outer 3 px. Brightness alone made black fin parts, pupils and dark spots
+    # part see-through (ram: ragged black spines)
+    from scipy import ndimage as nd
+    T, POCKET, NEAR = float(opt['--solid']), int(opt.get('--solid-pocket', 2000)), float(opt.get('--solid-near', 15))
+    lab, n = nd.label(a.max(2) < T)
+    if n:
+        cnt = np.bincount(lab.ravel()); edge = np.unique(np.r_[lab[0], lab[-1], lab[:, 0], lab[:, -1]])
+        bgid = np.zeros(n + 1, bool); bgid[edge] = True; bgid[cnt > POCKET] = True; bgid[0] = False
+        d = nd.distance_transform_edt(~bgid[lab])   # distance to the outside background
+        near = nd.minimum(d, lab, index=np.arange(n + 1))
+        bgid |= np.asarray(near) < NEAR; bgid[0] = False
+        fish = ~bgid[lab]
+    else: fish = np.ones(a.shape[:2], bool)
+    IN = int(opt.get('--solid-in', 3))   # keep the brightness ramp on a 3 px rim: at 1 px the near-black antialiased fin edges turned into black flecks (ram tail close-up)
+    al = np.maximum(al, nd.binary_erosion(fish, iterations=IN).astype(float))
 rgba = Image.fromarray(np.dstack([a, (al * 255).astype(np.uint8)]), 'RGBA').rotate(J['method']['rotationDeg'], resample=Image.BICUBIC, center=(sx, sy))
 s = 1022 / TL; H = round(1024 * asp)
 card = Image.new('RGBA', (1024, H), (0, 0, 0, 0))

@@ -108,6 +108,7 @@ os.makedirs(shots, exist_ok=True)
 card = os.path.join(shots, ID + '-card.png')
 er = sum([['--erase', ','.join(map(str, e))] for e in spec.get('erase', [])], [])
 common = ['--aspect', asp, '--clip-head', spec.get('clip_head', 25), '--alo', alo, '--aw', aw, '--sat', sat]
+if spec.get('solid', 5): common += ['--solid', spec.get('solid', 5)]   # opaque inside the fish silhouette (method row 45); 'solid': 0 = brightness alpha only
 side_card = os.path.join(work, 'side_full.png')
 if spec.get('card_sheet'):   # the body card from a sheet whose panel 1 has the paired fins replaced by the finless flank (the 3D fins draw themselves); the fin card keeps them
     cs_ = Image.open(spec['card_sheet']).convert('RGB'); sqc = Image.new('RGB', (N, N)); sqc.paste(cs_.crop((0, 0, cs_.width, sy1 + 8)), (0, 0))

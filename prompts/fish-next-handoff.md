@@ -54,6 +54,7 @@ helps every species. Nathan picks the species; he generates each sheet in ChatGP
    `python -I scripts/fish-contact.py <id> --sheet <work>/sheet.webp` -> `shots/<id>-views.jpg`. Before / after:
    `shootFish(id, tl, {tag: 'before', views: ['tail']})`, rebuild, `{tag: 'after'}`, then `fish-contact.py <id> --compare before after`.
    Close the tank panel first if it is open. Stop the server when done.
+   Card alpha is solid inside the fish silhouette (row 45): black fins, pupils and dark marks no longer need `alo` / `aw` by hand.
 6. **Judgment, still by hand:** pectoral spread per species (row 32), colour saturation (`sat`, row 22: the ram's fins render
    redder than the sheet), whether the picture matches the sheet. Log the sheet in the method doc's "Prompts used" table.
 
