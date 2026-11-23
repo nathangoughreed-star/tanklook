@@ -4,6 +4,7 @@
     ped         row 2 min depth, rear 30%  topW   row 3 max width            frontWH  row 4 left width / height
     stray       row 2 pixels outside row 1 (% of row 2)    iou15  row 5 vs row 1 silhouette after a bounding-box fit
     pec         row 5 pectoral area / SL^2 x 1000
+    frontH      row 4 left height / row 2 max depth (same scale asked: 1.00)   topSnout  row 3 snout x minus row 2 snout x, % SL
 Usage: python fish-sheet-audit5.py <sheet.webp> [more sheets...] [--real depth,head,ped,width]"""
 import sys, os, numpy as np
 from scipy import ndimage as nd
@@ -37,17 +38,17 @@ def audit(path):
     s = 1 / (P1 - P0) * (p1 - p0)                                      # row 5 px per row 1 px
     return dict(depth=100 * dep.max() / SL, head=100 * head / SL, ped=100 * ped / SL, topW=100 * (t[3] - t[2]) / SL,
                 frontWH=(f[1] - f[0]) / (f[3] - f[2]), stray=100 * (m2s & ~m1).sum() / m2.sum(), iou15=iou,
-                pec=1000 * yel.sum() / s ** 2 / SL ** 2)
+                pec=1000 * yel.sum() / s ** 2 / SL ** 2, frontH=(f[3] - f[2]) / dep.max(), topSnout=100 * (t[1] - X1) / SL)
 
 
 def main(args):
     real = None
     if '--real' in args: i = args.index('--real'); real = [float(v) for v in args[i + 1].split(',')]; args = args[:i] + args[i + 2:]
-    keys = ['depth', 'head', 'ped', 'topW', 'frontWH', 'stray', 'iou15', 'pec']
+    keys = ['depth', 'head', 'ped', 'topW', 'frontWH', 'stray', 'iou15', 'pec', 'frontH', 'topSnout']
     print('%-28s' % 'sheet' + ''.join('%9s' % k for k in keys))
     if real: print('%-28s' % 'real (FishShapes)' + ''.join('%9.1f' % v for v in real) + '%9.2f' % (real[3] / real[0]))
     for p in args:
-        r = audit(p); print('%-28s' % os.path.basename(os.path.dirname(p) + '/' + os.path.basename(p))[-28:] + ''.join(('%9.2f' if k in ('frontWH', 'iou15') else '%9.1f') % r[k] for k in keys))
+        r = audit(p); print('%-28s' % os.path.basename(os.path.dirname(p) + '/' + os.path.basename(p))[-28:] + ''.join(('%9.2f' if k in ('frontWH', 'iou15', 'frontH') else '%9.1f') % r[k] for k in keys))
 
 
 if __name__ == '__main__':
