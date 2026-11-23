@@ -34,8 +34,14 @@ roles = {}
 for k, v in sorted(fins['components'].items(), key=lambda kv: int(kv[0])): roles.setdefault(v['role'], int(k))   # largest per role (an adipose is a second, smaller 'dorsal')
 
 
+DORSAL_IDS = [int(k) for k, v in fins['components'].items() if v['role'] == 'dorsal']
+
+
 def base(role):
-    ys, xs = np.nonzero((full == roles[role]) & bodyd); return xs, ys
+    # a row of finlets (4+ dorsal pieces): the back line runs under all of them, not just the largest; else the outline climbed into
+    # the other finlets' lower parts (bichir: 16.0 vs 13.3 % SL deep at 40 % SL, method row 55)
+    sel = np.isin(full, DORSAL_IDS) if role == 'dorsal' and len(DORSAL_IDS) >= 4 else (full == roles[role])
+    ys, xs = np.nonzero(sel & bodyd); return xs, ys
 
 
 def binned(xs, ys, step=30):
@@ -122,7 +128,10 @@ for k_ in range(1, n_ + 1):
     if (cm_ & near).sum() >= 0.5 * cm_.sum() and cm_.sum() < 0.01 * sizes[big]: card[cm_] = 0; gone += 1
 if gone: print('card: %d loose fin fragment(s) removed' % gone)
 Image.fromarray(card).save(os.path.join(W, 'sheet3card.png')); spec["card_sheet"] = os.path.join(W, 'sheet3card.png').replace(chr(92), '/')
-if sum(1 for v in fins['components'].values() if v['role'] == 'dorsal') >= 2:   # adipose or split dorsal: outline it as 'dorsal2' so the 3D card keeps it (cardinal: it floated as a fleck, method row 46)
+nd_ = sum(1 for v in fins['components'].values() if v['role'] == 'dorsal')
+if nd_ >= 4:   # a row of finlets (bichir: 9): one dorsal over all of them, the gaps bridged in fish-outline.py (--fin-gap), not two fins (method row 55)
+    spec['finlets'] = nd_
+elif nd_ >= 2:   # adipose or split dorsal: outline it as 'dorsal2' so the 3D card keeps it (cardinal: it floated as a fleck, method row 46)
     spec['dorsals'] = 2
 spec['dense'] = True   # handoff step 6: every build-B fish so far is built dense
 json.dump(spec, open(os.path.join(W, ID + '.json'), 'w'), indent=1)

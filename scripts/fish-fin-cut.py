@@ -31,10 +31,12 @@ def map_body(a, M, bands):
     X0, X1, Y0, Y1 = bb(sil(0)); x0, x1, y0, y1 = bb(m5)
     crop = Image.fromarray((grey[y0:y1 + 1, x0:x1 + 1] * 255).astype(np.uint8)).resize((X1 - X0 + 1, Y1 - Y0 + 1), Image.NEAREST)
     o = np.zeros(M.shape, bool); o[Y0:Y1 + 1, X0:X1 + 1] = np.asarray(crop) > 127
-    # fin colours (dorsal red, anal green, caudal blue, pelvic cyan) warped the same way: 0 = none, 1..4
+    # fin colours (dorsal red, anal green, caudal blue, pelvic cyan, pectoral yellow) warped the same way: 0 = none, 1..5. Fin pixels
+    # nearest the yellow are the pectoral, which comes from the label map anyway: the piece loop below takes 1..4 only, so they drop out
+    # (bichir: the pectoral hangs below the belly and became the 'dorsal', nearest the last red finlet, method row 55)
     R, G, B = A[..., 0], A[..., 1], A[..., 2]; hi, lo = 170, 90
     col = np.zeros(M.shape, np.uint8)
-    for k, c in enumerate([(R > hi) & (G < lo) & (B < lo), (G > hi) & (R < lo) & (B < lo), (B > hi) & (R < lo) & (G < lo), (G > hi) & (B > hi) & (R < lo)], 1):
+    for k, c in enumerate([(R > hi) & (G < lo) & (B < lo), (G > hi) & (R < lo) & (B < lo), (B > hi) & (R < lo) & (G < lo), (G > hi) & (B > hi) & (R < lo), (R > hi) & (G > hi) & (B < lo)], 1):   # 5 = pectoral yellow (method row 55)
         col[c & m5] = k
     cc = Image.fromarray(col[y0:y1 + 1, x0:x1 + 1]).resize((X1 - X0 + 1, Y1 - Y0 + 1), Image.NEAREST)
     colw = np.zeros(M.shape, np.uint8); colw[Y0:Y1 + 1, X0:X1 + 1] = np.asarray(cc)

@@ -13,7 +13,7 @@ import sys, os, json, shutil, subprocess, importlib.util
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 KEEP = ('sat', 'alo', 'aw', 'taper', 'smooth_tail', 'pedt_max', 'clip_head', 'outline', 'fy0', 'erase', 'pec_window', 'anchor_top',
-        'no_tail', 'dorsals', 'smooth', 'warm', 'plan', 'plan_extra', 'card_sheet_off')
+        'no_tail', 'dorsals', 'smooth', 'warm', 'plan', 'plan_extra', 'fin_gap', 'card_sheet_off')
 STRETCH_AT = 0.08   # band around the median when there is no measured range
 
 

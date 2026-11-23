@@ -61,6 +61,7 @@ image instead, save it there yourself (the pasted image's path is in the message
 | `pepperedcoryb` | `cory-gen` (stretched k 1.173) | `--body-from-map` (row 50), `sat` 0.73, plan `pepperedcory` (row 52), `plan_extra` barbels + `--snout-open 15` (row 53); mass 1.08-1.50x (one specimen looks wrong) |
 | `royalgrammac` | `gramma2-gen` | second gramma sheet (eyespot marked white in row 5: row 51); mass 1.09-1.27x |
 | `oscarb` | `oscar5-gen` (stretched k 1.093) | tiger oscar, `--body-from-map`, `sat` 0.75 (row 54: orange still slightly redder, body greyer); snout outline matches the sheet (the blunt look is painted lip detail); mass 0.97-1.34x. Not `oscar-gen` (an older experiment's folder) |
+| `bichirb` | `bichir-gen` | Senegal bichir, not in FishShapes (FishBase ratios + estimates in `fishshapes.json`); finlet mode (row 55), `--body-from-map`, `--snout-open 9`, `sat` 0.67; mass 1.8x the length-weight estimate (sheet drew it at the deep end) |
 
 ## The pipeline now (per species; scripted 2026-11-23, method row 44)
 1. **Numbers:** `python -I scripts/fishshapes.py "<Genus species>"` prints every FishShapes v1 specimen (depth, head, peduncle, width

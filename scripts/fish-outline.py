@@ -276,14 +276,14 @@ def main():
         d = (tb - tf) if sign < 0 else (bf - bb)
         return np.where(np.nan_to_num(d) >= 3)[0], d
 
-    def run(idx, x_lo, x_hi):
+    def run(idx, x_lo, x_hi, gap=6):
         idx = idx[(idx >= x_lo) & (idx <= x_hi)]
         if not len(idx):
             return None
-        # largest contiguous run (gaps up to 6 px allowed)
+        # largest contiguous run (gaps up to `gap` px allowed; --fin-gap N for the dorsal: a row of finlets is one fin, bichir, method row 55)
         runs, s0, p = [], idx[0], idx[0]
         for i in idx[1:]:
-            if i - p > 6:
+            if i - p > gap:
                 runs.append((s0, p)); s0 = i
             p = i
         runs.append((s0, p))
@@ -291,7 +291,7 @@ def main():
 
     di, dd = sticks(-1)
     ai, ad = sticks(+1)
-    dr = run(di, pedx - 10, sx)
+    dr = run(di, pedx - 10, sx, int(opts.get('--fin-gap', 6)))
     ar = run(ai, pedx - 10, sx)
 
     def u_of(x):  # % SL from the snout
