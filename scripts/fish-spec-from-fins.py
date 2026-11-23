@@ -86,6 +86,13 @@ src = np.array(Image.open(os.path.join(W, 'sheet.webp')).convert('RGB')); card =
 yy, xx = np.nonzero(paint); sy_, sx_ = yy - dy0, xx - dx0; ok = (sy_ >= 0) & (sy_ < M.shape[0]) & (sx_ >= 0) & (sx_ < M.shape[1])
 lit = src[sy_[ok], sx_[ok]].max(1) > 40   # only where panel 2 has body (the pelvic hangs below the belly: there the card stays black = cut out)
 card[yy[ok][lit], xx[ok][lit]] = src[sy_[ok][lit], sx_[ok][lit]]; card[yy[ok][~lit], xx[ok][~lit]] = 0
+near = nd.binary_dilation(paint, iterations=12)   # leftovers of an erased fin (a pelvic tip the fin mask missed) float free below the belly
+lab_, n_ = nd.label(nd.binary_closing(card.max(2) > 15, iterations=2)); sizes = np.bincount(lab_.ravel()); sizes[0] = 0; big = sizes.argmax(); gone = 0
+for k_ in range(1, n_ + 1):
+    if k_ == big: continue
+    cm_ = lab_ == k_
+    if (cm_ & near).sum() >= 0.5 * cm_.sum() and cm_.sum() < 0.01 * sizes[big]: card[cm_] = 0; gone += 1
+if gone: print('card: %d loose fin fragment(s) removed' % gone)
 Image.fromarray(card).save(os.path.join(W, 'sheet3card.png')); spec["card_sheet"] = os.path.join(W, 'sheet3card.png').replace(chr(92), '/')
 json.dump(spec, open(os.path.join(W, ID + '.json'), 'w'), indent=1)
 print('%s: ped %s, dorsal %d / anal %d base pts, eye %s, pectoral %s (swing %s deg), pelvic %s; front-map pelvic angle %s deg' % (
