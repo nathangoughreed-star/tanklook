@@ -26,6 +26,7 @@ helps every species. Nathan picks the species; he generates each sheet in ChatGP
 | `cardinalb` | `cardinal-gen/sheet.webp` | first non-disc fish; sheet depth 25% SL (real 29.4) |
 | `cardinalc` | `cardinal-v2s-gen` | v2 sheet stretched to FishShapes depth (`fish-sheet-stretch.py`, k 1.162), pectoral spread 0.35. **Preferred cardinal** |
 | `bluetangd` | (earlier chat) | rebuilt only for the new eyes |
+| `gbrb` | `ram-gen` | German blue ram, `--body-from-map`, `thickx` 0.56; mass 1.2-1.36x FishShapes |
 
 ## The pipeline now (per species)
 1. **Numbers first:** FishShapes v1 CSV (Smithsonian specimens; https://zenodo.org/records/6642650, copy in the old scratchpad may be
@@ -38,6 +39,8 @@ helps every species. Nathan picks the species; he generates each sheet in ChatGP
 3. **Sheet** from Nathan -> `<work>/sheet.webp`. Audit: `python -I scripts/fish-sheet-audit5.py <sheet> --real depth,head,ped,width`.
 4. **Fin cut:** `python -I scripts/fish-fin-cut.py <work>` (fins named by row-5 colour). If row 2 kept fins (depth well above real or
    a fin role missing): add `--body-from-map`.
+   Also use it when the dorsal / anal tips overhang the stalk with black gaps under them (cichlids, gouramis, bettas): row 2 fills
+   those gaps as body (row 42). `fish-build.py` now clamps the stalk depth from 85 % SL back (row 43).
 5. **Depth:** if the audited depth is off by more than ~8%: `python -I scripts/fish-sheet-stretch.py <sheet> <real/drawn> <new-work>/sheet.webp`
    and continue in the new folder (row 39).
 6. **Spec:** `python -I scripts/fish-spec-from-fins.py <work> <id> "<name>" "<sci>" <tl_mm>` (also samples eye colours, size and pupil).

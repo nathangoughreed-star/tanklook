@@ -77,10 +77,14 @@ run(S('fish-topview.py'), os.path.join(work, 'sheet.png'), anat, at, ty0 - 6, ty
 fit = run(S('fish-thickfit.py'), at, '--pedt-max', spec.get('pedt_max', 0.3)).strip()
 J = json.load(open(at, encoding='utf8'))
 A = J['anatomy']
-dp_ = A['depthProfile']   # the last station sits on the tail-fin root, where the mask reads the fin: keep the stalk depth of the station before it
-for k_ in ('top', 'bottom'):
-    if len(dp_[k_]) > 3 and abs(dp_[k_][-1]) > 1.3 * abs(dp_[k_][-2]):
-        dp_[k_][-1] = dp_[k_][-2]
+dp_ = A['depthProfile']   # the rear stations can read fin as body: the tail-fin root, and dorsal / anal tips that overhang the stalk (German blue ram: 97-100 % SL read 27 % SL, the fin tips, so the solid filled the black gaps = dark wedges; method row 43)
+for k_ in ('top', 'bottom'):   # from 85 % SL back, the stalk may flare at most 15 % over its smallest depth so far (was: last station only, vs the one before it)
+    lo_ = None
+    for i_, s_ in enumerate(dp_['stations']):
+        if s_ < 85: continue
+        v_ = abs(dp_[k_][i_])
+        if lo_ is not None and v_ > 1.15 * lo_: dp_[k_][i_] = round(np.sign(dp_[k_][i_]) * 1.15 * lo_, 3); v_ = 1.15 * lo_
+        lo_ = v_ if lo_ is None else min(lo_, v_)
 if spec.get('measured_width') and spec.get('smooth_tail', True):   # rear half-widths ease from 60 % SL down to the stalk's measured width (a sheet's top view often ends the body in a step: thick stub, then a thin stalk)
     st_, hw_ = A['depthProfile']['stations'], A['thickness']['halfWidthPctSL']
     i0_ = min(range(len(st_)), key=lambda i: abs(st_[i] - 60)); h0_ = hw_[i0_]; he_ = min(hw_[-5:])
