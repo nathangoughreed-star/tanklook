@@ -7,7 +7,7 @@
   "tl": 70
  },
  "measured_width": true,
- "plan": "oscar",
+ "plan": "pepperedcory",
  "landmarks": {
   "ped": [
    268,
@@ -103,7 +103,7 @@
   ]
  },
  "eye": [
-  787,
+  791,
   232,
   18
  ],
@@ -321,10 +321,10 @@
  "dorsals": 2,
  "dense": true,
  "eye_iris": [
-  "#534837",
-  "#382d1e"
+  "#544938",
+  "#3f2f1e"
  ],
- "eye_pupil": "#0d0e11",
+ "eye_pupil": "#0c0d0f",
  "eye_full": 24,
  "eye_pupil_frac": 0.412,
  "width_pct_sl": 27.2,

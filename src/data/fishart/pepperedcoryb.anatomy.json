@@ -508,12 +508,12 @@
    "note": "built by scripts/fish-build.py from pepperedcoryb.json",
    "photo": {
     "art": "pepperedcoryb",
-    "plan": "oscar",
+    "plan": "pepperedcory",
     "sx": 880.0,
     "sl": 612.0,
     "ax": 246.0,
     "eye": [
-     787,
+     791,
      232,
      18
     ],
@@ -728,10 +728,10 @@
      ]
     },
     "eyeIris": [
-     "#534837",
-     "#382d1e"
+     "#544938",
+     "#3f2f1e"
     ],
-    "eyePupil": "#0d0e11",
+    "eyePupil": "#0c0d0f",
     "eyeFull": 24,
     "pupilFrac": 0.412,
     "proj": {
