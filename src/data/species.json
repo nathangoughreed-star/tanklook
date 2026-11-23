@@ -67,6 +67,7 @@
   {"id": "bambooshark", "name": "Brownbanded bamboo shark", "sci": "Chiloscyllium punctatum", "tl": 900, "art": "bambooshark", "aspect": 0.164},
   {"id": "bluetangd", "name": "Blue tang", "sci": "Paracanthurus hepatus", "tl": 310, "art": "bluetangd", "aspect": 0.526},
   {"id": "yellowtangb", "name": "Yellow tang", "sci": "Zebrasoma flavescens", "tl": 200, "art": "yellowtangb", "aspect": 0.75},
+  {"id": "discusc", "name": "Discus", "sci": "Symphysodon aequifasciatus", "tl": 150, "art": "discusc", "aspect": 0.975},
   {"id": "oscar", "albino": "https://link.springer.com/article/10.1007/s10750-022-04921-w", "name": "Oscar", "sci": "Astronotus ocellatus", "tl": 300, "art": "oscar"},
   {"id": "goldfish", "name": "Fancy goldfish", "sci": "Carassius auratus", "tl": 203, "group": "shoal", "art": "goldfish"},
   {"id": "comet", "name": "Comet goldfish", "sci": "Carassius auratus", "tl": 250, "group": "shoal", "art": "comet", "note": "Single-tailed goldfish; grows to 30 cm, best in a pond or a very large tank."},

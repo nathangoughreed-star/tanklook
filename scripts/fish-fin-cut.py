@@ -9,7 +9,7 @@ Writes into the work folder:
               (the largest such component is the pelvic pair); plus the pectoral: from panel 5 (yellow region, black root dot)
               when the sheet has one, else from pec.json ({"poly": [[x, y], ...]} absolute sheet px, hand trace), else none
   pec.npy     bool, whole sheet, the pectoral region (only when there is one)
-Usage: python fish-fin-cut.py <work-folder> [sheet.webp]"""
+Usage: python fish-fin-cut.py <work-folder> [sheet.webp] [--body-from-map]   (body from panel 5 grey, for same-hue scaled fins)"""
 import sys, os, json, numpy as np
 from scipy import ndimage as nd
 from PIL import Image, ImageDraw
@@ -17,6 +17,28 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fishsheet as fs
 
 MIN_PX, DILATE = 300, 2
+
+
+def map_body(a, M, bands):
+    """Panel 5's grey body (holes filled: eye, pectoral), scaled and shifted by bounding box onto panel 1. Whole-sheet bool.
+    Panel 5 is a uniformly scaled copy of panel 1 on the discus sheet (IoU 0.975 after the bbox fit)."""
+    def sil(i):
+        y0, y1, x0, x1 = bands[i]; m = np.zeros(M.shape, bool); m[y0:y1, x0:x1] = M[y0:y1, x0:x1]; return m
+    def bb(m): ys, xs = np.where(m); return xs.min(), xs.max(), ys.min(), ys.max()
+    A = a.astype(int); m5 = sil(4)
+    grey = nd.binary_fill_holes((abs(A[..., 0] - 128) < 30) & (abs(A[..., 1] - 128) < 30) & (abs(A[..., 2] - 128) < 30) & m5)
+    lab, n = nd.label(grey); grey = lab == (np.argmax(np.bincount(lab.ravel())[1:]) + 1)
+    X0, X1, Y0, Y1 = bb(sil(0)); x0, x1, y0, y1 = bb(m5)
+    crop = Image.fromarray((grey[y0:y1 + 1, x0:x1 + 1] * 255).astype(np.uint8)).resize((X1 - X0 + 1, Y1 - Y0 + 1), Image.NEAREST)
+    o = np.zeros(M.shape, bool); o[Y0:Y1 + 1, X0:X1 + 1] = np.asarray(crop) > 127
+    # fin colours (dorsal red, anal green, caudal blue, pelvic cyan) warped the same way: 0 = none, 1..4
+    R, G, B = A[..., 0], A[..., 1], A[..., 2]; hi, lo = 170, 90
+    col = np.zeros(M.shape, np.uint8)
+    for k, c in enumerate([(R > hi) & (G < lo) & (B < lo), (G > hi) & (R < lo) & (B < lo), (B > hi) & (R < lo) & (G < lo), (G > hi) & (B > hi) & (R < lo)], 1):
+        col[c & m5] = k
+    cc = Image.fromarray(col[y0:y1 + 1, x0:x1 + 1]).resize((X1 - X0 + 1, Y1 - Y0 + 1), Image.NEAREST)
+    colw = np.zeros(M.shape, np.uint8); colw[Y0:Y1 + 1, X0:X1 + 1] = np.asarray(cc)
+    return o, colw
 
 
 def main(F, sheet=None):
@@ -27,8 +49,13 @@ def main(F, sheet=None):
     dy, dx = fs.align(M, bands[0], bands[1])
     p1y = bands[0][0]
     M1 = fs.mask(M, bands[0])[p1y:bands[0][1]]; M2 = fs.shift(fs.mask(M, bands[1]), dy, dx)[p1y:bands[0][1]]   # panel 2 in panel 1's frame
+    if '--body-from-map' in sys.argv:   # same-hue scaled fins (discus): row 2 kept the fins; take the body from panel 5's grey instead
+        M2, colw = map_body(a, M, bands); M2 = M2[p1y:bands[0][1]]; colw = colw[p1y:bands[0][1]]
     fin = M1 & ~nd.binary_dilation(M2, iterations=DILATE)
     lab0, n0 = nd.label(fin); cnt = np.bincount(lab0.ravel()); cnt[0] = 0
+    if '--body-from-map' in sys.argv:   # the fins touch round the disc: name each fin pixel by the nearest panel-5 fin colour
+        idx = nd.distance_transform_edt(colw == 0, return_distances=False, return_indices=True)
+        lab0 = np.where(fin, colw[idx[0], idx[1]], 0).astype(np.int32); cnt = np.bincount(lab0.ravel(), minlength=5); cnt[0] = 0
     order = [i for i in np.argsort(-cnt) if cnt[i] > MIN_PX]
     lab = np.zeros(lab0.shape, np.int32)
     for new, old in enumerate(order, 1): lab[lab0 == old] = new
@@ -43,7 +70,8 @@ def main(F, sheet=None):
         yy, xx = np.where(lab == k); cx, cy = xx.mean(), yy.mean()
         xi = int(np.clip(round(cx), bx0, bx1 - 1))
         mid = (t2[xi] + b2[xi]) / 2 if not np.isnan(t2[xi]) else (M2.any(1).nonzero()[0].mean())
-        if cx < bx0 + 0.12 * bl: role = 'caudal'
+        if '--body-from-map' in sys.argv: role = ['', 'dorsal', 'anal', 'caudal', 'pelvic'][order[k - 1]]
+        elif cx < bx0 + 0.12 * bl: role = 'caudal'
         elif cy < mid: role = 'dorsal'
         elif cx < bx0 + 0.5 * bl: role = 'anal'
         else: role = 'pelvic'
@@ -72,4 +100,5 @@ def main(F, sheet=None):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None)
+    A = [x for x in sys.argv[1:] if not x.startswith("--")]
+    main(A[0], A[1] if len(A) > 1 else None)
