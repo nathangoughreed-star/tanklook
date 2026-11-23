@@ -56,6 +56,9 @@ image instead, save it there yourself (the pasted image's path is in the message
 | `bluetangd` | (earlier chat) | rebuilt only for the new eyes |
 | `tailspotb` | `tailspot-gen` | tailspot blenny, E. bicolor proportions as proxy (`proxy_for` in fishshapes.json: drawn depth / width kept inside its range, row 49), `sat` 0.78 |
 | `gbrb` | `ram-gen` | German blue ram, `--body-from-map`, `thickx` 0.56; mass 1.2-1.36x FishShapes |
+| `royalgrammab` | `gramma-gen` | mass 1.16-1.35x, sat 1.05 (none set) |
+| `dwarfgouramib` | `gourami-gen` | mass 1.07-1.20x, sat 1.14 (none set); thread pelvic short from the side |
+| `pepperedcoryb` | `cory-gen` (stretched k 1.173) | `--body-from-map` (row 50), `sat` 0.73; barbels lost, snout pointed |
 
 ## The pipeline now (per species; scripted 2026-11-23, method row 44)
 1. **Numbers:** `python -I scripts/fishshapes.py "<Genus species>"` prints every FishShapes v1 specimen (depth, head, peduncle, width
