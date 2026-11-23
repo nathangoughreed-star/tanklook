@@ -44,7 +44,7 @@ def fill(tpl, vals):
 
 # Template rule "No size adjectives" (cardinal tetra, 2026-11-23; method row 44): the image model reads them as instructions to
 # exaggerate. Give a measured number (EXTRA_RATIOS) or name the shape. Warnings only (a fin can be "long-based"); --strict stops.
-SIZE = re.compile(r'\b(large|larger|small|smaller|big|tiny|huge|short|deep|tall|high|slightly|very|extremely|only|wide|broad|narrow|thick|thin|slender|stout|massive|minute)\b', re.I)
+SIZE = re.compile(r'\b(large|larger|small|smaller|big|tiny|huge|short|deep|tall|high|slightly|very|extremely|only|wide|broad|narrow|thick|thin|slender|stout|massive|minute|shallow|slim|long|fat|skinny)\b', re.I)
 SIZE_KEYS = ('BODY_BULLETS', 'FIN_BULLETS', 'CROSS_SECTION_WORDS', 'TOP_VIEW_SHAPE', 'FRONT_VIEW_SHAPE')
 
 
