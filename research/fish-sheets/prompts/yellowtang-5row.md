@@ -1,6 +1,6 @@
 # Yellow tang 5-row sheet prompt (2026-11-23)
 
-From `B-5row-template.md`. Values: SL 5 in, depth 53% SL, width 13% SL (width = 1/4 depth). Species block: `C:\Users
+From `B-5row-template.md`. Values: SL 5 in, depth 53% SL, width 13% SL (width = 1/4 depth). Species block: `C:\Users\nreed\fish-sheets\yellowtang-gen\species.txt`. Save the sheet as `C:\Users\nreed\fish-sheets\yellowtang-gen\sheet.webp`.
 reedish-sheets\yellowtang-gen\species.txt`. Sheet goes to `C:\Users
 reedish-sheets\yellowtang-gen\sheet.webp`.
 
