@@ -53,9 +53,18 @@ def main(F, sheet=None):
         M2, colw = map_body(a, M, bands); M2 = M2[p1y:bands[0][1]]; colw = colw[p1y:bands[0][1]]
     fin = M1 & ~nd.binary_dilation(M2, iterations=DILATE)
     lab0, n0 = nd.label(fin); cnt = np.bincount(lab0.ravel()); cnt[0] = 0
-    if '--body-from-map' in sys.argv:   # the fins touch round the disc: name each fin pixel by the nearest panel-5 fin colour
+    colof = None
+    if len(bands) >= 5:   # name each fin pixel by the nearest panel-5 fin colour, then split each colour into connected pieces: fins that
+        # touch (discus round the disc; the tailspot blenny's dorsal tip on the caudal, which merged into one 'dorsal', method row 49)
+        # come apart, and an adipose stays a second dorsal piece (row 46)
+        if '--body-from-map' not in sys.argv: _, colw = map_body(a, M, bands); colw = colw[p1y:bands[0][1]]
         idx = nd.distance_transform_edt(colw == 0, return_distances=False, return_indices=True)
-        lab0 = np.where(fin, colw[idx[0], idx[1]], 0).astype(np.int32); cnt = np.bincount(lab0.ravel(), minlength=5); cnt[0] = 0
+        colfin = np.where(fin, colw[idx[0], idx[1]], 0)
+        lab0 = np.zeros(fin.shape, np.int32); colof = {}; nid = 0
+        for c in range(1, 5):
+            l_, n_ = nd.label(colfin == c)
+            for j in range(1, n_ + 1): nid += 1; lab0[l_ == j] = nid; colof[nid] = c
+        cnt = np.bincount(lab0.ravel(), minlength=nid + 1); cnt[0] = 0
     order = [i for i in np.argsort(-cnt) if cnt[i] > MIN_PX]
     lab = np.zeros(lab0.shape, np.int32)
     for new, old in enumerate(order, 1): lab[lab0 == old] = new
@@ -67,19 +76,13 @@ def main(F, sheet=None):
     for x in c2: r = np.where(M2[:, x])[0]; t2[x], b2[x] = r[0], r[-1]
     # name by panel 5's fin colours when the sheet has a label map (cardinal tetra: the pelvic sits behind mid-body, so the
     # position rule called it anal); a component takes the colour covering most of it, if that is over half its pixels
-    colk = None
-    if len(bands) >= 5 and '--body-from-map' not in sys.argv:
-        _, cw = map_body(a, M, bands); cw = cw[p1y:bands[0][1]]; colk = {}
-        for k in range(1, len(order) + 1):
-            h = np.bincount(cw[lab == k], minlength=5); h[0] = 0; n = int((lab == k).sum())
-            colk[k] = ['', 'dorsal', 'anal', 'caudal', 'pelvic'][int(h.argmax())] if h.max() > 0.5 * n else None
+    colk = {k: ['', 'dorsal', 'anal', 'caudal', 'pelvic'][colof[order[k - 1]]] for k in range(1, len(order) + 1)} if colof else None
     roles = {}
     for k in range(1, len(order) + 1):
         yy, xx = np.where(lab == k); cx, cy = xx.mean(), yy.mean()
         xi = int(np.clip(round(cx), bx0, bx1 - 1))
         mid = (t2[xi] + b2[xi]) / 2 if not np.isnan(t2[xi]) else (M2.any(1).nonzero()[0].mean())
-        if '--body-from-map' in sys.argv: role = ['', 'dorsal', 'anal', 'caudal', 'pelvic'][order[k - 1]]
-        elif colk is not None and colk[k]: role = colk[k]
+        if colk is not None and colk[k]: role = colk[k]
         elif cx < bx0 + 0.12 * bl: role = 'caudal'
         elif cy < mid: role = 'dorsal'
         elif cx < bx0 + 0.5 * bl: role = 'anal'

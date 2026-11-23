@@ -178,8 +178,11 @@ except Exception as ex_:
 THICKX = spec.get('thickx')
 if spec.get('width_pct_sl'):   # handoff step 8 in one pass (method row 44): thickx = measured max width (FishShapes) / drawn max width
     drawn_ = 2 * max(A['thickness']['halfWidthPctSL'])
-    THICKX = round(spec['width_pct_sl'] / drawn_, 3)
-    print('width: drawn %.1f %% SL, measured %.1f -> thickx %.3f%s' % (drawn_, spec['width_pct_sl'], THICKX, '' if spec.get('thickx') in (None, THICKX) else ' (spec thickx %s ignored)' % spec['thickx']))
+    want_ = spec['width_pct_sl']
+    if spec.get('width_range'):   # proxy numbers (another species' FishShapes): keep the drawn width inside the proxy's measured range, clamp outside it (method row 49)
+        want_ = min(max(drawn_, spec['width_range'][0]), spec['width_range'][1])
+    THICKX = round(want_ / drawn_, 3)
+    print('width: drawn %.1f %% SL, target %.1f%s -> thickx %.3f%s' % (drawn_, want_, ' (proxy range %s)' % spec['width_range'] if spec.get('width_range') else '', THICKX, '' if spec.get('thickx') in (None, THICKX) else ' (spec thickx %s ignored)' % spec['thickx']))
 photo = {'art': ID, 'plan': spec.get('plan', 'oscar'), 'sx': round(sx, 1), 'sl': round(sl, 1), 'ax': round(ax, 1), 'eye': e,
          'pec': spec.get('pectoral'), 'pelvic': spec.get('pelvic'), 'eyeIris': spec.get('eye_iris'), 'eyePupil': spec.get('eye_pupil'), 'eyeFull': spec.get('eye_full'), 'pupilFrac': spec.get('eye_pupil_frac'),
          'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', FY0)}, 'thickx': THICKX, 'noTail': bool(spec.get('no_tail')), 'measuredWidth': bool(spec.get('measured_width')), 'aspect': asp, 'finImg': bool(er or spec.get('card_sheet'))}

@@ -5,7 +5,7 @@ specimens, plus each specimen's SL and weight for the build's mass check.
   Suggested values are the median over the specimens; the per-specimen table is printed so a person can override (e.g. drop a
   juvenile). FishBase length-weight a/b are Bayesian estimates for most aquarium fish: fallback only (row 35).
 Usage: python fishshapes.py "<Genus species>" [--out <work>/fishshapes.json] [--csv <path>]
-  --out writes {sci, n, depth, head, ped, width (all % SL), specimens [[sl_mm, weight_g], ...]}: fish-new.py reads it."""
+  --out writes {sci, n, depth, head, ped, width (medians, % SL), range {k: [min, max]}, specimens [[sl_mm, weight_g], ...]}: fish-new.py reads it."""
 import sys, os, csv, json, statistics, urllib.request
 
 URL = 'https://zenodo.org/api/records/6642650/files/FishShapes_specimensv1.csv/content'
@@ -43,6 +43,7 @@ def lookup(sci, rows):
         table.append((sl, w, rec))
     out['n'] = len(table)
     for k in per: out[k] = round(statistics.median(per[k]), 1) if per[k] else None
+    out['range'] = {k: [round(min(v), 1), round(max(v), 1)] for k, v in per.items() if v}   # fish-new.py stretches depth only outside this (method row 49)
     return out, table
 
 

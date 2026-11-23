@@ -1,8 +1,8 @@
 """Build-B pipeline driver, sheet to built fish (handoff steps 3-8 in one command; method row 44).
   <work> holds sheet.webp (Nathan's ChatGPT sheet). Runs:
    1. FishShapes numbers: <work>/fishshapes.json, made by fishshapes.py if missing (the sci name must be in FishShapes v1).
-   2. Audit (fish-sheet-audit5.py) against them. Depth off by more than 8 %: stretch the sheet (fish-sheet-stretch.py, row 39)
-      into <work>-s<k>/ and carry on there (--no-stretch to keep the drawn depth).
+   2. Audit (fish-sheet-audit5.py) against them. Depth outside the specimens' range: stretch the sheet to the nearest end of it
+      (fish-sheet-stretch.py, rows 39, 49) into <work>-s<k>/ and carry on there (--no-stretch to keep the drawn depth).
    3. Fin cut (fish-fin-cut.py; --body-from-map passed through: a fin role missing or row 2 well above the real depth, row 36).
    4. Spec (fish-spec-from-fins.py: eye colours, dense, pectoral spread kept to 0.2-0.35), copied to research/fish-specs/<id>.json
       with width_pct_sl and the FishShapes specimens. An existing spec's hand-set keys (sat, alo, aw, taper, ... see KEEP) are kept.
@@ -14,7 +14,7 @@ import sys, os, json, shutil, subprocess, importlib.util
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 KEEP = ('sat', 'alo', 'aw', 'taper', 'smooth_tail', 'pedt_max', 'clip_head', 'outline', 'fy0', 'erase', 'pec_window', 'anchor_top',
         'no_tail', 'dorsals', 'smooth', 'warm', 'plan', 'card_sheet_off')
-STRETCH_AT = 0.08
+STRETCH_AT = 0.08   # band around the median when there is no measured range
 
 
 def run(*a):
@@ -44,12 +44,18 @@ def main(argv):
     # 2. audit and depth
     sheet = os.path.join(W, 'sheet.webp')
     run(S('fish-sheet-audit5.py'), sheet, '--real', ','.join(str(v) for v in real))
-    drawn = mod('fish-sheet-audit5').audit(sheet)['depth']; k = fsh['depth'] / drawn
-    if abs(k - 1) > STRETCH_AT and '--no-stretch' not in flags:
+    drawn = mod('fish-sheet-audit5').audit(sheet)['depth']
+    lo, hi = (fsh.get('range') or {}).get('depth', [fsh['depth'] * (1 - STRETCH_AT), fsh['depth'] * (1 + STRETCH_AT)])
+    # method row 49: stretch only when the drawn depth is outside the measured specimens' range, and only to the nearest end of it
+    # (tailspot: drawn 22.5 inside the proxy's 18.7-22.8, squeezed to the 19.7 median it read 14 % long and skinny). With n 1 or no
+    # range, the old 8 % band around the median applies
+    if lo == hi: lo, hi = fsh['depth'] * (1 - STRETCH_AT), fsh['depth'] * (1 + STRETCH_AT)
+    target = min(max(drawn, lo), hi); k = target / drawn
+    if abs(k - 1) > 0.01 and '--no-stretch' not in flags:
         W2 = f'{W.rstrip("/")}-s{k:.3f}'; os.makedirs(W2, exist_ok=True)
-        print(f'depth: drawn {drawn:.1f} % SL vs FishShapes {fsh["depth"]:.1f}: stretch k {k:.3f} into {W2} (row 39)')
+        print(f'depth: drawn {drawn:.1f} % SL outside FishShapes {lo:.1f}-{hi:.1f}: stretch k {k:.3f} to {target:.1f} into {W2} (rows 39, 49)')
         run(S('fish-sheet-stretch.py'), sheet, f'{k:.4f}', os.path.join(W2, 'sheet.webp')); shutil.copy(fj, W2); W = W2
-    else: print(f'depth: drawn {drawn:.1f} % SL vs FishShapes {fsh["depth"]:.1f} (k {k:.3f}): no stretch')
+    else: print(f'depth: drawn {drawn:.1f} % SL within FishShapes {lo:.1f}-{hi:.1f} (median {fsh["depth"]:.1f}): no stretch')
 
     # 3-4. fins and spec
     run(S('fish-fin-cut.py'), W, *(['--body-from-map'] if '--body-from-map' in flags else []))
@@ -57,6 +63,8 @@ def main(argv):
     spec = json.load(open(os.path.join(W, ID + '.json')))
     spec['width_pct_sl'] = fsh['width']; spec['fishshapes'] = {'n': fsh['n'], 'depth': fsh['depth'], 'width': fsh['width'], 'specimens': fsh['specimens']}
     spec['measured_width'] = True
+    if fsh.get('proxy_for') and (fsh.get('range') or {}).get('width'): spec['width_range'] = fsh['range']['width']   # row 49
+    else: spec.pop('width_range', None)
     dst = os.path.join(ROOT, 'research', 'fish-specs', ID + '.json')
     if os.path.exists(dst):
         old = json.load(open(dst)); kept = {kk: old[kk] for kk in KEEP if kk in old}

@@ -35,7 +35,7 @@ export async function shootFish(species, tlMm, { tag = '', views = Object.keys(V
       t.fish = [{ id: 901, species, x: 0.5 * t.tank.L + (o.dx || 0) * tlMm, y: 0.5 * t.tank.H, depth: 0.5 * t.tank.D, yaw: o.yaw, pitch: 0, roll: 0, bend: 0 }];
       t.camera = { ...t.camera, az: o.az, el: o.el, zoom: z0 * o.z };
     });
-    await wait(settle);
+    await wait(done.length ? settle : settle + 2500);   // the first view after a page load waits for the new fish's textures (a blank side shot, tailspot)
     const file = `${species}-${name}${tag ? '-' + tag : ''}`; await grab(file); done.push(file);
   }
   return done;

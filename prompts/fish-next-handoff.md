@@ -26,7 +26,7 @@ helps every species. Nathan picks the species; he generates each sheet in ChatGP
 | `cardinalb` | `cardinal-gen/sheet.webp` | first non-disc fish; sheet depth 25% SL (real 29.4) |
 | `cardinalc` | `cardinal-v2s-gen` | v2 sheet stretched to FishShapes depth (`fish-sheet-stretch.py`, k 1.162), pectoral spread 0.35. **Preferred cardinal** |
 | `bluetangd` | (earlier chat) | rebuilt only for the new eyes |
-| `tailspotb` | `tailspot-gen` | tailspot blenny, E. bicolor proportions as proxy, stretched k 0.875, `sat` 0.78 |
+| `tailspotb` | `tailspot-gen` | tailspot blenny, E. bicolor proportions as proxy (`proxy_for` in fishshapes.json: drawn depth / width kept inside its range, row 49), `sat` 0.78 |
 | `gbrb` | `ram-gen` | German blue ram, `--body-from-map`, `thickx` 0.56; mass 1.2-1.36x FishShapes |
 
 ## The pipeline now (per species; scripted 2026-11-23, method row 44)
@@ -40,8 +40,8 @@ helps every species. Nathan picks the species; he generates each sheet in ChatGP
    `research/fish-sheets/prompts/<slug>-5row.md`.
 3. **Sheet** from Nathan -> `<work>/sheet.webp`.
 4. **Build, one command:** `python -I scripts/fish-new.py <work> <id> "<Common>" "<Genus species>" <tl_mm> [--body-from-map]`.
-   It runs fishshapes (if `<work>/fishshapes.json` is missing), the audit, the depth stretch when depth is off by more than 8 %
-   (into `<work>-s<k>`), the fin cut, the spec (eye colours, `dense`, pectoral spread kept to 0.2-0.35), copies the spec to
+   It runs fishshapes (if `<work>/fishshapes.json` is missing), the audit, the depth stretch when the drawn depth is outside the
+   specimens' range, to its nearest end (row 49; into `<work>-s<k>`), the fin cut, the spec (eye colours, `dense`, pectoral spread kept to 0.2-0.35), copies the spec to
    `research/fish-specs/<id>.json` with `width_pct_sl` and the specimens, and builds: `thickx` from the measured width in the same
    pass, then the mass against every specimen (flags outside 0.8-1.45x). Rebuilding keeps an existing spec's hand-set keys
    (`sat`, `alo`, `aw`, pectoral spread, ...).
