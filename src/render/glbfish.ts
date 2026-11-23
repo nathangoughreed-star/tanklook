@@ -29,7 +29,7 @@ function swimReady(geo: THREE.BufferGeometry, map: THREE.Texture | null) {
   if (map) { map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 8; map.channel = 1; }
 }
 /** Multi-part builds (finless body + fin cut-outs) by species art. */
-const GEN: Record<string, string> = { boesemani: 'boesemani-gen' };
+const GEN: Record<string, string> = { boesemani: 'boesemani-gen', bluetangc: 'bluetang2-gen' };   // bluetangc = the blue tang's build B (5-row sheet); every second one swaps to the finless build
 const genParts = new Map<string, { name: string; geo: THREE.BufferGeometry; mat: THREE.Material }[]>();
 let gn = 0;
 if (GLB_ON && q.has('gen')) {
