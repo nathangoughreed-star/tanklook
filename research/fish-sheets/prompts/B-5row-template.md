@@ -22,6 +22,9 @@ The prompt has two parts:
 5. Log the sheet and what it got right or wrong in `research/fish-model-sheet-method.md`, section 2, "Prompts used".
 
 ## Rules for the species block
+- **No size adjectives (cardinal tetra, 2026-11-23).** "Large eye", "only slightly compressed", "small fin" are read as instructions to
+  exaggerate or distort: the cardinal came out too round (front width/height 0.69 vs real 0.53) after "only slightly compressed, rounded".
+  Give a measured number (`EXTRA_RATIOS`) or name the shape without a size word.
 - **Geometry first: depth is the one number.** The side outline is the body as drawn, so the depth must be right in the sheet.
 - **No width numbers (Nathan, 2026-11-23).** The sheets ignored them: the yellow tang was drawn 22% SL wide when asked 13% (+30%), the discus
   22.8% when asked 17% (+34%), the blue tang 1.28-1.38x heavy. The build keeps only the top view's width *shape* and rescales its maximum to
@@ -89,7 +92,7 @@ Species proportions:
 
 * Adult {{COMMON}}, standard length {{SL_IN}} inches.
 * Maximum body depth = approximately {{DEPTH_PCT}}% of standard length.
-{{BODY_BULLETS}}
+{{EXTRA_RATIOS}}{{BODY_BULLETS}}
 * Natural asymmetry of the head and body profile; do not substitute a perfect ellipse or pointed leaf shape.
 
 Important: The front and top views must reflect this {{CROSS_SECTION_WORDS}} anatomy. {{SHAPE_DONT}}
@@ -112,7 +115,7 @@ Head pointing right, body axis perfectly horizontal.
 
 Show the complete specimen with all fins in a neutral resting position.
 
-The dorsal and anal fins must be clearly distinguishable from the underlying body. The pectoral fin lies against the flank at its natural attachment position. Only the near-side pelvic fin is visible.
+Do not enlarge, spread, rotate, or reposition any fin or other structure to make it easier to see. Where a fin naturally overlaps the body, keep that overlap. The pectoral fin lies against the flank at its natural attachment position. Only the near-side pelvic fin is visible.
 
 This view establishes the master side silhouette for the entire sheet.
 ROW 2 — IDENTICAL SIDE BODY, FINS REMOVED
@@ -157,7 +160,7 @@ The fish is upright and bilaterally symmetrical in this view, with a neutral, na
 
 No fins or fin remnants.
 ROW 4 RIGHT — FRONT FIN SEGMENTATION MAP
-An exact geometric duplicate of the front projection in row 4 left.
+The same projected body silhouette as row 4 left, unchanged, with the pectoral and pelvic fins added at their attachment points.
 
 Replace the anatomical illustration with flat colors:
 
@@ -192,9 +195,9 @@ Preserve the pectoral fin's actual overlapping shape from row 1. Mark its attach
 
 No texture, shading, gradients, or decorative outlines.
 ILLUSTRATION STYLE
-Modern natural-history scientific illustration, like a high-quality zoological identification plate.
+Restrained zoological reference illustration. Geometry takes priority over surface detail.
 
-Accurate biological forms, clean silhouettes, finely controlled anatomical contours, and natural slightly subdued coloration.
+Accurate biological forms, clean silhouettes, clearly defined anatomical boundaries, and natural slightly subdued coloration. Minimal surface texture: no individually rendered scales and no photographic detail.
 
 {{SCALES}}
 
@@ -222,6 +225,8 @@ COMMON              =
 SCI                 = 
 SL_IN               =      (adult standard length, inches)
 DEPTH_PCT           =      (max body depth, % SL)
+EXTRA_RATIOS        =      (optional, measured only: FishShapes head depth and minimum peduncle depth as "* Head depth = approximately N% of standard length." lines, each ending 
+; empty if none)
 BODY_BULLETS        =      (4-8 "* " lines: overall shape and compression, snout/forehead, back and belly line,
                             where the greatest depth sits, the peduncle (and any spines or keels on it), eye position, mouth)
 CROSS_SECTION_WORDS =      ("thin, disc-like" / "moderately compressed" / "nearly round, slightly flattened below")
@@ -246,6 +251,7 @@ COMMON              = Pacific blue tang
 SCI                 = Paracanthurus hepatus
 SL_IN               = 6
 DEPTH_PCT           = 48
+EXTRA_RATIOS        = (empty)
 BODY_BULLETS        =
 * Deep oval body, extremely compressed laterally.
 * Short, blunt snout with a steep, rounded forehead.

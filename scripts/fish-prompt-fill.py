@@ -37,7 +37,7 @@ def parse(txt):
 
 def fill(tpl, vals):
     need = sorted(set(re.findall(r'\{\{([A-Z0-9_]+)\}\}', tpl)))
-    missing = [k for k in need if k not in vals or (vals[k] == '' and k != 'ROW5_EXTRA')]
+    missing = [k for k in need if k not in vals or (vals[k] == '' and k not in ('ROW5_EXTRA', 'EXTRA_RATIOS'))]
     if missing: sys.exit('missing or empty: ' + ', '.join(missing))
     return re.sub(r'\{\{([A-Z0-9_]+)\}\}', lambda m: vals[m.group(1)], tpl)
 
