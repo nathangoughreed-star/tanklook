@@ -135,6 +135,7 @@ Species: adult [scientific name] ([common name]), [sex if the sexes differ], [co
 | Ocellaris clownfish (sheet A) | A: method block + species name only | pending |
 | Ocellaris clownfish (sheet B) | B: the template above | pending |
 | Tiger oscar (sheet 1, `oscar-sheet1-variantB.webp`) | B on a second species | **Method held.** Audit all PASS: side 1071 / top 1065 px (0.6%), ends within 4 px, gaps 26 / 28 px; width ÷ depth 0.617 / 0.600 at 0.15 / 0.20 SL; front 243 × 396 px = 0.613 (+0.8%); tail edge-on 0.09 (variant B fixed the top-view fins). **Label map:** two tries, both unusable for regions (try 1 redrawn; try 2 ChatGPT's code: 8/255 silhouette + guessed polygons); request dropped (section 2). |
+| Yellow tang (`yellowtang-gen/sheet.webp`, 2026-11-23) | `B-5row-template.md`, first species after the blue tang (no photos) | Fin cut clean: finless side sits inside row 1 (267 px stray of 75k), 4 fin components + label-map pectoral, no hand fixes. Asked depth 53% / width 13% SL; got depth 64% SL, top width 22% SL (width/depth 0.34, asked 0.25); front 80 x 291 px = 0.27 vs top 94 px; row 5 pectoral drawn larger than row 1's. Mass 2.40x FishBase (a 0.0195 b 2.98) -> `thickx` 0.42 (`scripts/fish-mass.py`), a far bigger cut than the blue tang's 0.78. Built as `yellowtangb`. |
 
 
 **Sheet audit (agent, before any building).** Run `python -I scripts/fish-sheet-audit.py SHEET --out debug.png [--stations 0.15,0.20] [--real R] [--mirror]`
