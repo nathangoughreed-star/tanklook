@@ -7,16 +7,22 @@ Prints model g (at the current thickx), FishBase g, ratio, and the thickx that g
 import sys, json, math
 
 
-def main(path, tl_mm, a, b):
-    an = json.load(open(path, encoding='utf-8'))['anatomy']
-    thx = an['render']['photo'].get('thickx') or 1.0
+def mass_g(an, sl_mm, thx=None):
+    """Trunk mass in g of the anatomy block `an` at standard length sl_mm (thx: thickx, default the render's)."""
+    thx = thx or an['render']['photo'].get('thickx') or 1.0
     st = an['depthProfile']['stations']; top = an['depthProfile']['top']; bot = an['depthProfile']['bottom']
     hw = [w * thx for w in an['thickness']['halfWidthPctSL']]; assert an['thickness']['stations'] == st
     n = 2.4; k = 4 * math.gamma(1 + 1 / n) ** 2 / math.gamma(1 + 2 / n)   # area of |x/a|^n + |y/b|^n <= 1 is k*a*b
-    sl = tl_mm / 10 / an['tlOverSl']                                       # cm
+    sl = sl_mm / 10                                                        # cm
     area = [k * ((t + bo) / 2 / 100 * sl) * (w / 100 * sl) for t, bo, w in zip(top, bot, hw)]
-    vol = sum((area[i] + area[i + 1]) / 2 * (st[i + 1] - st[i]) / 100 * sl for i in range(len(st) - 1))
-    m, fb = 1.02 * vol, a * (tl_mm / 10) ** b
+    return 1.02 * sum((area[i] + area[i + 1]) / 2 * (st[i + 1] - st[i]) / 100 * sl for i in range(len(st) - 1))
+
+
+def main(path, tl_mm, a, b):
+    an = json.load(open(path, encoding='utf-8'))['anatomy']
+    thx = an['render']['photo'].get('thickx') or 1.0
+    hw = [w * thx for w in an['thickness']['halfWidthPctSL']]
+    m, fb = mass_g(an, tl_mm / an['tlOverSl'], thx), a * (tl_mm / 10) ** b
     r = m / fb
     print(f'model {m:.1f} g, FishBase {fb:.1f} g (TL {tl_mm / 25.4:.1f} in), ratio {r:.2f}; '
           f'max width {2 * max(hw):.1f}% SL; set thickx {thx / r:.2f} (current {thx})')

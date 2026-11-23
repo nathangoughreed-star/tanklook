@@ -28,42 +28,35 @@ helps every species. Nathan picks the species; he generates each sheet in ChatGP
 | `bluetangd` | (earlier chat) | rebuilt only for the new eyes |
 | `gbrb` | `ram-gen` | German blue ram, `--body-from-map`, `thickx` 0.56; mass 1.2-1.36x FishShapes |
 
-## The pipeline now (per species)
-1. **Numbers first:** FishShapes v1 CSV (Smithsonian specimens; https://zenodo.org/records/6642650, copy in the old scratchpad may be
-   gone: re-download). Per species: `Max_body_depth`, `Max_fish_width`, `Head_depth`, `Min_caudalpeduncle_depth`, `Total_weight`
-   over `Standard_length`. It covers most aquarium species (checked: ram, gramma, corys, guppy, danio, betta, angelfish, gobies,
-   chromis, clownfish, anthias, mandarin, swordtail, platy...). FishBase length-weight a/b are usually Bayesian estimates: fallback only.
-2. **Prompt:** fill the template's species block (`DEPTH_PCT`, `EXTRA_RATIOS` = head and peduncle depth, body bullets, colour, fins,
-   `SHAPE_DONT` / `TOP_DONT` for this body plan). **No width numbers, no size adjectives** (rows 37, template rules).
-   `python -I scripts/fish-prompt-fill.py <species.txt> <out.txt>`; save the prompt as `research/fish-sheets/prompts/<slug>-5row.md`.
-3. **Sheet** from Nathan -> `<work>/sheet.webp`. Audit: `python -I scripts/fish-sheet-audit5.py <sheet> --real depth,head,ped,width`.
-4. **Fin cut:** `python -I scripts/fish-fin-cut.py <work>` (fins named by row-5 colour). If row 2 kept fins (depth well above real or
-   a fin role missing): add `--body-from-map`.
-   Also use it when the dorsal / anal tips overhang the stalk with black gaps under them (cichlids, gouramis, bettas): row 2 fills
-   those gaps as body (row 42). `fish-build.py` now clamps the stalk depth from 85 % SL back (row 43).
-5. **Depth:** if the audited depth is off by more than ~8%: `python -I scripts/fish-sheet-stretch.py <sheet> <real/drawn> <new-work>/sheet.webp`
-   and continue in the new folder (row 39).
-6. **Spec:** `python -I scripts/fish-spec-from-fins.py <work> <id> "<name>" "<sci>" <tl_mm>` (also samples eye colours, size and pupil).
-   Copy `<work>/<id>.json` to `research/fish-specs/`, set `"dense": true`, check the pelvic covers the whole fin, pectoral `spread` 0.2-0.35.
-7. **Build:** `python -I scripts/fish-build.py research/fish-specs/<id>.json` (adds the species.json row).
-8. **Width:** read the drawn max width (`python -I scripts/fish-mass.py src/data/fishart/<id>.anatomy.json <tl_mm> 1 3`), set
-   `thickx` = FishShapes width / drawn width, rebuild. Check mass against FishShapes `Total_weight` at the same SL (pass tl = SL x tlOverSl).
-9. **Pictures:** six views (recipe below), one contact sheet, send with the sheet's row 1 beside them.
+## The pipeline now (per species; scripted 2026-11-23, method row 44)
+1. **Numbers:** `python -I scripts/fishshapes.py "<Genus species>"` prints every FishShapes v1 specimen (depth, head, peduncle, width
+   % SL, SL, weight), the medians and the prompt values. The CSV is cached in `C:/Users/nreed/fish-sheets/_cache/` (downloaded once).
+   Drop a juvenile by hand if the medians look off. Not in FishShapes: FishBase / Seriously Fish morphometrics, written into
+   `<work>/fishshapes.json` by hand (same keys).
+2. **Prompt:** fill the template's species block, save it as `<work>/species.txt`, then
+   `python -I scripts/fish-prompt-fill.py <work>/species.txt <work>/prompt.txt`. It **warns on size words** (row 37 / template rule):
+   rewrite each one as a number or a shape unless it is a position ("eye high on the head"). Save the prompt as
+   `research/fish-sheets/prompts/<slug>-5row.md`.
+3. **Sheet** from Nathan -> `<work>/sheet.webp`.
+4. **Build, one command:** `python -I scripts/fish-new.py <work> <id> "<Common>" "<Genus species>" <tl_mm> [--body-from-map]`.
+   It runs fishshapes (if `<work>/fishshapes.json` is missing), the audit, the depth stretch when depth is off by more than 8 %
+   (into `<work>-s<k>`), the fin cut, the spec (eye colours, `dense`, pectoral spread kept to 0.2-0.35), copies the spec to
+   `research/fish-specs/<id>.json` with `width_pct_sl` and the specimens, and builds: `thickx` from the measured width in the same
+   pass, then the mass against every specimen (flags outside 0.8-1.45x). Rebuilding keeps an existing spec's hand-set keys
+   (`sat`, `alo`, `aw`, pectoral spread, ...).
+   - `--body-from-map` stays a judgment call (rows 36, 42): use it when a fin role is missing, the finless row is well above the
+     real depth, or the dorsal / anal tips overhang the stalk with black gaps under them (cichlids, gouramis, bettas). An automatic
+     test on the row 2 / row 5 depth ratio did not separate the cases (row 43). The stalk clamp in `fish-build.py` (row 43) covers
+     the overhang either way.
+5. **Pictures:** dev server `glbfish`, page `?photoart`, wait ~4 s, then in the page
+   `const m = await import('/scripts/fish-shots.js'); await m.shootFish('<id>', <tl_mm>)` (six views + tail-base close-up, saved
+   to `shots/` by the server's `/__shot` endpoint: no receiver needed). Then
+   `python -I scripts/fish-contact.py <id> --sheet <work>/sheet.webp` -> `shots/<id>-views.jpg`. Before / after:
+   `shootFish(id, tl, {tag: 'before', views: ['tail']})`, rebuild, `{tag: 'after'}`, then `fish-contact.py <id> --compare before after`.
+   Close the tank panel first if it is open. Stop the server when done.
+6. **Judgment, still by hand:** pectoral spread per species (row 32), colour saturation (`sat`, row 22: the ram's fins render
+   redder than the sheet), whether the picture matches the sheet. Log the sheet in the method doc's "Prompts used" table.
 
-## Screenshot recipe (works around the pane not drawing)
-Run a tiny POST receiver in the background (`python -I scripts/shot-recv.py <outdir>`, port 5299), then in the page:
-```js
-const v = __gb.viewer, c = v.renderer.domElement;
-const shot = async (sp, az, el, zoom, yf) => { v.swim = false; v.sway = false; v.drifters.length = 0;
-  __gb.store.update(s => { const t = s.tanks[s.active]; t.tank = { L: 72*25.4, H: 24*25.4, D: 24*25.4 };
-    t.fish = [{ id: 901, species: sp, x: .5*t.tank.L, y: yf*t.tank.H, depth: .5*t.tank.D, yaw: 0, pitch: 0, roll: 0, bend: 0 }];
-    t.camera = { ...t.camera, az, el, zoom }; }); await new Promise(r => setTimeout(r, 1800)); };
-const grab = async name => { for (let i = 0; i < 3; i++) { v.dirty = true; v.draw(); await new Promise(r => setTimeout(r, 300)); }
-  v.dirty = true; v.draw(); const d = c.toDataURL('image/png'); await fetch('http://127.0.0.1:5299/' + name, { method: 'POST', body: d }); };
-```
-- Call `v.draw()` yourself: the drawn-listener route times out whenever the pane isn't being captured. Wait ~4 s after a reload.
-- Zoom scales with fish size: 12 in fish: side 4-8; 1.8 in cardinal: side 24-40, head-on 30, 3/4 views zoom 8 with `yf` .22.
-- Close the tank panel first if it is open; set the viewport to 1600x1000 and back to desktop at the end.
 
 ## Decisions on record (2026-11-23)
 - Thickness = FishShapes measured max width, not FishBase mass (FishBase's yellow tang a/b ran ~1.6x light; row 35).

@@ -3,7 +3,7 @@
   species:  a text file in the part 2 format: `KEY = value` lines; a key with an empty value takes the following lines
             up to the next `KEY =` line (trailing blank lines dropped). `(empty)` means an empty value. A `(...)` note after
             a one-line value is dropped.
-Usage: python fish-prompt-fill.py <species.txt> [out.txt]     (prints the prompt when no out file is given)
+Usage: python fish-prompt-fill.py <species.txt> [out.txt] [--strict]   (prints the prompt when no out file is given; warns on size words, --strict stops)
        python fish-prompt-fill.py --example                    (fills the template's own blue tang example)"""
 import sys, os, re
 
@@ -42,11 +42,31 @@ def fill(tpl, vals):
     return re.sub(r'\{\{([A-Z0-9_]+)\}\}', lambda m: vals[m.group(1)], tpl)
 
 
+# Template rule "No size adjectives" (cardinal tetra, 2026-11-23; method row 44): the image model reads them as instructions to
+# exaggerate. Give a measured number (EXTRA_RATIOS) or name the shape. Warnings only (a fin can be "long-based"); --strict stops.
+SIZE = re.compile(r'\b(large|larger|small|smaller|big|tiny|huge|short|deep|tall|high|slightly|very|extremely|only|wide|broad|narrow|thick|thin|slender|stout|massive|minute)\b', re.I)
+SIZE_KEYS = ('BODY_BULLETS', 'FIN_BULLETS', 'CROSS_SECTION_WORDS', 'TOP_VIEW_SHAPE', 'FRONT_VIEW_SHAPE')
+
+
+def size_words(vals):
+    out = []
+    for k in SIZE_KEYS:
+        for line in vals.get(k, '').splitlines():
+            for m in SIZE.finditer(line): out.append(f'  {k}: "{m.group(0)}" in: {line.strip()[:110]}')
+    return out
+
+
 def main(a):
     b = blocks(open(TPL, encoding='utf-8').read())
     tpl = b[0]
+    a = [x for x in a if x != '--strict'] if '--strict' in a else a; strict = len(a) != len(sys.argv[1:] or ['--example'])
     spec = b[2] if a[0] == '--example' else open(a[0], encoding='utf-8').read()
-    txt = fill(tpl, parse(spec))
+    vals = parse(spec); w = size_words(vals)
+    if w:
+        print(f'size words ({len(w)}): replace with a measured number or a shape (template rule "No size adjectives")', file=sys.stderr)
+        for x in w: print(x, file=sys.stderr)
+        if strict: sys.exit('--strict: size words found')
+    txt = fill(tpl, vals)
     if len(a) > 1: open(a[1], 'w', encoding='utf-8', newline='\n').write(txt + '\n'); print('wrote', a[1], len(txt), 'chars')
     else: sys.stdout.reconfigure(encoding='utf-8'); print(txt)
 

@@ -1,0 +1,42 @@
+// Build-B fish pictures (method row 44): six views and a tail-base close-up, saved by the dev server's /__shot endpoint
+// (scripts/shots-plugin.mjs) as shots/<id>-<view>[-<tag>].png. Then: python -I scripts/fish-contact.py <id> --sheet <sheet.webp>.
+// In the page (?photoart, ~4 s after load; close the tank panel first):
+//   const m = await import('/scripts/fish-shots.js'); await m.shootFish('gbrb', 50);          // tl in mm
+//   await m.shootFish('gbrb', 50, { tag: 'before', views: ['tail'] });                       // one view, tagged
+// Zoom scales with 1/TL (28 at 50 mm side-on); the canvas is drawn by hand because the drawn-listener route times out
+// whenever the pane isn't being captured.
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+export const VIEWS = {
+  side: { yaw: 0, az: 0, el: 0, z: 1 },
+  other: { yaw: 180, az: 0, el: 0, z: 1 },          // right flank: turn the fish, not the camera (the camera orbits the tank centre)
+  q34: { yaw: 40, az: 0, el: 15, z: 0.55 },
+  rear34: { yaw: 140, az: 0, el: 15, z: 0.55 },
+  front: { yaw: 0, az: 90, el: 0, z: 30 / 28 },
+  top: { yaw: 0, az: 0, el: 89, z: 24 / 28 },
+  tail: { yaw: 0, az: 0, el: 0, z: 2.6, dx: 0.3 }, // tail base centred: the fish moves forward by 0.3 TL
+};
+
+async function grab(name) {
+  const v = globalThis.__gb.viewer, c = v.renderer.domElement;
+  for (let i = 0; i < 4; i++) { v.dirty = true; v.draw(); await wait(300); }
+  const blob = await (await fetch(c.toDataURL('image/png'))).blob();
+  const r = await fetch('/__shot?name=' + encodeURIComponent(name), { method: 'POST', body: blob });
+  if (!r.ok) throw new Error('shot ' + name + ': ' + r.status);
+}
+
+export async function shootFish(species, tlMm, { tag = '', views = Object.keys(VIEWS), settle = 1800 } = {}) {
+  const gb = globalThis.__gb, v = gb.viewer, z0 = 28 * 50 / tlMm, done = [];
+  for (const name of views) {
+    const o = VIEWS[name];
+    v.swim = false; v.sway = false; v.drifters.length = 0;
+    gb.store.update(s => {
+      const t = s.tanks[s.active]; t.tank = { L: 72 * 25.4, H: 24 * 25.4, D: 24 * 25.4 };
+      t.fish = [{ id: 901, species, x: 0.5 * t.tank.L + (o.dx || 0) * tlMm, y: 0.5 * t.tank.H, depth: 0.5 * t.tank.D, yaw: o.yaw, pitch: 0, roll: 0, bend: 0 }];
+      t.camera = { ...t.camera, az: o.az, el: o.el, zoom: z0 * o.z };
+    });
+    await wait(settle);
+    const file = `${species}-${name}${tag ? '-' + tag : ''}`; await grab(file); done.push(file);
+  }
+  return done;
+}

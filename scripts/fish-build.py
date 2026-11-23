@@ -173,9 +173,14 @@ try:
         print('front eyes NOT found: fy0 %.4f from the body outline (centre of the deepest section)' % FY0)
 except Exception as ex_:
     print('front eye detection failed (%s): fy0 default %.4f' % (ex_, FY0))
+THICKX = spec.get('thickx')
+if spec.get('width_pct_sl'):   # handoff step 8 in one pass (method row 44): thickx = measured max width (FishShapes) / drawn max width
+    drawn_ = 2 * max(A['thickness']['halfWidthPctSL'])
+    THICKX = round(spec['width_pct_sl'] / drawn_, 3)
+    print('width: drawn %.1f %% SL, measured %.1f -> thickx %.3f%s' % (drawn_, spec['width_pct_sl'], THICKX, '' if spec.get('thickx') in (None, THICKX) else ' (spec thickx %s ignored)' % spec['thickx']))
 photo = {'art': ID, 'plan': spec.get('plan', 'oscar'), 'sx': round(sx, 1), 'sl': round(sl, 1), 'ax': round(ax, 1), 'eye': e,
          'pec': spec.get('pectoral'), 'pelvic': spec.get('pelvic'), 'eyeIris': spec.get('eye_iris'), 'eyePupil': spec.get('eye_pupil'), 'eyeFull': spec.get('eye_full'), 'pupilFrac': spec.get('eye_pupil_frac'),
-         'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', FY0)}, 'thickx': spec.get('thickx'), 'noTail': bool(spec.get('no_tail')), 'measuredWidth': bool(spec.get('measured_width')), 'aspect': asp, 'finImg': bool(er or spec.get('card_sheet'))}
+         'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', FY0)}, 'thickx': THICKX, 'noTail': bool(spec.get('no_tail')), 'measuredWidth': bool(spec.get('measured_width')), 'aspect': asp, 'finImg': bool(er or spec.get('card_sheet'))}
 A['render'] = {'note': 'built by scripts/fish-build.py from ' + os.path.basename(sys.argv[1]), 'photo': photo, 'fit': fit}
 J['art'] = ID
 json.dump(J, open(os.path.join(ROOT, 'src', 'data', 'fishart', ID + '.anatomy.json'), 'w', encoding='utf8'), indent=1)
@@ -187,3 +192,12 @@ if '"id": "%s"' % ID not in txt:
     i = txt.index('  {"id": "oscar",')
     open(sp, 'w', encoding='utf8').write(txt[:i] + line + txt[i:])
 print('OK', ID, 'aspect', asp, 'SL px', round(sl), 'TL px', round(TL), fit)
+fsh_ = spec.get('fishshapes') or {}
+if fsh_.get('specimens'):   # mass check against the real specimens at their own SL (rows 35, 44); deep-bodied fish ran 1.1-1.4x so far
+    import importlib.util as ilu_
+    sp_ = ilu_.spec_from_file_location('fishmass', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fish-mass.py')); fm_ = ilu_.module_from_spec(sp_); sp_.loader.exec_module(fm_)
+    rs_ = []
+    for sl_mm_, w_ in fsh_['specimens']:
+        m_ = fm_.mass_g(A, sl_mm_, THICKX); rs_.append(m_ / w_)
+        print('  mass at SL %.1f mm (%.2f in): model %.2f g vs FishShapes %.2f g = %.2fx' % (sl_mm_, sl_mm_ / 25.4, m_, w_, m_ / w_))
+    print('mass vs FishShapes: %.2f-%.2fx (n %d)%s' % (min(rs_), max(rs_), len(rs_), '  CHECK: outside 0.8-1.45x' if min(rs_) < 0.8 or max(rs_) > 1.45 else ''))

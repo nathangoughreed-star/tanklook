@@ -1,6 +1,6 @@
 {
  "id": "gbrb",
- "sheet": "C:/Users/nreed/fish-sheets/ram-gen/sheet3.png",
+ "sheet": "C:/Users/nreed/fish-sheets/ram-new/sheet3.png",
  "species": {
   "name": "German blue ram",
   "sci": "Mikrogeophagus ramirezi",
@@ -301,7 +301,8 @@
    ]
   ]
  },
- "card_sheet": "C:/Users/nreed/fish-sheets/ram-gen/sheet3card.png",
+ "card_sheet": "C:/Users/nreed/fish-sheets/ram-new/sheet3card.png",
+ "dense": true,
  "eye_iris": [
   "#87271c",
   "#8c0807"
@@ -309,6 +310,24 @@
  "eye_pupil": "#070504",
  "eye_full": 22,
  "eye_pupil_frac": 0.463,
- "dense": true,
- "thickx": 0.56
+ "width_pct_sl": 20.6,
+ "fishshapes": {
+  "n": 3,
+  "depth": 49.6,
+  "width": 20.6,
+  "specimens": [
+   [
+    30.56,
+    1.1
+   ],
+   [
+    36.31,
+    1.9
+   ],
+   [
+    41.65,
+    3.2
+   ]
+  ]
+ }
 }
