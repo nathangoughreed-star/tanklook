@@ -2,6 +2,7 @@
  "version": 2,
  "note": "Card width == typical adult total length (tl, mm) in aquaria; snails: crawling length. aspect = card height / width (computed from the art when omitted). art = a drawing key in src/art (placeholder.ts hand-drawn, fishgen.ts generated, snails.ts). zone 'bottom' rests on the substrate; kind 'snail' clings to the floor or a glass pane. habitat 'land' rests on ground above the water, 'both' on land or in water deep enough (default 'water'). group 'school' swims in a tight, aligned school, 'shoal' in a loose group (when 3+ are kept); level 'top' / 'low' is the part of the water column a swimmer favours (default mid). Both only steer Shuffle. Lengths are total length, nose to tail tip (Nathan 2026-10-08). cat = the Animals menu it is listed under: 'fw-fish' (default), 'fw-invert', 'sw-fish', 'sw-invert', 'amphibian', 'reptile', 'land-invert'. female = the female's drawing and adult length for a sexually dimorphic species (the species itself is the male).",
  "species": [
+  {"id": "bluetangb", "name": "Blue tang", "sci": "Paracanthurus hepatus", "tl": 310, "art": "bluetangb", "aspect": 0.499},
   {"id": "neon", "name": "Neon tetra", "sci": "Paracheirodon innesi", "tl": 38, "group": "school", "art": "tetra"},
   {"id": "cardinal", "name": "Cardinal tetra", "sci": "Paracheirodon axelrodi", "tl": 45, "group": "school", "art": "cardinal"},
   {"id": "ember", "name": "Ember tetra", "sci": "Hyphessobrycon amandae", "tl": 23, "group": "school", "art": "ember"},
