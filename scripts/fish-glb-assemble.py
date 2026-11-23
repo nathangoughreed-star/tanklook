@@ -114,6 +114,16 @@ def quad(px0, px1, py0, py1, rgba):
     q = trimesh.Trimesh([[x0, y1, 0], [x1, y1, 0], [x1, y0, 0], [x0, y0, 0]], [[0, 1, 2], [0, 2, 3]], process=False)
     q.visual = trimesh.visual.TextureVisuals(uv=np.array([[0, 0], [1, 0], [1, 1], [0, 1]], float), material=trimesh.visual.material.PBRMaterial(baseColorTexture=Image.fromarray(rgba, 'RGBA'), metallicFactor=0, roughnessFactor=1, alphaMode='MASK', alphaCutoff=0.5, doubleSided=True))   # fins seen from both sides (the app sets DoubleSide itself; viewers need the flag)
     return q
+MEMBRANE = dict(core=0.9, edge=0.4, feather=0.15)   # same numbers as src/render/textures.ts MEMBRANE (build B's photo fins)
+def membrane(rgba):
+    """Paired fin membrane: opacity x core inside, easing to x edge at the outline over `feather` of the fin's shorter side."""
+    from scipy import ndimage as nd
+    inside = rgba[..., 3] > 127
+    if not inside.any(): return rgba
+    ys, xs = np.where(inside); r = max(1.0, MEMBRANE['feather'] * min(np.ptp(xs) + 1, np.ptp(ys) + 1))
+    t = np.clip(nd.distance_transform_edt(inside) / r, 0, 1); f = t * t * (3 - 2 * t)
+    out = rgba.copy(); out[..., 3] = np.round(rgba[..., 3] * (MEMBRANE['edge'] + (MEMBRANE['core'] - MEMBRANE['edge']) * f)).astype(np.uint8)
+    return out
 def rgba_of(mask, x0, x1, y0, y1):
     al = (mask[y0:y1, x0:x1] * 255).astype(np.uint8)
     return np.dstack([a[y0:y1, x0:x1], al])
@@ -145,7 +155,7 @@ print('paired-fin angles: pectoral %d deg, pelvic %d deg (%s)' % (PEC_A, PEL_A, 
 for name, mask, hinge, ang in (('pec', pec, 'y', PEC_A), ('pel', pel, 'x', PEL_A)):
     if mask is None or not mask.any(): continue
     ys_, xs_ = np.where(mask); x0, x1, y0, y1 = xs_.min(), xs_.max() + 1, ys_.min(), ys_.max() + 1
-    rg = rgba_of(mask, x0, x1, y0, y1)
+    rg = membrane(rgba_of(mask, x0, x1, y0, y1))
     if hinge == 'y': rx, ry = (U(pec_root[0]), V(pec_root[1])) if pec_root else (U(x1), V((y0 + y1) / 2))   # pectoral: at the label map's root dot, else its front (head) end
     else: rx, ry = U((x0 + x1) / 2), V(y0)                     # pelvic: root along its top edge
     hw = halfwidth(rx, ry) * 0.9

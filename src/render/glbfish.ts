@@ -44,7 +44,8 @@ if (GLB_ON && q.has('gen')) {
       const geo = m.geometry.clone(); geo.applyMatrix4(m.matrixWorld); // node transforms baked in (the fins are placed by their nodes)
       const map = (m.material as THREE.MeshStandardMaterial).map; swimReady(geo, map);
       const fin = m.name !== 'body';
-      const mat = new THREE.MeshBasicMaterial({ map, side: fin ? THREE.DoubleSide : THREE.FrontSide, alphaTest: fin ? 0.5 : 0 });
+      const paired = /^(pec|pel)_/.test(m.name);   // paired fins carry the membrane alpha (fish-glb-assemble.py): alpha to coverage keeps the soft edge; the card stays a cutout
+      const mat = new THREE.MeshBasicMaterial({ map, side: fin ? THREE.DoubleSide : THREE.FrontSide, alphaTest: fin && !paired ? 0.5 : 0, alphaToCoverage: paired });
       mat.userData.fish = true; mat.userData.swim = true; mat.userData.cached = true;
       list.push({ name: m.name, geo, mat });
     });

@@ -40,6 +40,27 @@ export const fishBodyTexture = (sp: Species) => cached(`fishbody:${sp.look}`, ()
 /** A 3D fish's paired fin as its own small texture (drawn at the card's resolution); `box` = its extent in card units. */
 /** Photo-fin species (fish model method, row 26): the paired fins are cut out of the sheet's own side card (the unerased one, axis on the card's middle row) inside the plan's fin polygon, instead of being painted. */
 export const PHOTO_FINS: Record<string, { img: CanvasImageSource & { width: number; height: number } }> = {};
+/**
+ * Fin membrane (2026-11-23, blue tang review: "a thick, opaque yellow oval"): a photo-cut paired fin is see-through toward its
+ * edge, the way a thin membrane is. Opacity x MEMBRANE.core inside, easing to x MEMBRANE.edge at the outline over
+ * MEMBRANE.feather of the fin's shorter side. Because the fish stand-out line is fainter on see-through fin pixels, the
+ * dark rim thins with it. scripts/fish-glb-assemble.py applies the same numbers to the generated fish's fin cut-outs.
+ */
+export const MEMBRANE = { core: 0.9, edge: 0.4, feather: 0.15 };
+function membrane(c: HTMLCanvasElement, poly: [number, number][]) {
+  const W = c.width, H = c.height; if (W < 4 || H < 4 || poly.length < 3) return;
+  const xs = poly.map(p => p[0]), ys = poly.map(p => p[1]);
+  const r = Math.max(1, MEMBRANE.feather * Math.min(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)));
+  const m = document.createElement('canvas'); m.width = W; m.height = H; const mx = m.getContext('2d')!;
+  mx.filter = `blur(${(r / 2).toFixed(1)}px)`; mx.fillStyle = '#fff';
+  mx.beginPath(); poly.forEach((p, i) => i ? mx.lineTo(p[0], p[1]) : mx.moveTo(p[0], p[1])); mx.closePath(); mx.fill();
+  const ctx = c.getContext('2d')!, img = ctx.getImageData(0, 0, W, H), mk = mx.getImageData(0, 0, W, H).data, d = img.data;
+  for (let i = 3; i < d.length; i += 4) {
+    const t = Math.min(1, Math.max(0, (mk[i] / 255 - 0.5) * 2)), f = t * t * (3 - 2 * t);   // 0 at the outline .. 1 inside
+    d[i] = Math.round(d[i] * (MEMBRANE.edge + (MEMBRANE.core - MEMBRANE.edge) * f));
+  }
+  ctx.putImageData(img, 0, 0);
+}
 export const pairedFinTexture = (art: string, f: PairedFin, box: { u0: number; v0: number; w: number; h: number }, edge: EdgeMode) =>
   cached(`fin:${art}:${f.kind}:${edge}`, () => {
     const R = 1024, c = document.createElement('canvas'); c.width = Math.ceil(box.w * R); c.height = Math.ceil(box.h * R);
@@ -49,6 +70,7 @@ export const pairedFinTexture = (art: string, f: PairedFin, box: { u0: number; v
       const k = R / ph.img.width, X = (u: number) => (u - box.u0) * R, Y = (v: number) => (v - box.v0) * R;
       ctx.save(); ctx.beginPath(); f.pts.forEach((q, i) => i ? ctx.lineTo(X(q[0]), Y(q[1])) : ctx.moveTo(X(q[0]), Y(q[1]))); ctx.closePath(); ctx.clip();
       ctx.drawImage(ph.img, -box.u0 * R, -box.v0 * R - ph.img.height * k / 2, R, ph.img.height * k); ctx.restore();
+      membrane(c, f.pts.map(q => [X(q[0]), Y(q[1])] as [number, number]));
       return finish(c);
     }
     style.finA = edge === 'a2c' ? FIN_A2C : FIN_A;
