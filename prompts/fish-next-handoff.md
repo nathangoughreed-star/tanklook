@@ -59,6 +59,7 @@ image instead, save it there yourself (the pasted image's path is in the message
 | `royalgrammab` | `gramma-gen` | mass 1.16-1.35x, sat 1.05 (none set) |
 | `dwarfgouramib` | `gourami-gen` | mass 1.07-1.20x, sat 1.14 (none set); thread pelvic short from the side |
 | `pepperedcoryb` | `cory-gen` (stretched k 1.173) | `--body-from-map` (row 50), `sat` 0.73; barbels lost, snout pointed |
+| `royalgrammac` | `gramma2-gen` | second gramma sheet (eyespot marked white in row 5: row 51); mass 1.09-1.27x |
 
 ## The pipeline now (per species; scripted 2026-11-23, method row 44)
 1. **Numbers:** `python -I scripts/fishshapes.py "<Genus species>"` prints every FishShapes v1 specimen (depth, head, peduncle, width

@@ -74,6 +74,16 @@ spec["landmarks"] = {"ped": ped_, "dorsalBase": to_tail(binned(dx_, dy_), True),
 eye = None
 if len(bands) >= 5:
     y0_, y1_, x0_, x1_ = bands[4]; R = a[y0_:y1_, x0_:x1_].astype(int); wh = (R.min(2) > 215)
+    # several white discs (royal gramma v2 marked its dorsal eyespot white too, method row 51): keep the one ringed by the grey
+    # body, not by a fin colour; ties go to the disc nearest the snout (sheets face right)
+    lw, nw = nd.label(wh)
+    if nw > 1:
+        grey = (np.abs(R[..., 0] - R[..., 1]) < 20) & (np.abs(R[..., 1] - R[..., 2]) < 20) & (R[..., 0] > 70) & (R[..., 0] < 190)
+        def score(j):
+            c = lw == j; ring = nd.binary_dilation(c, iterations=5) & ~nd.binary_dilation(c, iterations=1)
+            return (c.sum() > 30, round(grey[ring].mean(), 1), np.nonzero(c)[1].mean())
+        best = max(range(1, nw + 1), key=score); wh = lw == best
+        print(f'  eye: {nw} white discs in the label map, kept the one on the grey body (x {np.nonzero(wh)[1].mean():.0f})')
     if wh.sum() > 30:
         L5 = fs.box(M, *bands[4]); s = (B1[1] - B1[0]) / (L5[1] - L5[0]); yy, xx = np.nonzero(wh)
         eye = [int(B1[0] + (xx.mean() + x0_ - L5[0]) * s), int(B1[2] + (yy.mean() + y0_ - L5[2]) * s), int(np.sqrt(wh.sum() / np.pi) * s)]
