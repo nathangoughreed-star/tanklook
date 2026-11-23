@@ -65,12 +65,21 @@ def main(F, sheet=None):
     c2 = np.where(M2.any(0))[0]; bx0, bx1 = c2[0], c2[-1] + 1; bl = bx1 - bx0
     t2 = np.full(M1.shape[1], np.nan); b2 = t2.copy()
     for x in c2: r = np.where(M2[:, x])[0]; t2[x], b2[x] = r[0], r[-1]
+    # name by panel 5's fin colours when the sheet has a label map (cardinal tetra: the pelvic sits behind mid-body, so the
+    # position rule called it anal); a component takes the colour covering most of it, if that is over half its pixels
+    colk = None
+    if len(bands) >= 5 and '--body-from-map' not in sys.argv:
+        _, cw = map_body(a, M, bands); cw = cw[p1y:bands[0][1]]; colk = {}
+        for k in range(1, len(order) + 1):
+            h = np.bincount(cw[lab == k], minlength=5); h[0] = 0; n = int((lab == k).sum())
+            colk[k] = ['', 'dorsal', 'anal', 'caudal', 'pelvic'][int(h.argmax())] if h.max() > 0.5 * n else None
     roles = {}
     for k in range(1, len(order) + 1):
         yy, xx = np.where(lab == k); cx, cy = xx.mean(), yy.mean()
         xi = int(np.clip(round(cx), bx0, bx1 - 1))
         mid = (t2[xi] + b2[xi]) / 2 if not np.isnan(t2[xi]) else (M2.any(1).nonzero()[0].mean())
         if '--body-from-map' in sys.argv: role = ['', 'dorsal', 'anal', 'caudal', 'pelvic'][order[k - 1]]
+        elif colk is not None and colk[k]: role = colk[k]
         elif cx < bx0 + 0.12 * bl: role = 'caudal'
         elif cy < mid: role = 'dorsal'
         elif cx < bx0 + 0.5 * bl: role = 'anal'

@@ -30,7 +30,8 @@ full = np.zeros(M.shape, np.int32); full[y0:y0 + lab.shape[0], :lab.shape[1]] = 
 pec = np.load(os.path.join(W, 'pec.npy')) if fins.get('pectoral') else None
 body = fs.mask(M, b1) > 0.5; body &= full == 0
 bodyd = nd.binary_dilation(body, iterations=2)
-roles = {v['role']: int(k) for k, v in fins['components'].items()}
+roles = {}
+for k, v in sorted(fins['components'].items(), key=lambda kv: int(kv[0])): roles.setdefault(v['role'], int(k))   # largest per role (an adipose is a second, smaller 'dorsal')
 
 
 def base(role):
