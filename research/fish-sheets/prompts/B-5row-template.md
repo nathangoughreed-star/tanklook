@@ -225,8 +225,7 @@ COMMON              =
 SCI                 = 
 SL_IN               =      (adult standard length, inches)
 DEPTH_PCT           =      (max body depth, % SL)
-EXTRA_RATIOS        =      (optional, measured only: FishShapes head depth and minimum peduncle depth as "* Head depth = approximately N% of standard length." lines, each ending 
-; empty if none)
+EXTRA_RATIOS        =      (optional, measured only: FishShapes head depth and minimum peduncle depth as "* Head depth = approximately N% of standard length." lines, all on ONE line, joined by a literal backslash-n and ending with one; empty if none)
 BODY_BULLETS        =      (4-8 "* " lines: overall shape and compression, snout/forehead, back and belly line,
                             where the greatest depth sits, the peduncle (and any spines or keels on it), eye position, mouth)
 CROSS_SECTION_WORDS =      ("thin, disc-like" / "moderately compressed" / "nearly round, slightly flattened below")
