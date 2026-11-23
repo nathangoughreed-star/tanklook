@@ -135,6 +135,14 @@ def main():
     x35 = xs.max() - 0.35 * (xs.max() - xs.min())   # the snout points right (sheets are mirrored to face right, row 13)
     filled_ = nd_.binary_fill_holes(full); head_ = np.zeros_like(full); head_[:, int(x35):] = True
     full = full | (filled_ & head_)
+    # --snout-open N: barbels / whiskers in front of a blunt face (peppered cory, method row 53) made the right-most pixel a barbel tip,
+    # so the first 3-4 % SL traced the thin barbel bundle: a wedge nose. Open the mask with an N px disc to find the face front, then
+    # drop everything in front of it (the barbels come back as 3D barbels from the plan).
+    if '--snout-open' in opts:
+        fo = opening(full, int(opts['--snout-open'])); fx = np.nonzero(fo.any(0))[0].max()
+        print('  snout-open %s: face front x %d (mask reached %d)' % (opts['--snout-open'], fx, xs.max()))
+        x8 = int(fx - 0.08 * (fx - xs.min()))   # the front 8 %: the opened mask, so barbels hanging under the chin go too
+        full[:, fx + 1:] = False; full[:, x8:] = fo[:, x8:]; full = largest_blob(full); ys, xs = np.nonzero(full)
 
     # --- first pass: rough axis from the unrotated mask
     xs_max, xs_min = xs.max(), xs.min()

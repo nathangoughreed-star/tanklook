@@ -58,7 +58,7 @@ image instead, save it there yourself (the pasted image's path is in the message
 | `gbrb` | `ram-gen` | German blue ram, `--body-from-map`, `thickx` 0.56; mass 1.2-1.36x FishShapes |
 | `royalgrammab` | `gramma-gen` | mass 1.16-1.35x, sat 1.05 (none set) |
 | `dwarfgouramib` | `gourami-gen` | mass 1.07-1.20x, sat 1.14 (none set); thread pelvic short from the side |
-| `pepperedcoryb` | `cory-gen` (stretched k 1.173) | `--body-from-map` (row 50), `sat` 0.73; barbels lost, snout pointed |
+| `pepperedcoryb` | `cory-gen` (stretched k 1.173) | `--body-from-map` (row 50), `sat` 0.73, plan `pepperedcory` (row 52), `plan_extra` barbels + `--snout-open 15` (row 53); mass 1.08-1.50x (one specimen looks wrong) |
 | `royalgrammac` | `gramma2-gen` | second gramma sheet (eyespot marked white in row 5: row 51); mass 1.09-1.27x |
 
 ## The pipeline now (per species; scripted 2026-11-23, method row 44)
