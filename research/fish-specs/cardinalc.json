@@ -283,5 +283,10 @@
  },
  "card_sheet": "C:/Users/nreed/fish-sheets/cardinal-v2s-gen/sheet3card.png",
  "thickx": 0.96,
- "dense": true
+ "dense": true,
+ "eye_iris": [
+  "#928c78",
+  "#564038"
+ ],
+ "eye_pupil": "#030506"
 }

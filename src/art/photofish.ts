@@ -60,7 +60,7 @@ for (const J of Object.values(files)) {
     } else delete P.pelvic;
     delete P.gape; delete P.gapeDrop; P.gillLine = 0;
     { const [ex, ey, er] = R.eye, u = 1 - (sx - ex) / sl * SLc, v = (ax - ey) / sl * -1 * SLc, [et, eb] = profile(P)(u);
-      P.eye = { ...P.eye, u, dv: (v - et) / (eb - et) - 0.38, r: er / sl * SLc, iris: ['#c8902a', '#0a0206'] }; }
+      P.eye = { ...P.eye, u, dv: (v - et) / (eb - et) - 0.38, r: er / sl * SLc, iris: R.eyeIris ?? ['#c8902a', '#0a0206'], ...(R.eyePupil ? { pupil: R.eyePupil } : {}) }; }   // iris sampled from the sheet's own eye (fish-eye-colour.py); amber only for older builds
     PHOTO_FINS[id] = { img: fin ?? card };
     PROJ_ART[id] = { top: { img: top }, front: { img: front, k: R.proj.fk, y0: R.proj.y0 } };
     FISH_ART[id] = (ctx, _p, W) => ctx.drawImage(card, 0, 0, W, W * (ctx.canvas.height / ctx.canvas.width));

@@ -274,5 +274,10 @@
   ]
  },
  "card_sheet": "C:/Users/nreed/fish-sheets/bluetang3-gen/sheet3card.png",
- "thickx": 0.78
+ "thickx": 0.78,
+ "eye_iris": [
+  "#1c161c",
+  "#110f0b"
+ ],
+ "eye_pupil": "#070708"
 }

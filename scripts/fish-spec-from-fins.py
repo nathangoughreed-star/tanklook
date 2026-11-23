@@ -96,6 +96,7 @@ for k_ in range(1, n_ + 1):
 if gone: print('card: %d loose fin fragment(s) removed' % gone)
 Image.fromarray(card).save(os.path.join(W, 'sheet3card.png')); spec["card_sheet"] = os.path.join(W, 'sheet3card.png').replace(chr(92), '/')
 json.dump(spec, open(os.path.join(W, ID + '.json'), 'w'), indent=1)
+import subprocess; subprocess.run([sys.executable, '-I', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fish-eye-colour.py'), os.path.join(W, ID + '.json')], check=True)   # iris / pupil colours from the sheet's eye
 print('%s: ped %s, dorsal %d / anal %d base pts, eye %s, pectoral %s (swing %s deg), pelvic %s; front-map pelvic angle %s deg' % (
     ID, spec['landmarks']['ped'], len(spec['landmarks']['dorsalBase']), len(spec['landmarks']['analBase']), eye,
     'yes' if pec is not None else 'no', None if pec_deg is None else round(pec_deg), 'yes' if 'pelvic' in spec else 'no', None if pel_deg is None else round(pel_deg)))

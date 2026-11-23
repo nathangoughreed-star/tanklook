@@ -302,5 +302,10 @@
   ]
  },
  "card_sheet": "C:/Users/nreed/fish-sheets/yellowtang-gen/sheet3card.png",
- "thickx": 0.76
+ "thickx": 0.76,
+ "eye_iris": [
+  "#bb8c00",
+  "#352200"
+ ],
+ "eye_pupil": "#080802"
 }
