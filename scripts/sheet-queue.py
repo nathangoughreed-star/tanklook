@@ -66,7 +66,21 @@ def wait_download(dl, before, ask):
         time.sleep(1)
 
 
+def single_instance():
+    """Only one queue at a time (2026-11-24: six copies ran at once, each overwrote the clipboard and grabbed the others' downloads)."""
+    lock = os.path.join(SHEETS, 'sheet-queue.lock')
+    try:
+        pid = int(open(lock).read().strip())
+        r = subprocess.run(['tasklist', '/FI', f'PID eq {pid}', '/NH'], capture_output=True, text=True)
+        if str(pid) in r.stdout and 'python' in r.stdout.lower():
+            sys.exit(f'another sheet queue is already running (PID {pid}). Use that window, or close it (q) and run this again.\n'
+                     f'Stuck? taskkill /PID {pid} /F')
+    except (OSError, ValueError): pass
+    open(lock, 'w').write(str(os.getpid()))
+
+
 def main(argv):
+    single_instance()
     opt = {argv[i]: argv[i + 1] for i in range(len(argv) - 1) if argv[i] in ('--downloads',)}
     dl = opt.get('--downloads', os.path.join(os.path.expanduser('~'), 'Downloads')); redo = '--redo' in argv; noopen = '--no-open' in argv
     if '--all' in argv: q = sorted(d for d in glob.glob(SHEETS + '/*-gen') if os.path.exists(d + '/prompt.txt') and not os.path.exists(d + '/sheet.webp'))
