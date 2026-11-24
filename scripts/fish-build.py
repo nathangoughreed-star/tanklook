@@ -136,7 +136,28 @@ common = ['--aspect', asp, '--clip-head', spec.get('clip_head', 25), '--alo', al
 if spec.get('solid', 5): common += ['--solid', spec.get('solid', 5)]   # opaque inside the fish silhouette (method row 45); 'solid': 0 = brightness alpha only
 side_card = os.path.join(work, 'side_full.png')
 if spec.get('card_sheet'):   # the body card from a sheet whose panel 1 has the paired fins replaced by the finless flank (the 3D fins draw themselves); the fin card keeps them
-    cs_ = Image.open(spec['card_sheet']).convert('RGB'); sqc = Image.new('RGB', (N, N)); sqc.paste(cs_.crop((0, 0, cs_.width, sy1 + 8)), (0, 0))
+    cs_ = Image.open(spec['card_sheet']).convert('RGB')
+    # flank holes (convict, 2026-11-24): where the finless flank replaced the pectoral, dark stripe pixels came out pure black, and the cutout
+    # reads pure black as background: holes in the body texture. Pixels black on the card sheet but not on the fin sheet are filled from
+    # their surroundings (harmonic fill: each pass, every hole pixel takes the mean of its filled neighbours)
+    ca_ = np.asarray(cs_).astype(float); sa_ = np.asarray(sheet).astype(float)
+    if ca_.shape == sa_.shape:
+        from scipy import ndimage as nd_
+        pasted_ = nd_.binary_dilation(np.abs(ca_ - sa_).max(2) > 30, iterations=15)   # where the finless flank was pasted in (the pectoral's place)
+        body_ = nd_.binary_fill_holes(nd_.binary_closing(sa_.max(2) > 40, iterations=3))   # inside the fish (black not reaching the background)
+        hole_ = (ca_.max(2) < 14) & pasted_ & body_; hole_[sy1 + 8:] = False
+        ex_, ey_, er_ = spec['eye']; yy_, xx_ = np.ogrid[:hole_.shape[0], :hole_.shape[1]]; hole_ &= (xx_ - ex_) ** 2 + (yy_ - ey_) ** 2 > (2.5 * er_) ** 2   # never the pupil
+        hole_ = nd_.binary_dilation(hole_, iterations=3) & body_ & (ca_.max(2) < 60)   # and its dark anti-aliased rim, so the fill does not take its colour
+        if hole_.any():
+            known_ = (~hole_).astype(float); img_ = ca_ * known_[..., None]; k_ = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]], float)
+            ys_, xs_ = np.nonzero(hole_); y0h_, y1h_, x0h_, x1h_ = max(0, ys_.min() - 2), ys_.max() + 3, max(0, xs_.min() - 2), xs_.max() + 3
+            sub_ = img_[y0h_:y1h_, x0h_:x1h_].copy(); w_ = known_[y0h_:y1h_, x0h_:x1h_].copy(); hs_ = hole_[y0h_:y1h_, x0h_:x1h_]
+            for _ in range(400):
+                num_ = np.dstack([nd_.convolve(sub_[..., c] * w_, k_, mode='nearest') for c in range(3)]); den_ = nd_.convolve(w_, k_, mode='nearest')
+                upd_ = hs_ & (den_ > 0); sub_[upd_] = num_[upd_] / den_[upd_, None]; w_[upd_] = 1.0
+            ca_[y0h_:y1h_, x0h_:x1h_] = np.where(hs_[..., None], sub_, ca_[y0h_:y1h_, x0h_:x1h_])
+            cs_ = Image.fromarray(np.clip(ca_, 0, 255).astype(np.uint8)); print('card sheet: %d black flank px filled' % hole_.sum())
+    sqc = Image.new('RGB', (N, N)); sqc.paste(cs_.crop((0, 0, cs_.width, sy1 + 8)), (0, 0))
     side_card = os.path.join(work, 'side_full_card.png'); sqc.save(side_card)
 FO = spec.get('fin_opacity')   # per-fin opacity profiles (method row 61): the card keeps coverage only, scripts/fish-fin-opacity.py writes the maps below
 mem = ['--membrane', ','.join(map(str, spec['membrane']))] if spec.get('membrane') and FO is None else []   # see-through median fins (method row 61): body card only, the fin card feeds the paired fins, which get their own membrane in textures.ts
