@@ -27,7 +27,8 @@ const place = (species, tl, o, bg, extra = []) => globalThis.__gb.store.update(s
   t.camera = { ...t.camera, az: 0, el: o.el, zoom: 28 * 50 / tl * o.z };
 });
 
-export async function finShots(ids, { tag = '', bgs = ['dark', 'light'], views = Object.keys(VIEWS), overlap = ids, settle = 1500 } = {}) {
+export async function finShots(ids, { tag = '', bgs = ['dark', 'light'], views = Object.keys(VIEWS), overlap = ids, settle = 1500, tl = {} } = {}) {
+  Object.assign(TL, tl);   // total lengths in mm for fish not in the table (framing)
   const v = globalThis.__gb.viewer, out = [], mv = v.host.parentElement, css = mv.style.cssText;
   mv.style.cssText = 'position:fixed;left:0;top:0;width:960px;height:720px;z-index:9999';   // the panel takes most of a narrow window: shoot at a fixed size
   try { return await shots(v, out, ids, tag, bgs, views, overlap, settle); } finally { mv.style.cssText = css; }
