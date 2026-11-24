@@ -67,6 +67,29 @@ function membrane(c: HTMLCanvasElement, poly: [number, number][]) {
   }
   ctx.putImageData(img, 0, 0);
 }
+/**
+ * Fin opacity maps (method row 61; review "Method B: fin transparency", 2026-11-24): photo fish built with a spec `fin_opacity`
+ * (scripts/fish-fin-opacity.py) carry a grey map per card, `card` aligned with the body card (median fins) and `fin` with the fin
+ * card (paired fins). The card's own alpha stays the COVERAGE (where a fin is), the map is the MATERIAL OPACITY (how much light it
+ * lets through: membrane, the sheet's painted rays, root to tip), so a fin can go well below 50 % without its outline moving. Those
+ * fins are drawn with true blending (finMaterial), not alpha-to-coverage or the 0.5 cutout.
+ */
+export const FIN_OPACITY: Record<string, { card: CanvasImageSource & { width: number; height: number }; fin: CanvasImageSource & { width: number; height: number } }> = {};
+const dataTexture = (c: HTMLCanvasElement | CanvasImageSource) => { const t = new THREE.CanvasTexture(c as HTMLCanvasElement); t.colorSpace = THREE.NoColorSpace; t.anisotropy = anisotropy; return t; };
+/** The body card's opacity map, or undefined for every fish without one (drawn as before). */
+export const finOpacityTexture = (art: string) => FIN_OPACITY[art] ? cached(`finop:${art}`, () => dataTexture(FIN_OPACITY[art].card)) : undefined;
+/** A paired fin's opacity, cut from the fin card's map like its colour (pairedFinTexture); outside the fin 0.75 (only the stand-out line reads it there). */
+export const pairedFinOpacity = (art: string, f: PairedFin, box: { u0: number; v0: number; w: number; h: number }) => {
+  const op = FIN_OPACITY[art]; if (!op) return undefined;
+  return cached(`finop:${art}:${f.kind}`, () => {
+    const R = 1024, c = document.createElement('canvas'); c.width = Math.ceil(box.w * R); c.height = Math.ceil(box.h * R);
+    const ctx = c.getContext('2d')!, k = R / op.fin.width, X = (u: number) => (u - box.u0) * R, Y = (v: number) => (v - box.v0) * R;
+    ctx.fillStyle = 'rgb(191,191,191)'; ctx.fillRect(0, 0, c.width, c.height);
+    ctx.save(); ctx.beginPath(); f.pts.forEach((q, i) => i ? ctx.lineTo(X(q[0]), Y(q[1])) : ctx.moveTo(X(q[0]), Y(q[1]))); ctx.closePath(); ctx.clip();
+    ctx.drawImage(op.fin, -box.u0 * R, -box.v0 * R - op.fin.height * k / 2, R, op.fin.height * k); ctx.restore();
+    return dataTexture(c);
+  });
+};
 export const pairedFinTexture = (art: string, f: PairedFin, box: { u0: number; v0: number; w: number; h: number }, edge: EdgeMode) =>
   cached(`fin:${art}:${f.kind}:${edge}`, () => {
     const R = 1024, c = document.createElement('canvas'); c.width = Math.ceil(box.w * R); c.height = Math.ceil(box.h * R);
@@ -76,7 +99,7 @@ export const pairedFinTexture = (art: string, f: PairedFin, box: { u0: number; v
       const k = R / ph.img.width, X = (u: number) => (u - box.u0) * R, Y = (v: number) => (v - box.v0) * R;
       ctx.save(); ctx.beginPath(); f.pts.forEach((q, i) => i ? ctx.lineTo(X(q[0]), Y(q[1])) : ctx.moveTo(X(q[0]), Y(q[1]))); ctx.closePath(); ctx.clip();
       ctx.drawImage(ph.img, -box.u0 * R, -box.v0 * R - ph.img.height * k / 2, R, ph.img.height * k); ctx.restore();
-      membrane(c, f.pts.map(q => [X(q[0]), Y(q[1])] as [number, number]));
+      if (!FIN_OPACITY[art]) membrane(c, f.pts.map(q => [X(q[0]), Y(q[1])] as [number, number])); // with an opacity map the alpha stays coverage
       return finish(c);
     }
     style.finA = edge === 'a2c' ? FIN_A2C : FIN_A;
@@ -208,12 +231,16 @@ export function sceneTexture(kind: BgScene, aspect: number) {
 
 /** Card materials are shared across rebuilds (marked cached so scene disposal leaves them alone). */
 const matCache = new Map<string, THREE.MeshBasicMaterial>();
-export function cardMaterial(key: string, map: THREE.Texture, edge: EdgeMode, side: THREE.Side = THREE.DoubleSide) {
-  const k = key + '|' + edge + '|' + side;
+export function cardMaterial(key: string, map: THREE.Texture, edge: EdgeMode, side: THREE.Side = THREE.DoubleSide, opacity?: THREE.Texture) {
+  const k = key + '|' + edge + '|' + side + (opacity ? '|op' : '');
   let m = matCache.get(k);
   if (!m) {
     m = new THREE.MeshBasicMaterial({ map, side });
-    if (edge === 'cutout') m.alphaTest = 0.5; else m.alphaToCoverage = true;
+    // fin opacity map (FIN_OPACITY): coverage in the map's alpha, material opacity in alphaMap, true blending whatever the edge mode. The
+    // stand-out line is drawn from the map's alpha alone (lighting.ts AQ_MAP, before alphaMap), so it stays on the real outline. Depth is
+    // written (alphaTest drops the empty texels): a fin seen through a nearer fin of another mesh drawn out of order is then hidden, not drawn over it
+    if (opacity) { m.alphaMap = opacity; m.transparent = true; m.alphaTest = 0.02; }
+    else if (edge === 'cutout') m.alphaTest = 0.5; else m.alphaToCoverage = true;
     m.userData.cached = true;
     matCache.set(k, m);
   }

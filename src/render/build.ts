@@ -56,7 +56,7 @@ import { isSnake, settleSnake, snakeBody, snakeContacts, type LimbPath } from '.
 import { isTarantula } from './tarantula3d';
 import { sagShell, snailBody } from './snail3d';
 import type { BgScene } from '../art/bgscenes';
-import { type BgGradient, sceneTexture, blendTexture, lecaTexture, meshTexture, cardMaterial, pictureTexture, fishBodyTexture, fishTexture, gradientTexture, personTexture, substrateFieldTexture, substrateFineTexture, substrateTexture } from './textures';
+import { type BgGradient, sceneTexture, blendTexture, lecaTexture, meshTexture, cardMaterial, pictureTexture, fishBodyTexture, fishTexture, finOpacityTexture, gradientTexture, personTexture, substrateFieldTexture, substrateFineTexture, substrateTexture } from './textures';
 
 /** Back-wall options; color null = no background (back glass only); light = use dark grid lines. */
 export const BACKGROUNDS: Record<Background, { label: string; color: number | null; gradient?: BgGradient; scene?: BgScene; light?: boolean; frost?: boolean }> = {
@@ -1812,7 +1812,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     const swim = !herp && !hang && !clinger && f.surface !== 'glass' && swims(sp.art); // swims in place (swim.ts): not a bottom dweller, not clinging to glass or hanging under a leaf
     const cardGeo = drapedCard(sp.art, w, h, f.bend, fin) || cardGeometry(w, h, isArachnid(sp.art) ? 0 : f.bend);
     if (!herp) cardGeo.setAttribute('aSwL', new THREE.Float32BufferAttribute(new Array(cardGeo.attributes.position.count).fill(swim ? w : 0), 1));
-    const m = new THREE.Mesh(cardGeo, herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${fish3d.fade}`, fishTexture(sp, S.render.edge, true, fish3d.fade), S.render.edge));
+    const m = new THREE.Mesh(cardGeo, herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${fish3d.fade}`, fishTexture(sp, S.render.edge, true, fish3d.fade), S.render.edge, THREE.DoubleSide, finOpacityTexture(sp.art)));
     if (!herp) { (m.material as THREE.Material).userData.fishCard = true; (m.material as THREE.Material).userData.swim = true; }
     if (swim) m.userData.swimmer = true; // the viewer redraws on its own while a fish swims (viewer swayDue) // fish stand out (render.pop) lifts the card too
     const snakeLimb = herp && isSnake(sp.art) && !!perch?.limb; // a snake on a limb follows its curve: built once the card is placed on it (below)

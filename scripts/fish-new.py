@@ -16,7 +16,7 @@ import sys, os, json, shutil, subprocess, importlib.util
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 KEEP = ('sat', 'alo', 'aw', 'taper', 'smooth_tail', 'pedt_max', 'clip_head', 'outline', 'fy0', 'erase', 'pec_window', 'anchor_top',
-        'no_tail', 'dorsals', 'smooth', 'warm', 'plan', 'plan_extra', 'fin_gap', 'card_sheet_off', 'sat_auto', 'membrane')
+        'no_tail', 'dorsals', 'smooth', 'warm', 'plan', 'plan_extra', 'fin_gap', 'card_sheet_off', 'sat_auto', 'membrane', 'stalk', 'fin_opacity')
 STRETCH_AT = 0.08   # band around the median when there is no measured range (proxy numbers only)
 TOL = 0.02          # built depth within 2 % of the target: no (further) stretch
 

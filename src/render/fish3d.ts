@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { analBox, bodyPlan, finRange, drawAnal, drawTail, eyeSpot, pairedFins, profile, tailBox, type Plan } from '../art/fishgen';
 import { FIN_A, FIN_A2C, rng, style } from '../art/paint';
 import type { EdgeMode } from '../scene/types';
-import { cardMaterial, pairedFinTexture } from './textures';
+import { cardMaterial, pairedFinOpacity, pairedFinTexture } from './textures';
 import { PROJ_ART, type ProjLayer } from '../art/projart';
 import { isShrimp3D, shrimpBody } from './shrimp3d';
 
@@ -418,7 +418,7 @@ function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = f
       // root at the origin; card frame (x = u, y = -v)
       g.translate(box.u0 + box.w / 2 - f.root[0], -(box.v0 + box.h / 2 - f.root[1]), 0); g.userData.keep = true; geoCache.set(key, g);
     }
-    const mat = cardMaterial(key, pairedFinTexture(art, f, box, edge), edge); mat.userData.fishCard = true; // outlined by fish stand out
+    const mat = cardMaterial(key, pairedFinTexture(art, f, box, edge), edge, THREE.DoubleSide, pairedFinOpacity(art, f, box)); mat.userData.fishCard = true; // outlined by fish stand out
     for (const side of [1, -1]) {
       // flat (plan option, off by default): held out flat like a fish on the glass all the time (hillstream loach)
       const flat = cling || !!(f.kind === 'pelvic' ? p.pelvic?.flat : p.pec?.flat), mesh = new THREE.Mesh(g, mat), a = (f.spread ?? (flat ? SPLAY : SPREAD)[f.kind]) * (finRange(art) && !cling ? 0.3 + 0.7 * Math.min(1, Math.max(0, fin)) : 1); // a folded fish holds its paired fins close too

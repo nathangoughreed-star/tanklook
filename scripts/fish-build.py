@@ -52,6 +52,16 @@ sq.paste(sheet.crop((0, 0, sheet.width, sy1 + 8)), (0, 0))
 sq.save(os.path.join(work, 'side_full.png'))
 sq.resize((N // 2, N // 2), Image.LANCZOS).save(os.path.join(work, 'side.png'))
 LM = spec['landmarks']
+EDGE = None   # flesh-to-tail-fin line from panel 5's fin map (scripts/fish-stalk-edge.py, method row 61): the SL end and the stalk depth
+if spec.get('fin_opacity') not in (None, False) and spec.get('stalk_edge', True):
+    sw_ = os.path.join(os.path.dirname(spec['sheet']), 'sheet.webp')
+    if os.path.exists(sw_):
+        EDGE = json.loads(run(S('fish-stalk-edge.py'), sw_, LM['ped'][0], LM['ped'][1]).strip() or 'null')
+    if EDGE:
+        print('stalk edge from the fin map: ped %s -> %s (%+.0f px)' % (LM['ped'], EDGE['ped'], EDGE['shift']))
+        LM['ped'] = EDGE['ped']
+    else:
+        print('stalk edge: no 5-panel sheet.webp beside the sheet (or no edge found): ped kept at', LM['ped'])
 for k_ in ('dorsalBase', 'analBase'):  # the fins overhang the tail stalk: a base line that stops short lets the rear outline read fin lobes as body (E5), so run it to the tail base
     pl_ = LM.get(k_) or []
     if pl_:
@@ -85,6 +95,21 @@ for k_ in ('top', 'bottom'):   # from 85 % SL back, the stalk may flare at most 
         v_ = abs(dp_[k_][i_])
         if lo_ is not None and v_ > 1.15 * lo_: dp_[k_][i_] = round(np.sign(dp_[k_][i_]) * 1.15 * lo_, 3); v_ = 1.15 * lo_
         lo_ = v_ if lo_ is None else min(lo_, v_)
+STALK = spec.get('stalk')
+if STALK is None and EDGE:   # the fin map's stalk height where the fin starts, split about the axis at the SL end
+    sl_e = A['slPx'] * 2; ax_e = A['landmarks']['snoutPxOriginal'][1] * 2
+    STALK = [round((ax_e - EDGE['top']) / sl_e * 100, 2), round((EDGE['bottom'] - ax_e) / sl_e * 100, 2)]
+    print('stalk depth from the fin map: top %.1f / bottom %.1f %% SL' % tuple(STALK))
+if STALK:   # 'stalk': [top, bottom] % SL, the painted tail stalk's half-depths at 100 % SL (method row 61). Long fin bases that run over the
+    # stalk (betta: dorsal and anal to 98-104 % SL) read as body there, so the solid filled the fin roots and a see-through fin showed it as a
+    # darker block (two layers). From 80 % SL the profile eases down to these values; never raised
+    st_ = dp_['stations']
+    for k_, cap_ in zip(('top', 'bottom'), STALK):
+        v80_ = abs(float(np.interp(80, st_, dp_[k_])))
+        for i_, s_ in enumerate(st_):
+            if s_ <= 80 or v80_ <= cap_: continue
+            u_ = (s_ - 80) / 20; want_ = v80_ + (cap_ - v80_) * u_ * u_ * (3 - 2 * u_)
+            if abs(dp_[k_][i_]) > want_: dp_[k_][i_] = round(float(np.sign(dp_[k_][i_]) or 1) * want_, 3)
 if spec.get('measured_width') and spec.get('smooth_tail', True):   # rear half-widths ease from 60 % SL down to the stalk's measured width (a sheet's top view often ends the body in a step: thick stub, then a thin stalk)
     st_, hw_ = A['depthProfile']['stations'], A['thickness']['halfWidthPctSL']
     i0_ = min(range(len(st_)), key=lambda i: abs(st_[i] - 60)); h0_ = hw_[i0_]; he_ = min(hw_[-5:])
@@ -113,7 +138,8 @@ side_card = os.path.join(work, 'side_full.png')
 if spec.get('card_sheet'):   # the body card from a sheet whose panel 1 has the paired fins replaced by the finless flank (the 3D fins draw themselves); the fin card keeps them
     cs_ = Image.open(spec['card_sheet']).convert('RGB'); sqc = Image.new('RGB', (N, N)); sqc.paste(cs_.crop((0, 0, cs_.width, sy1 + 8)), (0, 0))
     side_card = os.path.join(work, 'side_full_card.png'); sqc.save(side_card)
-mem = ['--membrane', ','.join(map(str, spec['membrane']))] if spec.get('membrane') else []   # see-through median fins (method row 61): body card only, the fin card feeds the paired fins, which get their own membrane in textures.ts
+FO = spec.get('fin_opacity')   # per-fin opacity profiles (method row 61): the card keeps coverage only, scripts/fish-fin-opacity.py writes the maps below
+mem = ['--membrane', ','.join(map(str, spec['membrane']))] if spec.get('membrane') and FO is None else []   # see-through median fins (method row 61): body card only, the fin card feeds the paired fins, which get their own membrane in textures.ts
 run(S('fish-cutout-card.py'), side_card, anat, card, *common, *er, *mem)
 fincard = os.path.join(shots, ID + '-fincard.png')
 fincommon = [v for i, v in enumerate(common) if not (v == '--clip-head' or (i and common[i - 1] == '--clip-head'))]   # the fin card is read only inside the fin polygons: no head clip, which cut the tailspot blenny's throat pelvics (method row 47)
@@ -186,10 +212,12 @@ if spec.get('width_pct_sl'):   # handoff step 8 in one pass (method row 44): thi
     print('width: drawn %.1f %% SL, target %.1f%s -> thickx %.3f%s' % (drawn_, want_, ' (proxy range %s)' % spec['width_range'] if spec.get('width_range') else '', THICKX, '' if spec.get('thickx') in (None, THICKX) else ' (spec thickx %s ignored)' % spec['thickx']))
 photo = {'art': ID, 'plan': spec.get('plan', 'oscar'), 'sx': round(sx, 1), 'sl': round(sl, 1), 'ax': round(ax, 1), 'eye': e,
          'pec': spec.get('pectoral'), 'pelvic': spec.get('pelvic'), 'eyeIris': spec.get('eye_iris'), 'eyePupil': spec.get('eye_pupil'), 'eyeFull': spec.get('eye_full'), 'pupilFrac': spec.get('eye_pupil_frac'),
-         'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', FY0)}, 'thickx': THICKX, 'noTail': bool(spec.get('no_tail')), 'measuredWidth': bool(spec.get('measured_width')), 'aspect': asp, 'finImg': bool(er or spec.get('card_sheet')), **({'planExtra': spec['plan_extra']} if spec.get('plan_extra') else {}), **({'finlets': spec['finlets']} if spec.get('finlets') else {})}
+         'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', FY0)}, 'thickx': THICKX, 'noTail': bool(spec.get('no_tail')), 'measuredWidth': bool(spec.get('measured_width')), 'aspect': asp, 'finImg': bool(er or spec.get('card_sheet')), **({'planExtra': spec['plan_extra']} if spec.get('plan_extra') else {}), **({'finlets': spec['finlets']} if spec.get('finlets') else {}), **({'opacity': True} if FO is not None and FO is not False else {}), **({'stalkEdge': EDGE['curve']} if EDGE else {})}
 A['render'] = {'note': 'built by scripts/fish-build.py from ' + os.path.basename(sys.argv[1]), 'photo': photo, 'fit': fit}
 J['art'] = ID
 json.dump(J, open(os.path.join(ROOT, 'src', 'data', 'fishart', ID + '.anatomy.json'), 'w', encoding='utf8'), indent=1)
+if FO is not None and FO is not False:   # {} = the defaults by fin type; false = opaque fins as before
+    print(run(S('fish-fin-opacity.py'), ID).strip())
 sp = os.path.join(ROOT, 'src', 'data', 'species.json')
 txt = open(sp, encoding='utf8').read()
 if '"id": "%s"' % ID not in txt:

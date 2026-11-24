@@ -5,7 +5,7 @@
  */
 import { PLANS, profile } from './fishgen';
 import { FISH_ART } from './placeholder';
-import { PHOTO_FINS } from '../render/textures';
+import { FIN_OPACITY, PHOTO_FINS } from '../render/textures';
 import { PROJ_ART } from './projart';
 
 const base = import.meta.env.BASE_URL;
@@ -21,7 +21,8 @@ for (const J of Object.values(files)) {
   if (!R) continue;
   const id: string = R.art;
   try {
-    const [card, top, front, fin] = await Promise.all([load(id), load(id + '-top'), load(id + '-front'), R.finImg ? load(id + '-fin') : Promise.resolve(null)]);
+    const [card, top, front, fin, op, finop] = await Promise.all([load(id), load(id + '-top'), load(id + '-front'), R.finImg ? load(id + '-fin') : Promise.resolve(null),
+      R.opacity ? load(id + '-op') : Promise.resolve(null), R.opacity ? load(id + '-finop') : Promise.resolve(null)]);   // fin opacity maps (method row 61)
     const P: any = (PLANS[id] ??= { ...PLANS[R.plan ?? 'oscar'] }), A = J.anatomy, d = A.depthProfile, F: any = A.fins;
     delete P.fins; delete P.finGrid;
     const pedU = 1 - 1 / A.tlOverSl, SLc = 1 - pedU, U = (s: number) => pedU + SLc * (1 - s / 100), Wd = (x: number) => x / 100 * SLc;
@@ -81,6 +82,7 @@ for (const J of Object.values(files)) {
       P.eye = { ...P.eye, u, dv: (v - et) / (eb - et) - 0.38, r: (R.eyeFull ?? er) / sl * SLc, iris: R.eyeIris ?? ['#c8902a', '#0a0206'], ...(R.eyePupil ? { pupil: R.eyePupil } : {}), ...(R.pupilFrac ? { pupilFrac: R.pupilFrac } : {}) }; }   // iris sampled from the sheet's own eye (fish-eye-colour.py); amber only for older builds
     if (R.planExtra) Object.assign(P, R.planExtra); // per-model Plan knobs from the spec's plan_extra (cory barbels: method row 53)
     PHOTO_FINS[id] = { img: fin ?? card };
+    if (op && finop) FIN_OPACITY[id] = { card: op, fin: finop };
     PROJ_ART[id] = { top: { img: top }, front: { img: front, k: R.proj.fk, y0: R.proj.y0 } };
     FISH_ART[id] = (ctx, _p, W) => ctx.drawImage(card, 0, 0, W, W * (ctx.canvas.height / ctx.canvas.width));
   } catch (e) { console.warn(e); }
