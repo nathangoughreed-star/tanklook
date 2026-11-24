@@ -36,8 +36,16 @@ def key():
     except ImportError: return None
 
 
+def digest(p):
+    import hashlib
+    return hashlib.md5(open(p, 'rb').read()).hexdigest()
+
+
+FILED = set()   # hashes of the sheets filed this run: a repeat download of the previous fish (Nathan, 2026-11-24) is not the next fish's sheet
+
+
 def wait_download(dl, before, ask):
-    """Returns the path of the first new, finished image in dl, or 's' / 'q'."""
+    """Returns the path of the first new, finished image in dl, or 's' / 'q'. Skips exact copies of a sheet already filed."""
     seen = {}
     while True:
         k = key()
@@ -48,8 +56,12 @@ def wait_download(dl, before, ask):
             if f in before and before[f] == (mt, sz): continue
             if os.path.exists(os.path.join(dl, f + '.crdownload')) or sz == 0: continue
             if seen.get(f) == sz:   # same size two polls running: the download is complete
-                try: Image.open(os.path.join(dl, f)).verify(); return os.path.join(dl, f)
-                except Exception: pass
+                p = os.path.join(dl, f)
+                try: Image.open(p).verify()
+                except Exception: seen[f] = sz; continue
+                if digest(p) in FILED:
+                    print(f'  ignored {f}: a repeat download of a sheet already filed', flush=True); before[f] = (mt, sz); continue
+                return p
             seen[f] = sz
         time.sleep(1)
 
@@ -60,6 +72,7 @@ def main(argv):
     if '--all' in argv: q = sorted(d for d in glob.glob(SHEETS + '/*-gen') if os.path.exists(d + '/prompt.txt') and not os.path.exists(d + '/sheet.webp'))
     else: q = [a for i, a in enumerate(argv) if not a.startswith('--') and not (i > 0 and argv[i - 1] == '--downloads')]
     q = [d for d in q if os.path.exists(os.path.join(d, 'prompt.txt'))]
+    for p in glob.glob(SHEETS + '/*/sheet-download.*'): FILED.add(digest(p))   # sheets filed by earlier runs count as repeats too
     if not q: sys.exit('nothing in the queue (folders need prompt.txt' + ('' if redo else ' and no sheet.webp') + ')')
     print(f'{len(q)} sheet(s) to make. Per fish: Ctrl+V, Enter, wait, click download.  s = skip, r = reopen, q = quit\n')
     done, skipped = [], []
@@ -80,7 +93,7 @@ def main(argv):
         if got == 'q': print('  quit'); skipped += [os.path.basename(x) for x in q[n - 1:]]; break
         if got == 's': print('  skipped'); skipped.append(name); continue
         ext = os.path.splitext(got)[1].lower(); keep = os.path.join(d, 'sheet-download' + ext)
-        shutil.move(got, keep)
+        FILED.add(digest(got)); shutil.move(got, keep)
         im = Image.open(keep); im.load(); im.convert('RGB').save(sheet, lossless=True)
         json.dump({'download': os.path.basename(got), 'filed': time.strftime('%Y-%m-%d %H:%M'), 'size_px': list(im.size), 'generator': 'ChatGPT (Nathan, web)',
                    'prompt_chars': len(prompt)}, open(os.path.join(d, 'sheet.json'), 'w'), indent=1)
