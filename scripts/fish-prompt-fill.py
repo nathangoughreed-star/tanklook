@@ -66,6 +66,10 @@ def main(a):
         print(f'size words ({len(w)}): replace with a measured number or a shape (template rule "No size adjectives")', file=sys.stderr)
         for x in w: print(x, file=sys.stderr)
         if strict: sys.exit('--strict: size words found')
+    # row 2 is the finless body: MARKS_SHORT (what row 2 keeps) naming a fin made ChatGPT keep it (guppy 'spotted delta tail', 2026-11-24:
+    # row 2 kept the tail, the fin cut found no caudal, the map-body fallback built a body in strips). A hard stop, not a warning
+    fins = re.findall(r'\b(fins?|tail|caudal|dorsal|anal|pelvic|pectoral|sword|streamers?|filaments?|feelers?|veils?)\b', vals.get('MARKS_SHORT', ''), re.I)
+    if fins: sys.exit(f'MARKS_SHORT names fins ({", ".join(fins)}): row 2 has no fins, list body markings only')
     txt = fill(tpl, vals)
     if len(a) > 1: open(a[1], 'w', encoding='utf-8', newline='\n').write(txt + '\n'); print('wrote', a[1], len(txt), 'chars')
     else: sys.stdout.reconfigure(encoding='utf-8'); print(txt)
