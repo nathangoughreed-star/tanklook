@@ -62,7 +62,9 @@ def main(argv):
     # head depth (Nathan 2026-11-24, b6 "snouts too pointy"): the head gets its own factor from the FishShapes head depth at the eye
     # (borrowed numbers: kept inside the proxy's head range). ChatGPT draws heads shallow; scaled with the body they read as cones.
     hd = aud.get('head'); kh = None
-    if hd and fsh.get('head') and '--no-head' not in flags:
+    # OPT-IN (--head-depth): Nathan 2026-11-24 after the b6 rebuild: "more harm than good"; the cone read is mostly the missing lips
+    # and mouth, and borrowed / noisy head numbers made bulb heads (ember). Kept for a fish whose drawn head is clearly wrong.
+    if hd and fsh.get('head') and '--head-depth' in flags:
         hlo, hhi = (fsh.get('range') or {}).get('head', [fsh['head'], fsh['head']])
         htarget = min(max(hd, hlo), hhi) if proxy and hlo < hhi else fsh['head']
         # caps: own numbers 0.8-1.25; borrowed 0.87-1.15 (ember: H. anisitsi's head 20.9 % SL vs 14.3 drawn gave 1.4, a bulb head)
