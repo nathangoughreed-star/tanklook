@@ -157,7 +157,7 @@
     ]
    },
    "dorsal2": {
-    "baseStartPctSL": 55.92,
+    "baseStartPctSL": 53.67,
     "baseEndPctSL": 104.08,
     "maxHeightPctSL": 17.11,
     "heightProfile": [
@@ -950,7 +950,8 @@
       425.2,
       200.0
      ]
-    ]
+    ],
+    "ver": "2ef7aa8e"
    },
    "fit": "{'thick': 0.9, 'pedT': 0.024, 'rmsPctSL': 0.59, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }

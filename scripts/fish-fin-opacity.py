@@ -73,12 +73,31 @@ def ring(op, cov):
     return np.where(inside, op, 0.5 + 0.5 * near)
 
 
+def median_allowed(A, R, W, H, spec):
+    """Card pixels the fin map allows outside the body: panel 5's grey body, red / green / blue (dorsal, anal, caudal) and 2 % SL round
+    them, laid on the card. All True when the sheet has no fin map."""
+    sw = os.path.join(os.path.dirname(spec['sheet']), 'sheet.webp')
+    if not os.path.exists(sw): return np.ones((H, W), bool)
+    import importlib.util as ilu
+    sp = ilu.spec_from_file_location('stalkedge', os.path.join(HERE, 'fish-stalk-edge.py')); se = ilu.module_from_spec(sp); sp.loader.exec_module(se)
+    mm = se.map_mask(sw)
+    if mm is None: return np.ones((H, W), bool)
+    o, colw = mm[3], mm[4]; A2 = dict(A); A2['_rotationDeg'] = A.get('_rot', 0.0)
+    ok = se._rot(A2, o | (colw == 1) | (colw == 2) | (colw == 3))
+    sx, sy = [v * 2 for v in A['landmarks']['snoutPxOriginal']]; TLs = A['slPx'] * 2 * A['tlOverSl']; k = 1022 / TLs
+    ok = nd.binary_dilation(ok, iterations=max(2, int(0.02 * A['slPx'] * 2)))
+    Xc, Yc = np.meshgrid(np.arange(W), np.arange(H)); xs = np.round(sx - (1022 - Xc) / k).astype(int); ys = np.round(sy + (Yc - H / 2) / k).astype(int)
+    inside = (xs >= 0) & (xs < ok.shape[1]) & (ys >= 0) & (ys < ok.shape[0])
+    out = np.zeros((H, W), bool); out[inside] = ok[ys[inside], xs[inside]]
+    return out
+
+
 def main():
     ID = sys.argv[1]
     opt = {a: sys.argv[i + 2] for i, a in enumerate(sys.argv[1:-1]) if a.startswith('--')}
     spec = json.load(open(os.path.join(ROOT, 'research', 'fish-specs', ID + '.json'), encoding='utf8'))
     P = profiles(json.loads(opt['--profile']) if '--profile' in opt else spec.get('fin_opacity'))
-    A = json.load(open(os.path.join(ROOT, 'src', 'data', 'fishart', ID + '.anatomy.json'), encoding='utf8'))['anatomy']
+    J0 = json.load(open(os.path.join(ROOT, 'src', 'data', 'fishart', ID + '.anatomy.json'), encoding='utf8')); A = J0['anatomy']; A['_rot'] = J0.get('method', {}).get('rotationDeg', 0.0)
     R = A['render']['photo']
     card = np.asarray(Image.open(os.path.join(ROOT, 'shots', ID + '-card.png')).convert('RGBA')).astype(float) / 255
     H, W = card.shape[:2]; cov = card[..., 3]; SLc = 1022 / A['tlOverSl']; ys = np.arange(H)
@@ -114,7 +133,18 @@ def main():
         op[m] = mem + (ray - mem) * conf[m]
     e = np.clip(db / np.maximum(1.0, EASE * SLc + 0.3 * (db + de)), 0, 1); e = e * e * (3 - 2 * e)   # and over 30 % of the fin's own root-to-edge length, so a long tail eases in gently (Nathan 2026-11-24: "merge transition ... not as jarring")   # ease in from the body (a hard switch drew a seam; 6 % SL kept a convict's short spiny dorsal solid)
     op = 1 - e * (1 - op)
+    # the 3D paired fins draw themselves: a leftover copy of the pelvic / pectoral on the card (the finless card sheet keeps a faint grey one
+    # below the belly) hung as a blurred ghost under the real fin (convict, cherry barb; Nathan 2026-11-24). Cleared outside the body
+    from PIL import ImageDraw
+    pm = Image.new('L', (W, H), 0); pd = ImageDraw.Draw(pm)
+    for key in ('pec', 'pelvic'):
+        f = R.get(key)
+        if f and f.get('poly'): pd.polygon([(X(x), Y(y)) for x, y in f['poly']], fill=255)
+    paired = nd.binary_dilation(np.asarray(pm) > 0, iterations=4) & ~body
+    stray = paired | ~median_allowed(A, R, W, H, spec)   # and anything else past the body the fin map does not call dorsal, anal or tail fin
+    stray &= ~body
     op = ring(op, cov)
+    op[stray] = 0.0   # after ring(): it fills everything outside the coverage, and undid the hole the first time
     out = os.path.join(ROOT, 'public', 'art', 'fish')
     Image.fromarray(np.round(op * 255).astype(np.uint8), 'L').save(os.path.join(out, ID + '-op.webp'), lossless=True)
 
@@ -142,6 +172,12 @@ def main():
         Image.fromarray(np.round(op * 255).astype(np.uint8)).save(os.path.join(dd, ID + '-op.png'))
         Image.fromarray(np.round(fop * 255).astype(np.uint8)).save(os.path.join(dd, ID + '-finop.png'))
         Image.fromarray(np.round(dbg['strength'] * 255).astype(np.uint8)).save(os.path.join(dd, ID + '-strength.png'))
+    import hashlib   # new build stamp (photofish.ts image URLs), also when this runs on its own
+    h = hashlib.sha1()
+    for f in sorted(os.listdir(out)):
+        if f.startswith(ID + '.') or f.startswith(ID + '-'): h.update(open(os.path.join(out, f), 'rb').read())
+    A.pop('_rot', None); A['render']['photo']['ver'] = h.hexdigest()[:8]
+    json.dump(J0, open(os.path.join(ROOT, 'src', 'data', 'fishart', ID + '.anatomy.json'), 'w', encoding='utf8'), indent=1)
     fm = fin & (e > 0.99)
     print('opacity', ID, 'median fins: mean %.2f, rays %.0f %% of fin px (conf > 0.5)' % (op[fm].mean() if fm.any() else 1, 100 * (conf[fin] > 0.5).mean() if fin.any() else 0))
 

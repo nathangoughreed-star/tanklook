@@ -426,7 +426,10 @@ function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = f
       // flat (plan option, off by default): held out flat like a fish on the glass all the time (hillstream loach)
       const flat = cling || !!(f.kind === 'pelvic' ? p.pelvic?.flat : p.pec?.flat), mesh = new THREE.Mesh(g, mat), a = (f.spread ?? (flat ? SPLAY : SPREAD)[f.kind]) * (finRange(art) && !cling ? 0.3 + 0.7 * Math.min(1, Math.max(0, fin)) : 1); // a folded fish holds its paired fins close too
       // root slightly inside the surface so the base never shows a gap
-      const s = surfaceAt(p, f.root[0], f.root[1], side, bend), z0 = bendZ(bend, s.x);
+      // fin-map fish (tailBlend, method row 61): the belly can sit above the sheet's root (the depth profile is clamped to the fin map), so the
+      // root is held on the solid; otherwise the pelvic hung in the water under the belly
+      const [rt, rb] = profile(p)(f.root[0]), rv = p.tailBlend ? Math.min(rb - 0.004, Math.max(rt + 0.004, f.root[1])) : f.root[1];
+      const s = surfaceAt(p, f.root[0], rv, side, bend), z0 = bendZ(bend, s.x);
       mesh.position.set(s.x, s.y, z0 + (s.z - z0) * 0.85);
       if (f.kind === 'pelvic') mesh.rotation.x = -side * a;
       else if (flat) mesh.rotation.set(-side * a, side * (f.sweep ?? 0.35), 0, 'YXZ'); // flat fin: a = swing of its span out about the body axis (pitch/roll), sweep = swing back about the vertical

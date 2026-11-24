@@ -99,7 +99,17 @@ if EDGE:   # the whole depth profile against panel 5's grey body (method row 61)
     import importlib.util as ilu_se
     sp_se = ilu_se.spec_from_file_location('stalkedge', S('fish-stalk-edge.py')); se_ = ilu_se.module_from_spec(sp_se); sp_se.loader.exec_module(se_)
     A['_rotationDeg'] = J['method']['rotationDeg']
-    ch_ = se_.clamp_profile(os.path.join(os.path.dirname(spec['sheet']), 'sheet.webp'), A); del A['_rotationDeg']
+    SW_ = os.path.join(os.path.dirname(spec['sheet']), 'sheet.webp')
+    ch_ = se_.clamp_profile(SW_, A)
+    for fk_, runs_ in se_.fin_bases(SW_, A).items():   # fin bases from the fin map: only ever widened (a short base cut the fin's front off)
+        cand_ = [(n_, r_) for n_ in (fk_, fk_ + '2') if A['fins'].get(n_) and A['fins'][n_].get('baseStartPctSL') is not None for r_ in runs_]
+        if not cand_: continue
+        n_, (b0_, b1_) = max(cand_, key=lambda c: min(c[1][1], A['fins'][c[0]]['baseEndPctSL']) - max(c[1][0], A['fins'][c[0]]['baseStartPctSL']))
+        f_ = A['fins'][n_]; o0_, o1_ = f_['baseStartPctSL'], f_['baseEndPctSL']
+        if min(b1_, o1_) - max(b0_, o0_) < 0: continue   # no overlap: a different fin, leave it
+        f_['baseStartPctSL'], f_['baseEndPctSL'] = round(min(o0_, b0_), 2), round(max(o1_, b1_), 2)
+        if (f_['baseStartPctSL'], f_['baseEndPctSL']) != (o0_, o1_): print('%s base from the fin map: %.1f-%.1f -> %.1f-%.1f %% SL' % (n_, o0_, o1_, f_['baseStartPctSL'], f_['baseEndPctSL']))
+    del A['_rotationDeg']
     if ch_: print('depth profile clamped to the fin map at %d station sides: %s' % (len(ch_), ', '.join('%g %s %.1f->%.1f' % c for c in ch_[:8])))
 STALK = spec.get('stalk')
 if STALK is None and EDGE:   # the fin map's stalk height where the fin starts, split about the axis at the SL end
@@ -245,6 +255,12 @@ J['art'] = ID
 json.dump(J, open(os.path.join(ROOT, 'src', 'data', 'fishart', ID + '.anatomy.json'), 'w', encoding='utf8'), indent=1)
 if FO is not None and FO is not False:   # {} = the defaults by fin type; false = opaque fins as before
     print(run(S('fish-fin-opacity.py'), ID).strip())
+import hashlib   # build stamp: photofish.ts puts it on the image URLs, so a rebuilt fish's images are never served from the browser's cache
+h_ = hashlib.sha1()
+for f_ in sorted(os.listdir(out)):
+    if f_.startswith(ID + '.') or f_.startswith(ID + '-'): h_.update(open(os.path.join(out, f_), 'rb').read())
+photo['ver'] = h_.hexdigest()[:8]
+json.dump(J, open(os.path.join(ROOT, 'src', 'data', 'fishart', ID + '.anatomy.json'), 'w', encoding='utf8'), indent=1)
 sp = os.path.join(ROOT, 'src', 'data', 'species.json')
 txt = open(sp, encoding='utf8').read()
 if '"id": "%s"' % ID not in txt:
@@ -256,6 +272,10 @@ else:   # a rebuild keeps the entry but its aspect must follow the new card (gup
     import re as re_
     new_ = re_.sub(r'(\{"id": "%s"[^\n]*?"aspect": )[0-9.]+' % re_.escape(ID), lambda m_: m_.group(1) + str(asp), txt, count=1)
     if new_ != txt: open(sp, 'w', encoding='utf8').write(new_)
+if EDGE:   # self-check picture + warnings against the fin map (method row 61): shots/<id>-mapcheck.png
+    A['_rotationDeg'] = J['method']['rotationDeg']
+    for w_ in se_.check_picture(SW_, A, card, os.path.join(shots, ID + '-mapcheck.png')): print('CHECK body vs fin map:', w_)
+    del A['_rotationDeg']
 print('OK', ID, 'aspect', asp, 'SL px', round(sl), 'TL px', round(TL), fit)
 fsh_ = spec.get('fishshapes') or {}
 if fsh_.get('specimens'):   # mass check against the real specimens at their own SL (rows 35, 44); deep-bodied fish ran 1.1-1.4x so far

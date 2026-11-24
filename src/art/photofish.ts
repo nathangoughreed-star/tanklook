@@ -9,10 +9,12 @@ import { FIN_OPACITY, PHOTO_FINS } from '../render/textures';
 import { PROJ_ART } from './projart';
 
 const base = import.meta.env.BASE_URL;
-const load = (f: string) => new Promise<HTMLCanvasElement>((res, rej) => {
+// `v` = the build's stamp (render.photo.ver, fish-build.py): a rebuilt fish's images keep their URLs, and the browser's image cache served the
+// old opacity map across reloads (2026-11-24); the stamp makes each build's URLs new
+const load = (f: string, v?: string) => new Promise<HTMLCanvasElement>((res, rej) => {
   const im = new Image();
   im.onload = () => { const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; c.getContext('2d')!.drawImage(im, 0, 0); res(c); };
-  im.onerror = () => rej(new Error('photofish: ' + f + ' failed to load')); im.src = `${base}art/fish/${f}.webp`;
+  im.onerror = () => rej(new Error('photofish: ' + f + ' failed to load')); im.src = `${base}art/fish/${f}.webp${v ? '?v=' + v : ''}`;
 });
 const files = import.meta.glob('../data/fishart/*.anatomy.json', { eager: true, import: 'default' }) as Record<string, any>;
 
@@ -21,8 +23,9 @@ for (const J of Object.values(files)) {
   if (!R) continue;
   const id: string = R.art;
   try {
-    const [card, top, front, fin, op, finop] = await Promise.all([load(id), load(id + '-top'), load(id + '-front'), R.finImg ? load(id + '-fin') : Promise.resolve(null),
-      R.opacity ? load(id + '-op') : Promise.resolve(null), R.opacity ? load(id + '-finop') : Promise.resolve(null)]);   // fin opacity maps (method row 61)
+    const v = R.ver as string | undefined;
+    const [card, top, front, fin, op, finop] = await Promise.all([load(id, v), load(id + '-top', v), load(id + '-front', v), R.finImg ? load(id + '-fin', v) : Promise.resolve(null),
+      R.opacity ? load(id + '-op', v) : Promise.resolve(null), R.opacity ? load(id + '-finop', v) : Promise.resolve(null)]);   // fin opacity maps (method row 61)
     const P: any = (PLANS[id] ??= { ...PLANS[R.plan ?? 'oscar'] }), A = J.anatomy, d = A.depthProfile, F: any = A.fins;
     delete P.fins; delete P.finGrid;
     const pedU = 1 - 1 / A.tlOverSl, SLc = 1 - pedU, U = (s: number) => pedU + SLc * (1 - s / 100), Wd = (x: number) => x / 100 * SLc;

@@ -146,7 +146,7 @@
   },
   "fins": {
    "dorsal": {
-    "baseStartPctSL": 47.52,
+    "baseStartPctSL": 45.21,
     "baseEndPctSL": 71.99,
     "maxHeightPctSL": 11.85,
     "heightProfile": [
@@ -226,8 +226,8 @@
     "note": "fin spines are dark/translucent: heights are lower bounds"
    },
    "anal": {
-    "baseStartPctSL": 77.3,
-    "baseEndPctSL": 88.65,
+    "baseStartPctSL": 68.97,
+    "baseEndPctSL": 89.36,
     "maxHeightPctSL": 4.75,
     "heightProfile": [
      [
@@ -707,7 +707,8 @@
       298.0,
       284.0
      ]
-    ]
+    ],
+    "ver": "7bfd5429"
    },
    "fit": "{'thick': 0.78, 'pedT': 0.3, 'rmsPctSL': 2.32, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }
