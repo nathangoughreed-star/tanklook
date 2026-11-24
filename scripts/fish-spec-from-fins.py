@@ -75,7 +75,22 @@ def to_tail(pts, top, step=30):
     return sorted(out + pts)
 
 
-spec["landmarks"] = {"ped": ped_, "dorsalBase": to_tail(binned(dx_, dy_), True), "analBase": to_tail(binned(ax_, ay_), False)}
+def all_dorsals(step=30):
+    """Two or three dorsal pieces (a split dorsal: rainbowfish, gudgeons; or dorsal + adipose): the back line runs under every piece and
+    along the real back in the gaps. With only the largest piece the front dorsal of the Boeseman's rainbow had no base line, so the
+    outline climbed it and it was built as body, a hump on the back (b6, Nathan 2026-11-24)."""
+    ys, xs = np.nonzero(np.isin(full, DORSAL_IDS) & bodyd); pts = binned(xs, ys, step)
+    if not pts: return pts
+    gaps = []
+    for (x0, _), (x1, _) in zip(pts, pts[1:]):
+        for x in range(x0 + step, x1 - step // 2, step):
+            col = np.nonzero(body[:, x])[0]
+            if len(col): gaps.append([int(x), int(col[0])])
+    return sorted(pts + gaps)
+
+
+dbase = all_dorsals() if 2 <= len(DORSAL_IDS) <= 3 else binned(dx_, dy_)
+spec["landmarks"] = {"ped": ped_, "dorsalBase": to_tail(dbase, True), "analBase": to_tail(binned(ax_, ay_), False)}
 # eye: white disc of the label map, moved into panel 1 by the silhouette boxes; else the darkest disc in panel 1's head
 eye = None
 if len(bands) >= 5:
