@@ -90,6 +90,12 @@ function bodyGeometry(p: Plan, aspect: number, bend: number, swim = false) {
     const a = i * R + j, b = a + R;
     idx.push(a, a + 1, b, a + 1, b + 1, b); // outward-facing (FrontSide)
   }
+  // close the nose: the last ring (u = 1) is a section 1-5 % SL deep, and left open it showed as a black hole in the middle of every
+  // front view (Nathan 2026-11-24, b6). A flat fan at x = 0.5 (TL unchanged); its normals average into the last ring, rounding the
+  // tip, and it faces forward, so the front projection layer paints it.
+  { const last = (STATIONS - 1) * (RING + 1), { vc: vn } = ring(1), cn = pos.length / 3;
+    pos.push(0.5, -vn, bendZ(bend, 0.5)); uv.push(1, 0.5 - vn / aspect);
+    for (let j = 0; j < RING; j++) idx.push(cn, last + j, last + j + 1); }
   // cap the cut at the peduncle (the tail fin on the card covers the joint)
   // its own copy of the first ring: shared vertices averaged the cap's backward normal into the body's last ring, which then
   // shaded differently and showed as a line where the tail fin starts (E-GEN tang)
