@@ -350,22 +350,7 @@
  "sat_auto": true,
  "ped_hand": "tail base set by hand 2026-11-24: the fin cut put it in the tail fork (x 218)",
  "fin_opacity": {
-  "all": {
-   "membrane": [
-    0.85,
-    0.6
-   ],
-   "rays": [
-    0.95,
-    0.8
-   ]
-  },
-  "pectoral": {
-   "membrane": [
-    0.45,
-    0.25
-   ]
-  }
+  "preset": "pigmented"
  },
- "fin_opacity_source": "pigmented (photo check 2026-11-24, Commons: Male Cherry Barb 700.jpg, Cherry barb, Puntius titteya.jpg; red males like the sheet): fins deep red, nearly solid at the root, a little see-through toward the edges; plant stems barely show through the tail. Guess was a class too clear"
+ "fin_opacity_source": "pigmented (photo check 2026-11-24; Commons: Male Cherry Barb 700.jpg, Cherry barb, Puntius titteya.jpg; red males like the sheet): fins deep red, nearly solid at the root, a little see-through toward the edges; plant stems barely show through the tail. The earlier guess was a class too clear."
 }

@@ -357,44 +357,7 @@
  "sat": 0.76,
  "sat_auto": true,
  "fin_opacity": {
-  "caudal": {
-   "membrane": [
-    0.5,
-    0.3
-   ],
-   "rays": [
-    0.85,
-    0.6
-   ]
-  },
-  "dorsal": {
-   "membrane": [
-    0.75,
-    0.35
-   ]
-  },
-  "anal": {
-   "membrane": [
-    0.7,
-    0.35
-   ]
-  },
-  "pectoral": {
-   "membrane": [
-    0.3,
-    0.15
-   ],
-   "rays": [
-    0.6,
-    0.4
-   ]
-  },
-  "pelvic": {
-   "membrane": [
-    0.65,
-    0.45
-   ]
-  }
+  "preset": "translucent"
  },
- "fin_opacity_source": "translucent (photo check 2026-11-24, Commons: Convict cichlid (Amatitlania nigrofasciata).jpg, Convict Cichlid (3371934808).jpg, Aquarium tropical du Palais de la Porte Doree - Archocentrus nigrofasciatus.JPG): tail and soft dorsal / anal clearly see-through over plants with a yellow tint, rays visible; body bars run onto the spiny dorsal base; pectorals nearly clear; pelvics whitish, about half"
+ "fin_opacity_source": "translucent (photo check 2026-11-24; Commons: Convict cichlid (Amatitlania nigrofasciata).jpg, Convict Cichlid (3371934808).jpg, Aquarium tropical du Palais de la Porte Doree - Archocentrus nigrofasciatus.JPG): tail and soft dorsal / anal clearly see-through over plants with a yellow tint, rays visible; body bars run onto the spiny dorsal base; pectorals nearly clear; pelvics whitish, about half."
 }

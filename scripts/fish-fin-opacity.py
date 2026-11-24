@@ -28,11 +28,34 @@ DEFAULTS = {   # [root, tip] opacity; rays are the painted ray lines, membrane t
 }
 
 
+def _cls(m, r, pm=None, pr=None):   # a class's fins: median fins (dorsal, anal, caudal, pelvic) and pectoral as [root, tip] pairs
+    d = {k: {'membrane': m, 'rays': r} for k in ('dorsal', 'anal', 'caudal', 'pelvic')}
+    d['pectoral'] = {'membrane': pm or m, 'rays': pr or r}
+    return d
+
+
+# Fin transparency classes (method row 61 (11)), picked per species by the reference-photo check (scripts/fish-fin-class.py), calibrated on
+# the four test fish: clear = neon tetra, translucent = convict cichlid, pigmented = red male cherry barb, solid = veiltail betta. A spec can
+# set the class for the whole fish ({"preset": "clear"}) and per fin ({"pectoral": {"preset": "clear"}}), and numbers over either
+PRESETS = {
+    'clear': _cls([0.35, 0.15], [0.65, 0.4], [0.25, 0.1], [0.5, 0.3]),
+    'translucent': {**_cls([0.7, 0.35], [0.9, 0.65], [0.35, 0.15], [0.65, 0.4]), 'caudal': {'membrane': [0.55, 0.3], 'rays': [0.85, 0.6]}, 'pelvic': {'membrane': [0.65, 0.45], 'rays': [0.9, 0.7]}},
+    'pigmented': _cls([0.85, 0.6], [0.95, 0.8], [0.45, 0.25], [0.75, 0.5]),
+    'solid': _cls([0.92, 0.75], [0.98, 0.88], [0.6, 0.4], [0.85, 0.65]),
+}
+
+
 def profiles(spec_fo):
+    """Per fin: the type default, then the fish's class, then `all`, then the fin's own class, then the fin's own numbers."""
     fo = spec_fo if isinstance(spec_fo, dict) else {}
     out = {}
     for k, d in DEFAULTS.items():
-        p = dict(d); p.update(fo.get('all', {})); p.update(fo.get(k, {})); out[k] = p
+        p = dict(d)
+        if fo.get('preset') in PRESETS: p.update(PRESETS[fo['preset']][k])
+        p.update({kk: v for kk, v in fo.get('all', {}).items() if kk != 'preset'})
+        own = fo.get(k, {})
+        if own.get('preset') in PRESETS: p.update(PRESETS[own['preset']][k])
+        p.update({kk: v for kk, v in own.items() if kk != 'preset'}); out[k] = p
     return out
 
 
