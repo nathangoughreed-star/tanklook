@@ -114,8 +114,11 @@ function bodyGeometry(p: Plan, aspect: number, bend: number, swim = false) {
     const k = 1 - 0.28 * Math.max(0, -ny) + 0.04 * Math.max(0, ny)
       + glow * (0.07 * Math.pow(Math.max(0, ny * 0.6 + nz * 0.4), 4) - 0.045 * Math.max(0, -ny));
     col.push(k, k, k);
+    // tail blend (fin-opacity fish, method row 61): the solid's last stretch fades out (alpha to coverage, so it stays in the opaque pass and
+    // needs no sorting against other fish) onto the card's painting of the same scales, instead of ending in a hard cap where the fin starts
+    if (p.tailBlend) { const t = Math.min(1, Math.max(0, (g.attributes.position.getX(i) + 0.5 - p.pedU) / p.tailBlend)); col.push(t * t * (3 - 2 * t)); }
   }
-  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, p.tailBlend ? 4 : 3));
   g.setAttribute('aSwL', new THREE.Float32BufferAttribute(new Array(n.count).fill(swim ? 1 : 0), 1)); // swim in place (swim.ts): 1 = the unit body moves, 0 = holds still
   // how squarely the surface faces the side (1 = flank, 0 = edge-on to the projection): where the paint is reliable
   g.setAttribute('aSide', new THREE.Float32BufferAttribute(Array.from({ length: n.count }, (_, i) => Math.abs(n.getZ(i))), 1));
@@ -683,7 +686,7 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   let g = geoCache.get(key); if (!g) { g = bodyGeometry(p, aspect, b, swim); geoCache.set(key, g); }
   const grp = new THREE.Group(); grp.scale.setScalar(w);
   grp.add(new THREE.Mesh(g, fishMat(`body:${map.uuid}:${fish3d.fade}:${fish3d.wrap}`, () => {
-    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); m.userData.swim = true; if (p.bodyA !== undefined) { m.transparent = true; m.opacity = Math.min(1, p.bodyA + 0.15); m.depthWrite = false; } if (fish3d.fade) { m.userData.plain = p.sharp ? t.map : t.plain; m.userData.side = p.sharp ? SIDE_SHARP : fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
+    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); m.userData.swim = true; if (p.tailBlend) m.alphaToCoverage = true; if (p.bodyA !== undefined) { m.transparent = true; m.opacity = Math.min(1, p.bodyA + 0.15); m.depthWrite = false; } if (fish3d.fade) { m.userData.plain = p.sharp ? t.map : t.plain; m.userData.side = p.sharp ? SIDE_SHARP : fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
   })));
   if (p.bodyA === undefined) { const o = new THREE.Mesh(g, outlineMat); o.userData.nolight = true; grp.add(o); }
   const pa = PROJ_ART[art];

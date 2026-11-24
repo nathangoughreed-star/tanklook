@@ -112,7 +112,7 @@ def main():
         m = fin & (kind == k)
         mem, ray = lerp(P[k]['membrane'], g[m]), lerp(P[k]['rays'], g[m])
         op[m] = mem + (ray - mem) * conf[m]
-    e = np.clip(db / max(1.0, EASE * SLc), 0, 1); e = e * e * (3 - 2 * e)   # ease in from the body (a hard switch drew a seam; 6 % SL kept a convict's short spiny dorsal solid)
+    e = np.clip(db / np.maximum(1.0, EASE * SLc + 0.3 * (db + de)), 0, 1); e = e * e * (3 - 2 * e)   # and over 30 % of the fin's own root-to-edge length, so a long tail eases in gently (Nathan 2026-11-24: "merge transition ... not as jarring")   # ease in from the body (a hard switch drew a seam; 6 % SL kept a convict's short spiny dorsal solid)
     op = 1 - e * (1 - op)
     op = ring(op, cov)
     out = os.path.join(ROOT, 'public', 'art', 'fish')

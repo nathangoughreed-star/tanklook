@@ -82,7 +82,7 @@ for (const J of Object.values(files)) {
       P.eye = { ...P.eye, u, dv: (v - et) / (eb - et) - 0.38, r: (R.eyeFull ?? er) / sl * SLc, iris: R.eyeIris ?? ['#c8902a', '#0a0206'], ...(R.eyePupil ? { pupil: R.eyePupil } : {}), ...(R.pupilFrac ? { pupilFrac: R.pupilFrac } : {}) }; }   // iris sampled from the sheet's own eye (fish-eye-colour.py); amber only for older builds
     if (R.planExtra) Object.assign(P, R.planExtra); // per-model Plan knobs from the spec's plan_extra (cory barbels: method row 53)
     PHOTO_FINS[id] = { img: fin ?? card };
-    if (op && finop) FIN_OPACITY[id] = { card: op, fin: finop };
+    if (op && finop) { FIN_OPACITY[id] = { card: op, fin: finop }; P.tailBlend = 0.05; }   // the solid fades onto the card over 5 % of TL before the fin
     PROJ_ART[id] = { top: { img: top }, front: { img: front, k: R.proj.fk, y0: R.proj.y0 } };
     FISH_ART[id] = (ctx, _p, W) => ctx.drawImage(card, 0, 0, W, W * (ctx.canvas.height / ctx.canvas.width));
   } catch (e) { console.warn(e); }

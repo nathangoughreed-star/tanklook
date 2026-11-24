@@ -66,6 +66,7 @@ type Mark =
 export interface Plan {
   depth: number;      // max body depth, widths
   pedU: number;       // where the body meets the tail (caudal fin length)
+  tailBlend?: number; // fin-opacity photo fish (method row 61): the solid fades out over this share of the card in front of pedU, onto the card's own painting
   ped: number;        // peduncle half-depth
   peak?: number;      // 0..1 along the body (tail->nose) where it is deepest
   back?: number;      // share of the depth above the centre line (0.5 symmetric; > 0.5 flat-bellied bottom fish)
