@@ -41,6 +41,9 @@ def find_bands(thr, gap):
 BAND_THR = 40; bands = find_bands(40, 3)
 if len(bands) != 3:   # a near-black fish (black molly, b6): its top view's dark back fell under 40 and split the panel in two
     BAND_THR = 12; bands = find_bands(12, 12)
+if BAND_THR == 40 and len(bands) == 3:   # near-black fish whose panels still split cleanly (red-tail shark, b6): the top view's dark back
+    _mx = np.asarray(sheet).max(2)[bands[0][0]:bands[0][1] + 1]; _fish = _mx[_mx > 8]   # still fell under 30 in fish-topview (hourglass)
+    if _fish.size and np.median(_fish) < 60: BAND_THR = 12; print('  near-black fish (side median %.0f): masks at 12' % np.median(_fish))
 a = np.asarray(sheet).max(2) > BAND_THR
 if len(bands) != 3:
     sys.exit('expected 3 panels, found %s (run scripts/fish-sheet-audit.py)' % bands)
