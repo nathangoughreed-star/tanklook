@@ -95,6 +95,7 @@ image instead, save it there yourself (the pasted image's path is in the message
 
 
 ## Decisions on record (2026-11-23)
+- 2026-11-24, Nathan: bichir = "B model, keep drawn". Species `bichir` (onboarded on `claude/exciting-engelbart-800558`, 9f89003b + ba5f0df4, unmerged) shows THIS branch's B model under `?photoart` and its drawn fishgen plan without. **Merge step for whoever merges this branch:** rename the B art key `bichirb` -> `bichir` (`src/data/fishart/bichirb.anatomy.json` -> `bichir.anatomy.json` with `"art"` and `render.photo.art`; the four `public/art/fish/bichirb*.webp`), delete the `bichirb` species row, and rebuild at the onboarded TL 445 mm (this branch built it at 305; `fish-new.py ... "Senegal bichir" "Polypterus senegalus" 445 --body-from-map`). Full steps: the shared notes file `bichir-b-model-merge.md`. The other B/C/D rows here are test copies of species already on main and stay separate until the loader-by-species-art merge.
 - 2026-11-24 (row 56): own-species numbers -> every build is stretched to the species' MEDIAN depth, judged on the built body (two passes); borrowed numbers (`proxy_for`) keep row 49. Black shots: fixed in `fish-shots.js` (canvas read in the same task as the draw).
 - Thickness = FishShapes measured max width, not FishBase mass (FishBase's yellow tang a/b ran ~1.6x light; row 35).
 - Width numbers out of the prompt: sheets overshot them by a third anyway (row 37). Depth stays as the one number.
