@@ -361,6 +361,10 @@
  "sat": 0.75,
  "sat_auto": true,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "translucent",
+  "pectoral": {
+   "preset": "clear"
+  }
+ },
+ "fin_opacity_source": "translucent, pectoral clear (photo check): gravel and planted tanks: dorsal and caudal faintly through apart from the red caudal root and the red / white edges; pectorals clear. Commons: White Cloud Mountain Minnow 1.jpg, White Cloud Mountain minnow (Tanichthys albonubes) captive adult female.jpg, White Cloud Mountain Minnow 2.jpg, Tanichthys albonubes by Ark.jpg"
 }

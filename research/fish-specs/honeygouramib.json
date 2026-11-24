@@ -234,6 +234,13 @@
   ]
  },
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "pigmented",
+  "caudal": {
+   "preset": "translucent"
+  },
+  "pectoral": {
+   "preset": "clear"
+  }
+ },
+ "fin_opacity_source": "pigmented, caudal translucent, pectoral clear (photo check): orange males in planted tanks: yellow dorsal and orange anal barely see-through, caudal plants faintly through; pectorals clear. Commons: Colisasota male.jpg, Colisa chuna male.jpg, Honey gourami yellow.jpg, Honey gaurami.jpg"
 }

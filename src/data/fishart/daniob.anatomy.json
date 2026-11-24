@@ -787,7 +787,7 @@
       217.0
      ]
     ],
-    "ver": "0f917726"
+    "ver": "1914d3f3"
    },
    "fit": "{'thick': 0.85, 'pedT': 0.3, 'rmsPctSL': 0.92, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }

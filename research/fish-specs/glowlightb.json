@@ -354,6 +354,7 @@
  "sat": 0.64,
  "sat_auto": true,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "clear"
+ },
+ "fin_opacity_source": "clear (photo check): planted tanks: fins glassy, plants clearly through, only the red dorsal front and white fin tips pigmented. Commons: Tetra Glowlight cropped.jpg, Hemigrammus erythrozonus h080.jpg, Hemigrammus erythrozonus.jpg, Tetra Glowlight.jpg"
 }

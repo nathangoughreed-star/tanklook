@@ -369,6 +369,10 @@
  "sat": 0.72,
  "sat_auto": true,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "pigmented",
+  "pectoral": {
+   "preset": "translucent"
+  }
+ },
+ "fin_opacity_source": "pigmented, pectoral translucent (photo check): purple / yellow fins barely see-through on reef backgrounds, the caudal edge a little clearer (white-background photo); dorsal eyespot opaque. Commons: Gramma loreto 01.jpg, Gramma loreto, Adult (Royal Gramma).jpg, Gramma loreto, Fairy Basslet.jpg"
 }

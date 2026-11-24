@@ -341,6 +341,13 @@
  "sat": 0.83,
  "sat_auto": true,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "pigmented",
+  "caudal": {
+   "preset": "translucent"
+  },
+  "pectoral": {
+   "preset": "clear"
+  }
+ },
+ "fin_opacity_source": "pigmented, caudal translucent, pectoral clear (photo check): wild-type black skirts: anal and dorsal dark, background barely through, edges clearer; caudal grey, rocks faintly through; pectorals clear. Commons: Gymnocorymbus ternetzi.JPG, Zalobniczka czarna tetra (Gymnocorymbus ternetzi ).jpg, 03.Gymnocorymbus ternetzi.JPG, 23.Gymnocorymbus ternetzi.JPG"
 }

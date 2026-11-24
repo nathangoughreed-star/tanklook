@@ -362,6 +362,10 @@
  "sat": 0.67,
  "outline": "--level --thr 8 --open 9 --snout-open 9",
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "pigmented",
+  "pectoral": {
+   "preset": "solid"
+  }
+ },
+ "fin_opacity_source": "pigmented, pectoral solid (photo check): grey-olive wild type on gravel / in planted tanks: dorsal finlets and tail body-coloured, background barely through (a little at the finlet edges in the backlit shot); the big fleshy pectoral lobe opaque. Commons: Polypterus senegalus senegalus.jpg, Polypterus senegalus 243650469.jpg, Bichir Polypterus senegalus.jpg, Polypterus senegalus (male and female).jpg"
 }

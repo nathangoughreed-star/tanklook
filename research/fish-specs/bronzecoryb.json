@@ -343,6 +343,7 @@
   "barbelR": 0.006
  },
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "translucent"
+ },
+ "fin_opacity_source": "translucent (photo check): bronze corys over gravel / plants: grey fins, gravel and plants faintly through dorsal and caudal, rays visible. Commons: Female Bronze Corydoras (Corydoras aeneus).jpg, Corydoras aeneus 2.jpg, Corydoras aeneus.jpg (albinos in Corydoras aeneus 01.jpg ignored)"
 }

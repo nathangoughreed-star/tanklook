@@ -350,6 +350,7 @@
   "barbelR": 0.006
  },
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "translucent"
+ },
+ "fin_opacity_source": "translucent (photo check): peppered corys over gravel / sand: dark spots on the rays, background faintly through the membrane. Commons: Corydoras paleatus by NiKo.jpg, Corydoras paleatus 1.jpg, Corydoras paleatus matt.jpg, Corydoras paleatus 04.jpg"
 }

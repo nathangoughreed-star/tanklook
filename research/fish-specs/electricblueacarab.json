@@ -357,6 +357,13 @@
  "sat": 0.54,
  "sat_auto": true,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "pigmented",
+  "caudal": {
+   "preset": "translucent"
+  },
+  "pectoral": {
+   "preset": "clear"
+  }
+ },
+ "fin_opacity_source": "pigmented, caudal translucent, pectoral clear (photo check): weak evidence: one true electric blue photo (dark, unusable) plus the neon-blue A. pulcher line: blue dorsal / anal barely see-through, caudal background faintly through, pectorals clear. Commons: The Electric Blue Acara (Andinoacara pulcher, electric blue morph).jpg, Andinoacara pulcher spec. neonblue.jpg, Andinoacara pulcher spec. neonblue & offspring 2.jpg"
 }

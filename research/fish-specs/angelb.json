@@ -309,6 +309,10 @@
  "sat": 0.66,
  "sat_auto": true,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "translucent",
+  "pectoral": {
+   "preset": "clear"
+  }
+ },
+ "fin_opacity_source": "translucent, pectoral clear (photo check): silver / striped angels in planted tanks: plants clearly through the caudal and faintly through dorsal / anal, rays striped dark; pectorals clear. Commons: Pterophyllum scalare A742576.jpg, Pterophyllum scalare 03.jpg, Pterophyllum scalare adult.jpg, Biotope aquarium - Pterophyllum sp. Manacapuru.jpg"
 }

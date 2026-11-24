@@ -333,6 +333,10 @@
  "sat": 1.1,
  "sat_auto": true,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "pigmented",
+  "pectoral": {
+   "preset": "clear"
+  }
+ },
+ "fin_opacity_source": "pigmented, pectoral clear (photo check): red / yellow-finned platies in planted tanks: coloured fins barely see-through, clearer only at the caudal edge; pectorals clear. Commons: Xiphophorus maculatus in aqarium.JPG, Xiphophorus maculatus Platy.JPG, Two Xiphophorus maculatus in aquarium.jpg, Rainbow wag platy.jpg"
 }

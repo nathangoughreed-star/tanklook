@@ -357,6 +357,10 @@
  "sat": 0.83,
  "sat_auto": true,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "translucent",
+  "pectoral": {
+   "preset": "clear"
+  }
+ },
+ "fin_opacity_source": "translucent, pectoral clear (photo check): wild-type zebra danios: caudal and anal carry the blue / gold stripes, membrane between them faintly shows the background; dorsal translucent; pectorals clear. Commons: Zebrafisch.jpg, Danio rerio lab right.JPG, Danio rerio.JPG (Danio rerio Mintern 151.jpg is a drawing, ignored)"
 }

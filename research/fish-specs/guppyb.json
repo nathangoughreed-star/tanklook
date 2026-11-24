@@ -361,6 +361,13 @@
  "sat": 0.7,
  "sat_auto": true,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "translucent",
+  "caudal": {
+   "preset": "pigmented"
+  },
+  "pectoral": {
+   "preset": "clear"
+  }
+ },
+ "fin_opacity_source": "translucent, caudal pigmented, pectoral clear (photo check): wild-type males (like the sheet's spotted body): dorsal and unpatterned fin parts clearly see-through, the coloured caudal patch barely; the sheet's caudal is coloured, so caudal pigmented; pectorals clear. Commons: Trinidadian guppy (Poecilia reticulata) male and female.png, Trinidadian guppy (Poecilia reticulata) male.png, Poecilia reticulata (male).JPG, Golomine (Poecilia reticulata) male en Guadeloupe - 1.jpg"
 }

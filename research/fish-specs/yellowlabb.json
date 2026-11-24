@@ -369,6 +369,13 @@
  "sat": 1.3,
  "sat_auto": true,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "pigmented",
+  "caudal": {
+   "preset": "translucent"
+  },
+  "pectoral": {
+   "preset": "clear"
+  }
+ },
+ "fin_opacity_source": "pigmented, caudal translucent, pectoral clear (photo check): yellow labs: black dorsal band and black anal / pelvic edges opaque, yellow parts barely through; caudal background faintly through; pectorals clear. Commons: Labidochromis caeruleus (male).jpg, Labidochromis caeruleus from Lake Malawi.jpg, Cichlidae Labidochromis caeruleus 2.jpg, Labidochromis caeruleus 01.jpg"
 }

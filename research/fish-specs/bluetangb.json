@@ -234,6 +234,10 @@
  "measured_width": true,
  "plan": "oscar",
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "solid",
+  "pectoral": {
+   "preset": "pigmented"
+  }
+ },
+ "fin_opacity_source": "solid, pectoral pigmented (photo check): reef tanks: black / blue dorsal and anal and the yellow tail fully opaque; yellow pectoral barely see-through. Commons: Paracanthurus hepatus - Wilhelma 01.jpg, Blue tang (Paracanthurus hepatus) 02.jpg, Paracanthurus hepatus 02.jpg, Paracanthurus hepatus (Regal Tang).jpg"
 }

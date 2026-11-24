@@ -347,6 +347,10 @@
   ]
  },
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "solid",
+  "pectoral": {
+   "preset": "pigmented"
+  }
+ },
+ "fin_opacity_source": "solid, pectoral pigmented (photo check): yellow dorsal, anal and caudal fully opaque in all four; pectoral barely see-through. Commons: Zebrasoma flavescens Luc Viatour.jpg, Zebrasoma flavescens 01.JPG, Zebrasoma flavescens in Ouwehands Dierenpark.jpg, Yellow Tang at Ripley's Aquarium of Canada.jpg"
 }

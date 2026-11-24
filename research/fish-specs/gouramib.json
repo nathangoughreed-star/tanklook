@@ -321,6 +321,10 @@
  "sat": 0.71,
  "sat_auto": true,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "translucent",
+  "pectoral": {
+   "preset": "clear"
+  }
+ },
+ "fin_opacity_source": "translucent, pectoral clear (photo check): pearl gouramis in planted tanks: dotted fins, plants faintly through dorsal, caudal and the rear of the anal; pectorals clear. Commons: Trichopodus leerii.jpg, Osphronemidae Trichopodus leerii 4.jpg, Pearl gourami (cropped).jpg, Pearl gourami.jpg"
 }

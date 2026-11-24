@@ -313,6 +313,10 @@
  "sat": 0.56,
  "sat_auto": true,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "translucent",
+  "pectoral": {
+   "preset": "clear"
+  }
+ },
+ "fin_opacity_source": "translucent, pectoral clear (photo check): three-spot gouramis: dotted dorsal, anal and caudal with the background faintly through; pectorals clear. Wild / gold-ish photos, not the blue morph of the sheet (same fins). Commons: Trichopodus trichopterus (3 spot gourami, Philippines) 04.jpg, Trichopodus trichopterus 99295059.jpg, Trichopodus trichopterus A.jpg, Three Spot Gourami female.jpg"
 }

@@ -333,6 +333,13 @@
  "sat": 0.77,
  "sat_auto": true,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "translucent",
+  "dorsal": {
+   "preset": "pigmented"
+  },
+  "pelvic": {
+   "preset": "pigmented"
+  }
+ },
+ "fin_opacity_source": "translucent, dorsal pigmented, pelvic pigmented (photo check): standard German blue rams in planted / gravel tanks: caudal and anal spotted, background faintly through (clearly in Mikrogeophagus ramirezi male.jpg); dorsal's black front spines and red edge opaque, its yellow membrane faintly through: pigmented, since translucent turned the black spines grey on screen; red-and-blue pelvics opaque-ish. Commons: Mikrogeophagus ramirezi (cropped), 2017.jpg, Mikrogeophagus ramirezi male.jpg, Mikrogeophagus ramirezi, 2017.jpg, Mikrogeophagus ramirezi hd.JPG"
 }

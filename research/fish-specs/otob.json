@@ -365,6 +365,10 @@
  "sat": 0.8,
  "sat_auto": true,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "clear",
+  "caudal": {
+   "preset": "translucent"
+  }
+ },
+ "fin_opacity_source": "clear, caudal translucent (photo check): otos on plants / glass: dorsal, pectoral, pelvic glassy with plants clearly through; caudal carries dark marks, faintly through. Commons: Otocinclus vestitus.jpg, Otocinclus ssp 12.jpg, Otocinclus ssp 4.jpg, Otocinclus ssp 9.jpg"
 }

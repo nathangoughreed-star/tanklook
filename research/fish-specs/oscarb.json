@@ -344,6 +344,10 @@
  },
  "sat": 0.75,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "solid",
+  "pectoral": {
+   "preset": "translucent"
+  }
+ },
+ "fin_opacity_source": "solid, pectoral translucent (photo check): tiger oscars: dark dorsal, anal and caudal opaque in all four; pectorals faintly see-through with visible rays. Commons: Astronotus ocellatus.jpg, Astronotus ocellatus - Karlsruhe Zoo 01.jpg, Oscar fish (Astronotus ocellatus).jpg, Astronotus ocellatus 2010 G1.jpg"
 }

@@ -413,6 +413,7 @@
  "sat": 0.6,
  "sat_auto": true,
  "fin_opacity": {
-  "preset": "solid"
- }
+  "preset": "translucent"
+ },
+ "fin_opacity_source": "translucent (photo check): reef photos: long dorsal and anal show the reef through them (clearly in 2 of 3, orange-tinted in 1), caudal faintly through. The sheet painted these fins opaque orange-brown. Commons: Ecsenius stigmatura.jpg, Ecsenius stigmatura 40405804.jpg, Tailspot coralblenny (Ecsenius stigmatura) (47706410652).jpg"
 }
