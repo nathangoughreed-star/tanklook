@@ -27,17 +27,20 @@ def S(n):
 
 sheet = Image.open(spec['sheet']).convert('RGB')
 sheet.save(os.path.join(work, 'sheet.png'))
-a = np.asarray(sheet).max(2) > 40
-rows = np.nonzero(a.any(1))[0]
-bands = []
-s = p = rows[0]
-for r in rows[1:]:
-    if r - p > 3:
-        bands.append((s, p))
-        s = r
-    p = r
-bands.append((s, p))
-bands = [b for b in bands if b[1] - b[0] > 30]
+def find_bands(thr, gap):
+    rows = np.nonzero((np.asarray(sheet).max(2) > thr).any(1))[0]
+    out = []; s = p = rows[0]
+    for r in rows[1:]:
+        if r - p > gap:
+            out.append((s, p)); s = r
+        p = r
+    out.append((s, p)); return [b for b in out if b[1] - b[0] > 30]
+
+
+BAND_THR = 40; bands = find_bands(40, 3)
+if len(bands) != 3:   # a near-black fish (black molly, b6): its top view's dark back fell under 40 and split the panel in two
+    BAND_THR = 12; bands = find_bands(12, 12)
+a = np.asarray(sheet).max(2) > BAND_THR
 if len(bands) != 3:
     sys.exit('expected 3 panels, found %s (run scripts/fish-sheet-audit.py)' % bands)
 sy0, sy1 = bands[0]
