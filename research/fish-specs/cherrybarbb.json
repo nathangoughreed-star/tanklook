@@ -352,8 +352,12 @@
  "fin_opacity": {
   "all": {
    "membrane": [
-    0.65,
-    0.35
+    0.85,
+    0.6
+   ],
+   "rays": [
+    0.95,
+    0.8
    ]
   },
   "pectoral": {
@@ -362,5 +366,6 @@
     0.25
    ]
   }
- }
+ },
+ "fin_opacity_source": "pigmented (photo check 2026-11-24, Commons: Male Cherry Barb 700.jpg, Cherry barb, Puntius titteya.jpg; red males like the sheet): fins deep red, nearly solid at the root, a little see-through toward the edges; plant stems barely show through the tail. Guess was a class too clear"
 }
