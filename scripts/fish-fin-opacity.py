@@ -41,7 +41,9 @@ PRESETS = {
     'clear': _cls([0.35, 0.15], [0.65, 0.4], [0.25, 0.1], [0.5, 0.3]),
     'translucent': {**_cls([0.7, 0.35], [0.9, 0.65], [0.35, 0.15], [0.65, 0.4]), 'caudal': {'membrane': [0.55, 0.3], 'rays': [0.85, 0.6]}, 'pelvic': {'membrane': [0.65, 0.45], 'rays': [0.9, 0.7]}},
     'pigmented': _cls([0.85, 0.6], [0.95, 0.8], [0.45, 0.25], [0.75, 0.5]),
-    'solid': _cls([0.92, 0.75], [0.98, 0.88], [0.6, 0.4], [0.85, 0.65]),
+    # solid's pectoral is solid too: it was [0.6, 0.4] from the betta, whose clear pectorals its spec already sets per fin, so every unchecked
+    # fish got half see-through pectorals (bichir: its big fleshy pectoral showed as a pale ghost disc under the belly, Nathan 2026-11-24)
+    'solid': _cls([0.92, 0.75], [0.98, 0.88]),
 }
 
 
