@@ -50,7 +50,13 @@ export const MEMBRANE = { core: 0.9, edge: 0.4, feather: 0.15 };
 function membrane(c: HTMLCanvasElement, poly: [number, number][]) {
   const W = c.width, H = c.height; if (W < 4 || H < 4 || poly.length < 3) return;
   const xs = poly.map(p => p[0]), ys = poly.map(p => p[1]);
-  const r = Math.max(1, MEMBRANE.feather * Math.min(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)));
+  // feather from the fin's shorter side; a thin streamer (angelfish pelvic filament, 2026-11-24) has a big bounding box but is only a
+  // few px wide, so that feather swallowed all of it and it rendered as a faint ghost: there use twice its mean width (2 x area / perimeter)
+  const short = Math.min(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys));
+  let area = 0, per = 0;
+  poly.forEach((p, i) => { const q = poly[(i + 1) % poly.length]; area += p[0] * q[1] - q[0] * p[1]; per += Math.hypot(q[0] - p[0], q[1] - p[1]); });
+  const wMean = Math.abs(area) / per;   // the shoelace sum is 2 x area, so this is 2 x area / perimeter: a strip's width, half a square's side
+  const r = Math.max(1, MEMBRANE.feather * (wMean < 0.25 * short ? 2 * wMean : short));
   const m = document.createElement('canvas'); m.width = W; m.height = H; const mx = m.getContext('2d')!;
   mx.filter = `blur(${(r / 2).toFixed(1)}px)`; mx.fillStyle = '#fff';
   mx.beginPath(); poly.forEach((p, i) => i ? mx.lineTo(p[0], p[1]) : mx.moveTo(p[0], p[1])); mx.closePath(); mx.fill();
