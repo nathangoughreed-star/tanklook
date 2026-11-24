@@ -18,13 +18,14 @@ asp = float(opt.get('--aspect', 0.369))
 J = json.load(open(js)); im = Image.open(src).convert('RGB')
 for e in [v for k, v in opt.items() if k == '--erase']:   # x0,y0,x1,y1 in source-photo px: blacked out before the cutout (a fin the 3D model draws itself)
     x0, y0, x1, y1 = map(int, e.split(',')); im.paste((0, 0, 0), (x0, y0, x1, y1))
-a = np.asarray(im)
+a = a0 = np.asarray(im)   # a0: the sheet's own colours, for the alpha below. Alpha from the desaturated colours made dark saturated parts
+# see-through as sat went down (royal gramma at sat 0.72: a hole in the dorsal eyespot; method row 58), so sat changes colour only
 if '--sat' in opt: a = desat(a, float(opt['--sat']))
 k = im.width / J['source']['px'][0]
 sx, sy = [v * k for v in J['anatomy']['landmarks']['snoutPxOriginal']]
 TL = J['anatomy']['tlPx'] * k
 ALO, AW = float(opt.get('--alo', 12)), float(opt.get('--aw', 40))   # alpha ramp: dark fins (oscar, max channel ~45) came out half transparent and blue against the tank at 12/40: use --alo 4 --aw 14
-al = np.clip((a.max(2).astype(float) - ALO) / AW, 0, 1)
+al = np.clip((a0.max(2).astype(float) - ALO) / AW, 0, 1)
 if '--solid' in opt:   # --solid T (method row 45): the background is near-black (< T) pixels connected to the image edge, plus enclosed black
     # pockets within --solid-near px of it (a gap under an overhanging fin tip, closed off by the thin fin edge: 3-6.4 px on the ram and
     # discus sheets) or over --solid-pocket px (an erased fin). Deeper pockets (pupils, dark marks: 30-43 px in) and everything else is
@@ -32,7 +33,7 @@ if '--solid' in opt:   # --solid T (method row 45): the background is near-black
     # part see-through (ram: ragged black spines)
     from scipy import ndimage as nd
     T, POCKET, NEAR = float(opt['--solid']), int(opt.get('--solid-pocket', 2000)), float(opt.get('--solid-near', 15))
-    lab, n = nd.label(a.max(2) < T)
+    lab, n = nd.label(a0.max(2) < T)
     if n:
         cnt = np.bincount(lab.ravel()); edge = np.unique(np.r_[lab[0], lab[-1], lab[:, 0], lab[:, -1]])
         bgid = np.zeros(n + 1, bool); bgid[edge] = True; bgid[cnt > POCKET] = True; bgid[0] = False

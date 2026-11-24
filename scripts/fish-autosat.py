@@ -49,9 +49,12 @@ def render_sat(png):
 
 def shoot(ID, tl, tag, url):
     cmd = ['node', os.path.join('scripts', 'fish-autoshot.mjs'), f'{ID}:{tl}', '--views', 'side', '--tag', tag] + (['--url', url] if url else [])
-    r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace', shell=os.name == 'nt')
-    line = [l for l in r.stdout.splitlines() if l.startswith('{')]
-    res = json.loads(line[-1]) if line else {'ok': [], 'fail': [r.stderr.strip()[-300:]]}
+    for attempt in (1, 2):   # one retry: a headless shot can fail once (royal gramma, 2026-11-24: CDP reply without a result)
+        r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace', shell=os.name == 'nt')
+        line = [l for l in r.stdout.splitlines() if l.startswith('{')]
+        res = json.loads(line[-1]) if line else {'ok': [], 'fail': [r.stderr.strip()[-300:]]}
+        if res['ok'] and not res['fail']: break
+        print(f'shot attempt {attempt} failed: {res["fail"]}', flush=True)
     if res['fail'] or not res['ok']: raise SystemExit(f'autosat: shot failed: {res["fail"]}')
     return os.path.join(ROOT, 'shots', res['ok'][0] + '.png')
 
