@@ -58,4 +58,22 @@ if '--clip-head' in opt:   # --clip-head 30: head stations (0..30 % SL) have no 
             t = np.interp(sp, d['stations'], d['top']) / 100 * SLc; b = np.interp(sp, d['stations'], d['bottom']) / 100 * SLc
             ys = np.arange(H); c_a[(ys < H / 2 - t - 2) | (ys > H / 2 + b + 2), x, 3] = 0
     card = Image.fromarray(c_a, 'RGBA')
+if '--membrane' in opt:   # --membrane CORE,EDGE,FEATHER (method row 61, Nathan 2026-11-24: "complete lack of transparency in fins"):
+    # the median fins (everything outside the measured body outline, the whole tail behind the stalk) get the paired fins' membrane
+    # (textures.ts MEMBRANE): opacity x CORE well inside the fin, easing to x EDGE at its outer edge over FEATHER x SL. The body stays solid.
+    from scipy import ndimage as nd
+    core, edge, fea = map(float, opt['--membrane'].split(','))
+    d = J['anatomy']['depthProfile']; SLc = 1022 / J['anatomy']['tlOverSl']; c_a = np.asarray(card).copy(); al = c_a[..., 3].astype(float) / 255
+    body = np.zeros(al.shape, bool); ys = np.arange(H)
+    for x in range(1024):
+        sp = (1022 - x) / SLc * 100
+        if 0 <= sp <= 100:
+            t = np.interp(sp, d['stations'], d['top']) / 100 * SLc; b = np.interp(sp, d['stations'], d['bottom']) / 100 * SLc
+            body[:, x] = (ys >= H / 2 - t - 1) & (ys <= H / 2 + b + 1)
+    body = nd.binary_dilation(body & (al > 0.5), iterations=3)   # a 3 px solid rim: the fin root never shows a seam
+    dist = nd.distance_transform_edt(al > 0.5)   # px to the fish's outer edge
+    f = np.clip(dist / max(1.0, fea * SLc), 0, 1); f = f * f * (3 - 2 * f)
+    g = np.clip(nd.distance_transform_edt(~body) / max(1.0, 0.06 * SLc), 0, 1); g = g * g * (3 - 2 * g)   # fade in over 6 % SL from the body:
+    k = 1 - g * (1 - (edge + (core - edge) * f))   # a hard switch drew a seam across the betta's tail base and the barb's dorsal root
+    c_a[..., 3] = np.round(al * k * 255).astype(np.uint8); card = Image.fromarray(c_a, 'RGBA')
 card.save(out); print(card.size)

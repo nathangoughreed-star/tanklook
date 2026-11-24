@@ -113,7 +113,8 @@ side_card = os.path.join(work, 'side_full.png')
 if spec.get('card_sheet'):   # the body card from a sheet whose panel 1 has the paired fins replaced by the finless flank (the 3D fins draw themselves); the fin card keeps them
     cs_ = Image.open(spec['card_sheet']).convert('RGB'); sqc = Image.new('RGB', (N, N)); sqc.paste(cs_.crop((0, 0, cs_.width, sy1 + 8)), (0, 0))
     side_card = os.path.join(work, 'side_full_card.png'); sqc.save(side_card)
-run(S('fish-cutout-card.py'), side_card, anat, card, *common, *er)
+mem = ['--membrane', ','.join(map(str, spec['membrane']))] if spec.get('membrane') else []   # see-through median fins (method row 61): body card only, the fin card feeds the paired fins, which get their own membrane in textures.ts
+run(S('fish-cutout-card.py'), side_card, anat, card, *common, *er, *mem)
 fincard = os.path.join(shots, ID + '-fincard.png')
 fincommon = [v for i, v in enumerate(common) if not (v == '--clip-head' or (i and common[i - 1] == '--clip-head'))]   # the fin card is read only inside the fin polygons: no head clip, which cut the tailspot blenny's throat pelvics (method row 47)
 run(S('fish-cutout-card.py'), os.path.join(work, 'side_full.png'), anat, fincard, *fincommon)
