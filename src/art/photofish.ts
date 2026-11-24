@@ -59,6 +59,7 @@ for (const J of Object.values(files)) {
       if (spans.length) P.finletSpans = spans;
     }
     if (R.finlets && P.dorsal) P.dorsal = { at: P.dorsal.at, len: P.dorsal.len, h: P.dorsal.h, spines: 0, lead: 1, rake: 0.5, tip: 'round', trail: 0, a: P.dorsal.a };
+    if (F.adipose) P.rootedTop = [[U(F.adipose.baseEndPctSL), U(F.adipose.baseStartPctSL)]];   // from the fin map (fish-build.py): the card cut its base away and the adipose floated (black skirt, sweep 2026-11-24)
     if (F.dorsal2) P.dorsal2 = { ...P.dorsal2, at: U(F.dorsal2.baseStartPctSL), len: Wd(F.dorsal2.baseEndPctSL - F.dorsal2.baseStartPctSL), h: Wd(F.dorsal2.maxHeightPctSL) };
     if (F.anal) P.anal = { ...P.anal, at: U(F.anal.baseStartPctSL), len: Wd(F.anal.baseEndPctSL - F.anal.baseStartPctSL), h: Wd(F.anal.maxHeightPctSL), rake: 0.85 };
     // the template plan's spines (oscar: spineH 0.04-0.07) stood taller than a low measured fin and drew a slab of card around it

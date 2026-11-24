@@ -38,7 +38,7 @@ export function finRooted(p: Plan, top: boolean, u: number) {
   // a row of finlets (bichir): the root rim only under each finlet; one rim along the whole row stood above the inset solid as a band
   // ending in a step in front of the first finlet (method row 57)
   const dors = p.finletSpans ? p.finletSpans.some(([a, b]) => u > a - 0.004 && u < b + 0.004) : on(p.dorsal);
-  return top ? dors || on(p.dorsal2) : p.gono ? Math.abs(u - p.gono.at) < 0.03 : !p.analSplit && on(p.anal);
+  return top ? dors || on(p.dorsal2) || !!p.rootedTop?.some(([a, b]) => u > a - 0.01 && u < b + 0.01) : p.gono ? Math.abs(u - p.gono.at) < 0.03 : !p.analSplit && on(p.anal);
 }
 type Mark =
   | { k: 'band'; u0: number; u1: number; v0: number; v1: number; c: string; a?: number; f?: number; wave?: number }
@@ -66,6 +66,7 @@ type Mark =
 export interface Plan {
   depth: number;      // max body depth, widths
   pedU: number;       // where the body meets the tail (caudal fin length)
+  rootedTop?: [number, number][]; // photo fish (method row 61): extra fins on the back from the fin map (an adipose), [u0, u1]: the card keeps their roots
   tailBlend?: number; // fin-opacity photo fish (method row 61): the solid fades out over this share of the card in front of pedU, onto the card's own painting
   ped: number;        // peduncle half-depth
   peak?: number;      // 0..1 along the body (tail->nose) where it is deepest

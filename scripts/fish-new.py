@@ -10,7 +10,7 @@
    5. Build (fish-build.py: thickx from the measured width in the same pass, mass check against every specimen).
    6. Colour (row 58): fish-autosat.py renders the side headless, sets sat so the mid-body saturation matches the sheet, rebuilds
       (2 passes typical). Skipped when the spec has a hand-set sat; --no-autosat skips it.
-   7. Fin transparency (row 61 (11)): new specs get fin_opacity {} (defaults by fin type, the fin-map rules on) and a PHOTO CHECK NEEDED
+   7. Fin transparency (row 61 (11)): new specs get fin_opacity {"preset": "solid"} (the fin-map rules on, fins as solid as before) and a PHOTO CHECK NEEDED
       line until scripts/fish-fin-class.py records the class from reference photos (fin_opacity_source). fin_opacity: false = opaque fins.
   Pictures stay a separate step: scripts/fish-shots.js in the page (or scripts/fish-autoshot.mjs headless), then fish-contact.py.
 Usage: python fish-new.py <work> <id> "<Common name>" "<Genus species>" <tl_mm> [--body-from-map] [--no-stretch] [--no-autosat]"""
@@ -115,7 +115,7 @@ def build_once(W, ID, NAME, SCI, TL, fsh, flags, S):
         for kk, v in kept.items():
             if '.' not in kk: spec[kk] = v
         if kept: print('kept from the existing spec:', kept)
-    if 'fin_opacity' not in spec: spec['fin_opacity'] = {}   # see-through fins by fin type until the photo check sets the class (method row 61 (11))
+    if 'fin_opacity' not in spec: spec['fin_opacity'] = {'preset': 'solid'}   # solid until the photo check sets the class: the translucent type defaults washed out coloured fins (oscar, guppy, gramma; sweep 2026-11-24)
     if spec.get('fin_opacity') is not False and not spec.get('fin_opacity_source'):
         print('PHOTO CHECK NEEDED: fin transparency is on defaults. Look at reference photos, then record the class:')
         print('  python -I scripts/fish-fin-class.py %s --urls' % ID)

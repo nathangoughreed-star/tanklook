@@ -105,6 +105,10 @@ if EDGE:   # the whole depth profile against panel 5's grey body (method row 61)
         cand_ = [(n_, r_) for n_ in (fk_, fk_ + '2') if A['fins'].get(n_) and A['fins'][n_].get('baseStartPctSL') is not None for r_ in runs_]
         if not cand_: continue
         n_, (b0_, b1_) = max(cand_, key=lambda c: min(c[1][1], A['fins'][c[0]]['baseEndPctSL']) - max(c[1][0], A['fins'][c[0]]['baseStartPctSL']))
+        if fk_ == 'dorsal':   # a red piece behind every dorsal that does not overlap one: the adipose (black skirt, neon), so the card keeps its root
+            ends_ = [A['fins'][n]['baseEndPctSL'] for n in ('dorsal', 'dorsal2') if A['fins'].get(n) and A['fins'][n].get('baseEndPctSL') is not None]
+            rear_ = [r for r in runs_ if ends_ and r[0] > max(ends_) + 2]
+            if rear_: A['fins']['adipose'] = {'baseStartPctSL': rear_[-1][0], 'baseEndPctSL': rear_[-1][1]}; print('adipose from the fin map: %.1f-%.1f %% SL' % tuple(rear_[-1]))
         f_ = A['fins'][n_]; o0_, o1_ = f_['baseStartPctSL'], f_['baseEndPctSL']
         if min(b1_, o1_) - max(b0_, o0_) < 0: continue   # no overlap: a different fin, leave it
         f_['baseStartPctSL'], f_['baseEndPctSL'] = round(min(o0_, b0_), 2), round(max(o1_, b1_), 2)
