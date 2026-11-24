@@ -35,7 +35,10 @@ const isMedian = (f: AnyFin): f is MedianFin => 'at' in f;
 /** Is a fin rooted on the back (`top`) or belly at u? (the 3D card keeps the body's rim there, so the fin roots stay) */
 export function finRooted(p: Plan, top: boolean, u: number) {
   const on = (f: AnyFin | undefined) => !!f && (isMedian(f) ? u > f.at - f.len - 0.02 && u < f.at + 0.02 : u > f.u0 - 0.02 && u < f.u1 + 0.02);
-  return top ? on(p.dorsal) || on(p.dorsal2) : p.gono ? Math.abs(u - p.gono.at) < 0.03 : !p.analSplit && on(p.anal);
+  // a row of finlets (bichir): the root rim only under each finlet; one rim along the whole row stood above the inset solid as a band
+  // ending in a step in front of the first finlet (method row 57)
+  const dors = p.finletSpans ? p.finletSpans.some(([a, b]) => u > a - 0.004 && u < b + 0.004) : on(p.dorsal);
+  return top ? dors || on(p.dorsal2) : p.gono ? Math.abs(u - p.gono.at) < 0.03 : !p.analSplit && on(p.anal);
 }
 type Mark =
   | { k: 'band'; u0: number; u1: number; v0: number; v1: number; c: string; a?: number; f?: number; wave?: number }
@@ -113,6 +116,8 @@ export interface Plan {
   // (share, default 0.55); head this share narrower than the trunk from the gill cover on; thickness kept to the snout
   // tip (share of max: a flat, wide snout)
   belly?: number; wide?: number; pedT?: number; step?: number; noseW?: number;
+  finlets?: number; // build B: the dorsal is a row of this many finlets (photofish.ts)
+  finletSpans?: [number, number][]; // their u spans: the card keeps a root rim under each one only (finRooted)
   angular?: number;   // 0 curved outline .. 1 straight back and belly lines meeting at a rounded apex (diamond: angelfish)
   scale?: number;     // scale size (widths) for the scale net; 0 = none (default 0.024)
   plates?: boolean;   // armoured (corydoras): two rows of bony plates instead of scales

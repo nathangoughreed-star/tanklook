@@ -44,6 +44,17 @@ for (const J of Object.values(files)) {
     if (R.measuredWidth) P.halfWidth = d.stations.map((s: number, i: number) => [U(s), Wd(A.thickness.halfWidthPctSL[i]) * (R.thickx ?? 1)] as [number, number]).sort((a: number[], b: number[]) => a[0] - b[0]);
     P.tail = { ...P.tail, h: R.noTail ? 0.0005 : Wd(Math.max(...F.caudal.outline.map((c: number[]) => (c[1] + c[2]) / 2))) };
     if (F.dorsal) P.dorsal = { ...P.dorsal, at: U(F.dorsal.baseStartPctSL), len: Wd(F.dorsal.baseEndPctSL - F.dorsal.baseStartPctSL), h: Wd(F.dorsal.maxHeightPctSL) };
+    // a row of finlets (bichir): one plain band over all of them, its height the tallest finlet; the fin card's alpha cuts each finlet out.
+    // The template plan's spiny front (oscar: spines 0.6, spineH 0.05-0.07) drew a dark block in front of the first finlet (method row 57)
+    if (R.finlets) {
+      P.finlets = R.finlets;
+      const hp: [number, number][] = (F.dorsal?.heightProfile ?? []).map(([sp, h]: number[]) => [U(sp), h] as [number, number]).sort((a: number[], b: number[]) => a[0] - b[0]);
+      const spans: [number, number][] = []; let s0: number | null = null, last = 0;
+      for (const [u, h] of hp) { if (h > 0.3) { if (s0 === null) s0 = u; last = u; } else if (s0 !== null) { spans.push([s0, last]); s0 = null; } }
+      if (s0 !== null) spans.push([s0, last]);
+      if (spans.length) P.finletSpans = spans;
+    }
+    if (R.finlets && P.dorsal) P.dorsal = { at: P.dorsal.at, len: P.dorsal.len, h: P.dorsal.h, spines: 0, lead: 1, rake: 0.5, tip: 'round', trail: 0, a: P.dorsal.a };
     if (F.dorsal2) P.dorsal2 = { ...P.dorsal2, at: U(F.dorsal2.baseStartPctSL), len: Wd(F.dorsal2.baseEndPctSL - F.dorsal2.baseStartPctSL), h: Wd(F.dorsal2.maxHeightPctSL) };
     if (F.anal) P.anal = { ...P.anal, at: U(F.anal.baseStartPctSL), len: Wd(F.anal.baseEndPctSL - F.anal.baseStartPctSL), h: Wd(F.anal.maxHeightPctSL), rake: 0.85 };
     const { sx, sl, ax } = R, cv = (x: number, y: number): [number, number] => [1 - (sx - x) / sl * SLc, (y - ax) / sl * SLc];

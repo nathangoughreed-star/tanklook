@@ -66,10 +66,11 @@ def main(argv):
     k = want(drawn) / drawn
     print(f'depth: audit {drawn:.1f} % SL, target {want(drawn):.1f} ({rule}): first-pass k {k:.3f}')
     built = build_once(stretched(k), ID, NAME, SCI, TL, fsh, flags, S)
-    k2 = want(built) / built
-    if abs(k2 - 1) > TOL and not nostretch:
+    for pass_ in (2, 3):   # the built depth does not scale exactly with the sheet (the fin cut and back line move): up to two corrections
+        k2 = want(built) / built
+        if abs(k2 - 1) <= TOL or nostretch: break
         k *= k2
-        print(f'depth: built {built:.1f} % SL, target {want(built):.1f}: second pass, total k {k:.3f}')
+        print(f'depth: built {built:.1f} % SL, target {want(built):.1f}: pass {pass_}, total k {k:.3f}')
         built = build_once(stretched(k), ID, NAME, SCI, TL, fsh, flags, S)
     print(f'depth: built {built:.1f} % SL (audit {drawn:.1f}, total k {k:.3f}; {rule})')
     print(f'done: {ID}. Next: pictures (scripts/fish-shots.js, then fish-contact.py), then the method-doc row for this sheet.')

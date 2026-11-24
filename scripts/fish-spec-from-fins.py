@@ -121,6 +121,12 @@ yy, xx = np.nonzero(paint); sy_, sx_ = yy - dy0, xx - dx0; ok = (sy_ >= 0) & (sy
 lit = src[sy_[ok], sx_[ok]].max(1) > 40   # only where panel 2 has body (the pelvic hangs below the belly: there the card stays black = cut out)
 card[yy[ok][lit], xx[ok][lit]] = src[sy_[ok][lit], sx_[ok][lit]]; card[yy[ok][~lit], xx[ok][~lit]] = 0
 near = nd.binary_dilation(paint, iterations=12)   # leftovers of an erased fin (a pelvic tip the fin mask missed) float free below the belly
+# row 5's pectoral sits a few px off row 1's: the painted fin's edge outside the map outline stayed on the card as a sliver hanging below
+# the belly (bichir after the depth stretch, method row 57). Near the erased fins, cut out every card pixel where panel 2 has no body.
+yy, xx = np.nonzero(near & (card.max(2) > 15)); sy_, sx_ = yy - dy0, xx - dx0; ok = (sy_ >= 0) & (sy_ < M.shape[0]) & (sx_ >= 0) & (sx_ < M.shape[1])
+off = np.zeros(len(yy), bool); off[ok] = src[sy_[ok], sx_[ok]].max(1) <= 40; off[~ok] = True
+card[yy[off], xx[off]] = 0
+if off.sum(): print('card: %d px of painted paired fin outside the finless body cut out' % int(off.sum()))
 lab_, n_ = nd.label(nd.binary_closing(card.max(2) > 15, iterations=2)); sizes = np.bincount(lab_.ravel()); sizes[0] = 0; big = sizes.argmax(); gone = 0
 for k_ in range(1, n_ + 1):
     if k_ == big: continue
