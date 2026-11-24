@@ -8,7 +8,11 @@ const args = process.argv.slice(2), opt = k => { const i = args.indexOf(k); retu
 const fish = args.filter((a, i) => !a.startsWith('--') && !(i > 0 && args[i - 1].startsWith('--'))).map(a => { const [id, tl] = a.split(':'); return { id, tl: +tl }; });
 if (!fish.length || fish.some(f => !f.id || !(f.tl > 0))) { console.error('usage: node scripts/fish-autoshot.mjs <id>:<tl_mm> ... [--tag T] [--views a,b] [--url U]'); process.exit(2); }
 const TAG = opt('--tag') ?? '', VIEWS = opt('--views')?.split(','), sleep = ms => new Promise(r => setTimeout(r, ms));
-const VPORT = 6800 + Math.floor(Math.random() * 150), CPORT = VPORT + 1000;
+// free ports from the OS: two runs at once (batch builder + a hand run, 2026-11-24) drew the same random port, and one drove the
+// other's page, so the betta was measured and shot as the angelfish
+import { createServer } from 'node:net';
+const freePort = () => new Promise(r => { const s = createServer(); s.listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => r(p)); }); });
+const VPORT = await freePort(), CPORT = await freePort();
 const BASE = opt('--url') ?? `http://localhost:${VPORT}/`;
 const kids = [];
 const done = code => { for (const k of kids) { try { process.platform === 'win32' ? spawn('taskkill', ['/pid', String(k.pid), '/T', '/F'], { stdio: 'ignore' }) : k.kill(); } catch {} } setTimeout(() => process.exit(code), 800); };
