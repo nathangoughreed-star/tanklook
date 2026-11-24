@@ -200,6 +200,13 @@ def main():
     pedx = lo2 + int(np.argmin(np.where(np.isnan(th[lo2:hi2]), 1e9, th[lo2:hi2])))
     if 'ped' in LMK: pedx = int(LMK['ped'][0])
     SL = float(sx - pedx)
+    # --face F: the --open disc (9 px at half scale) erases anything thinner than ~18 sheet px, which is the lips: the face became a
+    # cone from forehead to chin (Nathan 2026-11-24, b6: "snouts too pointy", auratus / CPD / gourami). In the front F % SL take the
+    # edges of a 3 px opening instead (keeps lips and mouth, still drops thin barbels). Not with --snout-open (corys handle the face).
+    if '--face' in opts and '--snout-open' not in opts:
+        fr = rot_mask(opening(full, int(opts.get('--face-open', 3))))
+        tfa, bfa = col_edges(fr); xx = np.arange(W); zf = (xx > sx - float(opts['--face']) / 100 * SL) & ~np.isnan(tfa)
+        tb = np.where(zf, np.fmin(tb, tfa), tb); bb = np.where(zf, np.fmax(bb, bfa), bb)
     if bodyB is not None:  # back (the dorsal-fin zone, u >= 35 % SL): top edge from the colour mask; head and belly from the shape mask
         xx = np.arange(W)
         tb = np.where((xx < sx - 0.35 * SL) & (xx > sx - float(opts.get("--topend", 0.85)) * SL), tbB, tb)
