@@ -95,6 +95,12 @@ for k_ in ('top', 'bottom'):   # from 85 % SL back, the stalk may flare at most 
         v_ = abs(dp_[k_][i_])
         if lo_ is not None and v_ > 1.15 * lo_: dp_[k_][i_] = round(np.sign(dp_[k_][i_]) * 1.15 * lo_, 3); v_ = 1.15 * lo_
         lo_ = v_ if lo_ is None else min(lo_, v_)
+if EDGE:   # the whole depth profile against panel 5's grey body (method row 61): fin roots along the back and belly are not body
+    import importlib.util as ilu_se
+    sp_se = ilu_se.spec_from_file_location('stalkedge', S('fish-stalk-edge.py')); se_ = ilu_se.module_from_spec(sp_se); sp_se.loader.exec_module(se_)
+    A['_rotationDeg'] = J['method']['rotationDeg']
+    ch_ = se_.clamp_profile(os.path.join(os.path.dirname(spec['sheet']), 'sheet.webp'), A); del A['_rotationDeg']
+    if ch_: print('depth profile clamped to the fin map at %d station sides: %s' % (len(ch_), ', '.join('%g %s %.1f->%.1f' % c for c in ch_[:8])))
 STALK = spec.get('stalk')
 if STALK is None and EDGE:   # the fin map's stalk height where the fin starts, split about the axis at the SL end
     sl_e = A['slPx'] * 2; ax_e = A['landmarks']['snoutPxOriginal'][1] * 2

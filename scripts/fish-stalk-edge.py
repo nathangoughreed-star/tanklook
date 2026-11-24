@@ -17,13 +17,41 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 
 
-def detect(sheet, px, py, debug=None):
+def map_mask(sheet):
+    """(sheet rgb, non-black mask, panel bands, panel 5's grey body laid on panel 1) or None without a 5th panel."""
     import importlib.util as ilu
     import fishsheet as fs
     sp = ilu.spec_from_file_location('fincut', os.path.join(HERE, 'fish-fin-cut.py')); fc = ilu.module_from_spec(sp); sp.loader.exec_module(fc)
     a, M = fs.load(sheet); bands = fs.panel_bands(M)
     if len(bands) < 5: return None
-    o, _ = fc.map_body(a, M, bands)
+    return a, M, bands, fc.map_body(a, M, bands)[0]
+
+
+def clamp_profile(sheet, A, margin=1.0):
+    """Clamp a built depth profile (anatomy A, half-res side.png measures) to panel 5's grey body: no station's top / bottom past the map's
+    back / belly + margin % SL. The side outline cannot tell a fin root from the body where a fin runs along it (cherry barb anal fin
+    80-90 % SL: the solid filled its root, a dark strip under the stalk; Nathan 2026-11-24). Only ever lowers. Returns the stations changed."""
+    from PIL import Image
+    mm = map_mask(sheet)
+    if mm is None: return None
+    o = mm[3]; sx, sy = [v * 2 for v in A['landmarks']['snoutPxOriginal']]; SL = A['slPx'] * 2; rot = A.get('_rotationDeg', 0.0)
+    if abs(rot) > 0.01: o = np.asarray(Image.fromarray(o.astype(np.uint8) * 255).rotate(rot, resample=Image.NEAREST, center=(sx, sy))) > 127
+    d = A['depthProfile']; changed = []
+    for i, s in enumerate(d['stations']):
+        x = int(round(sx - s / 100 * SL))
+        if not (0 <= x < o.shape[1]): continue
+        ys = np.nonzero(o[:, x])[0]
+        if len(ys) < 3: continue
+        mt, mb = (sy - ys.min()) / SL * 100 + margin, (ys.max() - sy) / SL * 100 + margin
+        if d['top'][i] > mt: changed.append((s, 'top', d['top'][i], round(mt, 2))); d['top'][i] = round(float(mt), 3)
+        if d['bottom'][i] > mb: changed.append((s, 'bottom', d['bottom'][i], round(mb, 2))); d['bottom'][i] = round(float(mb), 3)
+    return changed
+
+
+def detect(sheet, px, py, debug=None):
+    mm = map_mask(sheet)
+    if mm is None: return None
+    a, M, bands, o = mm
     Y0, Y1, X0, X1 = bands[0]; sx = np.nonzero(M[Y0:Y1].any(0))[0].max(); SL = max(50.0, sx - px)
     x0, x1 = int(max(0, px - 0.2 * SL)), int(min(M.shape[1], px + 0.25 * SL)); r0, r1 = int(max(Y0, py - 0.3 * SL)), int(min(Y1, py + 0.3 * SL))
     rear = np.full(r1 - r0, np.nan)
