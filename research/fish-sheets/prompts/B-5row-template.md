@@ -232,7 +232,7 @@ CROSS_SECTION_WORDS =      ("thin, disc-like" / "moderately compressed" / "nearl
 COLORATION          =      (paragraphs: base body colour and the belly; each diagnostic mark by shape, start, end and how
                             the marks connect; eye colour; anything image models get wrong)
 FIN_BULLETS         =      ("* Dorsal: ..." then Anal, Caudal, Pectoral, Pelvic, then any adipose / second dorsal)
-MARKS_SHORT         =      (what row 2 must keep, e.g. "black markings, and yellow peduncle pattern")
+MARKS_SHORT         =      (what row 2 must keep, e.g. "black markings, and yellow peduncle pattern"): BODY markings only, never a fin, tail, sword, filament or fin edge (row 2 has no fins; "the spotted delta tail" here made ChatGPT keep the guppy's tail, 2026-11-24)
 TOP_VIEW_SHAPE      =      (one phrase, e.g. "narrow, laterally compressed body, widest slightly behind the eyes and tapering smoothly toward the caudal peduncle")
 TOP_PATTERN         =      (e.g. "the black pattern wrapping over the back"; "the back's colour" if the back is plain)
 FRONT_VIEW_SHAPE    =      (e.g. "tall and extremely narrow")

@@ -28,6 +28,9 @@ LOOKS.push(...GEAR_LOOKS.map(g => ({ id: 'gear-' + g.id, look: 'gear-' + g.id, n
 // the artificial plants (lane P4): look 'fake-<variant>', true size (mm), drawn as placed in a tank
 const FAKES = new Map(Object.entries(LIBRARY).filter(([, v]) => v.kind === 'artificial').map(([id, v]) => ['fake-' + id, { id, label: v.label }]));
 LOOKS.push(...[...FAKES].map(([look, f]) => ({ id: look, look, name: f.label, sci: 'artificial plant', tl: 1, aspect: 1, art: 'fake', cat: 'fake' }) as unknown as Species));
+// ?q=guppyb,bettab: build only those models (exact look/id), so a batch of new fish opens fast instead of all ~300
+const Q_IDS = (new URLSearchParams(location.search).get('q') ?? '').toLowerCase().split(',').map(t => t.trim()).filter(Boolean);
+if (Q_IDS.length) { const keep = LOOKS.filter(s => Q_IDS.includes(s.look) || Q_IDS.includes(s.id)); LOOKS.splice(0, LOOKS.length, ...keep); }
 function fakeModel(S: typeof setup, variant: string) {
   const it = makeItem(S.tank, variant, 1, 7, S.tank.L / 2, S.tank.D / 2), m = itemMesh(S, S.tank, it)!, g = new THREE.Group();
   m.position.set(0, 0, 0); g.add(m);
@@ -189,13 +192,15 @@ function applyFilter() {
   const q = ($('filter') as HTMLInputElement).value.trim().toLowerCase();
   const onlyFlag = ($('onlyFlag') as HTMLInputElement).checked, onlyChanged = ($('onlyChanged') as HTMLInputElement).checked;
   const ch = new Set(changed().map(s => s.look));
-  for (const [look, el] of rows) el.hidden = (!!q && !el.dataset.text!.includes(q)) || (onlyFlag && !(look in flags)) || (onlyChanged && !ch.has(look));
+  const qs = q.split(',').map(t => t.trim()).filter(Boolean); // "a,b,c" shows any of them (review a batch: ?q=guppyb,bettab)
+  for (const [look, el] of rows) el.hidden = (qs.length > 0 && !qs.some(t => el.dataset.text!.includes(t))) || (onlyFlag && !(look in flags)) || (onlyChanged && !ch.has(look));
   for (const h of list.querySelectorAll('h2')) {
     const any = LOOKS.some(s => s.cat === (h as HTMLElement).dataset.cat && !rows.get(s.look)!.hidden);
     (h as HTMLElement).hidden = !any;
   }
 }
 $('filter').oninput = applyFilter; $('onlyFlag').onchange = applyFilter; $('onlyChanged').onchange = applyFilter;
+{ const q0 = new URLSearchParams(location.search).get('q'); if (q0) { ($('filter') as HTMLInputElement).value = q0; applyFilter(); } }
 document.body.dataset.light = 'both';
 for (const b of document.querySelectorAll<HTMLButtonElement>('[data-light]')) b.onclick = () => {
   document.body.dataset.light = b.dataset.light!;

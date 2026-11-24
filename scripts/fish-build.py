@@ -225,6 +225,10 @@ if '"id": "%s"' % ID not in txt:
     line = '  {"id": "%s", "name": "%s", "sci": "%s", "tl": %s, "art": "%s", "aspect": %s},\n' % (ID, m['name'], m['sci'], m['tl'], ID, asp)
     i = txt.index('  {"id": "oscar",')
     open(sp, 'w', encoding='utf8').write(txt[:i] + line + txt[i:])
+else:   # a rebuild keeps the entry but its aspect must follow the new card (guppy 2026-11-24: 0.596 left in place after a 0.393 rebuild)
+    import re as re_
+    new_ = re_.sub(r'(\{"id": "%s"[^\n]*?"aspect": )[0-9.]+' % re_.escape(ID), lambda m_: m_.group(1) + str(asp), txt, count=1)
+    if new_ != txt: open(sp, 'w', encoding='utf8').write(new_)
 print('OK', ID, 'aspect', asp, 'SL px', round(sl), 'TL px', round(TL), fit)
 fsh_ = spec.get('fishshapes') or {}
 if fsh_.get('specimens'):   # mass check against the real specimens at their own SL (rows 35, 44); deep-bodied fish ran 1.1-1.4x so far
