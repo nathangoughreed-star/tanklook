@@ -97,6 +97,7 @@
   {"id": "threespotb", "name": "Three-spot gourami", "sci": "Trichopodus trichopterus", "tl": 180, "art": "threespotb", "aspect": 0.476},
   {"id": "whitecloudb", "name": "White cloud mountain minnow", "sci": "Tanichthys albonubes", "tl": 40, "art": "whitecloudb", "aspect": 0.367},
   {"id": "yellowlabb", "name": "Yellow lab cichlid", "sci": "Labidochromis caeruleus", "tl": 100, "art": "yellowlabb", "aspect": 0.459},
+  {"id": "guppyb", "name": "Guppy", "sci": "Poecilia reticulata", "tl": 38, "art": "guppyb", "aspect": 0.392},
   {"id": "oscar", "albino": "https://link.springer.com/article/10.1007/s10750-022-04921-w", "name": "Oscar", "sci": "Astronotus ocellatus", "tl": 300, "art": "oscar"},
   {"id": "goldfish", "name": "Fancy goldfish", "sci": "Carassius auratus", "tl": 203, "group": "shoal", "art": "goldfish"},
   {"id": "comet", "name": "Comet goldfish", "sci": "Carassius auratus", "tl": 250, "group": "shoal", "art": "comet", "note": "Single-tailed goldfish; grows to 30 cm, best in a pond or a very large tank."},

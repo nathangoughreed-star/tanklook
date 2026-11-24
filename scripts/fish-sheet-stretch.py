@@ -9,7 +9,11 @@
   left alone. Bands grow when k > 1 so moved fins never leave the band.
   --whole: the old stretch (rows 1, 2, 4, 5 resized by k: fins and eye stretch too).
   k = measured depth / sheet depth.
-Usage: python fish-sheet-stretch.py <sheet.webp> <k> <out.webp> [--whole]"""
+  --head KH (Nathan 2026-11-24, b6 "snouts too pointy"): the head gets its own factor, KH = measured head depth / drawn head depth
+  (FishShapes head, at the eye). ChatGPT draws heads shallow (gourami 13.6 vs 17.7 % SL) and one body factor then squeezed or under-
+  filled them (auratus k 0.92 on a head that needed 1.07): a cone face. Per column, k = KH from the snout to 12 % SL (past the eye), blending
+  linearly to k at 26 % SL (ahead of the deepest body; at 22-38 % the auratus loop had to squeeze its trunk to 0.76), k behind. Rows 1, 2, 5 only; row 4 keeps k.
+Usage: python fish-sheet-stretch.py <sheet.webp> <k> <out.webp> [--whole] [--head KH]"""
 import sys, os, numpy as np
 from PIL import Image
 from scipy import ndimage as nd
@@ -83,11 +87,12 @@ def paste_rigid(o, src, pm, t, b, k, grow, grey=False):
     """Paired fins kept whole: clear what the remap made of them, then paste each fin piece shifted by the remap's displacement at its
     root (the piece's point nearest the body centre line). grey: the label map, where the cleared pixels inside the body become grey."""
     c = (t + b) / 2; h = (b - t) / 2
+    kx = np.broadcast_to(np.asarray(k, float), t.shape)
     def shift(x, y):
-        x = int(np.clip(x, 0, len(t) - 1))
-        if y < t[x]: return (c[x] - k * h[x]) - t[x]
-        if y > b[x]: return (c[x] + k * h[x]) - b[x]
-        return (c[x] + k * (y - c[x])) - y
+        x = int(np.clip(x, 0, len(t) - 1)); kk = kx[x]
+        if y < t[x]: return (c[x] - kk * h[x]) - t[x]
+        if y > b[x]: return (c[x] + kk * h[x]) - b[x]
+        return (c[x] + kk * (y - c[x])) - y
     # clear: the remapped fin pixels (remap the mask itself)
     H, W = pm.shape; Ho = o.shape[0]; yo = np.arange(Ho)[:, None].astype(float) - grow
     to, bo = c - k * h, c + k * h
@@ -104,7 +109,15 @@ def paste_rigid(o, src, pm, t, b, k, grow, grey=False):
     return o
 
 
-def main(src, k, out, whole=False):
+def kcols(body, k, kh):
+    """Per-column factor for one side row: kh at the head (u <= 12 % SL from the snout, past the eye), k behind 26 %, linear between."""
+    W = body.shape[1]
+    if kh is None: return np.full(W, k)
+    xs = np.nonzero(body.any(0))[0]; sx, px = xs.max(), xs.min(); u = (sx - np.arange(W)) / max(1, sx - px)
+    return np.interp(u, [0.12, 0.26], [kh, k])
+
+
+def main(src, k, out, whole=False, kh=None):
     a, M = fs.load(src); b = fs.panel_bands(M); img = Image.open(src).convert('RGB'); W, H = img.size; A = np.asarray(img)
     rows = rows_of(b, H)
     assert len(rows) == 5 or whole, f'expected 5 rows for the body-only stretch, found {len(rows)} (use --whole)'
@@ -133,7 +146,8 @@ def main(src, k, out, whole=False):
         pair1 = nd.binary_dilation(pair1m, iterations=3) & m1
         pairs = {0: pair1, 4: nd.binary_dilation(pair5, iterations=1)}
         depth = max(np.max(e[1] - e[0]) for e in E.values())
-        grow = int(np.ceil(max(0.0, (k - 1) * depth / 2))) + 2
+        KC = {i: kcols(bd, k, kh) for i, bd in bodies.items()}
+        grow = int(np.ceil(max(0.0, (max(k, kh or 0) - 1) * depth / 2))) + 2
     parts = []; prev = 0
     for i, (y0p, y1p) in enumerate(spans):
         gap = y0p - prev; prev = y1p
@@ -144,16 +158,18 @@ def main(src, k, out, whole=False):
         elif i == 2:          # row 3: top view, untouched
             pass
         else:
-            t, bt = E[i]; src_ = np.asarray(band); o_ = remap(src_, t, bt, k, grow)
-            if i in pairs: o_ = paste_rigid(o_, src_, pairs[i], t, bt, k, grow, grey=(i == 4))
+            t, bt = E[i]; src_ = np.asarray(band); o_ = remap(src_, t, bt, KC[i], grow)
+            if i in pairs: o_ = paste_rigid(o_, src_, pairs[i], t, bt, KC[i], grow, grey=(i == 4))
             band = Image.fromarray(o_)
         parts.append((gap, band))
     tail = H - prev
     o = Image.new('RGB', (W, sum(g + p.height for g, p in parts) + tail), (0, 0, 0)); y = 0
     for g, p in parts: y += g; o.paste(p, (0, y)); y += p.height
-    o.save(out, quality=95); print('wrote %s (%d x %d, rows %d, k %.3f, %s)' % (out, W, o.height, len(rows), k, 'whole rows' if whole else 'body only'))
+    o.save(out, quality=95); print('wrote %s (%d x %d, rows %d, k %.3f%s, %s)' % (out, W, o.height, len(rows), k, '' if kh is None else ', head %.3f' % kh, 'whole rows' if whole else 'body only'))
 
 
 if __name__ == '__main__':
     args = [x for x in sys.argv[1:] if not x.startswith('--')]
-    main(args[0], float(args[1]), args[2], whole='--whole' in sys.argv)
+    kh = float(sys.argv[sys.argv.index('--head') + 1]) if '--head' in sys.argv else None
+    args = [x for x in args if x != (sys.argv[sys.argv.index('--head') + 1] if kh is not None else None)]
+    main(args[0], float(args[1]), args[2], whole='--whole' in sys.argv, kh=kh)

@@ -54,18 +54,30 @@ def main(argv):
     # than TOL, stretch the original sheet by the corrected factor and build once more.
     sheet0 = os.path.join(W, 'sheet.webp'); W0 = W
     run(S('fish-sheet-audit5.py'), sheet0, '--real', ','.join(str(v) for v in real))
-    drawn = mod('fish-sheet-audit5').audit(sheet0)['depth']
+    aud = mod('fish-sheet-audit5').audit(sheet0); drawn = aud['depth']
     proxy = bool(fsh.get('proxy_for'))
     lo, hi = (fsh.get('range') or {}).get('depth', [fsh['depth'] * (1 - STRETCH_AT), fsh['depth'] * (1 + STRETCH_AT)])
     if lo == hi: lo, hi = fsh['depth'] * (1 - STRETCH_AT), fsh['depth'] * (1 + STRETCH_AT)
     want = (lambda d: min(max(d, lo), hi)) if proxy else (lambda d: fsh['depth'])
     rule = f'proxy range {lo:.1f}-{hi:.1f} (row 49)' if proxy else f'own median {fsh["depth"]:.1f} (row 56)'
     nostretch = '--no-stretch' in flags
+    # head depth (Nathan 2026-11-24, b6 "snouts too pointy"): the head gets its own factor from the FishShapes head depth at the eye
+    # (borrowed numbers: kept inside the proxy's head range). ChatGPT draws heads shallow; scaled with the body they read as cones.
+    hd = aud.get('head'); kh = None
+    # OPT-IN (--head-depth): Nathan 2026-11-24 after the b6 rebuild: "more harm than good"; the cone read is mostly the missing lips
+    # and mouth, and borrowed / noisy head numbers made bulb heads (ember). Kept for a fish whose drawn head is clearly wrong.
+    if hd and fsh.get('head') and '--head-depth' in flags:
+        hlo, hhi = (fsh.get('range') or {}).get('head', [fsh['head'], fsh['head']])
+        htarget = min(max(hd, hlo), hhi) if proxy and hlo < hhi else fsh['head']
+        # caps: own numbers 0.8-1.25; borrowed 0.87-1.15 (ember: H. anisitsi's head 20.9 % SL vs 14.3 drawn gave 1.4, a bulb head)
+        kh = min(max(htarget / hd, 0.87 if proxy else 0.8), 1.15 if proxy else 1.25)
+        print(f'head: audit {hd:.1f} % SL at the eye, target {htarget:.1f}: head k {kh:.3f}')
+        if abs(kh - 1) <= TOL: kh = None
 
     def stretched(k):
-        if abs(k - 1) <= TOL or nostretch: return W0
-        W2 = f'{W0.rstrip("/")}-s{k:.3f}'; os.makedirs(W2, exist_ok=True)
-        run(S('fish-sheet-stretch.py'), sheet0, f'{k:.4f}', os.path.join(W2, 'sheet.webp')); shutil.copy(fj, W2); return W2
+        if (abs(k - 1) <= TOL and kh is None) or nostretch: return W0
+        W2 = f'{W0.rstrip("/")}-s{k:.3f}' + (f'h{kh:.3f}' if kh else ''); os.makedirs(W2, exist_ok=True)
+        run(S('fish-sheet-stretch.py'), sheet0, f'{k:.4f}', os.path.join(W2, 'sheet.webp'), *(['--head', f'{kh:.4f}'] if kh else [])); shutil.copy(fj, W2); return W2
 
     k = want(drawn) / drawn
     print(f'depth: audit {drawn:.1f} % SL, target {want(drawn):.1f} ({rule}): first-pass k {k:.3f}')

@@ -319,6 +319,11 @@ function step() {
     else if (import.meta.env.DEV && q.has('record')) save(changed(), true);
   }
 }
+// build-B fish (the *b looks) exist only with the dogfood loaders, as in main.ts ?photoart; ?q loads them too so a new batch can be reviewed
+if (Q_IDS.length || new URLSearchParams(location.search).has('photoart')) {
+  $('status').textContent = 'Loading the build-B fish…';
+  await import('../art/photoart').catch(e => console.warn(e)); await import('../art/photofish').catch(e => console.warn(e));
+}
 if (gl) setTimeout(step, 0);
 else {
   $('status').innerHTML = 'This browser cannot draw 3D (WebGL is off), so the models cannot be drawn here. <a href="model-sheets/">Open the pre-rendered model sheets</a>: images of every model, same views and lights.';

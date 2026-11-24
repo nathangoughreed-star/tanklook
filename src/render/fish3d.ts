@@ -33,12 +33,15 @@ function sections(p: Plan) {
   // card rim kept under a fin root or at the tail stood above or below the solid as a band (method row 59)
   const inset = Math.min(INSET, 0.04 * maxHv);
   return (u: number): Section => {
-    const [a, b] = prof(u), s = (u - p.pedU) / (1 - p.pedU), vc = (a + b) / 2, hv = Math.max(0, (b - a) / 2 - inset);
+    // no inset at the nose (no fin roots there): on a 1-3 % SL deep snout tip the fixed inset took a third to two thirds of the depth
+    // and turned blunt lips into a point (Nathan 2026-11-24, b6 "snouts too pointy": CPD tip 1.6 % SL outline, 1.0 built)
+    const s = (u - p.pedU) / (1 - p.pedU), ins = inset * (1 - smooth(0.9, 0.98, s));
+    const [a, b] = prof(u), vc = (a + b) / 2, hv = Math.max(0, (b - a) / 2 - ins);
     // thickness follows depth but stays fuller toward the head (fish are widest behind the gills)
     let t = thick * (0.35 * hv + 0.65 * maxHv * Math.sin(Math.min(1, hv / maxHv) * Math.PI / 2)) * (pedT + (1 - pedT) * Math.sqrt(s));
     if (p.halfWidth) { // measured top-view widths: the body is as wide as the sheet's top view at every station (not tied to the depth)
       const h = p.halfWidth; let j = 0; while (j < h.length - 2 && h[j + 1][0] < u) j++;
-      const [u0, w0] = h[j], [u1, w1] = h[j + 1], k = Math.min(1, Math.max(0, (u - u0) / (u1 - u0 || 1))); t = Math.max(0, w0 + (w1 - w0) * k - inset * 0.5);
+      const [u0, w0] = h[j], [u1, w1] = h[j + 1], k = Math.min(1, Math.max(0, (u - u0) / (u1 - u0 || 1))); t = Math.max(0, w0 + (w1 - w0) * k - ins * 0.5);
     } else
     if (p.headW) t *= 1 + p.headW * smooth(0.5, 0.82, s); // a broad flat head (pleco), the trunk tapering behind it
     // armoured heads sit a step narrower than the trunk; a flat snout keeps its width to the tip (shovel)
@@ -87,6 +90,12 @@ function bodyGeometry(p: Plan, aspect: number, bend: number, swim = false) {
     const a = i * R + j, b = a + R;
     idx.push(a, a + 1, b, a + 1, b + 1, b); // outward-facing (FrontSide)
   }
+  // close the nose: the last ring (u = 1) is a section 1-5 % SL deep, and left open it showed as a black hole in the middle of every
+  // front view (Nathan 2026-11-24, b6). A flat fan at x = 0.5 (TL unchanged); its normals average into the last ring, rounding the
+  // tip, and it faces forward, so the front projection layer paints it.
+  { const last = (STATIONS - 1) * (RING + 1), { vc: vn } = ring(1), cn = pos.length / 3;
+    pos.push(0.5, -vn, bendZ(bend, 0.5)); uv.push(1, 0.5 - vn / aspect);
+    for (let j = 0; j < RING; j++) idx.push(cn, last + j, last + j + 1); }
   // cap the cut at the peduncle (the tail fin on the card covers the joint)
   // its own copy of the first ring: shared vertices averaged the cap's backward normal into the body's last ring, which then
   // shaded differently and showed as a line where the tail fin starts (E-GEN tang)
