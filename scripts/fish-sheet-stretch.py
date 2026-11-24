@@ -51,6 +51,22 @@ def edges(body):
     return nd.uniform_filter1d(t, 5), nd.uniform_filter1d(b, 5)
 
 
+def bridge(t, b, body, pair):
+    """Where a paired fin (yellow / cyan in the label map) touches the body's top or bottom edge, that edge is the fin's, not the body's:
+    the bichir's pectoral hangs past the belly, so the grey stopped at the fin and the body read half as deep there (114 vs 164 px),
+    which put a block on the back (method row 60). Interpolate those columns' edges from their neighbours."""
+    if pair is None or not pair.any(): return t, b
+    W = len(t); x = np.arange(W); H_ = pair.shape[0]
+    near = nd.binary_dilation(pair, iterations=3)
+    bad_b = np.array([0 <= int(b[i]) + 1 < H_ and near[min(H_ - 1, int(b[i]) + 1), i] for i in range(W)])
+    bad_t = np.array([0 <= int(t[i]) - 1 < H_ and near[max(0, int(t[i]) - 1), i] for i in range(W)])
+    bad_b = nd.binary_dilation(bad_b, iterations=4); bad_t = nd.binary_dilation(bad_t, iterations=4)
+    b = b.copy(); t = t.copy()
+    if (~bad_b).sum() > 1: b[bad_b] = np.interp(x[bad_b], x[~bad_b], b[~bad_b])
+    if (~bad_t).sum() > 1: t[bad_t] = np.interp(x[bad_t], x[~bad_t], t[~bad_t])
+    return t, b
+
+
 def remap(band, t, b, k, grow):
     """Body-only vertical remap of one band (H, W, 3): returns (H + 2 * grow, W, 3). t, b: per-column body top / bottom."""
     H, W = band.shape[:2]; Ho = H + 2 * grow
@@ -61,6 +77,31 @@ def remap(band, t, b, k, grow):
     xs = np.broadcast_to(np.arange(W)[None, :], ys.shape).astype(float)
     out = np.stack([nd.map_coordinates(band[..., ch].astype(float), [ys, xs], order=1, mode='constant', cval=0) for ch in range(3)], -1)
     return np.clip(out, 0, 255).astype(np.uint8)
+
+
+def paste_rigid(o, src, pm, t, b, k, grow, grey=False):
+    """Paired fins kept whole: clear what the remap made of them, then paste each fin piece shifted by the remap's displacement at its
+    root (the piece's point nearest the body centre line). grey: the label map, where the cleared pixels inside the body become grey."""
+    c = (t + b) / 2; h = (b - t) / 2
+    def shift(x, y):
+        x = int(np.clip(x, 0, len(t) - 1))
+        if y < t[x]: return (c[x] - k * h[x]) - t[x]
+        if y > b[x]: return (c[x] + k * h[x]) - b[x]
+        return (c[x] + k * (y - c[x])) - y
+    # clear: the remapped fin pixels (remap the mask itself)
+    H, W = pm.shape; Ho = o.shape[0]; yo = np.arange(Ho)[:, None].astype(float) - grow
+    to, bo = c - k * h, c + k * h
+    ys = np.where(yo < to, yo - (to - t), np.where(yo > bo, yo - (bo - b), c + (yo - c) / k))
+    mo = nd.map_coordinates(pm.astype(float), [ys, np.broadcast_to(np.arange(W)[None, :], ys.shape).astype(float)], order=0) > 0.5
+    if grey:
+        inside = (yo >= to) & (yo <= bo); o = o.copy(); o[mo & inside] = 128; o[mo & ~inside] = 0
+    lab, n = nd.label(pm)
+    for j in range(1, n + 1):
+        yy, xx = np.nonzero(lab == j)
+        k_ = np.argmin(np.abs(yy - c[xx])); d = int(round(shift(xx[k_], yy[k_]))) + grow
+        ny = yy + d; ok = (ny >= 0) & (ny < Ho)
+        o[ny[ok], xx[ok]] = src[yy[ok], xx[ok]]
+    return o
 
 
 def main(src, k, out, whole=False):
@@ -77,7 +118,21 @@ def main(src, k, out, whole=False):
         body1 = onto(body5, bb(m5), bb(m1), m1.shape) & m1
         body2 = nd.binary_fill_holes(m2)
         bodies = {0: body1, 1: body2, 4: body5}
-        depth = max(np.max(edges(bd)[1] - edges(bd)[0]) for bd in bodies.values())
+        S5 = A[r5[0]:r5[1]].astype(int); R_, G_, B_ = S5[..., 0], S5[..., 1], S5[..., 2]
+        pair5 = ((R_ > 170) & (G_ > 170) & (B_ < 90)) | ((G_ > 170) & (B_ > 170) & (R_ < 90))
+        pair1m = onto(pair5, bb(m5), bb(m1), m1.shape)
+        E = {i: edges(bd) for i, bd in bodies.items()}
+        E[4] = bridge(*E[4], body5, pair5); E[0] = bridge(*E[0], body1, pair1m)
+        # row 1: its OWN outline wherever that lies within SNAP px of the map's edge (everywhere but under a fin): row 5's outline placed
+        # by the boxes ran a few px inside the front finlet and the head, which doubled the finlet and notched the back (method row 60)
+        has1 = m1.any(0); top1 = np.where(has1, m1.argmax(0), np.nan); bot1 = np.where(has1, m1.shape[0] - 1 - m1[::-1].argmax(0), np.nan)
+        t1, b1_ = E[0]; SNAP = 8
+        t1 = np.where(np.abs(top1 - t1) <= SNAP, top1, t1); b1_ = np.where(np.abs(bot1 - b1_) <= SNAP, bot1, b1_)
+        E[0] = (nd.uniform_filter1d(np.nan_to_num(t1, nan=float(np.nanmean(t1))), 3), nd.uniform_filter1d(np.nan_to_num(b1_, nan=float(np.nanmean(b1_))), 3))
+        # paired fins (row 5 yellow / cyan; on row 1 placed by the boxes): moved whole by the shift at their root, not split at the belly line
+        pair1 = nd.binary_dilation(pair1m, iterations=3) & m1
+        pairs = {0: pair1, 4: nd.binary_dilation(pair5, iterations=1)}
+        depth = max(np.max(e[1] - e[0]) for e in E.values())
         grow = int(np.ceil(max(0.0, (k - 1) * depth / 2))) + 2
     parts = []; prev = 0
     for i, (y0p, y1p) in enumerate(spans):
@@ -89,7 +144,9 @@ def main(src, k, out, whole=False):
         elif i == 2:          # row 3: top view, untouched
             pass
         else:
-            t, bt = edges(bodies[i]); band = Image.fromarray(remap(np.asarray(band), t, bt, k, grow))
+            t, bt = E[i]; src_ = np.asarray(band); o_ = remap(src_, t, bt, k, grow)
+            if i in pairs: o_ = paste_rigid(o_, src_, pairs[i], t, bt, k, grow, grey=(i == 4))
+            band = Image.fromarray(o_)
         parts.append((gap, band))
     tail = H - prev
     o = Image.new('RGB', (W, sum(g + p.height for g, p in parts) + tail), (0, 0, 0)); y = 0
