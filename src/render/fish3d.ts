@@ -30,7 +30,7 @@ function sections(p: Plan) {
   const prof = profile(p), thick = p.thick!, pedT = p.pedT ?? 0.55, gu = 1 - (1 - p.pedU) * 0.2; // gu: the gill cover
   const maxHv = Math.max(...Array.from({ length: 41 }, (_, i) => { const [a, b] = prof(p.pedU + (1 - p.pedU) * i / 40); return (b - a) / 2; }));
   // the inset scales with the fish's depth (at most 4 % of its half-depth): a fixed 0.006 was 13 % of a bichir's half-depth, and every
-  // card rim kept under a fin root or at the tail stood above or below the solid as a band (method row 58)
+  // card rim kept under a fin root or at the tail stood above or below the solid as a band (method row 59)
   const inset = Math.min(INSET, 0.04 * maxHv);
   return (u: number): Section => {
     const [a, b] = prof(u), s = (u - p.pedU) / (1 - p.pedU), vc = (a + b) / 2, hv = Math.max(0, (b - a) / 2 - inset);

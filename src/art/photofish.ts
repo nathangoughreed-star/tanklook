@@ -58,7 +58,7 @@ for (const J of Object.values(files)) {
     if (F.dorsal2) P.dorsal2 = { ...P.dorsal2, at: U(F.dorsal2.baseStartPctSL), len: Wd(F.dorsal2.baseEndPctSL - F.dorsal2.baseStartPctSL), h: Wd(F.dorsal2.maxHeightPctSL) };
     if (F.anal) P.anal = { ...P.anal, at: U(F.anal.baseStartPctSL), len: Wd(F.anal.baseEndPctSL - F.anal.baseStartPctSL), h: Wd(F.anal.maxHeightPctSL), rake: 0.85 };
     // the template plan's spines (oscar: spineH 0.04-0.07) stood taller than a low measured fin and drew a slab of card around it
-    // (bichir anal: spines 0.04-0.06 on a 0.022 fin, method row 58): no spine above the fin's own height
+    // (bichir anal: spines 0.04-0.06 on a 0.022 fin, method row 59): no spine above the fin's own height
     for (const k of ['dorsal', 'dorsal2', 'anal'] as const) {
       const f = P[k]; if (!f || !f.spineH) continue;
       const sh = (Array.isArray(f.spineH) ? f.spineH : [f.spineH, f.spineH]) as [number, number];

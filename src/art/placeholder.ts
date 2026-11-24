@@ -61,7 +61,7 @@ export function drawFishCard(art: string, aspect: number, W = 1024, finA = FIN_A
     const prof = profile(p), N = 96, u0 = p.pedU + 0.008, us = Array.from({ length: N + 1 }, (_, i) => u0 + (1.02 - u0) * i / N); // u0: the cut starts a hair inside the solid, so the card tucks under its tail end (cut and body ending on the same line left a hairline seam where the tail fin starts)
     // the root rim scales with the fish's depth (at most 8 % of its half-depth, twice the solid's inset in fish3d.ts): 0.012 was a quarter
     // of a bichir's half-depth, and the flat unshaded rim over the shaded solid read as pale slabs above the anal fin, bases under the
-    // finlets and a step at the tail (method row 58)
+    // finlets and a step at the tail (method row 59)
     const maxHv = Math.max(...Array.from({ length: 41 }, (_, i) => { const [a, b] = prof(p.pedU + (1 - p.pedU) * i / 40); return (b - a) / 2; }));
     const hol = Math.min(HOLLOW, 0.08 * maxHv);
     const top = (u: number) => (u < p.pedU + 0.03 || finRooted(p, true, u) || (p.adipose && Math.abs(u - p.pedU - 0.07) < 0.05) ? hol : -HOLLOW_OUT);
