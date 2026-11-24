@@ -8,13 +8,15 @@
    4. Spec (fish-spec-from-fins.py: eye colours, dense, pectoral spread kept to 0.2-0.35), copied to research/fish-specs/<id>.json
       with width_pct_sl and the FishShapes specimens. An existing spec's hand-set keys (sat, alo, aw, taper, ... see KEEP) are kept.
    5. Build (fish-build.py: thickx from the measured width in the same pass, mass check against every specimen).
-  Pictures stay a separate step: scripts/fish-shots.js in the page, then fish-contact.py.
-Usage: python fish-new.py <work> <id> "<Common name>" "<Genus species>" <tl_mm> [--body-from-map] [--no-stretch]"""
+   6. Colour (row 58): fish-autosat.py renders the side headless, sets sat so the mid-body saturation matches the sheet, rebuilds
+      (2 passes typical). Skipped when the spec has a hand-set sat; --no-autosat skips it.
+  Pictures stay a separate step: scripts/fish-shots.js in the page (or scripts/fish-autoshot.mjs headless), then fish-contact.py.
+Usage: python fish-new.py <work> <id> "<Common name>" "<Genus species>" <tl_mm> [--body-from-map] [--no-stretch] [--no-autosat]"""
 import sys, os, json, shutil, subprocess, importlib.util
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 KEEP = ('sat', 'alo', 'aw', 'taper', 'smooth_tail', 'pedt_max', 'clip_head', 'outline', 'fy0', 'erase', 'pec_window', 'anchor_top',
-        'no_tail', 'dorsals', 'smooth', 'warm', 'plan', 'plan_extra', 'fin_gap', 'card_sheet_off')
+        'no_tail', 'dorsals', 'smooth', 'warm', 'plan', 'plan_extra', 'fin_gap', 'card_sheet_off', 'sat_auto')
 STRETCH_AT = 0.08   # band around the median when there is no measured range (proxy numbers only)
 TOL = 0.02          # built depth within 2 % of the target: no (further) stretch
 
@@ -73,6 +75,8 @@ def main(argv):
         print(f'depth: built {built:.1f} % SL, target {want(built):.1f}: pass {pass_}, total k {k:.3f}')
         built = build_once(stretched(k), ID, NAME, SCI, TL, fsh, flags, S)
     print(f'depth: built {built:.1f} % SL (audit {drawn:.1f}, total k {k:.3f}; {rule})')
+    if '--no-autosat' not in flags:   # 6. colour (row 58); a hand-set sat is kept (fish-autosat.py says so)
+        run(S('fish-autosat.py'), ID, '--apply', '--passes', '3')
     print(f'done: {ID}. Next: pictures (scripts/fish-shots.js, then fish-contact.py), then the method-doc row for this sheet.')
 
 
