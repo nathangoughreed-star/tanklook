@@ -94,7 +94,7 @@ at = os.path.join(work, 'a.t.json')
 extra = (['--dense'] if spec.get('dense') else []) + (['--dorsals', '2'] if spec.get('dorsals') == 2 else []) + (['--fin-gap', str(spec.get('fin_gap', 40))] if spec.get('finlets') else []) + (['--smooth'] if spec.get('smooth') else []) + (['--warm', '--blue', str(spec['warm'])] if spec.get('warm') else [])
 run(S('fish-outline.py'), os.path.join(work, 'side.png'), anat, *spec.get('outline', '--level --thr 8 --open 9').split(), '--landmarks', os.path.join(work, 'lm.json'), *extra)
 pw = spec.get('pec_window', [22, 44])
-run(S('fish-topview.py'), os.path.join(work, 'sheet.png'), anat, at, ty0 - 6, ty1 + 6, '--x0', 0, '--fullbody', *(['--anchor'] if spec.get('anchor_top', True) else []), '--pec0', pw[0], '--pec1', pw[1])
+run(S('fish-topview.py'), os.path.join(work, 'sheet.png'), anat, at, ty0 - 6, ty1 + 6, '--x0', 0, '--fullbody', *(['--anchor'] if spec.get('anchor_top', True) else []), '--pec0', pw[0], '--pec1', pw[1], *(['--mask-thr', BAND_THR] if BAND_THR < 40 else []))
 fit = run(S('fish-thickfit.py'), at, '--pedt-max', spec.get('pedt_max', 0.3)).strip()
 J = json.load(open(at, encoding='utf8'))
 A = J['anatomy']
@@ -210,7 +210,7 @@ fincard = os.path.join(shots, ID + '-fincard.png')
 fincommon = [v for i, v in enumerate(common) if not (v == '--clip-head' or (i and common[i - 1] == '--clip-head'))]   # the fin card is read only inside the fin polygons: no head clip, which cut the tailspot blenny's throat pelvics (method row 47)
 run(S('fish-cutout-card.py'), os.path.join(work, 'side_full.png'), anat, fincard, *fincommon)
 run(S('fish-projcards.py'), os.path.join(work, 'sheet.png'), os.path.join(work, 'sheet.png'), at, os.path.join(shots, ID + '-proj'),
-    '--top', '%d,%d' % (ty0 - 6, ty1 + 6), '--front', '%d,%d,%d,%d' % (fx0, fy0_ - 4, fx1, fy1_ + 4), '--sat', sat)
+    '--top', '%d,%d' % (ty0 - 6, ty1 + 6), '--front', '%d,%d,%d,%d' % (fx0, fy0_ - 4, fx1, fy1_ + 4), '--sat', sat, *(['--mask-thr', BAND_THR] if BAND_THR < 40 else []))
 out = os.path.join(ROOT, 'public', 'art', 'fish')
 os.makedirs(out, exist_ok=True)
 for src, dst in ((card, ID), (os.path.join(shots, ID + '-proj-top.png'), ID + '-top'), (os.path.join(shots, ID + '-proj-front.png'), ID + '-front')):

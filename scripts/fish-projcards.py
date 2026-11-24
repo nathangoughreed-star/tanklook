@@ -24,12 +24,12 @@ sx = A['landmarks']['snoutPxOriginal'][0] * k; TL = A['tlPx'] * k; s = 1022 / TL
 y0, y1 = map(int, opt['--top'].split(','))
 a = np.asarray(Image.open(aligned).convert('RGB'))[y0:y1]
 SAT = float(opt['--sat']) if '--sat' in opt else 1.0
-m = a.max(2) > 30
+MT = float(opt.get("--mask-thr", 30)); m = a.max(2) > MT   # --mask-thr 12: near-black fish (black molly, b6)
 cols = np.nonzero(m.any(0))[0]
 xcut = 0 if '--no-tail-cut' in sys.argv else int(round(sx - A['slPx'] * k - float(opt.get('--tail-margin', 0.01)) * TL))   # first column kept (x grows toward the snout)
 # centre line from the uncut panel, then cut: rows (card height) and alpha come from the body only
 mid = float(np.median([(np.nonzero(m[:, x])[0].min() + np.nonzero(m[:, x])[0].max()) / 2 for x in range(int(sx - 0.8 * (sx - cols.min())), int(sx - 0.3 * (sx - cols.min()))) if m[:, x].any()]))
-a = a.copy(); a[:, :max(0, xcut)] = 0; m = a.max(2) > 30; rows = np.nonzero(m.any(1))[0]
+a = a.copy(); a[:, :max(0, xcut)] = 0; m = a.max(2) > MT; rows = np.nonzero(m.any(1))[0]
 half = max(mid - rows.min(), rows.max() - mid); Ht = 2 * int(np.ceil(half * s)) + 16
 al = np.clip((a.max(2).astype(float) - 12) / 40, 0, 1)
 rgba = Image.fromarray(np.dstack([desat(a, SAT), (al * 255).astype(np.uint8)]), 'RGBA')

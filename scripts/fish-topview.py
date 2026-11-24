@@ -13,7 +13,7 @@ sheet, js, out, y0, y1 = pos[0], pos[1], pos[2], int(pos[3]), int(pos[4])
 x0, thr = float(opt.get('--x0', 125)), float(opt.get('--thr', 0.6))
 J = json.load(open(js)); A = J['anatomy']
 a = np.asarray(Image.open(sheet).convert('RGB')).astype(float)[y0:y1]
-full = a.max(2) > 30
+full = a.max(2) > float(opt.get("--mask-thr", 30))   # --mask-thr 12: near-black fish (black molly, b6; fish-build passes it)
 q = np.where(full, a[..., 2] / (a[..., 0] + a[..., 2] + 1e-6), 0)
 qb = np.asarray(Image.fromarray((q * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(2))).astype(float) / 255
 body = full if '--fullbody' in sys.argv else full & (qb > thr)   # --fullbody: bodies that aren't bluer than their fins (orange fish)
