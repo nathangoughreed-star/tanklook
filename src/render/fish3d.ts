@@ -33,12 +33,15 @@ function sections(p: Plan) {
   // card rim kept under a fin root or at the tail stood above or below the solid as a band (method row 59)
   const inset = Math.min(INSET, 0.04 * maxHv);
   return (u: number): Section => {
-    const [a, b] = prof(u), s = (u - p.pedU) / (1 - p.pedU), vc = (a + b) / 2, hv = Math.max(0, (b - a) / 2 - inset);
+    // no inset at the nose (no fin roots there): on a 1-3 % SL deep snout tip the fixed inset took a third to two thirds of the depth
+    // and turned blunt lips into a point (Nathan 2026-11-24, b6 "snouts too pointy": CPD tip 1.6 % SL outline, 1.0 built)
+    const s = (u - p.pedU) / (1 - p.pedU), ins = inset * (1 - smooth(0.9, 0.98, s));
+    const [a, b] = prof(u), vc = (a + b) / 2, hv = Math.max(0, (b - a) / 2 - ins);
     // thickness follows depth but stays fuller toward the head (fish are widest behind the gills)
     let t = thick * (0.35 * hv + 0.65 * maxHv * Math.sin(Math.min(1, hv / maxHv) * Math.PI / 2)) * (pedT + (1 - pedT) * Math.sqrt(s));
     if (p.halfWidth) { // measured top-view widths: the body is as wide as the sheet's top view at every station (not tied to the depth)
       const h = p.halfWidth; let j = 0; while (j < h.length - 2 && h[j + 1][0] < u) j++;
-      const [u0, w0] = h[j], [u1, w1] = h[j + 1], k = Math.min(1, Math.max(0, (u - u0) / (u1 - u0 || 1))); t = Math.max(0, w0 + (w1 - w0) * k - inset * 0.5);
+      const [u0, w0] = h[j], [u1, w1] = h[j + 1], k = Math.min(1, Math.max(0, (u - u0) / (u1 - u0 || 1))); t = Math.max(0, w0 + (w1 - w0) * k - ins * 0.5);
     } else
     if (p.headW) t *= 1 + p.headW * smooth(0.5, 0.82, s); // a broad flat head (pleco), the trunk tapering behind it
     // armoured heads sit a step narrower than the trunk; a flat snout keeps its width to the tip (shovel)
