@@ -95,6 +95,7 @@ image instead, save it there yourself (the pasted image's path is in the message
 
 
 ## Decisions on record (2026-11-23)
+- 2026-11-24 (row 56): own-species numbers -> every build is stretched to the species' MEDIAN depth, judged on the built body (two passes); borrowed numbers (`proxy_for`) keep row 49. Black shots: fixed in `fish-shots.js` (canvas read in the same task as the draw).
 - Thickness = FishShapes measured max width, not FishBase mass (FishBase's yellow tang a/b ran ~1.6x light; row 35).
 - Width numbers out of the prompt: sheets overshot them by a third anyway (row 37). Depth stays as the one number.
 - ChatGPT draws cardinals ~25% SL deep in every layout (2 five-row + 3 side-only); the layout is not the cause. Fix depth at build (row 39).

@@ -20,7 +20,10 @@ export const VIEWS = {
 async function grab(name) {
   const v = globalThis.__gb.viewer, c = v.renderer.domElement;
   for (let i = 0; i < 4; i++) { v.dirty = true; v.draw(); await wait(300); }
-  const blob = await (await fetch(c.toDataURL('image/png'))).blob();
+  // read the canvas in the same task as a draw: WebGL clears the buffer once the frame is composited, so a toDataURL after an await
+  // came back solid black whenever the composite won the race (most often with the Browser pane hidden or just resized, 2026-11-24)
+  v.dirty = true; v.draw(); const url = c.toDataURL('image/png');
+  const blob = await (await fetch(url)).blob();
   const r = await fetch('/__shot?name=' + encodeURIComponent(name), { method: 'POST', body: blob });
   if (!r.ok) throw new Error('shot ' + name + ': ' + r.status);
 }
