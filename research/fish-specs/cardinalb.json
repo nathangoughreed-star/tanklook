@@ -362,5 +362,8 @@
     0.6
    ]
   ]
+ },
+ "fin_opacity": {
+  "preset": "solid"
  }
 }

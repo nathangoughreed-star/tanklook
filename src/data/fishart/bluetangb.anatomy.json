@@ -75,8 +75,8 @@
     17.59,
     18.84,
     19.7,
-    19.9,
-    20.1,
+    20.61,
+    21.51,
     20.6,
     21.86,
     21.91,
@@ -495,7 +495,7 @@
    "pelvicOrPectoral": {
     "rootPctSL": 37.19,
     "tipPctSL": 42.21,
-    "maxDropPctSL": 4.52,
+    "maxDropPctSL": 4.02,
     "note": "any fin material under the belly in the head half; pelvic and pectoral are not separable in a side photo"
    },
    "caudal": {
@@ -577,32 +577,32 @@
    ],
    "halfWidthPctSL": [
     0.86,
-    3.45,
-    5.46,
-    5.98,
-    6.91,
-    7.29,
-    7.66,
-    8.04,
-    8.41,
+    3.54,
+    5.78,
+    6.21,
+    7.14,
+    7.47,
+    7.8,
+    8.13,
+    8.46,
     8.79,
-    8.67,
     8.54,
-    8.19,
-    7.79,
-    7.29,
-    6.66,
-    6.08,
-    5.45,
-    4.82,
-    3.451,
-    1.545
+    8.29,
+    7.91,
+    7.695,
+    7.083,
+    6.166,
+    5.085,
+    4.004,
+    3.087,
+    2.083,
+    1.13
    ],
    "source": "top panel of the generated sheet, blue-share mask (thr 0.60); the narrower side of the centre line",
    "fit": {
-    "thick": 0.42,
+    "thick": 0.41,
     "pedT": 0.3,
-    "rmsPctSL": 1.2,
+    "rmsPctSL": 0.81,
     "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
    }
   },
@@ -717,17 +717,23 @@
       ]
      ]
     },
+    "eyeIris": null,
+    "eyePupil": null,
+    "eyeFull": null,
+    "pupilFrac": null,
     "proj": {
      "fk": 902.0,
-     "y0": 0.0754
+     "y0": 0.0192
     },
     "thickx": null,
     "noTail": false,
     "measuredWidth": true,
     "aspect": 0.499,
-    "finImg": false
+    "finImg": false,
+    "opacity": true,
+    "ver": "012d354b"
    },
-   "fit": "{'thick': 0.42, 'pedT': 0.3, 'rmsPctSL': 1.2, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
+   "fit": "{'thick': 0.41, 'pedT': 0.3, 'rmsPctSL': 0.81, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }
  },
  "reliability": {

@@ -348,5 +348,8 @@
  "plan_extra": {
   "barbels": 0.045,
   "barbelR": 0.006
+ },
+ "fin_opacity": {
+  "preset": "solid"
  }
 }

@@ -331,5 +331,8 @@
   ]
  },
  "sat": 1.1,
- "sat_auto": true
+ "sat_auto": true,
+ "fin_opacity": {
+  "preset": "solid"
+ }
 }

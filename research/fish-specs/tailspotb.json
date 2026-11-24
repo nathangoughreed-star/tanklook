@@ -411,5 +411,8 @@
   15.4
  ],
  "sat": 0.6,
- "sat_auto": true
+ "sat_auto": true,
+ "fin_opacity": {
+  "preset": "solid"
+ }
 }

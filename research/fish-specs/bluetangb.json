@@ -232,5 +232,8 @@
   ]
  },
  "measured_width": true,
- "plan": "oscar"
+ "plan": "oscar",
+ "fin_opacity": {
+  "preset": "solid"
+ }
 }

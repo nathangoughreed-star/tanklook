@@ -360,5 +360,8 @@
   ]
  },
  "sat": 0.67,
- "outline": "--level --thr 8 --open 9 --snout-open 9"
+ "outline": "--level --thr 8 --open 9 --snout-open 9",
+ "fin_opacity": {
+  "preset": "solid"
+ }
 }

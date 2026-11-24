@@ -345,5 +345,8 @@
     156.0
    ]
   ]
+ },
+ "fin_opacity": {
+  "preset": "solid"
  }
 }
