@@ -51,17 +51,17 @@ Natural colouring, slightly subdued, not saturated.
 
 The body is deep violet-purple to magenta, paler on the belly, with six thin, bright orange-yellow horizontal lines running from the head along the flank to the tail, and a thin orange line through the eye. A small dark spot sits at the base of the tail on the upper side.
 
-Eye: orange-red with a dark pupil.
+Eye: red with a dark pupil.
 
 Color boundaries must wrap continuously over the three-dimensional body, remaining consistent in all projections.
 FIN GEOMETRY
 Attach the fins to the established master body without modifying its shape.
 
 * Dorsal: One long, continuous fin from the nape to the caudal peduncle, low in front and rising to a rounded rear. Purple-orange. Drawn opaque.
-* Anal: Starts under the middle of the body, with a rounded rear. Purple-orange. Drawn opaque.
+* Anal: Starts under the middle of the body, with a rounded rear. Purple-orange with a blue stripe along the base. Drawn opaque.
 * Caudal: Rounded, with a straight trailing edge. Purple-orange with an orange edge. Drawn opaque.
 * Pectoral: Emerging behind the gill cover, rounded, naturally folded close against the flank. Clear. Drawn opaque.
-* Pelvic: Pointed, below the pectoral base. Purple. Drawn opaque.
+* Pelvic: Pointed, below the pectoral base. Purple with a blue streak. Drawn opaque.
 * No adipose fin.
 
 Use natural fin-ray structure and smooth, anatomically accurate edges. Fins are opaque and not translucent.
@@ -175,3 +175,5 @@ Before finalizing the sheet, check these relationships:
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
+
+<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://en.wikipedia.org/wiki/Pseudocheilinus_hexataenia. What it decided: eye red; blue stripe on anal base, blue streak on pelvic. Text-only = judged from page text, photo pixels not seen. -->

@@ -176,3 +176,5 @@ Before finalizing the sheet, check these relationships:
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
+
+<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict UNVERIFIED; text-only. Sources: https://commons.wikimedia.org/wiki/File:Panaqolus_maccus.jpg; https://en.wikipedia.org/wiki/Panaque_maccus. What it decided: no source confirms the bands/orange fin edge; check a photo. Text-only = judged from page text, photo pixels not seen. -->

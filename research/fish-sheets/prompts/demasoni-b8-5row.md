@@ -49,7 +49,7 @@ Important: The front and top views must reflect this moderately compressed anato
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The body is pale sky blue. Eight to ten dark blue-black vertical bars cross the body from the back down the flank, and one bar crosses the head through the eye. The bars are narrower than the blue spaces between them. The belly is pale blue-white.
+The body is mid-blue, paler blue-white between the bars. Eight to ten dark blue-black vertical bars cross the body from the back down the flank, and one bar crosses the head through the eye. The bars are narrower than the paler spaces between them. The belly is pale blue-white.
 
 Eye: pale blue with a dark pupil.
 
@@ -171,7 +171,9 @@ Before finalizing the sheet, check these relationships:
 3. Rows 2 and 3 have identical snout-to-peduncle lengths and horizontally aligned endpoints.
 4. The front-view body width agrees with the top-view maximum body width.
 5. Every fin is attached at the same anatomical location in the illustrated view and its corresponding segmentation map.
-6. The characteristic pale blue body with dark vertical bars remains consistent across all realistic projections.
+6. The characteristic mid-blue body with dark vertical bars remains consistent across all realistic projections.
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
+
+<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://en.wikipedia.org/wiki/Chindongo_demasoni; https://seriouslyfish.com/species/pseudotropheus-demasoni. What it decided: mid-blue body, not pale sky blue. Text-only = judged from page text, photo pixels not seen. -->

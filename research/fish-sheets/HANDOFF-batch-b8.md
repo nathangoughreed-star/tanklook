@@ -43,3 +43,10 @@ Chosen as every fish still on an old model with no sheet or spec; left out: fanc
 All colour/pattern text is written from memory; check the reference photos (PIPELINE step 2) and fix the species.txt, refill and re-queue only that fish if a pattern is wrong.
 Review fixes carried in every prompt (nose, snout, split dorsal wording per PIPELINE step 4). Where a fish has two dorsals, `ROW5_EXTRA` maps the second dorsal to the first's red (peacock gudgeon precedent).
 Fish-new may expect specific roles for non-fish-typical anatomy (firefish filament, watchman pelvic disc, mandarin): watch the fin cut on the first build.
+
+## Colour check against references (2026-11-25, Nathan: "check colours")
+Done by three Sonnet subagents reading Wikipedia / Commons / Seriously Fish / museum text; each prompt's `.md` ends with an HTML comment listing sources and verdict.
+**Only kadango was seen as a photo (one small Commons image); every other fish is TEXT-ONLY**: the colour is checked against page text, not against pixels.
+Changed: merah, chili, demasoni, kadango, livingstonii (anal), firefish, sixline, koletang, foxface, lawnmowerblenny, pajamacardinal, coralbeauty, mandarin, watchman (small), banggai (depth 42 % SL, hand-set in `fishshapes.json`; was 36).
+OK as written: exclamation, afra (yellow dorsal = Jalo form), yellowtailblue. Unverified, left as is: clownpleco, syno; pleco belly depends on which species Nathan means (spotted = P. pardalis, vermiculated kept for Hypostomus).
+Before the sheet runs, a photo look at the text-only fish is still owed (PIPELINE step 2).

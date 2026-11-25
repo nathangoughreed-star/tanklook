@@ -50,7 +50,7 @@ Important: The front and top views must reflect this slightly compressed anatomy
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The body is olive-brown to tan, with fine, narrow, darker vertical bars along the flank, and many tiny pale dots over the head and body. The belly is paler tan. A dark patch sits behind each eye.
+The body is olive to brown, with several dark vertical bars, dark streaks toward the front, and many round or elongated white spots of varying sizes. A few small, bright blue spots with dark outlines sit on the upper rear half of the body.
 
 Eye: gold with a dark pupil.
 
@@ -58,7 +58,7 @@ Color boundaries must wrap continuously over the three-dimensional body, remaini
 FIN GEOMETRY
 Attach the fins to the established master body without modifying its shape.
 
-* Dorsal: One long, continuous fin from the nape to the caudal peduncle, low and even, with a shallow notch in the middle. Olive-brown with fine dark lines. Drawn opaque.
+* Dorsal: One long, continuous fin from the nape to the caudal peduncle, low and even, joined to the caudal base by a membrane. Olive-brown with fine dark lines. Drawn opaque.
 * Anal: A long, low fin along the rear belly. Olive-brown. Drawn opaque.
 * Caudal: Rounded to straight, with a pale edge. Olive-brown with fine dark lines. Drawn opaque.
 * Pectoral: Emerging behind the gill cover, rounded, naturally folded close against the flank. Clear with faint marks. Drawn opaque.
@@ -89,7 +89,7 @@ This is a subtraction operation, not a new drawing of a finless fish.
 * Do not expand the body to replace the removed dorsal or anal fins.
 * Do not round or taper the caudal peduncle into a point.
 * End the peduncle at the original caudal-fin attachment with a short vertical edge.
-* Preserve the eyes, mouth, gill covers, the olive-tan body with fine darker vertical bars and the tiny pale dots.
+* Preserve the eyes, mouth, gill covers, the olive-brown body with dark vertical bars, white spots and a few small blue spots.
 * Continue the natural body coloration beneath the removed pectoral fin.
 
 The body surface in row 2 must correspond exactly to the body surface in row 1.
@@ -172,7 +172,9 @@ Before finalizing the sheet, check these relationships:
 3. Rows 2 and 3 have identical snout-to-peduncle lengths and horizontally aligned endpoints.
 4. The front-view body width agrees with the top-view maximum body width.
 5. Every fin is attached at the same anatomical location in the illustrated view and its corresponding segmentation map.
-6. The characteristic olive-tan body with fine vertical bars remains consistent across all realistic projections.
+6. The characteristic olive-brown body with dark bars and white spots remains consistent across all realistic projections.
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
+
+<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://commons.wikimedia.org/wiki/File:Salarias_fasciatus_Aquarium_DG.jpg; https://en.wikipedia.org/wiki/Salarias_fasciatus. What it decided: dark bars, white spots, few blue spots; dorsal has no notch. Text-only = judged from page text, photo pixels not seen. -->

@@ -49,7 +49,7 @@ Important: The front and top views must reflect this laterally compressed anatom
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The body is dark brown to olive-brown, shading to a paler, greyer brown on the belly, with fine, pale horizontal lines across the head and flank. A thin gold ring surrounds the eye, and a small orange-yellow patch sits at the base of the pectoral fin.
+The body is purplish-brown to dark brown, shading to a paler brown on the belly, with fine, light blue horizontal lines across the head and flank. A thin gold ring surrounds the eye, and a small orange-yellow patch sits at the base of the pectoral fin.
 
 Eye: dark with a gold ring.
 
@@ -88,7 +88,7 @@ This is a subtraction operation, not a new drawing of a finless fish.
 * Do not expand the body to replace the removed dorsal or anal fins.
 * Do not round or taper the caudal peduncle into a point.
 * End the peduncle at the original caudal-fin attachment with a short vertical edge.
-* Preserve the eyes, mouth, gill covers, the dark brown body with fine pale horizontal lines and the gold ring around the eye.
+* Preserve the eyes, mouth, gill covers, the dark brown body with fine light blue horizontal lines and the gold ring around the eye.
 * Continue the natural body coloration beneath the removed pectoral fin.
 
 The body surface in row 2 must correspond exactly to the body surface in row 1.
@@ -171,7 +171,9 @@ Before finalizing the sheet, check these relationships:
 3. Rows 2 and 3 have identical snout-to-peduncle lengths and horizontally aligned endpoints.
 4. The front-view body width agrees with the top-view maximum body width.
 5. Every fin is attached at the same anatomical location in the illustrated view and its corresponding segmentation map.
-6. The characteristic dark brown body with fine pale lines remains consistent across all realistic projections.
+6. The characteristic dark brown body with fine light blue lines remains consistent across all realistic projections.
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
+
+<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://en.wikipedia.org/wiki/Ctenochaetus_strigosus. What it decided: purplish-brown with fine light-blue lines. Text-only = judged from page text, photo pixels not seen. -->

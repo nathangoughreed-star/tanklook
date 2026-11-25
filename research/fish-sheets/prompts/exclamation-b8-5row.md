@@ -174,3 +174,5 @@ Before finalizing the sheet, check these relationships:
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
+
+<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict OK; text-only. Sources: https://seriouslyfish.com/species/boraras-urophthalmoides; https://en.wikipedia.org/wiki/Boraras_urophthalmoides. What it decided: stripe + peduncle blotch confirmed. Text-only = judged from page text, photo pixels not seen. -->

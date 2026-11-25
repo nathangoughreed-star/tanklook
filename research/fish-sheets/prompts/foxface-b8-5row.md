@@ -49,7 +49,7 @@ Important: The front and top views must reflect this strongly laterally compress
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The body is bright yellow on the flank, belly and rear. The head is white, with a black band that crosses from the nape through the eye to the throat, and a black patch that covers the upper back from the nape to the dorsal fin, continuing down to the chest as a black edge.
+The body is vivid yellow. The head and front of the body are white, with a black band running from the mouth back through the eye to the start of the dorsal fin, and a black area on the breast that rises toward the pectoral base.
 
 Eye: dark with a gold ring.
 
@@ -88,7 +88,7 @@ This is a subtraction operation, not a new drawing of a finless fish.
 * Do not expand the body to replace the removed dorsal or anal fins.
 * Do not round or taper the caudal peduncle into a point.
 * End the peduncle at the original caudal-fin attachment with a short vertical edge.
-* Preserve the eyes, mouth, gill covers, the yellow body with the white head and the black band through the eye.
+* Preserve the eyes, mouth, gill covers, the yellow body with the white head, the black band through the eye and the black breast.
 * Continue the natural body coloration beneath the removed pectoral fin.
 
 The body surface in row 2 must correspond exactly to the body surface in row 1.
@@ -103,7 +103,7 @@ Do not make the body spindle-shaped or excessively thick; the body is very thin 
 
 Eyes may be slightly visible along the sides of the head.
 
-Show the actual dorsal coloration and the yellow back with a black patch near the head.
+Show the actual dorsal coloration and the yellow back with the dark band at the head.
 
 No fins or fin remnants.
 ROW 4 LEFT — FRONT VIEW, FINS REMOVED
@@ -171,7 +171,9 @@ Before finalizing the sheet, check these relationships:
 3. Rows 2 and 3 have identical snout-to-peduncle lengths and horizontally aligned endpoints.
 4. The front-view body width agrees with the top-view maximum body width.
 5. Every fin is attached at the same anatomical location in the illustrated view and its corresponding segmentation map.
-6. The characteristic yellow body, white head with a black eye band remains consistent across all realistic projections.
+6. The characteristic yellow body, white head, black eye band and black breast remains consistent across all realistic projections.
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
+
+<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://commons.wikimedia.org/wiki/File:Siganus_vulpinus_2.jpg; https://en.wikipedia.org/wiki/Foxface_rabbitfish. What it decided: black band mouth-eye-dorsal start and black breast; no black back patch. Text-only = judged from page text, photo pixels not seen. -->

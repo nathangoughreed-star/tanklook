@@ -58,7 +58,7 @@ FIN GEOMETRY
 Attach the fins to the established master body without modifying its shape.
 
 * Dorsal: One continuous fin from the nape to the caudal peduncle: spiny rays in front forming a low straight edge, soft rays behind rising to a rounded point. Blue-grey with brown blotch marks and a thin pale edge. Drawn opaque.
-* Anal: Starts under the middle of the body, spiny rays in front and a rounded soft part behind. Blue-grey with brown blotch marks. Drawn opaque.
+* Anal: Starts under the middle of the body, spiny rays in front and a rounded soft part behind. Orange to red, with a few brown marks. Drawn opaque.
 * Caudal: Rounded, with a straight trailing edge. Blue-grey with faint brown marks. Drawn opaque.
 * Pectoral: Emerging behind the gill cover, rounded, naturally folded close against the flank. Clear. Drawn opaque.
 * Pelvic: Pointed, below the pectoral base. Blue-grey. Drawn opaque.
@@ -175,3 +175,5 @@ Before finalizing the sheet, check these relationships:
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
+
+<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://en.wikipedia.org/wiki/Nimbochromis_livingstonii (Adult_male_livingstonii.png). What it decided: anal fin orange to red. Text-only = judged from page text, photo pixels not seen. -->

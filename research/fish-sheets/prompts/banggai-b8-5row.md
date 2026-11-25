@@ -32,7 +32,7 @@ First establish one anatomically accurate, finless three-dimensional body. All f
 Species proportions:
 
 * Adult Banggai cardinalfish, standard length 2.6 inches.
-* Maximum body depth = approximately 36% of standard length.
+* Maximum body depth = approximately 42% of standard length.
 * Head depth = approximately 22% of standard length.
 * Minimum caudal-peduncle depth = approximately 14% of standard length.
 * Adult. Cardinalfish body, deep and laterally compressed, oval, with an arched back and a convex belly.
@@ -177,3 +177,5 @@ Before finalizing the sheet, check these relationships:
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
+
+<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED (depth); text-only. Sources: https://en.wikipedia.org/wiki/Banggai_cardinalfish; Koumans 1933 (repository.naturalis.nl/pub/318030); https://commons.wikimedia.org/wiki/File:Pterapogon_kauderni.jpg. What it decided: depth set to 42 % SL (sources 40-50 %); colours/bars OK. Text-only = judged from page text, photo pixels not seen. -->

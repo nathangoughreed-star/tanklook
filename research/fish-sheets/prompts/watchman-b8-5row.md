@@ -49,7 +49,7 @@ Important: The front and top views must reflect this nearly round at the front, 
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The body is bright lemon-yellow, with a few faint, narrow vertical darker yellow bars on the flank, and fine pale blue spots on the head and cheek. The belly is pale yellow.
+The body is bright lemon-yellow, with four to five faint, narrow, vertical, darker yellow bars on the flank, fine pale blue or white spots on the head, the upper front body and the fins, and a dark brown streak above the upper jaw. The belly is pale yellow.
 
 Eye: gold with a dark pupil.
 
@@ -177,3 +177,5 @@ Before finalizing the sheet, check these relationships:
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
+
+<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict SMALL ADDITIONS; text-only. Sources: https://commons.wikimedia.org/wiki/File:Cryptocentrus_cinctus.JPG; fishesofaustralia.net.au species 98. What it decided: 4-5 faint bars, pale spots, brown streak above jaw. Text-only = judged from page text, photo pixels not seen. -->

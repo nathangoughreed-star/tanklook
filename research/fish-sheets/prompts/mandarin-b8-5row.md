@@ -49,9 +49,9 @@ Important: The front and top views must reflect this nearly round, flattened bel
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The body is a mosaic of vivid, swirling blue-green and orange: deep blue on the back and flanks with a wavy pattern of bright orange-yellow lines and spots on the head, flank and belly, edged with dark blue. The belly is mottled orange and blue.
+The body is bright blue with swirling orange stripes. The face is blue-green with bold blue stripes.
 
-Eye: dark, ringed with gold.
+Eye: red with a black pupil.
 
 Color boundaries must wrap continuously over the three-dimensional body, remaining consistent in all projections.
 FIN GEOMETRY
@@ -59,9 +59,9 @@ Attach the fins to the established master body without modifying its shape.
 
 * First dorsal: A tall, sail-like fin of spines on the nape, with the first spine drawn out into a long filament. Blue with orange wavy lines. Drawn opaque.
 * Second dorsal: A separate, low soft fin behind the first, rounded at the rear. Blue with orange wavy lines. Drawn opaque.
-* Anal: Short and rounded, near the tail. Blue with a thin orange edge. Drawn opaque.
-* Caudal: Rounded, with a wide fan. Blue with orange wavy lines and a pale edge. Drawn opaque.
-* Pectoral: Emerging behind the gill cover, wide and rounded, naturally folded close against the flank. Clear with blue-green tint. Drawn opaque.
+* Anal: Short and rounded, near the tail. Striped orange and blue. Drawn opaque.
+* Caudal: Rounded, with a wide fan. Striped orange and blue. Drawn opaque.
+* Pectoral: Emerging behind the gill cover, wide and rounded, naturally folded close against the flank. Nearly transparent with a slight tint. Drawn opaque.
 * Pelvic: Wide and rounded, below the pectoral base. Orange with blue marks. Drawn opaque.
 * No adipose fin.
 
@@ -177,3 +177,5 @@ Before finalizing the sheet, check these relationships:
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
+
+<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://commons.wikimedia.org/wiki/File:Synchiropus_splendidus_2_Luc_Viatour.jpg; https://en.wikipedia.org/wiki/Synchiropus_splendidus. What it decided: eye red; striped anal/caudal; transparent pectoral. Text-only = judged from page text, photo pixels not seen. -->

@@ -48,7 +48,7 @@ Important: The front and top views must reflect this laterally compressed anatom
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The whole body is a uniform deep strawberry red, a little darker on the back and paler on the belly, with fine darker red flecks on the flank. There is no stripe. A faint darker mark sits at the base of the dorsal fin.
+The body is pale, translucent orange-red, with the red strongest around a series of dark spots and blotches along the flank rather than a continuous stripe. The belly is paler.
 
 Eye: gold with a dark pupil.
 
@@ -87,7 +87,7 @@ This is a subtraction operation, not a new drawing of a finless fish.
 * Do not expand the body to replace the removed dorsal or anal fins.
 * Do not round or taper the caudal peduncle into a point.
 * End the peduncle at the original caudal-fin attachment with a short vertical edge.
-* Preserve the eyes, mouth, gill covers, the uniform strawberry-red body with fine red flecks.
+* Preserve the eyes, mouth, gill covers, the pale red body with a row of dark flank blotches.
 * Continue the natural body coloration beneath the removed pectoral fin.
 
 The body surface in row 2 must correspond exactly to the body surface in row 1.
@@ -170,7 +170,9 @@ Before finalizing the sheet, check these relationships:
 3. Rows 2 and 3 have identical snout-to-peduncle lengths and horizontally aligned endpoints.
 4. The front-view body width agrees with the top-view maximum body width.
 5. Every fin is attached at the same anatomical location in the illustrated view and its corresponding segmentation map.
-6. The characteristic uniform red body remains consistent across all realistic projections.
+6. The characteristic pale red body with dark blotches remains consistent across all realistic projections.
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
+
+<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://commons.wikimedia.org/wiki/File:Boraras_merah4.png; https://seriouslyfish.com/species/boraras-merah; https://en.wikipedia.org/wiki/Boraras_merah. What it decided: pale red body with dark flank blotches, not uniform red. Text-only = judged from page text, photo pixels not seen. -->

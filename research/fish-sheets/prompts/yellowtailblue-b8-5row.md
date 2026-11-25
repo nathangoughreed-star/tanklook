@@ -176,3 +176,5 @@ Before finalizing the sheet, check these relationships:
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
+
+<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict OK; text-only. Sources: https://commons.wikimedia.org/wiki/File:Chrysiptera_parasema.JPG; https://en.wikipedia.org/wiki/Chrysiptera_parasema. What it decided: yellow may extend onto rear of dorsal/anal; never back or belly. Text-only = judged from page text, photo pixels not seen. -->

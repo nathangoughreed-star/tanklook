@@ -49,7 +49,7 @@ Important: The front and top views must reflect this moderately compressed anato
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-Adult male colouring. The body is iridescent steel-blue to blue-grey on the back and flank, paler blue-silver on the belly. The head is a little darker blue. The dorsal and anal fins are bright red-orange.
+Adult male colouring. The flank is reddish maroon to red-orange, and the head is metallic blue. The belly is paler red-orange.
 
 Eye: silver with a dark pupil.
 
@@ -57,8 +57,8 @@ Color boundaries must wrap continuously over the three-dimensional body, remaini
 FIN GEOMETRY
 Attach the fins to the established master body without modifying its shape.
 
-* Dorsal: One continuous fin from the nape to the caudal peduncle: spiny rays in front forming a low straight edge, soft rays behind rising to a rounded point. Bright red-orange with a thin blue edge. Drawn opaque.
-* Anal: Starts under the middle of the body, spiny rays in front and a rounded soft part behind. Bright red-orange with a thin blue edge. Drawn opaque.
+* Dorsal: One continuous fin from the nape to the caudal peduncle: spiny rays in front forming a low straight edge, soft rays behind rising to a rounded point. Dark, edged light blue. Drawn opaque.
+* Anal: Starts under the middle of the body, spiny rays in front and a rounded soft part behind. Dark, edged light blue. Drawn opaque.
 * Caudal: Forked, with rounded lobes. Blue-grey. Drawn opaque.
 * Pectoral: Emerging behind the gill cover, rounded, naturally folded close against the flank. Clear. Drawn opaque.
 * Pelvic: Pointed, below the pectoral base. Blue-grey. Drawn opaque.
@@ -88,7 +88,7 @@ This is a subtraction operation, not a new drawing of a finless fish.
 * Do not expand the body to replace the removed dorsal or anal fins.
 * Do not round or taper the caudal peduncle into a point.
 * End the peduncle at the original caudal-fin attachment with a short vertical edge.
-* Preserve the eyes, mouth, gill covers, the steel-blue body.
+* Preserve the eyes, mouth, gill covers, the reddish maroon flank and the metallic blue head.
 * Continue the natural body coloration beneath the removed pectoral fin.
 
 The body surface in row 2 must correspond exactly to the body surface in row 1.
@@ -103,7 +103,7 @@ Do not make the body spindle-shaped or excessively thick.
 
 Eyes may be slightly visible along the sides of the head.
 
-Show the actual dorsal coloration and the blue-grey back.
+Show the actual dorsal coloration and the maroon back.
 
 No fins or fin remnants.
 ROW 4 LEFT — FRONT VIEW, FINS REMOVED
@@ -171,7 +171,9 @@ Before finalizing the sheet, check these relationships:
 3. Rows 2 and 3 have identical snout-to-peduncle lengths and horizontally aligned endpoints.
 4. The front-view body width agrees with the top-view maximum body width.
 5. Every fin is attached at the same anatomical location in the illustrated view and its corresponding segmentation map.
-6. The characteristic steel-blue body with red dorsal and anal fins remains consistent across all realistic projections.
+6. The characteristic red-maroon flank with a metallic blue head remains consistent across all realistic projections.
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
+
+<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; photo-seen (one small Commons infobox image: blue head, golden flank, dark fins). Sources: https://commons.wikimedia.org/wiki/File:Copadichromis_borleyi2.jpg; https://en.wikipedia.org/wiki/Copadichromis_borleyi; thatpetplace.com redfin kandango. What it decided: male flank red-maroon, head metallic blue, dorsal/anal dark with light-blue edge (was steel-blue body, red fins). Text-only = judged from page text, photo pixels not seen. -->

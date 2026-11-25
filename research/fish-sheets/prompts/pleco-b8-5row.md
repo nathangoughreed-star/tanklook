@@ -176,3 +176,5 @@ Before finalizing the sheet, check these relationships:
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
+
+<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict UNVERIFIED; text-only. Sources: https://en.wikipedia.org/wiki/Pterygoplichthys_pardalis; scotcat.com Loricariidae. What it decided: belly pattern depends on species (spotted in P. pardalis; vermiculated kept for Hypostomus); Nathan to confirm which fish he means. Text-only = judged from page text, photo pixels not seen. -->
