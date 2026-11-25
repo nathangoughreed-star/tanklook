@@ -434,5 +434,18 @@
   "preset": "solid"
  },
  "sat": 0.58,
- "sat_auto": true
+ "sat_auto": true,
+ "body_clear": {
+  "zones": {
+   "head": "translucent",
+   "trunk": "clear",
+   "belly": "clear",
+   "lowerrear": "clear"
+  },
+  "inner": {
+   "spine": null,
+   "sac": null
+  }
+ },
+ "body_clear_source": "head translucent, trunk clear, belly clear, lowerrear clear (photo check): 2026-11-25; Commons Aquarium_de_la_Porte_Dor\u00e9e_-_Kryptopterus_vitreolus_01.jpg (viewed): plants and gravel plainly through the trunk, belly and rear; spine visible as a thin line; head darker (skull, organs) so translucent"
 }

@@ -7,7 +7,7 @@
   "tl": 230
  },
  "measured_width": true,
- "plan": "oscar",
+ "plan": "pepperedcory",
  "landmarks": {
   "ped": [
    229,
@@ -349,5 +349,10 @@
  "fin_opacity": {
   "preset": "solid"
  },
- "sat": 0.8
+ "sat": 0.8,
+ "outline": "--level --thr 8 --open 9 --snout-open 15",
+ "plan_extra": {
+  "barbels": 0.04,
+  "barbelR": 0.005
+ }
 }
