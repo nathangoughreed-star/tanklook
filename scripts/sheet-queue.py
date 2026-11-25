@@ -66,6 +66,22 @@ def wait_download(dl, before, ask):
         time.sleep(1)
 
 
+def expect_words(d):
+    """Words the right download's title is likely to contain: the folder's species id, common name, genus and epithet (species.txt)."""
+    w = {os.path.basename(d.rstrip(chr(47) + chr(92))).split('-')[0].lower()}
+    try:
+        for ln in open(os.path.join(d, 'species.txt'), encoding='utf-8'):
+            if ln.startswith(('COMMON', 'SCI')): w |= {t.strip('.,()').lower() for t in ln.split('=', 1)[1].split()}
+    except OSError: pass
+    return {x for x in w if len(x) >= 4}
+
+
+def title_matches(path, d):
+    """ChatGPT titles the download from the picture ("Gourami Anatomy Reference Sheet"). A title sharing no word with the fish is suspect
+    (the mismatch only warns: titles like "Orthographic Damselfish ..." for a chromis are fine only if the family word is in the name list)."""
+    t = os.path.basename(path).lower(); return any(x in t for x in expect_words(d))
+
+
 def single_instance():
     """Only one queue at a time (2026-11-24: six copies ran at once, each overwrote the clipboard and grabbed the others' downloads)."""
     lock = os.path.join(SHEETS, 'sheet-queue.lock')
@@ -104,6 +120,11 @@ def main(argv):
         before = images(dl); ask()
         print(f'[{n}/{len(q)}] {name}: prompt copied, new ChatGPT chat opened. Waiting for the download...', flush=True)
         got = wait_download(dl, before, ask)
+        while got not in ('q', 's') and not title_matches(got, d):   # guard (2026-11-25): a gourami download from another chat was filed as the harlequin
+            print(f'  WARNING: the download is named "{os.path.basename(got)}", which shares no word with {name} ({", ".join(sorted(expect_words(d)))}).', flush=True)
+            if input('  File it as this fish anyway? [y/N] ').strip().lower() == 'y': break
+            before[os.path.basename(got)] = (os.stat(got).st_mtime, os.stat(got).st_size); print('  left in Downloads, waiting for the next download...', flush=True)
+            got = wait_download(dl, before, ask)
         if got == 'q': print('  quit'); skipped += [os.path.basename(x) for x in q[n - 1:]]; break
         if got == 's': print('  skipped'); skipped.append(name); continue
         ext = os.path.splitext(got)[1].lower(); keep = os.path.join(d, 'sheet-download' + ext)

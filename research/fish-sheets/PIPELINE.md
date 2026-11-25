@@ -54,7 +54,14 @@ One runbook, start to finish. Entry point for every fish chat. Written 2026-11-2
 ## 5. Sheets (Nathan)
 - `python scripts/sheet-queue.py --all` from the shared folder, one copy only. Per fish he clears the box, pastes, Enter, downloads.
   Files `sheet.webp` + `sheet.json`. Redo one: `python scripts/sheet-queue.py <folder> --redo`.
-- Gate: sheet.webp exists in `<id>-<batch>-gen/`. Do not run the queue yourself unless Nathan asks.
+- **Guard against a mis-filed sheet (b7, 2026-11-25):** the queue files the FIRST new image in Downloads, whichever ChatGPT chat made it.
+  At 12:02 a "Gourami Anatomy Reference Sheet.png" (made 12:02:31, another chat's download) was filed as the harlequin; the real harlequin arrived
+  at 12:07 and went to the next folder (kribensis): an off-by-one cascade, found only at review. Rules: (1) nothing else downloads from ChatGPT or into Downloads
+  while a queue runs (R147 colour-form sheets included: one queue, one download stream); (2) `sheet-queue.py` now compares the download's title with the folder's
+  id / common name / genus / species words and, on no match, warns and asks `[y/N]` (it leaves the file in Downloads on N; a harmless false alarm for
+  titles like "Orthographic Damselfish ..."); (3) at review the first check is `sheet.json` "download" against the fish, and the sheet beside the model.
+  Fix after the fact: move the sheet (and `sheet.json`, `sheet-download.*`) to the right folder, delete the wrong fish's build files, rebuild with `--rebuild`.
+- Gate: sheet.webp exists in `<id>-<batch>-gen/` and its download title matches the fish. Do not run the queue yourself unless Nathan asks.
 
 ## 6. Audit + build (`fish-new.py`, driven by `fish-batch.py`)
 - Background: `python -I scripts/fish-batch.py --batch <bN> --idle 45 [--only id1,id2] [--rebuild id]`, then end the turn.
