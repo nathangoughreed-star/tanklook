@@ -75,3 +75,10 @@ for it, as the template note says).
 
 ## Commit
 Prompts and this file are committed by path with `scripts/ship.sh`. Specs, art and anatomy for built fish follow the b6 "Commit" recipe.
+
+## State 2026-11-25 (b7 review)
+Built (14): balashark bristlenose chromis clownkilli clownloach cockatoo comet dwarfpencil endler firemouth glasscatfish greenneon harlequin kribensis. Root-band filter on (fish-build, `fishroot.py`).
+**Approved by Nathan 2026-11-25 and live in `fishLive.json` (12):** balashark bristlenose chromis clownkilli clownloach cockatoo comet dwarfpencil endler greenneon harlequin kribensis.
+**Held:** firemouth (thin dark dotted line at the tail join, renderer or card, being checked) and glasscatfish (body see-through `body_clear` set from a Commons photo, not yet seen in a tank scene). Both are built, not in fishLive.
+Notes: bristlenose has a chin barbel only (snout tentacles not modelled) and a small smudge below the belly; mass out of range on comet (1.24-1.54x), glasscatfish (1.45-1.56x), harlequin (0.79-1.36x). Fin-beat strips owed.
+Still no sheet: ocellaris peacock peapuffer rainbowshark tigerbarb yoyoloach (Nathan's queue). The 25 fish live before 2026-11-25 still carry the tail-root band until rebuilt with fish-build.

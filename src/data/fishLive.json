@@ -100,6 +100,54 @@
     "bluetang": {
       "look": "bluetangc",
       "approved": "2026-11-25"
+    },
+    "balashark": {
+      "look": "balasharkb",
+      "approved": "2026-11-25"
+    },
+    "bristlenose": {
+      "look": "bristlenoseb",
+      "approved": "2026-11-25"
+    },
+    "chromis": {
+      "look": "chromisb",
+      "approved": "2026-11-25"
+    },
+    "clownkilli": {
+      "look": "clownkillib",
+      "approved": "2026-11-25"
+    },
+    "clownloach": {
+      "look": "clownloachb",
+      "approved": "2026-11-25"
+    },
+    "cockatoo": {
+      "look": "cockatoob",
+      "approved": "2026-11-25"
+    },
+    "comet": {
+      "look": "cometb",
+      "approved": "2026-11-25"
+    },
+    "dwarfpencil": {
+      "look": "dwarfpencilb",
+      "approved": "2026-11-25"
+    },
+    "endler": {
+      "look": "endlerb",
+      "approved": "2026-11-25"
+    },
+    "greenneon": {
+      "look": "greenneonb",
+      "approved": "2026-11-25"
+    },
+    "harlequin": {
+      "look": "harlequinb",
+      "approved": "2026-11-25"
+    },
+    "kribensis": {
+      "look": "kribensisb",
+      "approved": "2026-11-25"
     }
   }
 }
