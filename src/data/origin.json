@@ -136,5 +136,6 @@
  "lawnmowerblenny": {"c": ["indopacific"], "r": "Indo-Pacific: Red Sea and East Africa to Samoa, north to the Ryukyu Islands", "s": "FishBase"},
  "flameangel": {"c": ["indopacific"], "r": "Pacific Ocean, mainly tropical waters (most common in the Marshall, Line and Cook Islands)", "s": "FishBase"},
  "foxface": {"c": ["indopacific"], "r": "Western Pacific: western Philippines, Indonesia, New Guinea, Great Barrier Reef, east to Kiribati and Tonga", "s": "FishBase"},
- "koletang": {"c": ["indopacific"], "r": "Eastern Central Pacific: endemic to the Hawaiian Islands and Johnston Island", "s": "FishBase"}
+ "koletang": {"c": ["indopacific"], "r": "Eastern Central Pacific: endemic to the Hawaiian Islands and Johnston Island", "s": "FishBase"},
+ "bichirb": {"c": ["africa"], "r": "West and Central Africa: Senegal, Gambia, Niger, Volta, Chad and Nile basins, Lakes Turkana and Albert", "s": "Seriously Fish"}
 }

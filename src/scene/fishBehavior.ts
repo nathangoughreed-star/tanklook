@@ -35,6 +35,7 @@ export const HOVER: Record<string, HoverSpec> = {
   royalgramma: { w: 0.35, pec: 0.6, caudal: 0.3 }, firefish: { w: 0.55, pec: 0.5, caudal: 0.2 }, banggai: { w: 0.6, pec: 0.9, caudal: 0.2 },
   koletang: { w: 0.1, pec: 0.5, caudal: 0.5 },
   foxface: { w: 0.15, pec: 0.6, caudal: 0.4 },
+  bichirb: { w: 0.4, pec: 0.8, caudal: 0.15 }, // R150: props itself on its pectorals and fans them while still
   flameangel: { w: 0.35, pec: 0.7, caudal: 0.3 },
   lawnmowerblenny: { w: 0.4, pec: 1, caudal: 0.2 },
   orchiddottyback: { w: 0.3, pec: 0.7, caudal: 0.3 },
@@ -106,6 +107,7 @@ export const STYLE: Record<string, StyleSpec> = {
 export const BENTHIC: Record<string, number> = {
   bronzecory: 0.85, pepperedcory: 0.85, saltpepper: 0.85, falsejulii: 0.85, pandacory: 0.85, sterbai: 0.85, pygmycory: 0.8, // corys: mostly still, the shoal goes foraging now and then
   watchman: 0.88, // FB3: sits on its sand patch, hops now and then
+  bichirb: 0.85, // R150: nocturnal, rests on the floor most of the day
   kuhli: 0.8, clownloach: 0.75, yoyoloach: 0.75, syno: 0.75, sae: 0.72, rainbowshark: 0.75, redtailshark: 0.75,
 };
 
@@ -146,6 +148,7 @@ export const HABIT: Record<string, HabitSpec> = {
   royalgramma: H('crevice', 'hug',      4.5,   1.3, 0.85, 0,   0.5,  2.5, 1.5, 0.4, 0,   0.5, [3, 25]),  // holds a cave or overhang, belly to the rock (upside down under ledges), darts out and back
   koletang: H('crevice', 'hug',      35,  2,   0.3,  0,   0.85, 0,   8,   1.5, 0,   0.5),
   foxface: H('crevice', 'mid',      30,  2,   0,    1.2, 0.7,  0.3, 6,   1.5, 0,   0,   [3, 12]),
+  bichirb: H('crevice', 'perch',    8,   1.3, 0,    0,   0.5,  0.5, 2,   0.8, 0,   0.3, [10, 60]), // R150: sits on its fins near a cave, prowls the floor
   flameangel: H('crevice', 'hug',      10,  1.5, 0.7,  0,   0.55, 1.2, 8,   0.4, 0,   0),
   lawnmowerblenny: H('crevice', 'perch',    15,  1.2, 0.2,  0,   0.45, 0.6, 12,  0.8, 1,   3,   [3, 15]),
   orchiddottyback: H('crevice', 'hoverLow', 8,   1.3, 0,    1,   0.6,  1.2, 2,   1,   1,   0,   [3, 12]),

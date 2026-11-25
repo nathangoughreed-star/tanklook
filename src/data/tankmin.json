@@ -2865,5 +2865,26 @@
    },
    "why": "the mean of every minimum found (4 figures: Aquarium Domain 65 gal; LiveAquaria 70 gal; Reefs.com 70 gal; SaltwaterFish 120 gal), 81 gal; the footprint is the standard g75 tank (1220 x 458 mm) nearest that volume, because the pages give no base"
   }
+,
+  "bichirb": {
+   "red": {
+    "L": 1665,
+    "W": 605,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Seriously Fish and Practical Fishkeeping, averaged",
+    "url": "https://www.seriouslyfish.com/species/polypterus-senegalus/",
+    "states": "Seriously Fish 150 x 60 x 60 cm; Practical Fishkeeping (fishkeeper.co.uk) at least 6 x 2 x 2 ft; the two bases averaged, 166 x 60.5 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 117.5,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care pages",
+    "url": "https://www.seriouslyfish.com/species/polypterus-senegalus/"
+   },
+   "why": "the two pages that give a base averaged (150 x 60 cm, 6 x 2 ft); the gallon figure is the mean of every minimum found (5 figures: Furry Critter 55 gal; Aquarium Source 90 gal; That Pet Place 120 gal; Seriously Fish 143 gal; Practical Fishkeeping 180 gal), 117.5 gal (R150, 2026-11-25)"
+  }
  }
 }

@@ -53,6 +53,7 @@ export const SPACE_FACTOR: Record<string, [number, string]> = {
   clownkilli: [1.58, 'tiny body, fish under 2 g: the class median; no AqAdvisor row to fit it against yet (RX1, 2026-11-18)'],
   koletang: [1.36, "big body, fish over 30 g: the class median; no AqAdvisor row to fit it against yet (RX2, 2026-11-19)"],
   foxface: [1.36, "big body, fish over 30 g: the class median; no AqAdvisor row to fit it against yet (RX2, 2026-11-19)"],
+  bichirb: [1.36, "big body, fish over 30 g: the class median; no AqAdvisor row to fit it against yet (R150, 2026-11-25)"],
   flameangel: [0.83, "mid body, fish 2 to 30 g: the class median; no AqAdvisor row to fit it against yet (RX2, 2026-11-19)"],
   lawnmowerblenny: [0.83, "mid body, fish 2 to 30 g: the class median; no AqAdvisor row to fit it against yet (RX2, 2026-11-19)"],
   orchiddottyback: [0.83, "mid body, fish 2 to 30 g: the class median; no AqAdvisor row to fit it against yet (RX2, 2026-11-19)"],

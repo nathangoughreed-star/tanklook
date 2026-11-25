@@ -77,7 +77,7 @@
   {"id": "pepperedcoryb", "name": "Peppered corydoras", "sci": "Corydoras paleatus", "tl": 70, "art": "pepperedcoryb", "aspect": 0.577},
   {"id": "royalgrammac", "name": "Royal gramma", "sci": "Gramma loreto", "tl": 80, "art": "royalgrammac", "aspect": 0.456},
   {"id": "oscarb", "name": "Tiger oscar", "sci": "Astronotus ocellatus", "tl": 305, "art": "oscarb", "aspect": 0.564},
-  {"id": "bichirb", "name": "Senegal bichir", "sci": "Polypterus senegalus", "tl": 305, "art": "bichirb", "aspect": 0.193},
+  {"id": "bichirb", "name": "Senegal bichir", "sci": "Polypterus senegalus", "tl": 335, "zone": "bottom", "level": "low", "art": "bichirb", "aspect": 0.193, "note": "Sold at 2-4 in but a captive adult reaches 12-16 in; a nocturnal, air-breathing floor predator that eats any tankmate that fits its mouth and escapes through any gap in the lid (Seriously Fish, Practical Fishkeeping)."},
   {"id": "angelb", "name": "Angelfish", "sci": "Pterophyllum scalare", "tl": 150, "art": "angelb", "aspect": 1.382},
   {"id": "bettab", "name": "Betta", "sci": "Betta splendens", "tl": 65, "art": "bettab", "aspect": 0.519},
   {"id": "blackskirtb", "name": "Black skirt tetra", "sci": "Gymnocorymbus ternetzi", "tl": 70, "art": "blackskirtb", "aspect": 0.744},

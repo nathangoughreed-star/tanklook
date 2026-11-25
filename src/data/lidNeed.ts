@@ -45,6 +45,7 @@ const REQUIRED: Record<string, SpeciesLid> = {
   firenewt: req('newts walk out of an open top'),
   axolotl: req('axolotls can leap or climb out when startled and are lost on a dry floor'),
   yoyoloach: req('yoyo loaches jump; Seriously Fish advises a tight-fitting lid'),
+  bichirb: req('bichirs are escape artists that push through any gap in the top; Seriously Fish and Practical Fishkeeping advise a tight lid'),
 };
 for (const id of ['cpo', 'cajundwarf', 'rswcrayfish', 'redclaw', 'thaicrab']) {
   const n = (NEEDS[id] ?? []).find(x => x.text.startsWith('Lid'));

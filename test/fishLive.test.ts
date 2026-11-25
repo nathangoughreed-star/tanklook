@@ -28,11 +28,11 @@ describe('fishLive.json (approved build-B fish)', () => {
 });
 
 describe('build-B review looks stay out of the app lists', () => {
-  it('model-only rows (angelb, cardinalc, bluetangd, clownknife, bichirb) are findable but not listed; real species stay listed', async () => {
+  it('model-only rows (angelb, cardinalc, bluetangd, clownknife, bambooshark) are findable but not listed; real species stay listed', async () => {
     const { SPECIES, REVIEW_LOOKS } = await import('../src/data/species');
     const listed = new Set(SPECIES.map(s => s.id)), review = new Set(REVIEW_LOOKS.map(s => s.id));
-    for (const id of ['angelb', 'cardinalc', 'bluetangd', 'oscarb', 'royalgrammab', 'clownknife', 'bambooshark', 'bichirb']) { expect(listed.has(id), id).toBe(false); expect(review.has(id), id).toBe(true); expect(getSpecies(id), id).toBeTruthy(); }
-    for (const id of ['angel', 'cardinal', 'bluetang', 'oscar', 'royalgramma', 'betta', 'goldfish', 'comet', 'flameangel', 'peapuffer']) expect(listed.has(id), id).toBe(true);
+    for (const id of ['angelb', 'cardinalc', 'bluetangd', 'oscarb', 'royalgrammab', 'clownknife', 'bambooshark']) { expect(listed.has(id), id).toBe(false); expect(review.has(id), id).toBe(true); expect(getSpecies(id), id).toBeTruthy(); }
+    for (const id of ['angel', 'cardinal', 'bluetang', 'oscar', 'royalgramma', 'betta', 'goldfish', 'comet', 'flameangel', 'peapuffer', 'bichirb']) expect(listed.has(id), id).toBe(true);
   });
 });
 

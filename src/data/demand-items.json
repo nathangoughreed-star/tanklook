@@ -2167,6 +2167,13 @@
    "hi": 150,
    "unit": "each; LiveAquaria $92.99, That Pet Place $149.99 (out of stock); a $600 premium listing ignored (RX2 search 2026-11-19)",
    "url": "https://liveaquaria.com/product/345/?pcatid=345"
+  },
+  "animal:bichirb": {
+   "lo": 13,
+   "mode": 15,
+   "hi": 25,
+   "unit": "each, 2-5 in juvenile; That Pet Place small $14.99 (store only), Imperial Tropicals $12.99, LiveAquaria 3-5 in $24.99 (R150 search 2026-11-25; stock varies)",
+   "url": "https://www.thatpetplace.com/Polypterus-senegalus-senegal-bichir-213446"
   }
  }
 }

@@ -13,6 +13,7 @@ export const WATER: Record<string, { ok: R; tol: R; est?: true }> = {
   yellowtang: { ok: [24,26], tol: [22,28] },
   koletang: { ok: [24,26], tol: [22,28] },
   foxface: { ok: [24,26], tol: [22,28] },
+  bichirb: { ok: [24,28], tol: [22,30], est: true },
   flameangel: { ok: [22,26], tol: [20,28] },
   lawnmowerblenny: { ok: [24,26], tol: [22,28] },
   orchiddottyback: { ok: [24,26], tol: [22,28] },
