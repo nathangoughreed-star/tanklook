@@ -867,6 +867,10 @@
       ]
      ]
     },
+    "eyeIris": null,
+    "eyePupil": null,
+    "eyeFull": null,
+    "pupilFrac": null,
     "proj": {
      "fk": 728.0,
      "y0": 0.0165
@@ -875,7 +879,8 @@
     "noTail": false,
     "measuredWidth": true,
     "aspect": 0.498,
-    "finImg": true
+    "finImg": true,
+    "ver": "a5adfa77"
    },
    "fit": "{'thick': 0.44, 'pedT': 0.3, 'rmsPctSL': 1.52, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }

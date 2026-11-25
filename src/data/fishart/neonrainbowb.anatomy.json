@@ -854,7 +854,7 @@
     "pupilFrac": 0.463,
     "proj": {
      "fk": 856.0,
-     "y0": 0.007
+     "y0": -0.0033
     },
     "thickx": 0.75,
     "noTail": false,
@@ -916,7 +916,7 @@
       214.0
      ]
     ],
-    "ver": "5e5b7445"
+    "ver": "c8058539"
    },
    "fit": "{'thick': 0.71, 'pedT': 0.3, 'rmsPctSL': 0.56, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }

@@ -756,7 +756,7 @@
     "pupilFrac": 0.37,
     "proj": {
      "fk": 914.0,
-     "y0": 0.0022
+     "y0": -0.0263
     },
     "thickx": 0.919,
     "noTail": false,
@@ -818,7 +818,6 @@
       265.0
      ]
     ],
-    "ver": "2b03cb5b",
     "bodyClear": {
      "zones": {
       "trunk": "translucent",
@@ -829,7 +828,8 @@
       "spine": null,
       "sac": null
      }
-    }
+    },
+    "ver": "2b03cb5b"
    },
    "fit": "{'thick': 0.85, 'pedT': 0.255, 'rmsPctSL': 0.46, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }

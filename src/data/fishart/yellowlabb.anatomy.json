@@ -882,7 +882,7 @@
     "pupilFrac": 0.519,
     "proj": {
      "fk": 738.0,
-     "y0": 0.0204
+     "y0": -0.014
     },
     "thickx": 0.586,
     "noTail": false,
