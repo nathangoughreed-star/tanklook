@@ -837,12 +837,17 @@ export function drapedCard(art: string, w: number, h: number, bend: number, fin 
     let x = pos.getX(i), y = pos.getY(i), z = 0;
     const u = x / w + 0.5, v = -y / w, [t, b] = prof(Math.max(u, p.pedU));
     if (p.drape) { const out = Math.max(0, t - v, v - b), ramp = smooth(0.01, 0.14, out), tailer = 1 + 1.5 * smooth(p.pedU + 0.1, 0, u); z = p.drape * w * ramp * tailer * Math.sin(u * 10 + 0.7); }
-    if (fold && u > p.pedU) {
+    // behind the peduncle only the dorsal and anal tips that trail past it fold, about the peduncle's edge; the tail fin stays.
+    // Weight 0 inside the caudal's outline (its half-height ramping from the peduncle's to the plan's tail.h), 1 just outside it.
+    // Folding nothing back there left those tips standing as a stub with the folded fin lying over it (Nathan 2026-11-25:
+    // the blue ram's rear dorsal and anal tips "look folded over on themselves")
+    const k = !fold ? 0 : u > p.pedU ? 1 : smooth(0.005, 0.02, Math.abs(v - (t + b) / 2) - ((b - t) / 2 + (p.tail.h * 0.95 - (b - t) / 2) * smooth(p.pedU, p.pedU * 0.65, u)));
+    if (k > 0) {
       const up = t - v, dn = v - b;
       if (up > 0 || dn > 0) {
         const out = Math.max(up, dn), u2 = Math.max(0.02, u - out * sa * 0.55), [t2, b2] = prof(Math.max(u2, p.pedU));
         const v2 = up > 0 ? Math.min(t - out * ca, t2 - 0.003) : Math.max(b + out * ca, b2 + 0.003); // lifted by its own base, never below the outline it lies over (continuous: no shards over a body's apex)
-        x = (u2 - 0.5) * w; y = -v2 * w;
+        x = (u + (u2 - u) * k - 0.5) * w; y = -(v + (v2 - v) * k) * w;
       }
     }
     pos.setXYZ(i, x, y, bendZ(bend, x / w) * w + z);
