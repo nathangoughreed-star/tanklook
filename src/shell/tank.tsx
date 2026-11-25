@@ -379,7 +379,7 @@ function BgPictures({ store, S }: { store: Store; S: TankSetup }) {
 /** The tank highlighted in the open picker, if it is not the one in use: the workspace's Done applies it (Nathan 2026-11-25: Done used to drop the preview). */
 export const pickerPending: { choose: (() => void) | null } = { choose: null };
 
-export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: Store; preview: (S: TankSetup | null) => void; onClose: () => void; onMaker: (h: MakerHow) => void; libN: number }) {
+export function TankPicker({ store, preview, onClose, onChosen, onMaker, libN }: { store: Store; preview: (S: TankSetup | null) => void; onClose: () => void; /** after a new tank is applied (double-click, Enter, Choose, Done): back to the main view (Nathan 2026-11-25) */ onChosen?: () => void; onMaker: (h: MakerHow) => void; libN: number }) {
   const S = store.tank, u = store.scene.units;
   const lib: CustomTank[] = useMemo(() => loadLibrary(), [libN]);
   const [g, flip] = useGroups();
@@ -405,7 +405,7 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
     preview(null);
     if (r.opt) { const o = r.opt; store.edit(s => chooseCommercial(s, o)); pinPreset(store.scene.active, store.tank, saleOf(o.m, o.v ?? soleProduct(o.m))); }
     else store.edit(s => chooseCustom(s, r.custom!));
-    onClose();
+    if (onChosen) onChosen(); else onClose();
   };
   pickerPending.choose = cur && !cur.inUse ? () => choose(cur) : null;
   const onKey = (e: KeyboardEvent) => {

@@ -120,7 +120,7 @@ function TabBar({ open, onPick }: { open: SectionId | 'more' | null; onPick: (id
   );
 }
 
-interface TankHost { store: Store; picker: boolean; setPicker: (on: boolean) => void; maker: (h: MakerHow) => void; preview: (S: TankSetup | null) => void; libN: number }
+interface TankHost { store: Store; picker: boolean; setPicker: (on: boolean) => void; /** a tank was chosen: back to the main view */ leave: () => void; maker: (h: MakerHow) => void; preview: (S: TankSetup | null) => void; libN: number }
 interface S8Host { store: Store; profile: () => UserProfile; getViewer: () => Viewer | undefined; phone: boolean }
 interface S5Host { onSurprise: () => void }
 interface DiscHost { scope: Tab[] | undefined; onScope: (t: Tab[] | undefined) => void; say: (t: string, bad?: boolean) => void }
@@ -133,7 +133,7 @@ function Panel({ id, more, onPick, onClose, tank, s8, disc, s5 }: { id: SectionI
   );
   if (!id || isWorkspace(id)) return null;   // WS2 / WS3: a workspace section draws itself next to the viewer (see WsBody in App), not as a side panel
   const s = sectionOf(id);
-  if (id === 'tank' && tank.picker) return <TankPicker store={tank.store} preview={tank.preview} onClose={() => tank.setPicker(false)} onMaker={tank.maker} libN={tank.libN} />;
+  if (id === 'tank' && tank.picker) return <TankPicker store={tank.store} preview={tank.preview} onClose={() => tank.setPicker(false)} onChosen={tank.leave} onMaker={tank.maker} libN={tank.libN} />;
   if (id === 'tank') return (
     <section class="panel" aria-label="Tank">
       <div class="sec-head"><h2>Tank</h2><button type="button" class="btn icon ghost" title="Fold the panel (Esc)" aria-label="Fold the panel" onClick={onClose}><Icon name="x" /></button></div>
@@ -186,7 +186,7 @@ function Panel({ id, more, onPick, onClose, tank, s8, disc, s5 }: { id: SectionI
 
 /** WS3: the workspace body of Tank, Plants, Animals and Equipment: the section's own component, wide. */
 function WsBody({ id, tank, s8 }: { id: SectionId; tank: TankHost; s8: S8Host }) {
-  if (id === 'tank') return tank.picker ? <TankPicker store={tank.store} preview={tank.preview} onClose={() => tank.setPicker(false)} onMaker={tank.maker} libN={tank.libN} /> : <TankSection store={tank.store} onPicker={() => tank.setPicker(true)} onMaker={tank.maker} libN={tank.libN} />;
+  if (id === 'tank') return tank.picker ? <TankPicker store={tank.store} preview={tank.preview} onClose={() => tank.setPicker(false)} onChosen={tank.leave} onMaker={tank.maker} libN={tank.libN} /> : <TankSection store={tank.store} onPicker={() => tank.setPicker(true)} onMaker={tank.maker} libN={tank.libN} />;
   if (id === 'animals') return <AnimalsSection store={s8.store} getViewer={s8.getViewer} />;
   if (id === 'plants') return <PlantsSection store={s8.store} getViewer={s8.getViewer} />;
   return <EquipmentSection store={s8.store} units={s8.store.scene.units} />;
@@ -279,8 +279,8 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
         checks={phone || split ? null : <CheckBar head m={model} on={drawer === 'selection' ? null : drawer} onPick={check} />}
         view={<ViewCluster store={store} getViewer={viewer} phone={phone} compare={<CompareButtons store={store} phone={phone} say={files.say} />} />} />
       {phone ? null : <Rail open={section} onPick={pick} />}
-      <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); setPicker(false); }} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} disc={{ scope, onScope: setScope, say: files.say }} s5={{ onSurprise: () => { setScope(undefined); setSection('discover'); } }} />
-      {ws && section && section !== 'scape' ? <SectionWorkspace key={section} id={section} store={store} profile={profile} phone={phone} onDone={() => { pickerPending.choose?.(); setSection(null); setPicker(false); }} onIdeas={() => ideas(section)}><WsBody id={section} tank={{ store, picker, setPicker, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} /></SectionWorkspace> : null}
+      <Panel id={section} more={more} onPick={pick} onClose={() => { setSection(null); setMore(false); setPicker(false); }} tank={{ store, picker, setPicker, leave: () => { setSection(null); setPicker(false); }, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} disc={{ scope, onScope: setScope, say: files.say }} s5={{ onSurprise: () => { setScope(undefined); setSection('discover'); } }} />
+      {ws && section && section !== 'scape' ? <SectionWorkspace key={section} id={section} store={store} profile={profile} phone={phone} onDone={() => { pickerPending.choose?.(); setSection(null); setPicker(false); }} onIdeas={() => ideas(section)}><WsBody id={section} tank={{ store, picker, setPicker, leave: () => { setSection(null); setPicker(false); }, maker: openMaker, preview, libN }} s8={{ store, profile, getViewer: viewer, phone }} /></SectionWorkspace> : null}
       {ws && section === 'scape' ? <ScapeWorkspace store={store} getViewer={viewer} phone={phone} onDone={() => setSection(null)} onIdeas={() => ideas('scape')} /> : null}
       <IdeasButton section={more || ws ? null : section} onIdeas={ideas} />
       {split && panelOpen && !phone ? <EditingBar store={store} /> : null}
