@@ -81,6 +81,8 @@ export interface Leaf3D {
   thick?: number;
   /** Samples along the blade and across it (3 = a midrib, 5 = room for a cup or a ripple). */
   seg: [number, number];
+  /** A painted leaf texture (lane PT): the name of its entry in src/data/plantart/leaves.json (absent = vertex colours only). */
+  tex?: string;
 }
 export interface Plant3D {
   /** rosette = leaves from one crown; rhizome = leaves along a creeping root; stem = upright stems with paired leaves;
@@ -180,13 +182,13 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
       cols: [['#2c5c22', '#4a8236'], ['#32662a', '#528c3c'], ['#2a5420', '#467a32']], under: '#4a6e3a', rib: '#8ab470' } },
   carpet: { grow: { speed: 'medium', overflow: 'spread', len: [50, 450], more: 1 }, sway: 0.1, form: 'carpet', n: [60, 70], spread: 1, stalk: '#3f6a2e', leaf: {
     len: [5, 7.5], wid: 0.75, prof: [0.9, 0.5], rise: [0.9, 1.5], arch: 0.1, twist: 0.3, fold: 0.2, wave: [0, 0], pet: 0,
-    cols: CARPET_GREENS, under: '#567e42', seg: [2, 3] } },
+    cols: CARPET_GREENS, under: '#567e42', seg: [2, 3], tex: 'carpet' } },
   anubias: { grow: { speed: 'slow', overflow: 'none', len: [40, 180], more: 4 }, sway: 0.08, form: 'rhizome', n: [10, 14], spread: 0.4, stalk: '#2e5226', leaf: {
     len: [0.6, 0.95], wid: 0.4, prof: [0.7, 0.55], rise: [0.1, 0.6], arch: 0.25, twist: 0.3, fold: 0.15, wave: [0.02, 2], pet: 0.25,
     cols: [['#1e3e1c', '#3a6a32'], ['#22441e', '#40723a']], under: '#3e6236', rib: '#5a8a4a', seg: [8, 5] } },
   grass: { grow: { speed: 'fast', overflow: 'trail', len: [120, 900], more: 6 }, sway: 1, form: 'rosette', n: [16, 24], crowns: [3, 5], spread: 0.5, stalk: '#3f6a2e', leaf: {
     len: [0.6, 1], wid: 0.035, prof: [1, 0.12], rise: [0.02, 0.3], arch: 0.5, twist: 1.5, fold: 0, wave: [0, 0], pet: 0,
-    cols: GRASS_GREENS, under: '#56703e', seg: [12, 3] } },
+    cols: GRASS_GREENS, under: '#56703e', seg: [12, 3], tex: 'grass' } },
   stem: { grow: { speed: 'fast', overflow: 'emerge', len: [70, 900], more: 4, shoots: 1 }, sway: 0.65, form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#3f6a2e', top: { cols: [['#42682c', '#6a8c46']], from: 0.8 }, leaf: {
     len: [0.11, 0.14], wid: 0.3, prof: [0.8, 0.6], rise: [0.5, 1.2], arch: 0.3, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
     cols: STEM_GREENS, under: '#506a3c', seg: [4, 3] },
@@ -202,7 +204,7 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   // Cryptocoryne wendtii: short stalked lance leaves with rippled edges, olive-brown to bronze, reddish underneath
   crypt: { grow: { speed: 'slow', overflow: 'none', len: [45, 300], more: 5 }, sway: 0.15, form: 'rosette', n: [12, 18], crowns: [1, 3], spread: 0.3, stalk: '#5a4a30', leaf: {
     len: [0.75, 1], wid: 0.32, prof: [0.6, 0.8], rise: [0.15, 0.9], arch: 0.35, twist: 0.15, fold: -0.08, wave: [0.06, 5], pet: 0.28,
-    cols: [['#44502a', '#72783e'], ['#4e4a2a', '#7e7040'], ['#5a462a', '#8a6a40'], ['#3e4c26', '#66763c']], under: '#84563c', rib: '#a09060', seg: [12, 5] } },
+    cols: [['#44502a', '#72783e'], ['#4e4a2a', '#7e7040'], ['#5a462a', '#8a6a40'], ['#3e4c26', '#66763c']], under: '#84563c', rib: '#a09060', seg: [12, 5], tex: 'crypt' } },
   // Bucephalandra: a small creeping rhizome of stiff lance leaves, dark green with blue-grey and wine casts
   buce: { grow: { speed: 'slow', overflow: 'none', len: [30, 150], more: 4 }, sway: 0.05, form: 'rhizome', n: [8, 12], spread: 0.45, stalk: '#3a3028', leaf: {
     len: [0.55, 0.9], wid: 0.28, prof: [0.7, 0.6], rise: [0.2, 0.8], arch: 0.2, twist: 0.25, fold: 0.1, wave: [0.04, 3], pet: 0.15,

@@ -16,6 +16,7 @@ import { D2R, clamp, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
+import { plantAtlas } from './plantAtlas';
 import { artificialGeometry, bendPlant, carpetOnGround, clumpOnGround, dropPlant, growShader, grownView, plant3d, plantGeometry, plantRaycast, revealPlant, unpackGeometry, uploadPlant, type JobOut, type PlantJob } from './plant3d';
 import { reefShape } from './coral3d';
 import { ornamentShape } from './ornament3d';
@@ -706,7 +707,8 @@ function plantMaterial(T: Tank, free = false) {
   if (m) return m;
   const { planes, patch } = glassClip(T);
   // above the rim (lane OG2) only the floor plane stays: leaves and vines spill past the glass and hang down its outside
-  m = new THREE.MeshBasicMaterial({ vertexColors: true, clippingPlanes: free ? planes.slice(0, 1) : planes });
+  // (lane PT: the shared leaf atlas as `map`: a leaf's alpha is its outline; everything else samples a white texel)
+  m = new THREE.MeshBasicMaterial({ vertexColors: true, map: plantAtlas(), alphaTest: 0.5, clippingPlanes: free ? planes.slice(0, 1) : planes });
   m.onBeforeCompile = sh => { patch(sh); growShader(sh); };
   m.customProgramCacheKey = () => free ? 'plant-rim' : 'plant-clip';
   // above the water (an emersed stem or sword leaf, lane GR2) there is no water haze: it fades out over the first few
@@ -917,7 +919,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
     return { x: dx * c + dd * s, y: groundHeight(S, T, x, d) - ground, z: dx * s - dd * c, w: Math.min(CARPET_W, 2 * groundInsideBy(S, T, x, d)) };
   };
   // (what grows past g0 is only built once the plant has a growth of its own: a starter set costs what it did)
-  const sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}${plant3d.emerse ? '' : 'n'}${plant3d.variety ? 'v' : ''}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
+  const sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}${plant3d.emerse ? '' : 'n'}${plant3d.variety ? 'v' : ''}${plant3d.tex === 'paint' ? '' : plant3d.tex}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
   const args = [type, it.seed, h, { spread: it.spread, stems: it.stems, dens: it.dens, clip: clip.length ? clip : undefined, drop: drop || undefined, limbs: limbs.length ? limbs : undefined }, g0, more, it.size] as const;
   let bend: { F: number; C?: number; water: boolean; walls: number[]; ks: string } | undefined;
   const aboveWater = S.water.on && y >= waterY(T, S.water.level) - 2 && PLANT3D[type]?.land; // (a land plant standing above the water, on a rock or wood: nothing to lie over at, lane OG3)

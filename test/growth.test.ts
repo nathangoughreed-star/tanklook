@@ -25,12 +25,15 @@ function tris(g: THREE.BufferGeometry) {
 
 describe('plant growth', () => {
   it('a plant with no growth of its own draws exactly as before growth existed', () => {
+    plant3d.tex = 'off'; // (the fixture predates the leaf textures, lane PT: textured types carry white vertex colours)
+    try {
     for (const type of OLD) for (const seed of [1, 7, 4242]) {
       const h = { carpet: 160, redroot: 200, salvinia: 200 }[type as string] ?? [60, 150, 320][seed % 3];
       const clump = type === 'stem' && seed === 7 ? { spread: 120, stems: 9 } : {};
       const now = revealPlant(plantGeometry(type, seed, h, clump), growthOf(type, h));
       expect(tris(now), `${type} seed ${seed}`).toEqual(tris(plantBefore(type, seed, h, clump)));
     }
+    } finally { plant3d.tex = 'paint'; }
   });
 
   it('growth is back-solved from the saved size, and the grown size follows the species curve', () => {

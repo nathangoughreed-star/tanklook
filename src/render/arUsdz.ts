@@ -15,6 +15,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { MM, baseCentre, roomObjects } from './ar';
 import type { Viewport } from './viewer';
 import { cpuGeometry } from './plant3d';
+import { atlasPixels } from './plantAtlas';
 
 /**
  * Triangles in the whole export at most (~100 bytes a triangle after trimUsda). Nathan 2026-10-14: 250k (~25 MB) over
@@ -395,6 +396,18 @@ export function droppedObjects(vp: Pick<Viewport, 'scene' | 'dotMeshes'>) {
   return new Set<THREE.Object3D>([...roomObjects(vp.scene!), ...(vp.dotMeshes ?? [])]);
 }
 
+/** A plant part's vertex colours times the leaf atlas texel at each vertex's uv (linear; a part with no texture stays as it is). */
+function bakeAtlas(g: THREE.BufferGeometry) {
+  const px = atlasPixels(), uv = g.attributes.uv, col = g.attributes.color;
+  if (!px || !uv || !col) { g.deleteAttribute('uv'); return; }
+  const lin = (c: number) => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  for (let i = 0; i < col.count; i++) {
+    const x = Math.min(px.width - 1, Math.max(0, Math.floor(uv.getX(i) * px.width))), y = Math.min(px.height - 1, Math.max(0, Math.floor((1 - uv.getY(i)) * px.height))), o = (y * px.width + x) * 4;
+    col.setXYZ(i, col.getX(i) * lin(px.data[o]), col.getY(i) * lin(px.data[o + 1]), col.getZ(i) * lin(px.data[o + 2]));
+  }
+  g.deleteAttribute('uv');
+}
+
 /** Build the plain, merged, metre-scale copy of a viewport's tank, ready for the USDZ exporter. */
 export async function usdzScene(vp: Viewport, budget = BUDGET) {
   const sc = vp.scene!, drop = droppedObjects(vp);
@@ -410,8 +423,11 @@ export async function usdzScene(vp: Viewport, budget = BUDGET) {
       const vc = !!(m && (m as THREE.MeshBasicMaterial).vertexColors && src.attributes.color);
       const s = m && specOf(m, vc, mesh.userData);
       if (!s) continue;
-      s.map = drawable(s.map);
-      const g = worldPart(mesh, gr.start, gr.count, !!s.map, vc);
+      // plants (lane PT): the shared leaf atlas is baked into the vertex colours instead (every plant keeps its baked colours)
+      const pl = !!m.userData?.plantClip;
+      if (pl) { s.map = null; s.alphaTest = 0; s.bake = vc; } else s.map = drawable(s.map);
+      const g = worldPart(mesh, gr.start, gr.count, pl && vc, vc);
+      if (pl && vc) bakeAtlas(g);
       if (m.clippingPlanes?.length) clipTriangles(g, m.clippingPlanes);
       const n = g.index!.count / 3;
       if (!n) continue;

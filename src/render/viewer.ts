@@ -26,6 +26,7 @@ import { Roam } from './roam';
 import { Crawl } from './crawl';
 import { Cling } from './cling';
 import { capping, rimHeadroom } from './items';
+import { atlasLoaded } from './plantAtlas';
 import { PERSON_BODY, PERSON_HEAD } from '../art/placeholder';
 import { inFocus, type FocusSec } from './menuFocus';
 import { gearSel, onGearSel, setPieceSource } from './gearSel';
@@ -408,6 +409,7 @@ export class Viewer {
     store.pairTanks = () => (this.pair ? (this.pair.only != null ? [this.pair.S[this.pair.only]] : [...this.pair.S]) : null);
     store.sideCamEdit = (i, fn) => this.pairCamEdit(i, fn); store.sideCam = i => this.pairCamOf(i);
     capping.on = !!this.renderer.getContext().getContextAttributes()?.stencil;
+    atlasLoaded.on = () => this.invalidate(); // the plants' leaf atlas arrived (lane PT)
     this.renderer.setPixelRatio(this.baseRatio());
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.localClippingEnabled = true; // hardscape is cut off at the glass (render/items.ts solidMaterial)

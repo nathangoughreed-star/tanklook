@@ -24,12 +24,15 @@ import { CARPET_H, MAX_STEMS } from '../scene/items';
 import { taperTube } from './fish3d';
 import { leafAlgaeShader } from './algae';
 import { FX, onFx } from './fx';
+import { WHITE_UV, cellIndex, rectUV, strapAlong, texOf } from '../art/plantTex';
 
 /** Switches for review sheets: sway (off = every leaf rigid), emerse (off = no emersed
  *  twins: emerging plants lie over at the surface as in GR1), gpu (off = revealPlant on the CPU every growth step, as
  *  before lane GR4: the A/B timings), variety (lane VF-B: the `variety` fx switch, render/fx.ts; kept here so the
- *  worker gets it with the other switches). */
-export const plant3d = { sway: true, emerse: true, gpu: true, variety: FX.variety };
+ *  worker gets it with the other switches). `tex` (lane PT): the painted leaf textures: 'paint' = the texture's own colour (the
+ *  vertex colour is white, carrying only the form shading, tint and jitter), 'lum' = the texture's light and dark over
+ *  the species' own vertex colours, 'off' = vertex colours alone, as before the textures. */
+export const plant3d = { sway: true, emerse: true, gpu: true, variety: FX.variety, tex: 'paint' as 'paint' | 'lum' | 'off' };
 onFx(fx => { plant3d.variety = fx.variety; });
 
 // Variety (lane VF-B, plan VF stage VF2, 2026-11-11): with the `variety` switch on, each plant and leaf differs a little
@@ -99,23 +102,24 @@ const fullBy = (a: number, w: number, by: number) => { a = Math.min(a, by - 0.00
 
 /** Vertices of one plant before merging: positions, base colours, triangles, growth tags. */
 class Sheets {
-  pos: number[] = []; col: number[] = []; idx: number[] = [];
+  pos: number[] = []; col: number[] = []; uv: number[] = []; idx: number[] = [];
   anc: number[] = []; gr: number[] = []; pc: number[] = []; par: number[] = []; apar: number[] = []; em: number[] = [];
   /** Variety (lane VF-B): each grid's colours from vertex `from` on jittered as one leaf. */
   jit?: (col: number[], from: number) => void;
   constructor(public pieces: number[][]) {}
   /** A grid of rows x cols points (row-major), with the base colour per point; front = as given, back = reversed. */
-  grid(p: THREE.Vector3[], c: THREE.Color[], rows: number, cols: number, back: THREE.Color[] | undefined, tg: Tag[], pb?: THREE.Vector3[]) {
+  grid(p: THREE.Vector3[], c: THREE.Color[], rows: number, cols: number, back: THREE.Color[] | undefined, tg: Tag[], pb?: THREE.Vector3[], uv?: { f: number[]; b: number[] }) {
     const c0 = this.col.length;
-    this.sides(p, c, rows, cols, back, tg, pb);
+    this.sides(p, c, rows, cols, back, tg, pb, uv);
     this.jit?.(this.col, c0);
   }
-  private sides(p: THREE.Vector3[], c: THREE.Color[], rows: number, cols: number, back: THREE.Color[] | undefined, tg: Tag[], pb?: THREE.Vector3[]) {
+  private sides(p: THREE.Vector3[], c: THREE.Color[], rows: number, cols: number, back: THREE.Color[] | undefined, tg: Tag[], pb?: THREE.Vector3[], uv?: { f: number[]; b: number[] }) {
     for (const side of back ? [0, 1] : [0]) {
       const o = this.pos.length / 3;
       (side && pb ? pb : p).forEach((v, i) => {
         const k = side ? back![i] : c[i], t = tg[i];
         this.pos.push(v.x, v.y, v.z); this.col.push(k.r, k.g, k.b);
+        if (uv) { const a = side ? uv.b : uv.f; this.uv.push(a[i * 2], a[i * 2 + 1]); } else this.uv.push(WHITE_UV[0], WHITE_UV[1]);
         this.anc.push(t.anc.x, t.anc.y, t.anc.z); this.gr.push(t.a, t.w); this.pc.push(t.pc); this.par.push(t.par); this.apar.push(t.apar); this.em.push(t.em ?? 0);
       });
       for (let i = 0; i < rows - 1; i++) for (let j = 0; j < cols - 1; j++) {
@@ -128,6 +132,7 @@ class Sheets {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(this.pos, 3));
     g.setAttribute('color', new THREE.Float32BufferAttribute(this.col, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uv, 2));
     g.setIndex(this.idx);
     setTags(g, this.anc, this.gr, this.pc, this.par, this.apar, this.em);
     return g;
@@ -151,6 +156,13 @@ function tagEach(g: THREE.BufferGeometry, fn: (i: number) => Tag) {
   setTags(g, anc, gr, pc, par, apar, em);
   return g;
 }
+/** Every vertex of g samples the atlas's white texel (stalks, tubes, cores: they keep their vertex colours; mergeGeometries needs every part to have uv). */
+function whiteUV(g: THREE.BufferGeometry) {
+  const n = g.attributes.position.count, a = new Float32Array(n * 2);
+  for (let i = 0; i < n; i++) { a[i * 2] = WHITE_UV[0]; a[i * 2 + 1] = WHITE_UV[1]; }
+  g.setAttribute('uv', new THREE.BufferAttribute(a, 2));
+  return g;
+}
 const tagAll = (g: THREE.BufferGeometry, a: number, w: number, anc: THREE.Vector3) => tagEach(g, () => ({ a, w, anc, pc: -1, par: 0, apar: 0 }));
 
 /** How a leaf gives to the water: leans `k` toward the current (cx, cz) by the tip, plus an S-wobble of `wob` sideways. */
@@ -170,6 +182,11 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
   const rib = f.rib ? new THREE.Color(f.rib) : null, stalk = new THREE.Color(stalkCol), pts: THREE.Vector3[] = [], pbs: THREE.Vector3[] = [], cs: THREE.Color[] = [], bs: THREE.Color[] = [];
   const edge = new THREE.Color(cols[0]), mid = new THREE.Color(cols[1]), under = new THREE.Color(f.under), tip = f.tip ? new THREE.Color(f.tip[0]) : null;
   const hx = Math.cos(yaw), hz = Math.sin(yaw), ph = r() * 6.28;
+  // a painted leaf texture (lane PT): the leaf's cell (no random draw: the look index of its colour pair, else a hash of
+  // where it sits in the buffer) or, for a strap, the atlas column for its length
+  const tx = f.tex && plant3d.tex !== 'off' ? texOf(f.tex) : undefined, lum = plant3d.tex === 'lum';
+  const cell = tx?.kind === 'leaf' ? tx.cells[cellIndex(f.cols.indexOf(cols), out.pos.length / 3, tx.cells.length)] : undefined, strap = tx?.kind === 'strap' ? strapAlong(tx, L) : undefined;
+  const v0 = tx?.kind === 'leaf' ? tx.v0 : 0, mu = cell?.mu ?? (tx?.kind === 'strap' ? tx.mean : [1, 1, 1]), mn = cell?.mn ?? mu, uvF: number[] = [], uvB: number[] = [];
   // spots (optional): soft round blobs at (along, across), round on the leaf itself (across scaled by the width)
   const spot = f.spots ? new THREE.Color(f.spots.col) : null, blobs = f.spots ? Array.from({ length: Math.round(between(r, f.spots.n)) }, () => [0.08 + r() * 0.85, (r() - 0.5) * 1.6, 0.6 + r() * 0.4]) : [];
   const spotAt = (s: number, u: number) => {
@@ -215,6 +232,11 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
       // a thick (fleshy) leaf, lane CP: the upper side bulges up and the underside down, meeting at the rim
       if (blade && f.thick) { const th = f.thick * w / 2 * Math.max(0, 1 - u * u); pts.push(at.clone().addScaledVector(up, th)); pbs.push(at.addScaledVector(up, -th)); } else { pts.push(at); pbs.push(at); }
       tg.push(rowTag);
+      if (tx) {
+        const x = (u + 1) / 2;
+        if (cell) { const y = blade ? v0 + (1 - v0) * s : v0 * i / NP, xx = blade ? x : 0.5; rectUV(cell.up, xx, y, uvF); rectUV(cell.un, xx, y, uvB); }
+        else if (strap) { const v = blade ? strap.v(s * L) : 0; rectUV(strap.rect, x, v, uvF); rectUV(strap.rect, x, v, uvB); }
+      } else { uvF.push(WHITE_UV[0], WHITE_UV[1]); uvB.push(WHITE_UV[0], WHITE_UV[1]); }
       const k = blade ? edge.clone().lerp(mid, (1 - Math.abs(u)) ** 1.5) : stalk.clone();
       if (blade && rib && u === 0 && s > 0.02 && s < 0.9) k.lerp(rib, 0.55);
       if (blade && tip && s > 1 - f.tip![1]) k.lerp(tip, ((s - 1 + f.tip![1]) / f.tip![1]) ** 1.5);
@@ -222,6 +244,13 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
       if (blade && heart && s < f.heart![1]) k.lerp(heart, (1 - s / f.heart![1]) ** 1.3);
       if (blade && vein) k.lerp(vein, 0.9 * veinAt(s, u));
       cs.push(k.multiplyScalar(bright)); bs.push(blade ? under.clone().lerp(k, 0.3).multiplyScalar(bright) : k);
+      if (tx) {
+        // the texture carries the colour: white (only the brightness draw), or the species' colour over the texture's own mean.
+        // (Sheets.grid's first side has its front face turned DOWN, so from above it is the second side that shows: the upper
+        // texture goes on that one and the underside's on the first. Plants without a texture are left as they always were.)
+        const ku = cs.pop()!.clone(), kb = bs.pop()!.clone(), cap = (x: number, m: number) => Math.min(4, x / m);
+        if (lum) { cs.push(kb.setRGB(cap(kb.r, mn[0]), cap(kb.g, mn[1]), cap(kb.b, mn[2]))); bs.push(ku.setRGB(cap(ku.r, mu[0]), cap(ku.g, mu[1]), cap(ku.b, mu[2]))); } else { cs.push(new THREE.Color(bright, bright, bright)); bs.push(new THREE.Color(bright, bright, bright)); }
+      }
     }
     if (blade && f.pinnae) rowsAt.push({ c: c.clone(), d, side: side.clone(), up: up.clone(), s, i });
   }
@@ -242,7 +271,7 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
     }
   }
   if (!tag.on) out.pieces.push(line);
-  out.grid(pts, cs, rows, NC, bs, tg, f.thick ? pbs : undefined);
+  out.grid(pts, cs, rows, NC, bs, tg, f.thick ? pbs : undefined, tx ? { f: uvB, b: uvF } : { f: uvF, b: uvB });
   return c;
 }
 
@@ -253,7 +282,7 @@ function tube(pts: THREE.Vector3[], r: number, col: string, N = Math.max(4, pts.
   const k = new THREE.Color(col), a = new Float32Array(g.attributes.position.count * 3);
   for (let i = 0; i < a.length; i += 3) { a[i] = k.r; a[i + 1] = k.g; a[i + 2] = k.b; }
   g.setAttribute('color', new THREE.BufferAttribute(a, 3));
-  g.deleteAttribute('uv');
+  whiteUV(g);
   const tags = new Map<number, Tag>();
   return tagEach(g, i => {
     const j = Math.floor(i / (R + 1));
@@ -758,7 +787,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       const x = cp.getX(i), y = cp.getY(i), z = cp.getZ(i), d = Math.hypot(x, z), a = Math.atan2(z, x), e = rim(a) * 0.92;
       cp.setXYZ(i, x * e, y >= 0 ? domeY(Math.min(1, d), a) * 0.85 : -Math.sqrt(Math.max(0, 1 - d * d)) * h * 0.5, z * e);
     }
-    core.deleteAttribute('uv'); core.computeVertexNormals();
+    whiteUV(core); core.computeVertexNormals();
     const kc = new THREE.Color(P.stalk), ca = new Float32Array(cp.count * 3);
     for (let i = 0; i < ca.length; i += 3) { ca[i] = kc.r; ca[i + 1] = kc.g; ca[i + 2] = kc.b; }
     core.setAttribute('color', new THREE.BufferAttribute(ca, 3));
@@ -921,7 +950,7 @@ export function carpetOnGround(base: THREE.BufferGeometry, spot: Spot) {
   }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  for (const k of ['color', 'normal']) g.setAttribute(k, base.attributes[k]);
+  for (const k of ['color', 'normal', 'uv']) g.setAttribute(k, base.attributes[k]);
   g.setIndex(base.index);
   g.computeBoundingBox(); g.computeBoundingSphere(); g.userData.keep = true; g.userData.grow = { ...G, anc };
   return g;
@@ -963,7 +992,7 @@ export function clumpOnGround(src: THREE.BufferGeometry, off: (x: number, z: num
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    for (const k of ['color', 'normal']) if (src.attributes[k]) g.setAttribute(k, src.attributes[k]);
+    for (const k of ['color', 'normal', 'uv']) if (src.attributes[k]) g.setAttribute(k, src.attributes[k]);
     g.setIndex(src.index);
     g.computeBoundingBox(); g.computeBoundingSphere();
     Object.assign(g.userData, src.userData, { keep: true, grow: { ...G, anc } });
@@ -1004,7 +1033,7 @@ export function revealPlant(src: THREE.BufferGeometry, g: number) {
   for (let t = 0; t < I.length; t += 3) if (s[I[t]] > 0 || s[I[t + 1]] > 0 || s[I[t + 2]] > 0) { keep[m++] = I[t]; keep[m++] = I[t + 1]; keep[m++] = I[t + 2]; }
   const out = new THREE.BufferGeometry();
   out.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  for (const k of ['color', 'normal']) if (src.attributes[k]) out.setAttribute(k, src.attributes[k]);
+  for (const k of ['color', 'normal', 'uv']) if (src.attributes[k]) out.setAttribute(k, src.attributes[k]);
   out.setIndex(new THREE.BufferAttribute(keep.slice(0, m), 1));
   // bounds over the vertices that can show (as computeBoundingBox / Sphere would, without walking the dead ones)
   const box = new THREE.Box3(), c = new THREE.Vector3();
@@ -1079,7 +1108,7 @@ function gpuParts(src: THREE.BufferGeometry, G: GrowData) {
   src.userData.gpu = p;
   return p;
 }
-const SHARED = ['position', 'color', 'normal', 'aAnc', 'aGrow'] as const;
+const SHARED = ['position', 'color', 'uv', 'normal', 'aAnc', 'aGrow'] as const;
 /**
  * The plant at growth g for the GPU: a light geometry sharing src's buffers (nothing is copied or uploaded again) plus
  * its growth (`aGrowth`, one value), drawn with the plant material; one per mesh, disposed with it (its dispose frees only its own vertex array
@@ -1091,7 +1120,7 @@ export function grownView(src: THREE.BufferGeometry, g: number, reveal = () => r
   const G = src.userData.grow as GrowData | undefined;
   if (!G) return src;
   const p = gpuParts(src, G), out = new THREE.BufferGeometry();
-  for (const k of ['position', 'color', 'normal'] as const) if (src.attributes[k]) out.setAttribute(k, src.attributes[k]);
+  for (const k of ['position', 'color', 'uv', 'normal'] as const) if (src.attributes[k]) out.setAttribute(k, src.attributes[k]);
   out.setAttribute('aAnc', p.anc); out.setAttribute('aGrow', p.grow); out.setIndex(p.index);
   out.setAttribute('aGrowth', new THREE.InstancedBufferAttribute(Float32Array.of(g), 1));
   if (!src.boundingSphere) src.computeBoundingSphere();
@@ -1388,6 +1417,7 @@ export function bendPlant(src: THREE.BufferGeometry, F: number, o: { ceil?: numb
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   g.setAttribute('color', src.attributes.color);
+  g.setAttribute('uv', src.attributes.uv);
   g.setIndex(src.index);
   g.computeVertexNormals();
   g.computeBoundingBox(); g.computeBoundingSphere();
@@ -1412,7 +1442,7 @@ export function packGeometry(g: THREE.BufferGeometry, skip: string[] = []): Pack
 export function unpackGeometry(p: Packed, base?: THREE.BufferGeometry) {
   const g = new THREE.BufferGeometry();
   for (const [k, [a, n]] of Object.entries(p.attrs)) g.setAttribute(k, new THREE.BufferAttribute(a, n));
-  if (base) for (const k of ['color', 'normal']) if (!p.attrs[k] && base.attributes[k]) g.setAttribute(k, base.attributes[k]);
+  if (base) for (const k of ['color', 'normal', 'uv']) if (!p.attrs[k] && base.attributes[k]) g.setAttribute(k, base.attributes[k]);
   g.setIndex(p.index ? new THREE.BufferAttribute(p.index, 1) : base?.index ?? null);
   if (p.box) g.boundingBox = new THREE.Box3(new THREE.Vector3().fromArray(p.box), new THREE.Vector3().fromArray(p.box, 3));
   if (p.sphere) g.boundingSphere = new THREE.Sphere(new THREE.Vector3().fromArray(p.sphere), p.sphere[3]);
@@ -1440,13 +1470,13 @@ export function runJob(j: PlantJob): JobOut {
     const full = kept.get(j.id)!, q = j.ground;
     kept.delete(j.id);
     const g = carpetOnGround(full, (_x, _z, i) => Number.isNaN(q[i * 4]) ? null : { x: q[i * 4], y: q[i * 4 + 1], z: q[i * 4 + 2], w: q[i * 4 + 3] });
-    return { id: j.id, full: packGeometry(full), ground: packGeometry(g, ['color', 'normal', 'index']) };
+    return { id: j.id, full: packGeometry(full), ground: packGeometry(g, ['color', 'normal', 'uv', 'index']) };
   }
   Object.assign(plant3d, j.switches);
   const full = plantGeometry(...j.args);
   if (j.carpet) { kept.set(j.id, full); return { id: j.id, anchors: Float32Array.from(full.userData.anchors as Float32Array) }; }
   const b = j.bend ? bendPlant(full, j.bend.F, { ceil: j.bend.C, water: j.bend.water, walls: j.bend.walls }) : full;
-  return { id: j.id, full: packGeometry(full), bent: b === full ? undefined : packGeometry(b, ['color', 'index']) };
+  return { id: j.id, full: packGeometry(full), bent: b === full ? undefined : packGeometry(b, ['color', 'uv', 'index']) };
 }
 /** Send a plant's buffers (with its GPU growth tags) to the GPU now, by drawing it into a 1 x 1 target, so its first
  *  draw in the tank uploads nothing (several MB for a grown stem clump or carpet): one buffer per call (each draw
@@ -1457,7 +1487,7 @@ export function uploadPlant(r: THREE.WebGLRenderer, src: THREE.BufferGeometry, s
   const all = grownView(src, 1);
   if (all === src) return -1;
   // (positions first, drawn without triangles; then the triangles; then one attribute at a time)
-  const has = ['position', 'index', 'color', 'normal', 'aAnc', 'aGrow'].filter(k => k === 'index' || all.attributes[k]), ks = has.slice(0, step + 1), v = new THREE.BufferGeometry();
+  const has = ['position', 'index', 'color', 'uv', 'normal', 'aAnc', 'aGrow'].filter(k => k === 'index' || all.attributes[k]), ks = has.slice(0, step + 1), v = new THREE.BufferGeometry();
   for (const k of ks) if (k !== 'index') v.setAttribute(k, all.attributes[k]);
   v.setIndex(ks.includes('index') ? all.index : null); v.boundingSphere = all.boundingSphere; v.dispose = all.dispose;
   const m = new THREE.Mesh(v, upMat), was = r.getRenderTarget();
