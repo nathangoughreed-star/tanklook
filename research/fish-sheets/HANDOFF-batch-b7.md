@@ -82,3 +82,6 @@ Built (14): balashark bristlenose chromis clownkilli clownloach cockatoo comet d
 **Held (resolved 2026-11-25, Nathan "Yes, both"): firemouth and glasscatfish went live too (14 of 14 built b7 fish live).**
 Notes: bristlenose has a chin barbel only (snout tentacles not modelled) and a small smudge below the belly; mass out of range on comet (1.24-1.54x), glasscatfish (1.45-1.56x), harlequin (0.79-1.36x). Fin-beat strips owed.
 Still no sheet: ocellaris peacock peapuffer rainbowshark tigerbarb yoyoloach (Nathan's queue). The 25 fish live before 2026-11-25 still carry the tail-root band until rebuilt with fish-build.
+
+## Final 2026-11-25
+The last six (ocellaris peacock peapuffer rainbowshark tigerbarb yoyoloach) were built after a visual check of each sheet (`visual_check` in sheet.json) and approved by Nathan ("Approve all six"): all 20 b7 fish are live. Open: rainbow shark barbels not visible on the model; tiger barb has no autosat (sat unset); no fin-beat strips or tail-root check for these six; the 25 pre-b7 live fish still carry the tail-root band until rebuilt.

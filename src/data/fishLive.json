@@ -156,6 +156,30 @@
     "firemouth": {
       "look": "firemouthb",
       "approved": "2026-11-25"
+    },
+    "ocellaris": {
+      "look": "ocellarisb",
+      "approved": "2026-11-25"
+    },
+    "peacock": {
+      "look": "peacockb",
+      "approved": "2026-11-25"
+    },
+    "peapuffer": {
+      "look": "peapufferb",
+      "approved": "2026-11-25"
+    },
+    "rainbowshark": {
+      "look": "rainbowsharkb",
+      "approved": "2026-11-25"
+    },
+    "tigerbarb": {
+      "look": "tigerbarbb",
+      "approved": "2026-11-25"
+    },
+    "yoyoloach": {
+      "look": "yoyoloachb",
+      "approved": "2026-11-25"
     }
   }
 }
