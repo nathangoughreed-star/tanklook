@@ -37,7 +37,7 @@ export async function load(sceneName, mode) {
 }
 export async function shot(name, sceneName, mode) {
   const viewer = await load(sceneName, mode);
-  const blob = await viewer.exportPNG(1);
+  const blob = await viewer.exportPNG(2);
   await fetch('/__shot?name=' + name, { method: 'POST', body: blob });
   return name;
 }
