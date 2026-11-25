@@ -25,18 +25,28 @@ const smooth = (a: number, b: number, x: number) => { const k = Math.min(1, Math
 
 type Section = { vc: number; hv: number; t: number; p: Plan };
 
+/** Length of the rounded nose dome: 0.4 x the outline's half-depth at the tip (width units). */
+const tipLen = (p: Plan) => { const [a, b] = profile(p)(1); return 0.4 * Math.max(0, b - a) / 2; };
+/** Body stations: STATIONS from the peduncle, denser at the nose, then 5 more inside the nose dome, densest at the tip. */
+function tipStations(p: Plan) {
+  const L = tipLen(p), out: number[] = [];
+  for (let i = 0; i < STATIONS; i++) { const k = i / (STATIONS - 1), u = p.pedU + (1 - p.pedU) * (1 - Math.cos(k * Math.PI / 2) ** 1.5); if (L <= 0 || u < 1 - L) out.push(u); }
+  if (L > 0) for (let m = 0; m <= 5; m++) out.push(1 - L * Math.cos(m / 5 * Math.PI / 2));
+  return out;
+}
+
 /** Cross-section at u: centre line vc, half-depth hv, half-thickness t (all widths). */
 function sections(p: Plan) {
   const prof = profile(p), thick = p.thick!, pedT = p.pedT ?? 0.55, gu = 1 - (1 - p.pedU) * 0.2; // gu: the gill cover
   const maxHv = Math.max(...Array.from({ length: 41 }, (_, i) => { const [a, b] = prof(p.pedU + (1 - p.pedU) * i / 40); return (b - a) / 2; }));
   // the inset scales with the fish's depth (at most 4 % of its half-depth): a fixed 0.006 was 13 % of a bichir's half-depth, and every
   // card rim kept under a fin root or at the tail stood above or below the solid as a band (method row 59)
-  const inset = Math.min(INSET, 0.04 * maxHv);
+  const inset = Math.min(INSET, 0.04 * maxHv), tipR = tipLen(p);
   return (u: number): Section => {
     // no inset at the nose (no fin roots there): on a 1-3 % SL deep snout tip the fixed inset took a third to two thirds of the depth
     // and turned blunt lips into a point (Nathan 2026-11-24, b6 "snouts too pointy": CPD tip 1.6 % SL outline, 1.0 built)
     const s = (u - p.pedU) / (1 - p.pedU), ins = inset * (1 - smooth(0.9, 0.98, s));
-    const [a, b] = prof(u), vc = (a + b) / 2, hv = Math.max(0, (b - a) / 2 - ins);
+    const [a, b] = prof(u), vc = (a + b) / 2; let hv = Math.max(0, (b - a) / 2 - ins);
     // thickness follows depth but stays fuller toward the head (fish are widest behind the gills)
     let t = thick * (0.35 * hv + 0.65 * maxHv * Math.sin(Math.min(1, hv / maxHv) * Math.PI / 2)) * (pedT + (1 - pedT) * Math.sqrt(s));
     if (p.halfWidth) { // measured top-view widths: the body is as wide as the sheet's top view at every station (not tied to the depth)
@@ -50,6 +60,11 @@ function sections(p: Plan) {
       t = Math.max(t, p.noseW * thick * maxHv * smooth(0.55, 0.8, s) * (1 - 0.5 * smooth(0.9, 1, s)));
       const k = Math.max(0, (s - 0.86) / 0.14); t *= Math.sqrt(Math.max(0, 1 - k * k)); // a rounded shovel seen from above or below, not a square cut
     }
+    // round the tip: the last section keeps the full lip depth and the nose fan is flat, so a lipped snout ended in a square stub
+    // (Nathan 2026-11-25, three-spot). Over the last 0.4 x the tip's half-depth the section closes as a
+    // dome, depth and width alike (0.9 rounded the lips away into a point); bodyGeometry adds rings there (tipStations) so it is round.
+    const d = 1 - u;
+    if (tipR > 0 && d < tipR) { const f = Math.sqrt(Math.max(0, 1 - ((tipR - d) / tipR) ** 2)); hv *= f; t *= f; }
     return { vc, hv, t, p };
   };
 }
@@ -75,9 +90,8 @@ function thetaAt(sec: Section, v: number) {
  * UVs are the side projection of the card texture: (u, 0.5 - v / aspect).
  */
 function bodyGeometry(p: Plan, aspect: number, bend: number, swim = false) {
-  const ring = sections(p), pos: number[] = [], uv: number[] = [], idx: number[] = [];
-  for (let i = 0; i < STATIONS; i++) {
-    const k = i / (STATIONS - 1), u = p.pedU + (1 - p.pedU) * (1 - Math.cos(k * Math.PI / 2) ** 1.5); // denser at the nose
+  const ring = sections(p), pos: number[] = [], uv: number[] = [], idx: number[] = [], us = tipStations(p), NS = us.length;
+  for (const u of us) {
     const sec = ring(u), x = u - 0.5, z0 = bendZ(bend, x);
     for (let j = 0; j <= RING; j++) {
       const [v, z] = ringPt(sec, j / RING * Math.PI * 2);
@@ -86,14 +100,14 @@ function bodyGeometry(p: Plan, aspect: number, bend: number, swim = false) {
     }
   }
   const R = RING + 1;
-  for (let i = 0; i < STATIONS - 1; i++) for (let j = 0; j < RING; j++) {
+  for (let i = 0; i < NS - 1; i++) for (let j = 0; j < RING; j++) {
     const a = i * R + j, b = a + R;
     idx.push(a, a + 1, b, a + 1, b + 1, b); // outward-facing (FrontSide)
   }
   // close the nose: the last ring (u = 1) is a section 1-5 % SL deep, and left open it showed as a black hole in the middle of every
   // front view (Nathan 2026-11-24, b6). A flat fan at x = 0.5 (TL unchanged); its normals average into the last ring, rounding the
   // tip, and it faces forward, so the front projection layer paints it.
-  { const last = (STATIONS - 1) * (RING + 1), { vc: vn } = ring(1), cn = pos.length / 3;
+  { const last = (NS - 1) * (RING + 1), { vc: vn } = ring(1), cn = pos.length / 3;
     pos.push(0.5, -vn, bendZ(bend, 0.5)); uv.push(1, 0.5 - vn / aspect);
     for (let j = 0; j < RING; j++) idx.push(cn, last + j, last + j + 1); }
   // cap the cut at the peduncle (the tail fin on the card covers the joint)
