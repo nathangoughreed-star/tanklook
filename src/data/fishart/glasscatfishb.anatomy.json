@@ -897,7 +897,7 @@
       "sac": null
      }
     },
-    "ver": "aa9ccfee"
+    "ver": "490c87a7"
    },
    "fit": "{'thick': 0.45, 'pedT': 0.0, 'rmsPctSL': 0.7, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }
