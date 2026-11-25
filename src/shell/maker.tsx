@@ -13,7 +13,7 @@ import { FailLabels } from './failView';
 import { failOverlay } from './failOverlay';
 import { EDGE_HELP, EDGE_OPTS, edgeSummary, edgeWarnings, edgeOf } from './logic/edges';
 import type { EdgeFinish } from '../scene/customTanks';
-import { SizeMode, FreeSize, GlassPriceFields, WideView, type SolveMode } from './glassSolve';
+import { SizeMode, FreeSize, PolyFreeSize, GlassPriceFields, WideView, type SolveMode } from './glassSolve';
 import type { PaneThick, UpgradeOption } from './logic/glassUpgrade';
 import type { SizeCell, SolveInputs, SolveToggles } from './logic/tankEnvelope';
 import { LIMITS } from '../scene/validate';
@@ -282,7 +282,8 @@ function GlassGroup({ panes, braceNow, kind, over, setOver, onApply, solve, setS
     const cur = choice.custom ?? panel?.braceNow ?? startBrace(u);
     setChoice({ ...choice, bracing: 'custom', brace: k, custom: k === 'none' ? undefined : { ...cur, cross: k === 'cross' ? Math.max(1, cur.cross ?? 0) : 0 } });
   };
-  const custom = !rim && tg.bracing === 'custom';
+  const poly = !!panel?.poly; // polygon tanks: flat sides, one wall thickness, no brace (scene/polyGlass.ts)
+  const custom = !rim && !poly && tg.bracing === 'custom';
   return (
     <Group title="Glass check" sum={sum} open={open} onToggle={onToggle}>
       {panel && !panel.supported ? <div class="hint">{panel.reason}</div> : <>
@@ -290,14 +291,15 @@ function GlassGroup({ panes, braceNow, kind, over, setOver, onApply, solve, setS
         <div class="hint">{solve === 'size' ? 'Free: size. The glass and the minimum safety factor are fixed; change the size as you like and see which panes fall short, and what it takes to fix them.' : 'Free: glass. You set the size and the minimum safety factor; the glass follows.'}</div>
         <div class="row"><span class="lbl">{solve === 'glass' ? 'Safety factor' : 'Safety factor at least'}</span><input class="slider" type="range" min={2} max={6} step={0.1} value={choice.sf} aria-label="Safety factor" onInput={e => setChoice({ ...choice, sf: +(e.target as HTMLInputElement).value })} />
           <span class="val"><input class="input num" type="number" min={1.5} max={8} step={0.1} value={choice.sf} aria-label="Safety factor value" onChange={e => { const v = parseFloat((e.target as HTMLInputElement).value); if (Number.isFinite(v) && v >= 1.5 && v <= 8) setChoice({ ...choice, sf: v }); }} /></span></div>
-        <div class="row"><span class="lbl">Glass</span><Seg label="Glass thicknesses" value={tg.mixed ? 'mixed' : 'same'} opts={[['same', 'Same everywhere'], ['mixed', 'Mixed']]} onPick={m => setChoice({ ...choice, mode: m === 'mixed' ? 'perPane' : 'uniform' })} /><span /></div>
-        {!rim ? <div class="row"><span class="lbl">Bracing</span><Seg label="Bracing" value={tg.bracing} opts={[['optimized', 'Optimized'], ['custom', 'Custom']]} onPick={setBracing} /><span /></div> : null}
-        <div class="hint">{tg.mixed ? 'Mixed: front and back, ends and bottom can each be a different thickness.' : 'One thickness for every wall and the bottom.'}{rim ? '' : tg.bracing === 'optimized' ? ' Bracing is chosen for you.' : ' Bracing is yours: set the strips below.'}</div>
+ {poly ? null : <div class="row"><span class="lbl">Glass</span><Seg label="Glass thicknesses" value={tg.mixed ? 'mixed' : 'same'} opts={[['same', 'Same everywhere'], ['mixed', 'Mixed']]} onPick={m => setChoice({ ...choice, mode: m === 'mixed' ? 'perPane' : 'uniform' })} /><span /></div>}
+        {!rim && !poly ? <div class="row"><span class="lbl">Bracing</span><Seg label="Bracing" value={tg.bracing} opts={[['optimized', 'Optimized'], ['custom', 'Custom']]} onPick={setBracing} /><span /></div> : null}
+        {poly ? null : <div class="hint">{tg.mixed ? 'Mixed: front and back, ends and bottom can each be a different thickness.' : 'One thickness for every wall and the bottom.'}{rim ? '' : tg.bracing === 'optimized' ? ' Bracing is chosen for you.' : ' Bracing is yours: set the strips below.'}</div>}
         {custom ? <>
           <Seg label="Brace" value={kindOf(choice.custom ?? null)} opts={[['none', 'No brace'], ['perimeter', 'Perimeter'], ['cross', 'Perimeter + cross']]} onPick={setKind} />
           <BraceFields b={choice.custom ?? null} u={u} locks={locks} setLocks={setLocks} setBrace={setBrace} onOptimize={solve === 'glass' ? onOptimize : undefined} busy={busy} optLine={solve === 'glass' ? optLine : ''} note={solve === 'glass' && panel ? panel.braceNote : ''} />
         </> : null}
-        {solve === 'size' ? <>
+        {solve === 'size' && poly ? <PolyFreeSize T={T} rim={rim} panes={panes} sf={choice.sf} bottom={choice.bottom} u={u} kind={kind} over={over} onApply={onApply} /> : null}
+        {solve === 'size' && !poly ? <>
           <FreeSize T={T} rim={rim} panes={panes} brace={braceNow} sf={choice.sf} bottom={choice.bottom} u={u} tg={tg} kind={kind} over={over} onApply={onApply} />
           <details class="gprices" onToggle={e => { if ((e.target as HTMLDetailsElement).open) setSin({ ...sin, glass: panes.long, glassEnds: panes.end, glassBottom: panes.bottom }); }}><summary>See options: the largest tank for a glass</summary>
             <SizeMode T={T} rim={rim} inp={sin} setInp={setSin} sf={choice.sf} bottom={choice.bottom} u={u} tg={tg} onPick={loadCell} onChart={openWide} /></details>

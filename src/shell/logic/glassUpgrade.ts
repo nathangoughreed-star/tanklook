@@ -4,6 +4,8 @@
 import { IN_MM, STOCK_METRIC, STOCK_US_PICK, type BraceSpec } from '../../scene/glassSolver';
 import { checkTank, type TankCheck } from '../../scene/glassEnvelope';
 import { MM2_PER_SQFT, priceSqFt, type GlassKind, type GlassPrices } from '../../scene/glassPrice';
+import { polyAreas, polyCheck, type PolyCheck } from '../../scene/polyGlass';
+import type { Tank } from '../../scene/types';
 import { baseOf, braceText, type SolveInputs } from './tankEnvelope';
 import { glassText, type Units } from './tank';
 
@@ -77,4 +79,20 @@ export function upgradeCard(i: UpgradeIn): UpgradeCard {
   }
   options.sort((a, b) => a.costUsd - b.costUsd);
   return { ok: false, check, failGroups: fg, options };
+}
+
+/** Polygon tanks: the walls (every side one thickness) and the bottom. The way back is thicker glass (the thinnest stock that passes); no brace. */
+export function polyUpgradeCard(i: { T: Tank; rim: boolean; panes: PaneThick; sf: number; bottom: 'full' | 'perimeter'; kind: GlassKind; over?: GlassPrices; u: Units }): { ok: boolean; check: PolyCheck; options: UpgradeOption[] } {
+  const { T, rim, panes, sf, bottom, kind, over, u } = i, wall0 = panes.long, check = polyCheck(T, rim, { wall: wall0, bottom: panes.bottom }, sf, bottom);
+  if (check.ok) return { ok: true, check, options: [] };
+  const ar = polyAreas(T), stock = (u === 'in' ? STOCK_US_PICK : STOCK_METRIC).slice().sort((a, b) => a - b), options: UpgradeOption[] = [];
+  for (const t of stock.filter(t => t > wall0 + 1e-6)) {
+    const bt = bottom === 'full' ? Math.max(panes.bottom, t) : panes.bottom, c = polyCheck(T, rim, { wall: t, bottom: bt }, sf, bottom);
+    if (!c.ok) continue;
+    const nw = priceSqFt(t, kind, over), ow = priceSqFt(wall0, kind, over), nb = priceSqFt(bt, kind, over), ob = priceSqFt(panes.bottom, kind, over);
+    const usd = ar.wall * (nw.usd - ow.usd) + ar.bottom * (nb.usd - ob.usd), next = { long: t, end: t, bottom: bt };
+    options.push({ kind: 'glass', label: `Thicker glass all round: ${glassText(t, u)}`, sf: c.minSf, costUsd: usd, panes: next, brace: null, own: nw.own || ow.own || nb.own || ob.own });
+    break;
+  }
+  return { ok: false, check, options };
 }

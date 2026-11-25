@@ -4,10 +4,11 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { IN_MM, STOCK_METRIC, STOCK_US_PICK, glassChoices } from '../scene/glassSolver';
 import { estimateSqFt, priceKey, type GlassKind, type GlassPrices } from '../scene/glassPrice';
-import { upgradeCard, type PaneThick, type UpgradeOption } from './logic/glassUpgrade';
+import { polyUpgradeCard, upgradeCard, type PaneThick, type UpgradeOption } from './logic/glassUpgrade';
 import { BRACE_LEVELS, heightTable, type BraceLevel } from '../scene/glassEnvelope';
 import type { BraceSpec } from '../scene/glassSolver';
 import { Pill } from './ui';
+import type { Tank } from '../scene/types';
 import { FailView } from './failView';
 import { diagnose } from '../scene/glassDiagnose';
 import { H_MAX, baseOf, bestBrace, braceText, glassWords, lenText, levelsOf, sfPanel, sizeTable, type SizeCell, type SolveInputs, type SolveToggles } from './logic/tankEnvelope';
@@ -92,6 +93,25 @@ export function FreeSize({ T, rim, panes, brace, sf, bottom, u, tg, kind, over, 
     </div> : null}
     {p.joints.some(j => !j.ok) ? <div class="dwarn warn">⚠ A silicone joint is over its design stress: widen the bond or use more silicone.</div> : null}
     {p.fits ? <FailView d={diag} u={u} dims={{ L: T.L, D: T.D, H: T.H }} /> : null}
+  </>;
+}
+
+/** Free: size for a polygon tank: every side is a flat pane of its own length; one thickness for the walls. */
+export function PolyFreeSize({ T, rim, panes, sf, bottom, u, kind, over, onApply }: { T: Tank; rim: boolean; panes: PaneThick; sf: number; bottom: 'full' | 'perimeter'; u: Units; kind: GlassKind; over?: GlassPrices; onApply: (o: UpgradeOption) => void }) {
+  const card = useMemo(() => polyUpgradeCard({ T, rim, panes, sf, bottom, kind, over, u }), [JSON.stringify(T), rim, panes.long, panes.bottom, sf, bottom, kind, JSON.stringify(over), u]);
+  const c = card.check, wallSf = Math.min(...c.sides.map(x => x.sf));
+  return <>
+    <div class="hint">This tank, {lenText(T.H, u)} tall, filled to the brim, at its own glass ({glassText(panes.long, u)} walls, {glassText(panes.bottom, u)} bottom){rim ? ', the trim holding the top edge' : ', no brace'}. Change the size above: nothing is blocked, the safety factors follow.</div>
+    <table class="gtable" aria-label="Safety factor by side"><thead><tr><th>Side</th><th>Glass</th><th>SF</th></tr></thead>
+      <tbody>{c.sides.map(x => <tr><td>{lenText(x.len, u)} wide</td><td>{glassText(panes.long, u)}</td><td class={x.sf + 1e-9 >= sf && x.defl <= 1 ? '' : 'bad'}><b>{x.sf.toFixed(1)}</b></td></tr>)}
+        <tr><td>Bottom</td><td>{glassText(panes.bottom, u)}</td><td class={c.bottomSf == null || c.bottomSf + 1e-9 >= sf ? '' : 'bad'}><b>{c.bottomSf == null ? 'on stand' : c.bottomSf.toFixed(1)}</b></td></tr></tbody></table>
+    <div class="drow"><span>Lowest safety factor (minimum {sf.toFixed(1)})</span><Pill tone={card.ok ? 'ok' : 'bad'}>{Math.min(wallSf, c.bottomSf ?? Infinity).toFixed(1)}</Pill></div>
+    {card.ok ? <div class="hint">Meets the minimum of {sf.toFixed(1)}.</div> : <div class="dwarn warn upgrade" role="region" aria-label="Ways to get back over the minimum">
+      <b>Back over {sf.toFixed(1)}</b>
+      {!card.options.length ? <div class="hint">No stock glass gets this tank to {sf.toFixed(1)}: make it smaller, add a rim or lower the minimum.</div> : null}
+      {card.options.map(o => <div class="drow" key={o.label}><span>{o.label}<div class="hint">SF {o.sf.toFixed(1)} · about +${Math.max(0, Math.round(o.costUsd)).toLocaleString('en-US')}{o.own ? ' (your prices)' : ' (estimate)'}</div></span><button type="button" class="btn sm" onClick={() => onApply(o)}>Apply</button></div>)}
+    </div>}
+    <div class="hint">Polygons: no brace and no silicone joint check yet. Each side is checked as a flat pane of its own width.</div>
   </>;
 }
 

@@ -3,6 +3,7 @@
 // Rimless = a free top edge (braces optional, the optimizer's table); rimmed = the trim holds the top edge (no brace table).
 import { DEFAULT_SF, IN_MM, optimizeBrace, optimizeBraceCustom, solveGlass, toGlassBuild, type BraceLocks, type BraceSpec, type GlassBuild, type GlassOpts, type GlassSolution, type JointCheck, type PaneId } from '../../scene/glassSolver';
 import { shapeOf } from '../../scene/shape';
+import { polyAreas, polySolve } from '../../scene/polyGlass';
 import type { Tank } from '../../scene/types';
 import { glassText, type Units } from './tank';
 
@@ -34,6 +35,8 @@ export interface JointRow { label: string; use: string; ok: boolean }
 export interface GlassPanel {
   /** false: not a box tank, the solver covers rectangles only */
   supported: boolean;
+  /** a polygon tank (flat sides, no brace, no silicone joint check): the maker hides the brace and the box-only views */
+  poly?: boolean;
   reason?: string;
   top: 'free' | 'held';
   topLine: string;
@@ -71,6 +74,7 @@ const fmtSf = (v: number) => Number.isFinite(v) ? v.toFixed(1) : '-';
 /** The whole panel. A rimless tank runs the brace optimizer (its table); a rimmed one is solved with its top held and has no brace table. */
 export function glassPanel(T: Tank, rim: boolean, c: GlassChoice, u: Units): GlassPanel {
   const empty = (reason: string): GlassPanel => ({ supported: false, reason, top: rim ? 'held' : 'free', topLine: '', panes: [], sfAchieved: '-', sfOk: false, braces: [], joints: [], notes: [], weight: '', use: null, braceNow: null, braceNote: '', volume: '', verdict: '' });
+  if (shapeOf(T) === 'poly') return polyPanel(T, rim, c, u);
   if (shapeOf(T) !== 'rect') return empty('The glass check works on box tanks (rectangles) for now; other shapes keep the glass you pick.');
   const spec = { L: T.L, D: T.D, H: T.H };
   let sol: GlassSolution, braces: BraceRow[] = [], brace: BraceSpec | null = null, braceNote = '';
@@ -139,4 +143,21 @@ export function optimizeChoice(T: Tank, c: GlassChoice, u: Units, locks: BraceLo
   const walls = r.best.solution.panes.front.thickness;
   const what = `${fmtLenIn(b.width, u)} perimeter${b.cross ? `, ${b.cross} cross` : ''}, ${glassText(b.thickness, u)} strips${walls != null ? `, walls ${glassText(walls, u)}` : ''}`;
   return { brace: b, ok: true, line: `${what}: ${less >= 0 ? `${less}% less` : `${-less}% more`} glass than unbraced.` };
+}
+
+/** Polygon tanks (lane GC2): each side is a flat plate; the thinnest stock glass for the longest side sets the walls. */
+function polyPanel(T: Tank, rim: boolean, c: GlassChoice, u: Units): GlassPanel {
+  const r = polySolve(T, rim, c.sf, c.bottom, u === 'in' ? 'in' : 'cm'), ar = polyAreas(T);
+  const base: GlassPanel = { supported: true, poly: true, top: rim ? 'held' : 'free', topLine: rim ? 'Rimmed: the trim holds the top edge of each pane.' : 'Rimless: the top edge of each pane is free.', panes: [], sfAchieved: '-', sfOk: false, braces: [], joints: [], notes: ['Each side is checked as a flat pane of its own length. No brace and no silicone joint check for polygons yet.'], weight: '', use: null, braceNow: null, braceNote: '', volume: '', verdict: '' };
+  if (r.wall == null || r.bottom == null || !r.check) return { ...base, verdict: `No stock glass meets a safety factor of ${c.sf.toFixed(1)} on this tank: make the longest side or the height smaller, add a rim or lower the safety factor.` };
+  const ck = r.check, wallSf = Math.min(...ck.sides.map(x => x.sf));
+  const cuIn = (ar.wall * r.wall + ar.bottom * r.bottom) * 144 / IN_MM, lb = cuIn * 0.0905;
+  const build = { panes: { front: r.wall, back: r.wall, left: r.wall, right: r.wall, bottom: r.bottom }, brace: null, safetyFactor: c.sf } as GlassBuild;
+  return { ...base, sfAchieved: fmtSf(ck.minSf), sfOk: ck.ok,
+    panes: [
+      { label: `Walls (longest side ${fmtLenIn(Math.max(...ck.sides.map(x => x.len)), u)})`, mm: r.wall, thickness: glassText(r.wall, u), sf: fmtSf(wallSf), governs: ck.deflRatio > 1 ? 'bending' : 'strength', ok: wallSf + 1e-9 >= c.sf },
+      { label: 'Bottom', mm: r.bottom, thickness: glassText(r.bottom, u), sf: ck.bottomSf == null ? 'on stand' : fmtSf(ck.bottomSf), governs: ck.bottomSf == null ? 'matched to walls' : 'strength', ok: ck.bottomSf == null || ck.bottomSf + 1e-9 >= c.sf },
+    ],
+    weight: `${Math.round(lb)} lb of glass`, volume: u === 'in' ? `${Math.round(cuIn).toLocaleString('en-US')} cu in of glass, ${Math.round(lb)} lb` : `${Math.round(cuIn * 0.016387)} L of glass, ${Math.round(lb * 0.4536)} kg`,
+    use: { glass: Math.max(r.wall, r.bottom), build }, verdict: `Meets the safety factor of ${c.sf.toFixed(1)}.` };
 }
