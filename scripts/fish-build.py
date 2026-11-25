@@ -80,7 +80,11 @@ def half(pts):
     return [[x / 2, y / 2] for x, y in pts]
 
 
-json.dump({'ped': [LM['ped'][0] / 2, LM['ped'][1] / 2], 'dorsalBase': half(LM.get('dorsalBase', [])), 'analBase': half(LM.get('analBase', []))},
+pel_ = (spec.get('pelvic') or {}).get('poly') or []
+if pel_:   # the pelvic's attached edge (the poly's top run, root included) is the belly line across the fin, as analBase is for the anal fin
+    my_ = min(p_[1] for p_ in pel_); pelB = sorted({p_[0]: p_ for p_ in pel_ if p_[1] <= my_ + 5 or p_ == pel_[0]}.values())
+else: pelB = []
+json.dump({'ped': [LM['ped'][0] / 2, LM['ped'][1] / 2], 'dorsalBase': half(LM.get('dorsalBase', [])), 'analBase': half(LM.get('analBase', [])), 'pelvicBase': half(pelB) if len(pelB) >= 2 else []},
           open(os.path.join(work, 'lm.json'), 'w'))
 anat = os.path.join(work, 'a.json')
 at = os.path.join(work, 'a.t.json')

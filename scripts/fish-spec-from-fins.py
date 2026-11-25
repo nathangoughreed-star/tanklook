@@ -122,7 +122,10 @@ if pec is not None:
     sp0 = spec["pectoral"]["spread"]; spec["pectoral"]["spread"] = float(min(0.35, max(0.2, sp0)))   # handoff step 6 / row 32: 0.2 buries the fin, 0.5 reads as paddles head-on; the front map often reads 0.42-0.45
     if spec["pectoral"]["spread"] != sp0: print('pectoral spread %.2f from the front map -> %.2f (kept to 0.2-0.35; set by hand to judge per species, row 32)' % (sp0, spec["pectoral"]["spread"]))
 if 'pelvic' in roles:
-    pm = full == roles['pelvic']; px_, py_ = base('pelvic'); i = np.argmax(px_)
+    pm = full == roles['pelvic']
+    po = nd.binary_opening(pm, iterations=3); lp, npl = nd.label(po)   # drop thin strips the label map runs back along the belly line (salt-and-pepper cory: a 1-row sliver to 30% SL drew a dark flap under the belly, b6)
+    if npl: pm = lp == 1 + int(np.argmax(nd.sum(po, lp, range(1, npl + 1))))
+    px_, py_ = base('pelvic'); i = np.argmax(px_)
     proot = [int(px_[i]), int(py_[i])]; ys, xs = np.nonzero(pm)
     ol = outline(pm); k = int(np.argmin([np.hypot(x - proot[0], y - proot[1]) for x, y in ol])); ol = ol[k + 1:] + ol[:k]
     spec["pelvic"] = {"root": proot, "len": int(np.max(np.hypot(xs - proot[0], ys - proot[1]))), "poly": [proot] + ol}

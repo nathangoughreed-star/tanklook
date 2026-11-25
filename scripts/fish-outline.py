@@ -219,7 +219,7 @@ def main():
     if '--landmarks' in opts:  # hand-placed fin bases (side_full px, sheet already level): {"dorsalBase": [[x,y],...], "analBase": [[x,y],...]}
         # the body edge across each median fin's base is the polyline through the points, not whatever the colour or shape mask found
         LM = json.load(open(opts['--landmarks']))
-        for key, arr in (('dorsalBase', tb), ('analBase', bb)):
+        for key, arr in (('dorsalBase', tb), ('analBase', bb), ('pelvicBase', bb)):   # pelvicBase: a broad pelvic (corydoras) otherwise reads as belly and hangs the body into the fin's footprint (b6)
             pts = sorted(LM.get(key, []))
             if len(pts) >= 2:
                 px_, py_ = [p_[0] for p_ in pts], [p_[1] for p_ in pts]
