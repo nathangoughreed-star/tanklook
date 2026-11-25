@@ -64,6 +64,14 @@
     "yellowlab": {
       "look": "yellowlabb",
       "approved": "2026-11-25"
+    },
+    "gbr": {
+      "look": "gbrb",
+      "approved": "2026-11-25"
+    },
+    "oscar": {
+      "look": "oscarb",
+      "approved": "2026-11-25"
     }
   }
 }
