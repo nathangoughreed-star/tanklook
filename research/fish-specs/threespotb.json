@@ -6,6 +6,8 @@
   "sci": "Trichopodus trichopterus",
   "tl": 180
  },
+ "front_ramp": [0.15, 0.5],
+ "front_ramp_why": "wedge snout faces sideways: the default [0.35, 0.75] left the front panel only on the nose tip (Nathan 2026-11-25)",
  "measured_width": true,
  "plan": "oscar",
  "landmarks": {
