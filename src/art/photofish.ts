@@ -18,6 +18,22 @@ const load = (f: string, v?: string) => new Promise<HTMLCanvasElement>((res, rej
 });
 const files = import.meta.glob('../data/fishart/*.anatomy.json', { eager: true, import: 'default' }) as Record<string, any>;
 
+/**
+ * Per-station factor from the sheet's drawn top-view half-widths to the 3D body's (render.photo thickx = real max width / drawn max).
+ * ChatGPT draws the head about the right width and bulges the mid-body (zebra danio: head 13.5 % SL at the eyes, mid-body 20, the real
+ * fish 13.4 at its widest), so one uniform thickx squeezed the head a third too thin; worst on thin fish (tiger barb, gourami, angelfish,
+ * danio; Nathan 2026-11-25). When the build narrows the fish (thickx < 1) the width is a soft cap at the real half-width c instead:
+ * hw / (1 + (hw / c)^6)^(1/6), rescaled so the widest station is exactly c. Stations well under c keep about their drawn width, the
+ * bulge flattens onto c, from the snout back to the widest station; behind it the uniform factor. A fish the build widens or keeps (thickx >= 1), or spec width_fit 'uniform', keeps the uniform factor.
+ * scripts/fish-mass.py mirrors this.
+ */
+export function widthScale(hw: number[], thickx: number, fit?: string): number[] {
+  if (thickx >= 1 || fit === 'uniform') return hw.map(() => thickx);
+  const c = thickx * Math.max(...hw), soft = hw.map(h => h / (1 + (h / c) ** 6) ** (1 / 6)), k = c / Math.max(...soft);
+  const im = hw.indexOf(Math.max(...hw));   // stations run snout (0) to stalk: behind the widest one the drawn taper keeps its shape (the cap there left deep-bodied fish a square stub at the stalk: tiger barb, gourami, angelfish)
+  return hw.map((h, i) => (h > 0 && i < im ? soft[i] * k / h : thickx));
+}
+
 /** The 3D eye covers the iris only: eye_full (fish-eye-colour.py, 1.35 x the sheet's eye r) reached the dark socket round the eye on
  *  nearly every build-B fish, and the dome painted it as iris: a wide pale ring that read as an oversized eye (Nathan 2026-11-25, zebra
  *  danio; all 25 live cards checked: the iris edge sits at 1.0-1.15 r). 1.1 r = 0.815 eye_full; the card's own socket shows round it. */
@@ -57,7 +73,8 @@ export async function loadPhotoFish(only?: ReadonlySet<string>): Promise<Set<str
     const topS = smoothCurve(topPts), botS = smoothCurve(botPts);
     Object.assign(P, { pedU, outline: [...topS.reverse(), ...botS] }); // outlineProfile (fishgen.ts) wants the snout first: top snout to tail, then bottom tail to snout
     P.thick = A.thickness.fit.thick * (R.thickx ?? 1); P.pedT = A.thickness.fit.pedT;
-    if (R.measuredWidth) P.halfWidth = d.stations.map((s: number, i: number) => [U(s), Wd(A.thickness.halfWidthPctSL[i]) * (R.thickx ?? 1)] as [number, number]).sort((a: number[], b: number[]) => a[0] - b[0]);
+    const ws = R.measuredWidth ? widthScale(A.thickness.halfWidthPctSL, R.thickx ?? 1, R.widthFit) : null;
+    if (R.measuredWidth) P.halfWidth = d.stations.map((s: number, i: number) => [U(s), Wd(A.thickness.halfWidthPctSL[i]) * ws![i]] as [number, number]).sort((a: number[], b: number[]) => a[0] - b[0]);
     P.tail = { ...P.tail, h: R.noTail ? 0.0005 : Wd(Math.max(...F.caudal.outline.map((c: number[]) => (c[1] + c[2]) / 2))) };
     if (F.dorsal) P.dorsal = { ...P.dorsal, at: U(F.dorsal.baseStartPctSL), len: Wd(F.dorsal.baseEndPctSL - F.dorsal.baseStartPctSL), h: Wd(F.dorsal.maxHeightPctSL) };
     // a row of finlets (bichir): one plain band over all of them, its height the tallest finlet; the fin card's alpha cuts each finlet out.
@@ -99,7 +116,7 @@ export async function loadPhotoFish(only?: ReadonlySet<string>): Promise<Set<str
     if (R.planExtra) Object.assign(P, R.planExtra); // per-model Plan knobs from the spec's plan_extra (cory barbels: method row 53)
     PHOTO_FINS[id] = { img: fin ?? card };
     if (op && finop) { FIN_OPACITY[id] = { card: op, fin: finop }; P.tailBlend = 0.05; }   // the solid fades onto the card over 5 % of TL before the fin
-    PROJ_ART[id] = { top: { img: top, ...(R.measuredWidth && R.thickx ? { sy: R.thickx } : {}), ...(R.proj.topRamp ? { ramp: R.proj.topRamp } : {}) }, front: { img: front, k: R.proj.fk, y0: R.proj.y0, ...(R.proj.ramp ? { ramp: R.proj.ramp } : {}) } };   // ramp: a wedge snout faces sideways, so its front layer needs a wider fade (Nathan 2026-11-25, three-spot)
+    PROJ_ART[id] = { top: { img: top, ...(ws ? { sy: d.stations.map((s: number, i: number) => [U(s), ws[i]] as [number, number]).sort((a: number[], b: number[]) => a[0] - b[0]) } : {}), ...(R.proj.topRamp ? { ramp: R.proj.topRamp } : {}) }, front: { img: front, k: R.proj.fk, y0: R.proj.y0, ...(R.proj.ramp ? { ramp: R.proj.ramp } : {}) } };   // ramp: a wedge snout faces sideways, so its front layer needs a wider fade (Nathan 2026-11-25, three-spot)
     FISH_ART[id] = (ctx, _p, W) => ctx.drawImage(card, 0, 0, W, W * (ctx.canvas.height / ctx.canvas.width));
     done.add(id);
   } catch (e) { console.warn(e); }

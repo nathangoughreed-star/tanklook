@@ -11,7 +11,12 @@ def mass_g(an, sl_mm, thx=None):
     """Trunk mass in g of the anatomy block `an` at standard length sl_mm (thx: thickx, default the render's)."""
     thx = thx or an['render']['photo'].get('thickx') or 1.0
     st = an['depthProfile']['stations']; top = an['depthProfile']['top']; bot = an['depthProfile']['bottom']
-    hw = [w * thx for w in an['thickness']['halfWidthPctSL']]; assert an['thickness']['stations'] == st
+    hw0 = an['thickness']['halfWidthPctSL']; assert an['thickness']['stations'] == st
+    if thx < 1 and an['render']['photo'].get('widthFit') != 'uniform':   # soft cap at the real half-width, as photofish.ts widthScale()
+        c = thx * max(hw0); soft = [h / (1 + (h / c) ** 6) ** (1 / 6) for h in hw0]; k = c / max(soft); im = hw0.index(max(hw0))
+        hw = [s * k if i < im else h * thx for i, (s, h) in enumerate(zip(soft, hw0))]
+    else:
+        hw = [w * thx for w in hw0]
     n = 2.4; k = 4 * math.gamma(1 + 1 / n) ** 2 / math.gamma(1 + 2 / n)   # area of |x/a|^n + |y/b|^n <= 1 is k*a*b
     sl = sl_mm / 10                                                        # cm
     area = [k * ((t + bo) / 2 / 100 * sl) * (w / 100 * sl) for t, bo, w in zip(top, bot, hw)]

@@ -8,10 +8,11 @@
 export interface ProjLayer {
   img: HTMLCanvasElement | ImageBitmap | HTMLImageElement;
   /** front only: image px per card unit (card width = 1), and the card y (up) of the image's centre row */
-  k?: number; ky?: number; y0?: number;
+  k?: number; ky?: number; y0?: number;   // ky: vertical px per card unit when the front panel's face is stretched against the side view (default = k)
   /** top only: the body's width / the image's drawn width (render.photo thickx). The sheet draws the top view wider than the real fish and the
-   *  build squeezes the body to the measured width; the image squeezes with it, else its outer third (the danio's flank stripes and eyes) fell off the body */
-  sy?: number;   // ky: vertical px per card unit when the front panel's face is stretched against the side view (default = k)
+   *  build squeezes the body to the measured width; the image squeezes with it, else its outer third (the danio's flank stripes and eyes) fell off the body.
+   *  A list of [u, factor] (u: 0 tail .. 1 nose) per station (photofish.ts widthScale). */
+  sy?: number | [number, number][];
   /** alpha ramps on the surface normal: [from, to] (top: normal.y, front: normal.x) */
   ramp?: [number, number];
 }

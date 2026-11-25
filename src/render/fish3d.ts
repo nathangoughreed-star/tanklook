@@ -732,6 +732,14 @@ export const outlineMat = hullMaterial('clamp(length(modelMatrix[0].xyz) * proje
  * Projected face layer (projart.ts): a copy of the body that shares its positions, normals and swim attribute but has its own UVs
  * (top: x along the card, z across it; front: z across, y up) and a vertex alpha that fades in where the surface faces up / forward.
  */
+/** The top image's squeeze at u (0 tail .. 1 nose): one factor, or [u, factor] stations interpolated (clamped at the ends). */
+function syAt(sy: ProjLayer['sy'], u: number) {
+  if (sy === undefined) return 1;
+  if (typeof sy === 'number') return sy;
+  if (u <= sy[0][0]) return sy[0][1];
+  for (let j = 1; j < sy.length; j++) if (u <= sy[j][0]) { const [u0, f0] = sy[j - 1], [u1, f1] = sy[j]; return f0 + (f1 - f0) * (u - u0) / (u1 - u0 || 1); }
+  return sy[sy.length - 1][1];
+}
 function projGeometry(g: THREE.BufferGeometry, kind: 'top' | 'front', L: ProjLayer) {
   const pos = g.attributes.position, nor = g.attributes.normal, col = g.attributes.color, n = pos.count;
   const uv = new Float32Array(n * 2), c4 = new Float32Array(n * 4);
@@ -739,7 +747,7 @@ function projGeometry(g: THREE.BufferGeometry, kind: 'top' | 'front', L: ProjLay
   const iw = (L.img as HTMLCanvasElement).width, ih = (L.img as HTMLCanvasElement).height;
   for (let i = 0; i < n; i++) {
     const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
-    if (kind === 'top') { uv[2 * i] = x + 0.5; uv[2 * i + 1] = 0.5 - z / (L.sy ?? 1) * iw / ih; }
+    if (kind === 'top') { uv[2 * i] = x + 0.5; uv[2 * i + 1] = 0.5 - z / syAt(L.sy, x + 0.5) * iw / ih; }
     else { const k = L.k ?? 500; uv[2 * i] = 0.5 + z * k / iw; uv[2 * i + 1] = 0.5 + (y - (L.y0 ?? 0)) * (L.ky ?? k) / ih; }
     const f = kind === 'top' ? nor.getY(i) : nor.getX(i), t = Math.min(1, Math.max(0, (f - a0) / (a1 - a0)));
     c4[4 * i] = c4[4 * i + 1] = c4[4 * i + 2] = col.getX(i); c4[4 * i + 3] = t * t * (3 - 2 * t);
