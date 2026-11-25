@@ -1,6 +1,8 @@
 # Handoff: build-B batch b7 (the next 20 fish), written 2026-11-25
 
 ## Start here
+- **The steps live in `research/fish-sheets/PIPELINE.md`** (one runbook, 15 steps). This file holds only the b7 list and notes.
+- **Pending for b7 (2026-11-25):** body translucency (step 10) waits on branch `claude/translucent-bodies`, parked by Nathan; fin beat (step 11) needs no spec change. b7 builds ship without translucency.
 - This is the same pipeline as b6. Read `research/fish-sheets/HANDOFF-batch-b6.md` for the steps, the known fixes and the
   "never again" incidents; this file only records what is different for b7.
 - **State:** the 20 prompts are written and committed (`research/fish-sheets/prompts/<id>-b7-5row.md`). The work folders
