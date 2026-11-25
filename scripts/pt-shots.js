@@ -8,6 +8,9 @@ export const SCENES = {
   // the water below the grass and the crypt tips: they lie over at the surface (bendPlant)
   bent: { tank: [609, 305, 305], water: 0.5, items: [['grass', 3, 150, 100, 420], ['crypt', 11, 330, 150, 200], ['carpet', 2, 480, 150, 220]], cam: { az: 14, el: 14, zoom: 1.7 } },
   pilotclose: { tank: [609, 305, 305], items: [['crypt', 11, 250, 150, 140], ['grass', 3, 90, 90, 300], ['carpet', 2, 420, 170, 200]], cam: { az: 8, el: 12, zoom: 3 } },
+  catA: { tank: [1219, 530, 330], items: [['stem', 1, 60, 170, 300], ['stemred', 2, 160, 170, 300], ['rotala', 3, 260, 170, 300], ['ludwigia', 4, 360, 170, 260], ['hornwort', 5, 460, 170, 300], ['anacharis', 6, 560, 170, 300], ['grass', 7, 660, 170, 330], ['balansae', 8, 760, 170, 300], ['sword', 9, 860, 170, 280], ['ozelot', 10, 960, 170, 260], ['lotus', 11, 1060, 170, 200]], cam: { az: 0, el: 4, zoom: 1 } },
+  catB: { tank: [1219, 530, 330], items: [['crypt', 1, 60, 170, 140], ['anubias', 2, 160, 170, 110], ['buce', 3, 260, 170, 90], ['fern', 4, 360, 170, 200], ['sagittaria', 5, 460, 170, 90], ['hairgrass', 6, 560, 170, 80], ['carpet', 7, 660, 170, 120], ['moss', 8, 760, 170, 90], ['salvinia', 9, 860, 170, 120], ['frogbit', 10, 960, 170, 120], ['lettuce', 11, 1060, 170, 120]], cam: { az: 0, el: 4, zoom: 1 } },
+  glow: { tank: [609, 305, 305], light: 'led', items: [['crypt', 11, 250, 150, 140], ['grass', 3, 90, 90, 300], ['carpet', 2, 420, 170, 200], ['crypt', 5, 340, 120, 110]], cam: { az: 8, el: 4, zoom: 2.2 } },
   // from above: the upper side of each leaf and its stripes' handedness (a red dot left of the midrib)
   top: { tank: [609, 305, 305], items: [['crypt', 11, 200, 150, 130], ['carpet', 2, 440, 150, 200], ['grass', 3, 80, 80, 200]], cam: { az: 0, el: 80, zoom: 1.7 } },
   // every other plant type, in a four-foot tank: must be pixel-identical before / after
@@ -24,6 +27,7 @@ export async function load(sceneName, mode) {
   const S = Sc.bareSetup();
   S.tank = { L: spec.tank[0], H: spec.tank[1], D: spec.tank[2] };
   S.render.bg = 'blue'; S.render.grid = false; S.render.rim = true; S.substrate.show = true; S.water.level = spec.water ?? 1;
+  if (spec.light) S.light.type = spec.light;
   S.items = spec.items.map(([v, seed, x, d, size], i) => It.makeItem(S.tank, v, i + 1, seed, x, d, size ? { size } : {}));
   store.edit(t => { for (const k of Object.keys(t)) delete t[k]; Object.assign(t, structuredClone(S)); });
   store.cam(c => { c.az = spec.cam.az; c.el = spec.cam.el; c.zoom = spec.cam.zoom; });

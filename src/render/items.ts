@@ -17,6 +17,7 @@ import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
 import { plantAtlas } from './plantAtlas';
+import { AQ_MAX } from '../scene/lightout';
 import { artificialGeometry, bendPlant, carpetOnGround, clumpOnGround, dropPlant, growShader, grownView, plant3d, plantGeometry, plantRaycast, revealPlant, unpackGeometry, uploadPlant, type JobOut, type PlantJob } from './plant3d';
 import { reefShape } from './coral3d';
 import { ornamentShape } from './ornament3d';
@@ -700,6 +701,8 @@ function capPasses(m: THREE.Mesh, T: Tank, id: number) {
 }
 /** 3D plants are cut off at the glass the same way (a leaf arching past a pane stops at it), one material per outline;
  *  its shader shows each plant at its own growth (plant3d growShader, lane GR4). */
+/** How much of a lamp behind a leaf shines through it (plantMaterial's `post`). */
+const LEAF_GLOW = 0.5;
 const plantMats = new Map<string, THREE.MeshBasicMaterial>();
 function plantMaterial(T: Tank, free = false) {
   const k = glassKey(T) + (free ? '|rim' : '');
@@ -715,6 +718,22 @@ function plantMaterial(T: Tank, free = false) {
   // mm, so leaves lying at the surface keep theirs
   const post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
     sh.fragmentShader = sh.fragmentShader.replace('float aqF = smoothstep(0.0, 0.5, aqWaterPath())', '$& * (1.0 - smoothstep(uWater.y + 6.0, uWater.y + 14.0, vAqP.y))');
+    // light through the leaf (lane PT step 6): a lamp on the far side of the blade from the eye shines through it, tinted by the
+    // leaf's own colour, strongest looking toward the lamp; only under a fixture (uMode 1), nothing for a thick (succulent) leaf
+    // is special-cased: the term is modest
+    sh.fragmentShader = sh.fragmentShader.replace('vec3 aqLt = aqLight(); outgoingLight *= aqLt;', `$&
+  if (uMode > 0.5 && uMode < 1.5) {
+    vec3 ptN = normalize(vAqN), ptV = normalize(cameraPosition - vAqP); float ptT = 0.0;
+    for (int i = 0; i < ${AQ_MAX}; i++) {
+      if (i >= uEmN) break;
+      vec4 e = uEm[i]; vec3 q = e.w > 0.0 ? vec3(clamp(vAqP.x, e.x - e.w, e.x + e.w), e.y, e.z) : e.xyz;
+      vec3 tl = q - vAqP; float d = length(tl); vec3 ld = tl / max(d, 1.0), ptR = vec3(0.0);
+      float cone = pow(max(ld.y, 0.0), uBeamM), r = d / uRef, fall = e.w > 0.0 ? 1.0 / (1.0 + r) : 1.0 / (1.0 + r * r);
+      ptT += cone * fall * max(-dot(ptN, ld), 0.0) * (0.35 + 0.65 * max(dot(-ptV, ld), 0.0));
+    }
+    vec3 ptC = diffuseColor.rgb * mix(vec3(1.0), diffuseColor.rgb * 1.8 + 0.05, 0.6);
+    outgoingLight += ptC * uLCol * (uBright * uNorm * ptT * ${LEAF_GLOW.toFixed(2)});
+  }`);
     growShader(sh); // (after the lighting's vAqP: the haze and the light need the grown position)
   };
   Object.assign(m.userData, { cached: true, keep: true, plantClip: true, pre: patch, post });
