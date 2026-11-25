@@ -701,7 +701,8 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); m.userData.swim = true; if (p.tailBlend) m.alphaToCoverage = true;
     const cl = p.clear && clarityMap(art, aspect);
     if (cl) { // see-through by region (lighting.ts aqPatch, userData.clear): both sides drawn, far flank first, so the body reads as a volume
-      m.transparent = true; m.depthWrite = false; m.side = THREE.DoubleSide; m.userData.clear = cl; m.userData.clearK = new THREE.Vector2(p.clearMin ?? 0.12, p.clearRim ?? 0.8);
+      // true blending, not alpha to coverage (tailBlend fish): coverage has only a few levels, and the mask's gradients came out as hard-edged boxes
+      m.alphaToCoverage = false; m.transparent = true; m.depthWrite = false; m.side = THREE.DoubleSide; m.userData.clear = cl; m.userData.clearK = new THREE.Vector2(p.clearMin ?? 0.12, p.clearRim ?? 0.8);
     } else if (p.bodyA !== undefined) { m.transparent = true; m.opacity = Math.min(1, p.bodyA + 0.15); m.depthWrite = false; }
     if (fish3d.fade) { m.userData.plain = p.sharp ? t.map : t.plain; m.userData.side = p.sharp ? SIDE_SHARP : fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
   }));

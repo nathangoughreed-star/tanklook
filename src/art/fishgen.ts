@@ -640,9 +640,6 @@ export const PLANS: Record<string, Plan> = {
       { k: 'band', u0: 0.2, u1: 0.94, v0: -0.075, v1: 0.004, c: '#5ac8ff', a: 0.2, f: 0.02 },  // glow around the stripe
       { k: 'band', u0: 0.2, u1: 0.94, v0: -0.054, v1: -0.014, c: '#2f7ff0', a: 1, f: 0.008 }, // blue stripe
       { k: 'band', u0: 0.26, u1: 0.9, v0: -0.045, v1: -0.027, c: '#78d6ff', a: 0.85, f: 0.006 }], // bright core
-    // 3D (2026-11-25 prototype): the silvery belly half see-through, and the stalk behind the red band clearer
-    clear: [{ k: 'band', u0: 0.5, u1: 0.88, v0: 0.075, v1: 0.2, c: '#000', a: 0.5, f: 0.03 }, { k: 'band', u0: 0.1, u1: 0.22, v0: -0.02, v1: 0.2, c: '#000', a: 0.6, f: 0.035 }],
-    clearMin: 0.2, clearRim: 0.85,
     eye: { r: 0.024, iris: ['#b9ccd2', '#4c5c63'] } },
   // Ember tetra (Hyphessobrycon amandae): luminous copper/orange, rounded snout, clear warm fins.
   // The shape and coloration describe a well-colored adult; adult total length is kept in species.json.
@@ -658,11 +655,6 @@ export const PLANS: Record<string, Plan> = {
       { k: 'blob', u: 0.855, v: 0.047, ru: 0.065, rv: 0.073, c: '#b74824', a: 0.25 }, // flush around gill plate
       { k: 'band', u0: 0.22, u1: 0.74, v0: -0.105, v1: -0.076, c: '#a34524', a: 0.25, f: 0.014 }, // darkened back line
     ],
-    // 3D (2026-11-25): the whole body faintly see-through, the lower rear and the tail stalk most; the spine and the silvery gut sac show inside
-    clear: [{ k: 'band', u0: 0.15, u1: 0.84, v0: -0.25, v1: 0.25, c: '#000', a: 0.45, f: 0.04 }, { k: 'band', u0: 0.1, u1: 0.3, v0: -0.25, v1: 0.25, c: '#000', a: 0.6, f: 0.04 },
-      { k: 'band', u0: 0.25, u1: 0.6, v0: 0.04, v1: 0.25, c: '#000', a: 0.55, f: 0.03 }],
-    clearMin: 0.15, clearRim: 0.85,
-    inner: [{ k: 'spine', u0: 0.18, u1: 0.8, v: -0.01, v1: -0.02, r: 0.004, c: '#8a3a20' }, { k: 'sac', u: 0.66, v: 0.035, ru: 0.11, rv: 0.04, rz: 0.026, c: '#e0955a' }],
     eye: { r: 0.031, u: 0.905, dv: -0.02, iris: ['#f2c889', '#60301c'] } },
   rummynose: { gape: 0.022, gapeDrop: 0.005, thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.028, peak: 0.66, snout: 0.45, shade: ['#8b927f', '#b6bbae', '#e2e1da'], tail: { type: 'fork', h: 0.14 }, fin: '#c8ccc5',
     dorsal: { at: 0.61, len: 0.06, h: 0.09, rake: 0.12, taper: 0.4, lead: 0.6, tip: 'point', trail: 0.05, drop: 0.2 }, anal: { at: 0.47, len: 0.21, h: 0.045, rake: 0.05, lead: 0.9, drop: 0.5, trail: 0.01 }, adipose: true, pelvic: { u: 0.62, len: 0.05 },
@@ -693,12 +685,7 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { u0: 0.47, u1: 0.6, h: 0.09, tint: '#e0704f' }, anal: { u0: 0.33, u1: 0.47, h: 0.06, tint: '#e0704f' }, pelvic: { u: 0.6, len: 0.06 },
     marks: [{ k: 'blob', u: 0.3, v: -0.01, ru: 0.2, rv: 0.08, c: '#b08ac0', a: 0.22 },            // purple sheen aft of the wedge
       { k: 'poly', pts: [[0.635, -0.125, 'c'], [0.615, -0.02], [0.625, 0.085, 'c'], [0.175, 0.006, 'c']], c: '#e8a85a', a: 0.75 }, // golden rim
-      { k: 'poly', pts: [[0.62, -0.115, 'c'], [0.6, -0.02], [0.61, 0.075, 'c'], [0.19, 0.004, 'c']], c: '#1f1d22', a: 0.92 }],
-    // 3D (2026-11-25): the pink body see-through around the black wedge (above and below its tail half, and the stalk); the wedge and the head stay solid
-    clear: [{ k: 'band', u0: 0.08, u1: 0.19, v0: -0.25, v1: 0.25, c: '#000', a: 0.55, f: 0.03 }, { k: 'band', u0: 0.18, u1: 0.48, v0: 0.055, v1: 0.25, c: '#000', a: 0.45, f: 0.03 },
-      { k: 'band', u0: 0.18, u1: 0.45, v0: -0.25, v1: -0.065, c: '#000', a: 0.4, f: 0.03 }],
-    clearMin: 0.15, clearRim: 0.85,
-    eye: { r: 0.03, iris: ['#e8a050', '#5a3018'] } },
+      { k: 'poly', pts: [[0.62, -0.115, 'c'], [0.6, -0.02], [0.61, 0.075, 'c'], [0.19, 0.004, 'c']], c: '#1f1d22', a: 0.92 }], eye: { r: 0.03, iris: ['#e8a050', '#5a3018'] } },
   chili: { shimmer: 0.5, shimmerRgb: '255,195,155', gillLine: 0.22, finFade: 0.3, noseCap: 0.03, gape: 0.02, gapeDrop: 0.005, thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.03, peak: 0.58, snout: 0.6, shade: ['#a5402e', '#d4563c', '#e07a5c'], tail: { type: 'fork', h: 0.13, tint: '#c95a44' }, fin: '#cf7056',
     dorsal: { at: 0.53, len: 0.06, h: 0.08, rake: 0.3, lead: 0.6, tip: 'point', trail: 0.045, drop: 0.2 }, anal: { at: 0.45, len: 0.1, h: 0.055, rake: 0.05, lead: 0.85, tip: 'point', trail: 0.03, drop: 0.35 }, pelvic: { u: 0.56, len: 0.05 },
     marks: [{ k: 'band', u0: 0.22, u1: 0.85, v0: -0.012, v1: 0.012, c: '#2a1a18', a: 0.7, f: 0.01 }, { k: 'blob', u: 0.24, v: 0, ru: 0.03, rv: 0.025, c: '#1a1212', a: 0.8 }],
@@ -1371,10 +1358,6 @@ Object.assign(PLANS, {
     anal: { u0: 0.28, u1: 0.92, h: 0.09, tint: '#c4d0c0', a: 0.5 }, pelvic: { u: 0.3, len: 0.03, tint: '#c4d0c0' },
     marks: [{ k: 'band', u0: 0.15, u1: 0.55, v0: 0.03, v1: 0.07, c: '#a8b8a2', a: 0.5, f: 0.03 }],
     solid: [{ k: 'band', u0: 0.12, u1: 0.9, v0: -0.012, v1: 0.004, c: '#3e4e3a', a: 0.9, f: 0.005 }, { k: 'band', u0: 0.14, u1: 0.88, v0: -0.03, v1: -0.024, c: '#7a8a76', a: 0.4, f: 0.004 }, { k: 'blob', u: 0.22, v: 0.0, ru: 0.09, rv: 0.055, c: '#2a3228', a: 0.85 }, { k: 'blob', u: 0.2, v: 0.0, ru: 0.05, rv: 0.04, c: '#c8d0c4', a: 0.35 }],
-    // 3D (2026-11-25 prototype): the whole trunk nearly clear, the head less so (skull, gill cover); the spine and the silvery organ sac behind the head as solids inside
-    clear: [{ k: 'band', u0: 0.08, u1: 0.84, v0: -0.25, v1: 0.25, c: '#000', a: 0.95, f: 0.04 }, { k: 'band', u0: 0.84, u1: 1.05, v0: -0.25, v1: 0.25, c: '#000', a: 0.55, f: 0.03 }],
-    clearMin: 0.1, clearRim: 0.75,
-    inner: [{ k: 'spine', u0: 0.15, u1: 0.84, v: -0.004, v1: 0.002, r: 0.0035, c: '#56604f' }, { k: 'sac', u: 0.76, v: 0.03, ru: 0.075, rv: 0.038, rz: 0.022, c: '#c4c8bc' }, { k: 'sac', u: 0.8, v: 0.045, ru: 0.035, rv: 0.02, rz: 0.018, c: '#5a5a48' }],
     finMarks: [], eye: { r: 0.034, iris: ['#c0b890', '#1a1a18'] } }),
   //@@RX1END
 });
@@ -1454,6 +1437,25 @@ for (const r of albinoSpecies.species as { id: string; art: string; female?: { a
 }
 
 export const bodyPlan = (art: string): Plan | undefined => PLANS[art] ?? SHRIMP_PLANS[art];
+/**
+ * See-through bodies (Plan.clear / clearMin / clearRim / inner), only on build-B fish (Nathan 2026-11-25: no point testing on the old
+ * models): keyed by the B art, merged into its plan by photofish.ts, so the fish-build.py anatomy JSON stays untouched. Marks in card
+ * units of the B card (u 0 tail tip .. 1 snout, v down from the centre line), placed on the card photo.
+ */
+export const CLEAR_B: Record<string, Pick<Plan, 'clear' | 'clearMin' | 'clearRim' | 'inner'>> = {
+  // neon: the silvery belly under the front half, and a faint olive back over the stripe (the spine shows through in life)
+  neonb: { clear: [{ k: 'band', u0: 0.48, u1: 0.84, v0: 0.04, v1: 0.2, c: '#000', a: 0.45, f: 0.025 }, { k: 'band', u0: 0.22, u1: 0.8, v0: -0.2, v1: -0.06, c: '#000', a: 0.3, f: 0.02 }],
+    clearMin: 0.2, clearRim: 0.85 },
+  // cardinal: red the whole length (stays solid), only the back over the stripe and the grey tail stalk faintly see-through
+  cardinalc: { clear: [{ k: 'band', u0: 0.22, u1: 0.8, v0: -0.2, v1: -0.06, c: '#000', a: 0.3, f: 0.02 }, { k: 'band', u0: 0.12, u1: 0.2, v0: -0.2, v1: 0.2, c: '#000', a: 0.35, f: 0.02 }],
+    clearMin: 0.2, clearRim: 0.85 },
+  // glowlight: the clearest of the tetras: the whole trunk see-through, the lower rear most; the head and gill cover less
+  glowlightb: { clear: [{ k: 'band', u0: 0.15, u1: 0.8, v0: -0.2, v1: 0.2, c: '#000', a: 0.45, f: 0.04 }, { k: 'band', u0: 0.18, u1: 0.5, v0: 0.02, v1: 0.2, c: '#000', a: 0.6, f: 0.03 },
+    { k: 'band', u0: 0.8, u1: 1.02, v0: -0.2, v1: 0.2, c: '#000', a: 0.15, f: 0.03 }], clearMin: 0.15, clearRim: 0.85 },
+  // guppy: the rear trunk (orange, spotted) see-through, the front faintly; the head solid
+  guppyb: { clear: [{ k: 'band', u0: 0.18, u1: 0.46, v0: -0.2, v1: 0.2, c: '#000', a: 0.45, f: 0.035 }, { k: 'band', u0: 0.46, u1: 0.78, v0: -0.2, v1: 0.2, c: '#000', a: 0.2, f: 0.04 }],
+    clearMin: 0.2, clearRim: 0.85 },
+};
 /**
  * The 3D body's clarity mask for a card W wide (same projection as the card: (u, v) -> (u W, H/2 + v W)): white = solid, darker =
  * see-through by each `clear` mark's `a`. Undefined when the plan has none.
