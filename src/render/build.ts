@@ -45,7 +45,7 @@ import { itemDeps, itemMesh, leafProbe, solidProbe, underProbe } from './items';
 import { rootsKey, rootsMesh } from './roots';
 import { outlineKey, spaceOutline } from './spaceOutline';
 import { addBackdrop, backdropGeometry } from './backdrop';
-import { drapedCard, fish3d, fishBody, hullMaterial, swims } from './fish3d';
+import { drapedCard, fish3d, fishBody, hullMaterial, seeThroughCard, swims } from './fish3d';
 import { BANDS } from '../scene/scatter';
 import { herpBody, herpFloatTop, isHerp3D } from './herp3d';
 import { isLizard } from './lizard3d';
@@ -1817,7 +1817,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     if (swim) m.userData.swimmer = true; // the viewer redraws on its own while a fish swims (viewer swayDue) // fish stand out (render.pop) lifts the card too
     const snakeLimb = herp && isSnake(sp.art) && !!perch?.limb; // a snake on a limb follows its curve: built once the card is placed on it (below)
     if (snakeLimb) { /* added below */ } else if (herp) m.add(herpBody(sp.art, w, perch?.limb ? 'perch' : f.surface, perch?.limb?.r, isArachnid(sp.art) ? f.bend : isLizard(sp.art) && f.sex !== 'f' && f.id % 4 === 0 ? 1 : 0)); // a quarter of the male anoles display the dewlap (by id, so it survives save / load and Shuffle) // the card stays as the invisible picking target
-    else if (!glbSwap(sp.art, m, w)) m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass' || !!hang, fin, swim)); // solid body + paired fins; the card keeps the median fins
+    else if (!glbSwap(sp.art, m, w)) { m.add(fishBody(sp.art, sp.aspect, w, f.bend, fishBodyTexture(sp), S.render.edge, f.surface === 'glass' || !!hang, fin, swim)); seeThroughCard(sp.art, sp.aspect, m.material as THREE.Material); } // solid body + paired fins; the card keeps the median fins (and, see-through fish, the stalk fades with the body)
     if (f.surface === 'glass') { const gk = onGlass(S, T, f, sp, m, w, A); if (gk === 'glass') markCling(m, f, w, sp, true); register(m, w, h); return; }
     if (hang) { hangOn(f, m, sp.rest * w + PANE_GAP, hang); register(m, w, h); return; }
     // floating at the water surface (dwarf frog): the pose's `top` line just under the water line, wherever it is

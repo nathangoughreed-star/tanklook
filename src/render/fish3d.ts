@@ -765,10 +765,20 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
 
 const clarityCache = new Map<string, THREE.Texture>();
 /** The body's clarity mask (fishgen `clarityCanvas`, on the body's own UVs): green 1 = solid, 0 = as clear as `clearMin`. */
-function clarityMap(art: string, aspect: number) {
-  const k = art + '|' + aspect; let t = clarityCache.get(k);
-  if (!t) { const c = clarityCanvas(art, aspect); if (!c) return undefined; t = new THREE.CanvasTexture(c); t.anisotropy = 4; clarityCache.set(k, t); }
+function clarityMap(art: string, aspect: number, clip = false) {
+  const k = art + '|' + aspect + (clip ? '|card' : ''); let t = clarityCache.get(k);
+  if (!t) { const c = clarityCanvas(art, aspect, 512, clip); if (!c) return undefined; t = new THREE.CanvasTexture(c); t.anisotropy = 4; clarityCache.set(k, t); }
   return t;
+}
+/**
+ * A see-through fish's fin card (build.ts): its leftover body painting behind the hollow cut (the tail stalk) takes the body's clarity, so
+ * the stalk does not turn from clear 3D body to opaque card at the cut (Nathan 2026-11-25, guppy: "this abrupt change cant exist").
+ * Flat and face-on, so no edge-on rim. Sets the card material once (cached per species).
+ */
+export function seeThroughCard(art: string, aspect: number, mat: THREE.Material) {
+  const p = bodyPlan(art), st = p && seeThrough(p); if (!st || mat.userData.clear) return;
+  const cl = clarityMap(art, aspect, true); if (!cl) return;
+  mat.userData.clear = cl; mat.userData.clearK = new THREE.Vector2(st.min, 0); mat.transparent = true; mat.alphaToCoverage = false; mat.needsUpdate = true;
 }
 const innerGeo = new Map<string, THREE.BufferGeometry>();
 /**
