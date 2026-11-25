@@ -16,6 +16,18 @@
     "cherrybarb": {
       "look": "cherrybarbb",
       "approved": "2026-11-24"
+    },
+    "danio": {
+      "look": "daniob",
+      "approved": "2026-11-24"
+    },
+    "whitecloud": {
+      "look": "whitecloudb",
+      "approved": "2026-11-24"
+    },
+    "glowlight": {
+      "look": "glowlightb",
+      "approved": "2026-11-24"
     }
   }
 }
