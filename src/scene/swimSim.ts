@@ -521,7 +521,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       // on its fins (a quarter of the rate; near something it still turns away quickly). One resting on the bed barely turns.
       const bedRest = isB && mode[i] === REST && dst === 0, way0 = bedRest ? 0.08 : 0.25;
       // burst-and-coast swimmers under way (FB2: they turn in their bursts) and the home-keeping habit species (FB3: belly to the rock, held spot) keep their tuned rates; a burst swimmer hovering does not
-      const free = (sRate[i] > 0 && mode[i] === MOVE && dst === 0 && subMode[i] !== 2) || ovOn || hb[i] > 0;
+      const free = (sRate[i] > 0 && mode[i] === MOVE && dst === 0 && subMode[i] !== 2) || ((ovOn || hb[i] > 0) && !held);
       const way = free ? 1 : clamp(way0 + (bedRest ? 0 : 0.75 * K) + 0.75 * spd[i] / (L * 0.6), way0, 1);
       const maxStep = turn[i] * (1 + 0.5 * K) * dt * (isB ? 1.3 : 1) * (pulsing ? (burstLeft[i] > 0 ? 1.6 : 0.5) : 1) * way;
       const yawBefore = Math.atan2(-hz[i], hx[i]), ohx = hx[i], ohy = hy[i], ohz = hz[i];
