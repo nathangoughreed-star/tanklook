@@ -741,7 +741,10 @@
     "noTail": false,
     "measuredWidth": true,
     "aspect": 0.434,
-    "finImg": true
+    "finImg": true,
+    "bodyClear": {
+     "zones": {}
+    }
    },
    "fit": "{'thick': 0.64, 'pedT': 0.294, 'rmsPctSL': 0.41, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }

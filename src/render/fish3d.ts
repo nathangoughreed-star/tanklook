@@ -4,7 +4,7 @@
 // card stays as the fins (thin membranes); its painted body sits inside the solid. Nose and tail tips are unchanged,
 // so nose-to-tail stays adult TL.
 import * as THREE from 'three';
-import { analBox, bodyPlan, finRange, drawAnal, drawTail, eyeSpot, pairedFins, profile, tailBox, type Plan } from '../art/fishgen';
+import { analBox, bodyPlan, clarityCanvas, finRange, seeThrough, drawAnal, drawTail, eyeSpot, pairedFins, profile, tailBox, type Plan } from '../art/fishgen';
 import { FIN_A, FIN_A2C, rng, style } from '../art/paint';
 import type { EdgeMode } from '../scene/types';
 import { cardMaterial, pairedFinOpacity, pairedFinTexture } from './textures';
@@ -766,11 +766,29 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   if (isShrimp3D(art)) return shrimpBody(art, w); // shrimp: their own body plan (shrimp3d.ts)
   const p = shaped(bodyPlan(art)!), b = Math.round(bend * 20) / 20, key = `${art}|${aspect}|${b}|${fish3d.fade}|${swim ? 's' : ''}`;
   let g = geoCache.get(key); if (!g) { g = bodyGeometry(p, aspect, b, swim); geoCache.set(key, g); }
-  const grp = new THREE.Group(); grp.scale.setScalar(w);
-  grp.add(new THREE.Mesh(g, fishMat(`body:${map.uuid}:${fish3d.fade}:${fish3d.wrap}`, () => {
-    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); m.userData.swim = true; if (p.tailBlend) m.alphaToCoverage = true; if (p.bodyA !== undefined) { m.transparent = true; m.opacity = Math.min(1, p.bodyA + 0.15); m.depthWrite = false; } if (fish3d.fade) { m.userData.plain = p.sharp ? t.map : t.plain; m.userData.side = p.sharp ? SIDE_SHARP : fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
-  })));
-  if (p.bodyA === undefined) { const o = new THREE.Mesh(g, outlineMat); o.userData.nolight = true; grp.add(o); }
+  const grp = new THREE.Group(), st = seeThrough(p); grp.scale.setScalar(w);
+  const bodyKey = `body:${map.uuid}:${fish3d.fade}:${fish3d.wrap}:${st ? art + aspect : ''}`;
+  const bodyMake = (side: THREE.Side) => () => {
+    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); m.userData.swim = true; if (p.tailBlend) m.alphaToCoverage = true;
+    const cl = st && clarityMap(art, aspect);
+    if (cl) { // see-through by region (lighting.ts aqPatch, userData.clear): both sides drawn, far flank first, so the body reads as a volume
+      // true blending, not alpha to coverage (tailBlend fish): coverage has only a few levels, and the mask's gradients came out as hard-edged boxes
+      m.alphaToCoverage = false; m.transparent = true; m.depthWrite = false; m.userData.clear = cl; m.userData.clearK = new THREE.Vector2(st!.min, st!.rim);
+    } else if (p.bodyA !== undefined) { m.transparent = true; m.opacity = Math.min(1, p.bodyA + 0.15); m.depthWrite = false; }
+    if (cl) m.side = side;
+    if (fish3d.fade) { m.userData.plain = p.sharp ? t.map : t.plain; m.userData.side = p.sharp ? SIDE_SHARP : fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
+  };
+  if (st) {
+    // a see-through body draws after every fish's projected face layers (renderOrder 1): drawn before them, a farther fish's top / front
+    // painting landed on top of it (it writes no depth), as a stripe across the harlequin's solid wedge. Its far flank (2), then what is
+    // inside it (3: the soft gut sac / swim bladder), then its near flank (4), so the organs are seen through the flesh, not laid on top of
+    // it (Nathan 2026-11-25: the sac "looks like a sticker"); its own face layers last (5)
+    const back = new THREE.Mesh(g, fishMat(bodyKey + ':back', bodyMake(THREE.BackSide))); back.renderOrder = 2; grp.add(back);
+    const front = new THREE.Mesh(g, fishMat(bodyKey + ':front', bodyMake(THREE.FrontSide))); front.renderOrder = 4; grp.add(front);
+  } else grp.add(new THREE.Mesh(g, fishMat(bodyKey, bodyMake(THREE.FrontSide))));
+  // the dark outline hull is the body's back faces: through a see-through body it would show as a dark lining, so clear fish go without
+  if (p.bodyA === undefined && !st) { const o = new THREE.Mesh(g, outlineMat); o.userData.nolight = true; grp.add(o); }
+  if (st?.inner.length) for (const m of innerMeshes(art, st.inner, b, swim)) grp.add(m);
   const pa = PROJ_ART[art];
   if (pa) for (const kind of ['top', 'front'] as const) {
     const L = pa[kind]; if (!L) continue;
@@ -780,7 +798,7 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
       const pm = new THREE.MeshBasicMaterial({ map: t, vertexColors: true, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
       pm.userData.swim = true; return pm;
     }));
-    m.renderOrder = 1; grp.add(m);
+    m.renderOrder = st ? 5 : 1; grp.add(m);
   }
   for (const e of eyePlacements(p, b)) {
     // measured eye (pupilFrac set; Nathan 2026-11-23: eyes too small and nearly all pupil): e.r is the eye's radius on the sheet. The head curves
@@ -795,7 +813,9 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   const belly = bellyPlate(art, p, b); if (belly) grp.add(belly);
   if (p.tail.split) for (const m of splitTail(art, p, b, edge)) grp.add(m);
   if (p.analSplit && p.anal && !p.gono) for (const m of splitAnal(art, p, b, edge)) grp.add(m);
-  for (const f of finMeshes(art, p, b, edge, cling, fin)) grp.add(f);
+  // paired fins of a see-through fish draw after its body (5): drawn first, a fin wrote depth and blanked the far flank behind it, which
+  // left a pale hole with the fin's outline round it, reading as a sticker (Nathan 2026-11-25, guppy pectoral)
+  for (const f of finMeshes(art, p, b, edge, cling, fin)) { if (st) f.renderOrder = 5; grp.add(f); }
   if (p.limbs) {
     const mat = (c?: string) => fishMat(`limb:${art}:${c ?? ''}`, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(c ?? p.shade[0]).multiplyScalar(0.9) })); // own colour (cleaner shrimp's white antennae) or the back's
     for (const m of limbMeshes(art, p, b, mat)) grp.add(m);
@@ -821,6 +841,68 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   return grp;
 }
 
+const clarityCache = new Map<string, THREE.Texture>();
+/** The body's clarity mask (fishgen `clarityCanvas`, on the body's own UVs): green 1 = solid, 0 = as clear as `clearMin`. */
+function clarityMap(art: string, aspect: number, clip = false) {
+  const k = art + '|' + aspect + (clip ? '|card' : ''); let t = clarityCache.get(k);
+  if (!t) { const c = clarityCanvas(art, aspect, 512, clip); if (!c) return undefined; t = new THREE.CanvasTexture(c); t.anisotropy = 4; clarityCache.set(k, t); }
+  return t;
+}
+/**
+ * A see-through fish's fin card (build.ts): its leftover body painting behind the hollow cut (the tail stalk) takes the body's clarity, so
+ * the stalk does not turn from clear 3D body to opaque card at the cut (Nathan 2026-11-25, guppy: "this abrupt change cant exist").
+ * Flat and face-on, so no edge-on rim. Sets the card material once (cached per species).
+ */
+export function seeThroughCard(art: string, aspect: number, mat: THREE.Material) {
+  const p = bodyPlan(art), st = p && seeThrough(p); if (!st || mat.userData.clear) return;
+  const cl = clarityMap(art, aspect, true); if (!cl) return;
+  mat.userData.clear = cl; mat.userData.clearK = new THREE.Vector2(st.min, 0); mat.transparent = true; mat.alphaToCoverage = false; mat.needsUpdate = true;
+}
+/** Organs seen through the body: peak opacity face-on, and how far round toward the rim (|n.v|) it takes to reach it. */
+const SAC = { a: 0.6, edge: 0.85 };
+const innerGeo = new Map<string, THREE.BufferGeometry>();
+/**
+ * What shows through a see-through body (Plan.inner): opaque solids inside it, in body units like the body (x = u - 0.5, y = -v,
+ * z bent with the body) and carrying the same swim attributes (uv.x = u, aSwL), so they bend and beat with it.
+ */
+function innerMeshes(art: string, list: NonNullable<Plan['inner']>, bend: number, swim: boolean) {
+  return list.map((it, i) => {
+    const key = `${art}|${i}|${bend}|${swim}`;
+    let g = innerGeo.get(key);
+    if (!g) {
+      if (it.k === 'spine') {
+        const pts: THREE.Vector3[] = [], N = 24;
+        for (let j = 0; j <= N; j++) { const u = it.u0 + (it.u1 - it.u0) * j / N, v = it.v + ((it.v1 ?? it.v) - it.v) * j / N, x = u - 0.5; pts.push(new THREE.Vector3(x, -v, bendZ(bend, x))); }
+        g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, it.r, 6, false);
+        // taper toward the tail: scale each ring's offset from the curve by its u (thin at u0)
+        const pos = g.attributes.position, c = new THREE.Vector3();
+        for (let k = 0; k < pos.count; k++) {
+          const x = pos.getX(k), u = x + 0.5, t = Math.min(1, Math.max(0, (u - it.u0) / (it.u1 - it.u0))), s = 0.45 + 0.55 * Math.sqrt(t);
+          const xc = x, vc = it.v + ((it.v1 ?? it.v) - it.v) * t; c.set(xc, -vc, bendZ(bend, xc));
+          pos.setXYZ(k, c.x + (pos.getX(k) - c.x) * s, c.y + (pos.getY(k) - c.y) * s, c.z + (pos.getZ(k) - c.z) * s);
+        }
+      } else {
+        g = new THREE.SphereGeometry(1, 20, 14); const x = it.u - 0.5;
+        g.scale(it.ru, it.rv, it.rz); g.translate(x, -it.v, bendZ(bend, x));
+      }
+      const pos = g.attributes.position, uv = new Float32Array(pos.count * 2);
+      for (let k = 0; k < pos.count; k++) uv[2 * k] = pos.getX(k) + 0.5;
+      g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+      g.setAttribute('aSwL', new THREE.Float32BufferAttribute(new Array(pos.count).fill(swim ? 1 : 0), 1));
+      g.computeVertexNormals(); g.userData.keep = true; innerGeo.set(key, g);
+    }
+    // the spine stays a solid rod; an organ (gut sac, swim bladder) is soft: see-through, densest where it faces the eye and fading to
+    // nothing at its rim (lighting.ts userData.soft), drawn between the body's far and near flanks, so no hard sticker outline
+    const m = fishMat(`inner:${art}:${i}`, () => {
+      const mm = new THREE.MeshBasicMaterial({ color: new THREE.Color(it.c) }); mm.userData.swim = true;
+      if (it.k === 'sac') { mm.transparent = true; mm.depthWrite = false; mm.userData.soft = new THREE.Vector2(SAC.a, SAC.edge); }
+      return mm;
+    });
+    const o = new THREE.Mesh(g, m); if (it.k === 'sac') o.renderOrder = 3;
+    return o;
+  });
+}
+
 /**
  * One draw per material (lane FM): the group's meshes that share a material (the two eyes, the two gape lines, each pair
  * of paired fins, the barbels, a doubled tail or anal) become one mesh, their own transforms baked into the vertices,
@@ -836,7 +918,7 @@ export function mergeShared(grp: THREE.Group) {
     const key = 'merge:' + parts.map(m => m.geometry.uuid + ':' + m.matrix.elements.join(',')).join('|');
     let g = geoCache.get(key);
     if (!g) { const b = bakeMerge(parts); if (!b) continue; geoCache.set(key, g = b); }
-    const one = new THREE.Mesh(g, mat);
+    const one = new THREE.Mesh(g, mat); one.renderOrder = parts[0].renderOrder; // keep the draw order (a see-through fish's fins and organs)
     grp.children[grp.children.indexOf(parts[0])] = one; one.parent = grp;
     for (const m of parts) { if (m !== parts[0]) grp.remove(m); m.parent = null; }
   }

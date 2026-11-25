@@ -112,6 +112,17 @@ export interface Plan {
   finFade?: number;    // 2D: fins turn this much more translucent toward their edge (0..0.4); opt-in
   bodyA?: number;      // 2D card: the whole body is this opaque (0..1), a see-through fish (glass catfish); `solid` marks are painted over it at full strength
   solid?: Mark[];       // marks drawn over a see-through body (the spine, the organs behind the head)
+  // 3D see-through body by region (2026-11-25): each mark's `a` is how clear the body is there (0 solid .. 1 clear), its `f`
+  // the feather, so bands and blobs give soft gradients; painted into a mask on the body's own UVs (fish3d `clarityMap`).
+  // Overrides bodyA / solid on the 3D body (the 2D card keeps them). clearRim: how far the body turns solid again where
+  // it is seen edge-on (more flesh in the sightline; 0..1, default 0.8). clearMin: the clearest it gets (default 0.12)
+  clear?: Mark[];
+  bodyClear?: BodyClear; // see-through body from the reference-photo check (build-B fish: scripts/fish-body-class.py -> render.photo.bodyClear); `seeThrough` turns it into zones and inner solids
+  clearRim?: number;
+  clearMin?: number;
+  // 3D: what shows through a see-through body, opaque solids inside it (bend and swim with it). spine: a thin rod at v
+  // from u0 to u1 (r: radius, widths); sac: an ellipsoid (organs, swim bladder) at (u, v), radii ru, rv and rz across
+  inner?: ({ k: 'spine'; u0: number; u1: number; v: number; v1?: number; r: number; c: string } | { k: 'sac'; u: number; v: number; ru: number; rv: number; rz: number; c: string })[];
   shimmerRgb?: string; // 2D: glint colour as 'r,g,b' (default warm gold)
   shimmer?: number;    // 2D: fine, deterministic warm scale glints (0..1); opt-in, projected to 3D flanks
   // 3D body shape (all optional): flat belly 0..1; cross-section widest low (+) or high (-); thickness at the peduncle
@@ -502,7 +513,8 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
     fin(ctx, P, W, [[u + 0.03, b + 0.01], [u, b - 0.035, 'c'], [u - 0.03, b + 0.01]], [u, b], p.fin, ray, { rays: 0 });
   }
   const [t0, b0] = [Math.min(...g.bodyPts.map(q => q[1])), Math.max(...g.bodyPts.map(q => q[1]))];
-  if (p.bodyA !== undefined) { ctx.save(); ctx.globalAlpha *= p.bodyA; }
+  const seeA = p.bodyA !== undefined && !(p.clear && !style.paired); // a 3D body with a clarity mask is painted solid; the mask makes it see-through
+  if (seeA) { ctx.save(); ctx.globalAlpha *= p.bodyA!; }
   body(ctx, P, W, g.bodyPts, t0, b0, [[0, p.shade[0]], [0.4, p.shade[1]], [0.65, p.shade[1]], [1, p.shade[2]]], p.rim ?? 0.035, l => {
     paintMarks(l, P, W, p.marks, 7, g.prof);
     if (p.shimmer) shimmer(l, P, W, p.pedU + 0.025, 1 - (1 - p.pedU) * 0.14, g.prof, p.shimmer, p.shimmerRgb);
@@ -518,7 +530,8 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
     l.beginPath(); l.moveTo(mx, my); l.quadraticCurveTo((mx + ex) / 2, ey, ex, ey);
     l.strokeStyle = 'rgba(18,16,12,0.45)'; l.lineWidth = 0.004 * W; l.stroke();
   });
-  if (p.bodyA !== undefined) { ctx.restore(); if (p.solid) paintMarks(ctx, P, W, p.solid, 11); }
+  if (seeA) ctx.restore();
+  if (p.bodyA !== undefined && p.solid && !(p.inner && !style.paired)) paintMarks(ctx, P, W, p.solid, 11); // 3D bodies with `inner` show them as solids instead
   // pectoral fin: faint fan behind the gill cover
   if (style.paired && paired.length) drawPairedFin(paired[paired.length - 1], ctx, P, W, ray);
   if (p.barbels && style.paired) { // style.paired off = painted for the 3D pipeline, which has its own barbels
@@ -1425,6 +1438,90 @@ for (const r of albinoSpecies.species as { id: string; art: string; female?: { a
 }
 
 export const bodyPlan = (art: string): Plan | undefined => PLANS[art] ?? SHRIMP_PLANS[art];
+/** The body photo check's result (research/fish-specs/<id>.json body_clear): see-through class per anatomical zone, and what shows inside. */
+export interface BodyClear { zones: Partial<Record<BodyZone, BodyClass>>; inner?: Partial<Record<'spine' | 'sac' | 'bladder', string | null>> }
+export type BodyZone = 'head' | 'back' | 'trunk' | 'belly' | 'lowerrear' | 'stalk';
+export type BodyClass = 'clear' | 'translucent' | 'faint' | 'solid';
+/** How clear each class makes its zone (mask a: 0 solid .. 1 as clear as clearMin). */
+export const BODY_CLASS: Record<BodyClass, number> = { clear: 0.75, translucent: 0.5, faint: 0.25, solid: 0 };
+/**
+ * Zones in anatomy, so one table fits any fish: s = share of SL from the snout (0) to the tail base (1), d = share of the body's
+ * depth at that point from the top (0) to the belly (1). Feathered by ZONE_FEATHER along and across.
+ */
+export const BODY_ZONES: Record<BodyZone, { s: [number, number]; d: [number, number] }> = {
+  head: { s: [-0.02, 0.22], d: [-0.1, 1.1] },
+  back: { s: [0.22, 0.88], d: [-0.1, 0.35] },
+  trunk: { s: [0.22, 0.88], d: [-0.1, 1.1] },
+  belly: { s: [0.22, 0.7], d: [0.6, 1.1] },
+  lowerrear: { s: [0.5, 0.9], d: [0.5, 1.1] },
+  stalk: { s: [0.85, 1.04], d: [-0.1, 1.1] },
+};
+export const ZONE_FEATHER = { s: 0.05, d: 0.15 };
+/**
+ * The body turns solid again toward the tail root: every fin root is 0.7-0.95 opaque (fish-fin-opacity.py presets), and a
+ * clear stalk meeting the tail fin's root was a hard edge (Nathan 2026-11-25, guppy: "this abrupt change cant exist").
+ */
+export const ROOT_EASE = 0.2; // length of the ease (share of SL), ending where the card's cut starts
+/** Default colours of what shows through: a dark spine, the gut sac pale, the swim bladder silver. */
+const INNER_C = { spine: '#4e5648', sac: '#cdc6b6', bladder: '#dfe3df' };
+export type Zone = { s0: number; s1: number; d0: number; d1: number; a: number };
+/**
+ * A plan's see-through body, from the photo check (bodyClear) or hand marks (clear): the zones / marks for the clarity mask, the
+ * solids inside (in card units, placed from the body's own profile) and the shader's clearMin / clearRim. Undefined = solid body.
+ */
+export function seeThrough(p: Plan): { zones: Zone[]; marks: Mark[]; inner: NonNullable<Plan['inner']>; min: number; rim: number } | undefined {
+  const bc = p.bodyClear, zs = Object.entries(bc?.zones ?? {}).filter(([, c]) => c && c !== 'solid') as [BodyZone, BodyClass][];
+  if (!zs.length && !p.clear) return undefined;
+  const zones = zs.map(([z, c]) => ({ s0: BODY_ZONES[z].s[0], s1: BODY_ZONES[z].s[1], d0: BODY_ZONES[z].d[0], d1: BODY_ZONES[z].d[1], a: BODY_CLASS[c] }));
+  const inner = [...(p.inner ?? [])];
+  if (bc?.inner && zs.length) {
+    const prof = profile(p), SL = 1 - p.pedU, U = (s: number) => 1 - s * SL;
+    const at = (s: number, d: number) => { const [t, b] = prof(U(s)); return t + (b - t) * d; };
+    const depth = (s: number) => { const [t, b] = prof(U(s)); return b - t; };
+    const I = bc.inner;
+    if ('spine' in I) inner.push({ k: 'spine', u0: U(0.98), u1: U(0.24), v: at(0.98, 0.45), v1: at(0.24, 0.4), r: Math.max(0.0025, 0.025 * depth(0.5)), c: I.spine ?? INNER_C.spine });
+    if ('bladder' in I) inner.push({ k: 'sac', u: U(0.47), v: at(0.47, 0.42), ru: 0.13 * SL, rv: 0.13 * depth(0.47), rz: 0.1 * depth(0.47), c: I.bladder ?? INNER_C.bladder });
+    if ('sac' in I) inner.push({ k: 'sac', u: U(0.42), v: at(0.42, 0.66), ru: 0.12 * SL, rv: 0.15 * depth(0.42), rz: 0.11 * depth(0.42), c: I.sac ?? INNER_C.sac });
+  }
+  return { zones, marks: p.clear ?? [], inner, min: p.clearMin ?? 0.15, rim: p.clearRim ?? 0.85 };
+}
+/**
+ * The 3D body's clarity mask for a card W wide (same projection as the card: (u, v) -> (u W, H/2 + v W)): white = solid, darker =
+ * see-through by each `clear` mark's `a`. Undefined when the plan has none.
+ */
+export function clarityCanvas(art: string, aspect: number, W = 512, clip = false): HTMLCanvasElement | undefined {
+  const p = bodyPlan(art), st = p && seeThrough(p); if (!p || !st) return undefined;
+  const c = document.createElement('canvas'), H = Math.round(W * aspect); c.width = W; c.height = H;
+  const base = c.getContext('2d')!; base.fillStyle = '#fff'; base.fillRect(0, 0, W, H);
+  // the see-through is painted on its own layer, then laid on white: `clip` (the fin card's copy) keeps it inside the body outline, so the
+  // card's leftover body painting behind the hollow cut (the tail stalk) fades with the 3D body and its fins are left alone
+  const lc = document.createElement('canvas'); lc.width = W; lc.height = H; const ctx = lc.getContext('2d')!;
+  const prof = profile(p), SL = 1 - p.pedU, sm = (e0: number, e1: number, x: number) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+  // solid again before the fin card's hollow cut (placeholder.ts: pedU + tailBlend + 0.008): behind it the card's stalk painting and the
+  // fading body overlap, so any clarity left there drew a seam at the cut
+  const re1 = 1 - ((p.tailBlend ?? 0) + 0.02) / SL, re0 = re1 - ROOT_EASE;
+  // zones, one pixel column at a time: along the body by share of SL, across it by share of the depth there, both feathered
+  if (st.zones.length) for (let x = 0; x < W; x++) {
+    const u = (x + 0.5) / W, s = (1 - u) / SL, [t, b] = prof(Math.min(1, Math.max(p.pedU, u))), y0 = H / 2 + t * W, dy = (b - t) * W;
+    for (const z of st.zones) {
+      const ws = sm(z.s0 - ZONE_FEATHER.s, z.s0, s) * (1 - sm(z.s1, z.s1 + ZONE_FEATHER.s, s)) * (1 - sm(re0, re1, s)); if (ws <= 0.001 || dy <= 0) continue;
+      const g = ctx.createLinearGradient(0, y0 - 0.2 * dy, 0, y0 + 1.2 * dy), fd = ZONE_FEATHER.d, k = (d: number) => Math.min(1, Math.max(0, (d + 0.2) / 1.4));
+      const A = z.a * ws, col = (q: number) => `rgba(0,0,0,${(A * q).toFixed(4)})`;
+      g.addColorStop(k(z.d0 - fd), col(0)); g.addColorStop(k(z.d0), col(1)); g.addColorStop(Math.max(k(z.d0), k(z.d1)), col(1)); g.addColorStop(Math.max(k(z.d0), k(z.d1 + fd)), col(0));
+      ctx.fillStyle = g; ctx.fillRect(x, y0 - 0.2 * dy, 1, 1.4 * dy);
+    }
+  }
+  if (st.marks.length) paintMarks(ctx, (u, v) => [u * W, H / 2 + v * W], W, st.marks.map(m => ({ ...m, c: '#000' })), 23, prof);
+  if (clip) {
+    const us = Array.from({ length: 97 }, (_, i) => p.pedU - 0.01 + (1.01 - p.pedU + 0.01) * i / 96);
+    ctx.globalCompositeOperation = 'destination-in'; ctx.beginPath();
+    us.forEach((u, i) => { const y = H / 2 + prof(Math.max(p.pedU, Math.min(1, u)))[0] * W; i ? ctx.lineTo(u * W, y) : ctx.moveTo(u * W, y); });
+    for (const u of [...us].reverse()) ctx.lineTo(u * W, H / 2 + prof(Math.max(p.pedU, Math.min(1, u)))[1] * W);
+    ctx.closePath(); ctx.fillStyle = '#000'; ctx.fill(); ctx.globalCompositeOperation = 'source-over';
+  }
+  base.drawImage(lc, 0, 0);
+  return c;
+}
 /**
  * Fin posture (lane FE1): 0 = median fins folded flat along the back and belly .. 1 = held fully erect (the drawn card).
  * `lo`..`hi` is the range a shuffle draws from, `def` what a fish without a value of its own shows. A sensible default

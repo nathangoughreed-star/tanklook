@@ -356,5 +356,17 @@
  "fin_opacity": {
   "preset": "clear"
  },
- "fin_opacity_source": "clear (photo check): planted tanks: fins glassy, plants clearly through, only the red dorsal front and white fin tips pigmented. Commons: Tetra Glowlight cropped.jpg, Hemigrammus erythrozonus h080.jpg, Hemigrammus erythrozonus.jpg, Tetra Glowlight.jpg"
+ "fin_opacity_source": "clear (photo check): planted tanks: fins glassy, plants clearly through, only the red dorsal front and white fin tips pigmented. Commons: Tetra Glowlight cropped.jpg, Hemigrammus erythrozonus h080.jpg, Hemigrammus erythrozonus.jpg, Tetra Glowlight.jpg",
+ "body_clear": {
+  "zones": {
+   "trunk": "translucent",
+   "lowerrear": "clear",
+   "stalk": "clear",
+   "head": "faint"
+  },
+  "inner": {
+   "sac": "#a9ac9e"
+  }
+ },
+ "body_clear_source": "trunk translucent, lowerrear clear, stalk clear, head faint (photo check): 2026-11-25; Commons: Hemigrammus erythrozonus h080.jpg, Tetra Glowlight cropped.jpg: plants and the net plainly through the whole trunk, clearest at the rear and the stalk; the head faintly; a silvery-grey gut sac behind the gill cover; the spine hidden under the red line"
 }

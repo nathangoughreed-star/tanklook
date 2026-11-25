@@ -369,5 +369,17 @@
    "preset": "clear"
   }
  },
- "fin_opacity_source": "translucent, caudal pigmented, pectoral clear (photo check): wild-type males (like the sheet's spotted body): dorsal and unpatterned fin parts clearly see-through, the coloured caudal patch barely; the sheet's caudal is coloured, so caudal pigmented; pectorals clear. Commons: Trinidadian guppy (Poecilia reticulata) male and female.png, Trinidadian guppy (Poecilia reticulata) male.png, Poecilia reticulata (male).JPG, Golomine (Poecilia reticulata) male en Guadeloupe - 1.jpg"
+ "fin_opacity_source": "translucent, caudal pigmented, pectoral clear (photo check): wild-type males (like the sheet's spotted body): dorsal and unpatterned fin parts clearly see-through, the coloured caudal patch barely; the sheet's caudal is coloured, so caudal pigmented; pectorals clear. Commons: Trinidadian guppy (Poecilia reticulata) male and female.png, Trinidadian guppy (Poecilia reticulata) male.png, Poecilia reticulata (male).JPG, Golomine (Poecilia reticulata) male en Guadeloupe - 1.jpg",
+ "body_clear": {
+  "zones": {
+   "trunk": "translucent",
+   "lowerrear": "translucent",
+   "stalk": "clear"
+  },
+  "inner": {
+   "spine": null,
+   "sac": null
+  }
+ },
+ "body_clear_source": "trunk translucent, lowerrear translucent, stalk clear (photo check): 2026-11-25; Commons: Trinidadian guppy (Poecilia reticulata) male.png (and the female in it), Poecilia reticulata (male).JPG: the trunk see-through with the spine showing as a line, the stalk clearest, a silver gut sac behind the head; the head solid; pigment spots solid"
 }
