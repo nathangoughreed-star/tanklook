@@ -93,7 +93,7 @@ function resolve(r: RawSpecies): Species {
 const RAW = data.species as RawSpecies[];
 // A bare row (id, name, sci, tl, art, aspect only) is a model, not an onboarded species: a build-B review look for a fish
 // that has a full row (angelb, cardinalc, bluetangd...: scripts/fish-new.py), or a new fish whose model landed behind
-// ?photoart before its care data (clownknife, bambooshark; bichirb was onboarded in R150). It stays out of SPECIES (the pickers, catalogue,
+// ?photoart before its care data (clownknife, bambooshark and bichirb were, until R150 onboarded them). It stays out of SPECIES (the pickers, catalogue,
 // stocking, and the every-species data tests) except with dogfood ?photoart, where Nathan adds it to a tank to judge it.
 // getSpecies still finds it (review page, goLive, saved tanks). Found 2026-11-24: the bare rows were listed in freshwater
 // pickers on tanklook.com with a stand-in card, and their missing care data failed CI, so nothing deployed from 11-23 on.

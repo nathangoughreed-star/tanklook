@@ -882,6 +882,18 @@
    "b": 2.99,
    "src": "fishbase-bayes",
    "note": "FishBase ID 5024 Bayesian (TL cm); its four TL rows (a 0.015/0.002/0.003/0.00302, b 2.65/2.90/3.17/3.177) average 197 g at 36 cm vs 206 g here (R150)"
+  },
+  "clownknife": {
+   "a": 0.00726,
+   "b": 3.0,
+   "src": "fishbase",
+   "note": "FishBase ID 27034 length-weight row (TL cm, one 88 cm fish; b 3.000 likely assumed); the Bayesian a 0.00468, b 3.06 gives 16 % less at 91 cm (R150)"
+  },
+  "bambooshark": {
+   "a": 0.00407,
+   "b": 3.09,
+   "src": "fishbase-bayes",
+   "note": "FishBase ID 5903 Bayesian (TL cm); FishBase has no length-weight row for this species (R150)"
   }
  }
 }

@@ -112,8 +112,9 @@ export function measureLines(w: Who, d: MinData | undefined, g: Geometry): Lines
   // a gallon figure names the catalogue size and the glass holds up to 10 % less (a 20 gal long, 30 x 12 x 12 in, is 71 L, not 75.7): the red lines' 10 % slack applies (Nathan 2026-10-26)
   if (d?.vol) gc.push({ limiting: 'water', need: d.vol.gal * GAL_L * 100 / MIN_SLACK_PCT, have: g.tankLitres ?? g.litres, mark: 'advisory', site: d.vol.site, states: `${d.vol.gal} gal` });
   const depth = depthOf(g), max = d?.depth?.maxWaterDepthMm ?? 0;
-  // no page states a minimum water depth (MX7): water shallower than the animal is long is not assessed, not a pass
-  return { red, green: worst(gc), assessed: !(w.water && depth < w.tl), depthMm: depth, tooDeepMm: max && depth > max ? max : 0 };
+  // no page states a minimum water depth (MX7), and no tank-height rule follows from body length (Nathan 2026-11-25, R150: a 3 ft
+  // knifefish or bamboo shark turns side to side, not end over end): only a wet species in a tank with no water is not assessed
+  return { red, green: worst(gc), assessed: !(w.water && depth <= 0), depthMm: depth, tooDeepMm: max && depth > max ? max : 0 };
 }
 
 const what = (m: Measured, f: Fmt, n: number) => m.limiting === 'length' ? `${f.len(n)} long` : m.limiting === 'width' ? `${f.len(n)} front to back`
@@ -130,7 +131,7 @@ export function recommendedOf(m: Measured, f: Fmt = CM): string {
   return `below the recommended size: ${m.site} recommends ${m.mark === 'derived (est)' ? 'about ' : ''}${what(m, f, m.need)}, ${haveOf(m, f)}`;
 }
 /** The red sentence of a row in these units: the unmet measure, or why it is not assessed. */
-export const reasonIn = (x: MinRow, f: Fmt = CM) => x.assessed ? reasonOf(x.measure, f) : `not assessed: ${f.len(x.depthMm)} of water is shallower than its own length (${f.len(x.tl)}), and no source states a minimum water depth`;
+export const reasonIn = (x: MinRow, f: Fmt = CM) => x.assessed ? reasonOf(x.measure, f) : `not assessed: the tank holds no water (${f.len(x.depthMm)}), and no source states a minimum water depth`;
 /** Advisories that never fail, in these units. */
 export const notesIn = (x: MinRow, f: Fmt = CM) => x.tooDeepMm ? [`${f.len(x.depthMm)} of water, deeper than advised (${minDataOf(x.id)?.depth?.note})`] : [];
 

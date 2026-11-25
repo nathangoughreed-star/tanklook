@@ -41,6 +41,7 @@ export interface DwellerRule { needs?: Grain; prefers?: Grain; minDepth?: number
 export const DWELLER: Record<string, DwellerRule> = {
   kuhli: { needs: 'sand', minDepth: 1 * MM_IN, sharp: true, why: 'buries itself in soft sand and scrapes its barbels and belly on coarse or sharp material' },
   bichirb: { prefers: 'sand', why: 'rests and hunts on the floor on its pectoral fins; soft sand or smooth gravel spares its belly (hobby pages), Seriously Fish states no grain' },
+  bambooshark: { prefers: 'sand', why: 'a floor shark that rests on sand and mud bottoms in the wild (Florida Museum); soft sand spares its belly' },
   bronzecory: { prefers: 'sand', sharp: true, why: 'sifts the bottom with its barbels, which sharp or coarse gravel can wear down and infect' },
   pandacory: { prefers: 'sand', sharp: true, why: 'sifts the bottom with its barbels, which sharp or coarse gravel can wear down and infect' },
   sterbai: { prefers: 'sand', sharp: true, why: 'sifts the bottom with its barbels, which sharp or coarse gravel can wear down and infect' },

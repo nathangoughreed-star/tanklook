@@ -36,6 +36,8 @@ export const HOVER: Record<string, HoverSpec> = {
   koletang: { w: 0.1, pec: 0.5, caudal: 0.5 },
   foxface: { w: 0.15, pec: 0.6, caudal: 0.4 },
   bichirb: { w: 0.4, pec: 0.8, caudal: 0.15 }, // R150: props itself on its pectorals and fans them while still
+  clownknife: { w: 0.5, pec: 0.4, caudal: 0.1 }, // R150: hangs in the water and creeps on its long anal fin
+  bambooshark: { w: 0.5, pec: 0.3, caudal: 0.2 }, // R150: rests on the floor most of the day
   flameangel: { w: 0.35, pec: 0.7, caudal: 0.3 },
   lawnmowerblenny: { w: 0.4, pec: 1, caudal: 0.2 },
   orchiddottyback: { w: 0.3, pec: 0.7, caudal: 0.3 },
@@ -107,6 +109,7 @@ export const STYLE: Record<string, StyleSpec> = {
 export const BENTHIC: Record<string, number> = {
   bronzecory: 0.85, pepperedcory: 0.85, saltpepper: 0.85, falsejulii: 0.85, pandacory: 0.85, sterbai: 0.85, pygmycory: 0.8, // corys: mostly still, the shoal goes foraging now and then
   watchman: 0.88, // FB3: sits on its sand patch, hops now and then
+  bambooshark: 0.9, // R150: sedentary, nocturnal
   bichirb: 0.85, // R150: nocturnal, rests on the floor most of the day
   kuhli: 0.8, clownloach: 0.75, yoyoloach: 0.75, syno: 0.75, sae: 0.72, rainbowshark: 0.75, redtailshark: 0.75,
 };
@@ -149,6 +152,7 @@ export const HABIT: Record<string, HabitSpec> = {
   koletang: H('crevice', 'hug',      35,  2,   0.3,  0,   0.85, 0,   8,   1.5, 0,   0.5),
   foxface: H('crevice', 'mid',      30,  2,   0,    1.2, 0.7,  0.3, 6,   1.5, 0,   0,   [3, 12]),
   bichirb: H('crevice', 'perch',    8,   1.3, 0,    0,   0.5,  0.5, 2,   0.8, 0,   0.3, [10, 60]), // R150: sits on its fins near a cave, prowls the floor
+  bambooshark: H('crevice', 'perch',  6,   1.3, 0,    0,   0.4,  0.3, 1,   0.6, 0,   0.2, [20, 90]), // R150: sits by its shaded hide, prowls at night
   flameangel: H('crevice', 'hug',      10,  1.5, 0.7,  0,   0.55, 1.2, 8,   0.4, 0,   0),
   lawnmowerblenny: H('crevice', 'perch',    15,  1.2, 0.2,  0,   0.45, 0.6, 12,  0.8, 1,   3,   [3, 15]),
   orchiddottyback: H('crevice', 'hoverLow', 8,   1.3, 0,    1,   0.6,  1.2, 2,   1,   1,   0,   [3, 12]),

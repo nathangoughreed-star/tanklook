@@ -91,6 +91,8 @@ export const CARE: Record<string, AnimalCare> = {
   lawnmowerblenny: A(2, 159, 0, [24, 26], { solo: true, fam: 'blenny', preyChecked: true }), // RX2 (R139 phase 2, 2026-11-19)
   orchiddottyback: A(1, 106, 1, [24, 26], { solo: true, fam: 'dottyback', preyChecked: true }), // RX2 (R139 phase 2, 2026-11-19)
   bichirb: A(2, 445, 0, [24, 28], { prey: { mm: 110 }, cover: 'cave' }), // R150 (2026-11-25): minL = the mean of 5 minimums, 117.5 gal; prey = an estimate, a third of its length
+  clownknife: A(3, 757, 1, [24, 28], { prey: { mm: 450 }, solo: true, cover: 'cave' }), // R150: minL = 200 gal (Furry Critter's minimum); prey = half its length (a knifefish care page)
+  bambooshark: A(3, 859, 1, [22, 26], { prey: { mm: 150 }, solo: true, cover: 'cave' }), // R150: minL = the mean of 3 minimums, 227 gal; prey = an estimate (crabs, shrimp, small fish)
   pajamacardinal: A(1, 98, 0, [22, 26], { preyChecked: true }), // RX2 (R139 phase 2, 2026-11-19)
   yellowtailblue: A(1, 106, 1, [22, 26], { preyChecked: true }), // RX2 (R139 phase 2, 2026-11-19)
   tailspotblenny: A(1, 45, 0, [24, 26], { solo: true, fam: 'blenny', preyChecked: true }), // RX2 (R139 phase 2, 2026-11-19)
