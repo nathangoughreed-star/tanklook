@@ -19,6 +19,7 @@ import sys, os, json, shutil, subprocess, importlib.util
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 KEEP = ('sat', 'alo', 'aw', 'taper', 'smooth_tail', 'pedt_max', 'clip_head', 'outline', 'fy0', 'erase', 'pec_window', 'anchor_top',
         'no_tail', 'dorsals', 'smooth', 'warm', 'plan', 'plan_extra', 'fin_gap', 'card_sheet_off', 'sat_auto', 'membrane', 'stalk', 'fin_opacity', 'fin_opacity_source', 'front_ramp', 'front_ramp_why')
+PROXY_LO, PROXY_HI = 0.75, 1.3   # a proxy fish keeps its drawn depth inside [lo*0.75, hi*1.3] (row 64)
 STRETCH_AT = 0.08   # band around the median when there is no measured range (proxy numbers only)
 TOL = 0.02          # built depth within 2 % of the target: no (further) stretch
 
@@ -61,6 +62,10 @@ def main(argv):
     want = (lambda d: min(max(d, lo), hi)) if proxy else (lambda d: fsh['depth'])
     rule = f'proxy range {lo:.1f}-{hi:.1f} (row 49)' if proxy else f'own median {fsh["depth"]:.1f} (row 56)'
     nostretch = '--no-stretch' in flags
+    if proxy and not nostretch and lo * PROXY_LO <= drawn <= hi * PROXY_HI:
+        # Nathan 2026-11-25 (clown pleco squashed 22.8 -> 18.4, yoyo loach stretched 22.7 -> 28.7, harlequin 34 -> 29, "the pleco has the body issue again"):
+        # a proxy's range is a guess about ANOTHER species; the sheet shows the real fish. Inside a wide band around it, keep the drawn depth.
+        nostretch = True; print(f'depth: drawn {drawn:.1f} % SL is inside the wide proxy band {lo * PROXY_LO:.1f}-{hi * PROXY_HI:.1f}: kept, no stretch (row 64)')
     # head depth (Nathan 2026-11-24, b6 "snouts too pointy"): the head gets its own factor from the FishShapes head depth at the eye
     # (borrowed numbers: kept inside the proxy's head range). ChatGPT draws heads shallow; scaled with the body they read as cones.
     hd = aud.get('head'); kh = None
