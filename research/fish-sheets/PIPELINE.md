@@ -79,6 +79,10 @@ One runbook, start to finish. Entry point for every fish chat. Written 2026-11-2
   changes for any other fish. `fish-sheet-audit5.py` now stops with a clear message when it finds fewer than 5 panels.
 - **Proxy depth too low** (harlequin b7, Nathan: "not that slender, taller"): fish-new squashes a proxy fish to the proxy's range. If the sheet's drawn depth
   matches real photos, widen `depth` / `range.depth` in the folder's `fishshapes.json` by hand (with a note) and rebuild with `--rebuild`.
+- **Pale band at the body / tail-fin join** (Nathan 2026-11-25, every b7 fish and the live danio; ChatGPT draws a crescent row of pale scales across the tail root):
+  `fish-build.py` now runs `scripts/fishroot.py` on the side image and the card sheet, on by default (`"root_band": 0` in the spec turns it off). Check the tail root
+  in the side render. Fish built before 2026-11-25 (the 25 live ones) still have the band until rebuilt with `fish-build.py`.
+- **Card blob below the belly** (bristlenose): a pocket left where the sheet's pelvic was erased can hang below the belly; spec `erase: [[x0,y0,x1,y1]]` (sheet px) blacks it out before the cutout.
 - Rows: 44 (fish-new), 56 (depth), 58 (colour), 61 (batch).
 
 ## 7. Registration checks (panel, eye, mouth, tail, snout)
