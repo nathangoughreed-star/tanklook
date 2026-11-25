@@ -705,6 +705,9 @@ function capPasses(m: THREE.Mesh, T: Tank, id: number) {
 const LEAF_GLOW = 0.5;
 /** Relief from the painted texture's luminance (plantMaterial's `post`): the bump height in mm per unit luminance, and how strongly the lamps' facing change shows. */
 const LEAF_RELIEF = 6.0, LEAF_RELIEF_K = 1.8;
+/** Review switch (lane PT): off = the plant shader without the glow and relief (frame-time A/B; set, then `needsUpdate` on the plant materials). */
+export const plantFx = { on: true };
+if (import.meta.env?.DEV) (globalThis as { __plantFx?: typeof plantFx }).__plantFx = plantFx; // (the perf A/B reaches it from the page)
 const plantMats = new Map<string, THREE.MeshBasicMaterial>();
 function plantMaterial(T: Tank, free = false) {
   const k = glassKey(T) + (free ? '|rim' : '');
@@ -715,7 +718,7 @@ function plantMaterial(T: Tank, free = false) {
   // (lane PT: the shared leaf atlas as `map`: a leaf's alpha is its outline; everything else samples a white texel)
   m = new THREE.MeshBasicMaterial({ vertexColors: true, map: plantAtlas(), alphaTest: 0.5, clippingPlanes: free ? planes.slice(0, 1) : planes });
   m.onBeforeCompile = sh => { patch(sh); growShader(sh); };
-  m.customProgramCacheKey = () => free ? 'plant-rim' : 'plant-clip';
+  m.customProgramCacheKey = () => (free ? 'plant-rim' : 'plant-clip') + (plantFx.on ? '' : '-nofx');
   // above the water (an emersed stem or sword leaf, lane GR2) there is no water haze: it fades out over the first few
   // mm, so leaves lying at the surface keep theirs
   const post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
@@ -724,7 +727,7 @@ function plantMaterial(T: Tank, free = false) {
     // leaf's own colour, strongest looking toward the lamp (flat light: one soft key from above, as the fish have).
     // Relief (step 7): the painted texture's light and dark read as height (veins, blisters): the normal is tipped by the
     // screen-space gradient of the texel's luminance and the lamps' facing is redone with it (a flat white texel: no change).
-    sh.fragmentShader = sh.fragmentShader.replace('vec3 aqLt = aqLight(); outgoingLight *= aqLt;', `$&
+    if (plantFx.on) sh.fragmentShader = sh.fragmentShader.replace('vec3 aqLt = aqLight(); outgoingLight *= aqLt;', `$&
   {
     vec3 ptN = normalize(vAqN), ptV = normalize(cameraPosition - vAqP);
     vec3 sx = dFdx(vAqP), sy = dFdy(vAqP), r1 = cross(sy, ptN), r2 = cross(ptN, sx);

@@ -1,9 +1,9 @@
-// Lane PT (R151): the cost of the plant leaf atlas, for scripts/perf-baseline.mjs --ab (frames alternate: a = every plant
-// material with its atlas `map` + alphaTest as shipped, b = the same materials without them, i.e. the shader as it was).
+// Lane PT (R151): the cost of the plant leaf shaders, for scripts/perf-baseline.mjs --ab (frames alternate).
+//  1: glow + relief on (a) vs off (b), same atlas map.  2: everything on (a) vs the old plain vertex-colour shader (b: no map, no fx).
 const collect = `const T = (globalThis.__ptT ??= []); for (const vp of __gb.viewer.active) vp.scene.traverse(o => { const m = o.material; if (m && m.userData && m.userData.plantClip && !T.includes(m)) T.push(m); });
 globalThis.__ptTex ??= T[0] && T[0].map;`;
-export default [{
-  name: 'plant atlas map + alphaTest (a) vs plain vertex colours (b)',
-  a: `${collect} for (const m of T) { if (m.map !== globalThis.__ptTex) { m.map = globalThis.__ptTex; m.alphaTest = 0.5; m.needsUpdate = true; } }`,
-  b: `${collect} for (const m of T) { if (m.map) { m.map = null; m.alphaTest = 0; m.needsUpdate = true; } }`,
-}];
+const set = (fx, map) => `${collect} { globalThis.__plantFx.on = ${fx}; for (const m of T) { m.map = ${map ? 'globalThis.__ptTex' : 'null'}; m.alphaTest = ${map ? 0.5 : 0}; m.needsUpdate = true; } }`;
+export default [
+  { name: 'glow + relief shader (a) vs without (b), atlas kept', a: set(true, true), b: set(false, true) },
+  { name: 'all of it (a) vs the old plain vertex-colour shader (b)', a: set(true, true), b: set(false, false) },
+];

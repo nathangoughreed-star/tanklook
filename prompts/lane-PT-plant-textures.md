@@ -101,3 +101,5 @@ None from real sheets yet. What the cutter needs from them (already in `leaf-she
 `python scripts/plant-leaves.py --webp`: `leaves.webp` 1024x872, **83 KB** (png would be 569 KB, so the shipped atlas is webp). Crypt cell 104x352 (v0 0.18, the sheet's stalk is
 about 17 % of the leaf), carpet 80x88. Crypt leaves come out narrower than the old grid (the painted outline is slimmer than the grid), which is what the alpha is for.
 `paint` vs `lum` shots: `shots/pc_compare.png` (close) and `shots/pilot_compare.png` for Nathan to pick; default stays `paint`.
+
+**Frame time with glow + relief + smoother crypt (2026-11-25, same method: alternate frames, GPU timers, ref 4 ft tank, 80 pairs, Intel Arc iGPU).** Glow + relief on vs off (atlas kept): 2.38 vs 2.56 ms GPU, i.e. no measurable cost (inside the +/-0.2 ms noise). Everything vs the old plain vertex-colour shader: 2.60 vs 2.01 ms GPU = **+0.57 ms GPU, +0.3 ms CPU**, the same as the atlas alone (+0.62 earlier). Triangles 827k -> 866k (+5 %, the smoother crypt). `plantFx.on` (items.ts) is the review switch for the A/B.
