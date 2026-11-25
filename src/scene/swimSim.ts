@@ -624,7 +624,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       pitchS[i] += (pt - pitchS[i]) * Math.min(1, dt * 4);
       let rollT = clamp(-yawRate[i] * R2D * 0.12, -12, 12);
       if (hb[i]) {
-        if (hOri[i] > 0 && !isB && c0[i] < r + L * 0.6) { // FB3: near a rock face the belly turns toward it (upside down under a ledge)
+        if (hOri[i] > 0 && !isB && c0[i] < r + L * 0.6 && isItem(px[i], py[i], pz[i], c0[i], r)) { // FB3: near a rock face the belly turns toward it (upside down under a ledge); R150: only a placed rock or wood, never the glass, floor or surface (mbuna with a glass home rolled onto their sides)
           const yw = Math.atan2(-hz[i], hx[i]), sy = Math.sin(yw), cy = Math.cos(yw), dh = g0x[i] * hx[i] + g0y[i] * hy[i] + g0z[i] * hz[i];
           const ux = g0x[i] - dh * hx[i], uy = g0y[i] - dh * hy[i], uz = g0z[i] - dh * hz[i], um = Math.sqrt(ux * ux + uy * uy + uz * uz);
           if (um > 0.25) { const th = Math.atan2((ux * sy + uz * cy) / um, uy / um) * R2D * hOri[i], w = clamp((r + L * 0.6 - c0[i]) / (L * 0.35), 0, 1); rollT = rollT * (1 - w) + th * w; }
