@@ -76,6 +76,8 @@ export function SettingsSection({ store, getViewer }: { store: Store; getViewer:
   const u = store.scene.units, rules = rulesNow(store);
   return (
     <>
+      {/* the version, big at the top so it is easy to find and compare with the latest push (Nathan 2026-11-25) */}
+      <div class="sbuild" title={`Commit ${__BUILD__.sha}`}>Build {__BUILD__.n}<span class="sbuild-d">{__BUILD__.date}</span></div>
       <div class="sgroup"><h3>Units</h3>
         <Seg value={u} opts={UNIT_OPTS} label="Units" onPick={x => setUnits(store, x)} /><div class="hint">{UNIT_NOTE[u]}</div></div>
       <div class="sgroup"><h3>Rules</h3>
