@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult strawberry rasbora (Boraras merah) for 3D model reconstruction. Title the image "strawberry rasbora (Boraras merah) reference sheet".
+Create a scientifically accurate orthographic reference sheet of a single adult strawberry rasbora (Boraras merah) for 3D model reconstruction.
 
 PRIMARY OBJECTIVE
 

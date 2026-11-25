@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult six-line wrasse (Pseudocheilinus hexataenia) for 3D model reconstruction. Title the image "six-line wrasse (Pseudocheilinus hexataenia) reference sheet".
+Create a scientifically accurate orthographic reference sheet of a single adult six-line wrasse (Pseudocheilinus hexataenia) for 3D model reconstruction.
 
 PRIMARY OBJECTIVE
 

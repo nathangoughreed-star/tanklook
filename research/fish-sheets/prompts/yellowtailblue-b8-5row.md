@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult yellowtail blue damselfish (Chrysiptera parasema) for 3D model reconstruction. Title the image "yellowtail blue damselfish (Chrysiptera parasema) reference sheet".
+Create a scientifically accurate orthographic reference sheet of a single adult yellowtail blue damselfish (Chrysiptera parasema) for 3D model reconstruction.
 
 PRIMARY OBJECTIVE
 

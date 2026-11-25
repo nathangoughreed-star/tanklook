@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult kadango cichlid (Copadichromis borleyi) for 3D model reconstruction. Title the image "kadango cichlid (Copadichromis borleyi) reference sheet".
+Create a scientifically accurate orthographic reference sheet of a single adult kadango cichlid (Copadichromis borleyi) for 3D model reconstruction.
 
 PRIMARY OBJECTIVE
 

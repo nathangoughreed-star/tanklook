@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult kole tang (Ctenochaetus strigosus) for 3D model reconstruction. Title the image "kole tang (Ctenochaetus strigosus) reference sheet".
+Create a scientifically accurate orthographic reference sheet of a single adult kole tang (Ctenochaetus strigosus) for 3D model reconstruction.
 
 PRIMARY OBJECTIVE
 

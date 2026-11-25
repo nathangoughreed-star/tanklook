@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult dogtooth cichlid (Cynotilapia afra) for 3D model reconstruction. Title the image "dogtooth cichlid (Cynotilapia afra) reference sheet".
+Create a scientifically accurate orthographic reference sheet of a single adult dogtooth cichlid (Cynotilapia afra) for 3D model reconstruction.
 
 PRIMARY OBJECTIVE
 

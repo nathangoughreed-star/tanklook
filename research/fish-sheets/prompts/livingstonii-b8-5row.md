@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult Livingstone's cichlid (Nimbochromis livingstonii) for 3D model reconstruction. Title the image "Livingstone's cichlid (Nimbochromis livingstonii) reference sheet".
+Create a scientifically accurate orthographic reference sheet of a single adult Livingstone's cichlid (Nimbochromis livingstonii) for 3D model reconstruction.
 
 PRIMARY OBJECTIVE
 

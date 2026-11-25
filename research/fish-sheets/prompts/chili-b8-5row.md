@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult chili rasbora (Boraras brigittae) for 3D model reconstruction. Title the image "chili rasbora (Boraras brigittae) reference sheet".
+Create a scientifically accurate orthographic reference sheet of a single adult chili rasbora (Boraras brigittae) for 3D model reconstruction.
 
 PRIMARY OBJECTIVE
 

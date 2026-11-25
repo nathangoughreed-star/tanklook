@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult Malawi synodontis (Synodontis njassae) for 3D model reconstruction. Title the image "Malawi synodontis (Synodontis njassae) reference sheet".
+Create a scientifically accurate orthographic reference sheet of a single adult Malawi synodontis (Synodontis njassae) for 3D model reconstruction.
 
 PRIMARY OBJECTIVE
 

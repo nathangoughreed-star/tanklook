@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult pajama cardinalfish (Sphaeramia nematoptera) for 3D model reconstruction. Title the image "pajama cardinalfish (Sphaeramia nematoptera) reference sheet".
+Create a scientifically accurate orthographic reference sheet of a single adult pajama cardinalfish (Sphaeramia nematoptera) for 3D model reconstruction.
 
 PRIMARY OBJECTIVE
 

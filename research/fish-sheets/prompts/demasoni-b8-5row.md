@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult demasoni cichlid (Pseudotropheus demasoni) for 3D model reconstruction. Title the image "demasoni cichlid (Pseudotropheus demasoni) reference sheet".
+Create a scientifically accurate orthographic reference sheet of a single adult demasoni cichlid (Pseudotropheus demasoni) for 3D model reconstruction.
 
 PRIMARY OBJECTIVE
 
