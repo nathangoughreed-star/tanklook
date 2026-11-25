@@ -18,9 +18,16 @@ const load = (f: string, v?: string) => new Promise<HTMLCanvasElement>((res, rej
 });
 const files = import.meta.glob('../data/fishart/*.anatomy.json', { eager: true, import: 'default' }) as Record<string, any>;
 
-for (const J of Object.values(files)) {
+/**
+ * Applies the build-B fish: all of them (?photoart, the review page) or only the arts in `only` (the approved ones in
+ * src/data/fishLive.json, for every visitor). Images load in parallel; resolves to the arts that loaded, so a fish whose
+ * images failed keeps its old look (main.ts swaps only those).
+ */
+export async function loadPhotoFish(only?: ReadonlySet<string>): Promise<Set<string>> {
+ const done = new Set<string>();
+ await Promise.all(Object.values(files).map(async J => {
   const R = J.anatomy?.render?.photo;
-  if (!R) continue;
+  if (!R || (only && !only.has(R.art))) return;
   const id: string = R.art;
   try {
     const v = R.ver as string | undefined;
@@ -89,5 +96,8 @@ for (const J of Object.values(files)) {
     if (op && finop) { FIN_OPACITY[id] = { card: op, fin: finop }; P.tailBlend = 0.05; }   // the solid fades onto the card over 5 % of TL before the fin
     PROJ_ART[id] = { top: { img: top }, front: { img: front, k: R.proj.fk, y0: R.proj.y0 } };
     FISH_ART[id] = (ctx, _p, W) => ctx.drawImage(card, 0, 0, W, W * (ctx.canvas.height / ctx.canvas.width));
+    done.add(id);
   } catch (e) { console.warn(e); }
+ }));
+ return done;
 }

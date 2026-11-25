@@ -20,8 +20,21 @@ import { attachReport } from './ui/report';
 import { isShareHash } from './scene/share';
 import { chooseUi } from './uiChoice';
 import { applyScopeToDom } from './ui/scopeDom';
-// dogfood: ?photoart swaps the orchid dottyback for the photo-cutout art (src/art/photoart.ts); without the flag nothing changes
-if (new URLSearchParams(location.search).has('photoart')) { await import('./art/photoart').catch(e => console.warn(e)); await import('./art/photofish').catch(e => console.warn(e)); }
+import { getSpecies, goLive } from './data/species';
+import fishLive from './data/fishLive.json';
+// build-B fish: each one Nathan approved (src/data/fishLive.json) replaces its species' look for every visitor once its images
+// load; dogfood ?photoart loads every build-B fish, plus the orchid dottyback cutout (src/art/photoart.ts)
+{
+  const dog = new URLSearchParams(location.search).has('photoart'), live = Object.entries(fishLive.live as Record<string, { look: string }>);
+  if (dog) await import('./art/photoart').catch(e => console.warn(e));
+  if (dog || live.length) {
+    try {
+      const arts = new Map(live.map(([id, e]) => [id, getSpecies(e.look)?.art ?? '']));
+      const done = await (await import('./art/photofish')).loadPhotoFish(dog ? undefined : new Set(arts.values()));
+      for (const [id, e] of live) if (done.has(arts.get(id)!)) goLive(id, e.look);
+    } catch (e) { console.warn(e); }
+  }
+}
 applyScopeToDom();   // AQ1: aquarium-only wording (src/scope.ts)
 
 function webglAvailable() {

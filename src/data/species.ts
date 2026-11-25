@@ -88,11 +88,36 @@ function resolve(r: RawSpecies): Species {
   return sp;
 }
 
-export const SPECIES: Species[] = (data.species as RawSpecies[]).map(resolve);
-const byId = new Map(SPECIES.map(s => [s.id, s]));
+const RAW = data.species as RawSpecies[];
+// A build-B review look (angelb, cardinalc, bluetangd...: scripts/fish-new.py) is a bare row (id, name, sci, tl, art, aspect only)
+// for a fish that already has a full row. It is not a species of its own: it stays out of SPECIES (the pickers, catalogue,
+// stocking) except with dogfood ?photoart, where Nathan adds it to a tank to judge it. getSpecies still finds it (review
+// page, goLive, saved tanks). Found 2026-11-24: the bare rows were listed in freshwater pickers on tanklook.com, drawn
+// with a stand-in card.
+const BARE = new Set(['id', 'name', 'sci', 'tl', 'art', 'aspect']);
+const fullSci = new Set(RAW.filter(r => Object.keys(r).some(k => !BARE.has(k))).map(r => r.sci));
+const isReviewLook = (r: RawSpecies) => Object.keys(r).every(k => BARE.has(k)) && fullSci.has(r.sci);
+const dogfood = typeof location !== 'undefined' && new URLSearchParams(location.search).has('photoart');
+const ALL: Species[] = RAW.map(resolve);
+/** The species offered anywhere in the app (build-B review looks only with ?photoart). */
+export const SPECIES: Species[] = ALL.filter((_s, i) => dogfood || !isReviewLook(RAW[i]));
+/** The build-B review looks left out of SPECIES (the review page lists them). */
+export const REVIEW_LOOKS: Species[] = ALL.filter((_s, i) => isReviewLook(RAW[i]));
+const byId = new Map(ALL.map(s => [s.id, s]));
 
 export const getSpecies = (id: string) => byId.get(id);
 export const hasSpecies = (id: string) => byId.has(id);
+/**
+ * An approved build-B fish goes live (src/data/fishLive.json, applied by main.ts once its images loaded): the species is drawn
+ * and sized with the build-B row's art and look from then on. Its albino and female forms keep their own art.
+ */
+export function goLive(id: string, look: string): boolean {
+  const s = byId.get(id), l = byId.get(look);
+  if (!s || !l || s === l) return false;
+  s.art = l.art; s.aspect = l.aspect; s.rest = l.rest;
+  s.look = l.look;   // the look keys the baked picker still (public/gallery/<look>.webp, else drawn from the art) and the texture caches
+  return true;
+}
 /** The look a fish is drawn and sized with: the species, or its female for a female of a dimorphic species. */
 export const speciesOf = (f: { species: string; sex?: Sex; albino?: boolean; form?: string; finForm?: string }) => {
   const sp = byId.get(f.species), s = sp && f.sex === 'f' && sp.female ? sp.female : sp;

@@ -3,7 +3,9 @@
 // model is made of (geometry + texture thumbnails + colours); when it no longer matches model-versions.json the row says
 // "changed", and on the dev server "Record" bumps those models' versions and writes the file (commit it with the change).
 import * as THREE from 'three';
-import { CATEGORIES, SPECIES, type Species } from '../data/species';
+import { CATEGORIES, REVIEW_LOOKS, SPECIES as LISTED, type Species } from '../data/species';
+// the review page shows every model, the build-B review looks included (species.ts keeps them out of the app's lists)
+const SPECIES = [...LISTED, ...REVIEW_LOOKS.filter(s => !LISTED.includes(s))];
 import { speciesModel } from '../render/preview3d';
 import { OUTLINE, fish3d } from '../render/fish3d';
 import { LU, applyLighting, setLightUniforms, setWaterUniforms } from '../render/lighting';
@@ -322,7 +324,7 @@ function step() {
 // build-B fish (the *b looks) exist only with the dogfood loaders, as in main.ts ?photoart; ?q loads them too so a new batch can be reviewed
 if (Q_IDS.length || new URLSearchParams(location.search).has('photoart')) {
   $('status').textContent = 'Loading the build-B fish…';
-  await import('../art/photoart').catch(e => console.warn(e)); await import('../art/photofish').catch(e => console.warn(e));
+  await import('../art/photoart').catch(e => console.warn(e)); await import('../art/photofish').then(m => m.loadPhotoFish()).catch(e => console.warn(e));
 }
 if (gl) setTimeout(step, 0);
 else {
