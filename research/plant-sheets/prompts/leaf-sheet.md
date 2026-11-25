@@ -4,6 +4,9 @@ The fish method, simplified for plants. A leaf is nearly flat, so one top-down v
 There are no 3 views and no label map. The 3D plant keeps its procedural shape, growth and sway (render/plant3d.ts);
 only the colour inside each leaf comes from the sheet, and the leaf outline comes from the sheet's alpha.
 
+**Easiest way:** `python scripts/plant-sheet-queue.py` (from the shared folder). It copies each prompt to the clipboard,
+opens a new ChatGPT chat, and files the download where lane PT reads it. Your part per plant: Ctrl+V, Enter, click download.
+
 **Generator:** ChatGPT. No photos, one generation per sheet. Save each result as
 `C:\Users\nreed\fish-sheets\plants\<type>-d1.png`, next to the fish sheets. Keep the full-size PNG, not the webp preview.
 
