@@ -1,6 +1,7 @@
 // Pure physical rules shared by the renderer, the UI and the tests. No three.js here.
 import { BG_DIRS, archBulge, bowlRadius, clampIn, frontAt, footprint, glassAt, inside, nearestGlass, normTank, shapeOf, volumeBetween, wallSpan } from './shape';
 import type { Hardscape } from './items';
+import { fishTL, restsOnFloor, speciesOf } from '../data/species';
 import type { BackdropSettings, BgSide, Fish, RenderSettings, StandSettings, SubstrateSettings, Surface, Tank, TankSetup, Units } from './types';
 
 import { IN, unitMM, toUnit, fromUnit, fmtLen } from '../units';
@@ -142,6 +143,30 @@ export function clearOfWall(T: Tank, x: number, depth: number, gap: number, side
   return inside(T, px, pd, 10) ? { x: px, depth: pd } : { x, depth };
 }
 
+/** A fish's half-extent along a unit floor direction n (x, depth): its body, `fishTL` long (shortened by its pitch) and
+ *  about a tenth of that thick, turned to its yaw, plus a 3 mm gap. Nose and tail stay behind the glass, not just the
+ *  centre (Nathan 2026-11-25: a gourami's head came out through the side pane). Swimmers only: animals on the floor,
+ *  glass, hardscape or leaves keep their resting spot. */
+function bodyReach(f: Fish): (n: readonly [number, number]) => number {
+  const sp = speciesOf(f);
+  if (!sp || sp.body === 'snake' || f.surface || restsOnFloor(sp)) return () => 0; // swimmers only: a percher sits where its anchor holds it
+  const tl = fishTL(f, sp), a = (f.yaw ?? 0) * Math.PI / 180, hl = tl / 2 * Math.cos((f.pitch ?? 0) * Math.PI / 180), ht = tl * 0.06;
+  const hx = Math.cos(a), hd = Math.sin(a);
+  return n => hl * Math.abs(hx * n[0] + hd * n[1]) + ht * Math.abs(hd * n[0] - hx * n[1]) + 3;
+}
+
+/** clampIn with each pane's inset = the body's reach toward that pane; falls back to the centre-only clamp when the body is wider than the tank. */
+function clampBody(T: Tank, x: number, d: number, reach: (n: readonly [number, number]) => number) {
+  const { edges } = footprint(T);
+  for (let k = 0; k < 16; k++) {
+    let worst = 0, n: readonly [number, number] = [0, 0];
+    for (const e of edges) { const v = -((x - e.a[0]) * e.n[0] + (d - e.a[1]) * e.n[1]) - reach(e.n); if (v < worst) { worst = v; n = e.n; } }
+    if (worst >= -1e-6) return { x, depth: d };
+    x += n[0] * worst; d += n[1] * worst;
+  }
+  return inside(T, x, d, 0) ? { x, depth: d } : clampIn(T, x, d);
+}
+
 /**
  * Keep a fish inside its tank: within the footprint (a glass snail on the glass), between the floor and the top. In a
  * bowl, within the sphere's circle at the fish's height.
@@ -149,17 +174,20 @@ export function clearOfWall(T: Tank, x: number, depth: number, gap: number, side
 export function clampFish(f: Fish, A: Tank, back = 0, sides?: readonly BgSide[]) {
   f.y = clamp(f.y, 0, A.H);
   if (f.surface === 'glass') { const g = nearestGlass(A, f.x, f.depth, f.y); f.x = g.x; f.depth = g.depth; return; }
+  const reach = bodyReach(f);
   if (shapeOf(A) === 'bowl') {
-    const R = A.L / 2, r = bowlRadius(A, f.y), dx = f.x - R, dd = f.depth - R, q = Math.hypot(dx, dd);
-    if (q > r) { f.x = R + dx * r / q; f.depth = R + dd * r / q; }
+    const R = A.L / 2, dx = f.x - R, dd = f.depth - R, q = Math.hypot(dx, dd);
+    const r = Math.max(0, bowlRadius(A, f.y) - (q > 1e-6 ? reach([dx / q, dd / q]) : 0));
+    if (q > r) { f.x = R + (q > 1e-6 ? dx * r / q : 0); f.depth = R + (q > 1e-6 ? dd * r / q : 0); }
     return;
   }
   if (shapeOf(A) === 'arch' && archBulge(A) > 0) { // the front glass bulges out at mid-height: swim out to it, not just to the frame line
-    const fy = frontAt(A, f.y), q = clampIn({ L: A.L, H: A.H, D: A.D }, clamp(f.x, 0, A.L), clamp(f.depth, fy, A.D));
-    ({ x: f.x, depth: f.depth } = clearOfWall({ L: A.L, H: A.H, D: A.D }, q.x, q.depth, back && back + 10, sides));
+    const box = { L: A.L, H: A.H, D: A.D }, fy = Math.min(frontAt(A, f.y) + reach([0, -1]), A.D / 2);
+    const q = clampBody(box, clamp(f.x, 0, A.L), clamp(f.depth, fy, A.D), reach);
+    ({ x: f.x, depth: f.depth } = clearOfWall(box, q.x, q.depth, back && back + 10, sides));
     return;
   }
-  const p = clampIn(A, clamp(f.x, 0, A.L), clamp(f.depth, 0, A.D));
+  const p = clampBody(A, clamp(f.x, 0, A.L), clamp(f.depth, 0, A.D), reach);
   ({ x: f.x, depth: f.depth } = clearOfWall(A, p.x, p.depth, back && back + 10, sides)); // `back`: the 3D wall's depth, kept clear by 10 mm
 }
 
