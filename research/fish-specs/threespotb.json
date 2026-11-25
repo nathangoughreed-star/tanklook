@@ -1,6 +1,6 @@
 {
  "id": "threespotb",
- "sheet": "C:/Users/nreed/fish-sheets/threespot-b5-gen-s1.066/sheet3.png",
+ "sheet": "C:/Users/nreed/fish-sheets/threespot-b7-up/sheet3.png",
  "species": {
   "name": "Three-spot gourami",
   "sci": "Trichopodus trichopterus",
@@ -10,286 +10,326 @@
  "plan": "oscar",
  "landmarks": {
   "ped": [
-   275,
-   165
+   266,
+   178
   ],
   "dorsalBase": [
    [
-    287,
-    115
+    278,
+    129
    ],
    [
-    317,
-    117
+    308,
+    126
    ],
    [
-    347,
-    108
+    329,
+    110
    ],
    [
-    365,
+    359,
     96
    ],
    [
-    395,
-    85
+    389,
+    84
    ],
    [
-    425,
-    73
+    419,
+    72
    ],
    [
-    455,
-    63
+    449,
+    65
    ],
    [
-    485,
-    55
+    479,
+    57
    ],
    [
-    515,
+    509,
+    52
+   ],
+   [
+    539,
     49
    ],
    [
-    544,
-    47
-   ],
-   [
-    561,
-    48
+    555,
+    50
    ]
   ],
   "analBase": [
    [
-    290,
-    216
-   ],
-   [
-    316,
-    221
-   ],
-   [
-    346,
-    235
-   ],
-   [
-    376,
-    249
-   ],
-   [
-    406,
+    241,
     261
    ],
    [
-    436,
+    289,
+    230
+   ],
+   [
+    315,
+    241
+   ],
+   [
+    345,
+    257
+   ],
+   [
+    375,
     271
    ],
    [
-    466,
-    280
+    405,
+    283
    ],
    [
-    497,
+    435,
     290
    ],
    [
-    526,
-    292
+    465,
+    297
    ],
    [
-    556,
-    294
+    495,
+    302
    ],
    [
-    574,
-    294
+    525,
+    304
+   ],
+   [
+    555,
+    306
+   ],
+   [
+    585,
+    307
    ]
   ]
  },
  "eye": [
-  793,
-  153,
+  801,
+  166,
   15
  ],
  "pectoral": {
   "root": [
-   692,
-   200
+   684,
+   218
   ],
   "poly": [
    [
-    692,
-    200
+    684,
+    218
    ],
    [
-    693,
-    209
+    684,
+    228
    ],
    [
-    679,
-    219
+    675,
+    240
    ],
    [
-    667,
+    660,
+    246
+   ],
+   [
+    647,
+    250
+   ],
+   [
+    637,
+    251
+   ],
+   [
+    628,
+    251
+   ],
+   [
+    611,
+    249
+   ],
+   [
+    603,
+    247
+   ],
+   [
+    593,
+    242
+   ],
+   [
+    583,
+    236
+   ],
+   [
+    576,
     225
    ],
    [
-    657,
-    230
+    572,
+    212
    ],
    [
-    646,
-    233
+    572,
+    205
    ],
    [
-    638,
-    235
+    576,
+    196
    ],
    [
-    624,
-    234
+    584,
+    187
    ],
    [
-    617,
-    232
-   ],
-   [
-    605,
-    224
-   ],
-   [
-    600,
-    219
-   ],
-   [
-    592,
-    207
-   ],
-   [
-    588,
-    195
-   ],
-   [
-    588,
+    598,
     181
    ],
    [
-    589,
-    177
+    609,
+    181
    ],
    [
-    596,
-    169
+    620,
+    184
    ],
    [
-    608,
-    165
+    629,
+    187
    ],
    [
-    621,
-    166
+    641,
+    192
    ],
    [
-    631,
-    169
+    650,
+    197
    ],
    [
-    639,
-    171
+    660,
+    203
    ],
    [
-    652,
-    176
-   ],
-   [
-    661,
-    180
-   ],
-   [
-    671,
-    185
-   ],
-   [
-    686,
-    193
+    675,
+    211
    ]
   ],
   "spread": 0.35
  },
  "pelvic": {
   "root": [
-   693,
-   275
+   681,
+   297
   ],
-  "len": 239,
+  "len": 178,
   "poly": [
    [
-    693,
-    275
+    681,
+    297
    ],
    [
-    659,
-    295
+    638,
+    315
    ],
    [
     610,
-    308
+    322
+   ],
+   [
+    603,
+    323
+   ],
+   [
+    601,
+    324
+   ],
+   [
+    599,
+    324
+   ],
+   [
+    597,
+    324
    ],
    [
     596,
-    310
+    325
    ],
    [
-    591,
-    311
+    595,
+    326
    ],
    [
-    588,
-    311
+    593,
+    325
    ],
    [
-    585,
-    312
+    589,
+    326
    ],
    [
-    584,
-    312
+    577,
+    328
    ],
    [
-    581,
-    312
+    508,
+    342
    ],
    [
-    578,
-    313
+    544,
+    326
    ],
    [
-    573,
-    313
+    586,
+    318
    ],
    [
-    561,
-    314
-   ],
-   [
-    473,
+    594,
     319
    ],
    [
-    458,
-    320
+    594,
+    318
+   ],
+   [
+    595,
+    318
+   ],
+   [
+    596,
+    319
+   ],
+   [
+    596,
+    318
+   ],
+   [
+    597,
+    318
+   ],
+   [
+    598,
+    318
+   ],
+   [
+    608,
+    315
    ]
   ]
  },
- "card_sheet": "C:/Users/nreed/fish-sheets/threespot-b5-gen-s1.066/sheet3card.png",
+ "card_sheet": "C:/Users/nreed/fish-sheets/threespot-b7-up/sheet3card.png",
  "dense": true,
  "eye_iris": [
-  "#393d43",
-  "#2a2f2f"
+  "#393b3c",
+  "#292c2d"
  ],
- "eye_pupil": "#030202",
+ "eye_pupil": "#020201",
  "eye_full": 20,
- "eye_pupil_frac": 0.543,
+ "eye_pupil_frac": 0.494,
  "width_pct_sl": 16.4,
  "fishshapes": {
   "n": 3,
@@ -318,5 +358,13 @@
    "preset": "clear"
   }
  },
- "fin_opacity_source": "translucent, pectoral clear (photo check): three-spot gouramis: dotted dorsal, anal and caudal with the background faintly through; pectorals clear. Wild / gold-ish photos, not the blue morph of the sheet (same fins). Commons: Trichopodus trichopterus (3 spot gourami, Philippines) 04.jpg, Trichopodus trichopterus 99295059.jpg, Trichopodus trichopterus A.jpg, Three Spot Gourami female.jpg"
+ "fin_opacity_source": "translucent, pectoral clear (photo check): three-spot gouramis: dotted dorsal, anal and caudal with the background faintly through; pectorals clear. Wild / gold-ish photos, not the blue morph of the sheet (same fins). Commons: Trichopodus trichopterus (3 spot gourami, Philippines) 04.jpg, Trichopodus trichopterus 99295059.jpg, Trichopodus trichopterus A.jpg, Three Spot Gourami female.jpg",
+ "fy0": 0.0236,
+ "fy0_why": "front layer registered on the MOUTH, not the eyes: the b7 sheet front panel draws the mouth 14 px under the eyes, the side view 3 px (sheet3 eye 166 / mouth 169, front crop eye 148 / mouth 162 of 322, TL 722 px); eye registration (-0.0033) put the painted lips 1.5 % TL under the 3D lips. Front eyes sit on the oval edge where the front layer is faded out (Nathan 2026-11-25). Then +8 px (0.0111): the snout tip was warped 8 px up for a higher, more upturned mouth (see snout_warp)",
+ "snout_warp": "Nathan 2026-11-25 'higher, more upturned': threespot-b7-up/ is threespot-b7-s1.075/ with sheet3.png and sheet3card.png rows 18-345 warped up by 8 px x s^2, s = (x - 818) / (860 - 818) clipped to 0-1 (snout from just past the eye to the lip tip)",
+ "front_ramp": [
+  0.15,
+  0.5
+ ],
+ "front_ramp_why": "wedge snout faces sideways: the default [0.35, 0.75] left the front panel only on the nose tip (Nathan 2026-11-25)"
 }

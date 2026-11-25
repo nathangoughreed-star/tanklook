@@ -25,18 +25,28 @@ const smooth = (a: number, b: number, x: number) => { const k = Math.min(1, Math
 
 type Section = { vc: number; hv: number; t: number; p: Plan };
 
+/** Length of the rounded nose dome: 0.4 x the outline's half-depth at the tip (width units). */
+const tipLen = (p: Plan) => { const [a, b] = profile(p)(1); return 0.4 * Math.max(0, b - a) / 2; };
+/** Body stations: STATIONS from the peduncle, denser at the nose, then 5 more inside the nose dome, densest at the tip. */
+function tipStations(p: Plan) {
+  const L = tipLen(p), out: number[] = [];
+  for (let i = 0; i < STATIONS; i++) { const k = i / (STATIONS - 1), u = p.pedU + (1 - p.pedU) * (1 - Math.cos(k * Math.PI / 2) ** 1.5); if (L <= 0 || u < 1 - L) out.push(u); }
+  if (L > 0) for (let m = 0; m <= 5; m++) out.push(1 - L * Math.cos(m / 5 * Math.PI / 2));
+  return out;
+}
+
 /** Cross-section at u: centre line vc, half-depth hv, half-thickness t (all widths). */
 function sections(p: Plan) {
   const prof = profile(p), thick = p.thick!, pedT = p.pedT ?? 0.55, gu = 1 - (1 - p.pedU) * 0.2; // gu: the gill cover
   const maxHv = Math.max(...Array.from({ length: 41 }, (_, i) => { const [a, b] = prof(p.pedU + (1 - p.pedU) * i / 40); return (b - a) / 2; }));
   // the inset scales with the fish's depth (at most 4 % of its half-depth): a fixed 0.006 was 13 % of a bichir's half-depth, and every
   // card rim kept under a fin root or at the tail stood above or below the solid as a band (method row 59)
-  const inset = Math.min(INSET, 0.04 * maxHv);
+  const inset = Math.min(INSET, 0.04 * maxHv), tipR = tipLen(p);
   return (u: number): Section => {
     // no inset at the nose (no fin roots there): on a 1-3 % SL deep snout tip the fixed inset took a third to two thirds of the depth
     // and turned blunt lips into a point (Nathan 2026-11-24, b6 "snouts too pointy": CPD tip 1.6 % SL outline, 1.0 built)
     const s = (u - p.pedU) / (1 - p.pedU), ins = inset * (1 - smooth(0.9, 0.98, s));
-    const [a, b] = prof(u), vc = (a + b) / 2, hv = Math.max(0, (b - a) / 2 - ins);
+    const [a, b] = prof(u), vc = (a + b) / 2; let hv = Math.max(0, (b - a) / 2 - ins);
     // thickness follows depth but stays fuller toward the head (fish are widest behind the gills)
     let t = thick * (0.35 * hv + 0.65 * maxHv * Math.sin(Math.min(1, hv / maxHv) * Math.PI / 2)) * (pedT + (1 - pedT) * Math.sqrt(s));
     if (p.halfWidth) { // measured top-view widths: the body is as wide as the sheet's top view at every station (not tied to the depth)
@@ -50,6 +60,11 @@ function sections(p: Plan) {
       t = Math.max(t, p.noseW * thick * maxHv * smooth(0.55, 0.8, s) * (1 - 0.5 * smooth(0.9, 1, s)));
       const k = Math.max(0, (s - 0.86) / 0.14); t *= Math.sqrt(Math.max(0, 1 - k * k)); // a rounded shovel seen from above or below, not a square cut
     }
+    // round the tip: the last section keeps the full lip depth and the nose fan is flat, so a lipped snout ended in a square stub
+    // (Nathan 2026-11-25, three-spot). Over the last 0.4 x the tip's half-depth the section closes as a
+    // dome, depth and width alike (0.9 rounded the lips away into a point); bodyGeometry adds rings there (tipStations) so it is round.
+    const d = 1 - u;
+    if (tipR > 0 && d < tipR) { const f = Math.sqrt(Math.max(0, 1 - ((tipR - d) / tipR) ** 2)); hv *= f; t *= f; }
     return { vc, hv, t, p };
   };
 }
@@ -75,9 +90,8 @@ function thetaAt(sec: Section, v: number) {
  * UVs are the side projection of the card texture: (u, 0.5 - v / aspect).
  */
 function bodyGeometry(p: Plan, aspect: number, bend: number, swim = false) {
-  const ring = sections(p), pos: number[] = [], uv: number[] = [], idx: number[] = [];
-  for (let i = 0; i < STATIONS; i++) {
-    const k = i / (STATIONS - 1), u = p.pedU + (1 - p.pedU) * (1 - Math.cos(k * Math.PI / 2) ** 1.5); // denser at the nose
+  const ring = sections(p), pos: number[] = [], uv: number[] = [], idx: number[] = [], us = tipStations(p), NS = us.length;
+  for (const u of us) {
     const sec = ring(u), x = u - 0.5, z0 = bendZ(bend, x);
     for (let j = 0; j <= RING; j++) {
       const [v, z] = ringPt(sec, j / RING * Math.PI * 2);
@@ -86,14 +100,14 @@ function bodyGeometry(p: Plan, aspect: number, bend: number, swim = false) {
     }
   }
   const R = RING + 1;
-  for (let i = 0; i < STATIONS - 1; i++) for (let j = 0; j < RING; j++) {
+  for (let i = 0; i < NS - 1; i++) for (let j = 0; j < RING; j++) {
     const a = i * R + j, b = a + R;
     idx.push(a, a + 1, b, a + 1, b + 1, b); // outward-facing (FrontSide)
   }
   // close the nose: the last ring (u = 1) is a section 1-5 % SL deep, and left open it showed as a black hole in the middle of every
   // front view (Nathan 2026-11-24, b6). A flat fan at x = 0.5 (TL unchanged); its normals average into the last ring, rounding the
   // tip, and it faces forward, so the front projection layer paints it.
-  { const last = (STATIONS - 1) * (RING + 1), { vc: vn } = ring(1), cn = pos.length / 3;
+  { const last = (NS - 1) * (RING + 1), { vc: vn } = ring(1), cn = pos.length / 3;
     pos.push(0.5, -vn, bendZ(bend, 0.5)); uv.push(1, 0.5 - vn / aspect);
     for (let j = 0; j < RING; j++) idx.push(cn, last + j, last + j + 1); }
   // cap the cut at the peduncle (the tail fin on the card covers the joint)
@@ -410,6 +424,59 @@ function splitAnal(art: string, p: Plan, bend: number, edge: EdgeMode) {
   });
 }
 
+/**
+ * Pectoral posture and beat (Nathan 2026-11-25: "very stiff, no animation"; "when the fish is sitting still / hovering it
+ * should beat the pectoral fins and top fins: in real life this keeps it still and upright in flowing water"): in the vertex
+ * shader on the swim clock (`SWIM.uSwim`; still when swimming is off or exporting) and this fish's tail strength (`uCalm`,
+ * set per draw by swim.ts hookCalm: near 0 hovering, 1 cruising). Hovering, the fins open out from the sheet's spread and
+ * scull (~1.2 Hz, a flexible wave root to tip); swimming, they fold in toward the body with a faint flutter. Done per vertex
+ * (along the fin's own normal, by distance from the root) so it survives `mergeShared`, which merges the pair into one
+ * mesh: the CPU fanning in roam.ts (fanPecs, userData.pec) finds no fin meshes once merged.
+ * `aFin` = (distance from the root, card widths, 0 = held still; side +1 / -1). The phase is offset per fish by where it sits.
+ */
+const FLEX_VERT = `if (uSwim.y > 0.0 && aFin.x > 0.0) {
+  float flO = clamp(1.0 - uCalm, 0.0, 1.0); // 0 swimming (fins in) .. 1 hovering (fins out, sculling)
+  float flP = dot(modelMatrix[3].xz, vec2(0.013, 0.019)) * 6.2832 + aFin.y * 0.6;
+  float flRest = mix(-0.08, 0.3, flO);
+  float flBeat = (0.03 + 0.17 * flO) * (0.85 + 0.15 * sin(uSwim.x * 0.5 + flP)) * sin(uSwim.x * 7.5 + flP - aFin.x * 6.0);
+  transformed += normal * (aFin.y * aFin.x * (flRest + flBeat));
+}`;
+function flexPatch(sh: THREE.WebGLProgramParametersWithUniforms) {
+  Object.assign(sh.uniforms, { uSwim: SWIM.uSwim, uCalm: SWIM.uCalm });
+  sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute vec2 aFin;' + (sh.vertexShader.includes('uniform vec2 uSwim') ? '' : ' uniform vec2 uSwim; uniform float uCalm;'))
+    .replace('#include <begin_vertex>', '#include <begin_vertex>\n' + FLEX_VERT);
+}
+
+/**
+ * A paired fin's membrane: a subdivided sheet (root at the origin, card frame) with body to it (Nathan 2026-11-25: "add
+ * some thickness so they aren't a 2D sheet"): two layers that part at the root by `thick` card widths and close toward
+ * the fin's far edge, the pair cupped (the trailing part curls away from the body). `side` mirrors the cup and thickness
+ * so both flanks curl outward; `flex` = bends on the swim clock (aFin.x > 0).
+ */
+
+function finSheet(box: { u0: number; v0: number; w: number; h: number }, root: [number, number], len: number, side: number, flex: boolean, thick: number) {
+  const NX = 10, NY = 8, pos: number[] = [], nrm: number[] = [], uv: number[] = [], fin: number[] = [], idx: number[] = [];
+  for (const layer of [1, -1]) {
+    const base = pos.length / 3;
+    for (let j = 0; j <= NY; j++) for (let i = 0; i <= NX; i++) {
+      const s = i / NX, t = j / NY, x = box.u0 + s * box.w - root[0], y = -(box.v0 + t * box.h - root[1]), d = Math.hypot(x, y), k = Math.min(1, d / len);
+      const cup = 0.22 * d * k, half = 0.5 * thick * (1 - k) ** 1.5;
+      pos.push(x, y, side * (cup + layer * half)); nrm.push(0, 0, 1); uv.push(s, 1 - t); fin.push(flex ? d : 0, side);
+    }
+    for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) {
+      const a = base + j * (NX + 1) + i, b = a + 1, c = a + NX + 1, e = c + 1;
+      if (layer > 0) idx.push(a, c, b, b, c, e); else idx.push(a, b, c, b, e, c);
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  g.setAttribute('aFin', new THREE.Float32BufferAttribute(fin, 2));
+  g.setIndex(idx); g.computeBoundingSphere(); g.computeBoundingBox();
+  return g;
+}
+
 const SPREAD = { pelvic: 0.6, pectoral: 0.75 };
 /** Swing of the paired fins on a fish clinging to glass: pressed out flat against the pane, pectorals swept back. */
 const SPLAY = { pelvic: 1.4, pectoral: 1.3 };
@@ -424,16 +491,16 @@ function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = f
     const us = f.pts.map(q => q[0]), vs = f.pts.map(q => q[1]), m = 0.01;
     const box = { u0: Math.min(...us) - m, v0: Math.min(...vs) - m, w: Math.max(...us) - Math.min(...us) + 2 * m, h: Math.max(...vs) - Math.min(...vs) + 2 * m };
     const key = `fin:${art}:${f.kind}`;
-    let g = geoCache.get(key);
-    if (!g) {
-      g = new THREE.PlaneGeometry(box.w, box.h);
-      // root at the origin; card frame (x = u, y = -v)
-      g.translate(box.u0 + box.w / 2 - f.root[0], -(box.v0 + box.h / 2 - f.root[1]), 0); g.userData.keep = true; geoCache.set(key, g);
-    }
+    // fin length from the root (card widths): the farthest outline point
+    const len = Math.max(...f.pts.map(q => Math.hypot(q[0] - f.root[0], q[1] - f.root[1])));
     const mat = cardMaterial(key, pairedFinTexture(art, f, box, edge), edge, THREE.DoubleSide, pairedFinOpacity(art, f, box)); mat.userData.fishCard = true; // outlined by fish stand out
+    if (!mat.userData.fin) { mat.userData.fin = true; mat.userData.pre = flexPatch; } // lighting runs `pre` (lighting.ts aqPatch)
     for (const side of [1, -1]) {
       // flat (plan option, off by default): held out flat like a fish on the glass all the time (hillstream loach)
-      const flat = cling || !!(f.kind === 'pelvic' ? p.pelvic?.flat : p.pec?.flat), mesh = new THREE.Mesh(g, mat), a = (f.spread ?? (flat ? SPLAY : SPREAD)[f.kind]) * (finRange(art) && !cling ? 0.3 + 0.7 * Math.min(1, Math.max(0, fin)) : 1); // a folded fish holds its paired fins close too
+      const flat = cling || !!(f.kind === 'pelvic' ? p.pelvic?.flat : p.pec?.flat), flex = f.kind === 'pectoral' && !flat, gk = `${key}:${side}:${flex ? 1 : 0}`;
+      let g = geoCache.get(gk);
+      if (!g) { g = finSheet(box, f.root, len, side, flex, len * 0.12); g.userData.keep = true; geoCache.set(gk, g); }
+      const mesh = new THREE.Mesh(g, mat), a = (f.spread ?? (flat ? SPLAY : SPREAD)[f.kind]) * (finRange(art) && !cling ? 0.3 + 0.7 * Math.min(1, Math.max(0, fin)) : 1); // a folded fish holds its paired fins close too
       // root slightly inside the surface so the base never shows a gap
       // fin-map fish (tailBlend, method row 61): the belly can sit above the sheet's root (the depth profile is clamped to the fin map), so the
       // root is held on the solid; otherwise the pelvic hung in the water under the belly
@@ -897,6 +964,23 @@ function bakeMerge(parts: THREE.Mesh[]) {
 export const FOLD_MAX = 1.35;
 /** Whether this body plan can swim in place (swim.ts): the plain one-tail fish. A doubled tail or anal (fantail goldfish) is built from separate pieces that would not follow the body: still for now. */
 export const swims = (art: string) => { const p = bodyPlan(art); return !!p && !isShrimp3D(art) && !p.tail.split && !p.analSplit && !p.limbs; };
+/**
+ * Median-fin heights on a fish card (`aFinH`, swim.ts SWIM_VERT): per vertex, how far it sits above the back or below the
+ * belly (card widths; 0 on the body and over the tail fin), so the dorsal and anal fins can ripple while the fish hovers.
+ */
+export function cardFinHeights(art: string, g: THREE.BufferGeometry, w: number) {
+  const p = bodyPlan(art), pos = g.attributes.position, h = new Float32Array(pos.count);
+  if (p) {
+    const prof = profile(p);
+    for (let i = 0; i < pos.count; i++) {
+      const u = pos.getX(i) / w + 0.5, v = -pos.getY(i) / w;
+      if (u <= p.pedU + 0.02) continue;
+      const [t, b] = prof(u); h[i] = Math.max(0, t - v, v - b);
+    }
+  }
+  g.setAttribute('aFinH', new THREE.Float32BufferAttribute(h, 1));
+}
+
 export function drapedCard(art: string, w: number, h: number, bend: number, fin = 1): THREE.BufferGeometry | null {
   const p = bodyPlan(art), fold = p && finRange(art) ? (1 - Math.min(1, Math.max(0, fin))) * FOLD_MAX : 0;
   if (!p || !(p.drape || fold > 0.01)) return null;
@@ -905,12 +989,17 @@ export function drapedCard(art: string, w: number, h: number, bend: number, fin 
     let x = pos.getX(i), y = pos.getY(i), z = 0;
     const u = x / w + 0.5, v = -y / w, [t, b] = prof(Math.max(u, p.pedU));
     if (p.drape) { const out = Math.max(0, t - v, v - b), ramp = smooth(0.01, 0.14, out), tailer = 1 + 1.5 * smooth(p.pedU + 0.1, 0, u); z = p.drape * w * ramp * tailer * Math.sin(u * 10 + 0.7); }
-    if (fold && u > p.pedU) {
+    // behind the peduncle only the dorsal and anal tips that trail past it fold, about the peduncle's edge; the tail fin stays.
+    // Weight 0 inside the caudal's outline (its half-height ramping from the peduncle's to the plan's tail.h), 1 just outside it.
+    // Folding nothing back there left those tips standing as a stub with the folded fin lying over it (Nathan 2026-11-25:
+    // the blue ram's rear dorsal and anal tips "look folded over on themselves")
+    const k = !fold ? 0 : u > p.pedU ? 1 : smooth(0.005, 0.02, Math.abs(v - (t + b) / 2) - ((b - t) / 2 + (p.tail.h * 0.95 - (b - t) / 2) * smooth(p.pedU, p.pedU * 0.65, u)));
+    if (k > 0) {
       const up = t - v, dn = v - b;
       if (up > 0 || dn > 0) {
         const out = Math.max(up, dn), u2 = Math.max(0.02, u - out * sa * 0.55), [t2, b2] = prof(Math.max(u2, p.pedU));
         const v2 = up > 0 ? Math.min(t - out * ca, t2 - 0.003) : Math.max(b + out * ca, b2 + 0.003); // lifted by its own base, never below the outline it lies over (continuous: no shards over a body's apex)
-        x = (u2 - 0.5) * w; y = -v2 * w;
+        x = (u + (u2 - u) * k - 0.5) * w; y = -(v + (v2 - v) * k) * w;
       }
     }
     pos.setXYZ(i, x, y, bendZ(bend, x / w) * w + z);

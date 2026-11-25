@@ -9,7 +9,7 @@ import * as THREE from 'three';
 
 /** The shared swim uniform: x time in seconds, y strength (0 = still). The viewer sets it per frame. */
 export const SWIM = { uSwim: { value: new THREE.Vector2(0, 0) }, uCalm: { value: 1 }, uBreath: { value: 0 } }; // uCalm (FB1): this fish's tail-beat strength, set per draw by `hookCalm` (1 = the usual beat, near 0 = hovering, above 1 = a wriggle)
-export const SWIM_DECL = 'attribute float aSwL; uniform vec2 uSwim; uniform float uCalm, uBreath;'; // uBreath (FB2): gill-cover / mouth pulse of a fish resting on the bottom, 0..1
+export const SWIM_DECL = 'attribute float aSwL; attribute float aFinH; uniform vec2 uSwim; uniform float uCalm, uBreath;'; // uBreath (FB2): gill-cover / mouth pulse of a fish resting on the bottom, 0..1
 
 /** Tail-beat peak (fraction of body length) at the tail tip; a head at rest, growing toward the tail. */
 export const SWIM_AMP = 0.055;
@@ -26,6 +26,10 @@ export const SWIM_VERT = `if (uSwim.y > 0.0 && aSwL > 0.0) {
   float swHd = smoothstep(0.72, 1.0, uv.x), swMo = smoothstep(0.9, 1.0, uv.x), swBr = sin(6.2832 * 1.5 * uSwim.x + swPh * 3.0);
   transformed.z *= 1.0 + uBreath * 0.09 * swHd * swBr; transformed.y *= 1.0 + uBreath * 0.06 * swMo * swBr; // the gill covers swell, the mouth opens a little
   transformed.z += uSwim.y * uCalm * aSwL * ${SWIM_AMP} * swG * swE * sin(swW);
+  // hovering (Nathan 2026-11-25): the dorsal and anal fins ripple to hold the fish still and upright; aFinH = height above the
+  // back / below the belly (cards only; 0 elsewhere), a wave running tailward along the fin, none while the tail beats
+  float swFo = clamp(1.0 - uCalm, 0.0, 1.0);
+  transformed.z += uSwim.y * swFo * aFinH * aSwL * 0.08 * sin(6.2832 * 1.2 * uSwim.x + swPh * 2.3 + 14.0 * uv.x);
 }`;
 
 
@@ -34,7 +38,7 @@ export function hookCalm(root: THREE.Object3D) {
   root.traverse(o => {
     const mesh = o as THREE.Mesh, mat = mesh.material as THREE.Material | undefined;
     if (!mesh.isMesh || !mat || Array.isArray(mat)) return;
-    if (!(mat.userData.swim || (mat as THREE.ShaderMaterial).uniforms?.uCalm)) return;
+    if (!(mat.userData.swim || mat.userData.fin || (mat as THREE.ShaderMaterial).uniforms?.uCalm)) return; // fin: the pectorals open and beat when hovering (fish3d FLEX_VERT)
     mesh.onBeforeRender = () => { SWIM.uCalm.value = (root.userData.calm as number | undefined) ?? 1; SWIM.uBreath.value = (root.userData.breath as number | undefined) ?? 0; (mat as THREE.ShaderMaterial).uniformsNeedUpdate = true; };
   });
 }

@@ -10,6 +10,7 @@ import { makeIsItem, pickHomes } from './swimHome';
 
 const D2R = Math.PI / 180, R2D = 180 / Math.PI;
 const MAX_SUB = 1 / 30; // longest internal step (s): a long frame is split so nothing tunnels
+const PIV = 0.2; // slow-turn pivot, body lengths ahead of the centre (~0.3 TL behind the snout)
 const MOVE = 0, REST = 1, HOP = 2; // modes: swim, hover/graze, bottom-dweller hop
 
 export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, seed: number): SwimSim => {
@@ -515,8 +516,15 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       // ---- turn (limited rate, quicker when something is close)
       const cd = clamp(hx[i] * dx + hy[i] * dy + hz[i] * dz, -1, 1), ang = Math.acos(cd);
       const pulsing = sRate[i] > 0 && mode[i] === MOVE && dst === 0 && subMode[i] === 0;
-      const maxStep = turn[i] * (1 + 0.5 * K) * dt * (isB ? 1.3 : 1) * (pulsing ? (burstLeft[i] > 0 ? 1.6 : 0.5) : 1);
-      const yawBefore = Math.atan2(-hz[i], hx[i]);
+      // turning takes way on (Nathan 2026-11-25: "they yaw and pitch effortlessly about their centroid ... in place"): a fish
+      // turns by bending its body as it swims, so the full rate needs ~0.6 BL/s; nearly still it can only scull round slowly
+      // on its fins (a quarter of the rate; near something it still turns away quickly). One resting on the bed barely turns.
+      const bedRest = isB && mode[i] === REST && dst === 0, way0 = bedRest ? 0.08 : 0.25;
+      // burst-and-coast swimmers under way (FB2: they turn in their bursts) and the home-keeping habit species (FB3: belly to the rock, held spot) keep their tuned rates; a burst swimmer hovering does not
+      const free = (sRate[i] > 0 && mode[i] === MOVE && dst === 0 && subMode[i] !== 2) || ((ovOn || hb[i] > 0) && !held);
+      const way = free ? 1 : clamp(way0 + (bedRest ? 0 : 0.75 * K) + 0.75 * spd[i] / (L * 0.6), way0, 1);
+      const maxStep = turn[i] * (1 + 0.5 * K) * dt * (isB ? 1.3 : 1) * (pulsing ? (burstLeft[i] > 0 ? 1.6 : 0.5) : 1) * way;
+      const yawBefore = Math.atan2(-hz[i], hx[i]), ohx = hx[i], ohy = hy[i], ohz = hz[i];
       let nx: number, ny: number, nz: number;
       if (ang <= maxStep) { nx = dx; ny = dy; nz = dz; }
       else { const t = maxStep / ang; nx = hx[i] * (1 - t) + dx * t; ny = hy[i] * (1 - t) + dy * t; nz = hz[i] * (1 - t) + dz * t; }
@@ -526,6 +534,12 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       if (ny > lim || ny < -lim) { const hs = Math.sqrt(Math.max(1e-9, nx * nx + nz * nz)), nh = Math.sqrt(1 - lim * lim); ny = ny > 0 ? lim : -lim; nx = nx / hs * nh; nz = nz / hs * nh; }
       const nm = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
       hx[i] = nx / nm; hy[i] = ny / nm; hz[i] = nz / nm;
+      // the body swings about a point ahead of its middle (behind the head, near the pectorals), not about its centre: the
+      // head leads and the tail sweeps out. Pivot PIV body lengths ahead of the centre stays put through the turn. Only
+      // as way comes off: under way, the swim itself already carries the body round an arc. Skipped where the swing would
+      // take it within its radius of something solid (a fish tucked against a rock just turns about its middle).
+      { const a = free ? 0 : L * PIV * clamp(1 - spd[i] / (L * 0.6), 0, 1), sx = a * (ohx - hx[i]), sy = isB ? 0 : a * (ohy - hy[i]), sz = a * (ohz - hz[i]);
+        if (sx * sx + sy * sy + sz * sz > 1e-8 && field.clearance(px[i] + sx, py[i] + sy, pz[i] + sz, undefined, m) >= r) { px[i] += sx; py[i] += sy; pz[i] += sz; } }
       let dyaw = Math.atan2(-hz[i], hx[i]) - yawBefore; if (dyaw > Math.PI) dyaw -= 2 * Math.PI; else if (dyaw < -Math.PI) dyaw += 2 * Math.PI;
       yawRate[i] += (dyaw / dt - yawRate[i]) * Math.min(1, dt * 5);
 

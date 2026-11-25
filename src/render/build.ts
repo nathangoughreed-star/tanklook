@@ -45,7 +45,7 @@ import { itemDeps, itemMesh, leafProbe, solidProbe, underProbe } from './items';
 import { rootsKey, rootsMesh } from './roots';
 import { outlineKey, spaceOutline } from './spaceOutline';
 import { addBackdrop, backdropGeometry } from './backdrop';
-import { drapedCard, fish3d, fishBody, hullMaterial, seeThroughCard, swims } from './fish3d';
+import { cardFinHeights, drapedCard, fish3d, fishBody, hullMaterial, seeThroughCard, swims } from './fish3d';
 import { BANDS } from '../scene/scatter';
 import { herpBody, herpFloatTop, isHerp3D } from './herp3d';
 import { isLizard } from './lizard3d';
@@ -1395,8 +1395,8 @@ function contactShadow(S: TankSetup, T: Tank, x: number, depth: number, bottom: 
   return m;
 }
 
-export function cardGeometry(w: number, h: number, bend: number) {
-  const g = new THREE.PlaneGeometry(w, h, 16, 1);
+export function cardGeometry(w: number, h: number, bend: number, rows = 1) {
+  const g = new THREE.PlaneGeometry(w, h, 16, rows); // rows > 1: a swimmer's median fins ripple when it hovers (swim.ts aFinH)
   if (bend) {
     const p = g.attributes.position;
     for (let i = 0; i < p.count; i++) { const u = p.getX(i) / (w / 2); p.setZ(i, bend * w * 0.14 * (1 - u * u)); }
@@ -1810,7 +1810,8 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     const p: Fish = snapped ? { ...f, x: on.p[0], depth: on.p[2] } : f; // where it stands: the spot, or the limb found beside it
     const clinger = !herp && !hang && !!clingPace(sp.id); // sucker-mouth grazers stick to a surface (render/cling.ts) instead of swimming
     const swim = !herp && !hang && !clinger && f.surface !== 'glass' && swims(sp.art); // swims in place (swim.ts): not a bottom dweller, not clinging to glass or hanging under a leaf
-    const cardGeo = drapedCard(sp.art, w, h, f.bend, fin) || cardGeometry(w, h, isArachnid(sp.art) ? 0 : f.bend);
+    const cardGeo = drapedCard(sp.art, w, h, f.bend, fin) || cardGeometry(w, h, isArachnid(sp.art) ? 0 : f.bend, swim ? 10 : 1);
+    if (swim) cardFinHeights(sp.art, cardGeo, w);
     if (!herp) cardGeo.setAttribute('aSwL', new THREE.Float32BufferAttribute(new Array(cardGeo.attributes.position.count).fill(swim ? w : 0), 1));
     const m = new THREE.Mesh(cardGeo, herp ? HIDDEN : cardMaterial(`fish:${sp.look}:${fish3d.fade}`, fishTexture(sp, S.render.edge, true, fish3d.fade), S.render.edge, THREE.DoubleSide, finOpacityTexture(sp.art)));
     if (!herp) { (m.material as THREE.Material).userData.fishCard = true; (m.material as THREE.Material).userData.swim = true; }

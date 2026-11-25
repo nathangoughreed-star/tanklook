@@ -18,6 +18,13 @@ Every new species and every look change is drawn from real photos (two or more p
 
 **Fish 3D models from a 3-view reference sheet** (the orchid dottyback method, Nathan 2026-11-19): read `research/fish-model-sheet-method.md` first, run its section 4 checklist before showing Nathan, and record every correction he makes there in the same commit.
 
+## Fish models: "the model" means build B (Nathan, 2026-11-25)
+When Nathan reports a problem with a fish model, assume he means its **build-B** model (he also calls it "version B" or "the new model") unless he says otherwise. Don't assume the older procedural model.
+- **Which fish have one:** `src/data/fishLive.json` lists the approved fish (species id -> build-B look id, usually `<id>b`, a few `<id>c`). It is loaded for every visitor. `?photoart` shows every built build-B fish, approved or not. The review page takes `?q=id1,id2`.
+- **How a fish is drawn:** `src/art/photofish.ts` reads `src/data/fishart/<look>.anatomy.json` (`render.photo` block) and the images in `public/art/fish/`. `species.ts` `goLive` swaps the species' art. Albino and female forms keep their old art.
+- **How a fish is built:** a 5-row ChatGPT sheet becomes a model through `scripts/fish-new.py` / `fish-build.py` / `fish-batch.py`. Fix a model through its spec (`research/fish-specs/<look>.json`) and a rebuild, never by hand-editing the generated files. Pipeline, known fixes and "never again" incidents: `research/fish-sheets/HANDOFF-batch-b6.md`; the latest batch: `HANDOFF-batch-b7.md`; history: `research/fish-model-history.md`. The request is R146 in `research/requests.md`.
+- A fish that isn't in `fishLive.json` still draws with its old model on the live site. Ask before assuming which model he is looking at.
+
 ## Other house rules
 - **Nathan's asks outside your task are forwarded at once (2026-11-15).** If Nathan asks you for anything that is not your own lane's task (a bug he noticed, a feature, a fix in another area), send it to the coordinator chat right away with his exact words and any picture path, before doing anything else, and tell him you did. Never hold it or answer "noted". The coordinator logs every ask in `research/requests.md`; an ask that never reaches it gets lost (R81 sat in a lane chat for four hours).
 - End replies with "Build N", the commit count on origin/main.

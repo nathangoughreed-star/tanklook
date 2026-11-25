@@ -203,18 +203,21 @@ FY0 = round((ax - e[1]) / TL, 4)
 try:
     fa = np.asarray(sheet).astype(int)[fy0_ - 4:fy1_ + 5, fx0:fx1 + 1].max(2)
     hh, ww = fa.shape
+    if os.environ.get('FRONT_DEBUG'): from PIL import Image as _I; _I.fromarray(fa.clip(0, 255).astype('uint8')).save(os.environ['FRONT_DEBUG']); print('front crop', hh, ww, 'ax', ax, 'eye', e, 'TL', TL)
     bodym = fa > 40
     xs_b = np.nonzero(bodym.sum(0) > hh * 0.15)[0]
     cxf = (xs_b.min() + xs_b.max()) / 2
     best_ = None
-    for thr_, amin_, rnd_ in ((60, 40, .6), (75, 100, .5)):   # strict pass first (small black pupils), then a relaxed one for big dark eyes with a highlight
+    # strict pass first (small black pupils), then a relaxed one for big dark eyes with a highlight; last, a wide pass for narrow faces whose
+    # eyes sit on the oval's edge (three-spot b7, Nathan 2026-11-25: missed, the outline fallback put the mouth on the chin)
+    for thr_, amin_, rnd_, cw_, mg_ in ((60, 40, .6, .25, 8), (75, 100, .5, .25, 8), (75, 40, .3, .45, 2)):   # .3: a highlight leaves the eye a ring, not a disc
         if best_: break
         dk = (fa < thr_) & np.pad(np.ones((hh - 20, ww - 20), bool), 10)
         inside = np.zeros_like(dk)
         for r_ in range(hh):
             c_ = np.nonzero(bodym[r_])[0]
-            if len(c_) > 20: inside[r_, c_.min() + 8:c_.max() - 7] = True
-        dk &= inside & (np.abs(np.arange(ww) - cxf) < ww * .25)[None, :]   # dark pixels inside the fish, not the black background
+            if len(c_) > 20: inside[r_, c_.min() + mg_:c_.max() - mg_ + 1] = True
+        dk &= inside & (np.abs(np.arange(ww) - cxf) < ww * cw_)[None, :]   # dark pixels inside the fish, not the black background
         dk[: int(hh * .08)] = False
         dk[int(hh * .65):] = False
         lab_ = np.zeros(dk.shape, int); n_ = 0; blobs_ = []
@@ -256,7 +259,7 @@ if spec.get('width_pct_sl'):   # handoff step 8 in one pass (method row 44): thi
     print('width: drawn %.1f %% SL, target %.1f%s -> thickx %.3f%s' % (drawn_, want_, ' (proxy range %s)' % spec['width_range'] if spec.get('width_range') else '', THICKX, '' if spec.get('thickx') in (None, THICKX) else ' (spec thickx %s ignored)' % spec['thickx']))
 photo = {'art': ID, 'plan': spec.get('plan', 'oscar'), 'sx': round(sx, 1), 'sl': round(sl, 1), 'ax': round(ax, 1), 'eye': e,
          'pec': spec.get('pectoral'), 'pelvic': spec.get('pelvic'), 'eyeIris': spec.get('eye_iris'), 'eyePupil': spec.get('eye_pupil'), 'eyeFull': spec.get('eye_full'), 'pupilFrac': spec.get('eye_pupil_frac'),
-         'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', FY0)}, 'thickx': THICKX, 'noTail': bool(spec.get('no_tail')), 'measuredWidth': bool(spec.get('measured_width')), 'aspect': asp, 'finImg': bool(er or spec.get('card_sheet')), **({'planExtra': spec['plan_extra']} if spec.get('plan_extra') else {}), **({'finlets': spec['finlets']} if spec.get('finlets') else {}), **({'opacity': True} if FO is not None and FO is not False else {}), **({'stalkEdge': EDGE['curve']} if EDGE else {})}
+         'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', FY0), **({'ramp': spec['front_ramp']} if spec.get('front_ramp') else {})}, 'thickx': THICKX, 'noTail': bool(spec.get('no_tail')), 'measuredWidth': bool(spec.get('measured_width')), 'aspect': asp, 'finImg': bool(er or spec.get('card_sheet')), **({'planExtra': spec['plan_extra']} if spec.get('plan_extra') else {}), **({'finlets': spec['finlets']} if spec.get('finlets') else {}), **({'opacity': True} if FO is not None and FO is not False else {}), **({'stalkEdge': EDGE['curve']} if EDGE else {})}
 if spec.get('body_clear') is not None: photo['bodyClear'] = spec['body_clear']   # see-through body zones from the photo check (scripts/fish-body-class.py, method row 62)
 A['render'] = {'note': 'built by scripts/fish-build.py from ' + os.path.basename(sys.argv[1]), 'photo': photo, 'fit': fit}
 J['art'] = ID
