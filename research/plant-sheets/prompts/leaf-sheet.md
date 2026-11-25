@@ -49,3 +49,57 @@ Species: Micranthemum tweediei 'Monte Carlo', submersed. Canvas 1:1 square, a gr
    under[], for grass base/mid/tip).
 4. It neutralises the hue, giving texture luminance x the vertex colour, or keeps the colour (a texture-colour
    flag per type). Decide this in the pilot by looking at both.
+
+## Species paragraphs (batch 2: the next ten leaf families, 2026-11-25)
+
+Same layout as the pilot: uppers on top, undersides below in the same order, mirrored left-right. Save as `<type>-d1.png` (`python scripts/plant-sheet-queue.py sword anubias ...` does the copying).
+
+### sword: Echinodorus 'Bleherae', Amazon sword (plant type `sword`)
+```
+Species: Echinodorus 'Bleherae' (Amazon sword), submersed. Canvas 3:2 landscape, a grid of 3 columns x 2 rows. Top row: three leaves seen from their upper side, a fresh mid to deep green, one a touch yellower. Bottom row: the undersides of the same three leaves in the same order, the outline mirrored left-right, paler yellow-green with prominent raised veins. Leaves are long and lance-shaped, about six times as long as wide, widest just above the middle, tapering to a pointed tip, with a long narrow channelled stalk (about a quarter to a third of the leaf length) and a gently wavy margin; clearly visible parallel veins run from base to tip with fine cross-veins between them.
+```
+
+### anubias: Anubias barteri var. nana (plant type `anubias`)
+```
+Species: Anubias barteri var. nana, submersed. Canvas 3:2 landscape, a grid of 3 columns x 2 rows. Top row: three leaves seen from their upper side, a very dark glossy green, thick and leathery, one slightly lighter. Bottom row: the undersides of the same three leaves in the same order, the outline mirrored left-right, a paler matte green with a raised midrib. Leaves are broad and oval to slightly arrow-shaped, about twice as long as wide, with a rounded blunt tip, a smooth margin and a stout straight stalk (about a quarter of the leaf length); a strong pale midrib and a few arching side veins; waxy surface.
+```
+
+### stem: generic green stem plant, Hygrophila / Bacopa type (plant type `stem`)
+```
+Species: a common green aquarium stem plant (Hygrophila polysperma 'Rosanervig' / Bacopa caroliniana type), submersed. Canvas 3:2 landscape, a grid of 4 columns x 2 rows. Top row: four leaves seen from their upper side, a fresh light to mid green, each slightly different in size. Bottom row: the undersides of the same four leaves in the same order, the outline mirrored left-right, paler green. Leaves are narrow-oval to lance-shaped, about three times as long as wide, tapering to a point, with no stalk (the base sits directly on the stem); a pale midrib and faint side veins; smooth margin.
+```
+
+### stemred: Alternanthera reineckii, red stem plant (plant type `stemred`)
+```
+Species: Alternanthera reineckii (red-leaved stem plant), submersed. Canvas 3:2 landscape, a grid of 4 columns x 2 rows. Top row: four leaves seen from their upper side, olive-bronze to wine-red, each a slightly different shade from olive-green to deep red-brown. Bottom row: the undersides of the same four leaves in the same order, the outline mirrored left-right, a deep wine red to purple-red. Leaves are narrow-oval to lance-shaped, about three times as long as wide, tapering to a point at both ends, no stalk; a slightly paler midrib; smooth margin.
+```
+
+### rotala: Rotala rotundifolia (plant type `rotala`)
+```
+Species: Rotala rotundifolia, submersed. Canvas 3:2 landscape, a grid of 4 columns x 2 rows. Top row: four leaves seen from their upper side, narrow and linear-lance, about five times as long as wide, light green with a pink-orange flush toward the tip, each a little different. Bottom row: the undersides of the same four leaves in the same order, the outline mirrored left-right, paler green-pink. No stalk (the base sits on the stem); a single fine midrib; smooth margin; slightly translucent.
+```
+
+### ludwigia: Ludwigia repens 'Rubin' (plant type `ludwigia`)
+```
+Species: Ludwigia repens 'Rubin', submersed. Canvas 3:2 landscape, a grid of 4 columns x 2 rows. Top row: four leaves seen from their upper side, broad oval, about one and a half times as long as wide, with a very short stalk, olive-brown to deep red, each a different shade, with a paler midrib and faint side veins. Bottom row: the undersides of the same four leaves in the same order, the outline mirrored left-right, a bright wine red to crimson. Smooth margin, a softly pointed tip.
+```
+
+### balansae: Cryptocoryne balansae (plant type `balansae`)
+```
+Species: Cryptocoryne balansae, submersed. Canvas 3:2 landscape, a grid of 3 columns x 2 rows. Top row: three leaves seen from their upper side, long and narrow like a ribbon, about eleven times as long as wide, mid-green with a slightly bronze tint, the surface crinkled and puckered between the veins, the margin strongly wavy all along its length; a very short stalk at the base. Bottom row: the undersides of the same three leaves in the same order, the outline mirrored left-right, paler green with a visible midrib and fine parallel veins. Each leaf fills its cell from bottom to top.
+```
+
+### buce: Bucephalandra 'Kedagang' (plant type `buce`)
+```
+Species: Bucephalandra 'Kedagang', submersed. Canvas 3:2 landscape, a grid of 3 columns x 2 rows. Top row: three leaves seen from their upper side, dark green to blue-green with a faint blue-grey iridescent sheen and a hint of wine at the base, lance-shaped to narrow-oval, about three and a half times as long as wide, with a short stalk (about a sixth of the length), a slightly undulate margin and a fine paler midrib. Bottom row: the undersides of the same three leaves in the same order, the outline mirrored left-right, paler grey-green with a wine-red tint. Stiff and slightly leathery.
+```
+
+### fern: Microsorum pteropus, Java fern (plant type `fern`)
+```
+Species: Microsorum pteropus (Java fern), submersed. Canvas 3:2 landscape, a grid of 3 columns x 2 rows. Top row: three leaves seen from their upper side, narrow lance-shaped, about ten times as long as wide, a dark glossy olive-green, the surface slightly ribbed, with a clear paler midrib and a short stalk (about a sixth of the length), a smooth to slightly wavy margin, tapering to a pointed tip. Bottom row: the undersides of the same three leaves in the same order, the outline mirrored left-right, paler green with a raised midrib (no spore dots). Each leaf fills its cell from bottom to top.
+```
+
+### ozelot: Echinodorus 'Ozelot', spotted sword (plant type `ozelot`)
+```
+Species: Echinodorus 'Ozelot' (spotted Amazon sword), submersed. Canvas 3:2 landscape, a grid of 3 columns x 2 rows. Top row: three leaves seen from their upper side, a mid green to olive with scattered irregular dark red-brown blotches and streaks (leopard-like markings), lance- to oval-shaped, about four and a half times as long as wide, with a long stalk (about a quarter of the length), a ruffled wavy margin and strong parallel veins. Bottom row: the undersides of the same three leaves in the same order, the outline mirrored left-right, a paler yellow-green to pinkish with the blotches showing through faintly.
+```

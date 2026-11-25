@@ -31,6 +31,17 @@ AW = 1024          # atlas width
 TYPES = {
     'crypt': dict(kind='leaf', cols=3, rows=2, upper=[0, 1, 2], under=[3, 4, 5], cell=(104, 352), v0=0.18),
     'carpet': dict(kind='leaf', cols=3, rows=3, upper=[0, 1, 2, 3, 4, 5], under=[6, 7, 8], cell=(80, 88), v0=0.0),
+    # batch 2 (2026-11-25)
+    'sword': dict(kind='leaf', cols=3, rows=2, upper=[0, 1, 2], under=[3, 4, 5], cell=(80, 416), v0=0.28),
+    'anubias': dict(kind='leaf', cols=3, rows=2, upper=[0, 1, 2], under=[3, 4, 5], cell=(112, 256), v0=0.22),
+    'stem': dict(kind='leaf', cols=4, rows=2, upper=[0, 1, 2, 3], under=[4, 5, 6, 7], cell=(72, 200), v0=0.0),
+    'stemred': dict(kind='leaf', cols=4, rows=2, upper=[0, 1, 2, 3], under=[4, 5, 6, 7], cell=(72, 200), v0=0.0),
+    'rotala': dict(kind='leaf', cols=4, rows=2, upper=[0, 1, 2, 3], under=[4, 5, 6, 7], cell=(48, 240), v0=0.0),
+    'ludwigia': dict(kind='leaf', cols=4, rows=2, upper=[0, 1, 2, 3], under=[4, 5, 6, 7], cell=(104, 168), v0=0.06),
+    'balansae': dict(kind='leaf', cols=3, rows=2, upper=[0, 1, 2], under=[3, 4, 5], cell=(40, 448), v0=0.07),
+    'buce': dict(kind='leaf', cols=3, rows=2, upper=[0, 1, 2], under=[3, 4, 5], cell=(88, 288), v0=0.15),
+    'fern': dict(kind='leaf', cols=3, rows=2, upper=[0, 1, 2], under=[3, 4, 5], cell=(40, 448), v0=0.07),
+    'ozelot': dict(kind='leaf', cols=3, rows=2, upper=[0, 1, 2], under=[3, 4, 5], cell=(88, 352), v0=0.22),
     'grass': dict(kind='strap', strips=4, order=dict(base=0, mid=1, tip=2, mid2=3), width=40, base=(40, 64), tip=(40, 64), mid=(100, 160), tiles=4),
 }
 
@@ -269,7 +280,7 @@ def rect_uv(it, H):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--sheets', default=r'C:\Users\nreed\fish-sheets\plants')
-    ap.add_argument('--types', default=','.join(TYPES))
+    ap.add_argument('--types', default='', help='comma list; default = every type with a real sheet in --sheets')
     ap.add_argument('--synth', action='store_true', help='draw striped test sheets for every type')
     ap.add_argument('--webp', action='store_true', help='write leaves.webp (lossy 88, with alpha) instead of leaves.png: several times smaller')
     ap.add_argument('--debug', default='', help='write the sheets used and the atlas here')
@@ -277,7 +288,8 @@ def main():
     items, man, test = [], {}, []
     white = np.full((8, 8, 4), 255, np.uint8)
     items.append(dict(name='white', img=white))
-    for name in a.types.split(','):
+    names = a.types.split(',') if a.types else [n for n in TYPES if a.synth or os.path.exists(os.path.join(a.sheets, f'{n}-d1.png'))]
+    for name in names:
         cfg = TYPES[name]
         path = os.path.join(a.sheets, f'{name}-d1.png')
         if not a.synth and os.path.exists(path):

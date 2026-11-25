@@ -175,10 +175,10 @@ export interface Grow {
 export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   fern: { grow: { speed: 'slow', overflow: 'none', len: [60, 300], more: 4 }, sway: 0.3, form: 'rhizome', n: [13, 18], spread: 0.6, stalk: '#5a4a32', leaf: {
     len: [0.7, 1], wid: 0.1, prof: [0.8, 0.8], rise: [0.08, 0.6], arch: 0.4, twist: 0.5, fold: -0.25, wave: [0.1, 4], pet: 0.06,
-    cols: [['#244a22', '#3e7038'], ['#2a5226', '#4a7e40']], under: '#355a30', rib: '#7aa060', tip: ['#3c7034', 0.3], seg: [10, 5] } },
+    cols: [['#244a22', '#3e7038'], ['#2a5226', '#4a7e40']], under: '#355a30', rib: '#7aa060', tip: ['#3c7034', 0.3], seg: [10, 5], tex: 'fern' } },
   sword: { grow: { speed: 'medium', overflow: 'emerge', len: [90, 600], more: 4 }, sway: 0.3, form: 'rosette', n: [16, 24], spread: 0.05, stalk: '#3a6a2c', leaf: {
     len: [0.75, 1], wid: 0.15, prof: [0.75, 0.8], rise: [0.05, 0.75], arch: 0.4, twist: 0.5, fold: -0.15, wave: [0.03, 3], pet: 0.3,
-    cols: [['#2e5c26', '#5a8c44'], ['#346428', '#62944a'], ['#2a5424', '#52843e']], under: '#527a42', rib: '#a0bc88', seg: [10, 5] },
+    cols: [['#2e5c26', '#5a8c44'], ['#346428', '#62944a'], ['#2a5424', '#52843e']], under: '#527a42', rib: '#a0bc88', seg: [10, 5], tex: 'sword' },
     // emersed: broad oval blades held up on long stiff stalks, a deeper green
     emersed: { k: 0.95, stiff: 230, land: 70, wid: 0.22, prof: [0.6, 0.6], pet: 0.55, twist: 0.15, fold: -0.08, wave: [0.01, 2],
       cols: [['#2c5c22', '#4a8236'], ['#32662a', '#528c3c'], ['#2a5420', '#467a32']], under: '#4a6e3a', rib: '#8ab470' } },
@@ -187,19 +187,19 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
     cols: CARPET_GREENS, under: '#567e42', seg: [2, 3], tex: 'carpet' } },
   anubias: { grow: { speed: 'slow', overflow: 'none', len: [40, 180], more: 4 }, sway: 0.08, form: 'rhizome', n: [10, 14], spread: 0.4, stalk: '#2e5226', leaf: {
     len: [0.6, 0.95], wid: 0.4, prof: [0.7, 0.55], rise: [0.1, 0.6], arch: 0.25, twist: 0.3, fold: 0.15, wave: [0.02, 2], pet: 0.25,
-    cols: [['#1e3e1c', '#3a6a32'], ['#22441e', '#40723a']], under: '#3e6236', rib: '#5a8a4a', seg: [8, 5] } },
+    cols: [['#1e3e1c', '#3a6a32'], ['#22441e', '#40723a']], under: '#3e6236', rib: '#5a8a4a', seg: [8, 5], tex: 'anubias' } },
   grass: { grow: { speed: 'fast', overflow: 'trail', len: [120, 900], more: 6 }, sway: 1, form: 'rosette', n: [16, 24], crowns: [3, 5], spread: 0.5, stalk: '#3f6a2e', leaf: {
     len: [0.6, 1], wid: 0.035, prof: [1, 0.12], rise: [0.02, 0.3], arch: 0.5, twist: 1.5, fold: 0, wave: [0, 0], pet: 0,
     cols: GRASS_GREENS, under: '#56703e', seg: [12, 3], tex: 'grass' } },
   stem: { grow: { speed: 'fast', overflow: 'emerge', len: [70, 900], more: 4, shoots: 1 }, sway: 0.65, form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#3f6a2e', top: { cols: [['#42682c', '#6a8c46']], from: 0.8 }, leaf: {
     len: [0.11, 0.14], wid: 0.3, prof: [0.8, 0.6], rise: [0.5, 1.2], arch: 0.3, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
-    cols: STEM_GREENS, under: '#506a3c', seg: [4, 3] },
+    cols: STEM_GREENS, under: '#506a3c', seg: [4, 3], tex: 'stem' },
     // emersed: shorter, rounder, held up along the stem, a darker glossy green
     emersed: { k: 0.8, stiff: 140, land: 35, wid: 0.5, prof: [0.9, 0.55], rise: [0.35, 0.8], arch: 0.12, twist: 0.1, fold: 0.12,
       cols: [['#2a5622', '#467c34'], ['#2e5c24', '#4c8438']], under: '#4a6a3e' } },
   stemred: { grow: { speed: 'medium', overflow: 'emerge', len: [70, 900], more: 4, shoots: 1 }, sway: 0.65, form: 'stem', n: [5, 7], nodes: 22, spread: 0.5, stalk: '#6a4a2a', top: { cols: [['#8a3a2a', '#c0604a'], ['#7e3426', '#b4583e']], from: 0.55 }, leaf: {
     len: [0.11, 0.14], wid: 0.3, prof: [0.8, 0.6], rise: [0.5, 1.2], arch: 0.3, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
-    cols: [['#4e5a2a', '#7e8a42'], ['#56602e', '#86904a']], under: '#7a7a4a', seg: [4, 3] },
+    cols: [['#4e5a2a', '#7e8a42'], ['#56602e', '#86904a']], under: '#7a7a4a', seg: [4, 3], tex: 'stemred' },
     // emersed: rounder, darker, green-bronze rather than red
     emersed: { k: 0.8, stiff: 140, land: 35, wid: 0.5, prof: [0.9, 0.55], rise: [0.35, 0.8], arch: 0.12, twist: 0.1, fold: 0.12,
       cols: [['#3a4a22', '#5e6e34'], ['#4a3e22', '#725a34']], under: '#6a4a3a' } },
@@ -210,22 +210,22 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   // Bucephalandra: a small creeping rhizome of stiff lance leaves, dark green with blue-grey and wine casts
   buce: { grow: { speed: 'slow', overflow: 'none', len: [30, 150], more: 4 }, sway: 0.05, form: 'rhizome', n: [8, 12], spread: 0.45, stalk: '#3a3028', leaf: {
     len: [0.55, 0.9], wid: 0.28, prof: [0.7, 0.6], rise: [0.2, 0.8], arch: 0.2, twist: 0.25, fold: 0.1, wave: [0.04, 3], pet: 0.15,
-    cols: [['#2a4a36', '#527a5e'], ['#323e4e', '#5e6e80'], ['#4a3438', '#7a5e62'], ['#2c4e38', '#58805e']], under: '#5e4a4e', rib: '#8aa898', seg: [8, 5] } },
+    cols: [['#2a4a36', '#527a5e'], ['#323e4e', '#5e6e80'], ['#4a3438', '#7a5e62'], ['#2c4e38', '#58805e']], under: '#5e4a4e', rib: '#8aa898', seg: [8, 5], tex: 'buce' } },
   // Rotala rotundifolia: many fine stems of small narrow leaves, pink to orange at the top
   rotala: { grow: { speed: 'fast', overflow: 'trail', len: [70, 900], more: 4, shoots: 1.5 }, sway: 0.7, form: 'stem', n: [7, 10], nodes: 30, spread: 0.55, stalk: '#6a5a3a', top: { cols: [['#b0606a', '#e0909a'], ['#b06a50', '#e09a78']], from: 0.6 }, leaf: {
     len: [0.07, 0.09], wid: 0.2, prof: [0.8, 0.6], rise: [0.45, 1.1], arch: 0.25, twist: 0.3, fold: -0.1, wave: [0, 0], pet: 0,
-    cols: [['#4a7a34', '#78a856'], ['#52823a', '#86b45e']], under: '#8a8a5a', seg: [4, 3] } },
+    cols: [['#4a7a34', '#78a856'], ['#52823a', '#86b45e']], under: '#8a8a5a', seg: [4, 3], tex: 'rotala' } },
   // Ludwigia repens 'Rubin': fewer, thicker stems of broad oval leaves, olive-brown below, deep red at the top, red underneath
   ludwigia: { grow: { speed: 'medium', overflow: 'emerge', len: [70, 800], more: 4, shoots: 1 }, sway: 0.55, form: 'stem', n: [4, 6], nodes: 16, spread: 0.45, stalk: '#6a3a2a', top: { cols: [['#7a2a22', '#b04a3a'], ['#6e2a2a', '#a04440']], from: 0.4 }, leaf: {
     len: [0.12, 0.15], wid: 0.55, prof: [1, 0.6], rise: [0.6, 1.25], arch: 0.25, twist: 0.2, fold: 0.1, wave: [0, 0], pet: 0.05,
-    cols: [['#5a4a2a', '#8a6a3e'], ['#5e4228', '#8e603c']], under: '#8a3a3a', seg: [5, 3] },
+    cols: [['#5a4a2a', '#8a6a3e'], ['#5e4228', '#8e603c']], under: '#8a3a3a', seg: [5, 3], tex: 'ludwigia' },
     // emersed: round, glossy, dark green with a red flush, red underneath
     emersed: { k: 0.8, stiff: 150, land: 22, wid: 0.7, prof: [1, 0.5], rise: [0.4, 0.85], arch: 0.1, twist: 0.1, fold: 0.15,
       cols: [['#2e4a22', '#4a6a32'], ['#3e3e22', '#5e5a32']], under: '#7a3434' } },
   // Cryptocoryne balansae: tall narrow straps, the blade puckered all along, green to bronze; gives to the current
   balansae: { grow: { speed: 'medium', overflow: 'trail', len: [120, 900], more: 5 }, sway: 0.6, form: 'rosette', n: [8, 14], crowns: [1, 3], spread: 0.25, stalk: '#4a4a2a', leaf: {
     len: [0.6, 1], wid: 0.08, prof: [0.9, 0.3], rise: [0.03, 0.35], arch: 0.45, twist: 0.4, fold: -0.1, wave: [0.1, 16], pet: 0.08,
-    cols: [['#3a5a26', '#5e8040'], ['#4a5428', '#727a3e'], ['#42502a', '#6a7440']], under: '#6a5a3a', seg: [28, 5] } },
+    cols: [['#3a5a26', '#5e8040'], ['#4a5428', '#727a3e'], ['#42502a', '#6a7440']], under: '#6a5a3a', seg: [28, 5], tex: 'balansae' } },
   // Dwarf sagittaria (S. subulata): a run of small grassy rosettes joined by runners, the start of a lawn
   sagittaria: { grow: { speed: 'fast', overflow: 'spread', len: [30, 150], more: 10 }, sway: 0.25, form: 'rosette', n: [40, 60], crowns: [6, 10], spread: 0.9, stalk: '#4a7a34', leaf: {
     len: [0.6, 1], wid: 0.05, prof: [1, 0.25], rise: [0.05, 0.75], arch: 0.4, twist: 0.6, fold: 0, wave: [0, 0], pet: 0,
@@ -234,7 +234,7 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   ozelot: { grow: { speed: 'medium', overflow: 'emerge', len: [80, 500], more: 4 }, sway: 0.25, form: 'rosette', n: [12, 18], spread: 0.05, stalk: '#4a6a2c', leaf: {
     len: [0.75, 1], wid: 0.22, prof: [0.7, 0.75], rise: [0.08, 0.8], arch: 0.4, twist: 0.4, fold: -0.12, wave: [0.04, 3], pet: 0.25,
     cols: [['#3a6e2c', '#64984a'], ['#42762e', '#70a252'], ['#4a6a2c', '#76904a']], under: '#5a7a46', rib: '#a8c690',
-    spots: { col: '#5e2a1e', n: [14, 24], r: 0.035 }, seg: [24, 7] },
+    spots: { col: '#5e2a1e', n: [14, 24], r: 0.035 }, seg: [24, 7], tex: 'ozelot' },
     emersed: { k: 0.95, stiff: 210, land: 70, wid: 0.26, prof: [0.6, 0.6], pet: 0.5, twist: 0.15, fold: -0.08, wave: [0.01, 2],
       cols: [['#2e5a24', '#4a7e38'], ['#34622a', '#52863e']], under: '#4a6a3a', rib: '#88b070' } },
   // Java moss (Taxiphyllum barbieri): a low ragged mound of tiny dark fronds over a dark core, on the ground or lifted
