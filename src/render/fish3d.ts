@@ -627,7 +627,7 @@ const matCache = new Map<string, THREE.MeshBasicMaterial>();
  * Colours bled outward into the transparent area (the body material is opaque, so where the solid reaches past the
  * painted outline, near the nose and at grazing angles, it would show the black of empty texels).
  */
-function bledTexture(map: THREE.Texture) {
+function bledTexture(map: THREE.Texture, noseBlur = true) {
   const src = map.image as HTMLCanvasElement, c = document.createElement('canvas'), t = document.createElement('canvas');
   c.width = t.width = src.width; c.height = t.height = src.height;
   const ctx = c.getContext('2d')!, tc = t.getContext('2d')!;
@@ -638,12 +638,16 @@ function bledTexture(map: THREE.Texture) {
     for (const [dx, dy] of [[2, 0], [-2, 0], [0, 2], [0, -2]]) ctx.drawImage(t, dx, dy);
     ctx.globalCompositeOperation = 'source-over';
   }
-  // the nose tip's columns stretch over the whole front of the head: soften them into a smooth blend there
+  // the nose tip's columns stretch over the whole front of the head: soften them into a smooth blend there. Not on photo-built fish
+  // (a front projection layer paints the face): there it blurred away the sheet's lips, mouth line and nostril from 84 % TL on, and
+  // the bare snout read as a cone (Nathan 2026-11-25, zebra danio "nose too pointy": rendered depth matched the card within 0.3 % TL)
+  if (noseBlur) {
   const bl = document.createElement('canvas'); bl.width = c.width; bl.height = c.height;
   const bc = bl.getContext('2d')!; bc.filter = `blur(${Math.round(c.width * 0.008)}px)`; bc.drawImage(c, 0, 0); bc.filter = 'none';
   const mk = bc.createLinearGradient(c.width * 0.84, 0, c.width * 0.96, 0); mk.addColorStop(0, 'rgba(0,0,0,0)'); mk.addColorStop(1, '#000');
   bc.globalCompositeOperation = 'destination-in'; bc.fillStyle = mk; bc.fillRect(0, 0, c.width, c.height);
   ctx.drawImage(bl, 0, 0);
+  }
   const tex = (cv: HTMLCanvasElement) => { const t = new THREE.CanvasTexture(cv); t.colorSpace = map.colorSpace; t.anisotropy = 16; return t; };
   // the blurred copy shown where the surface turns away from the side (see aqPatch)
   const pl = document.createElement('canvas'); pl.width = c.width; pl.height = c.height;
@@ -769,7 +773,7 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   const grp = new THREE.Group(), st = seeThrough(p); grp.scale.setScalar(w);
   const bodyKey = `body:${map.uuid}:${fish3d.fade}:${fish3d.wrap}:${st ? art + aspect : ''}`;
   const bodyMake = (side: THREE.Side) => () => {
-    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); m.userData.swim = true; if (p.tailBlend) m.alphaToCoverage = true;
+    const t = bledTexture(map, !PROJ_ART[art]?.front), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); m.userData.swim = true; if (p.tailBlend) m.alphaToCoverage = true;
     const cl = st && clarityMap(art, aspect);
     if (cl) { // see-through by region (lighting.ts aqPatch, userData.clear): both sides drawn, far flank first, so the body reads as a volume
       // true blending, not alpha to coverage (tailBlend fish): coverage has only a few levels, and the mask's gradients came out as hard-edged boxes
