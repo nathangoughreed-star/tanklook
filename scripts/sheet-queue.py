@@ -120,18 +120,19 @@ def main(argv):
         before = images(dl); ask()
         print(f'[{n}/{len(q)}] {name}: prompt copied, new ChatGPT chat opened. Waiting for the download...', flush=True)
         got = wait_download(dl, before, ask)
-        while got not in ('q', 's') and not title_matches(got, d):   # guard (2026-11-25): a gourami download from another chat was filed as the harlequin
-            print(f'  WARNING: the download is named "{os.path.basename(got)}", which shares no word with {name} ({", ".join(sorted(expect_words(d)))}).', flush=True)
-            if input('  File it as this fish anyway? [y/N] ').strip().lower() == 'y': break
-            before[os.path.basename(got)] = (os.stat(got).st_mtime, os.stat(got).st_size); print('  left in Downloads, waiting for the next download...', flush=True)
-            got = wait_download(dl, before, ask)
+        # Title check (2026-11-25: a gourami download from another chat was filed as the harlequin). It no longer stops the queue
+        # (Nathan: "I would rather the queue keep going"): a mismatch is filed and flagged in sheet.json, and the build chat looks at
+        # every sheet before building it (PIPELINE.md, sheet step), which is the real check.
+        match = got in ('q', 's') or title_matches(got, d)
+        if not match:
+            print(f'  NOTE: the download is named "{os.path.basename(got)}", which shares no word with {name}; filed anyway, flagged for the visual check.', flush=True)
         if got == 'q': print('  quit'); skipped += [os.path.basename(x) for x in q[n - 1:]]; break
         if got == 's': print('  skipped'); skipped.append(name); continue
         ext = os.path.splitext(got)[1].lower(); keep = os.path.join(d, 'sheet-download' + ext)
         FILED.add(digest(got)); shutil.move(got, keep)
         im = Image.open(keep); im.load(); im.convert('RGB').save(sheet, lossless=True)
         json.dump({'download': os.path.basename(got), 'filed': time.strftime('%Y-%m-%d %H:%M'), 'size_px': list(im.size), 'generator': 'ChatGPT (Nathan, web)',
-                   'prompt_chars': len(prompt)}, open(os.path.join(d, 'sheet.json'), 'w'), indent=1)
+                   'prompt_chars': len(prompt), 'title_match': match}, open(os.path.join(d, 'sheet.json'), 'w'), indent=1)
         print(f'  filed: {sheet} ({im.size[0]}x{im.size[1]})'); done.append(name)
     print(f'\ndone: {len(done)} {done}' + (f'\nskipped: {skipped}' if skipped else '') + '\nNext: tell the fish chat "sheets are in".')
 
