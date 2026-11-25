@@ -703,6 +703,8 @@ function capPasses(m: THREE.Mesh, T: Tank, id: number) {
  *  its shader shows each plant at its own growth (plant3d growShader, lane GR4). */
 /** How much of a lamp behind a leaf shines through it (plantMaterial's `post`). */
 const LEAF_GLOW = 0.5;
+/** Relief from the painted texture's luminance (plantMaterial's `post`): the bump height in mm per unit luminance, and how strongly the lamps' facing change shows. */
+const LEAF_RELIEF = 6.0, LEAF_RELIEF_K = 1.8;
 const plantMats = new Map<string, THREE.MeshBasicMaterial>();
 function plantMaterial(T: Tank, free = false) {
   const k = glassKey(T) + (free ? '|rim' : '');
@@ -719,20 +721,36 @@ function plantMaterial(T: Tank, free = false) {
   const post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
     sh.fragmentShader = sh.fragmentShader.replace('float aqF = smoothstep(0.0, 0.5, aqWaterPath())', '$& * (1.0 - smoothstep(uWater.y + 6.0, uWater.y + 14.0, vAqP.y))');
     // light through the leaf (lane PT step 6): a lamp on the far side of the blade from the eye shines through it, tinted by the
-    // leaf's own colour, strongest looking toward the lamp; only under a fixture (uMode 1), nothing for a thick (succulent) leaf
-    // is special-cased: the term is modest
+    // leaf's own colour, strongest looking toward the lamp (flat light: one soft key from above, as the fish have).
+    // Relief (step 7): the painted texture's light and dark read as height (veins, blisters): the normal is tipped by the
+    // screen-space gradient of the texel's luminance and the lamps' facing is redone with it (a flat white texel: no change).
     sh.fragmentShader = sh.fragmentShader.replace('vec3 aqLt = aqLight(); outgoingLight *= aqLt;', `$&
-  if (uMode > 0.5 && uMode < 1.5) {
-    vec3 ptN = normalize(vAqN), ptV = normalize(cameraPosition - vAqP); float ptT = 0.0;
-    for (int i = 0; i < ${AQ_MAX}; i++) {
-      if (i >= uEmN) break;
-      vec4 e = uEm[i]; vec3 q = e.w > 0.0 ? vec3(clamp(vAqP.x, e.x - e.w, e.x + e.w), e.y, e.z) : e.xyz;
-      vec3 tl = q - vAqP; float d = length(tl); vec3 ld = tl / max(d, 1.0), ptR = vec3(0.0);
-      float cone = pow(max(ld.y, 0.0), uBeamM), r = d / uRef, fall = e.w > 0.0 ? 1.0 / (1.0 + r) : 1.0 / (1.0 + r * r);
-      ptT += cone * fall * max(-dot(ptN, ld), 0.0) * (0.35 + 0.65 * max(dot(-ptV, ld), 0.0));
+  {
+    vec3 ptN = normalize(vAqN), ptV = normalize(cameraPosition - vAqP);
+    vec3 sx = dFdx(vAqP), sy = dFdy(vAqP), r1 = cross(sy, ptN), r2 = cross(ptN, sx);
+    float det = dot(sx, r1), ptH = dot(texture2D(map, vMapUv).rgb, vec3(0.3, 0.59, 0.11));
+    vec3 gr = sign(det) * (dFdx(ptH) * r1 + dFdy(ptH) * r2), ptB = ptN;
+    bool ptRel = dot(gr, gr) > 0.0;
+    if (ptRel) ptB = normalize(abs(det) * ptN - ${LEAF_RELIEF.toFixed(2)} * gr);
+    float ptT = 0.0, rel = 0.0, wS = 0.0; vec3 ptL = vec3(0.0);
+    if (uMode > 0.5 && uMode < 1.5) {
+      ptL = uLCol * (uBright * uNorm);
+      for (int i = 0; i < ${AQ_MAX}; i++) {
+        if (i >= uEmN) break;
+        vec4 e = uEm[i]; vec3 q = e.w > 0.0 ? vec3(clamp(vAqP.x, e.x - e.w, e.x + e.w), e.y, e.z) : e.xyz;
+        vec3 tl = q - vAqP; float d = length(tl); vec3 ld = tl / max(d, 1.0);
+        float cone = pow(max(ld.y, 0.0), uBeamM), r = d / uRef, w = cone * (e.w > 0.0 ? 1.0 / (1.0 + r) : 1.0 / (1.0 + r * r));
+        ptT += w * max(-dot(ptN, ld), 0.0) * (0.35 + 0.65 * max(dot(-ptV, ld), 0.0));
+        if (ptRel) { rel += w * (abs(dot(ptB, ld)) - abs(dot(ptN, ld))); wS += w; }
+      }
+    } else if (uMode < 0.5) {
+      vec3 ld = normalize(vec3(-0.2, 1.0, 0.35)); ptL = vec3(1.0);
+      ptT = 0.6 * max(-dot(ptN, ld), 0.0) * (0.35 + 0.65 * max(dot(-ptV, ld), 0.0));
+      if (ptRel) { rel = abs(dot(ptB, ld)) - abs(dot(ptN, ld)); wS = 1.0; }
     }
+    if (wS > 1e-4) outgoingLight *= clamp(1.0 + ${LEAF_RELIEF_K.toFixed(2)} * rel / wS, 0.5, 1.7);
     vec3 ptC = diffuseColor.rgb * mix(vec3(1.0), diffuseColor.rgb * 1.8 + 0.05, 0.6);
-    outgoingLight += ptC * uLCol * (uBright * uNorm * ptT * ${LEAF_GLOW.toFixed(2)});
+    outgoingLight += ptC * ptL * (ptT * ${LEAF_GLOW.toFixed(2)});
   }`);
     growShader(sh); // (after the lighting's vAqP: the haze and the light need the grown position)
   };
