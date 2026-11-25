@@ -57,7 +57,7 @@ The prompt has two parts:
 ## Part 1: method block (fixed)
 
 ```text
-Create a scientifically accurate orthographic reference sheet of a single adult {{COMMON}} ({{SCI}}) for 3D model reconstruction.
+Create a scientifically accurate orthographic reference sheet of a single adult {{COMMON}} ({{SCI}}) for 3D model reconstruction. Title the image "{{COMMON}} ({{SCI}}) reference sheet".
 
 PRIMARY OBJECTIVE
 

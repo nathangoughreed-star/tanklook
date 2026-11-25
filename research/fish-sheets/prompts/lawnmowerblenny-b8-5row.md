@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult lawnmower blenny (Salarias fasciatus) for 3D model reconstruction.
+Create a scientifically accurate orthographic reference sheet of a single adult lawnmower blenny (Salarias fasciatus) for 3D model reconstruction. Title the image "lawnmower blenny (Salarias fasciatus) reference sheet".
 
 PRIMARY OBJECTIVE
 

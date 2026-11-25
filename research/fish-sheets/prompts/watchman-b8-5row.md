@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult yellow watchman goby (Cryptocentrus cinctus) for 3D model reconstruction.
+Create a scientifically accurate orthographic reference sheet of a single adult yellow watchman goby (Cryptocentrus cinctus) for 3D model reconstruction. Title the image "yellow watchman goby (Cryptocentrus cinctus) reference sheet".
 
 PRIMARY OBJECTIVE
 

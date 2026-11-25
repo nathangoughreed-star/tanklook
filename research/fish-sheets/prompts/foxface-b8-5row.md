@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult foxface rabbitfish (Siganus vulpinus) for 3D model reconstruction.
+Create a scientifically accurate orthographic reference sheet of a single adult foxface rabbitfish (Siganus vulpinus) for 3D model reconstruction. Title the image "foxface rabbitfish (Siganus vulpinus) reference sheet".
 
 PRIMARY OBJECTIVE
 

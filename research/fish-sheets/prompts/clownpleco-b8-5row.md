@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult clown pleco (Panaque maccus) for 3D model reconstruction.
+Create a scientifically accurate orthographic reference sheet of a single adult clown pleco (Panaque maccus) for 3D model reconstruction. Title the image "clown pleco (Panaque maccus) reference sheet".
 
 PRIMARY OBJECTIVE
 

@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult firefish goby (Nemateleotris magnifica) for 3D model reconstruction.
+Create a scientifically accurate orthographic reference sheet of a single adult firefish goby (Nemateleotris magnifica) for 3D model reconstruction. Title the image "firefish goby (Nemateleotris magnifica) reference sheet".
 
 PRIMARY OBJECTIVE
 

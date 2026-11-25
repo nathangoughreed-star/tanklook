@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult common pleco (Hypostomus plecostomus) for 3D model reconstruction.
+Create a scientifically accurate orthographic reference sheet of a single adult common pleco (Hypostomus plecostomus) for 3D model reconstruction. Title the image "common pleco (Hypostomus plecostomus) reference sheet".
 
 PRIMARY OBJECTIVE
 

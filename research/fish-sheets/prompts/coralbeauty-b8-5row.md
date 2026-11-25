@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult coral beauty angelfish (Centropyge bispinosa) for 3D model reconstruction.
+Create a scientifically accurate orthographic reference sheet of a single adult coral beauty angelfish (Centropyge bispinosa) for 3D model reconstruction. Title the image "coral beauty angelfish (Centropyge bispinosa) reference sheet".
 
 PRIMARY OBJECTIVE
 

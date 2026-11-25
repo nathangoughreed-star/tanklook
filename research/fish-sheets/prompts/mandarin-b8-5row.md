@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult mandarin dragonet (Synchiropus splendidus) for 3D model reconstruction.
+Create a scientifically accurate orthographic reference sheet of a single adult mandarin dragonet (Synchiropus splendidus) for 3D model reconstruction. Title the image "mandarin dragonet (Synchiropus splendidus) reference sheet".
 
 PRIMARY OBJECTIVE
 

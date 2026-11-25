@@ -1,4 +1,4 @@
-Create a scientifically accurate orthographic reference sheet of a single adult exclamation point rasbora (Boraras urophthalmoides) for 3D model reconstruction.
+Create a scientifically accurate orthographic reference sheet of a single adult exclamation point rasbora (Boraras urophthalmoides) for 3D model reconstruction. Title the image "exclamation point rasbora (Boraras urophthalmoides) reference sheet".
 
 PRIMARY OBJECTIVE
 
