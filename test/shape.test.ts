@@ -98,9 +98,9 @@ describe('bowl (sphere cut flat at the floor and the opening)', () => {
   });
   it('keeps fish inside the sphere at their height, and snails on it', () => {
     const f = { id: 1, species: 'neon', x: 0, y: 160, depth: 200, yaw: 0, pitch: 0, roll: 0, bend: 0 };
-    clampFish(f, bowl); expect(Math.hypot(f.x - 200, f.depth - 200)).toBeCloseTo(200, 6); // the equator
+    clampFish(f, bowl); expect(Math.hypot(f.x - 200, f.depth - 200)).toBeCloseTo(200 - 22, 6); // the equator, less the neon's half-length (19 mm) and the 3 mm gap: its nose stays in
     const g = { ...f, x: 390, y: 270 }; clampFish(g, bowl);
-    expect(Math.hypot(g.x - 200, g.depth - 200)).toBeCloseTo(Math.sqrt(200 ** 2 - 110 ** 2), 6); // near the opening
+    expect(Math.hypot(g.x - 200, g.depth - 200)).toBeCloseTo(Math.sqrt(200 ** 2 - 110 ** 2) - 22, 6); // near the opening
     const r = rng(3);
     for (let i = 0; i < 300; i++) {
       const s = spawnSnail(() => 10, bowl, 20, r);
