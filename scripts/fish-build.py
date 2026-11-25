@@ -7,6 +7,7 @@ fish-projcards.py -> WebPs in public/art/fish -> src/data/fishart/<id>.anatomy.j
 src/art/photofish.ts reads) -> species.json entry. Needs numpy + Pillow."""
 import json, os, subprocess, sys
 import numpy as np
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 spec = json.load(open(sys.argv[1], encoding='utf8')); ID = spec['id']
@@ -158,6 +159,8 @@ er = sum([['--erase', ','.join(map(str, e))] for e in spec.get('erase', [])], []
 common = ['--aspect', asp, '--clip-head', spec.get('clip_head', 25), '--alo', alo, '--aw', aw, '--sat', sat]
 if spec.get('solid', 5): common += ['--solid', spec.get('solid', 5)]   # opaque inside the fish silhouette (method row 45); 'solid': 0 = brightness alpha only
 side_card = os.path.join(work, 'side_full.png')
+if spec.get('root_band', 1):   # pale band at the body / tail-fin join (scripts/fishroot.py, method row 63)
+    import fishroot; print('root band: %d px darkened in side_full.png' % fishroot.smooth_root(side_card, LM['ped']))
 if spec.get('card_sheet'):   # the body card from a sheet whose panel 1 has the paired fins replaced by the finless flank (the 3D fins draw themselves); the fin card keeps them
     cs_ = Image.open(spec['card_sheet']).convert('RGB')
     # flank holes (convict, 2026-11-24): where the finless flank replaced the pectoral, dark stripe pixels came out pure black, and the cutout
@@ -182,6 +185,7 @@ if spec.get('card_sheet'):   # the body card from a sheet whose panel 1 has the 
             cs_ = Image.fromarray(np.clip(ca_, 0, 255).astype(np.uint8)); print('card sheet: %d black flank px filled' % hole_.sum())
     sqc = Image.new('RGB', (N, N)); sqc.paste(cs_.crop((0, 0, cs_.width, sy1 + 8)), (0, 0))
     side_card = os.path.join(work, 'side_full_card.png'); sqc.save(side_card)
+    if spec.get('root_band', 1): import fishroot; print('root band: %d px darkened in side_full_card.png' % fishroot.smooth_root(side_card, LM['ped']))
 FO = spec.get('fin_opacity')   # per-fin opacity profiles (method row 61): the card keeps coverage only, scripts/fish-fin-opacity.py writes the maps below
 mem = ['--membrane', ','.join(map(str, spec['membrane']))] if spec.get('membrane') and FO is None else []   # see-through median fins (method row 61): body card only, the fin card feeds the paired fins, which get their own membrane in textures.ts
 run(S('fish-cutout-card.py'), side_card, anat, card, *common, *er, *mem)
