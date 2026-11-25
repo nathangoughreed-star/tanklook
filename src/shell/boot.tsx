@@ -74,6 +74,6 @@ export function bootShell() {
   const linked = openLink();
   if (!linked && start.message) files.say(start.message, true);
   else if (!linked && shouldWelcome(restored, saveError)) files.openStart();   // SS1: a first visit asks how to start
-  if (import.meta.env.DEV) Object.assign(window, { __gb: { store, viewer } });
+  if (import.meta.env.DEV || import.meta.env.VITE_GB_HANDLE) Object.assign(window, { __gb: { store, viewer } }); // VITE_GB_HANDLE=1: a production build for scripts/perf-*.mjs
   document.body.dataset.ui2 = 'ready';
 }

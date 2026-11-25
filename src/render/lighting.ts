@@ -80,12 +80,12 @@ export function lightRGB(K: number, salt: boolean): [number, number, number] {
 const AQ_CLIP = 72;
 /** Shared uniforms; set per viewport before each render because Tank A and Tank B have different fixtures. */
 export const LU = {
-  uEm: { value: Array.from({ length: AQ_MAX }, () => new THREE.Vector4()) }, uEmN: { value: 0 }, uMode: { value: 0 },
+  uEm: { value: new Float32Array(AQ_MAX * 4) }, uEmN: { value: 0 }, uMode: { value: 0 },
   uAmb: { value: 0.25 }, uBright: { value: 1 }, uNorm: { value: 1 }, uBeamM: { value: 1 },
   uRef: { value: REF }, uLCol: { value: new THREE.Color(1, 1, 1) },
   uRoomK: { value: 1 }, uSpill: { value: new THREE.Color(1, 1, 1) }, uSpillR: { value: 500 },
   uTankMin: { value: new THREE.Vector3() }, uTankMax: { value: new THREE.Vector3() }, uTankRound: { value: 0 },
-  uWater: { value: new THREE.Vector4() }, uClip: { value: Array.from({ length: AQ_CLIP }, () => new THREE.Vector3()) }, uClipN: { value: 0 }, uWCol: { value: new THREE.Color() }, uWTint: { value: new THREE.Vector4(1, 1, 1, 0) }, uPop: { value: 0 },
+  uWater: { value: new THREE.Vector4() }, uClip: { value: new Float32Array(AQ_CLIP * 3) }, uClipN: { value: 0 }, uWCol: { value: new THREE.Color() }, uWTint: { value: new THREE.Vector4(1, 1, 1, 0) }, uPop: { value: 0 },
   // light map (beam overlay): on, weight per emitter, the beam's concentration (see aqIrr)
   uMapOn: { value: 0 }, uMapW: { value: 1 }, uMapGain: { value: 1 },
   // light output (lane K; watts set): the map in real units, a port of scene/lightout.ts bandsAt. uLoA: phi x 1e6 /
@@ -94,7 +94,7 @@ export const LU = {
   // what is shown (PAR 1,1,1; lux LUXW); uMapDiv: the level at the bottom of the ramp (relative 1/16, PAR 2.5, lux 125);
   // uMapStep: contour lines every this much in the shown unit (light.mapStep / mapStepLux), 0 = a line at each doubling
   // scape shading (scene/shade.ts): uShA = x, z, radius, light passed; uShT = top; uShN columns
-  uShA: { value: Array.from({ length: SHADE_MAX }, () => new THREE.Vector4()) }, uShT: { value: new Array<number>(SHADE_MAX).fill(0) }, uShN: { value: 0 }, uShC: { value: 0 },
+  uShA: { value: new Float32Array(SHADE_MAX * 4) }, uShT: { value: new Array<number>(SHADE_MAX).fill(0) }, uShN: { value: 0 }, uShC: { value: 0 },
   uLoOn: { value: 0 }, uLoA: { value: new THREE.Vector4() }, uLoWall: { value: new THREE.Vector2() },
   uLoK: { value: new THREE.Vector3() }, uLoSplit: { value: new THREE.Vector3() }, uLoOut: { value: new THREE.Vector3(1, 1, 1) },
   uMapDiv: { value: 1 / 16 }, uMapStep: { value: 0 }, uLoM: { value: 1 }, uLoInd: { value: new THREE.Vector3() },
@@ -146,11 +146,13 @@ export function setWaterUniforms(T: Tank, w: WaterSettings, pop = 0, cond?: Cond
     if (l < 1e-6) continue;
     let nx = tz / l, nz = -tx / l; // world plan (x, z = -d); flipped to point away from the centroid
     if (nx * (a[0] - cx) + nz * (-a[1] + cd) < 0) { nx = -nx; nz = -nz; }
-    LU.uClip.value[n++].set(nx, nz, nx * a[0] - nz * a[1] + 0.5); // inside: nx x + nz z <= c (0.5 mm: the glass's own face)
+    { const u = LU.uClip.value, o = 3 * n++; u[o] = nx; u[o + 1] = nz; u[o + 2] = nx * a[0] - nz * a[1] + 0.5; } // inside: nx x + nz z <= c (0.5 mm: the glass's own face)
   }
   LU.uClipN.value = n;
 }
 /** Clips the water slab segment [a, b] (fractions of dv from o) to the footprint's half-planes in plan (uClipN = 0: the box). */
+/** The big uniform arrays are flat Float32Arrays: three's upload of a Vector3 / Vector4 array copies it element by element (toArray + flatten) at every material switch, ~7 ms a frame with 40 fish (2026-11-25). */
+function setVec4(a: Float32Array, i: number, e: ArrayLike<number>) { const o = 4 * i; a[o] = e[0]; a[o + 1] = e[1]; a[o + 2] = e[2]; a[o + 3] = e[3]; }
 const BOW_GLSL = `uniform vec3 uClip[${AQ_CLIP}]; uniform int uClipN;
 void aqBow(vec3 o, vec3 dv, inout float a, inout float b) {
   for (int i = 0; i < ${AQ_CLIP}; i++) {
@@ -265,7 +267,7 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   if (on) LU.uSpill.value.setRGB(...lightRGB(l.kelvin, !!S?.water.salt)).multiplyScalar(spill * bright); else LU.uSpill.value.setRGB(0, 0, 0); // no fixture: no light leaves the tank
   if (!on) return;
   const E = emitters(T, l, hgt), m = beamExp(l), gain = beamGain(l), ref: LightSettings = { ...l, spacing: 0, cone: 52 };
-  E.forEach((e, i) => LU.uEm.value[i].set(...e)); LU.uEmN.value = E.length;
+  E.forEach((e, i) => setVec4(LU.uEm.value, i, e)); LU.uEmN.value = E.length;
   // normalised with the fixture at the standard height, auto spacing and standard beam (sample a mid-height plane
   // across the tank), so raising it dims the tank (distance falloff) and evens it out (wider footprint), spreading
   // the bulbs past the glass loses light outside, and a narrower beam concentrates the same output (gain)
@@ -279,14 +281,14 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   if (env) setLoUniforms(env, lo!.scale, l.mapUnit ?? 'par');
   // the light map's columns (only when it counts the scape); else, with caustics on, the same columns for the caustics alone
   const sh = env?.shade ?? (FX.caustics && S ? causShadesOf(S, T) : []);
-  LU.uShN.value = env?.shade ? sh.length : 0; LU.uShC.value = FX.caustics ? sh.length : 0; sh.forEach((s, i) => { LU.uShA.value[i].set(s[0], s[1], s[2], s[3]); LU.uShT.value[i] = s[4]; });
+  LU.uShN.value = env?.shade ? sh.length : 0; LU.uShC.value = FX.caustics ? sh.length : 0; sh.forEach((s, i) => { setVec4(LU.uShA.value, i, s); LU.uShT.value[i] = s[4]; });
 }
 function setLoUniforms(env: LightEnv, scale: number, unit: 'par' | 'lux') {
   LU.uLoA.value.set(env.phi * 1e6 / env.norm, Number.isFinite(env.ys) ? env.ys : -1e6, env.trans * scale, env.walls ? env.walls.w : 0);
   LU.uLoWall.value.set(env.walls?.L ?? 0, env.walls?.D ?? 0);
   LU.uLoK.value.set(...env.k); LU.uLoSplit.value.set(...env.split); const o = unit === 'lux' ? LUXW : [1, 1, 1]; LU.uLoOut.value.set(o[0], o[1], o[2]);
   LU.uLoM.value = env.m; LU.uLoInd.value.set(...env.ind).multiplyScalar(scale);
-  env.E.forEach((e, i) => LU.uEm.value[i].set(...e)); LU.uEmN.value = env.E.length;
+  env.E.forEach((e, i) => setVec4(LU.uEm.value, i, e)); LU.uEmN.value = env.E.length;
 }
 
 const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';

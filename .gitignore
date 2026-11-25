@@ -5,3 +5,6 @@ dist/
 dist-single/
 shots/
 *.local
+dist-perf/
+dist-perfn/
+dist-perf2/
