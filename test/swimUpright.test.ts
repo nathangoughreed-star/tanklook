@@ -1,5 +1,5 @@
 // R150: a habit fish turns belly-to-surface only to placed hardscape, never the glass, floor or water surface. Yellow labs (mbuna, orient 0.5) in a
-// bare 24 x 12 x 12 in tank fall back to a glass home; they rolled up to 45 deg onto their sides there. They must stay near upright (turn bank only).
+// bare 24 x 12 x 12 in tank fall back to a glass home; they rolled up to 45 deg onto their sides there, and in open water too (a capped clearance read). They must stay near upright (turn bank only).
 import { describe, expect, it } from 'vitest';
 import { HABIT } from '../src/scene/fishBehavior';
 import { makeSwimSim } from '../src/scene/swimSim';
@@ -7,7 +7,10 @@ import type { SwimmerSpec } from '../src/scene/swimTypes';
 import { boxTank } from './swimFieldDouble';
 
 const L = 610, D = 305, TOP = 290, GROUND = 40;
-const field = boxTank(L, D, TOP, GROUND, []);
+// like the app's voxel field (render/swimField.ts): a capped read still returns the direction of the nearest solid. The plain double gives none
+// when capped, which hid the bug: the live labs banked 45 deg toward the nearest pane in open water.
+const box = boxTank(L, D, TOP, GROUND, []);
+const field = { ...box, clearance: (x: number, y: number, z: number, grad?: number[], cap = 100) => Math.min(box.clearance(x, y, z, grad as never, 1e9), cap) };
 const hab = (id: string) => ({ ...HABIT[id], hold: [...HABIT[id].hold] as [number, number] });
 const home = (x: number, y: number, z: number) => ({ x, y, z, yaw: 0, pitch: 0, roll: 0 });
 

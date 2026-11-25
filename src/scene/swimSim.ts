@@ -624,10 +624,16 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       pitchS[i] += (pt - pitchS[i]) * Math.min(1, dt * 4);
       let rollT = clamp(-yawRate[i] * R2D * 0.12, -12, 12);
       if (hb[i]) {
-        if (hOri[i] > 0 && !isB && c0[i] < r + L * 0.6 && isItem(px[i], py[i], pz[i], c0[i], r)) { // FB3: near a rock face the belly turns toward it (upside down under a ledge); R150: only a placed rock or wood, never the glass, floor or surface (mbuna with a glass home rolled onto their sides)
-          const yw = Math.atan2(-hz[i], hx[i]), sy = Math.sin(yw), cy = Math.cos(yw), dh = g0x[i] * hx[i] + g0y[i] * hy[i] + g0z[i] * hz[i];
-          const ux = g0x[i] - dh * hx[i], uy = g0y[i] - dh * hy[i], uz = g0z[i] - dh * hz[i], um = Math.sqrt(ux * ux + uy * uy + uz * uz);
-          if (um > 0.25) { const th = Math.atan2((ux * sy + uz * cy) / um, uy / um) * R2D * hOri[i], w = clamp((r + L * 0.6 - c0[i]) / (L * 0.35), 0, 1); rollT = rollT * (1 - w) + th * w; }
+        // FB3: near a rock face the belly turns toward it (upside down under a ledge). R150: only a placed rock or wood, never the glass, floor or surface,
+        // and only on a TRUE distance: c0 was read capped at the margin (36 mm for a lab) while the field still gives the direction of the nearest pane, so
+        // a capped c0 looked "36 mm from a face" everywhere and mbuna banked 45 deg toward the nearest glass in open water. Re-read uncapped to the band.
+        const band = r + L * 0.6;
+        let cB = c0[i], bx = g0x[i], by = g0y[i], bz = g0z[i];
+        if (hOri[i] > 0 && !isB && cB >= marg[i] * 0.999) { grad[0] = 0; grad[1] = 0; grad[2] = 0; cB = field.clearance(px[i], py[i], pz[i], grad, band); bx = grad[0]; by = grad[1]; bz = grad[2]; }
+        if (hOri[i] > 0 && !isB && cB < band * 0.999 && isItem(px[i], py[i], pz[i], cB, r)) {
+          const yw = Math.atan2(-hz[i], hx[i]), sy = Math.sin(yw), cy = Math.cos(yw), dh = bx * hx[i] + by * hy[i] + bz * hz[i];
+          const ux = bx - dh * hx[i], uy = by - dh * hy[i], uz = bz - dh * hz[i], um = Math.sqrt(ux * ux + uy * uy + uz * uz);
+          if (um > 0.25) { const th = Math.atan2((ux * sy + uz * cy) / um, uy / um) * R2D * hOri[i], w = clamp((band - cB) / (L * 0.35), 0, 1); rollT = rollT * (1 - w) + th * w; }
         }
         if (hS[i] === 7) rollT += 9 * Math.sin(T * 20) * Math.sin(Math.PI * clamp(hT[i] / Math.max(hDur[i], 0.1), 0, 1)); // a flick: a quick shudder
         let dr = rollT - rollS[i]; dr = ((dr + 540) % 360) - 180;
