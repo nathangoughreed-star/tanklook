@@ -55,6 +55,17 @@ for i, s in enumerate(st):
     if c: hw[i] = round(float(((np.mean([e[1] for e in c]) - np.mean([e[0] for e in c])) / 2 if (ANCH and s < 12) else min(mid - np.mean([e[0] for e in c]), np.mean([e[1] for e in c]) - mid)) / SL * 100), 2)
 keep = [(s, h) for s, h in zip(st, hw) if not (P0 <= s <= P1)]
 hw = [round(float(np.interp(s, [k[0] for k in keep], [k[1] for k in keep])), 2) if P0 <= s <= P1 else h for s, h in zip(st, hw)]
+# a snout never widens toward its tip: in the front 8 % SL, anything sticking out sideways there (the zebra danio's barbels) is not
+# body. The full-width tip stations measured it as such (danio: 4.05 % SL at the tip, 2.92 at 3 % SL), and the 3D snout pinched,
+# then flared into a flat plate as wide as the barbel spread (Nathan 2026-11-25: "hog-nosed danios"). From the narrowest front
+# station forward, close the snout as a quarter ellipse to 0.4 x that width at the tip (the round nose dome in fish3d.ts closes the rest).
+fr = [i for i, s in enumerate(st) if s <= 8]
+if fr:
+    m = min(fr, key=lambda i: hw[i]); sm = st[m]
+    if sm > 0 and max(hw[i] for i in fr if st[i] < sm) > hw[m] + 0.1:
+        for i in fr:
+            if st[i] < sm: hw[i] = round(hw[m] * max(0.4, np.sqrt(max(0.0, 1 - ((sm - st[i]) / sm) ** 2))), 2)
+        print('  nose flare closed: %.2f %% SL at %g %% SL, tip %.2f' % (hw[m], sm, hw[0]))
 A['thickness'] = {'stations': st, 'halfWidthPctSL': hw, 'source': 'top panel of the generated sheet, blue-share mask (thr %.2f); the narrower side of the centre line' % thr}
 json.dump(J, open(out, 'w'), indent=1)
 print(hw)

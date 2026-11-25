@@ -452,11 +452,11 @@
     100
    ],
    "halfWidthPctSL": [
-    4.05,
-    3.79,
-    3.51,
-    3.28,
-    3.12,
+    1.17,
+    1.61,
+    2.18,
+    2.53,
+    2.75,
     2.92,
     3.28,
     3.67,
@@ -487,9 +487,9 @@
    ],
    "source": "top panel of the generated sheet, blue-share mask (thr 0.60); the narrower side of the centre line",
    "fit": {
-    "thick": 0.85,
+    "thick": 0.84,
     "pedT": 0.3,
-    "rmsPctSL": 0.92,
+    "rmsPctSL": 0.78,
     "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
    }
   },
@@ -789,7 +789,7 @@
     ],
     "ver": "8b543b60"
    },
-   "fit": "{'thick': 0.85, 'pedT': 0.3, 'rmsPctSL': 0.92, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
+   "fit": "{'thick': 0.84, 'pedT': 0.3, 'rmsPctSL': 0.78, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }
  },
  "reliability": {
