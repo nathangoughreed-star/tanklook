@@ -3,6 +3,7 @@
 // rewrites research/source-coverage.md and research/source-baseline.json.
 import sourcesJson from '../src/data/sources.json';
 import speciesJson from '../src/data/species.json';
+import { SPECIES } from '../src/data/species';
 import bodymass from '../src/data/bodymass.json';
 import factors from '../src/data/factors.json';
 import demandDefaults from '../src/data/demand-defaults.json';
@@ -33,7 +34,9 @@ const pick = (o: Obj, keys: string[]) => Object.fromEntries(keys.filter(k => k i
 interface Target { name: string; label: string; data: unknown; leaf: (key: string, v: unknown, path: string[]) => boolean }
 const num = (_k: string, v: unknown) => typeof v === 'number';
 const numBool = (_k: string, v: unknown) => typeof v === 'number' || typeof v === 'boolean';
-const species = (speciesJson as { species: Obj[] }).species;
+// catalogue species only: art variants and held models (data/species.ts SPECIES) carry no sourced advice of their own
+const inCatalogue = new Set(SPECIES.map(x => x.id));
+const species = (speciesJson as { species: Obj[] }).species.filter(s => inCatalogue.has(s.id as string));
 export const TARGETS: Target[] = [
   { name: 'CARE', label: 'Animal care: min tank, temperament, temperature, pH / GH, group, predation (data/care.ts)', data: CARE,
     leaf: (k, v) => k !== 'tolEst' && (numBool(k, v) || k === 'fam') },
