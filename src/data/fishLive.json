@@ -28,6 +28,22 @@
     "glowlight": {
       "look": "glowlightb",
       "approved": "2026-11-24"
+    },
+    "neonrainbow": {
+      "look": "neonrainbowb",
+      "approved": "2026-11-24"
+    },
+    "electricblueacara": {
+      "look": "electricblueacarab",
+      "approved": "2026-11-24"
+    },
+    "convict": {
+      "look": "convictb",
+      "approved": "2026-11-24"
+    },
+    "platy": {
+      "look": "platyb",
+      "approved": "2026-11-24"
     }
   }
 }
