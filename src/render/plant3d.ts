@@ -178,7 +178,7 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
   const us = Array.from({ length: f.seg[1] }, (_, j) => (j / (f.seg[1] - 1)) * 2 - 1);
   if (f.rib) us.splice(us.length >> 1, 1, -0.07, 0, 0.07);
   // rows: a few up the bare stalk (a narrow strip in the stalk colour), then the blade
-  const NS = f.seg[0], NP = f.pet > 0 ? 3 : 0, NC = us.length, rows = NP + NS + 1, W = L * f.wid, SW = Math.max(0.6, W * 0.07);
+  const NS = f.seg[0], NP = f.pet > 0 ? 3 : 0, NC = us.length, rows = NP + NS + 1, W = L * f.wid, SW = Math.max(0.6, W * 0.07 * (f.stalkW ?? 1));
   const rib = f.rib ? new THREE.Color(f.rib) : null, stalk = new THREE.Color(stalkCol), pts: THREE.Vector3[] = [], pbs: THREE.Vector3[] = [], cs: THREE.Color[] = [], bs: THREE.Color[] = [];
   const edge = new THREE.Color(cols[0]), mid = new THREE.Color(cols[1]), under = new THREE.Color(f.under), tip = f.tip ? new THREE.Color(f.tip[0]) : null;
   const hx = Math.cos(yaw), hz = Math.sin(yaw), ph = r() * 6.28;

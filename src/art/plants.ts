@@ -81,6 +81,8 @@ export interface Leaf3D {
   thick?: number;
   /** Samples along the blade and across it (3 = a midrib, 5 = room for a cup or a ripple). */
   seg: [number, number];
+  /** Stalk thickness, times the default (a fraction of the blade width; absent = 1). */
+  stalkW?: number;
   /** A painted leaf texture (lane PT): the name of its entry in src/data/plantart/leaves.json (absent = vertex colours only). */
   tex?: string;
 }
@@ -203,7 +205,7 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
       cols: [['#3a4a22', '#5e6e34'], ['#4a3e22', '#725a34']], under: '#6a4a3a' } },
   // Cryptocoryne wendtii: short stalked lance leaves with rippled edges, olive-brown to bronze, reddish underneath
   crypt: { grow: { speed: 'slow', overflow: 'none', len: [45, 300], more: 5 }, sway: 0.15, form: 'rosette', n: [12, 18], crowns: [1, 3], spread: 0.3, stalk: '#5a4a30', leaf: {
-    len: [0.75, 1], wid: 0.32, prof: [0.6, 0.8], rise: [0.15, 0.9], arch: 0.35, twist: 0.15, fold: -0.08, wave: [0.06, 5], pet: 0.28,
+    len: [0.75, 1], wid: 0.32, prof: [0.6, 0.8], rise: [0.15, 0.9], arch: 0.35, twist: 0.15, fold: -0.08, wave: [0.06, 5], pet: 0.2, stalkW: 1.7,
     cols: [['#44502a', '#72783e'], ['#4e4a2a', '#7e7040'], ['#5a462a', '#8a6a40'], ['#3e4c26', '#66763c']], under: '#84563c', rib: '#a09060', seg: [26, 9], tex: 'crypt' } },
   // Bucephalandra: a small creeping rhizome of stiff lance leaves, dark green with blue-grey and wine casts
   buce: { grow: { speed: 'slow', overflow: 'none', len: [30, 150], more: 4 }, sway: 0.05, form: 'rhizome', n: [8, 12], spread: 0.45, stalk: '#3a3028', leaf: {
