@@ -72,6 +72,22 @@
     "oscar": {
       "look": "oscarb",
       "approved": "2026-11-25"
+    },
+    "pepperedcory": {
+      "look": "pepperedcoryb",
+      "approved": "2026-11-25"
+    },
+    "bronzecory": {
+      "look": "bronzecoryb",
+      "approved": "2026-11-25"
+    },
+    "oto": {
+      "look": "otob",
+      "approved": "2026-11-25"
+    },
+    "yellowtang": {
+      "look": "yellowtangb",
+      "approved": "2026-11-25"
     }
   }
 }
