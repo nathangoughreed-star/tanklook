@@ -95,11 +95,11 @@ export async function loadPhotoFish(only?: ReadonlySet<string>): Promise<Set<str
     } else delete P.pelvic;
     delete P.gape; delete P.gapeDrop; P.gillLine = 0;
     { const [ex, ey, er] = R.eye, u = 1 - (sx - ex) / sl * SLc, v = (ax - ey) / sl * -1 * SLc, [et, eb] = profile(P)(u);
-      P.eye = { ...P.eye, u, dv: (v - et) / (eb - et) - 0.38, r: (R.eyeFull ? R.eyeFull * EYE_IRIS : er) / sl * SLc, iris: R.eyeIris ?? ['#c8902a', '#0a0206'], ...(R.eyePupil ? { pupil: R.eyePupil } : {}), ...(R.pupilFrac ? { pupilFrac: Math.min(0.9, R.pupilFrac / EYE_IRIS) } : {}) }; }   // iris sampled from the sheet's own eye (fish-eye-colour.py); amber only for older builds
+      P.eye = { ...P.eye, u, dv: (v - et) / (eb - et) - 0.38, r: (R.eyeFull ? R.eyeFull * EYE_IRIS : er) / sl * SLc, iris: R.eyeIris ?? ['#c8902a', '#0a0206'], ...(R.eyePupil ? { pupil: R.eyePupil } : {}), ...(R.pupilFrac ? { pupilFrac: Math.min(0.9, R.pupilFrac / EYE_IRIS) } : {}), ...(R.eyeBulge ? { bulge: R.eyeBulge } : {}) }; }   // iris sampled from the sheet's own eye (fish-eye-colour.py); amber only for older builds
     if (R.planExtra) Object.assign(P, R.planExtra); // per-model Plan knobs from the spec's plan_extra (cory barbels: method row 53)
     PHOTO_FINS[id] = { img: fin ?? card };
     if (op && finop) { FIN_OPACITY[id] = { card: op, fin: finop }; P.tailBlend = 0.05; }   // the solid fades onto the card over 5 % of TL before the fin
-    PROJ_ART[id] = { top: { img: top }, front: { img: front, k: R.proj.fk, y0: R.proj.y0, ...(R.proj.ramp ? { ramp: R.proj.ramp } : {}) } };   // ramp: a wedge snout faces sideways, so its front layer needs a wider fade (Nathan 2026-11-25, three-spot)
+    PROJ_ART[id] = { top: { img: top, ...(R.measuredWidth && R.thickx ? { sy: R.thickx } : {}), ...(R.proj.topRamp ? { ramp: R.proj.topRamp } : {}) }, front: { img: front, k: R.proj.fk, y0: R.proj.y0, ...(R.proj.ramp ? { ramp: R.proj.ramp } : {}) } };   // ramp: a wedge snout faces sideways, so its front layer needs a wider fade (Nathan 2026-11-25, three-spot)
     FISH_ART[id] = (ctx, _p, W) => ctx.drawImage(card, 0, 0, W, W * (ctx.canvas.height / ctx.canvas.width));
     done.add(id);
   } catch (e) { console.warn(e); }

@@ -739,7 +739,7 @@ function projGeometry(g: THREE.BufferGeometry, kind: 'top' | 'front', L: ProjLay
   const iw = (L.img as HTMLCanvasElement).width, ih = (L.img as HTMLCanvasElement).height;
   for (let i = 0; i < n; i++) {
     const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
-    if (kind === 'top') { uv[2 * i] = x + 0.5; uv[2 * i + 1] = 0.5 - z * iw / ih; }
+    if (kind === 'top') { uv[2 * i] = x + 0.5; uv[2 * i + 1] = 0.5 - z / (L.sy ?? 1) * iw / ih; }
     else { const k = L.k ?? 500; uv[2 * i] = 0.5 + z * k / iw; uv[2 * i + 1] = 0.5 + (y - (L.y0 ?? 0)) * (L.ky ?? k) / ih; }
     const f = kind === 'top' ? nor.getY(i) : nor.getX(i), t = Math.min(1, Math.max(0, (f - a0) / (a1 - a0)));
     c4[4 * i] = c4[4 * i + 1] = c4[4 * i + 2] = col.getX(i); c4[4 * i + 3] = t * t * (3 - 2 * t);

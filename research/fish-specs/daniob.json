@@ -362,5 +362,16 @@
    "preset": "clear"
   }
  },
- "fin_opacity_source": "translucent, pectoral clear (photo check): wild-type zebra danios: caudal and anal carry the blue / gold stripes, membrane between them faintly shows the background; dorsal translucent; pectorals clear. Commons: Zebrafisch.jpg, Danio rerio lab right.JPG, Danio rerio.JPG (Danio rerio Mintern 151.jpg is a drawing, ignored)"
+ "fin_opacity_source": "translucent, pectoral clear (photo check): wild-type zebra danios: caudal and anal carry the blue / gold stripes, membrane between them faintly shows the background; dorsal translucent; pectorals clear. Commons: Zebrafisch.jpg, Danio rerio lab right.JPG, Danio rerio.JPG (Danio rerio Mintern 151.jpg is a drawing, ignored)",
+ "taper": [
+  97,
+  0.8
+ ],
+ "taper_note": "Nathan 2026-11-25 top view: the default [92, 0.5] halved the stalk against the sheet (1.7 vs 0.4-1.0 % SL); a light ease only",
+ "top_ramp": [
+  0.1,
+  0.45
+ ],
+ "eye_bulge": 0.6,
+ "top_note": "Nathan 2026-11-25 top view: the sheet shows the flank stripes and the eyes from above; the top image now paints from normal.y 0.1 (default 0.45) and the eye domes bulge 0.6 r (default 0.38)"
 }

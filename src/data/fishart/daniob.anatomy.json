@@ -452,11 +452,11 @@
     100
    ],
    "halfWidthPctSL": [
-    1.17,
-    1.61,
-    2.18,
-    2.53,
-    2.75,
+    2.92,
+    2.92,
+    2.92,
+    2.92,
+    2.92,
     2.92,
     3.28,
     3.67,
@@ -480,16 +480,16 @@
     5.71,
     4.528,
     3.525,
-    2.403,
-    1.78,
-    1.442,
-    1.31
+    2.855,
+    2.705,
+    2.377,
+    2.096
    ],
    "source": "top panel of the generated sheet, blue-share mask (thr 0.60); the narrower side of the centre line",
    "fit": {
-    "thick": 0.84,
+    "thick": 0.85,
     "pedT": 0.3,
-    "rmsPctSL": 0.78,
+    "rmsPctSL": 0.83,
     "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
    }
   },
@@ -723,9 +723,14 @@
     "eyePupil": "#0b0a09",
     "eyeFull": 26,
     "pupilFrac": 0.39,
+    "eyeBulge": 0.6,
     "proj": {
      "fk": 902.0,
-     "y0": -0.0109
+     "y0": -0.0109,
+     "topRamp": [
+      0.1,
+      0.45
+     ]
     },
     "thickx": 0.669,
     "noTail": false,
@@ -789,7 +794,7 @@
     ],
     "ver": "8b543b60"
    },
-   "fit": "{'thick': 0.84, 'pedT': 0.3, 'rmsPctSL': 0.78, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
+   "fit": "{'thick': 0.85, 'pedT': 0.3, 'rmsPctSL': 0.83, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }
  },
  "reliability": {
