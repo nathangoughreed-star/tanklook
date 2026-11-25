@@ -2,7 +2,7 @@
 // the plates of ONE tank at ONE glass thickness, each with the solver's own stress / deflection grid, which member governs and which check.
 // Same plate model as solveGlass (scene/glassSolver.ts platesAt) and the same brace check as checkTank (scene/glassEnvelope.ts): nothing new is computed.
 import { GAMMA_FRESH, GLASS_MOR, platesAt, type PlateResult } from './glassSolver';
-import { braceFor, checkTank, type BraceLevel, type EnvelopeBase } from './glassEnvelope';
+import { braceFor, checkTank, wallsOf, type BraceLevel, type EnvelopeBase } from './glassEnvelope';
 
 /** Colour of a safety factor against the target: green with 25 % to spare, amber when it passes with less, red when it fails. */
 export type Tone = 'ok' | 'near' | 'bad';
@@ -41,16 +41,16 @@ export interface Diagnosis {
 
 const LABEL: Record<Member, string> = { front: 'Front and back', ends: 'Ends', bottom: 'Bottom', brace: 'Brace strips' };
 
-/** Diagnose a tank (length L, height H, depth in `b.D`, mm) with one glass thickness `b.glass` and a bracing level. Fully filled, as the size table. */
+/** Diagnose a tank (length L, height H, depth in `b.D`, mm) at its glass (one thickness, or mixed: wallsOf) and a bracing level. Fully filled, as the size table. */
 export function diagnose(L: number, H: number, level: BraceLevel, b: EnvelopeBase): Diagnosis {
-  const br = braceFor(level, b), target = b.sf, t = b.glass;
-  const pl = platesAt({ L, D: b.D, H, waterDepth: H }, t, { safetyFactor: target, topEdge: level === 'rimmed' ? 'held' : 'free', brace: br, bottomSupport: b.bottom ?? 'full', gamma: b.gamma ?? GAMMA_FRESH });
+  const br = braceFor(level, b, L), target = b.sf, t = b.glass, ws = wallsOf(b);
+  const pl = platesAt({ L, D: b.D, H, waterDepth: H }, ws, { safetyFactor: target, topEdge: level === 'rimmed' ? 'held' : 'free', brace: br, bottomSupport: b.bottom ?? 'full', gamma: b.gamma ?? GAMMA_FRESH });
   const onStand = (b.bottom ?? 'full') === 'full';
-  const mk = (id: PaneDiag['id'], p: PlateResult, a: number, bb: number, stand = false): PaneDiag => {
+  const mk = (id: PaneDiag['id'], p: PlateResult, a: number, bb: number, t: number, stand = false): PaneDiag => {
     const sf = p.sigma > 0 ? GLASS_MOR / p.sigma : Infinity;
     return { id, label: LABEL[id], a, b: bb, t, sigma: p.sigma, sf, onStand: stand, w: p.w, wLimit: pl.r.defl * t, at: p.at, grid: p.grid!, tone: stand ? 'ok' : toneOf(sf, target) };
   };
-  const panes = [mk('front', pl.front, L, H), mk('ends', pl.left, b.D, H), mk('bottom', pl.bottom, L, b.D, onStand)];
+  const panes = [mk('front', pl.front, L, H, ws.long), mk('ends', pl.left, b.D, H, ws.end), mk('bottom', pl.bottom, L, b.D, ws.bottom, onStand)];
   const chk = checkTank(L, H, level, b), braceSf = chk.sf.brace;
   const brace = braceSf != null ? { sf: braceSf, tone: toneOf(braceSf, target) } : null;
   const cand: { member: Member; sf: number }[] = [...panes.filter(p => !p.onStand).map(p => ({ member: p.id as Member, sf: p.sf })), ...(brace ? [{ member: 'brace' as Member, sf: brace.sf }] : [])];
@@ -72,8 +72,8 @@ export function exaggeration(wMax: number, paneHeight: number, frac = 0.12): num
 /** Plain words: which check governs and by how much. */
 export function verdictText(d: Diagnosis, u: 'in' | 'cm'): string {
   const g = d.governing, sf = Number.isFinite(g.sf) ? g.sf.toFixed(1) : '-', pct = (v: number) => `${Math.round(v * 100)} %`;
-  const fw = d.panes[0];
+  const fw = d.panes[0].w / d.panes[0].wLimit >= d.panes[1].w / d.panes[1].wLimit ? d.panes[0] : d.panes[1];
   const strength = `${g.label}: safety factor ${sf} against ${d.target.toFixed(1)} needed (${pct(d.usage.stress)} of the strength limit)`;
-  const bend = `bending ${deflText(Math.max(fw.w, d.panes[1].w), u)} against ${deflText(fw.wLimit, u)} allowed (${pct(d.usage.deflection)} of the limit)`;
+  const bend = `bending ${deflText(fw.w, u)} against ${deflText(fw.wLimit, u)} allowed (${pct(d.usage.deflection)} of the limit)`;
   return `${d.ok ? 'Passes.' : 'Fails.'} ${d.check === 'stress' ? 'Strength' : 'Bending'} ${d.ok ? 'is the closer check' : 'governs'}: ${strength}; ${bend}.`;
 }

@@ -365,6 +365,9 @@ export interface GlassOpts {
   silicone?: SiliconeOpts;
   /** GS4: ask the plate solver for its deflection / stress grid (PlateResult.grid). */
   field?: boolean;
+  /** Evaluate at exactly these thicknesses (mm) instead of picking from stock: front / back, ends, bottom (Nathan 2026-11-24: "allowing glass
+   *  of different thicknesses in the same build" in every Solve for mode). A pane that fails reports thickness null, as an over-stock pick. */
+  fixed?: { long: number; end: number; bottom: number };
 }
 
 /**
@@ -500,18 +503,20 @@ export function solveGlass(spec: GlassTankSpec, opts: GlassOpts = {}): GlassSolu
   const longCheck = (t: number) => wallAt('long', spec, t, r), endCheck = (t: number) => wallAt('end', spec, t, r);
   const cont = opts.continuous ?? true, skip = { t: NaN, governs: 'stress' as const };
   const longReq = cont ? minThickness(longCheck, r) : skip, endReq = cont ? minThickness(endCheck, r) : skip;
-  let long = stockPick(longCheck), end = stockPick(endCheck);
+  const fx = opts.fixed;
+  const pickAt = (check: (t: number) => PlateResult, t: number) => { const res = check(t); return passes(res, t, r) ? { t: t as number | null, res: res as PlateResult | null } : { t: null as number | null, res: null as PlateResult | null }; };
+  let long = fx ? pickAt(longCheck, fx.long) : stockPick(longCheck), end = fx ? pickAt(endCheck, fx.end) : stockPick(endCheck);
   const wallMax = Math.max(long.t ?? Infinity, end.t ?? Infinity);
   let bottom: PaneResult;
   if (r.bottom === 'full') {
-    const bt = Number.isFinite(wallMax) ? wallMax : null;
+    const bt = fx ? fx.bottom : Number.isFinite(wallMax) ? wallMax : null;
     bottom = paneResult('bottom', spec.L, spec.D, Math.max(longReq.t, endReq.t), 'rule', bt, bt ? bottomAt(spec, bt, r) : null, r);
     notes.push('Bottom rests on a flat stand: matched to the thickest wall (rule), not solved as a plate.');
   } else {
-    const bc = (t: number) => bottomAt(spec, t, r), req = cont ? minThickness(bc, r) : skip, pick = stockPick(bc);
+    const bc = (t: number) => bottomAt(spec, t, r), req = cont ? minThickness(bc, r) : skip, pick = fx ? pickAt(bc, fx.bottom) : stockPick(bc);
     bottom = paneResult('bottom', spec.L, spec.D, req.t, req.governs, pick.t, pick.res, r);
   }
-  if (r.mode === 'uniform') {
+  if (r.mode === 'uniform' && !fx) {
     const all = [long.t, end.t, bottom.thickness];
     const t = all.some(v => v == null) ? null : Math.max(...(all as number[]));
     if (t != null) {
@@ -524,7 +529,7 @@ export function solveGlass(spec: GlassTankSpec, opts: GlassOpts = {}): GlassSolu
   const panes: Record<PaneId, PaneResult> = { front, back: { ...front, pane: 'back' }, left, right: { ...left, pane: 'right' }, bottom };
 
   let brace: BraceResult | null = null;
-  const tl = long.t ?? r.stock[r.stock.length - 1], te = end.t ?? r.stock[r.stock.length - 1];
+  const tl = long.t ?? fx?.long ?? r.stock[r.stock.length - 1], te = end.t ?? fx?.end ?? r.stock[r.stock.length - 1];
   const L = long.res ?? wallAt('long', spec, tl, r), En = end.res ?? wallAt('end', spec, te, r);
   const joints: JointCheck[] = [];
   const sil = opts.silicone ?? {}, allow = sil.designStress ?? SILICONE_DESIGN;
@@ -554,7 +559,7 @@ export function solveGlass(spec: GlassTankSpec, opts: GlassOpts = {}): GlassSolu
   const jointsOk = joints.every(j => j.ok);
   const { weightLb, volumeIn3 } = glassWeight(spec, panes, r.brace);
   const ok = PANES.every(p => panes[p].thickness != null) && (brace?.ok ?? true);
-  return { panes, mode: r.mode, brace, joints, braceJointsOk, jointsOk, weightLb, volumeIn3, ok, notes };
+  return { panes, mode: fx ? 'perPane' : r.mode, brace, joints, braceJointsOk, jointsOk, weightLb, volumeIn3, ok, notes };
 }
 
 /** Glass weight (lb) and volume (in^3) of the five panes plus brace strips. */
@@ -683,6 +688,7 @@ export function optimizeBraceCustom(spec: GlassTankSpec, opts: CustomOptimizeOpt
       const o = row(brace, s);
       if (better(o, best)) best = o;
       if (lk.thickness == null && s.panes.front.thickness === stock[0] && s.panes.left.thickness === stock[0]) break; // thicker strips only add glass
+      if (opts.fixed) break; // walls held: the first strip that passes is the least glass for this width and cross count
     }
   }
   return { best, none: noneRow, tried };
@@ -733,7 +739,7 @@ export function toGlassBuild(sol: GlassSolution, brace: BraceSpec | null, safety
 
 /** GS4: the three plates of a tank at ONE thickness, each with its deflection / stress grid, for the "where it fails" drawing. The same wall and bottom
  *  models as solveGlass (front = the long walls, left = the ends, bottom = a plate simply supported on four edges), nothing else computed. */
-export function platesAt(spec: GlassTankSpec, t: number, opts: GlassOpts = {}): { front: PlateResult; left: PlateResult; bottom: PlateResult; r: { sf: number; mor: number; defl: number } } {
-  const r = resolve({ ...opts, field: true });
-  return { front: wallAt('long', spec, t, r), left: wallAt('end', spec, t, r), bottom: bottomAt(spec, t, r), r: { sf: r.sf, mor: r.mor, defl: r.defl } };
+export function platesAt(spec: GlassTankSpec, t: number | { long: number; end: number; bottom: number }, opts: GlassOpts = {}): { front: PlateResult; left: PlateResult; bottom: PlateResult; r: { sf: number; mor: number; defl: number } } {
+  const r = resolve({ ...opts, field: true }), w = typeof t === 'number' ? { long: t, end: t, bottom: t } : t;
+  return { front: wallAt('long', spec, w.long, r), left: wallAt('end', spec, w.end, r), bottom: bottomAt(spec, w.bottom, r), r: { sf: r.sf, mor: r.mor, defl: r.defl } };
 }

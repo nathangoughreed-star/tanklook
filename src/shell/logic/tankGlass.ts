@@ -16,6 +16,9 @@ export interface GlassChoice {
   bottom: 'full' | 'perimeter';
   /** A brace the person set field by field (or Optimize filled in); wins over `brace` (lane CT1). Rimless box tanks only. */
   custom?: BraceSpec;
+  /** The Glass check's bracing toggle (Nathan 2026-11-24): 'optimized' = the optimizer's least-glass brace, whatever `brace` / `custom` say;
+   *  'custom' (or unset) = the person's brace (`custom`, else the `brace` kind's row). */
+  bracing?: 'optimized' | 'custom';
 }
 /** The bottom rests on a flat stand / mat by default, rimmed or not: matched to the thickest wall (GS1's builder rule; a rimmed 75 gal then
  *  comes out at 3/8 in all round, what framed 75s are sold with). */
@@ -75,12 +78,12 @@ export function glassPanel(T: Tank, rim: boolean, c: GlassChoice, u: Units): Gla
   else {
     const opt = optimizeBrace(spec, { ...solverOpts(false, c, u), continuous: false });
     const kindOf = (b: BraceSpec | null): BraceKind => !b ? 'none' : (b.cross ?? 0) > 0 ? 'cross' : 'perimeter';
-    const chosen = opt.options.find(o => kindOf(o.brace) === c.brace) ?? opt.options[0];
-    brace = c.custom ? { ...c.custom } : chosen.brace;
+    const chosen = c.bracing === 'optimized' ? opt.best : opt.options.find(o => kindOf(o.brace) === c.brace) ?? opt.options[0];
+    brace = c.bracing !== 'optimized' && c.custom ? { ...c.custom } : chosen.brace;
     if (brace && braceTooBig(spec, brace)) { braceNote = 'This brace is too wide for the tank: nothing is left open. Drawn and solved without it.'; brace = null; }
     else if (brace) { const o = openingOf(spec, brace); braceNote = `Opening left: ${fmtLenIn(o.depth, u)} front to back × ${fmtLenIn(o.length, u)} between strips${o.depth < 6 * IN_MM || o.length < 6 * IN_MM ? ' (under 6 in: tight for hands, a filter or a heater)' : ''}. Hang-on gear and lids rest on the glass edge: check they clear the strips.`; }
     braces = opt.options.map(o => ({
-      kind: kindOf(o.brace), label: o.label, cost: Math.round(o.costIndex), ok: o.solution.ok, spec: o.brace, on: !c.custom && o === chosen,
+      kind: kindOf(o.brace), label: o.label, cost: Math.round(o.costIndex), ok: o.solution.ok, spec: o.brace, on: (c.bracing === 'optimized' || !c.custom) && o === chosen,
       walls: `${o.solution.panes.front.label} / ${o.solution.panes.left.label}`,
       opening: o.brace ? `${fmtLenIn(o.opening.depth, u)} × ${fmtLenIn(o.opening.length, u)} open` : 'fully open',
     }));
