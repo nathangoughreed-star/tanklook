@@ -429,7 +429,7 @@ function splitAnal(art: string, p: Plan, bend: number, edge: EdgeMode) {
  * should beat the pectoral fins and top fins: in real life this keeps it still and upright in flowing water"): in the vertex
  * shader on the swim clock (`SWIM.uSwim`; still when swimming is off or exporting) and this fish's tail strength (`uCalm`,
  * set per draw by swim.ts hookCalm: near 0 hovering, 1 cruising). Hovering, the fins open out from the sheet's spread and
- * scull (~2 Hz, a flexible wave root to tip); swimming, they fold in toward the body with a faint flutter. Done per vertex
+ * scull (~1.2 Hz, a flexible wave root to tip); swimming, they fold in toward the body with a faint flutter. Done per vertex
  * (along the fin's own normal, by distance from the root) so it survives `mergeShared`, which merges the pair into one
  * mesh: the CPU fanning in roam.ts (fanPecs, userData.pec) finds no fin meshes once merged.
  * `aFin` = (distance from the root, card widths, 0 = held still; side +1 / -1). The phase is offset per fish by where it sits.
@@ -437,8 +437,8 @@ function splitAnal(art: string, p: Plan, bend: number, edge: EdgeMode) {
 const FLEX_VERT = `if (uSwim.y > 0.0 && aFin.x > 0.0) {
   float flO = clamp(1.0 - uCalm, 0.0, 1.0); // 0 swimming (fins in) .. 1 hovering (fins out, sculling)
   float flP = dot(modelMatrix[3].xz, vec2(0.013, 0.019)) * 6.2832 + aFin.y * 0.6;
-  float flRest = mix(-0.08, 0.4, flO);
-  float flBeat = (0.05 + 0.33 * flO) * (0.85 + 0.15 * sin(uSwim.x * 0.7 + flP)) * sin(uSwim.x * 14.0 + flP - aFin.x * 7.0);
+  float flRest = mix(-0.08, 0.3, flO);
+  float flBeat = (0.03 + 0.17 * flO) * (0.85 + 0.15 * sin(uSwim.x * 0.5 + flP)) * sin(uSwim.x * 7.5 + flP - aFin.x * 6.0);
   transformed += normal * (aFin.y * aFin.x * (flRest + flBeat));
 }`;
 function flexPatch(sh: THREE.WebGLProgramParametersWithUniforms) {
@@ -453,8 +453,6 @@ function flexPatch(sh: THREE.WebGLProgramParametersWithUniforms) {
  * the fin's far edge, the pair cupped (the trailing part curls away from the body). `side` mirrors the cup and thickness
  * so both flanks curl outward; `flex` = bends on the swim clock (aFin.x > 0).
  */
-/** Build-B pectorals drawn this much larger than measured (see finMeshes). */
-const PEC_GROW_B = 1.25;
 
 function finSheet(box: { u0: number; v0: number; w: number; h: number }, root: [number, number], len: number, side: number, flex: boolean, thick: number) {
   const NX = 10, NY = 8, pos: number[] = [], nrm: number[] = [], uv: number[] = [], fin: number[] = [], idx: number[] = [];
@@ -509,9 +507,6 @@ function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = f
       const [rt, rb] = profile(p)(f.root[0]), rv = p.tailBlend ? Math.min(rb - 0.004, Math.max(rt + 0.004, f.root[1])) : f.root[1];
       const s = surfaceAt(p, f.root[0], rv, side, bend), z0 = bendZ(bend, s.x);
       mesh.position.set(s.x, s.y, z0 + (s.z - z0) * 0.85);
-      // build-B fish (measured, photo-cut fins): pectorals a quarter larger about the root (Nathan 2026-11-25: "not large/prominent enough";
-      // the sheet catches them folded); scaling the mesh keeps the photo's fin texture on it
-      if (f.kind === 'pectoral' && p.fins?.pectoral) mesh.scale.setScalar(PEC_GROW_B);
       if (f.kind === 'pelvic') mesh.rotation.x = -side * a;
       else if (flat) mesh.rotation.set(-side * a, side * (f.sweep ?? 0.35), 0, 'YXZ'); // flat fin: a = swing of its span out about the body axis (pitch/roll), sweep = swing back about the vertical
       else mesh.rotation.set(-side * 0.25, side * a, 0, 'YXZ');

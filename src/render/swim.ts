@@ -29,7 +29,7 @@ export const SWIM_VERT = `if (uSwim.y > 0.0 && aSwL > 0.0) {
   // hovering (Nathan 2026-11-25): the dorsal and anal fins ripple to hold the fish still and upright; aFinH = height above the
   // back / below the belly (cards only; 0 elsewhere), a wave running tailward along the fin, none while the tail beats
   float swFo = clamp(1.0 - uCalm, 0.0, 1.0);
-  transformed.z += uSwim.y * swFo * aFinH * aSwL * 0.15 * sin(6.2832 * 2.2 * uSwim.x + swPh * 2.3 + 18.0 * uv.x);
+  transformed.z += uSwim.y * swFo * aFinH * aSwL * 0.08 * sin(6.2832 * 1.2 * uSwim.x + swPh * 2.3 + 14.0 * uv.x);
 }`;
 
 
