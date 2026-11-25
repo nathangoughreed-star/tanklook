@@ -89,19 +89,19 @@ function resolve(r: RawSpecies): Species {
 }
 
 const RAW = data.species as RawSpecies[];
-// A build-B review look (angelb, cardinalc, bluetangd...: scripts/fish-new.py) is a bare row (id, name, sci, tl, art, aspect only)
-// for a fish that already has a full row. It is not a species of its own: it stays out of SPECIES (the pickers, catalogue,
-// stocking) except with dogfood ?photoart, where Nathan adds it to a tank to judge it. getSpecies still finds it (review
-// page, goLive, saved tanks). Found 2026-11-24: the bare rows were listed in freshwater pickers on tanklook.com, drawn
-// with a stand-in card.
+// A bare row (id, name, sci, tl, art, aspect only) is a model, not an onboarded species: a build-B review look for a fish
+// that has a full row (angelb, cardinalc, bluetangd...: scripts/fish-new.py), or a new fish whose model landed behind
+// ?photoart before its care data (clownknife, bambooshark, bichirb). It stays out of SPECIES (the pickers, catalogue,
+// stocking, and the every-species data tests) except with dogfood ?photoart, where Nathan adds it to a tank to judge it.
+// getSpecies still finds it (review page, goLive, saved tanks). Found 2026-11-24: the bare rows were listed in freshwater
+// pickers on tanklook.com with a stand-in card, and their missing care data failed CI, so nothing deployed from 11-23 on.
 const BARE = new Set(['id', 'name', 'sci', 'tl', 'art', 'aspect']);
-const fullSci = new Set(RAW.filter(r => Object.keys(r).some(k => !BARE.has(k))).map(r => r.sci));
-const isReviewLook = (r: RawSpecies) => Object.keys(r).every(k => BARE.has(k)) && fullSci.has(r.sci);
+const isReviewLook = (r: RawSpecies) => Object.keys(r).every(k => BARE.has(k));
 const dogfood = typeof location !== 'undefined' && new URLSearchParams(location.search).has('photoart');
 const ALL: Species[] = RAW.map(resolve);
 /** The species offered anywhere in the app (build-B review looks only with ?photoart). */
 export const SPECIES: Species[] = ALL.filter((_s, i) => dogfood || !isReviewLook(RAW[i]));
-/** The build-B review looks left out of SPECIES (the review page lists them). */
+/** The model-only rows left out of SPECIES (the review page lists them). */
 export const REVIEW_LOOKS: Species[] = ALL.filter((_s, i) => isReviewLook(RAW[i]));
 const byId = new Map(ALL.map(s => [s.id, s]));
 
