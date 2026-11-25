@@ -203,18 +203,21 @@ FY0 = round((ax - e[1]) / TL, 4)
 try:
     fa = np.asarray(sheet).astype(int)[fy0_ - 4:fy1_ + 5, fx0:fx1 + 1].max(2)
     hh, ww = fa.shape
+    if os.environ.get('FRONT_DEBUG'): from PIL import Image as _I; _I.fromarray(fa.clip(0, 255).astype('uint8')).save(os.environ['FRONT_DEBUG']); print('front crop', hh, ww, 'ax', ax, 'eye', e, 'TL', TL)
     bodym = fa > 40
     xs_b = np.nonzero(bodym.sum(0) > hh * 0.15)[0]
     cxf = (xs_b.min() + xs_b.max()) / 2
     best_ = None
-    for thr_, amin_, rnd_ in ((60, 40, .6), (75, 100, .5)):   # strict pass first (small black pupils), then a relaxed one for big dark eyes with a highlight
+    # strict pass first (small black pupils), then a relaxed one for big dark eyes with a highlight; last, a wide pass for narrow faces whose
+    # eyes sit on the oval's edge (three-spot b7, Nathan 2026-11-25: missed, the outline fallback put the mouth on the chin)
+    for thr_, amin_, rnd_, cw_, mg_ in ((60, 40, .6, .25, 8), (75, 100, .5, .25, 8), (75, 40, .3, .45, 2)):   # .3: a highlight leaves the eye a ring, not a disc
         if best_: break
         dk = (fa < thr_) & np.pad(np.ones((hh - 20, ww - 20), bool), 10)
         inside = np.zeros_like(dk)
         for r_ in range(hh):
             c_ = np.nonzero(bodym[r_])[0]
-            if len(c_) > 20: inside[r_, c_.min() + 8:c_.max() - 7] = True
-        dk &= inside & (np.abs(np.arange(ww) - cxf) < ww * .25)[None, :]   # dark pixels inside the fish, not the black background
+            if len(c_) > 20: inside[r_, c_.min() + mg_:c_.max() - mg_ + 1] = True
+        dk &= inside & (np.abs(np.arange(ww) - cxf) < ww * cw_)[None, :]   # dark pixels inside the fish, not the black background
         dk[: int(hh * .08)] = False
         dk[int(hh * .65):] = False
         lab_ = np.zeros(dk.shape, int); n_ = 0; blobs_ = []

@@ -359,6 +359,8 @@
   }
  },
  "fin_opacity_source": "translucent, pectoral clear (photo check): three-spot gouramis: dotted dorsal, anal and caudal with the background faintly through; pectorals clear. Wild / gold-ish photos, not the blue morph of the sheet (same fins). Commons: Trichopodus trichopterus (3 spot gourami, Philippines) 04.jpg, Trichopodus trichopterus 99295059.jpg, Trichopodus trichopterus A.jpg, Three Spot Gourami female.jpg",
+ "fy0": 0.0125,
+ "fy0_why": "front layer registered on the MOUTH, not the eyes: the b7 sheet front panel draws the mouth 14 px under the eyes, the side view 3 px (sheet3 eye 166 / mouth 169, front crop eye 148 / mouth 162 of 322, TL 722 px); eye registration (-0.0033) put the painted lips 1.5 % TL under the 3D lips. Front eyes sit on the oval edge where the front layer is faded out (Nathan 2026-11-25)",
  "front_ramp": [
   0.15,
   0.5
