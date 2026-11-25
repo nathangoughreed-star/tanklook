@@ -1,6 +1,6 @@
 {
  "id": "threespotb",
- "sheet": "C:/Users/nreed/fish-sheets/threespot-b7-s1.075/sheet3.png",
+ "sheet": "C:/Users/nreed/fish-sheets/threespot-b7-up/sheet3.png",
  "species": {
   "name": "Three-spot gourami",
   "sci": "Trichopodus trichopterus",
@@ -321,7 +321,7 @@
    ]
   ]
  },
- "card_sheet": "C:/Users/nreed/fish-sheets/threespot-b7-s1.075/sheet3card.png",
+ "card_sheet": "C:/Users/nreed/fish-sheets/threespot-b7-up/sheet3card.png",
  "dense": true,
  "eye_iris": [
   "#393b3c",
@@ -359,8 +359,9 @@
   }
  },
  "fin_opacity_source": "translucent, pectoral clear (photo check): three-spot gouramis: dotted dorsal, anal and caudal with the background faintly through; pectorals clear. Wild / gold-ish photos, not the blue morph of the sheet (same fins). Commons: Trichopodus trichopterus (3 spot gourami, Philippines) 04.jpg, Trichopodus trichopterus 99295059.jpg, Trichopodus trichopterus A.jpg, Three Spot Gourami female.jpg",
- "fy0": 0.0125,
- "fy0_why": "front layer registered on the MOUTH, not the eyes: the b7 sheet front panel draws the mouth 14 px under the eyes, the side view 3 px (sheet3 eye 166 / mouth 169, front crop eye 148 / mouth 162 of 322, TL 722 px); eye registration (-0.0033) put the painted lips 1.5 % TL under the 3D lips. Front eyes sit on the oval edge where the front layer is faded out (Nathan 2026-11-25)",
+ "fy0": 0.0236,
+ "fy0_why": "front layer registered on the MOUTH, not the eyes: the b7 sheet front panel draws the mouth 14 px under the eyes, the side view 3 px (sheet3 eye 166 / mouth 169, front crop eye 148 / mouth 162 of 322, TL 722 px); eye registration (-0.0033) put the painted lips 1.5 % TL under the 3D lips. Front eyes sit on the oval edge where the front layer is faded out (Nathan 2026-11-25). Then +8 px (0.0111): the snout tip was warped 8 px up for a higher, more upturned mouth (see snout_warp)",
+ "snout_warp": "Nathan 2026-11-25 'higher, more upturned': threespot-b7-up/ is threespot-b7-s1.075/ with sheet3.png and sheet3card.png rows 18-345 warped up by 8 px x s^2, s = (x - 818) / (860 - 818) clipped to 0-1 (snout from just past the eye to the lip tip)",
  "front_ramp": [
   0.15,
   0.5
