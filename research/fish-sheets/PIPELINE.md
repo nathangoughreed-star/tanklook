@@ -73,6 +73,12 @@ One runbook, start to finish. Entry point for every fish chat. Written 2026-11-2
     `--body-from-map` builds but makes a body in strips. Endler (b7): redo the sheet if row 2 keeps a tail.
   - **Failed shot** (`Inspected target navigated or closed`): flaky, rerun `node scripts/fish-autoshot.mjs <id>:<tl> --views side,top --tag <bN>`.
   - Headless shots take OS free ports (two runs once measured the betta as the angel).
+- **Panels drawn closer than the detector's gap** (clown loach b7: rows 4 and 5 were 6 px apart, joined by a thin bridge, so only 4 panels were found and
+  the audit crashed): put `panel_gap.json` with `{"min_gap": 3}` beside `sheet.webp` (opt-in, default off; `fishsheet.load()` reads it, stretched copies
+  `<id>-<batch>-gen-sK` read the base folder's). Check `fs.panel_bands` returns 6 bands (or 5 without the front fin map) before building. Without the file nothing
+  changes for any other fish. `fish-sheet-audit5.py` now stops with a clear message when it finds fewer than 5 panels.
+- **Proxy depth too low** (harlequin b7, Nathan: "not that slender, taller"): fish-new squashes a proxy fish to the proxy's range. If the sheet's drawn depth
+  matches real photos, widen `depth` / `range.depth` in the folder's `fishshapes.json` by hand (with a note) and rebuild with `--rebuild`.
 - Rows: 44 (fish-new), 56 (depth), 58 (colour), 61 (batch).
 
 ## 7. Registration checks (panel, eye, mouth, tail, snout)

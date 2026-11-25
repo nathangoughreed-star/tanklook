@@ -18,6 +18,7 @@ def bb(m): ys, xs = np.where(m); return xs.min(), xs.max(), ys.min(), ys.max()
 
 def audit(path):
     a, M = fs.load(path); b = fs.panel_bands(M); A = a.astype(int)
+    if len(b) < 5: sys.exit(f'{path}: found {len(b)} panels, need 5. Two panels are closer than {fs._GAP or 6} px (or touch); redo the sheet, or put panel_gap.json {{"min_gap": N}} beside it (PIPELINE step 6).')
     def sil(i):
         y0, y1, x0, x1 = b[i]; m = np.zeros(M.shape, bool); m[y0:y1, x0:x1] = M[y0:y1, x0:x1]; return m
     m1, m2, m3, m4, m5 = sil(0), sil(1), sil(2), sil(3), sil(4)

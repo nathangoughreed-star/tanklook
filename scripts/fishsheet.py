@@ -7,7 +7,25 @@ from PIL import Image
 from scipy import ndimage as nd
 
 
+_GAP = None   # per-sheet override of panel_bands' min_gap, set by load() from panel_gap.json (opt-in; default off)
+
+
+def _override_gap(path):
+    """panel_gap.json {"min_gap": N} in the sheet's folder (or, for a stretched copy <id>-b7-gen-s0.861, the base folder) lowers the gap
+    that separates two panels. Only for a sheet whose panels are drawn closer than 6 px (clown loach b7: rows 4 and 5 were 6 px apart)."""
+    import os, re, json
+    d = os.path.dirname(os.path.abspath(path)); base = re.sub(r'-s[0-9.]+$', '', d)
+    for x in (d, base):
+        f = os.path.join(x, 'panel_gap.json')
+        if os.path.exists(f):
+            try: return int(json.load(open(f))['min_gap'])
+            except Exception: return None
+    return None
+
+
 def load(path):
+    global _GAP
+    _GAP = _override_gap(path)
     a = np.asarray(Image.open(path).convert('RGB'))
     return a, a.max(2) > 8
 
@@ -25,9 +43,10 @@ def _runs(v, min_gap, min_len):
     return [b for b in merged if b[1] - b[0] >= min_len]
 
 
-def panel_bands(M, min_gap=6, min_h=40, min_col_gap=12):
+def panel_bands(M, min_gap=None, min_h=40, min_col_gap=12):
     """Panel rectangles (y0, y1, x0, x1) in reading order, found by the black gaps on both axes: first the row bands
     (vertical stack, or the rows of a grid), then each row band split by column gaps (a 2x2 grid has two panels per row)."""
+    min_gap = min_gap or _GAP or 6
     out = []
     for y0, y1 in _runs(M.sum(1) > 0, min_gap, min_h):
         cols = _runs(M[y0:y1].sum(0) > 0, min_col_gap, 40)
