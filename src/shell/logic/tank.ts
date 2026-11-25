@@ -66,9 +66,9 @@ export function glassOption(mm: number, u: Units): string {
 
 /** The shape words of the new shell. Box / Corner / Round up front; Bow and the rarer shapes under More (Nathan 2026-11-13: few people
  *  build a bowfront, but old saves and owned tanks still need it, so it stays one click away). */
-export const SHAPE_WORD: Record<TankShape, string> = { rect: 'Box', bow: 'Bow', pie: 'Pie / round', round: 'Round', poly: 'Polygon', bowl: 'Bowl', arch: 'Curved front' };
+export const SHAPE_WORD: Record<TankShape, string> = { rect: 'Box', bow: 'Bow', pie: 'Pie / round', round: 'Round', poly: 'Polygon', bowl: 'Bowl', arch: 'Bow, vertical curve' };
 export const SHAPE_MAIN: TankShape[] = ['rect', 'pie'];
-export const SHAPE_MORE: TankShape[] = ['bow', 'poly', 'bowl', 'arch'];
+export const SHAPE_MORE: TankShape[] = ['bow', 'poly', 'bowl']; // 'arch' (curved front) is a toggle on the bowfront, not a shape of its own
 export const shapeLong = (s: TankShape) => SHAPES[s];
 
 // ---------------------------------------------------------------- Tank model card

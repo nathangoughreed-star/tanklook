@@ -570,10 +570,11 @@ export function attachPanels(store: Store, viewer: Viewer) {
     if (!also && !gate('size')) { sync(); return; }
     store.edit(s => applyTankEdit(s, next, { glass, also, thin: coalesce === undefined, adapt: adaptForEdit }), { coalesce }); // scene/tankEdit.ts
   }
-  $<HTMLSelectElement>('shapeSel').innerHTML = Object.entries(SHAPES).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
+  $<HTMLSelectElement>('shapeSel').innerHTML = Object.entries(SHAPES).filter(([k]) => k !== 'arch').map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
   // each shape keeps its own length / depth for this visit: a round or pie tank derives one from the other, so going
   // back to a rectangle brings its own size back (audit #5); a bowl derives its height too
   const shapeDims = shapeMemory();
+  $<HTMLSelectElement>('bowCurve').onchange = e => setTank(reshape(shapeDims, S().tank, (e.target as HTMLSelectElement).value as TankShape)); // a bowfront's curve: sideways (usual) or top to bottom
   $<HTMLSelectElement>('shapeSel').onchange = e => setTank(reshape(shapeDims, S().tank, (e.target as HTMLSelectElement).value as TankShape));
   for (const n of POLY_SIDES) $('sides' + n).onclick = () => setTank(T => ({ ...T, shape: 'poly', sides: n }));
   $('bowMin').oninput = e => setTank(T => ({ ...T, bowMin: +(e.target as HTMLInputElement).value }), 'bowMin');
@@ -1925,7 +1926,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
     document.title = `${G().name} · TankLook`; // the browser tab follows the tank (audit #31)
     for (const id of ['aL', 'aH', 'aD']) $(id).step = u === 'in' ? String(inchStep(+$(id).value, 1)) : '1';
     const sh = shapeOf(A);
-    setVal('shapeSel', sh); $('sidesRow').style.display = sh === 'poly' ? '' : 'none'; $('bowRow').style.display = sh === 'bow' ? '' : 'none';
+    setVal('shapeSel', sh === 'arch' ? 'bow' : sh); setVal('bowCurve', sh === 'arch' ? 'arch' : 'bow'); $('curveRow').style.display = sh === 'bow' || sh === 'arch' ? '' : 'none'; $('sidesRow').style.display = sh === 'poly' ? '' : 'none'; $('bowRow').style.display = sh === 'bow' ? '' : 'none';
     $('pieRow').style.display = sh === 'pie' ? '' : 'none';
     if (sh === 'pie') { setVal('pieDeg', A.pieDeg ?? PIE_DEFAULT); setOut('oPie', `${A.pieDeg ?? PIE_DEFAULT}°`); }
     for (const [k, o] of [['bowlFloor', 'oBowlFloor'], ['bowlTop', 'oBowlTop']] as const) {

@@ -205,10 +205,11 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
         <Group title="Shape" sum={SHAPE_WORD[shape]} open={open.shape} onToggle={fold('shape')}>
           <div class="seg full" role="group" aria-label="Shape">
             {SHAPE_MAIN.map(sh => <button type="button" class={shape === sh ? 'on' : ''} aria-pressed={shape === sh} onClick={() => size(reshape(mem.current, T, sh))}>{SHAPE_WORD[sh]}</button>)}
-            <select class={`segsel${SHAPE_MORE.includes(shape) ? ' on' : ''}`} aria-label="More shapes" value={SHAPE_MORE.includes(shape) ? shape : ''} onChange={e => { const v = (e.target as HTMLSelectElement).value as TankShape; if (v) size(reshape(mem.current, T, v)); }}>
+            <select class={`segsel${SHAPE_MORE.includes(shape) || shape === 'arch' ? ' on' : ''}`} aria-label="More shapes" value={SHAPE_MORE.includes(shape) ? shape : shape === 'arch' ? 'bow' : ''} onChange={e => { const v = (e.target as HTMLSelectElement).value as TankShape; if (v) size(reshape(mem.current, T, v)); }}>
               <option value="">More ▾</option>{SHAPE_MORE.map(sh => <option value={sh}>{SHAPE_WORD[sh]}</option>)}
             </select>
           </div>
+          {shape === 'bow' || shape === 'arch' ? <div class="row"><span class="lbl">Curve</span><Seg label="Bowfront curve" value={shape} opts={[['bow', 'Horizontal'], ['arch', 'Vertical']]} onPick={v => size(reshape(mem.current, T, v as TankShape))} /><span /></div> : null}
           {shape === 'poly' ? <div class="row"><span class="lbl">Sides</span><input class="input num" type="number" min={POLY_MIN} max={POLY_MAX} step={1} value={T.sides ?? 6} aria-label="Number of sides" onChange={e => { const v = parseInt((e.target as HTMLInputElement).value, 10); if (Number.isFinite(v) && v >= POLY_MIN && v <= POLY_MAX) { setRefuse(''); size(t => setPolyCount(t, v)); } else setRefuse(`A polygon has ${POLY_MIN} to ${POLY_MAX} sides.`); }} /><span class="unit">{POLY_MIN}-{POLY_MAX}</span></div> : null}
           {shape === 'rect' ? <button type="button" class="btn sm" onClick={() => size(t => ({ ...t, D: t.L, H: t.L }))}>Make it a cube</button> : null}
         </Group>

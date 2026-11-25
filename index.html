@@ -185,6 +185,7 @@ html.gb-new #app .nojs { visibility: visible } /* the no-WebGL message stays rea
     <div><label for="aH">Height</label><input id="aH" type="number" step="0.5" min="0"></div>
     <div><label for="aD" id="aDLab">Depth</label><input id="aD" type="number" step="0.5" min="0"></div>
   </div>
+  <div class="row" id="curveRow"><label for="bowCurve" title="Almost every bowfront curves sideways; a few (Fluval Flex) curve from top to bottom">Curve</label><select id="bowCurve"><option value="bow">Sideways (usual)</option><option value="arch">Top to bottom</option></select></div>
   <div class="row" id="bowRow"><label for="bowMin" title="Depth at the ends; the front curves out to the full depth at the centre">End depth</label><input id="bowMin" type="range" min="20" max="600" step="1"><output id="oBow"></output></div>
   <div class="row" id="pieRow"><label for="pieDeg" title="Angle between the two flat panes: 90° fits a room corner, 180° is a half round">Angle</label><input id="pieDeg" type="range" min="45" max="180" step="1"><output id="oPie"></output></div>
   <div class="row" id="bowlFloorRow"><label for="bowlFloor" title="Diameter of the flat bottom the bowl stands on">Floor ⌀</label><input id="bowlFloor" type="range" min="20" max="600" step="1"><output id="oBowlFloor"></output></div>
