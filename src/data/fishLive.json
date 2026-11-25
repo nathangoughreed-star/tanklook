@@ -148,6 +148,14 @@
     "kribensis": {
       "look": "kribensisb",
       "approved": "2026-11-25"
+    },
+    "glasscatfish": {
+      "look": "glasscatfishb",
+      "approved": "2026-11-25"
+    },
+    "firemouth": {
+      "look": "firemouthb",
+      "approved": "2026-11-25"
     }
   }
 }
