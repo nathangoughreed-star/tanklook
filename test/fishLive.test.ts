@@ -35,3 +35,16 @@ describe('build-B review looks stay out of the app lists', () => {
     for (const id of ['angel', 'cardinal', 'bluetang', 'oscar', 'royalgramma', 'betta', 'goldfish', 'comet', 'flameangel', 'peapuffer']) expect(listed.has(id), id).toBe(true);
   });
 });
+
+describe('colour forms of a species gone live', () => {
+  it('repaint the old model, whose form plan exists, not the build-B look', async () => {
+    const { speciesOf } = await import('../src/data/species');
+    const { artMeta } = await import('../src/art/fishgen');
+    const old = getSpecies('platy')!.art;
+    goLive('platy', 'platyb');
+    const f = speciesOf({ species: 'platy', form: 'sunburst' })!;
+    expect(f.art.startsWith(old + '~f:')).toBe(true);
+    expect(artMeta(f.art), f.art).toBeTruthy();
+    expect(getSpecies('platy')!.art).toBe(getSpecies('platyb')!.art);
+  });
+});

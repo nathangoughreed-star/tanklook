@@ -48,6 +48,8 @@ export interface Species {
   body?: 'snake';
   /** Texture / material cache key: the id, or `<id>~f` for the female look. */
   look: string;
+  /** Set by goLive: the model this species was drawn with before its build-B look; its colour forms still repaint it. */
+  formBase?: string;
   /** Sexually dimorphic species: the female look (own drawing, adult length, card aspect). The species itself is the male. */
   female?: Species;
   sex?: Sex;
@@ -114,6 +116,7 @@ export const hasSpecies = (id: string) => byId.has(id);
 export function goLive(id: string, look: string): boolean {
   const s = byId.get(id), l = byId.get(look);
   if (!s || !l || s === l) return false;
+  s.formBase ??= s.art;   // colour forms keep repainting the old model until each form has its own sheet (formSpecies)
   s.art = l.art; s.aspect = l.aspect; s.rest = l.rest;
   s.look = l.look;   // the look keys the baked picker still (public/gallery/<look>.webp, else drawn from the art) and the texture caches
   return true;
@@ -133,9 +136,11 @@ const formCache = new Map<string, Species>();
 function formSpecies(s: Species, form?: string, fin?: string): Species {
   const c = form && hasForm(s.id, 'colour', form) ? form : undefined, t = fin && hasForm(s.id, 'fin', fin) ? fin : undefined;
   if (!c && !t) return s;
-  const art = formArt(s.art, c, t), k = s.look + '|' + art;
+  // a species gone live on a build-B look (goLive) has no form plans of its own: its forms repaint the old model (formBase),
+  // whose plans fishgen registered at load; without this the form asked for '<look>~f:...', which has no plan (2026-11-25)
+  const base = s.formBase ?? s.art, art = formArt(base, c, t), k = s.look + '|' + art;
   let r = formCache.get(k);
-  if (!r) { const m = artMeta(art); r = { ...s, art, look: formArt(s.look, c, t), aspect: s.aspect === artMeta(s.art)?.aspect ? m?.aspect ?? s.aspect : s.aspect, rest: m?.rest ?? s.rest, albinoForm: undefined, female: undefined }; formCache.set(k, r); }
+  if (!r) { const m = artMeta(art); r = { ...s, art, look: formArt(s.look, c, t), aspect: s.formBase ? m?.aspect ?? s.aspect : s.aspect === artMeta(s.art)?.aspect ? m?.aspect ?? s.aspect : s.aspect, rest: m?.rest ?? s.rest, albinoForm: undefined, female: undefined }; formCache.set(k, r); }
   return r;
 }
 /** This fish's total length (mm): its custom size if set, else the adult length of its sex. */
