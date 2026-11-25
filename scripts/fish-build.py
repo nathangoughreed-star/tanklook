@@ -153,11 +153,20 @@ ax = A['landmarks']['snoutPxOriginal'][1] * 2
 TL = A['tlPx'] * 2
 asp = round((max(ax - sy0, sy1 - ax) * 2 / TL) + 0.02, 3)
 sat, alo, aw = spec.get('sat', 1.0), spec.get('alo', 4), spec.get('aw', 14)
+
+
+def lin_hex(h):   # with sat_lin the iris colours get the card's linear-light pre-desaturation too: the shader boosts the eye like the body (dwarf rasbora's pale gold iris read yellow, b6)
+    if not h or not spec.get('sat_lin'): return h
+    if isinstance(h, list): return [lin_hex(x) for x in h]
+    c = np.array([int(h[i:i + 2], 16) for i in (1, 3, 5)]) / 255; c = np.where(c <= 0.04045, c / 12.92, ((c + 0.055) / 1.055) ** 2.4)
+    y = c @ np.array([0.2126, 0.7152, 0.0722]); c = np.clip(y + (c - y) * sat, 0, 1); c = np.where(c <= 0.0031308, c * 12.92, 1.055 * c ** (1 / 2.4) - 0.055)
+    return '#' + ''.join('%02x' % int(round(v * 255)) for v in c)
 shots = os.path.join(ROOT, 'shots')
 os.makedirs(shots, exist_ok=True)
 card = os.path.join(shots, ID + '-card.png')
 er = sum([['--erase', ','.join(map(str, e))] for e in spec.get('erase', [])], [])
 common = ['--aspect', asp, '--clip-head', spec.get('clip_head', 25), '--alo', alo, '--aw', aw, '--sat', sat]
+if spec.get('sat_lin'): common += ['--sat-lin', 1]   # sat applied in linear light: keeps the hue (cutout-card desat_lin); opt-in, b6 2026-11-24
 if spec.get('solid', 5): common += ['--solid', spec.get('solid', 5)]   # opaque inside the fish silhouette (method row 45); 'solid': 0 = brightness alpha only
 side_card = os.path.join(work, 'side_full.png')
 if spec.get('root_band', 1):   # pale band at the body / tail-fin join (scripts/fishroot.py, method row 63)
@@ -263,7 +272,7 @@ if spec.get('width_pct_sl'):   # handoff step 8 in one pass (method row 44): thi
     THICKX = round(want_ / drawn_, 3)
     print('width: drawn %.1f %% SL, target %.1f%s -> thickx %.3f%s' % (drawn_, want_, ' (proxy range %s)' % spec['width_range'] if spec.get('width_range') else '', THICKX, '' if spec.get('thickx') in (None, THICKX) else ' (spec thickx %s ignored)' % spec['thickx']))
 photo = {'art': ID, 'plan': spec.get('plan', 'oscar'), 'sx': round(sx, 1), 'sl': round(sl, 1), 'ax': round(ax, 1), 'eye': e,
-         'pec': spec.get('pectoral'), 'pelvic': spec.get('pelvic'), 'eyeIris': spec.get('eye_iris'), 'eyePupil': spec.get('eye_pupil'), 'eyeFull': spec.get('eye_full'), 'pupilFrac': spec.get('eye_pupil_frac'), **({'eyeBulge': spec['eye_bulge']} if spec.get('eye_bulge') else {}),
+         'pec': spec.get('pectoral'), 'pelvic': spec.get('pelvic'), 'eyeIris': lin_hex(spec.get('eye_iris')), 'eyePupil': spec.get('eye_pupil'), 'eyeFull': spec.get('eye_full'), 'pupilFrac': spec.get('eye_pupil_frac'), **({'eyeBulge': spec['eye_bulge']} if spec.get('eye_bulge') else {}),
          'proj': {'fk': round(TL, 1), 'y0': spec.get('fy0', FY0), **({'topRamp': spec['top_ramp']} if spec.get('top_ramp') else {}), **({'ramp': spec['front_ramp']} if spec.get('front_ramp') else {})}, 'thickx': THICKX, 'noTail': bool(spec.get('no_tail')), 'measuredWidth': bool(spec.get('measured_width')), 'aspect': asp, 'finImg': bool(er or spec.get('card_sheet')), **({'planExtra': spec['plan_extra']} if spec.get('plan_extra') else {}), **({'finlets': spec['finlets']} if spec.get('finlets') else {}), **({'opacity': True} if FO is not None and FO is not False else {}), **({'stalkEdge': EDGE['curve']} if EDGE else {})}
 if spec.get('width_fit'): photo['widthFit'] = spec['width_fit']   # 'uniform': one thickx for every station instead of photofish.ts widthScale()'s soft cap
 if spec.get('body_clear') is not None: photo['bodyClear'] = spec['body_clear']   # see-through body zones from the photo check (scripts/fish-body-class.py, method row 62)

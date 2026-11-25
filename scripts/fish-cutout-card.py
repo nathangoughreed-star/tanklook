@@ -20,7 +20,12 @@ for e in [v for k, v in opt.items() if k == '--erase']:   # x0,y0,x1,y1 in sourc
     x0, y0, x1, y1 = map(int, e.split(',')); im.paste((0, 0, 0), (x0, y0, x1, y1))
 a = a0 = np.asarray(im)   # a0: the sheet's own colours, for the alpha below. Alpha from the desaturated colours made dark saturated parts
 # see-through as sat went down (royal gramma at sat 0.72: a hole in the dorsal eyespot; method row 58), so sat changes colour only
-if '--sat' in opt: a = desat(a, float(opt['--sat']))
+def desat_lin(a, f):   # --sat-lin: the same mix in LINEAR light, the exact inverse of the shader's boost (lighting.ts mixes about luminance in linear light, 1.35x):
+    # the sRGB mix leaves a saturated orange's green to collapse in the shader, so ember / CPD fins rendered red (b6, 2026-11-24); f = 1/1.35 = 0.74 gives the sheet back
+    c = a.astype(float) / 255; c = np.where(c <= 0.04045, c / 12.92, ((c + 0.055) / 1.055) ** 2.4); y = (c @ np.array([0.2126, 0.7152, 0.0722]))[..., None]
+    c = np.clip(y + (c - y) * f, 0, 1); c = np.where(c <= 0.0031308, c * 12.92, 1.055 * c ** (1 / 2.4) - 0.055)
+    return np.clip(np.round(c * 255), 0, 255).astype(np.uint8)
+if '--sat' in opt: a = (desat_lin if '--sat-lin' in sys.argv else desat)(a, float(opt['--sat']))
 k = im.width / J['source']['px'][0]
 sx, sy = [v * k for v in J['anatomy']['landmarks']['snoutPxOriginal']]
 TL = J['anatomy']['tlPx'] * k
