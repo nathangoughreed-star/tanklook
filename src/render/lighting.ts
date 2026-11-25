@@ -611,9 +611,20 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       'float aqG = abs(dot(normalize(vAqN), normalize(cameraPosition - vAqP)));\n' +
       'vec4 aqTex = mix(texture2D(uPlain, vMapUv), texture2D(map, vMapUv), smoothstep(uSide.x, uSide.y, vAqSide) * smoothstep(0.08, 0.3, aqG));');
   }
+  // see-through body by region (fish3d `clarityMap`, Plan.clear): the mask's solid share is opaque, the rest down to uClearK.x seen
+  // face-on; edge-on (more flesh in the sightline) it turns solid again by uClearK.y, which is what makes clear flesh read as a body
+  if (this.userData.clear) {
+    (shader.uniforms as Record<string, THREE.IUniform>).uClear = { value: this.userData.clear };
+    (shader.uniforms as Record<string, THREE.IUniform>).uClearK = { value: this.userData.clearK ?? new THREE.Vector2(0.12, 0.8) };
+    shader.fragmentShader = shader.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D uClear; uniform vec2 uClearK;')
+      .replace('#include <opaque_fragment>',
+      'float aqCs = texture2D(uClear, vMapUv).g, aqCe = 1.0 - abs(dot(normalize(vAqN), normalize(cameraPosition - vAqP)));\n' +
+      'diffuseColor.a *= mix(mix(uClearK.x, 1.0, aqCs), 1.0, uClearK.y * smoothstep(0.25, 0.95, aqCe));\n' +
+      '#include <opaque_fragment>');
+  }
 }
 // one cache key per material kind keeps one compiled program per kind
-const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.post ? 'b' + (this.userData.ng ?? '') : '') + (this.userData.fishCard ? 'k' : '') + (this.userData.plantClip ? 'g' : '') + (this.userData.pane ? 'w' : '') + (this.userData.swim ? 'm' : '') + (this.userData.fake ? 'z' + this.userData.fake : ''); };
+const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.clear ? 'C' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.post ? 'b' + (this.userData.ng ?? '') : '') + (this.userData.fishCard ? 'k' : '') + (this.userData.plantClip ? 'g' : '') + (this.userData.pane ? 'w' : '') + (this.userData.swim ? 'm' : '') + (this.userData.fake ? 'z' + this.userData.fake : ''); };
 
 /** Light every opaque surface inside the tank (substrate, background, fish, plant); glass, rim, lines and the fixture stay unlit. */
 export function applyLighting(sc: THREE.Scene) {

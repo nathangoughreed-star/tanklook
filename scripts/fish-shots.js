@@ -30,7 +30,8 @@ async function grab(name) {
   if (!r.ok) throw new Error('shot ' + name + ': ' + r.status);
 }
 
-export async function shootFish(species, tlMm, { tag = '', views = Object.keys(VIEWS), settle = 1800 } = {}) {
+// behind: a second fish of that species 1.2 TL farther from the camera, lower by 0.15 TL (see-through bodies, 2026-11-25: something to see through)
+export async function shootFish(species, tlMm, { tag = '', views = Object.keys(VIEWS), settle = 1800, behind } = {}) {
   const gb = globalThis.__gb, v = gb.viewer, z0 = 28 * 50 / tlMm, done = [];
   for (const name of views) {
     const o = VIEWS[name];
@@ -38,6 +39,7 @@ export async function shootFish(species, tlMm, { tag = '', views = Object.keys(V
     gb.store.update(s => {
       const t = s.tanks[s.active]; t.tank = { L: 72 * 25.4, H: 24 * 25.4, D: 24 * 25.4 };
       t.fish = [{ id: 901, species, x: 0.5 * t.tank.L + (o.dx || 0) * tlMm, y: 0.5 * t.tank.H, depth: 0.5 * t.tank.D, yaw: o.yaw, pitch: 0, roll: 0, bend: 0 }];
+      if (behind) t.fish.push({ id: 902, species: behind, x: 0.5 * t.tank.L + (o.dx || 0) * tlMm, y: 0.5 * t.tank.H - 0.15 * tlMm, depth: 0.5 * t.tank.D - 1.2 * tlMm, yaw: o.yaw, pitch: 0, roll: 0, bend: 0 });
       t.camera = { ...t.camera, az: o.az, el: o.el, zoom: z0 * o.z };
     });
     await wait(done.length ? settle : settle + 2500);   // the first view after a page load waits for the new fish's textures (a blank side shot, tailspot)

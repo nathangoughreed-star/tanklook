@@ -112,6 +112,16 @@ export interface Plan {
   finFade?: number;    // 2D: fins turn this much more translucent toward their edge (0..0.4); opt-in
   bodyA?: number;      // 2D card: the whole body is this opaque (0..1), a see-through fish (glass catfish); `solid` marks are painted over it at full strength
   solid?: Mark[];       // marks drawn over a see-through body (the spine, the organs behind the head)
+  // 3D see-through body by region (2026-11-25): each mark's `a` is how clear the body is there (0 solid .. 1 clear), its `f`
+  // the feather, so bands and blobs give soft gradients; painted into a mask on the body's own UVs (fish3d `clarityMap`).
+  // Overrides bodyA / solid on the 3D body (the 2D card keeps them). clearRim: how far the body turns solid again where
+  // it is seen edge-on (more flesh in the sightline; 0..1, default 0.8). clearMin: the clearest it gets (default 0.12)
+  clear?: Mark[];
+  clearRim?: number;
+  clearMin?: number;
+  // 3D: what shows through a see-through body, opaque solids inside it (bend and swim with it). spine: a thin rod at v
+  // from u0 to u1 (r: radius, widths); sac: an ellipsoid (organs, swim bladder) at (u, v), radii ru, rv and rz across
+  inner?: ({ k: 'spine'; u0: number; u1: number; v: number; v1?: number; r: number; c: string } | { k: 'sac'; u: number; v: number; ru: number; rv: number; rz: number; c: string })[];
   shimmerRgb?: string; // 2D: glint colour as 'r,g,b' (default warm gold)
   shimmer?: number;    // 2D: fine, deterministic warm scale glints (0..1); opt-in, projected to 3D flanks
   // 3D body shape (all optional): flat belly 0..1; cross-section widest low (+) or high (-); thickness at the peduncle
@@ -502,7 +512,8 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
     fin(ctx, P, W, [[u + 0.03, b + 0.01], [u, b - 0.035, 'c'], [u - 0.03, b + 0.01]], [u, b], p.fin, ray, { rays: 0 });
   }
   const [t0, b0] = [Math.min(...g.bodyPts.map(q => q[1])), Math.max(...g.bodyPts.map(q => q[1]))];
-  if (p.bodyA !== undefined) { ctx.save(); ctx.globalAlpha *= p.bodyA; }
+  const seeA = p.bodyA !== undefined && !(p.clear && !style.paired); // a 3D body with a clarity mask is painted solid; the mask makes it see-through
+  if (seeA) { ctx.save(); ctx.globalAlpha *= p.bodyA!; }
   body(ctx, P, W, g.bodyPts, t0, b0, [[0, p.shade[0]], [0.4, p.shade[1]], [0.65, p.shade[1]], [1, p.shade[2]]], p.rim ?? 0.035, l => {
     paintMarks(l, P, W, p.marks, 7, g.prof);
     if (p.shimmer) shimmer(l, P, W, p.pedU + 0.025, 1 - (1 - p.pedU) * 0.14, g.prof, p.shimmer, p.shimmerRgb);
@@ -518,7 +529,8 @@ export function drawPlan(p: Plan, ctx: Ctx, P: Proj, W: number) {
     l.beginPath(); l.moveTo(mx, my); l.quadraticCurveTo((mx + ex) / 2, ey, ex, ey);
     l.strokeStyle = 'rgba(18,16,12,0.45)'; l.lineWidth = 0.004 * W; l.stroke();
   });
-  if (p.bodyA !== undefined) { ctx.restore(); if (p.solid) paintMarks(ctx, P, W, p.solid, 11); }
+  if (seeA) ctx.restore();
+  if (p.bodyA !== undefined && p.solid && !(p.inner && !style.paired)) paintMarks(ctx, P, W, p.solid, 11); // 3D bodies with `inner` show them as solids instead
   // pectoral fin: faint fan behind the gill cover
   if (style.paired && paired.length) drawPairedFin(paired[paired.length - 1], ctx, P, W, ray);
   if (p.barbels && style.paired) { // style.paired off = painted for the 3D pipeline, which has its own barbels
@@ -628,6 +640,9 @@ export const PLANS: Record<string, Plan> = {
       { k: 'band', u0: 0.2, u1: 0.94, v0: -0.075, v1: 0.004, c: '#5ac8ff', a: 0.2, f: 0.02 },  // glow around the stripe
       { k: 'band', u0: 0.2, u1: 0.94, v0: -0.054, v1: -0.014, c: '#2f7ff0', a: 1, f: 0.008 }, // blue stripe
       { k: 'band', u0: 0.26, u1: 0.9, v0: -0.045, v1: -0.027, c: '#78d6ff', a: 0.85, f: 0.006 }], // bright core
+    // 3D (2026-11-25 prototype): the silvery belly half see-through, and the stalk behind the red band clearer
+    clear: [{ k: 'band', u0: 0.5, u1: 0.88, v0: 0.075, v1: 0.2, c: '#000', a: 0.5, f: 0.03 }, { k: 'band', u0: 0.1, u1: 0.22, v0: -0.02, v1: 0.2, c: '#000', a: 0.6, f: 0.035 }],
+    clearMin: 0.2, clearRim: 0.85,
     eye: { r: 0.024, iris: ['#b9ccd2', '#4c5c63'] } },
   // Ember tetra (Hyphessobrycon amandae): luminous copper/orange, rounded snout, clear warm fins.
   // The shape and coloration describe a well-colored adult; adult total length is kept in species.json.
@@ -1346,6 +1361,10 @@ Object.assign(PLANS, {
     anal: { u0: 0.28, u1: 0.92, h: 0.09, tint: '#c4d0c0', a: 0.5 }, pelvic: { u: 0.3, len: 0.03, tint: '#c4d0c0' },
     marks: [{ k: 'band', u0: 0.15, u1: 0.55, v0: 0.03, v1: 0.07, c: '#a8b8a2', a: 0.5, f: 0.03 }],
     solid: [{ k: 'band', u0: 0.12, u1: 0.9, v0: -0.012, v1: 0.004, c: '#3e4e3a', a: 0.9, f: 0.005 }, { k: 'band', u0: 0.14, u1: 0.88, v0: -0.03, v1: -0.024, c: '#7a8a76', a: 0.4, f: 0.004 }, { k: 'blob', u: 0.22, v: 0.0, ru: 0.09, rv: 0.055, c: '#2a3228', a: 0.85 }, { k: 'blob', u: 0.2, v: 0.0, ru: 0.05, rv: 0.04, c: '#c8d0c4', a: 0.35 }],
+    // 3D (2026-11-25 prototype): the whole trunk nearly clear, the head less so (skull, gill cover); the spine and the silvery organ sac behind the head as solids inside
+    clear: [{ k: 'band', u0: 0.08, u1: 0.84, v0: -0.25, v1: 0.25, c: '#000', a: 0.95, f: 0.04 }, { k: 'band', u0: 0.84, u1: 1.05, v0: -0.25, v1: 0.25, c: '#000', a: 0.55, f: 0.03 }],
+    clearMin: 0.1, clearRim: 0.75,
+    inner: [{ k: 'spine', u0: 0.15, u1: 0.84, v: -0.004, v1: 0.002, r: 0.0035, c: '#56604f' }, { k: 'sac', u: 0.76, v: 0.03, ru: 0.075, rv: 0.038, rz: 0.022, c: '#c4c8bc' }, { k: 'sac', u: 0.8, v: 0.045, ru: 0.035, rv: 0.02, rz: 0.018, c: '#5a5a48' }],
     finMarks: [], eye: { r: 0.034, iris: ['#c0b890', '#1a1a18'] } }),
   //@@RX1END
 });
@@ -1425,6 +1444,17 @@ for (const r of albinoSpecies.species as { id: string; art: string; female?: { a
 }
 
 export const bodyPlan = (art: string): Plan | undefined => PLANS[art] ?? SHRIMP_PLANS[art];
+/**
+ * The 3D body's clarity mask for a card W wide (same projection as the card: (u, v) -> (u W, H/2 + v W)): white = solid, darker =
+ * see-through by each `clear` mark's `a`. Undefined when the plan has none.
+ */
+export function clarityCanvas(art: string, aspect: number, W = 512): HTMLCanvasElement | undefined {
+  const p = bodyPlan(art); if (!p?.clear) return undefined;
+  const c = document.createElement('canvas'), H = Math.round(W * aspect); c.width = W; c.height = H;
+  const ctx = c.getContext('2d')!; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+  paintMarks(ctx, (u, v) => [u * W, H / 2 + v * W], W, p.clear.map(m => ({ ...m, c: '#000' })), 23, profile(p));
+  return c;
+}
 /**
  * Fin posture (lane FE1): 0 = median fins folded flat along the back and belly .. 1 = held fully erect (the drawn card).
  * `lo`..`hi` is the range a shuffle draws from, `def` what a fish without a value of its own shows. A sensible default

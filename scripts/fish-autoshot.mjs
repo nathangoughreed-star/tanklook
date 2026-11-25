@@ -1,6 +1,6 @@
 // Headless build-B fish pictures (method row 58): starts its own vite dev server and headless Chrome, opens /?photoart and runs
 // scripts/fish-shots.js for each fish, so no Browser pane, no launch.json server and no hand steps. Shots land in shots/ as usual.
-//   node scripts/fish-autoshot.mjs <id>:<tl_mm> [<id>:<tl_mm> ...] [--tag T] [--views side,top] [--url http://localhost:5197/]
+//   node scripts/fish-autoshot.mjs <id>:<tl_mm> [<id>:<tl_mm> ...] [--tag T] [--views side,top] [--url http://localhost:5197/] [--behind <species>]
 // --url reuses a running dev server instead of starting one. Prints one JSON line: {"ok":[files...],"fail":[...]}.
 import { spawn } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
@@ -39,7 +39,7 @@ else {
   await sleep(4000);
   if (!await ev(`location.search.includes('photoart')`).catch(() => false)) fail.push('page never kept ?photoart');
   else for (const f of fish) {
-    try { ok.push(...await ev(`import('/scripts/fish-shots.js').then(m => m.shootFish(${JSON.stringify(f.id)}, ${f.tl}, ${JSON.stringify({ tag: TAG, ...(VIEWS ? { views: VIEWS } : {}) })}))`)); }
+    try { ok.push(...await ev(`import('/scripts/fish-shots.js').then(m => m.shootFish(${JSON.stringify(f.id)}, ${f.tl}, ${JSON.stringify({ tag: TAG, ...(VIEWS ? { views: VIEWS } : {}), ...(opt('--behind') ? { behind: opt('--behind') } : {}) })}))`)); }
     catch (e) { fail.push(f.id + ': ' + e.message); }
   }
   console.log(JSON.stringify({ ok, fail }));

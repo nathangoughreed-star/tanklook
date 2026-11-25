@@ -4,7 +4,7 @@
 // card stays as the fins (thin membranes); its painted body sits inside the solid. Nose and tail tips are unchanged,
 // so nose-to-tail stays adult TL.
 import * as THREE from 'three';
-import { analBox, bodyPlan, finRange, drawAnal, drawTail, eyeSpot, pairedFins, profile, tailBox, type Plan } from '../art/fishgen';
+import { analBox, bodyPlan, clarityCanvas, finRange, drawAnal, drawTail, eyeSpot, pairedFins, profile, tailBox, type Plan } from '../art/fishgen';
 import { FIN_A, FIN_A2C, rng, style } from '../art/paint';
 import type { EdgeMode } from '../scene/types';
 import { cardMaterial, pairedFinOpacity, pairedFinTexture } from './textures';
@@ -697,10 +697,17 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   const p = shaped(bodyPlan(art)!), b = Math.round(bend * 20) / 20, key = `${art}|${aspect}|${b}|${fish3d.fade}|${swim ? 's' : ''}`;
   let g = geoCache.get(key); if (!g) { g = bodyGeometry(p, aspect, b, swim); geoCache.set(key, g); }
   const grp = new THREE.Group(); grp.scale.setScalar(w);
-  grp.add(new THREE.Mesh(g, fishMat(`body:${map.uuid}:${fish3d.fade}:${fish3d.wrap}`, () => {
-    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); m.userData.swim = true; if (p.tailBlend) m.alphaToCoverage = true; if (p.bodyA !== undefined) { m.transparent = true; m.opacity = Math.min(1, p.bodyA + 0.15); m.depthWrite = false; } if (fish3d.fade) { m.userData.plain = p.sharp ? t.map : t.plain; m.userData.side = p.sharp ? SIDE_SHARP : fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
+  grp.add(new THREE.Mesh(g, fishMat(`body:${map.uuid}:${fish3d.fade}:${fish3d.wrap}:${p.clear ? art + aspect : ''}`, () => {
+    const t = bledTexture(map), m = new THREE.MeshBasicMaterial({ map: t.map, vertexColors: true }); m.userData.swim = true; if (p.tailBlend) m.alphaToCoverage = true;
+    const cl = p.clear && clarityMap(art, aspect);
+    if (cl) { // see-through by region (lighting.ts aqPatch, userData.clear): both sides drawn, far flank first, so the body reads as a volume
+      m.transparent = true; m.depthWrite = false; m.side = THREE.DoubleSide; m.userData.clear = cl; m.userData.clearK = new THREE.Vector2(p.clearMin ?? 0.12, p.clearRim ?? 0.8);
+    } else if (p.bodyA !== undefined) { m.transparent = true; m.opacity = Math.min(1, p.bodyA + 0.15); m.depthWrite = false; }
+    if (fish3d.fade) { m.userData.plain = p.sharp ? t.map : t.plain; m.userData.side = p.sharp ? SIDE_SHARP : fish3d.wrap ? SIDE : new THREE.Vector2(0.3, 0.75); } return m;
   })));
-  if (p.bodyA === undefined) { const o = new THREE.Mesh(g, outlineMat); o.userData.nolight = true; grp.add(o); }
+  // the dark outline hull is the body's back faces: through a see-through body it would show as a dark lining, so clear fish go without
+  if (p.bodyA === undefined && !p.clear) { const o = new THREE.Mesh(g, outlineMat); o.userData.nolight = true; grp.add(o); }
+  if (p.inner) for (const m of innerMeshes(art, p, b, swim)) grp.add(m);
   const pa = PROJ_ART[art];
   if (pa) for (const kind of ['top', 'front'] as const) {
     const L = pa[kind]; if (!L) continue;
@@ -749,6 +756,49 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
   }
   if (fish3d.merge) mergeShared(grp);
   return grp;
+}
+
+const clarityCache = new Map<string, THREE.Texture>();
+/** The body's clarity mask (fishgen `clarityCanvas`, on the body's own UVs): green 1 = solid, 0 = as clear as `clearMin`. */
+function clarityMap(art: string, aspect: number) {
+  const k = art + '|' + aspect; let t = clarityCache.get(k);
+  if (!t) { const c = clarityCanvas(art, aspect); if (!c) return undefined; t = new THREE.CanvasTexture(c); t.anisotropy = 4; clarityCache.set(k, t); }
+  return t;
+}
+const innerGeo = new Map<string, THREE.BufferGeometry>();
+/**
+ * What shows through a see-through body (Plan.inner): opaque solids inside it, in body units like the body (x = u - 0.5, y = -v,
+ * z bent with the body) and carrying the same swim attributes (uv.x = u, aSwL), so they bend and beat with it.
+ */
+function innerMeshes(art: string, p: Plan, bend: number, swim: boolean) {
+  return p.inner!.map((it, i) => {
+    const key = `${art}|${i}|${bend}|${swim}`;
+    let g = innerGeo.get(key);
+    if (!g) {
+      if (it.k === 'spine') {
+        const pts: THREE.Vector3[] = [], N = 24;
+        for (let j = 0; j <= N; j++) { const u = it.u0 + (it.u1 - it.u0) * j / N, v = it.v + ((it.v1 ?? it.v) - it.v) * j / N, x = u - 0.5; pts.push(new THREE.Vector3(x, -v, bendZ(bend, x))); }
+        g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, it.r, 6, false);
+        // taper toward the tail: scale each ring's offset from the curve by its u (thin at u0)
+        const pos = g.attributes.position, c = new THREE.Vector3();
+        for (let k = 0; k < pos.count; k++) {
+          const x = pos.getX(k), u = x + 0.5, t = Math.min(1, Math.max(0, (u - it.u0) / (it.u1 - it.u0))), s = 0.45 + 0.55 * Math.sqrt(t);
+          const xc = x, vc = it.v + ((it.v1 ?? it.v) - it.v) * t; c.set(xc, -vc, bendZ(bend, xc));
+          pos.setXYZ(k, c.x + (pos.getX(k) - c.x) * s, c.y + (pos.getY(k) - c.y) * s, c.z + (pos.getZ(k) - c.z) * s);
+        }
+      } else {
+        g = new THREE.SphereGeometry(1, 20, 14); const x = it.u - 0.5;
+        g.scale(it.ru, it.rv, it.rz); g.translate(x, -it.v, bendZ(bend, x));
+      }
+      const pos = g.attributes.position, uv = new Float32Array(pos.count * 2);
+      for (let k = 0; k < pos.count; k++) uv[2 * k] = pos.getX(k) + 0.5;
+      g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+      g.setAttribute('aSwL', new THREE.Float32BufferAttribute(new Array(pos.count).fill(swim ? 1 : 0), 1));
+      g.computeVertexNormals(); g.userData.keep = true; innerGeo.set(key, g);
+    }
+    const m = fishMat(`inner:${art}:${i}`, () => { const mm = new THREE.MeshBasicMaterial({ color: new THREE.Color(it.c) }); mm.userData.swim = true; return mm; });
+    return new THREE.Mesh(g, m);
+  });
 }
 
 /**
