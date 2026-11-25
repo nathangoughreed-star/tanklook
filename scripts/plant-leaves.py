@@ -29,8 +29,8 @@ AW = 1024          # atlas width
 
 # type -> how its sheet is laid out and what a cell is (px). v0 = where the blade starts in a cell (below it the stalk)
 TYPES = {
-    'crypt': dict(kind='leaf', cols=3, rows=2, upper=[0, 1, 2], under=[3, 4, 5], cell=(96, 448), v0=0.22),
-    'carpet': dict(kind='leaf', cols=3, rows=3, upper=[0, 1, 2, 3, 4, 5], under=[6, 7, 8], cell=(56, 72), v0=0.0),
+    'crypt': dict(kind='leaf', cols=3, rows=2, upper=[0, 1, 2], under=[3, 4, 5], cell=(104, 352), v0=0.18),
+    'carpet': dict(kind='leaf', cols=3, rows=3, upper=[0, 1, 2, 3, 4, 5], under=[6, 7, 8], cell=(80, 88), v0=0.0),
     'grass': dict(kind='strap', strips=4, order=dict(base=0, mid=1, tip=2, mid2=3), width=40, base=(40, 64), tip=(40, 64), mid=(100, 160), tiles=4),
 }
 

@@ -96,3 +96,8 @@ textured types alone swap the two sides' uv and colours (upper texture on the si
 
 **Sheet issues / prompt changes for the batch**
 None from real sheets yet. What the cutter needs from them (already in `leaf-sheet.md`): leaves on pure white with 4 % gaps, midrib vertical, stalk about the lowest quarter (the cutter's `v0`), undersides in the same order as the uppers; grass as four straight strips with the middle cut straight across (the cutter cross-fades the seam). The cutter stops with a message if the leaf count differs from the layout (touching leaves, or a pale leaf lost against white).
+
+**Update 2026-11-25 (real sheets cut).** All three sheets were clean (white background, no shadows, nothing touching, layout as asked), no prompt change needed. Cut with
+`python scripts/plant-leaves.py --webp`: `leaves.webp` 1024x872, **83 KB** (png would be 569 KB, so the shipped atlas is webp). Crypt cell 104x352 (v0 0.18, the sheet's stalk is
+about 17 % of the leaf), carpet 80x88. Crypt leaves come out narrower than the old grid (the painted outline is slimmer than the grid), which is what the alpha is for.
+`paint` vs `lum` shots: `shots/pc_compare.png` (close) and `shots/pilot_compare.png` for Nathan to pick; default stays `paint`.
