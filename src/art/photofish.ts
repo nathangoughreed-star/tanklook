@@ -18,6 +18,10 @@ const load = (f: string, v?: string) => new Promise<HTMLCanvasElement>((res, rej
 });
 const files = import.meta.glob('../data/fishart/*.anatomy.json', { eager: true, import: 'default' }) as Record<string, any>;
 
+/** The 3D eye covers the iris only: eye_full (fish-eye-colour.py, 1.35 x the sheet's eye r) reached the dark socket round the eye on
+ *  nearly every build-B fish, and the dome painted it as iris: a wide pale ring that read as an oversized eye (Nathan 2026-11-25, zebra
+ *  danio; all 25 live cards checked: the iris edge sits at 1.0-1.15 r). 1.1 r = 0.815 eye_full; the card's own socket shows round it. */
+const EYE_IRIS = 1.1 / 1.35;
 /**
  * Applies the build-B fish: all of them (?photoart, the review page) or only the arts in `only` (the approved ones in
  * src/data/fishLive.json, for every visitor). Images load in parallel; resolves to the arts that loaded, so a fish whose
@@ -91,7 +95,7 @@ export async function loadPhotoFish(only?: ReadonlySet<string>): Promise<Set<str
     } else delete P.pelvic;
     delete P.gape; delete P.gapeDrop; P.gillLine = 0;
     { const [ex, ey, er] = R.eye, u = 1 - (sx - ex) / sl * SLc, v = (ax - ey) / sl * -1 * SLc, [et, eb] = profile(P)(u);
-      P.eye = { ...P.eye, u, dv: (v - et) / (eb - et) - 0.38, r: (R.eyeFull ?? er) / sl * SLc, iris: R.eyeIris ?? ['#c8902a', '#0a0206'], ...(R.eyePupil ? { pupil: R.eyePupil } : {}), ...(R.pupilFrac ? { pupilFrac: R.pupilFrac } : {}) }; }   // iris sampled from the sheet's own eye (fish-eye-colour.py); amber only for older builds
+      P.eye = { ...P.eye, u, dv: (v - et) / (eb - et) - 0.38, r: (R.eyeFull ? R.eyeFull * EYE_IRIS : er) / sl * SLc, iris: R.eyeIris ?? ['#c8902a', '#0a0206'], ...(R.eyePupil ? { pupil: R.eyePupil } : {}), ...(R.pupilFrac ? { pupilFrac: Math.min(0.9, R.pupilFrac / EYE_IRIS) } : {}) }; }   // iris sampled from the sheet's own eye (fish-eye-colour.py); amber only for older builds
     if (R.planExtra) Object.assign(P, R.planExtra); // per-model Plan knobs from the spec's plan_extra (cory barbels: method row 53)
     PHOTO_FINS[id] = { img: fin ?? card };
     if (op && finop) { FIN_OPACITY[id] = { card: op, fin: finop }; P.tailBlend = 0.05; }   // the solid fades onto the card over 5 % of TL before the fin

@@ -158,7 +158,7 @@ function eyePlacements(p: Plan, bend: number) {
   // `eye.up` turns the eye from the flank toward the top of the head (flattened fish: plecos look upward)
   const th = th0 + (EYE_TOP - th0) * (p.eye.up ?? 0);
   return [1, -1].map(side => ({
-    pos: pointAt(p, e.u, th, side, bend), n: normalAtTh(p, e.u, th, side, bend).add(new THREE.Vector3(p.eye.pupilFrac ? 0 : 0.2, 0, 0)).normalize(), /* measured (photo) eyes face straight out: the sheet's pupil is centred */ r: e.r, iris: e.iris, pupil: p.eye.pupil, bulge: p.eye.bulge ?? 0.38, pf: p.eye.pupilFrac,
+    pos: pointAt(p, e.u, th, side, bend), n: (n => p.eye.pupilFrac ? n.setX(n.x * 0.5) : n.add(new THREE.Vector3(0.2, 0, 0)))(normalAtTh(p, e.u, th, side, bend)).normalize(), /* measured (photo) eyes face straight out: the sheet's pupil is centred. Half the head's fore-aft lean: the full lean set the dome ~0.15 r behind the sheet's eye, none ~0.15 r in front with its rear rim cut by the widening head (danio, neon, Nathan 2026-11-25) */ /* measured (photo) eyes face straight out: the sheet's pupil is centred */ r: e.r, iris: e.iris, pupil: p.eye.pupil, bulge: p.eye.bulge ?? 0.38, pf: p.eye.pupilFrac,
   }));
 }
 /** Section angle of a fully raised eye (`eye.up` = 1): on the head's upper surface, a little off the midline. */
@@ -811,7 +811,9 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     const fit = e.pf ? { fp: Math.asin(Math.min(0.95, e.pf)) / Math.PI, fv: Math.asin(0.95) / Math.PI } : undefined;
     const m = new THREE.Mesh(dome(e.bulge), fishMat('eye:' + art, () => new THREE.MeshBasicMaterial({ map: eyeTexture(e.iris, e.pupil, fit) })));
     m.scale.setScalar(e.r); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), e.n);
-    m.position.copy(e.pos).addScaledVector(e.n, -e.r * (0.3 - 0.5 * (e.bulge - 0.38))); // set into the head, bulging a little (rounder domes sit less deep)
+    // set into the head, bulging a little (rounder domes sit less deep). A measured eye sits shallower (0.12 r): at 0.3 r a 0.38 dome shows
+    // only inside 0.62 r on a flat flank, so the head cut its rim ragged and the pupil read small (danio 1.3 vs the sheet's 1.8 % TL)
+    m.position.copy(e.pos).addScaledVector(e.n, -e.r * ((e.pf ? 0.12 : 0.3) - 0.5 * (e.bulge - 0.38)));
     grp.add(m);
   }
   const belly = bellyPlate(art, p, b); if (belly) grp.add(belly);
