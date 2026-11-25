@@ -364,5 +364,13 @@
  "fin_opacity": {
   "preset": "clear"
  },
- "fin_opacity_source": "clear (photo check 2026-11-24; Commons: Neonsalmler Paracheirodon innesi.jpg, Paracheirodon innesi 01.jpg): tail, dorsal, anal clear with a faint grey tint, rays faint; body red runs onto the tail root; white leading edges on anal and pelvic (pigment, stage 5)."
+ "fin_opacity_source": "clear (photo check 2026-11-24; Commons: Neonsalmler Paracheirodon innesi.jpg, Paracheirodon innesi 01.jpg): tail, dorsal, anal clear with a faint grey tint, rays faint; body red runs onto the tail root; white leading edges on anal and pelvic (pigment, stage 5).",
+ "body_clear": {
+  "zones": {
+   "belly": "faint",
+   "lowerrear": "faint"
+  },
+  "inner": {}
+ },
+ "body_clear_source": "belly faint, lowerrear faint (photo check): 2026-11-25; Commons: Neonsalmler Paracheirodon innesi.jpg, Paracheirodon innesi 01.jpg: back, stripe and red band opaque, plants do not show through; only a faint see-through strip along the silvery belly and above the anal fin; no spine or organs visible"
 }

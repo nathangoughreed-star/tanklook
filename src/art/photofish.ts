@@ -3,7 +3,7 @@
  * Every src/data/fishart/<id>.anatomy.json with a `render.photo` block (written by scripts/fish-build.py) is applied: measured outline and
  * thickness, the sheet's own eye, photo-cut paired fins, top and front projection layers, and the card. No per-species code.
  */
-import { CLEAR_B, PLANS, profile } from './fishgen';
+import { PLANS, profile } from './fishgen';
 import { FISH_ART } from './placeholder';
 import { FIN_OPACITY, PHOTO_FINS } from '../render/textures';
 import { PROJ_ART } from './projart';
@@ -35,7 +35,7 @@ export async function loadPhotoFish(only?: ReadonlySet<string>): Promise<Set<str
       R.opacity ? load(id + '-op', v) : Promise.resolve(null), R.opacity ? load(id + '-finop', v) : Promise.resolve(null)]);   // fin opacity maps (method row 61)
     const P: any = (PLANS[id] ??= { ...PLANS[R.plan ?? 'oscar'] }), A = J.anatomy, d = A.depthProfile, F: any = A.fins;
     delete P.fins; delete P.finGrid;
-    Object.assign(P, CLEAR_B[id] ?? {}); // see-through body regions (fishgen CLEAR_B)
+    if (R.bodyClear) P.bodyClear = R.bodyClear; else delete P.bodyClear; // see-through body zones from the photo check (scripts/fish-body-class.py; fishgen seeThrough)
     const pedU = 1 - 1 / A.tlOverSl, SLc = 1 - pedU, U = (s: number) => pedU + SLc * (1 - s / 100), Wd = (x: number) => x / 100 * SLc;
     const topPts = d.stations.map((s: number, i: number) => [U(s), -Wd(d.top[i])] as [number, number]), botPts = d.stations.map((s: number, i: number) => [U(s), Wd(d.bottom[i])] as [number, number]);
     // measured stations are sparse: smooth them lightly and resample with a clamped cubic so the head and tail are curves, not facets

@@ -117,6 +117,7 @@ export interface Plan {
   // Overrides bodyA / solid on the 3D body (the 2D card keeps them). clearRim: how far the body turns solid again where
   // it is seen edge-on (more flesh in the sightline; 0..1, default 0.8). clearMin: the clearest it gets (default 0.12)
   clear?: Mark[];
+  bodyClear?: BodyClear; // see-through body from the reference-photo check (build-B fish: scripts/fish-body-class.py -> render.photo.bodyClear); `seeThrough` turns it into zones and inner solids
   clearRim?: number;
   clearMin?: number;
   // 3D: what shows through a see-through body, opaque solids inside it (bend and swim with it). spine: a thin rod at v
@@ -1437,34 +1438,69 @@ for (const r of albinoSpecies.species as { id: string; art: string; female?: { a
 }
 
 export const bodyPlan = (art: string): Plan | undefined => PLANS[art] ?? SHRIMP_PLANS[art];
+/** The body photo check's result (research/fish-specs/<id>.json body_clear): see-through class per anatomical zone, and what shows inside. */
+export interface BodyClear { zones: Partial<Record<BodyZone, BodyClass>>; inner?: Partial<Record<'spine' | 'sac' | 'bladder', string | null>> }
+export type BodyZone = 'head' | 'back' | 'trunk' | 'belly' | 'lowerrear' | 'stalk';
+export type BodyClass = 'clear' | 'translucent' | 'faint' | 'solid';
+/** How clear each class makes its zone (mask a: 0 solid .. 1 as clear as clearMin). */
+export const BODY_CLASS: Record<BodyClass, number> = { clear: 0.75, translucent: 0.5, faint: 0.25, solid: 0 };
 /**
- * See-through bodies (Plan.clear / clearMin / clearRim / inner), only on build-B fish (Nathan 2026-11-25: no point testing on the old
- * models): keyed by the B art, merged into its plan by photofish.ts, so the fish-build.py anatomy JSON stays untouched. Marks in card
- * units of the B card (u 0 tail tip .. 1 snout, v down from the centre line), placed on the card photo.
+ * Zones in anatomy, so one table fits any fish: s = share of SL from the snout (0) to the tail base (1), d = share of the body's
+ * depth at that point from the top (0) to the belly (1). Feathered by ZONE_FEATHER along and across.
  */
-export const CLEAR_B: Record<string, Pick<Plan, 'clear' | 'clearMin' | 'clearRim' | 'inner'>> = {
-  // neon: the silvery belly under the front half, and a faint olive back over the stripe (the spine shows through in life)
-  neonb: { clear: [{ k: 'band', u0: 0.48, u1: 0.84, v0: 0.04, v1: 0.2, c: '#000', a: 0.45, f: 0.025 }, { k: 'band', u0: 0.22, u1: 0.8, v0: -0.2, v1: -0.06, c: '#000', a: 0.3, f: 0.02 }],
-    clearMin: 0.2, clearRim: 0.85 },
-  // cardinal: red the whole length (stays solid), only the back over the stripe and the grey tail stalk faintly see-through
-  cardinalc: { clear: [{ k: 'band', u0: 0.22, u1: 0.8, v0: -0.2, v1: -0.06, c: '#000', a: 0.3, f: 0.02 }, { k: 'band', u0: 0.12, u1: 0.2, v0: -0.2, v1: 0.2, c: '#000', a: 0.35, f: 0.02 }],
-    clearMin: 0.2, clearRim: 0.85 },
-  // glowlight: the clearest of the tetras: the whole trunk see-through, the lower rear most; the head and gill cover less
-  glowlightb: { clear: [{ k: 'band', u0: 0.15, u1: 0.8, v0: -0.2, v1: 0.2, c: '#000', a: 0.45, f: 0.04 }, { k: 'band', u0: 0.18, u1: 0.5, v0: 0.02, v1: 0.2, c: '#000', a: 0.6, f: 0.03 },
-    { k: 'band', u0: 0.8, u1: 1.02, v0: -0.2, v1: 0.2, c: '#000', a: 0.15, f: 0.03 }], clearMin: 0.15, clearRim: 0.85 },
-  // guppy: the rear trunk (orange, spotted) see-through, the front faintly; the head solid
-  guppyb: { clear: [{ k: 'band', u0: 0.18, u1: 0.46, v0: -0.2, v1: 0.2, c: '#000', a: 0.45, f: 0.035 }, { k: 'band', u0: 0.46, u1: 0.78, v0: -0.2, v1: 0.2, c: '#000', a: 0.2, f: 0.04 }],
-    clearMin: 0.2, clearRim: 0.85 },
+export const BODY_ZONES: Record<BodyZone, { s: [number, number]; d: [number, number] }> = {
+  head: { s: [-0.02, 0.22], d: [-0.1, 1.1] },
+  back: { s: [0.22, 0.88], d: [-0.1, 0.35] },
+  trunk: { s: [0.22, 0.88], d: [-0.1, 1.1] },
+  belly: { s: [0.22, 0.7], d: [0.6, 1.1] },
+  lowerrear: { s: [0.5, 0.9], d: [0.5, 1.1] },
+  stalk: { s: [0.85, 1.04], d: [-0.1, 1.1] },
 };
+export const ZONE_FEATHER = { s: 0.05, d: 0.15 };
+/** Default colours of what shows through: a dark spine, the gut sac pale, the swim bladder silver. */
+const INNER_C = { spine: '#4e5648', sac: '#cdc6b6', bladder: '#dfe3df' };
+export type Zone = { s0: number; s1: number; d0: number; d1: number; a: number };
+/**
+ * A plan's see-through body, from the photo check (bodyClear) or hand marks (clear): the zones / marks for the clarity mask, the
+ * solids inside (in card units, placed from the body's own profile) and the shader's clearMin / clearRim. Undefined = solid body.
+ */
+export function seeThrough(p: Plan): { zones: Zone[]; marks: Mark[]; inner: NonNullable<Plan['inner']>; min: number; rim: number } | undefined {
+  const bc = p.bodyClear, zs = Object.entries(bc?.zones ?? {}).filter(([, c]) => c && c !== 'solid') as [BodyZone, BodyClass][];
+  if (!zs.length && !p.clear) return undefined;
+  const zones = zs.map(([z, c]) => ({ s0: BODY_ZONES[z].s[0], s1: BODY_ZONES[z].s[1], d0: BODY_ZONES[z].d[0], d1: BODY_ZONES[z].d[1], a: BODY_CLASS[c] }));
+  const inner = [...(p.inner ?? [])];
+  if (bc?.inner && zs.length) {
+    const prof = profile(p), SL = 1 - p.pedU, U = (s: number) => 1 - s * SL;
+    const at = (s: number, d: number) => { const [t, b] = prof(U(s)); return t + (b - t) * d; };
+    const depth = (s: number) => { const [t, b] = prof(U(s)); return b - t; };
+    const I = bc.inner;
+    if ('spine' in I) inner.push({ k: 'spine', u0: U(0.98), u1: U(0.24), v: at(0.98, 0.45), v1: at(0.24, 0.4), r: Math.max(0.0025, 0.025 * depth(0.5)), c: I.spine ?? INNER_C.spine });
+    if ('bladder' in I) inner.push({ k: 'sac', u: U(0.47), v: at(0.47, 0.42), ru: 0.13 * SL, rv: 0.13 * depth(0.47), rz: 0.1 * depth(0.47), c: I.bladder ?? INNER_C.bladder });
+    if ('sac' in I) inner.push({ k: 'sac', u: U(0.42), v: at(0.42, 0.66), ru: 0.12 * SL, rv: 0.15 * depth(0.42), rz: 0.11 * depth(0.42), c: I.sac ?? INNER_C.sac });
+  }
+  return { zones, marks: p.clear ?? [], inner, min: p.clearMin ?? 0.15, rim: p.clearRim ?? 0.85 };
+}
 /**
  * The 3D body's clarity mask for a card W wide (same projection as the card: (u, v) -> (u W, H/2 + v W)): white = solid, darker =
  * see-through by each `clear` mark's `a`. Undefined when the plan has none.
  */
 export function clarityCanvas(art: string, aspect: number, W = 512): HTMLCanvasElement | undefined {
-  const p = bodyPlan(art); if (!p?.clear) return undefined;
+  const p = bodyPlan(art), st = p && seeThrough(p); if (!p || !st) return undefined;
   const c = document.createElement('canvas'), H = Math.round(W * aspect); c.width = W; c.height = H;
   const ctx = c.getContext('2d')!; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
-  paintMarks(ctx, (u, v) => [u * W, H / 2 + v * W], W, p.clear.map(m => ({ ...m, c: '#000' })), 23, profile(p));
+  const prof = profile(p), SL = 1 - p.pedU, sm = (e0: number, e1: number, x: number) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+  // zones, one pixel column at a time: along the body by share of SL, across it by share of the depth there, both feathered
+  if (st.zones.length) for (let x = 0; x < W; x++) {
+    const u = (x + 0.5) / W, s = (1 - u) / SL, [t, b] = prof(Math.min(1, Math.max(p.pedU, u))), y0 = H / 2 + t * W, dy = (b - t) * W;
+    for (const z of st.zones) {
+      const ws = sm(z.s0 - ZONE_FEATHER.s, z.s0, s) * (1 - sm(z.s1, z.s1 + ZONE_FEATHER.s, s)); if (ws <= 0.001 || dy <= 0) continue;
+      const g = ctx.createLinearGradient(0, y0 - 0.2 * dy, 0, y0 + 1.2 * dy), fd = ZONE_FEATHER.d, k = (d: number) => Math.min(1, Math.max(0, (d + 0.2) / 1.4));
+      const A = z.a * ws, col = (q: number) => `rgba(0,0,0,${(A * q).toFixed(4)})`;
+      g.addColorStop(k(z.d0 - fd), col(0)); g.addColorStop(k(z.d0), col(1)); g.addColorStop(Math.max(k(z.d0), k(z.d1)), col(1)); g.addColorStop(Math.max(k(z.d0), k(z.d1 + fd)), col(0));
+      ctx.fillStyle = g; ctx.fillRect(x, y0 - 0.2 * dy, 1, 1.4 * dy);
+    }
+  }
+  if (st.marks.length) paintMarks(ctx, (u, v) => [u * W, H / 2 + v * W], W, st.marks.map(m => ({ ...m, c: '#000' })), 23, prof);
   return c;
 }
 /**

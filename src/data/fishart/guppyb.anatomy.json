@@ -818,7 +818,18 @@
       265.0
      ]
     ],
-    "ver": "2b03cb5b"
+    "ver": "2b03cb5b",
+    "bodyClear": {
+     "zones": {
+      "trunk": "translucent",
+      "lowerrear": "translucent",
+      "stalk": "clear"
+     },
+     "inner": {
+      "spine": null,
+      "sac": null
+     }
+    }
    },
    "fit": "{'thick': 0.85, 'pedT': 0.255, 'rmsPctSL': 0.46, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }
