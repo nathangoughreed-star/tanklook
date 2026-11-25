@@ -20,7 +20,7 @@ export const SWIM_VERT = `if (uSwim.y > 0.0 && aSwL > 0.0) {
   float swS = 1.0 - uv.x;
   float swHz = clamp(2.6 * pow(60.0 / swLen, 0.35), 1.1, 3.4);
   float swPh = dot(modelMatrix[3].xz, vec2(0.0173, 0.0291));
-  float swE = smoothstep(0.2, 1.0, swS); swE *= sqrt(swE);
+  float swE = smoothstep(0.32, 1.0, swS); swE *= sqrt(swE); // the head (front ~third: snout, eye, gill cover) stays rigid; only the aft body flexes (Nathan 2026-11-25)
   float swG = 0.78 + 0.22 * sin(uSwim.x * 0.37 + swPh * 1.7);
   float swW = 6.2832 * swHz * uSwim.x + swPh - 5.0 * swS;
   float swHd = smoothstep(0.72, 1.0, uv.x), swMo = smoothstep(0.9, 1.0, uv.x), swBr = sin(6.2832 * 1.5 * uSwim.x + swPh * 3.0);

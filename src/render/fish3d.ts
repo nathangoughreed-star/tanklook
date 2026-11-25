@@ -742,7 +742,10 @@ function projGeometry(g: THREE.BufferGeometry, kind: 'top' | 'front', L: ProjLay
   }
   const o = new THREE.BufferGeometry();
   o.setAttribute('position', pos); o.setAttribute('normal', nor); o.setAttribute('aSwL', g.attributes.aSwL);
-  o.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); o.setAttribute('color', new THREE.BufferAttribute(c4, 4));
+  // the image's coordinates go in uv1 (the texture reads channel 1); uv stays the body's own (x: 0 tail .. 1 nose), which the swim
+  // wave reads (swim.ts SWIM_VERT). The front layer's projected uv.x runs ACROSS the fish, so it swayed the face as if it sat
+  // mid-body while the snout under it held still (Nathan 2026-11-25: 'the head wags ... weird with the static 2d overlay')
+  o.setAttribute('uv', g.attributes.uv); o.setAttribute('uv1', new THREE.BufferAttribute(uv, 2)); o.setAttribute('color', new THREE.BufferAttribute(c4, 4));
   o.setIndex(g.index); o.userData.keep = true;
   return o;
 }
@@ -773,7 +776,7 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     const L = pa[kind]; if (!L) continue;
     const gk = `${key}|proj|${kind}`; let pg = projGeoCache.get(gk); if (!pg) { pg = projGeometry(g, kind, L); projGeoCache.set(gk, pg); }
     const m = new THREE.Mesh(pg, fishMat(`proj:${kind}:${art}`, () => {
-      const t = new THREE.CanvasTexture(L.img as HTMLCanvasElement); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+      const t = new THREE.CanvasTexture(L.img as HTMLCanvasElement); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; t.channel = 1; // projected coords (projGeometry uv1)
       const pm = new THREE.MeshBasicMaterial({ map: t, vertexColors: true, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
       pm.userData.swim = true; return pm;
     }));
