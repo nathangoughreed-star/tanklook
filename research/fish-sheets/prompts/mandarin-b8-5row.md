@@ -178,4 +178,4 @@ Before finalizing the sheet, check these relationships:
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://commons.wikimedia.org/wiki/File:Synchiropus_splendidus_2_Luc_Viatour.jpg; https://en.wikipedia.org/wiki/Synchiropus_splendidus. What it decided: eye red; striped anal/caudal; transparent pectoral. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen and OK as written (status session, Commons photos). Earlier text sources: https://commons.wikimedia.org/wiki/File:Synchiropus_splendidus_2_Luc_Viatour.jpg; https://en.wikipedia.org/wiki/Synchiropus_splendidus. What it decided: eye red; striped anal/caudal; transparent pectoral. -->

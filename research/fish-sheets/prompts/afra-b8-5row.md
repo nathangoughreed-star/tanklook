@@ -49,7 +49,7 @@ Important: The front and top views must reflect this moderately compressed anato
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-Adult male colouring. The body is light blue-grey, with six dark blue-black vertical bars on the flank and one bar through the eye. The belly is pale blue. The dorsal fin is bright yellow.
+Adult male colouring. The body is light blue-grey, with six dark blue-black vertical bars on the flank and one bar through the eye. The head and nape are washed with yellow, joining the yellow dorsal fin. The belly is pale blue. The dorsal fin is bright yellow.
 
 Eye: pale blue with a dark pupil.
 
@@ -176,4 +176,4 @@ Before finalizing the sheet, check these relationships:
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict OK; text-only. Sources: https://en.wikipedia.org/wiki/Cynotilapia_afra (C_afra.jpg, Cobue male); https://seriouslyfish.com/species/cynotilapia-afra. What it decided: yellow dorsal is the Jalo form; other populations have bars continuing into the dorsal. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen by the status session, Commons file C_afra.jpg. Earlier text sources: https://en.wikipedia.org/wiki/Cynotilapia_afra (C_afra.jpg, Cobue male); https://seriouslyfish.com/species/cynotilapia-afra. What it decided: yellow dorsal is the Jalo form; other populations have bars continuing into the dorsal. -->

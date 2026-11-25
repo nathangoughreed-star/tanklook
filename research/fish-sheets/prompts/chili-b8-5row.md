@@ -48,7 +48,7 @@ Important: The front and top views must reflect this laterally compressed anatom
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The body is bright red, paler on the belly, with a short dark stripe along the flank that is often broken. There is no distinct spot at the base of the caudal fin.
+The body is bright red, paler on the belly, with a short dark stripe along the flank that is often broken, and a thin iridescent green-turquoise line along the upper edge of the stripe. There is no distinct spot at the base of the caudal fin.
 
 Eye: gold with a dark pupil.
 
@@ -56,9 +56,9 @@ Color boundaries must wrap continuously over the three-dimensional body, remaini
 FIN GEOMETRY
 Attach the fins to the established master body without modifying its shape.
 
-* Dorsal: One short, rounded fin set far back on the body, over the pelvic fin base. Red, with a dark edge. Drawn opaque.
-* Anal: Short and rounded, under the rear of the dorsal. Red, with a dark edge. Drawn opaque.
-* Caudal: Forked, with rounded lobes of equal length. Translucent red. Drawn opaque.
+* Dorsal: One short, rounded fin set far back on the body, over the pelvic fin base. Red with black marks. Drawn opaque.
+* Anal: Short and rounded, under the rear of the dorsal. Red with black marks. Drawn opaque.
+* Caudal: Forked, with rounded lobes of equal length. Translucent red with black marks. Drawn opaque.
 * Pectoral: Tiny, emerging behind the gill cover, naturally folded close against the flank. Clear. Drawn opaque.
 * Pelvic: Tiny, pointed, below the pectoral base. Clear. Drawn opaque.
 * No adipose fin.
@@ -175,4 +175,4 @@ Before finalizing the sheet, check these relationships:
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://seriouslyfish.com/species/boraras-brigittae; https://en.wikipedia.org/wiki/Boraras_brigittae. What it decided: no caudal-base spot; short broken stripe. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen by the status session, Commons file Boraras-brigittae-3191524164.jpg. Earlier text sources: https://seriouslyfish.com/species/boraras-brigittae; https://en.wikipedia.org/wiki/Boraras_brigittae. What it decided: no caudal-base spot; short broken stripe. -->

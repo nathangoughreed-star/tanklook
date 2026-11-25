@@ -49,7 +49,7 @@ Important: The front and top views must reflect this moderately compressed anato
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-Adult male colouring. The body is silver-blue to pale bronze, with large, irregular dark brown blotches scattered over the flank and head, like a giraffe pattern; the blotches are in no regular row. The belly is pale.
+Adult male colouring. The body is silver-blue to pale bronze, with large, irregular dark brown blotches scattered over the flank and head, like a giraffe pattern; the blotches are in no regular row. The head has a faint blue tint. The belly is pale.
 
 Eye: gold with a dark pupil.
 
@@ -61,7 +61,7 @@ Attach the fins to the established master body without modifying its shape.
 * Anal: Starts under the middle of the body, spiny rays in front and a rounded soft part behind. Orange to red, with a few brown marks. Drawn opaque.
 * Caudal: Rounded, with a straight trailing edge. Blue-grey with faint brown marks. Drawn opaque.
 * Pectoral: Emerging behind the gill cover, rounded, naturally folded close against the flank. Clear. Drawn opaque.
-* Pelvic: Pointed, below the pectoral base. Blue-grey. Drawn opaque.
+* Pelvic: Pointed, below the pectoral base. Orange-red. Drawn opaque.
 * No adipose fin.
 
 Use natural fin-ray structure and smooth, anatomically accurate edges. Fins are opaque and not translucent.
@@ -176,4 +176,4 @@ Before finalizing the sheet, check these relationships:
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://en.wikipedia.org/wiki/Nimbochromis_livingstonii (Adult_male_livingstonii.png). What it decided: anal fin orange to red. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen by the status session, Commons file Adult_male_livingstonii.png. Earlier text sources: https://en.wikipedia.org/wiki/Nimbochromis_livingstonii (Adult_male_livingstonii.png). What it decided: anal fin orange to red. -->

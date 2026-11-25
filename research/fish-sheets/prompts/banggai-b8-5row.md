@@ -178,4 +178,4 @@ Before finalizing the sheet, check these relationships:
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED (depth); text-only. Sources: https://en.wikipedia.org/wiki/Banggai_cardinalfish; Koumans 1933 (repository.naturalis.nl/pub/318030); https://commons.wikimedia.org/wiki/File:Pterapogon_kauderni.jpg. What it decided: depth set to 42 % SL (sources 40-50 %); colours/bars OK. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen and OK as written (status session, Commons photos). Earlier text sources: https://en.wikipedia.org/wiki/Banggai_cardinalfish; Koumans 1933 (repository.naturalis.nl/pub/318030); https://commons.wikimedia.org/wiki/File:Pterapogon_kauderni.jpg. What it decided: depth set to 42 % SL (sources 40-50 %); colours/bars OK. -->

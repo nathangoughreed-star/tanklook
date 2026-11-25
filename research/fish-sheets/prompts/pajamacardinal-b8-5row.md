@@ -49,7 +49,7 @@ Important: The front and top views must reflect this laterally compressed anatom
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The head and front of the body are greenish-yellow. The body is silver, each scale edged with a bold black margin. A broad, dark vertical band crosses the body behind the head. The rear body carries scattered red-orange spots.
+The head and front of the body are greenish-yellow. A broad, dark vertical band crosses the body behind the head, below the first dorsal fin, and the scales inside this band have black edges. The rear body is silver-white with scattered orange-brown polka dots.
 
 Eye: bright red-orange with a dark pupil.
 
@@ -89,7 +89,7 @@ This is a subtraction operation, not a new drawing of a finless fish.
 * Do not expand the body to replace the removed dorsal or anal fins.
 * Do not round or taper the caudal peduncle into a point.
 * End the peduncle at the original caudal-fin attachment with a short vertical edge.
-* Preserve the eyes, mouth, gill covers, the dark vertical band behind the head, the black-edged scales and the red-orange spots on the rear body.
+* Preserve the eyes, mouth, gill covers, the dark vertical band with black-edged scales behind the head and the orange-brown polka dots on the silver-white rear body.
 * Continue the natural body coloration beneath the removed pectoral fin.
 
 The body surface in row 2 must correspond exactly to the body surface in row 1.
@@ -173,9 +173,9 @@ Before finalizing the sheet, check these relationships:
 3. Rows 2 and 3 have identical snout-to-peduncle lengths and horizontally aligned endpoints.
 4. The front-view body width agrees with the top-view maximum body width.
 5. Every fin is attached at the same anatomical location in the illustrated view and its corresponding segmentation map.
-6. The characteristic greenish-yellow head, silver body with black scale edges and a dark band remains consistent across all realistic projections.
+6. The characteristic greenish-yellow head, dark band, silver-white rear body with orange-brown dots remains consistent across all realistic projections.
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://commons.wikimedia.org/wiki/File:Sphaeramia_nematoptera_Pajama_Cardinalfish.jpg; https://en.wikipedia.org/wiki/Pajama_cardinalfish. What it decided: greenish-yellow head, black-edged scales; no band through the eye. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen by the status session, Commons file Sphaeramia_nematoptera_Pajama_Cardinalfish.jpg. Earlier text sources: https://commons.wikimedia.org/wiki/File:Sphaeramia_nematoptera_Pajama_Cardinalfish.jpg; https://en.wikipedia.org/wiki/Pajama_cardinalfish. What it decided: greenish-yellow head, black-edged scales; no band through the eye. -->

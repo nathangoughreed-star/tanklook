@@ -48,7 +48,7 @@ Important: The front and top views must reflect this laterally compressed anatom
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The body is translucent amber-orange, paler on the belly. A thin black stripe runs along the middle of the flank from behind the gill cover to the caudal peduncle, and ends in a round black spot at the base of the caudal fin, so the stripe and spot together look like an exclamation mark lying on its side.
+The body is translucent amber-orange, paler on the belly. A thin orange-red line runs just above a thin black stripe. The black stripe runs along the middle of the flank from behind the gill cover to the caudal peduncle, and ends in a round black spot at the base of the caudal fin, so the stripe and spot together look like an exclamation mark lying on its side.
 
 Eye: gold with a dark pupil.
 
@@ -175,4 +175,4 @@ Before finalizing the sheet, check these relationships:
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict OK; text-only. Sources: https://seriouslyfish.com/species/boraras-urophthalmoides; https://en.wikipedia.org/wiki/Boraras_urophthalmoides. What it decided: stripe + peduncle blotch confirmed. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen by the status session, Commons file LK-ซิวหนู.jpg (infobox of Boraras urophthalmoides). Earlier text sources: https://seriouslyfish.com/species/boraras-urophthalmoides; https://en.wikipedia.org/wiki/Boraras_urophthalmoides. What it decided: stripe + peduncle blotch confirmed. -->

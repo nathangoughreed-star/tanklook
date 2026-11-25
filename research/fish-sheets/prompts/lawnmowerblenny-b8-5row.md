@@ -177,4 +177,4 @@ Before finalizing the sheet, check these relationships:
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://commons.wikimedia.org/wiki/File:Salarias_fasciatus_Aquarium_DG.jpg; https://en.wikipedia.org/wiki/Salarias_fasciatus. What it decided: dark bars, white spots, few blue spots; dorsal has no notch. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen and OK as written (status session, Commons photos). Earlier text sources: https://commons.wikimedia.org/wiki/File:Salarias_fasciatus_Aquarium_DG.jpg; https://en.wikipedia.org/wiki/Salarias_fasciatus. What it decided: dark bars, white spots, few blue spots; dorsal has no notch. -->

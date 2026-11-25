@@ -49,7 +49,7 @@ Important: The front and top views must reflect this nearly round, flattened bel
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The body is dark olive-brown to grey-brown on the back and flank, covered with a pattern of dark brown spots and fine wavy dark lines that run over the body, head and fins. The belly is pale grey-brown with a vermiculated pattern.
+The body is a lighter tan-brown, covered with dense, round, dark-brown spots like a leopard, over the body, the head and all the fins, including the sail-like dorsal fin. The belly is pale yellow-grey with dark spots.
 
 Eye: dark brown with a gold iris edge.
 
@@ -57,11 +57,11 @@ Color boundaries must wrap continuously over the three-dimensional body, remaini
 FIN GEOMETRY
 Attach the fins to the established master body without modifying its shape.
 
-* Dorsal: One tall, sail-like fin on the middle of the back with a stout front spine and a slanting top edge. Olive-brown with dark spots. Drawn opaque.
-* Anal: Starts under the rear of the dorsal fin, small and rounded. Olive-brown. Drawn opaque.
-* Caudal: Forked, with a longer lower lobe than the upper lobe. Olive-brown with dark spots. Drawn opaque.
-* Pectoral: Emerging behind the gill cover, broad and rounded, with a stout front spine, naturally folded close against the flank. Olive-brown with dark spots. Drawn opaque.
-* Pelvic: Broad and rounded, below the dorsal origin. Olive-brown with dark spots. Drawn opaque.
+* Dorsal: One tall, sail-like fin on the middle of the back with a stout front spine and a slanting top edge. Tan-brown with dense dark spots. Drawn opaque.
+* Anal: Starts under the rear of the dorsal fin, small and rounded. Tan-brown with dense dark spots. Drawn opaque.
+* Caudal: Forked, with a longer lower lobe than the upper lobe. Tan-brown with dense dark spots. Drawn opaque.
+* Pectoral: Emerging behind the gill cover, broad and rounded, with a stout front spine, naturally folded close against the flank. Tan-brown with dense dark spots. Drawn opaque.
+* Pelvic: Broad and rounded, below the dorsal origin. Tan-brown with dense dark spots. Drawn opaque.
 * Adipose fin: A small fleshy lobe on the back between the dorsal fin and the caudal fin, olive-brown.
 
 Use natural fin-ray structure and smooth, anatomically accurate edges. Fins are opaque and not translucent.
@@ -88,7 +88,7 @@ This is a subtraction operation, not a new drawing of a finless fish.
 * Do not expand the body to replace the removed dorsal or anal fins.
 * Do not round or taper the caudal peduncle into a point.
 * End the peduncle at the original caudal-fin attachment with a short vertical edge.
-* Preserve the eyes, mouth, gill covers, the olive-brown body with dark spots and wavy lines.
+* Preserve the eyes, mouth, gill covers, the tan-brown body with dense round dark-brown leopard spots.
 * Continue the natural body coloration beneath the removed pectoral fin.
 
 The body surface in row 2 must correspond exactly to the body surface in row 1.
@@ -103,7 +103,7 @@ Do not make the body spindle-shaped or excessively thick; the head is the widest
 
 Eyes may be slightly visible along the sides of the head.
 
-Show the actual dorsal coloration and the dark olive back with dark spots.
+Show the actual dorsal coloration and the tan back with dark-brown spots.
 
 No fins or fin remnants.
 ROW 4 LEFT — FRONT VIEW, FINS REMOVED
@@ -172,9 +172,9 @@ Before finalizing the sheet, check these relationships:
 3. Rows 2 and 3 have identical snout-to-peduncle lengths and horizontally aligned endpoints.
 4. The front-view body width agrees with the top-view maximum body width.
 5. Every fin is attached at the same anatomical location in the illustrated view and its corresponding segmentation map.
-6. The characteristic olive-brown body with dark spots and wavy lines remains consistent across all realistic projections.
+6. The characteristic tan-brown body with dense dark-brown spots remains consistent across all realistic projections.
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict UNVERIFIED; text-only. Sources: https://en.wikipedia.org/wiki/Pterygoplichthys_pardalis; scotcat.com Loricariidae. What it decided: belly pattern depends on species (spotted in P. pardalis; vermiculated kept for Hypostomus); Nathan to confirm which fish he means. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen by the status session, Commons file 2004-02-02_Pterygoplichthys_pardalis_on_blue_gravel.jpg. Earlier text sources: https://en.wikipedia.org/wiki/Pterygoplichthys_pardalis; scotcat.com Loricariidae. What it decided: belly pattern depends on species (spotted in P. pardalis; vermiculated kept for Hypostomus); Nathan to confirm which fish he means. -->

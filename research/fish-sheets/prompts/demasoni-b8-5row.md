@@ -49,7 +49,7 @@ Important: The front and top views must reflect this moderately compressed anato
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The body is mid-blue, paler blue-white between the bars. Eight to ten dark blue-black vertical bars cross the body from the back down the flank, and one bar crosses the head through the eye. The bars are narrower than the paler spaces between them. The belly is pale blue-white.
+The body is pale blue. Six to seven broad, dark blue-black vertical bars cross the body from the back down the flank, as wide as or wider than the bright pale-blue bars between them. The head is barred too, with bars between the eye and the snout. The belly is pale blue-white.
 
 Eye: pale blue with a dark pupil.
 
@@ -57,7 +57,7 @@ Color boundaries must wrap continuously over the three-dimensional body, remaini
 FIN GEOMETRY
 Attach the fins to the established master body without modifying its shape.
 
-* Dorsal: One continuous fin from the nape to the caudal peduncle: spiny rays in front forming a low straight edge, soft rays behind rising to a rounded point. Pale blue with dark vertical bar marks continuing from the body. Drawn opaque.
+* Dorsal: One continuous fin from the nape to the caudal peduncle: spiny rays in front forming a low straight edge, soft rays behind rising to a rounded point. Blue with dark bands continuing from the body bars. Drawn opaque.
 * Anal: Starts under the middle of the body, spiny rays in front and a rounded soft part behind. Pale blue with a few dark bar marks. Drawn opaque.
 * Caudal: Rounded, with a straight trailing edge. Pale blue with a few dark bar marks. Drawn opaque.
 * Pectoral: Emerging behind the gill cover, rounded, naturally folded close against the flank. Clear. Drawn opaque.
@@ -88,7 +88,7 @@ This is a subtraction operation, not a new drawing of a finless fish.
 * Do not expand the body to replace the removed dorsal or anal fins.
 * Do not round or taper the caudal peduncle into a point.
 * End the peduncle at the original caudal-fin attachment with a short vertical edge.
-* Preserve the eyes, mouth, gill covers, the dark vertical bars on the pale blue body.
+* Preserve the eyes, mouth, gill covers, the broad dark vertical bars on the pale blue body, including the head.
 * Continue the natural body coloration beneath the removed pectoral fin.
 
 The body surface in row 2 must correspond exactly to the body surface in row 1.
@@ -171,9 +171,9 @@ Before finalizing the sheet, check these relationships:
 3. Rows 2 and 3 have identical snout-to-peduncle lengths and horizontally aligned endpoints.
 4. The front-view body width agrees with the top-view maximum body width.
 5. Every fin is attached at the same anatomical location in the illustrated view and its corresponding segmentation map.
-6. The characteristic mid-blue body with dark vertical bars remains consistent across all realistic projections.
+6. The characteristic pale blue body with broad dark vertical bars remains consistent across all realistic projections.
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://en.wikipedia.org/wiki/Chindongo_demasoni; https://seriouslyfish.com/species/pseudotropheus-demasoni. What it decided: mid-blue body, not pale sky blue. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen by the status session, Commons file Pseudotropheus_demasoni.jpg. Earlier text sources: https://en.wikipedia.org/wiki/Chindongo_demasoni; https://seriouslyfish.com/species/pseudotropheus-demasoni. What it decided: mid-blue body, not pale sky blue. -->

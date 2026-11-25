@@ -176,4 +176,4 @@ Before finalizing the sheet, check these relationships:
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; photo-seen (one small Commons infobox image: blue head, golden flank, dark fins). Sources: https://commons.wikimedia.org/wiki/File:Copadichromis_borleyi2.jpg; https://en.wikipedia.org/wiki/Copadichromis_borleyi; thatpetplace.com redfin kandango. What it decided: male flank red-maroon, head metallic blue, dorsal/anal dark with light-blue edge (was steel-blue body, red fins). Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen and OK as written (status session, Commons photos). Earlier text sources: https://commons.wikimedia.org/wiki/File:Copadichromis_borleyi2.jpg; https://en.wikipedia.org/wiki/Copadichromis_borleyi; thatpetplace.com redfin kandango. What it decided: male flank red-maroon, head metallic blue, dorsal/anal dark with light-blue edge (was steel-blue body, red fins). -->

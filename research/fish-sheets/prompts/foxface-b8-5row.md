@@ -176,4 +176,4 @@ Before finalizing the sheet, check these relationships:
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://commons.wikimedia.org/wiki/File:Siganus_vulpinus_2.jpg; https://en.wikipedia.org/wiki/Foxface_rabbitfish. What it decided: black band mouth-eye-dorsal start and black breast; no black back patch. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen and OK as written (status session, Commons photos). Earlier text sources: https://commons.wikimedia.org/wiki/File:Siganus_vulpinus_2.jpg; https://en.wikipedia.org/wiki/Foxface_rabbitfish. What it decided: black band mouth-eye-dorsal start and black breast; no black back patch. -->

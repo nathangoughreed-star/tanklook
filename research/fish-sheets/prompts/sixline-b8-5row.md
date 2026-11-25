@@ -49,7 +49,7 @@ Important: The front and top views must reflect this laterally compressed anatom
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The body is deep violet-purple to magenta, paler on the belly, with six thin, bright orange-yellow horizontal lines running from the head along the flank to the tail, and a thin orange line through the eye. A small dark spot sits at the base of the tail on the upper side.
+The body is lavender-purple, with alternating thin orange and blue-violet horizontal stripes running from the head along the flank to the rear. The head is orange-pink, and the stripes continue across it. A small dark spot sits at the base of the tail on the upper side.
 
 Eye: red with a dark pupil.
 
@@ -59,7 +59,7 @@ Attach the fins to the established master body without modifying its shape.
 
 * Dorsal: One long, continuous fin from the nape to the caudal peduncle, low in front and rising to a rounded rear. Purple-orange. Drawn opaque.
 * Anal: Starts under the middle of the body, with a rounded rear. Purple-orange with a blue stripe along the base. Drawn opaque.
-* Caudal: Rounded, with a straight trailing edge. Purple-orange with an orange edge. Drawn opaque.
+* Caudal: Rounded, with a straight trailing edge. Green. Drawn opaque.
 * Pectoral: Emerging behind the gill cover, rounded, naturally folded close against the flank. Clear. Drawn opaque.
 * Pelvic: Pointed, below the pectoral base. Purple with a blue streak. Drawn opaque.
 * No adipose fin.
@@ -88,7 +88,7 @@ This is a subtraction operation, not a new drawing of a finless fish.
 * Do not expand the body to replace the removed dorsal or anal fins.
 * Do not round or taper the caudal peduncle into a point.
 * End the peduncle at the original caudal-fin attachment with a short vertical edge.
-* Preserve the eyes, mouth, gill covers, the violet-purple body with the six orange-yellow horizontal lines.
+* Preserve the eyes, mouth, gill covers, the lavender-purple body with alternating thin orange and blue-violet horizontal stripes and the orange-pink head.
 * Continue the natural body coloration beneath the removed pectoral fin.
 
 The body surface in row 2 must correspond exactly to the body surface in row 1.
@@ -171,9 +171,9 @@ Before finalizing the sheet, check these relationships:
 3. Rows 2 and 3 have identical snout-to-peduncle lengths and horizontally aligned endpoints.
 4. The front-view body width agrees with the top-view maximum body width.
 5. Every fin is attached at the same anatomical location in the illustrated view and its corresponding segmentation map.
-6. The characteristic violet body with six orange horizontal lines remains consistent across all realistic projections.
+6. The characteristic lavender body with orange and blue-violet stripes remains consistent across all realistic projections.
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://en.wikipedia.org/wiki/Pseudocheilinus_hexataenia. What it decided: eye red; blue stripe on anal base, blue streak on pelvic. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen by the status session, Commons file Six_Line_Wrasse_-_Pseudocheilinus_hexataenia_(cropped).jpg. Earlier text sources: https://en.wikipedia.org/wiki/Pseudocheilinus_hexataenia. What it decided: eye red; blue stripe on anal base, blue streak on pelvic. -->

@@ -48,7 +48,7 @@ Important: The front and top views must reflect this moderately compressed anato
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The body is grey-brown to dark grey above, paler grey-cream on the belly, with scattered round dark brown spots over the body, head and fins.
+The body is pale tan-cream, paler on the belly, with round dark brown-black spots over the body, the head and the fins, larger on the flank. The edges of the fins are pale.
 
 Eye: dark with a gold ring.
 
@@ -56,11 +56,11 @@ Color boundaries must wrap continuously over the three-dimensional body, remaini
 FIN GEOMETRY
 Attach the fins to the established master body without modifying its shape.
 
-* Dorsal: One tall, triangular fin on the shoulder, with a stout, straight front spine and a slanting top edge. Grey-brown with dark spots. Drawn opaque.
-* Anal: Short and rounded, near the tail. Grey-brown with dark spots. Drawn opaque.
-* Caudal: Deeply forked with pointed lobes. Grey-brown with dark spots. Drawn opaque.
-* Pectoral: Emerging behind the gill cover, with a stout, serrated front spine, naturally folded close against the flank. Grey-brown. Drawn opaque.
-* Pelvic: Small and rounded, below the rear of the dorsal. Grey-brown. Drawn opaque.
+* Dorsal: One tall, triangular fin on the shoulder, with a stout, straight front spine and a slanting top edge. Pale tan-cream with dark spots and a pale edge. Drawn opaque.
+* Anal: Short and rounded, near the tail. Pale tan-cream with dark spots and a pale edge. Drawn opaque.
+* Caudal: Deeply forked with pointed lobes. Pale tan-cream with dark spots and a pale edge. Drawn opaque.
+* Pectoral: Emerging behind the gill cover, with a stout, serrated front spine, naturally folded close against the flank. Pale tan-cream. Drawn opaque.
+* Pelvic: Small and rounded, below the rear of the dorsal. Pale tan-cream. Drawn opaque.
 * Adipose fin: A long, low fleshy fin on the back between the dorsal fin and the caudal fin, grey-brown with dark spots.
 
 Use natural fin-ray structure and smooth, anatomically accurate edges. Fins are opaque and not translucent.
@@ -87,7 +87,7 @@ This is a subtraction operation, not a new drawing of a finless fish.
 * Do not expand the body to replace the removed dorsal or anal fins.
 * Do not round or taper the caudal peduncle into a point.
 * End the peduncle at the original caudal-fin attachment with a short vertical edge.
-* Preserve the eyes, mouth, gill covers, the grey-brown body with round dark spots.
+* Preserve the eyes, mouth, gill covers, the pale tan-cream body with round dark brown-black spots.
 * Continue the natural body coloration beneath the removed pectoral fin.
 
 The body surface in row 2 must correspond exactly to the body surface in row 1.
@@ -102,7 +102,7 @@ Do not make the body spindle-shaped or excessively thick.
 
 Eyes may be slightly visible along the sides of the head.
 
-Show the actual dorsal coloration and the grey-brown back with dark spots.
+Show the actual dorsal coloration and the pale tan back with dark spots.
 
 No fins or fin remnants.
 ROW 4 LEFT — FRONT VIEW, FINS REMOVED
@@ -171,9 +171,9 @@ Before finalizing the sheet, check these relationships:
 3. Rows 2 and 3 have identical snout-to-peduncle lengths and horizontally aligned endpoints.
 4. The front-view body width agrees with the top-view maximum body width.
 5. Every fin is attached at the same anatomical location in the illustrated view and its corresponding segmentation map.
-6. The characteristic grey-brown body with dark spots remains consistent across all realistic projections.
+6. The characteristic pale tan-cream body with dark round spots remains consistent across all realistic projections.
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict UNVERIFIED; text-only. Sources: https://en.wikipedia.org/wiki/Synodontis_njassae. What it decided: no colour text found; check a photo. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen by the status session, Commons file Synodontis_njassae_01_ssj_20050321.jpg. Earlier text sources: https://en.wikipedia.org/wiki/Synodontis_njassae. What it decided: no colour text found; check a photo. -->

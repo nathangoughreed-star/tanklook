@@ -50,3 +50,9 @@ Done by three Sonnet subagents reading Wikipedia / Commons / Seriously Fish / mu
 Changed: merah, chili, demasoni, kadango, livingstonii (anal), firefish, sixline, koletang, foxface, lawnmowerblenny, pajamacardinal, coralbeauty, mandarin, watchman (small), banggai (depth 42 % SL, hand-set in `fishshapes.json`; was 36).
 OK as written: exclamation, afra (yellow dorsal = Jalo form), yellowtailblue. Unverified, left as is: clownpleco, syno; pleco belly depends on which species Nathan means (spotted = P. pardalis, vermiculated kept for Hypostomus).
 Before the sheet runs, a photo look at the text-only fish is still owed (PIPELINE step 2).
+
+## Photo pass (2026-11-25, status session, Commons photos; supersedes the text-only note above)
+All fish are now photo-seen except clownpleco (photo too dark: text-only, flag at sheet review). Corrected from photos: demasoni (six to seven broad bars, barred head), merah (one mid-flank blotch, red-orange lower line, red gill cover),
+coralbeauty (orange-red centre with thin dark blue-purple bars, all fins deep blue-purple), yellowtailblue (yellow only on the caudal end; dorsal/anal blue), sixline (lavender body, alternating orange/blue-violet stripes, green caudal),
+chili (green-turquoise line above the stripe, black marks on fins), exclamation (orange-red line above the stripe), afra (yellow wash on head and nape), livingstonii (orange-red pelvic, faint blue head), pleco (dense leopard spots, from a
+P. pardalis photo), syno (pale tan-cream base), pajamacardinal (black scale edges only inside the band). Photo-seen and OK: banggai, foxface, firefish, lawnmowerblenny, watchman, mandarin, koletang, kadango.

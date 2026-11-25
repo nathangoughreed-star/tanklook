@@ -50,7 +50,7 @@ Important: The front and top views must reflect this laterally compressed anatom
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The body is an electric, deep sky-blue over the whole head and body, with a darker blue back. The rear of the body and the tail fin are bright yellow, the colour changing from blue to yellow at the end of the dorsal fin base.
+The whole head and body are electric blue, with a darker blue back. The yellow begins at the very end of the caudal peduncle and covers the caudal fin.
 
 Eye: dark with a pale blue ring.
 
@@ -58,11 +58,11 @@ Color boundaries must wrap continuously over the three-dimensional body, remaini
 FIN GEOMETRY
 Attach the fins to the established master body without modifying its shape.
 
-* Dorsal: One continuous fin from the nape to the caudal peduncle, with two parts joined at the base: a spiny front part with a straight edge, a shallow notch, and then a soft rear part with a rounded tip. Blue in front, yellow at the rear. Drawn opaque.
-* Anal: Starts under the middle of the body, with a rounded soft part. Blue with a yellow rear. Drawn opaque.
+* Dorsal: One continuous fin from the nape to the caudal peduncle, with two parts joined at the base: a spiny front part with a straight edge, a shallow notch, and then a soft rear part with a rounded tip. Electric blue. Drawn opaque.
+* Anal: Starts under the middle of the body, with a rounded soft part. Electric blue. Drawn opaque.
 * Caudal: Slightly forked to nearly straight. Bright yellow. Drawn opaque.
 * Pectoral: Emerging behind the gill cover, naturally folded close against the flank. Clear. Drawn opaque.
-* Pelvic: Pointed, below the pectoral base. Blue. Drawn opaque.
+* Pelvic: Pointed, below the pectoral base. Electric blue. Drawn opaque.
 * No adipose fin.
 
 Use natural fin-ray structure and smooth, anatomically accurate edges. Fins are opaque and not translucent.
@@ -89,7 +89,7 @@ This is a subtraction operation, not a new drawing of a finless fish.
 * Do not expand the body to replace the removed dorsal or anal fins.
 * Do not round or taper the caudal peduncle into a point.
 * End the peduncle at the original caudal-fin attachment with a short vertical edge.
-* Preserve the eyes, mouth, gill covers, the electric blue body and the yellow rear body.
+* Preserve the eyes, mouth, gill covers, the electric blue head and body.
 * Continue the natural body coloration beneath the removed pectoral fin.
 
 The body surface in row 2 must correspond exactly to the body surface in row 1.
@@ -172,9 +172,9 @@ Before finalizing the sheet, check these relationships:
 3. Rows 2 and 3 have identical snout-to-peduncle lengths and horizontally aligned endpoints.
 4. The front-view body width agrees with the top-view maximum body width.
 5. Every fin is attached at the same anatomical location in the illustrated view and its corresponding segmentation map.
-6. The characteristic blue body with a yellow rear remains consistent across all realistic projections.
+6. The characteristic electric blue body with a yellow rear end remains consistent across all realistic projections.
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict OK; text-only. Sources: https://commons.wikimedia.org/wiki/File:Chrysiptera_parasema.JPG; https://en.wikipedia.org/wiki/Chrysiptera_parasema. What it decided: yellow may extend onto rear of dorsal/anal; never back or belly. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen by the status session, Commons file Chrysiptera_parasema.JPG. Earlier text sources: https://commons.wikimedia.org/wiki/File:Chrysiptera_parasema.JPG; https://en.wikipedia.org/wiki/Chrysiptera_parasema. What it decided: yellow may extend onto rear of dorsal/anal; never back or belly. -->

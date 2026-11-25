@@ -177,4 +177,4 @@ Before finalizing the sheet, check these relationships:
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict UNVERIFIED; text-only. Sources: https://commons.wikimedia.org/wiki/File:Panaqolus_maccus.jpg; https://en.wikipedia.org/wiki/Panaque_maccus. What it decided: no source confirms the bands/orange fin edge; check a photo. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): text-only: photo too dark to judge; flag at sheet review. Earlier text sources: https://commons.wikimedia.org/wiki/File:Panaqolus_maccus.jpg; https://en.wikipedia.org/wiki/Panaque_maccus. What it decided: no source confirms the bands/orange fin edge; check a photo. -->

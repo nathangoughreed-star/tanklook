@@ -50,7 +50,7 @@ Important: The front and top views must reflect this laterally compressed anatom
 MASTER COLORATION
 Natural colouring, slightly subdued, not saturated.
 
-The head is blue-purple. The body is dark purplish-blue above, with an orange-to-yellow centre and flanks crossed by irregular orange vertical bars and blue lines or spots.
+The centre of the body is orange-red, crossed by many thin, dark blue-purple vertical bars. The head, the back and the lower edge of the body are deep blue-purple.
 
 Eye: dark with a gold ring.
 
@@ -58,11 +58,11 @@ Color boundaries must wrap continuously over the three-dimensional body, remaini
 FIN GEOMETRY
 Attach the fins to the established master body without modifying its shape.
 
-* Dorsal: One continuous fin from the nape to the caudal peduncle: stiff spines in front forming a straight edge, soft rays behind forming a rounded point. Blue-purple with a bright blue margin. Drawn opaque.
-* Anal: Starts under the middle of the body, with a rounded, pointed rear. Blue-purple with a bright blue margin. Drawn opaque.
-* Caudal: Rounded. Blue-purple with a bright blue margin. Drawn opaque.
+* Dorsal: One continuous fin from the nape to the caudal peduncle: stiff spines in front forming a straight edge, soft rays behind forming a rounded point. Deep blue-purple. Drawn opaque.
+* Anal: Starts under the middle of the body, with a rounded, pointed rear. Deep blue-purple. Drawn opaque.
+* Caudal: Rounded. Deep blue-purple. Drawn opaque.
 * Pectoral: Emerging behind the gill cover, rounded, naturally folded close against the flank. Clear. Drawn opaque.
-* Pelvic: Pointed, below the pectoral base. Orange. Drawn opaque.
+* Pelvic: Pointed, below the pectoral base. Deep blue-purple. Drawn opaque.
 * No adipose fin.
 
 Use natural fin-ray structure and smooth, anatomically accurate edges. Fins are opaque and not translucent.
@@ -89,7 +89,7 @@ This is a subtraction operation, not a new drawing of a finless fish.
 * Do not expand the body to replace the removed dorsal or anal fins.
 * Do not round or taper the caudal peduncle into a point.
 * End the peduncle at the original caudal-fin attachment with a short vertical edge.
-* Preserve the eyes, mouth, gill covers, the blue-purple head and upper body with orange vertical bars and blue lines on the flank.
+* Preserve the eyes, mouth, gill covers, the orange-red body centre crossed by thin dark blue-purple vertical bars, with the deep blue-purple head and back.
 * Continue the natural body coloration beneath the removed pectoral fin.
 
 The body surface in row 2 must correspond exactly to the body surface in row 1.
@@ -172,9 +172,9 @@ Before finalizing the sheet, check these relationships:
 3. Rows 2 and 3 have identical snout-to-peduncle lengths and horizontally aligned endpoints.
 4. The front-view body width agrees with the top-view maximum body width.
 5. Every fin is attached at the same anatomical location in the illustrated view and its corresponding segmentation map.
-6. The characteristic purple-blue head and back, orange flank with bars remains consistent across all realistic projections.
+6. The characteristic orange-red centre with thin blue-purple bars, deep blue-purple head and back remains consistent across all realistic projections.
 7. All views are at the same physical scale.
 
 Do not sacrifice cross-view geometric consistency to improve the visual appearance of any individual panel.
 
-<!-- Reference check 2026-11-25 (b8 colours, Nathan: "check colours"): verdict CHANGED; text-only. Sources: https://commons.wikimedia.org/wiki/File:Centropyge_bispinosa_1.jpg; australian.museum coral-beauty page; https://en.wikipedia.org/wiki/Centropyge_bispinosa. What it decided: blue-purple head/back, orange flank bars, blue-margined fins. Text-only = judged from page text, photo pixels not seen. -->
+<!-- Reference check 2026-11-25 (Nathan: "check colours"; photo pass by the status session): photo-seen by the status session, Commons file Centropyge_bispinosa_1.jpg. Earlier text sources: https://commons.wikimedia.org/wiki/File:Centropyge_bispinosa_1.jpg; australian.museum coral-beauty page; https://en.wikipedia.org/wiki/Centropyge_bispinosa. What it decided: blue-purple head/back, orange flank bars, blue-margined fins. -->
