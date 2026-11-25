@@ -9,7 +9,7 @@ import { BACKDROPS } from '../../render/backdrop';
 import { LIMITS as VLIMITS } from '../../scene/validate';
 import { defaultSetup } from '../../scene/defaults';
 import { tankRowPrice } from '../../demand/prices';
-import { getTankModel, modelOfVariant, outerOf, pickRimless, saleLive, soleProduct, tankFromModel, tankSaleFor, variantByKey, variantName, type TankModel, type TankVariant } from '../../data/tanks';
+import { POPULAR_TANK_IDS, getTankModel, modelOfVariant, outerOf, pickRimless, saleLive, soleProduct, tankFromModel, tankSaleFor, variantByKey, variantName, type TankModel, type TankVariant } from '../../data/tanks';
 import { dockGroups, optKey, previewSetup, rangeText, isBundle, type DockOpt } from '../../ui/tankDockLogic';
 import { applyTankPick } from '../../ui/tankPick';
 import { applyTankEdit, flatEnds, setLid } from '../../scene/tankEdit';
@@ -240,11 +240,11 @@ export function productKey(S: TankSetup): string | undefined {
 
 export interface Commercial { rows: PickRow[]; total: number; /** no space set in Constraints: "Fits my space" cannot filter */ noSpace: boolean; /** makers in the catalogue for this kind, most tanks first (the brand filter's options) */ brands: [string, number][] }
 /** Every catalogue choice for the setup's kind (bare tanks first, then kits and bundles), filtered by the search, size chips and "Fits my space". */
-export function commercialRows(S: TankSetup, _u: Units, o: { q?: string; chips?: ReadonlySet<SizeChip>; fits?: boolean; sale?: boolean; f?: TankFilter; now?: number } = {}): Commercial {
+export function commercialRows(S: TankSetup, _u: Units, o: { q?: string; chips?: ReadonlySet<SizeChip>; fits?: boolean; sale?: boolean; f?: TankFilter; now?: number; /** only the classic generic sizes (POPULAR_TANK_IDS, any maker) and the tank in use */ popular?: boolean } = {}): Commercial {
   const kind: SetupKind = tankKind(S), groups = dockGroups(kind, o.q ?? '', o.now), inUse = productKey(S), space = S.layout.space;
   const all = groups.flatMap(g => g.bands.flatMap(b => b.opts));
   const chips = o.chips ?? new Set<SizeChip>();
-  const rows = all.filter(x => !o.f || passes(factsOf(x), o.f)).filter(x => (!o.sale || !!tankSale(x.v, o.now))).filter(x => (!chips.size || [...chips].some(c => inChip(x.gal, c))) && (!o.fits || !space || spaceFit(optTank(x), space).fits)).map(x => {
+  const rows = all.filter(x => !o.popular || (POPULAR_TANK_IDS.has(x.m.id) && x.typical) || x.key === inUse).filter(x => !o.f || passes(factsOf(x), o.f)).filter(x => (!o.sale || !!tankSale(x.v, o.now))).filter(x => (!chips.size || [...chips].some(c => inChip(x.gal, c))) && (!o.fits || !space || spaceFit(optTank(x), space).fits)).map(x => {
     const rim = pickRimless(x.m, x.v) ? 'rimless' : 'rimmed', kit = x.v && isBundle(x.v) ? ' · kit' : '';
     const inc = x.v?.includes, comes = x.v && isBundle(x.v) && inc ? ['tank', inc.stand ? 'stand' : '', inc.lid && inc.lid !== 'none' ? 'lid' : '', inc.light ? 'light' : '', inc.filter ? 'filter' : '', inc.heater ? 'heater' : ''].filter(Boolean).join(', ') : '', sale = tankSale(x.v, o.now), price = x.usd == null ? undefined : `${x.typical ? '~' : ''}${usd(x.usd)}${sale ? ' sale' : ''}`;
     return { key: x.key, name: x.v ? x.name : `${x.m.name}${x.typical ? ' (any maker)' : ''}`, meta: `${x.dims.replace(/×/g, ' × ')} in · ${rim}${kit}`,

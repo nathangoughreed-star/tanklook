@@ -6,7 +6,7 @@ import { parseScene } from '../src/scene/validate';
 import { defaultSetup } from '../src/scene/defaults';
 import { addCustomTank, editCustomTank, loadLibrary, parseSpec, saveLibrary, type CustomTankSpec } from '../src/scene/customTanks';
 import { solveGlass, IN_MM } from '../src/scene/glassSolver';
-import { getTankModel } from '../src/data/tanks';
+import { getTankModel, POPULAR_TANK_IDS } from '../src/data/tanks';
 import { mapToTank } from '../src/scene/physics';
 import {
   modelCard, customRows, commercialRows, chooseCommercial, chooseCustom, previewRow, makerSetup, makerFacts, priceView, startSpec, glassText, dims,
@@ -55,6 +55,14 @@ describe('Tank model card', () => {
 });
 
 describe('picker', () => {
+  it('popular: only the classic sizes (and the tank in use) until All sizes', () => {
+    const S = defaultSetup(), all = commercialRows(S, 'in'), pop = commercialRows(S, 'in', { popular: true });
+    expect(pop.rows.length).toBeGreaterThan(5);
+    expect(pop.rows.length).toBeLessThan(all.rows.length);
+    expect(pop.rows.every(r => (POPULAR_TANK_IDS.has(r.opt!.m.id) && r.opt!.typical) || r.inUse)).toBe(true);
+    expect(pop.rows.length).toBeLessThanOrEqual(POPULAR_TANK_IDS.size + 1);
+    for (const id of ['g10', 'g20l', 'g29', 'g40b', 'g55', 'g75']) expect(pop.rows.some(r => r.opt!.m.id === id && r.opt!.typical)).toBe(true);
+  });
   it('commercial rows: size chips filter by gallons, a search narrows, every row says rim and size', () => {
     const S = defaultSetup(), all = commercialRows(S, 'in');
     expect(all.total).toBeGreaterThan(50);

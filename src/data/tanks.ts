@@ -78,6 +78,8 @@ export interface TankModel {
 }
 
 export const TANK_MODELS = (data as { tanks: TankModel[] }).tanks;
+/** The classic US sizes the tank picker lists first (Nathan 2026-11-25); "All sizes" or a search reaches the rest. */
+export const POPULAR_TANK_IDS: ReadonlySet<string> = new Set(['g5_5', 'g10', 'g15', 'g20h', 'g20l', 'g29', 'g40b', 'g55', 'g75', 'g90', 'g125']);
 export const getTankModel = (id: string) => TANK_MODELS.find(m => m.id === id);
 
 /** A sale counts while its page was read in the last SALE_DAYS days and its end date, when given, has not passed (S224, Nathan

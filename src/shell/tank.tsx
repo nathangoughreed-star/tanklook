@@ -376,6 +376,8 @@ function BgPictures({ store, S }: { store: Store; S: TankSetup }) {
 }
 
 // ---------------------------------------------------------------- the docked picker
+/** The tank highlighted in the open picker, if it is not the one in use: the workspace's Done applies it (Nathan 2026-11-25: Done used to drop the preview). */
+export const pickerPending: { choose: (() => void) | null } = { choose: null };
 
 export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: Store; preview: (S: TankSetup | null) => void; onClose: () => void; onMaker: (h: MakerHow) => void; libN: number }) {
   const S = store.tank, u = store.scene.units;
@@ -384,18 +386,19 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
   const [q, setQ] = useState('');
   const [chips, setChips] = useState<Set<SizeChip>>(new Set());
   const [fits, setFits] = useState(false), [sale, setSale] = useState(false);
+  const [allSizes, setAllSizes] = useState(false); // popular sizes first (Nathan 2026-11-25); a search reaches every tank
   const [tf, setTf] = useState<TankFilter>(() => loadFilter()); // TP1: remembered per browser
   const setFilter = (n: TankFilter) => { setTf(n); saveFilter(n); };
   const clearAll = () => { setFilter({ ...freshFilter(), sort: tf.sort }); setChips(new Set()); setFits(false); setSale(false); };
   const [sel, setSel] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const searching = !!q.trim();
-  const custom = customRows(S, lib, u, q), comm = useMemo(() => commercialRows(S, u, { q, chips, fits, sale, f: tf }), [S, u, q, chips, fits, sale, tf]);
+  const custom = customRows(S, lib, u, q), comm = useMemo(() => commercialRows(S, u, { q, chips, fits, sale, f: tf, popular: !allSizes && !q.trim() }), [S, u, q, chips, fits, sale, tf, allSizes]);
   const showCustom = g.custom || searching, showComm = g.commercial || searching;
   const visible: PickRow[] = [...(showCustom ? custom : []), ...(showComm ? comm.rows : [])];
   const cur = visible.find(r => r.key === sel) ?? [...custom, ...comm.rows].find(r => r.key === sel);
 
-  useEffect(() => () => preview(null), []); // closing the picker drops the preview
+  useEffect(() => () => { preview(null); pickerPending.choose = null; }, []); // closing the picker drops the preview
   const pick = (r: PickRow) => { setSel(r.key); preview(r.inUse ? null : previewRow(store.tank, r)); };
   const choose = (r: PickRow | undefined) => {
     if (!r || r.inUse) { onClose(); return; }
@@ -404,6 +407,7 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
     else store.edit(s => chooseCustom(s, r.custom!));
     onClose();
   };
+  pickerPending.choose = cur && !cur.inUse ? () => choose(cur) : null;
   const onKey = (e: KeyboardEvent) => {
     if ((e.target as HTMLElement).tagName === 'INPUT' && e.key !== 'ArrowDown') return;
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
@@ -447,11 +451,13 @@ export function TankPicker({ store, preview, onClose, onMaker, libN }: { store: 
             <div class="chips">
               {SIZE_CHIPS.map(([c, t]) => <button type="button" class={`chip${chips.has(c) ? ' on' : ''}`} aria-pressed={chips.has(c)} onClick={() => { const n = new Set(chips); if (n.has(c)) n.delete(c); else n.add(c); setChips(n); }}>{t}</button>)}
               <button type="button" class={`chip${fits ? ' on' : ''}`} aria-pressed={fits} disabled={comm.noSpace} title={comm.noSpace ? 'Set your space in Constraints first (comes in shell step 5)' : 'Only tanks that fit the space you set'} onClick={() => setFits(!fits)}>Fits my space</button>
+              <button type="button" class={`chip${allSizes ? ' on' : ''}`} aria-pressed={allSizes} data-testid="all-sizes" title="Popular sizes only, or every size and product in the catalogue" onClick={() => setAllSizes(!allSizes)}>All sizes</button>
               <button type="button" class={`chip${sale ? ' on' : ''}`} aria-pressed={sale} title="Only tanks with a sale price on record; each row says when it was last checked" onClick={() => setSale(!sale)}>On sale</button>
             </div>
             <TankFilters f={tf} set={setFilter} shown={comm.rows.length} total={comm.total} brands={comm.brands} u={u} extra={chips.size + (fits ? 1 : 0) + (sale ? 1 : 0)} onClear={clearAll} />
             <div class="hint" data-testid="tank-count">{comm.rows.length} of {comm.total} shown</div>
             {comm.rows.map(row)}
+            {!allSizes && !searching ? <button type="button" class="btn sm" data-testid="show-all-sizes" onClick={() => setAllSizes(true)}>Show all sizes and products</button> : null}
             {!comm.rows.length ? <div class="hint">{sale ? 'No tank sale is on record.' : 'No commercial tank matches.'}</div> : null}
           </div> : null}
         </div>
