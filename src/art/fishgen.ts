@@ -427,11 +427,11 @@ export function pairedFins(p: Plan): PairedFin[] {
   const g = geometry(p), out: PairedFin[] = [];
   if (g.pelvic) out.push({ kind: 'pelvic', pts: g.pelvic, root: p.fins?.pelvicRoot ?? [p.pelvic!.u, g.prof(p.pelvic!.u)[1]], tint: p.pelvic!.tint ?? p.fin, a: p.pelvic!.thread || p.pelvic!.edge ? 0.85 : undefined, rays: p.pelvic!.thread ? 0 : 5, edge: p.pelvic!.edge, spots: p.pelvic!.spots, spread: p.pelvic!.spread });
   if (p.pectoral === false) return out;
-  const pu = p.pec?.u ?? 1 - (1 - p.pedU) * 0.24, [pt, pb] = g.prof(pu), pm = pt + (pb - pt) * (p.pec?.v ?? 0.62), pl = Math.min((1 - p.pedU) * 0.17, p.depth * 0.75) * (p.pec?.s ?? 1); // slender fish (loaches) keep small pectorals
+  const pu = p.pec?.u ?? 1 - (1 - p.pedU) * 0.24, [pt, pb] = g.prof(pu), pm = pt + (pb - pt) * (p.pec?.v ?? 0.62), pl = Math.min((1 - p.pedU) * 0.21, p.depth * 0.8) * (p.pec?.s ?? 1); // slender fish (loaches) keep small pectorals
   // w (off by default): a broad fan, the trailing edge this many times deeper (hillstream loach)
   const w = p.pec?.w ?? 1, pts: Pt[] = p.fins?.pectoral ? p.fins.pectoral : w === 1 ? [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.7, pm + pl * 0.55], [pu + 0.005, pm + 0.015]]
     : [[pu, pm - 0.01], [pu - pl, pm + pl * 0.3, 'c'], [pu - pl * 0.8, pm + pl * (0.3 + 0.25 * w)], [pu - pl * 0.4, pm + pl * 0.3 * w], [pu + 0.005, pm + 0.015 * w]];
-  out.push({ kind: 'pectoral', pts, root: p.fins?.pectoralRoot ?? [pu, pm], tint: p.pec?.tint ?? mixHex(p.fin, p.shade[1], 0.35), a: p.pec?.tint ? 0.8 : 0.45, rays: 5, edge: p.pec?.edge, spots: p.pec?.spots, spread: p.pec?.spread, sweep: p.pec?.sweep }); // pectoral takes on some flank colour: it lies against the body
+  out.push({ kind: 'pectoral', pts, root: p.fins?.pectoralRoot ?? [pu, pm], tint: p.pec?.tint ?? mixHex(p.fin, p.shade[1], 0.35), a: p.pec?.tint ? 0.85 : 0.6, rays: 5, edge: p.pec?.edge, spots: p.pec?.spots, spread: p.pec?.spread, sweep: p.pec?.sweep }); // pectoral takes on some flank colour: it lies against the body
   return out;
 }
 export function drawPairedFin(f: PairedFin, ctx: Ctx, P: Proj, W: number, ray = '#7d7a70') {
