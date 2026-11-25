@@ -3,6 +3,7 @@
 // glass / rim, plus `TankSetup.customTank` = name, library id, version, own price, owned), so a library edit or delete never changes a saved setup.
 // Pure data layer: no UI. Storage is injected (node tests), and defaults to localStorage when there is one.
 import { customGlass } from './autoGlass';
+import { parsePrices, type GlassPrices } from './glassPrice';
 import { defaultSetup } from './defaults';
 import { parseTank, parseCustomRef } from './validate';
 import { newUid } from './uid';
@@ -33,6 +34,8 @@ export interface CustomTankSpec {
   glassBuild?: GlassBuild;
   /** Edge finish of the whole tank (GS3); absent = the default for the rim. Recorded only: it does not change the glass check. */
   edge?: EdgeFinish;
+  /** The person's own glass price per sq ft by thickness (lane GC, R148); a thickness not listed uses the researched estimate (scene/glassPrice.ts). */
+  glassPrices?: GlassPrices;
 }
 export interface CustomTank extends CustomTankSpec { id: string; version: number; updated: number }
 export interface Store { getItem(k: string): string | null; setItem(k: string, v: string): void }
@@ -55,6 +58,7 @@ export function parseSpec(raw: unknown): CustomTankSpec | undefined {
     ...(ref.owned ? { owned: true } : {}),
     ...(parseBuild(o.glassBuild) ? { glassBuild: parseBuild(o.glassBuild)! } : {}),
     ...(parseEdge(o.edge) ? { edge: parseEdge(o.edge)! } : {}),
+    ...(parsePrices(o.glassPrices) ? { glassPrices: parsePrices(o.glassPrices)! } : {}),
   };
 }
 

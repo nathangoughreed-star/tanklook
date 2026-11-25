@@ -13,7 +13,8 @@ import { FailLabels } from './failView';
 import { failOverlay } from './failOverlay';
 import { EDGE_HELP, EDGE_OPTS, edgeSummary, edgeWarnings, edgeOf } from './logic/edges';
 import type { EdgeFinish } from '../scene/customTanks';
-import { SizeMode, SfMode, WideView, type SolveMode } from './glassSolve';
+import { SizeMode, FreeSize, GlassPriceFields, WideView, type SolveMode } from './glassSolve';
+import type { PaneThick, UpgradeOption } from './logic/glassUpgrade';
 import type { SizeCell, SolveInputs, SolveToggles } from './logic/tankEnvelope';
 import { LIMITS } from '../scene/validate';
 import { IN } from '../scene/physics';
@@ -83,7 +84,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
   const [opt, setOpt] = useState<{ text: string; key: string } | null>(null);
   const [busy, setBusy] = useState(false);
   // GS2: the Glass check's Solve for modes (Glass = the check below; Size = the largest tank for this glass; Safety factor = what this glass gives)
-  const [solve, setSolve] = useState<SolveMode>('glass');
+  const [solve, setSolve] = useState<SolveMode>('size');
   const [sin, setSin] = useState<SolveInputs>(() => ({ glass: typeof init.spec.glass === 'number' ? init.spec.glass : 0.25 * IN_MM, strip: 0.25 * IN_MM, stripWidth: 3 * IN_MM, depth: null }));
   const [wide, setWide] = useState(false);
   const mem = useRef(shapeMemory());
@@ -121,7 +122,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
     if (!keepBuild) delete next.glassBuild;
     return next;
   });
-  const size = (next: (T: Tank) => Tank) => edit(s => applyTankEdit(s, next, { thin: false }));
+  const size = (next: (T: Tank) => Tank) => edit(s => applyTankEdit(s, next, { thin: false }), solve === 'size'); // Free: size keeps the glass build: the glass is locked
   /** A box on the preview was edited: parsed in the scene's units, then through the same ranges as the side panel; returns a refusal (or null). */
   const commitDim = (id: string, raw: string): string | null => {
     const deg = id === 'A' ? parseFloat(raw) : undefined, mm = id === 'A' ? 1 : parseLen(raw, u);
@@ -152,6 +153,16 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
   const setBrace = (b: BraceSpec) => setChoice({ ...choice, custom: b });
   /** The two toggles (Nathan 2026-11-24): mixed glass = the Glass mode's per-pane solve; bracing optimized / custom, for every Solve for mode. */
   const tg: SolveToggles = { mixed: choice.mode === 'perPane', bracing: choice.bracing ?? 'optimized', brace: choice.custom ?? null };
+  /** Free: size (R148): the tank's own glass per wall and the brace in force. */
+  const gb = spec.glassBuild;
+  const panes: PaneThick = gb ? { long: gb.panes.front, end: gb.panes.left, bottom: gb.panes.bottom } : { long: gNow, end: gNow, bottom: gNow };
+  const braceNow: BraceSpec | null = spec.rim ? null : tg.bracing === 'custom' ? choice.custom ?? null : gb?.brace ?? null;
+  /** An upgrade option was clicked: its glass and brace are written into the tank (never automatic). */
+  const applyUpgrade = (o: UpgradeOption) => {
+    const p = o.panes, build = { panes: { front: p.long, back: p.long, left: p.end, right: p.end, bottom: p.bottom }, brace: o.brace, safetyFactor: choice.sf };
+    setSpec(sp => ({ ...sp, glass: Math.max(p.long, p.end, p.bottom), glassBuild: build }));
+    if (o.kind === 'brace') setChoice({ ...choice, bracing: 'custom', brace: !o.brace ? 'none' : (o.brace.cross ?? 0) > 0 ? 'cross' : 'perimeter', custom: o.brace ?? undefined });
+  };
   /** A number in the Size table was tapped: that tank (length, depth, height), that glass and the brace it was solved with go into the maker. */
   const loadCell = (c: SizeCell, D: number) => {
     const thick = tg.mixed ? Math.max(sin.glass, sin.glassEnds ?? sin.glass, sin.glassBottom ?? sin.glass) : sin.glass;
@@ -225,7 +236,7 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
           <div class="row"><span class="lbl">Rim</span><Seg label="Rim" value={spec.rim ? 'y' : 'n'} opts={[['y', 'Rimmed'], ['n', 'Rimless']]} onPick={v => edit(s => setRim(s, v === 'y'))} /><span /></div>
           <EdgeRows spec={spec} setEdge={e => setSpec(sp => ({ ...sp, edge: e }))} glassMm={gNow} />
         </Group>
-        <GlassGroup solve={solve} setSolve={setSolve} sin={sin} setSin={setSin} tg={tg} T={T} loadCell={loadCell} openWide={() => setWide(true)} panel={panel} choice={choice} setChoice={setChoice} locks={locks} setLocks={setLocks} onOptimize={optimize} busy={busy} optLine={opt && opt.key === key() ? opt.text : ''} setBrace={setBrace} rim={spec.rim} u={u} glassNow={gNow} build={!!spec.glassBuild} open={open.solver} onToggle={fold('solver')}
+        <GlassGroup solve={solve} setSolve={setSolve} sin={sin} setSin={setSin} tg={tg} T={T} loadCell={loadCell} openWide={() => setWide(true)} panes={panes} braceNow={braceNow} kind={spec.glassType} over={spec.glassPrices} setOver={o => setSpec(sp => { const { glassPrices: _g, ...r } = sp; return o ? { ...r, glassPrices: o } : r; })} onApply={applyUpgrade} panel={panel} choice={choice} setChoice={setChoice} locks={locks} setLocks={setLocks} onOptimize={optimize} busy={busy} optLine={opt && opt.key === key() ? opt.text : ''} setBrace={setBrace} rim={spec.rim} u={u} glassNow={gNow} build={!!spec.glassBuild} open={open.solver} onToggle={fold('solver')}
           onUse={() => panel?.use && setSpec({ ...spec, glass: panel.use.glass, glassBuild: panel.use.build })} />
         <Group title="Price" sum={spec.priceUsd != null ? `${usd(spec.priceUsd)} yours` : price.estimate != null ? `about ${usd(price.estimate)}` : 'no estimate'} open={open.price} onToggle={fold('price')}>
           <div class="drow"><span>Our estimate</span><b>{price.estimate != null ? usd(price.estimate) : '-'}</b></div>
@@ -253,11 +264,11 @@ export function Maker({ store, init, viewHost, getViewer, preview, onEnd }: { st
   );
 }
 
-function GlassGroup({ solve, setSolve, sin, setSin, tg, T, loadCell, openWide, panel, choice, setChoice, locks, setLocks, onOptimize, busy, optLine, setBrace, rim, u, glassNow, build, open, onToggle, onUse }: {
-  solve: SolveMode; setSolve: (m: SolveMode) => void; sin: SolveInputs; setSin: (i: SolveInputs) => void; tg: SolveToggles; T: Tank; loadCell: (c: SizeCell, D: number) => void; openWide: () => void;
+function GlassGroup({ panes, braceNow, kind, over, setOver, onApply, solve, setSolve, sin, setSin, tg, T, loadCell, openWide, panel, choice, setChoice, locks, setLocks, onOptimize, busy, optLine, setBrace, rim, u, glassNow, build, open, onToggle, onUse }: {
+  solve: SolveMode; setSolve: (m: SolveMode) => void; sin: SolveInputs; setSin: (i: SolveInputs) => void; panes: PaneThick; braceNow: BraceSpec | null; kind: 'standard' | 'lowiron'; over?: Record<string, number>; setOver: (o: Record<string, number> | undefined) => void; onApply: (o: UpgradeOption) => void; tg: SolveToggles; T: Tank; loadCell: (c: SizeCell, D: number) => void; openWide: () => void;
   panel: GlassPanel | null; choice: GlassChoice; setChoice: (c: GlassChoice) => void; locks: Record<BraceField, boolean>; setLocks: (l: Record<BraceField, boolean>) => void; onOptimize: () => void; busy: boolean; optLine: string; setBrace: (b: BraceSpec) => void; rim: boolean; u: Units; glassNow: number; build: boolean; open: boolean; onToggle: () => void; onUse: () => void;
 }) {
-  const sum = !panel ? 'working it out…' : !panel.supported ? 'box tanks only' : `${panel.panes[0].thickness} front · SF ${panel.sfAchieved}`;
+  const sum = !panel ? 'working it out…' : !panel.supported ? 'box tanks only' : solve === 'size' ? `${glassText(panes.long, u)} front · free size · min SF ${choice.sf.toFixed(1)}` : `${panel.panes[0].thickness} front · SF ${panel.sfAchieved}`;
   const kindOf = (b: BraceSpec | null) => !b ? 'none' : (b.cross ?? 0) > 0 ? 'cross' : 'perimeter';
   /** Custom bracing starts from the brace in force (the optimizer's), so switching never jumps. */
   const setBracing = (m: 'optimized' | 'custom') => {
@@ -274,7 +285,8 @@ function GlassGroup({ solve, setSolve, sin, setSin, tg, T, loadCell, openWide, p
   return (
     <Group title="Glass check" sum={sum} open={open} onToggle={onToggle}>
       {panel && !panel.supported ? <div class="hint">{panel.reason}</div> : <>
-        <Seg label="Solve for" value={solve} opts={[['glass', 'Glass'], ['size', 'Size'], ['sf', 'Safety factor']]} onPick={setSolve} />
+        <Seg label="Solve for" value={solve} opts={[['size', 'Free: size'], ['glass', 'Free: glass']]} onPick={setSolve} />
+        <div class="hint">{solve === 'size' ? 'Free: size. The glass and the minimum safety factor are fixed; change the size as you like and see which panes fall short, and what it takes to fix them.' : 'Free: glass. You set the size and the minimum safety factor; the glass follows.'}</div>
         <div class="row"><span class="lbl">{solve === 'glass' ? 'Safety factor' : 'Safety factor at least'}</span><input class="slider" type="range" min={2} max={6} step={0.1} value={choice.sf} aria-label="Safety factor" onInput={e => setChoice({ ...choice, sf: +(e.target as HTMLInputElement).value })} />
           <span class="val"><input class="input num" type="number" min={1.5} max={8} step={0.1} value={choice.sf} aria-label="Safety factor value" onChange={e => { const v = parseFloat((e.target as HTMLInputElement).value); if (Number.isFinite(v) && v >= 1.5 && v <= 8) setChoice({ ...choice, sf: v }); }} /></span></div>
         <div class="row"><span class="lbl">Glass</span><Seg label="Glass thicknesses" value={tg.mixed ? 'mixed' : 'same'} opts={[['same', 'Same everywhere'], ['mixed', 'Mixed']]} onPick={m => setChoice({ ...choice, mode: m === 'mixed' ? 'perPane' : 'uniform' })} /><span /></div>
@@ -284,8 +296,11 @@ function GlassGroup({ solve, setSolve, sin, setSin, tg, T, loadCell, openWide, p
           <Seg label="Brace" value={kindOf(choice.custom ?? null)} opts={[['none', 'No brace'], ['perimeter', 'Perimeter'], ['cross', 'Perimeter + cross']]} onPick={setKind} />
           <BraceFields b={choice.custom ?? null} u={u} locks={locks} setLocks={setLocks} setBrace={setBrace} onOptimize={solve === 'glass' ? onOptimize : undefined} busy={busy} optLine={solve === 'glass' ? optLine : ''} note={solve === 'glass' && panel ? panel.braceNote : ''} />
         </> : null}
-        {solve === 'size' ? <SizeMode T={T} rim={rim} inp={sin} setInp={setSin} sf={choice.sf} bottom={choice.bottom} u={u} tg={tg} onPick={loadCell} onChart={openWide} /> : null}
-        {solve === 'sf' ? <SfMode T={T} rim={rim} inp={sin} setInp={setSin} sf={choice.sf} bottom={choice.bottom} u={u} tg={tg} /> : null}
+        {solve === 'size' ? <>
+          <FreeSize T={T} rim={rim} panes={panes} brace={braceNow} sf={choice.sf} bottom={choice.bottom} u={u} tg={tg} kind={kind} over={over} onApply={onApply} />
+          <details class="gprices" onToggle={e => { if ((e.target as HTMLDetailsElement).open) setSin({ ...sin, glass: panes.long, glassEnds: panes.end, glassBottom: panes.bottom }); }}><summary>See options: the largest tank for a glass</summary>
+            <SizeMode T={T} rim={rim} inp={sin} setInp={setSin} sf={choice.sf} bottom={choice.bottom} u={u} tg={tg} onPick={loadCell} onChart={openWide} /></details>
+        </> : null}
         {solve !== 'glass' ? null : <>
         {!rim && panel && !custom && panel.braceNow ? <div class="hint">Brace: {braceWords(panel.braceNow, u)}. {panel.braceNote}</div> : null}
         {!panel ? <div class="hint">Working out the glass…</div> : <>
@@ -306,6 +321,7 @@ function GlassGroup({ solve, setSolve, sin, setSin, tg, T, loadCell, openWide, p
           <div class="drow"><span class="hint">{panel.weight}</span>
             {panel.use ? <button type="button" class="btn sm" disabled={build && Math.abs(panel.use.glass - glassNow) < 0.01} onClick={onUse}>{build && Math.abs(panel.use.glass - glassNow) < 0.01 ? 'In use' : `Use this glass (${glassText(panel.use.glass, u)})`}</button> : null}</div>
         </>}</>}
+        <GlassPriceFields kind={kind} over={over} set={setOver} u={u} />
         <div class="hint disclaimer">{DISCLAIMER}</div>
       </>}
     </Group>
