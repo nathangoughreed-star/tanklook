@@ -88,6 +88,18 @@
     "yellowtang": {
       "look": "yellowtangb",
       "approved": "2026-11-25"
+    },
+    "cardinal": {
+      "look": "cardinalc",
+      "approved": "2026-11-25"
+    },
+    "tailspotblenny": {
+      "look": "tailspotb",
+      "approved": "2026-11-25"
+    },
+    "bluetang": {
+      "look": "bluetangc",
+      "approved": "2026-11-25"
     }
   }
 }
