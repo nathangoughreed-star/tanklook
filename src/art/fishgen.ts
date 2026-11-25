@@ -658,6 +658,11 @@ export const PLANS: Record<string, Plan> = {
       { k: 'blob', u: 0.855, v: 0.047, ru: 0.065, rv: 0.073, c: '#b74824', a: 0.25 }, // flush around gill plate
       { k: 'band', u0: 0.22, u1: 0.74, v0: -0.105, v1: -0.076, c: '#a34524', a: 0.25, f: 0.014 }, // darkened back line
     ],
+    // 3D (2026-11-25): the whole body faintly see-through, the lower rear and the tail stalk most; the spine and the silvery gut sac show inside
+    clear: [{ k: 'band', u0: 0.15, u1: 0.84, v0: -0.25, v1: 0.25, c: '#000', a: 0.45, f: 0.04 }, { k: 'band', u0: 0.1, u1: 0.3, v0: -0.25, v1: 0.25, c: '#000', a: 0.6, f: 0.04 },
+      { k: 'band', u0: 0.25, u1: 0.6, v0: 0.04, v1: 0.25, c: '#000', a: 0.55, f: 0.03 }],
+    clearMin: 0.15, clearRim: 0.85,
+    inner: [{ k: 'spine', u0: 0.18, u1: 0.8, v: -0.01, v1: -0.02, r: 0.004, c: '#8a3a20' }, { k: 'sac', u: 0.66, v: 0.035, ru: 0.11, rv: 0.04, rz: 0.026, c: '#e0955a' }],
     eye: { r: 0.031, u: 0.905, dv: -0.02, iris: ['#f2c889', '#60301c'] } },
   rummynose: { gape: 0.022, gapeDrop: 0.005, thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.028, peak: 0.66, snout: 0.45, shade: ['#8b927f', '#b6bbae', '#e2e1da'], tail: { type: 'fork', h: 0.14 }, fin: '#c8ccc5',
     dorsal: { at: 0.61, len: 0.06, h: 0.09, rake: 0.12, taper: 0.4, lead: 0.6, tip: 'point', trail: 0.05, drop: 0.2 }, anal: { at: 0.47, len: 0.21, h: 0.045, rake: 0.05, lead: 0.9, drop: 0.5, trail: 0.01 }, adipose: true, pelvic: { u: 0.62, len: 0.05 },
@@ -688,7 +693,12 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { u0: 0.47, u1: 0.6, h: 0.09, tint: '#e0704f' }, anal: { u0: 0.33, u1: 0.47, h: 0.06, tint: '#e0704f' }, pelvic: { u: 0.6, len: 0.06 },
     marks: [{ k: 'blob', u: 0.3, v: -0.01, ru: 0.2, rv: 0.08, c: '#b08ac0', a: 0.22 },            // purple sheen aft of the wedge
       { k: 'poly', pts: [[0.635, -0.125, 'c'], [0.615, -0.02], [0.625, 0.085, 'c'], [0.175, 0.006, 'c']], c: '#e8a85a', a: 0.75 }, // golden rim
-      { k: 'poly', pts: [[0.62, -0.115, 'c'], [0.6, -0.02], [0.61, 0.075, 'c'], [0.19, 0.004, 'c']], c: '#1f1d22', a: 0.92 }], eye: { r: 0.03, iris: ['#e8a050', '#5a3018'] } },
+      { k: 'poly', pts: [[0.62, -0.115, 'c'], [0.6, -0.02], [0.61, 0.075, 'c'], [0.19, 0.004, 'c']], c: '#1f1d22', a: 0.92 }],
+    // 3D (2026-11-25): the pink body see-through around the black wedge (above and below its tail half, and the stalk); the wedge and the head stay solid
+    clear: [{ k: 'band', u0: 0.08, u1: 0.19, v0: -0.25, v1: 0.25, c: '#000', a: 0.55, f: 0.03 }, { k: 'band', u0: 0.18, u1: 0.48, v0: 0.055, v1: 0.25, c: '#000', a: 0.45, f: 0.03 },
+      { k: 'band', u0: 0.18, u1: 0.45, v0: -0.25, v1: -0.065, c: '#000', a: 0.4, f: 0.03 }],
+    clearMin: 0.15, clearRim: 0.85,
+    eye: { r: 0.03, iris: ['#e8a050', '#5a3018'] } },
   chili: { shimmer: 0.5, shimmerRgb: '255,195,155', gillLine: 0.22, finFade: 0.3, noseCap: 0.03, gape: 0.02, gapeDrop: 0.005, thick: 0.42, depth: 0.21, pedU: 0.2, ped: 0.03, peak: 0.58, snout: 0.6, shade: ['#a5402e', '#d4563c', '#e07a5c'], tail: { type: 'fork', h: 0.13, tint: '#c95a44' }, fin: '#cf7056',
     dorsal: { at: 0.53, len: 0.06, h: 0.08, rake: 0.3, lead: 0.6, tip: 'point', trail: 0.045, drop: 0.2 }, anal: { at: 0.45, len: 0.1, h: 0.055, rake: 0.05, lead: 0.85, tip: 'point', trail: 0.03, drop: 0.35 }, pelvic: { u: 0.56, len: 0.05 },
     marks: [{ k: 'band', u0: 0.22, u1: 0.85, v0: -0.012, v1: 0.012, c: '#2a1a18', a: 0.7, f: 0.01 }, { k: 'blob', u: 0.24, v: 0, ru: 0.03, rv: 0.025, c: '#1a1212', a: 0.8 }],
