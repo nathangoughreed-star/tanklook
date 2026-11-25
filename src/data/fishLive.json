@@ -48,6 +48,22 @@
     "threespot": {
       "look": "threespotb",
       "approved": "2026-11-24"
+    },
+    "dwarfgourami": {
+      "look": "dwarfgouramib",
+      "approved": "2026-11-25"
+    },
+    "honeygourami": {
+      "look": "honeygouramib",
+      "approved": "2026-11-25"
+    },
+    "gourami": {
+      "look": "gouramib",
+      "approved": "2026-11-25"
+    },
+    "yellowlab": {
+      "look": "yellowlabb",
+      "approved": "2026-11-25"
     }
   }
 }
