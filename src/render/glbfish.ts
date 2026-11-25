@@ -13,7 +13,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { outlineMat } from './fish3d';
 
-const q = new URLSearchParams(location.search);
+const q = new URLSearchParams(typeof location === 'undefined' ? '' : location.search);   // node tests import this module (no location there)
 export const GLB_ON = q.has('glbfish');
 const LODS = [20000, 8000, 3000, 1200];
 const want = q.get('glbfish') || '8000', all = q.has('glball');
