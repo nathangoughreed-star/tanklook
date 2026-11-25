@@ -6,7 +6,7 @@ For every <SHEETS>/<base>-<batch>-gen folder that has sheet.webp and no build.js
   3. <folder>/build.json: ok / failed, the last lines of the log, sat, shot files. Full log in <folder>/build.log.
 It keeps checking for new sheets until every folder of the batch is built, or none has landed for --idle minutes (default 45),
 then writes shots/<batch>-grid.jpg (the sheet's side row beside the built fish's side, one row per fish) and a summary table.
-Usage: python -I scripts/fish-batch.py [--batch b5] [--idle 45] [--only angel,betta] [--rebuild angel]"""
+Usage: python -I scripts/fish-batch.py [--batch b5] [--idle 45] [--only angel,betta] [--rebuild angel] [--group 4]"""
 import sys, os, json, glob, time, subprocess
 from PIL import Image, ImageDraw
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE); sys.path.insert(0, HERE)
@@ -63,7 +63,7 @@ def grid(rows, batch):
 
 def main(argv):
     opt = {argv[i]: argv[i + 1] for i in range(len(argv) - 1) if argv[i].startswith('--')}
-    batch = opt.get('--batch', 'b5'); idle = float(opt.get('--idle', 45)) * 60
+    batch = opt.get('--batch', 'b5'); idle = float(opt.get('--idle', 45)) * 60; group = int(opt.get('--group', 0)); built = 0   # --group N: exit after N builds (one review group of N fish for Nathan)
     only = set(opt['--only'].split(',')) if '--only' in opt else None; redo = set(opt.get('--rebuild', '').split(',')) - {''}
     dirs = sorted(d for d in glob.glob(f'{SHEETS}/*-{batch}-gen') if os.path.exists(d + '/prompt.txt'))
     base = lambda d: os.path.basename(d)[:-len(f'-{batch}-gen')]
@@ -76,8 +76,9 @@ def main(argv):
         todo = sorted((os.path.getmtime(d + '/sheet.webp'), d) for d in dirs if os.path.exists(d + '/sheet.webp') and not os.path.exists(d + '/build.json'))
         if todo:
             d = todo[0][1]; log(f'building {base(d)}b ...'); res = build(d, base(d), batch)
-            json.dump(res, open(d + '/build.json', 'w'), indent=1); last = time.time()
+            json.dump(res, open(d + '/build.json', 'w'), indent=1); last = time.time(); built += 1
             log(f'{base(d)}b: ' + ('ok' if res.get('ok') else 'FAILED') + f' ({res.get("minutes")} min, sat {res.get("sat")})' + ('' if res.get('ok') else ': ' + ' | '.join(res.get('tail', [res.get('why', '')]))))
+            if group and built >= group: break
             continue
         if all(os.path.exists(d + '/build.json') for d in dirs) or time.time() - last > idle: break
         time.sleep(20)

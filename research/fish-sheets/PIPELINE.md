@@ -64,7 +64,7 @@ One runbook, start to finish. Entry point for every fish chat. Written 2026-11-2
 - **Visual check before any build (Nathan 2026-11-25: "a quick manual check by you before making a model confirming it looks like the species its supposed to be"):**
   `sheet-queue.py` no longer stops on a title mismatch: it files the sheet and writes `title_match: false` in `sheet.json`. The build chat opens EVERY sheet
   (Read the `sheet-download.*`, mismatched title or not) and confirms it shows the right species (body, colours, bars, fins, row layout). Then it records one sentence in
-  `sheet.json` as `visual_check` ("Viewed <date>: ..."). **Never build a sheet with no `visual_check`.** A wrong species: move it to the right folder (or the misfiled
+  `sheet.json` as `visual_check` ("Viewed <date>: ..."). **Nothing is shown to Nathan or goes live for a sheet with no `visual_check`** (Nathan 2026-11-25: build as soon as a sheet lands, in groups of 4: `fish-batch.py --batch bN --group 4 --idle 90` polls the folders every 20 s and builds each sheet as it lands, exits after 4 so the chat can look at those 4 sheets beside their models, record `visual_check`, discard a wrong-species model, send the group to Nathan, then start the next group; an unattended build of an unchecked sheet is cheap and never live). A wrong species: move it to the right folder (or the misfiled
   folder), tell Nathan, and re-queue that fish.
   **Do not add "Title the image ..." to the prompt** (tried 2026-11-25: ChatGPT read "the image" as an existing image to edit and refused to generate the sheet). The download title stays whatever ChatGPT chooses.
 - Gate: sheet.webp exists in `<id>-<batch>-gen/` and its download title matches the fish. Do not run the queue yourself unless Nathan asks.
