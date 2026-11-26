@@ -714,6 +714,11 @@ const LEAF_RELIEF = 6.0, LEAF_RELIEF_K = 1.8;
 /** Review switch (lane PT): off = the plant shader without the glow and relief (frame-time A/B; set, then `needsUpdate` on the plant materials). */
 export const plantFx = { on: true, /** lane PT's glow / relief / sheen block and the above-water haze fade, revived on the right anchor (lane ART1); OFF until Nathan has seen it */ glow: false };
 if (import.meta.env?.DEV) (globalThis as { __plantFx?: typeof plantFx }).__plantFx = plantFx; // (the perf A/B reaches it from the page)
+// dev pages only: `?plant=sat:0.9;glow:1` sets the plant tone constants and the glow switch at load (the shot scripts use it: a switch the app reads at load is the one that can be shown to work)
+if (import.meta.env?.DEV && typeof location !== 'undefined') for (const kv of (new URLSearchParams(location.search).get('plant') ?? '').split(';').filter(Boolean)) {
+  const [k, x] = kv.split(':');
+  if (k === 'glow') plantFx.glow = x === '1'; else if (k in PLANT_TONE) (PLANT_TONE as Record<string, number>)[k] = +x;
+}
 const plantMats = new Map<string, THREE.MeshBasicMaterial>();
 function plantMaterial(T: Tank, free = false) {
   const k = glassKey(T) + (free ? '|rim' : '');
