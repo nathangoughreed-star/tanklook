@@ -443,6 +443,7 @@ export class Viewer {
     // three's loop (window frames, or the XR session's while one runs); an AR session draws through xrFrame instead (render/ar.ts)
     this.renderer.setAnimationLoop((t, f) => {
       if (this.xrFrame && f) this.xrFrame(t, f);
+      else if (this.buildHold) { /* waiting for fish art (holdBuild) */ }
       else {
         const builtNow = this.dirty && this.needsBuild;
         if (builtNow) this.buildAndLink();
@@ -670,6 +671,13 @@ export class Viewer {
     }
   }
   /** Rebuild on the next frame (UI-only state that changes the scene, like terrain editing). */
+  /** Lane FD: no build (so no draw, no shader link) until `p` settles or `ms` pass, so a scene's fish art can load first and no fish shows the old model before the new one. */
+  private buildHold = 0;
+  holdBuild(p: Promise<unknown>, ms: number) {
+    this.buildHold++;
+    let once = false; const free = () => { if (once) return; once = true; this.buildHold--; this.dirty = true; };
+    void p.then(free, free); setTimeout(free, ms);
+  }
   rebuild() { this.needsBuild = this.dirty = true; this.built = []; } // always a full build (textures loaded, terrain dots)
   /** Apply pending store edits to the scenes now, without drawing (an AR session draws itself: render/ar.ts). */
   buildNow() { if (this.needsBuild) this.build(); }

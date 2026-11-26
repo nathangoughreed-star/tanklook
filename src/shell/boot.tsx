@@ -23,6 +23,7 @@ import { pickItems } from './scape';
 import { scapeSec } from './logic/scape';
 import { openClicked } from './clickOpen';
 import { shouldWelcome } from './logic/start';
+import { watchLiveArt } from '../art/liveFish';
 
 export function bootShell() {
   document.documentElement.classList.remove('gb-new'); // BF1: the index.html pre-paint guard (hid the old markup, set a plain background)
@@ -57,6 +58,7 @@ export function bootShell() {
   render(<App store={store} viewHost={viewHost} profile={loadProfile} save={save} preview={preview} files={files} viewer={() => viewer} />, root);
 
   viewer = new Viewer(canvas, viewHost, store);
+  watchLiveArt(store, viewer); // FD: the build-B fish art of this scene loads now, the first build waits for it (src/art/liveFish.ts)
   applyViewPrefs(viewer, viewHost);
   attachPointer(viewer, store, (what, kind, id) => (what === 'gear' && gearSel()?.row === id) || (what === 'fish' && pickable.fish && store.selId === id) || (what === 'items' && pickItems.sec != null && scapeSec(kind ?? 'stone') === pickItems.sec && store.selItem === id), // R116: a press drags only what a click already selected
     t => openClicked(t, store, scapeSec)); // animals only, while Animals is open (step 4); the other pieces come with their sections; a click on a thing opens it (CM2)
