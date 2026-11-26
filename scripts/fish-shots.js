@@ -14,6 +14,7 @@ export const VIEWS = {
   rear34: { yaw: 140, az: 0, el: 15, z: 0.55 },
   front: { yaw: 0, az: 90, el: 0, z: 30 / 28 },
   top: { yaw: 0, az: 0, el: 89, z: 24 / 28 },
+  below: { yaw: 0, az: 0, el: -70, z: 1.8 },        // belly from below-front (sunken pleco belly, 2026-11-26): clingers are seen this way on the glass
   tail: { yaw: 0, az: 0, el: 0, z: 2.6, dx: 0.3 }, // tail base centred: the fish moves forward by 0.3 TL
   head: { yaw: 0, az: 0, el: 0, z: 2.6, dx: -0.3 }, // head close-up (snout / lips / mouth, b6 2026-11-24): the fish moves back by 0.3 TL
   face: { yaw: 0, az: 90, el: 0, z: 2.6 }, // front close-up (face, b6 2026-11-24)
