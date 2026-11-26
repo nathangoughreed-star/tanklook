@@ -199,9 +199,9 @@ export function FileMenu({ files }: { files: Files }) {
   );
 }
 
-function Dialog({ title, onClose, children, wide, full }: { title: string; onClose: () => void; children: preact.ComponentChildren; wide?: boolean; full?: boolean }) {
+function Dialog({ title, onClose, children, wide, full, top }: { title: string; onClose: () => void; children: preact.ComponentChildren; wide?: boolean; full?: boolean; /** a question that must show above any other dialog (the animal door's own window) */ top?: boolean }) {
   return (
-    <div class="scrim" onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}>
+    <div class={`scrim${top ? ' top' : ''}`} onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div class={`dlg${wide ? ' wide' : ''}${full ? ' full' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
         <div class="sec-head"><h2>{title}</h2><button type="button" class="btn icon ghost" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
         <div class="dlgbody">{children}</div>
@@ -277,7 +277,7 @@ export function FileLayer({ store, files }: { store: Store; files: Files }) {
       {s.dlg === 'examples' ? <ExamplesScreen files={files} Dialog={Dialog} /> : null}
       {s.dlg === 'start' ? <StartSheet files={files} Dialog={Dialog} /> : null}
       {s.dlg === 'saveas' ? <SaveAsDialog store={store} files={files} /> : null}
-      {s.ask ? <Dialog title={s.ask.title} onClose={() => s.ask!.resolve(s.ask!.actions[0].value)}>
+      {s.ask ? <Dialog top title={s.ask.title} onClose={() => s.ask!.resolve(s.ask!.actions[0].value)}>
         <p class="dlgtext">{s.ask.text}</p>
         <div class="acts end">{s.ask.actions.map(a => <button type="button" class={`btn${a.primary ? ' primary' : ''}${a.danger ? ' danger' : ''}`} onClick={() => s.ask!.resolve(a.value)}>{a.label}</button>)}</div>
       </Dialog> : null}
