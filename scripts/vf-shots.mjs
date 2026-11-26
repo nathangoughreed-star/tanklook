@@ -14,7 +14,8 @@
 //          --size 1050x850   --pairs 40   --no-shots   --no-numbers   --sheet (one side-by-side PNG per tank and view)
 //          --rest 20 [--throttle 4]   tank left alone / orbiting / idle for 20 s per fx set, normal CPU and 4x slower (caustic safeguards)
 //          --measure   (lane ART1) per-plant-variant S / L / S>0.8 share / low-vs-top darkening, pass / fail against the gates, into vf-shots.json
-//          --plant "sat=0.9,glow=1"   (lane ART1) set plant tone constants / the PT glow switch for the run
+//          --plant "on=1,sat=0.9,glow=1"   (lane ART1) plant tone constants / the PT glow switch, set at load through ?plant= (dev server only)
+//          --differs-from <dir>   exit 4 if any picture is byte-identical to the same-named one in <dir> (a switch that did nothing)
 //          --abplant "on=0|on=1"   (lane ART1) frame-time A/B of two plant specs on alternating frames (--pairs N)
 //          --anchors   (lane ART1) list every string-anchored shader patch that matched nothing (exit code 3 if any)
 //          --perf   also run scripts/perf-baseline.mjs on the tanks (steady draw, programs, first frame) into <out>/perf-baseline.json
@@ -263,6 +264,7 @@ log(`vf-shots at ${commit} (build ${build}${dirty ? ', src dirty' : ''}); fx set
 const dev = await createServer({ root: process.cwd(), server: { port: 6031, strictPort: false }, logLevel: 'error' });
 await dev.listen();
 const BASE = dev.resolvedUrls.local[0];
+const PLANT_Q = opt('plant', '') ? '&plant=' + encodeURIComponent(opt('plant', '').split(',').map(kv => kv.replace('=', ':')).join(';')) : ''; // --plant is read by the app at load (items.ts), the real path
 const br = await launch();
 await br.s('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: +(process.env.DPR ?? 1), mobile: false });
 const result = { commit, build, dirty, when: new Date().toISOString(), size: [W, H], fx: FXSETS, gpu: null, scenes: {} };
@@ -270,18 +272,17 @@ const save = (file, url) => writeFileSync(join(OUT, file), Buffer.from(url.split
 try {
   for (const file of SCENES) {
     const name = basename(file, '.json'); log(name);
-    await br.s('Page.navigate', { url: BASE + '?ui=1' });
+    await br.s('Page.navigate', { url: BASE + '?ui=1' + PLANT_Q });
     for (let i = 0; i < 300 && !(await br.ev('document.readyState === "complete"').catch(() => false)); i++) await sleep(100);
     await br.ev(`localStorage.setItem('tanklook.scene', ${JSON.stringify(readFileSync(file, 'utf8'))}); 1`);
     // Performance setting back to Full quality, held (auto off): an automatic step-down in one tank's throttled orbit would
     // otherwise carry into the next tank (it is saved in the browser) and stop the caustics there
     await br.ev(`localStorage.setItem('tanklook.perf', '{"level":0,"auto":false}'); 1`);
-    await br.s('Page.navigate', { url: BASE + '?ui=1' });
+    await br.s('Page.navigate', { url: BASE + '?ui=1' + PLANT_Q });
     for (let i = 0; i < 1200 && !(await br.ev('!!(window.__gb && window.__fx && __gb.viewer)').catch(() => false)); i++) await sleep(100);
     await br.ev(`window.__vf = (${KIT})(); 1`);
     await br.ev('__vf.settle(2500)');
     result.gpu ??= await br.ev('__vf.gpu()');
-    if (opt('plant', '')) await br.ev(`__vf.plant(${JSON.stringify(opt('plant', ''))})`); // ART1: plant tone / glow values for this run
     if (opt('abplant', '')) { const [a, b] = opt('abplant', '').split('|'); await br.ev('__vf.view("front")'); const r = (result.abPlant ??= {})[name] = await br.ev(`__vf.abPlant(${JSON.stringify(a)}, ${JSON.stringify(b)}, ${PAIRS})`, 900_000); log(`  plant A/B [${a}] -> [${b}]: GPU ${r.A} -> ${r.B} ms (paired delta ${r.delta}, p95 ${r.delta95}, n ${r.n})`); }
     if (flag('anchors')) { const m = (result.anchors ??= {})[name] = await br.ev('__vf.anchors()'); for (const [k, n] of m) log(`  MISSING ANCHOR x${n}: ${k}`); log(`  ${name}: ${m.length} missing shader anchor(s)`); if (m.length) process.exitCode = 3; }
     const row = result.scenes[name] = { shots: [], ab: {} };
@@ -342,6 +343,13 @@ try {
   await br.close(); await dev.close();
 }
 log(`wrote ${join(OUT, 'vf-shots.json')}`);
+// --differs-from <dir>: every picture written here must differ from the same-named one there (a variant that comes out identical to its neighbour = a switch that did nothing)
+if (opt('differs-from', '')) {
+  let same = 0;
+  for (const row of Object.values(result.scenes)) for (const f of row.shots) { const o = join(opt('differs-from', ''), f); if (existsSync(o) && readFileSync(o).equals(readFileSync(join(OUT, f)))) { log(`IDENTICAL to ${o}: ${f}`); same++; } }
+  if (same) { log(`${same} picture(s) identical to ${opt('differs-from', '')}: the variant did nothing`); process.exit(4); }
+  log(`all pictures differ from ${opt('differs-from', '')}`);
+}
 
 // ---------- optional: the existing perf and cold-load scripts on the same tanks ----------
 const run = (cmd, args) => new Promise((res, rej) => { const p = spawn(cmd, args, { stdio: 'inherit', shell: process.platform === 'win32' }); p.on('exit', c => (c ? rej(new Error(`${cmd} exit ${c}`)) : res())); });
