@@ -1,0 +1,181 @@
+{
+ "note": "Seeded by scripts/fish-fin-family.py from photo-checked specs. `use` families give fish-new.py its default fin_opacity (source marked as family table, still to confirm); others keep PHOTO CHECK NEEDED.",
+ "leave_one_out": {
+  "family_default_right": 11,
+  "blanket_solid_right": 4,
+  "of": 30
+ },
+ "families": {
+  "Cichlidae": {
+   "n": 6,
+   "share": 0.5,
+   "use": false,
+   "default": {
+    "preset": "translucent"
+   },
+   "members": {
+    "angelb": "translucent+pec clear",
+    "convictb": "translucent",
+    "electricblueacarab": "pigmented+pec clear",
+    "gbrb": "translucent",
+    "oscarb": "solid+pec translucent",
+    "yellowlabb": "pigmented+pec clear"
+   }
+  },
+  "Osphronemidae": {
+   "n": 5,
+   "share": 0.4,
+   "use": false,
+   "default": {
+    "preset": "pigmented",
+    "pectoral": {
+     "preset": "clear"
+    }
+   },
+   "members": {
+    "bettab": "solid+pec clear",
+    "dwarfgouramib": "pigmented+pec clear",
+    "gouramib": "translucent+pec clear",
+    "honeygouramib": "pigmented+pec clear",
+    "threespotb": "translucent+pec clear"
+   }
+  },
+  "Polypteridae": {
+   "n": 1,
+   "share": 1.0,
+   "use": false,
+   "default": {
+    "preset": "pigmented",
+    "pectoral": {
+     "preset": "solid"
+    }
+   },
+   "members": {
+    "bichirb": "pigmented+pec solid"
+   }
+  },
+  "Characidae": {
+   "n": 4,
+   "share": 0.75,
+   "use": true,
+   "default": {
+    "preset": "clear"
+   },
+   "members": {
+    "blackskirtb": "pigmented+pec clear",
+    "cardinalb": "clear",
+    "glowlightb": "clear",
+    "neonb": "clear"
+   }
+  },
+  "Acanthuridae": {
+   "n": 2,
+   "share": 1.0,
+   "use": true,
+   "default": {
+    "preset": "solid",
+    "pectoral": {
+     "preset": "pigmented"
+    }
+   },
+   "members": {
+    "bluetangb": "solid+pec pigmented",
+    "yellowtangb": "solid+pec pigmented"
+   }
+  },
+  "Callichthyidae": {
+   "n": 2,
+   "share": 1.0,
+   "use": true,
+   "default": {
+    "preset": "translucent"
+   },
+   "members": {
+    "bronzecoryb": "translucent",
+    "pepperedcoryb": "translucent"
+   }
+  },
+  "Cyprinidae": {
+   "n": 3,
+   "share": 0.67,
+   "use": true,
+   "default": {
+    "preset": "translucent",
+    "pectoral": {
+     "preset": "clear"
+    }
+   },
+   "members": {
+    "cherrybarbb": "pigmented",
+    "daniob": "translucent+pec clear",
+    "whitecloudb": "translucent+pec clear"
+   }
+  },
+  "Poeciliidae": {
+   "n": 3,
+   "share": 0.67,
+   "use": true,
+   "default": {
+    "preset": "translucent",
+    "pectoral": {
+     "preset": "clear"
+    }
+   },
+   "members": {
+    "guppyb": "translucent+pec clear",
+    "platyb": "pigmented+pec clear",
+    "swordtailb": "translucent+pec clear"
+   }
+  },
+  "Melanotaeniidae": {
+   "n": 1,
+   "share": 1.0,
+   "use": false,
+   "default": {
+    "preset": "translucent",
+    "pectoral": {
+     "preset": "clear"
+    }
+   },
+   "members": {
+    "neonrainbowb": "translucent+pec clear"
+   }
+  },
+  "Loricariidae": {
+   "n": 1,
+   "share": 1.0,
+   "use": false,
+   "default": {
+    "preset": "clear"
+   },
+   "members": {
+    "otob": "clear"
+   }
+  },
+  "Grammatidae": {
+   "n": 1,
+   "share": 1.0,
+   "use": false,
+   "default": {
+    "preset": "pigmented",
+    "pectoral": {
+     "preset": "translucent"
+    }
+   },
+   "members": {
+    "royalgrammab": "pigmented+pec translucent"
+   }
+  },
+  "Blenniidae": {
+   "n": 1,
+   "share": 1.0,
+   "use": false,
+   "default": {
+    "preset": "translucent"
+   },
+   "members": {
+    "tailspotb": "translucent"
+   }
+  }
+ }
+}

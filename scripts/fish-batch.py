@@ -10,7 +10,7 @@ Usage: python -I scripts/fish-batch.py [--batch b5] [--idle 45] [--only angel,be
 import sys, os, json, glob, time, subprocess
 from PIL import Image, ImageDraw
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE); sys.path.insert(0, HERE)
-SHEETS = 'C:/Users/nreed/fish-sheets'
+SHEETS = os.environ.get('FISH_SHEETS', 'C:/Users/nreed/fish-sheets')   # FISH_SHEETS / FISH_BATCH_NO_AUTOSAT: throwaway runs from a copy of scripts/ (FG1 print-path test)
 
 
 def log(msg): print(time.strftime('%H:%M ') + msg, flush=True)
@@ -24,7 +24,7 @@ def build(d, base, batch):
     sp = species().get(base)
     if not sp: return {'ok': False, 'why': f'{base} not in species.json'}
     ID = base + 'b'; t = time.time()
-    r = subprocess.run([sys.executable, '-I', os.path.join(HERE, 'fish-new.py'), d, ID, sp['name'], sp['sci'], str(sp['tl'])],
+    r = subprocess.run([sys.executable, '-I', os.path.join(HERE, 'fish-new.py'), d, ID, sp['name'], sp['sci'], str(sp['tl'])] + (['--no-autosat'] if os.environ.get('FISH_BATCH_NO_AUTOSAT') else []),
                        cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace')
     out = r.stdout + r.stderr; open(os.path.join(d, 'build.log'), 'w', encoding='utf-8').write(out)
     res = {'id': ID, 'ok': r.returncode == 0, 'minutes': round((time.time() - t) / 60, 1),
@@ -95,6 +95,15 @@ def main(argv):
         table.append(f'{r.get("id")}: ' + ('ok' if r.get('ok') else 'FAILED: ' + ' | '.join(r.get('tail', [])[-2:])) + (f', sat {r.get("sat")}' if r.get('sat') else ''))
     if rows: log('grid: ' + grid(rows, batch))
     print('\n'.join(table))
+    gates = []
+    for d in dirs:
+        if os.path.exists(d + '/build.json'): r = json.load(open(d + '/build.json')); gates.append((r.get('id'), r.get('gate')))
+    if any(g for _, g in gates):   # build gate table (fish-gate.py): one line per fish; flagged fish are listed again under "needs a fix"
+        print('\ngate (%s mode): fish | hard flags | to do' % next(g['mode'] for _, g in gates if g))
+        for i, g in gates:
+            if g: print(f'  {i}: ' + ('; '.join(g['flags']) or 'pass') + (('  | ' + '; '.join(g['soft'])) if g.get('soft') else ''))
+        bad = [i for i, g in gates if g and g.get('flags')]
+        print('needs a fix: ' + (', '.join(bad) if bad else 'none'))
 
 
 if __name__ == '__main__':
