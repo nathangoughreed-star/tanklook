@@ -8,13 +8,31 @@ import { goTargetOf, type FixPlan, type GoTarget } from './logic/noteFixes';
 import type { ChecksModel, CheckId, HabitatView, CostView, WaterView, NotesView } from './logic/checks';
 import { CHECKS } from './logic/checks';
 import { Icon, Meter, Pill } from './ui';
+import { useEffect, useState as useS } from 'preact/hooks';
+import { aqView, aqCheck, onAq } from './logic/aq';
+import type { TankSetup } from '../scene/types';
 
 /** R117: "Fix it" takes the user to the section where the problem is fixed by hand. It navigates only: nothing is applied. */
 function GoButton({ to }: { to: GoTarget }) {
   return <button type="button" class="btn fixit" data-goto={`${to.section}:${to.group}`} title={`Open ${to.label}`} onClick={() => openSection(to.section, to.group)}>Fix it</button>;
 }
 
-function Habitat({ v }: { v: HabitatView }) {
+/** HV: the AqAdvisor Check lives here, under our own reasons (it was on the animals panel): our number first, theirs beside it. */
+function AqRow({ S }: { S: TankSetup }) {
+  const [, bump] = useS(0);
+  useEffect(() => onAq(() => bump(n => n + 1)), []);
+  const aq = aqView(S);
+  if (!aq.show) return aq.note ? <div class="hint">{aq.note}</div> : null;
+  return (
+    <div class="aqrow"><span class="lbl">AqAdvisor</span>
+      {aq.canCheck ? <button type="button" class="btn sm" disabled={aq.busy} title="Ask AqAdvisor for this tank's stocking level (one request; only when the site is up)" onClick={() => void aqCheck(S)}>Check</button> : null}
+      <span class={aq.bad ? 'bad' : ''} role="status">{aq.text}</span>
+      <a href={aq.url} target="_blank" rel="noopener" title="Open this tank and stocking in AqAdvisor's calculator for the full report">AqAdvisor ↗</a>
+      {aq.note ? <div class="hint">{aq.note}</div> : null}</div>
+  );
+}
+
+function Habitat({ v, aq }: { v: HabitatView; aq?: boolean }) {
   return (
     <>
       <div class="drow"><span class="cap">Verdict</span><Pill tone={v.pill.tone}>{v.pill.word}</Pill></div>
@@ -24,8 +42,11 @@ function Habitat({ v }: { v: HabitatView }) {
       {v.bars.map(b => (
         <div class="dbar">
           <div class="drow"><span>{b.label}</span><b>{b.bar.text}</b></div>
-          <Meter fill={b.bar.fill} tone={b.tone} label={b.label} />
+          <Meter fill={b.bar.fill} tone={b.tone} label={b.label} ticks={b.key === 'water'} />
+          {b.key === 'water' ? <div class="zones" aria-hidden="true"><span>Comfortable (under 75%)</span><span>Full (Over past 100%)</span></div> : null}
           {b.topLines.length ? <ul class="dlist">{b.topLines.map(t => <li>{t}</li>)}</ul> : null}
+          {b.room?.countAs.length ? <ul class="dlist" data-countas>{b.room.countAs.map(t => <li>{t}</li>)}</ul> : null}
+          {b.room?.headroom ? <div class="hint" data-headroom>{b.room.headroom}</div> : null}
         </div>
       ))}
       {v.cats.length ? <div class="cap">By topic</div> : null}
@@ -36,6 +57,7 @@ function Habitat({ v }: { v: HabitatView }) {
         </div>
       ))}
       {v.reason ? <div class="hint">{v.reason}</div> : null}
+      {aq && !v.empty ? <AqRow S={v.tank} /> : null}
     </>
   );
 }
@@ -189,7 +211,7 @@ export function Drawer({ id, model, onClose, onFix, bundle }: { id: CheckId; mod
     <aside class="drawer" aria-label={title}>
       <div class="sec-head"><h2>{title}</h2><button type="button" class="btn icon ghost" title="Close (Esc)" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
       <div class="sec-body">
-        {id === 'habitat' ? <Habitat v={model.habitat} /> : id === 'cost' ? <Cost v={model.cost} bundle={bundle} /> : id === 'water' ? <Water v={model.water} /> : <Notes v={model.notes} onFix={onFix} />}
+        {id === 'habitat' ? <Habitat v={model.habitat} aq /> : id === 'cost' ? <Cost v={model.cost} bundle={bundle} /> : id === 'water' ? <Water v={model.water} /> : <Notes v={model.notes} onFix={onFix} />}
         <div class="hint dro">{id === 'notes' ? (model.notes.fixes.length && onFix ? 'Each button makes one change and is one undo step. A note with no button has no exact fix: change it in its own section.' : 'These notes have no exact one-click fix: change each in its own section.') : 'Read-only for now: each setting is changed in its own section.'}</div>
       </div>
     </aside>

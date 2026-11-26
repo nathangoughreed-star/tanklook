@@ -22,7 +22,6 @@ import { Icon } from './ui';
 import { SpeciesListDialog, speciesCount } from './speciesList';
 import { useFishSwimming } from './view';
 import { dragOut } from './drag';
-import { aqView, aqCheck, onAq } from './logic/aq';
 import { emptyScene } from '../scene/defaults';
 import { applyKind } from '../scene/pickerKind';
 import { totalOf, type Pk } from '../ui/stockPlanLogic';
@@ -107,8 +106,6 @@ export function AnimalsSection({ store, getViewer, pending }: { store: Store; ge
   const [listOpen, setListOpen] = useState(false);   // R131: the full species list
   const albinoSearch = wantsAlbino(query.q);   // AL1 part 3: "albino cory": Add from the card puts the fish in with the albino form on
   const pct = 100;   // AT1 (R42): new animals come in at the default size; a placed one is resized in the Selection drawer
-  useEffect(() => onAq(() => setN(n => n + 1)), []);
-  const aq = aqView(S);
   const timer = useRef(0);
   const say = (text: string, bad = false) => { setNote({ text, bad }); clearTimeout(timer.current); timer.current = window.setTimeout(() => setNote(null), bad ? 9000 : 4000); };
   useEffect(() => () => clearTimeout(timer.current), []);
@@ -167,13 +164,6 @@ export function AnimalsSection({ store, getViewer, pending }: { store: Store; ge
             ))}
           </div>
         ) : <div class="hint">{sv.empty}</div>}
-        {aq.show ? (
-          <div class="aqrow"><span class="lbl">AqAdvisor</span>
-            {aq.canCheck ? <button type="button" class="btn sm" disabled={aq.busy} title="Ask AqAdvisor for this tank's stocking level (one request; only when the site is up)" onClick={() => void aqCheck(S)}>Check</button> : null}
-            <span class={aq.bad ? 'bad' : ''} role="status">{aq.text}</span>
-            <a href={aq.url} target="_blank" rel="noopener" title="Open this tank and stocking in AqAdvisor's calculator for the full report">AqAdvisor ↗</a>
-            {aq.note ? <div class="hint">{aq.note}</div> : null}</div>
-        ) : aq.note ? <div class="hint">{aq.note}</div> : null}
         {sv.misfits ? (
           <div class="misnote"><span>{sv.misfitText} <span class="hint">{sv.misfitNames}.</span></span>
             <button type="button" class="btn sm" title="Take off the animals that do not live in this water (Ctrl+Z brings them back)" onClick={() => report(removeMisfits(store))}>Remove misfits ({sv.misfits})</button></div>

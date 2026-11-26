@@ -220,7 +220,7 @@ describe('filter gate', () => {
     expect(filterState(s)).toBe('unset'); expect(st.filter).toBe('unset');
     expect(r.nitrogen.filter.kind).not.toBe('none');
     const env = summaryOf(s).cats.find(c => c.id === 'environment')!;
-    expect(env.level).not.toBe('ok'); expect(env.items.some(i => i.level === 'unknown' && /No filter chosen/.test(i.text))).toBe(true);
+    expect(env.level).not.toBe('ok'); expect(env.items.some(i => i.level === 'caution' && i.support === 'filter' && /Filter not chosen/.test(i.text))).toBe(true);
     expect(env.items.map(i => i.text).join(' ')).not.toMatch(/impossible/i);
   });
   it('a path-1 tank (filter none until chosen) is worked against the same assumed filter as a plain inferred one', () => {

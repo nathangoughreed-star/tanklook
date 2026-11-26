@@ -12,8 +12,8 @@ export const Pill = ({ tone, children, title }: { tone: Tone; children: Componen
 );
 
 /** A read-only meter (tokens.css .bar): fill 0-100, coloured by tone. */
-export const Meter = ({ fill, tone, label }: { fill: number; tone: Tone; label: string }) => (
-  <div class="bar" role="meter" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(fill)}>
+export const Meter = ({ fill, tone, label, ticks }: { fill: number; tone: Tone; label: string; /** HV: marks at 75 and 100 (the Room scale) */ ticks?: boolean }) => (
+  <div class={ticks ? 'bar ticked' : 'bar'} role="meter" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(fill)}>
     <i class={tone === 'bad' ? 'bad' : tone === 'warn' ? 'warn' : ''} style={{ width: `${Math.max(0, Math.min(100, fill))}%` }} />
   </div>
 );

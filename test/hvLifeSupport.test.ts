@@ -8,6 +8,9 @@ import { summaryOf, summaryText } from '../src/ui/stockSummary';
 import { habitatView } from '../src/shell/logic/checks';
 import { checklistOf } from '../src/shell/logic/checklist';
 import { planHtml } from '../src/ui/planSheet';
+import { roomWorking } from '../src/ui/logic/room';
+import { stockingMemo } from '../src/scene/stocking';
+import { overWarn } from '../src/ui/stockPlanLogic';
 import type { TankSetup } from '../src/scene/types';
 
 const base = (): TankSetup => { const sc = parseScene(JSON.parse(SCENES[Object.keys(SCENES).find(k => { const t = parseScene(JSON.parse(SCENES[k])).scene; return t.tanks[t.active].water.on; })!])).scene; return sc.tanks[sc.active]; };
@@ -66,5 +69,14 @@ describe('HV life support', () => {
   it('the plan sheet opens with Not chosen yet', () => {
     const S = mk([['cardinal', 10]], { heater: 'none', filter: 'hob' });
     expect(planHtml({ title: 't', tank: 'x', animals: ['a'], fits: true, rows: [], missing: [], verdict: [{ level: 'ok', text: 'a' }, { level: 'ok', text: 'b' }], setupUsd: 0, upkeepUsdMo: 0, minPerWeek: 0, rhythm: '', rhythmNote: '', cycleNote: '', deals: [], waterPct: 1, floorPct: 1 } as any, [], summaryOf(S, 'in'))).toMatch(/Not chosen yet: a heater/);
+  });
+  it('Room working: 40 cardinals count as ~27 for room, and headroom comes from the engine itself', () => {
+    const S = mk([['cardinal', 40]], { heater: 'one', filter: 'hob' }, { tank: { ...base().tank, L: 914, D: 457, H: 406 } as any });
+    const w = roomWorking(S, stockingMemo(S));
+    expect(w.countAs[0]).toMatch(/^40 Cardinal tetras count as 2[67] for room/);
+    expect(w.headroom).toMatch(/more/);
+  });
+  it('a rule with no source never speaks as a fight: schooling species (flat counts only) give no over-count warning at any count', () => {
+    for (const id of ['neon', 'cardinal', 'ember', 'rummynose', 'danio', 'harlequin']) expect(overWarn({ id, n: 500 }), id).toBeUndefined();
   });
 });

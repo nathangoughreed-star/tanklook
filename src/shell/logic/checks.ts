@@ -8,6 +8,7 @@ import type { Brief } from '../../scene/brief';
 import { emptyBrief, rulesOf } from '../../scene/brief';
 import { checksNote } from '../../scene/rules';
 import { stockingMemo, plural, type Stocking } from '../../scene/stocking';
+import { roomWorking, type RoomWorking } from '../../ui/logic/room';
 import { tileState, topBy, tankSizeLine, type Bar, type TileState, type TopRow } from '../../ui/logic/habitat';
 import { stockSummary, type StockSummary, type CatLevel } from '../../ui/stockSummary';
 import { demandOf, drivers, type Demand, type UserProfile } from '../../demand';
@@ -45,11 +46,13 @@ export interface HabitatView {
   pill: { tone: Tone; word: string };
   sizeLine: string;
   cats: { label: string; word: string; tone: Tone; items: { text: string; /** R117: the "Fix it" button's destination, when the row has an obvious section */ go?: GoTarget }[] }[];
-  bars: { key: string; label: string; bar: Bar; tone: Tone; top: TopRow[]; topLines: string[] }[];
+  bars: { key: string; label: string; bar: Bar; tone: Tone; top: TopRow[]; topLines: string[]; /** HV: the Room bar's working: ticks at 75 and 100, the count-as line, the headroom */ room?: RoomWorking }[];
   warnings: { tone: Tone; text: string }[];
   reason: string;
   /** HV: the heater / filter the animals need and the tank lacks (scene/lifeSupport.ts), the same list the checklist, cost drawer and plan sheet read */
   support: Missing[];
+  /** the scene it was worked from (the drawer's AqAdvisor row asks about it) */
+  tank: TankSetup;
 }
 export function habitatView(S: TankSetup, units: Units, r: Stocking = stockingMemo(S)): HabitatView {
   const st: TileState = tileState(S, r, units), sm: StockSummary = stockSummary(S, r, st.mins, units);
@@ -59,10 +62,10 @@ export function habitatView(S: TankSetup, units: Units, r: Stocking = stockingMe
     : { tone: tooBig && sm.worst === 'ok' ? 'bad' as Tone : TONE[sm.worst], word: `${sm.worstWord}${tooBig ? ' · too big' : ''}${sm.unchecked ? ` · ${sm.unchecked} not checked` : ''}` };
   const lines = (top: TopRow[]) => top.map(t => `${plural(t.n, t.name)}: ${t.note ?? `${Math.round(t.share * 100)}%`}`);
   const bars = empty ? [] : [
-    { key: 'water', label: 'Water column', bar: st.water, top: topBy(r, 'space') },
+    { key: 'water', label: 'Room used', bar: st.water, top: topBy(r, 'space') },
     { key: 'floor', label: 'Floor', bar: st.floor, top: st.topFloor },
     ...(st.topMin.length ? [{ key: 'min', label: 'Tank minimum', bar: st.min, top: st.topMin }] : []),
-  ].map(b => ({ ...b, tone: toneOfBar(b.bar), topLines: lines(b.top) }));
+  ].map(b => ({ ...b, tone: toneOfBar(b.bar), topLines: lines(b.top), ...(b.key === 'water' ? { room: roomWorking(S, r) } : {}) }));
   const warnings = [
     ...(st.compat ? [{ tone: st.compat.level === 'over' ? 'bad' as Tone : 'warn' as Tone, text: st.compat.text }] : []),
     ...st.mins.map(w => ({ tone: w.level === 'over' ? 'bad' as Tone : 'warn' as Tone, text: w.text })),
@@ -71,7 +74,7 @@ export function habitatView(S: TankSetup, units: Units, r: Stocking = stockingMe
   const sc = (() => { try { const sp = standOf(S); return sp ? standCheck(sp, filledLb(S), volume(S.tank).gallons) : undefined; } catch { return undefined; } })();
   if (sc) warnings.push({ tone: sc.level === 'over' ? 'bad' as Tone : 'warn' as Tone, text: sc.text });
   return {
-    empty, support: empty ? [] : support, pill, sizeLine: tankSizeLine(S, r, units), reason: st.reason, warnings, bars,
+    empty, tank: S, support: empty ? [] : support, pill, sizeLine: tankSizeLine(S, r, units), reason: st.reason, warnings, bars,
     cats: empty ? [] : sm.cats.map(c => ({ label: c.label, word: c.word, tone: TONE[c.level], items: c.items.map(i => ({ text: i.text, ...(i.go ? { go: i.go === 'lid' ? GO_LID : i.go === 'heater' ? GO_HEATER : GO_FILTER } : {}) })) })),
   };
 }
