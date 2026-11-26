@@ -280,6 +280,86 @@
     "royalgramma": {
       "look": "royalgrammab",
       "approved": "2026-11-26"
+    },
+    "auratus": {
+      "look": "auratusb",
+      "approved": "2026-11-26"
+    },
+    "boesemani": {
+      "look": "boesemanib",
+      "approved": "2026-11-26"
+    },
+    "bolivianram": {
+      "look": "bolivianramb",
+      "approved": "2026-11-26"
+    },
+    "cpd": {
+      "look": "cpdb",
+      "approved": "2026-11-26"
+    },
+    "croakinggourami": {
+      "look": "croakinggouramib",
+      "approved": "2026-11-26"
+    },
+    "dwarfrasbora": {
+      "look": "dwarfrasborab",
+      "approved": "2026-11-26"
+    },
+    "ember": {
+      "look": "emberb",
+      "approved": "2026-11-26"
+    },
+    "falsejulii": {
+      "look": "falsejuliib",
+      "approved": "2026-11-26"
+    },
+    "hatchet": {
+      "look": "hatchetb",
+      "approved": "2026-11-26"
+    },
+    "molly": {
+      "look": "mollyb",
+      "approved": "2026-11-26"
+    },
+    "pandacory": {
+      "look": "pandacoryb",
+      "approved": "2026-11-26"
+    },
+    "peacockgudgeon": {
+      "look": "peacockgudgeonb",
+      "approved": "2026-11-26"
+    },
+    "pygmycory": {
+      "look": "pygmycoryb",
+      "approved": "2026-11-26"
+    },
+    "redtailshark": {
+      "look": "redtailsharkb",
+      "approved": "2026-11-26"
+    },
+    "rummynose": {
+      "look": "rummynoseb",
+      "approved": "2026-11-26"
+    },
+    "sae": {
+      "look": "saeb",
+      "approved": "2026-11-26"
+    },
+    "saltpepper": {
+      "look": "saltpepperb",
+      "approved": "2026-11-26"
+    },
+    "sparklinggourami": {
+      "look": "sparklinggouramib",
+      "approved": "2026-11-26"
+    },
+    "sterbai": {
+      "look": "sterbaib",
+      "approved": "2026-11-26"
+    },
+    "afra": {
+      "look": "afrab",
+      "approved": "2026-11-26"
     }
   }
 }
