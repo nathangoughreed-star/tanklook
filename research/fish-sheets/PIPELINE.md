@@ -168,3 +168,9 @@ first). Send with SendUserFile, ask approve / fix per fish. Images of a question
 
 ## Open items from b5 (not a batch's job unless Nathan asks)
 platy too red; gourami feelers missing; neon rainbow dorsal spike; danio barbels; angel dark patch at the dorsal base.
+
+## Backup of the stored sheets (FG1, 2026-11-26)
+`C:/Users/nreed/fish-sheets` is the only copy of the source sheets (4,298 files, 1.29 GB, outside the repo). Dated copy made 2026-11-26 at `C:/Users/nreed/fish-sheets-backup-2026-11-26` (same machine; Nathan has not named an off-machine place). Weekly, from PowerShell: `robocopy C:\Users\nreed\fish-sheets C:\Users\nreed\fish-sheets-backup-$(Get-Date -f yyyy-MM-dd) /E /COPY:DAT /NFL /NDL /NP`. Never publish the sheets.
+
+## Build gate (`scripts/fish-gate.py`, FG1, REPORT mode)
+`fish-batch.py` calls `gate()` after each build and writes `gate: {mode, pass, flags, soft, facts}` into `build.json`; the batch end prints a gate table and a "needs a fix" list. Hard flags: mass outside 0.7-1.6x, tlOverSl under 1.15, head/mid width under 0.55, eye outside 2-9 % SL, pectoral spread outside 0.05-0.6, no root-band line in a new build. Soft (to do / watch): mass 0.8-1.45x band, `fin-class-unconfirmed`, `no-visual-check`. Report mode never changes `ok`; block mode is Nathan's call (`MODE` in the script). Backtest of the 81 stored builds: `python -I scripts/fish-gate.py --scan`; test: `python -I scripts/fish-gate-test.py`.
