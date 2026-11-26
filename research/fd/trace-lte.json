@@ -1,0 +1,116 @@
+{
+ "at": "2026-11-26T14:44:16.076Z",
+ "net": "lte",
+ "cpu": 1,
+ "view": "betta-bowl",
+ "runs": [
+  {
+   "round": 0,
+   "build": "before",
+   "shellMs": 10579,
+   "partMs": 15684,
+   "partName": "tank part 0",
+   "kbBeforeShell": {
+    "jscss": 5076,
+    "fish": 8497,
+    "all": 13651
+   },
+   "kbBeforePart": {
+    "jscss": 5076,
+    "fish": 8497,
+    "all": 14069
+   },
+   "fishFiles": 266
+  },
+  {
+   "round": 0,
+   "build": "after",
+   "shellMs": 3639,
+   "partMs": 9226,
+   "partName": "tank part 0",
+   "kbBeforeShell": {
+    "jscss": 4448,
+    "fish": 0,
+    "all": 4524
+   },
+   "kbBeforePart": {
+    "jscss": 4448,
+    "fish": 0,
+    "all": 4524
+   },
+   "fishFiles": 0
+  },
+  {
+   "round": 1,
+   "build": "after",
+   "shellMs": 3601,
+   "partMs": 8360,
+   "partName": "tank part 0",
+   "kbBeforeShell": {
+    "jscss": 4448,
+    "fish": 0,
+    "all": 4524
+   },
+   "kbBeforePart": {
+    "jscss": 4448,
+    "fish": 0,
+    "all": 4524
+   },
+   "fishFiles": 0
+  },
+  {
+   "round": 1,
+   "build": "before",
+   "shellMs": 10649,
+   "partMs": 16582,
+   "partName": "tank part 0",
+   "kbBeforeShell": {
+    "jscss": 5076,
+    "fish": 8497,
+    "all": 13651
+   },
+   "kbBeforePart": {
+    "jscss": 5076,
+    "fish": 8497,
+    "all": 14069
+   },
+   "fishFiles": 266
+  },
+  {
+   "round": 2,
+   "build": "before",
+   "shellMs": 10673,
+   "partMs": 15701,
+   "partName": "tank part 0",
+   "kbBeforeShell": {
+    "jscss": 5076,
+    "fish": 8497,
+    "all": 13651
+   },
+   "kbBeforePart": {
+    "jscss": 5076,
+    "fish": 8497,
+    "all": 14069
+   },
+   "fishFiles": 266
+  },
+  {
+   "round": 2,
+   "build": "after",
+   "shellMs": 3583,
+   "partMs": 8668,
+   "partName": "tank part 0",
+   "kbBeforeShell": {
+    "jscss": 1187,
+    "fish": 0,
+    "all": 1256
+   },
+   "kbBeforePart": {
+    "jscss": 4448,
+    "fish": 0,
+    "all": 4941
+   },
+   "fishFiles": 0
+  }
+ ]
+}

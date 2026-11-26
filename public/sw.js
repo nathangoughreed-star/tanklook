@@ -2,10 +2,13 @@
 // - The page itself (navigations): network first, so a push to main shows on the next open; the cached copy only
 //   when offline.
 // - Vite's hashed files under assets/ never change: cache first, capped so old builds do not pile up.
+// - Fish art under art/fish/ requested with ?v=<build stamp> (photofish.ts): the stamp is in the URL, so the file at that URL never changes: cache first,
+//   no revalidation round trip per image on a repeat visit. Without ?v= (the review page, old models): network first.
 // - Everything else on this origin: network first, cached copy when offline.
 // - Other origins (the aqadvisor proxy, fonts, CDNs) are not touched: stocking advice is never served stale.
-const CACHE = 'tanklook-v1';
+const CACHE = 'tanklook-v2';   // v2 (lane FD, 2026-11-25): versioned fish art is cache first
 const ASSET_CAP = 120; // files kept under assets/; the oldest go first
+const FISH_CAP = 700;  // versioned fish images kept under art/fish/ (about 6 MB per build of all of them; a rebuilt fish leaves its old URL behind)
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './manifest.webmanifest'])).then(() => self.skipWaiting()));
@@ -31,15 +34,15 @@ async function networkFirst(req, key) {
   }
 }
 
-async function cacheFirst(req) {
+async function cacheFirst(req, tag = '/assets/', cap = ASSET_CAP) {
   const c = await caches.open(CACHE);
   const hit = await c.match(req);
   if (hit) return hit;
   const res = await fetch(req);
   if (res.ok) {
     await c.put(req, res.clone());
-    const old = (await c.keys()).filter((r) => r.url.includes('/assets/'));
-    for (const r of old.slice(0, Math.max(0, old.length - ASSET_CAP))) await c.delete(r);
+    const old = (await c.keys()).filter((r) => r.url.includes(tag));
+    for (const r of old.slice(0, Math.max(0, old.length - cap))) await c.delete(r);
   }
   return res;
 }
@@ -56,5 +59,6 @@ self.addEventListener('fetch', (e) => {
     e.respondWith(networkFirst(req, app ? self.registration.scope : undefined)); return;
   }
   if (url.pathname.includes('/assets/')) { e.respondWith(cacheFirst(req)); return; }
+  if (url.pathname.includes('/art/fish/') && url.searchParams.has('v')) { e.respondWith(cacheFirst(req, '/art/fish/', FISH_CAP)); return; }
   e.respondWith(networkFirst(req));
 });

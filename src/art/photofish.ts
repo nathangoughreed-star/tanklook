@@ -43,12 +43,16 @@ const EYE_IRIS = 1.1 / 1.35;
  * src/data/fishLive.json, for every visitor). Images load in parallel; resolves to the arts that loaded, so a fish whose
  * images failed keeps its old look (main.ts swaps only those).
  */
+/** One load per art, however many callers ask (lane FD: a scene's fish first, the rest on idle, a fish added later). */
+const inflight = new Map<string, Promise<boolean>>();
 export async function loadPhotoFish(only?: ReadonlySet<string>): Promise<Set<string>> {
  const done = new Set<string>();
  await Promise.all(Object.values(files).map(async J => {
   const R = J.anatomy?.render?.photo;
   if (!R || (only && !only.has(R.art))) return;
   const id: string = R.art;
+  let job = inflight.get(id);
+  if (!job) { job = (async () => {
   try {
     const v = R.ver as string | undefined;
     const [card, top, front, fin, op, finop] = await Promise.all([load(id, v), load(id + '-top', v), load(id + '-front', v), R.finImg ? load(id + '-fin', v) : Promise.resolve(null),
@@ -118,8 +122,10 @@ export async function loadPhotoFish(only?: ReadonlySet<string>): Promise<Set<str
     if (op && finop) { FIN_OPACITY[id] = { card: op, fin: finop }; P.tailBlend = 0.05; }   // the solid fades onto the card over 5 % of TL before the fin
     PROJ_ART[id] = { top: { img: top, ...(ws ? { sy: d.stations.map((s: number, i: number) => [U(s), ws[i]] as [number, number]).sort((a: number[], b: number[]) => a[0] - b[0]) } : {}), ...(R.proj.topRamp ? { ramp: R.proj.topRamp } : {}) }, front: { img: front, k: R.proj.fk, y0: R.proj.y0, ...(R.proj.ramp ? { ramp: R.proj.ramp } : {}) } };   // ramp: a wedge snout faces sideways, so its front layer needs a wider fade (Nathan 2026-11-25, three-spot)
     FISH_ART[id] = (ctx, _p, W) => ctx.drawImage(card, 0, 0, W, W * (ctx.canvas.height / ctx.canvas.width));
-    done.add(id);
-  } catch (e) { console.warn(e); }
+    return true;
+  } catch (e) { console.warn(e); inflight.delete(id); return false; }
+  })(); inflight.set(id, job); }
+  if (await job) done.add(id);
  }));
  return done;
 }
