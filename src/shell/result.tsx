@@ -12,7 +12,7 @@ export function ResultCard({ store, model, result, onMine, onAnother }: { store:
   return (
     <div class="ov resultcard glass" role="region" aria-label="This tank">
       <div class="rcname"><b>{store.scene.name}</b><span class="dim">{h.sizeLine ? ` · ${h.sizeLine}` : ''}</span></div>
-      <div class="rccost">{c ? <><b>{c.setup}</b><span class="dim"> to set up · {c.monthly} a month · {c.minutes}</span></> : <span class="dim">No price yet</span>}</div>
+      <div class="rccost">{c ? <><b>{c.setup}</b><span class="dim"> to set up · {c.monthly} · {c.minutes}</span></> : <span class="dim">No price yet</span>}</div>
       <div class="rcverdict"><Pill tone={h.pill.tone}>{h.pill.word}</Pill>{h.reason ? <span class="rcreason"> {h.reason}</span> : null}</div>
       {missing.length ? <ul class="rcmiss">{missing.map(m => <li>{m.text}</li>)}</ul> : null}
       <div class="acts rcacts">

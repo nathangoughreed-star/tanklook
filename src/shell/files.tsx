@@ -193,7 +193,7 @@ export function FileMenu({ files }: { files: Files }) {
       <button type="button" class="btn icon ghost" title="New, Open, Save as, Share link, Download" aria-label="File menu" aria-expanded={menu} onClick={() => setMenu(!menu)}><Icon name="more" /></button>
       {menu ? <div class="pop menu" role="menu" onClick={() => setMenu(false)}>
         {FILE_MENU.map(m => <button type="button" class="btn ghost" role="menuitem" title={m.hint} onClick={() => files.run(m.id)}>{m.label}</button>)}
-        <button type="button" class="btn ghost" role="menuitem" title="Show the Get started checklist on this tank" onClick={restoreChecklist}>Get started checklist</button>
+        <button type="button" class="btn ghost" role="menuitem" title="Show the setup steps on this tank" onClick={restoreChecklist}>Setup steps</button>
       </div> : null}
     </span>
   );
