@@ -74,6 +74,9 @@ Each item: what I did -> visible main prompt/text -> observations.
 
 `src/shell/start.tsx`, `src/shell/logic/start.ts`, `src/shell/checklist.tsx` (+ `logic/checklist.ts`), `src/shell/shell.css` (line 688 and the `max-width: 699px` block), `src/shell/App.tsx`, `src/shell/tank.tsx`, `src/shell/animals.tsx`, `src/shell/equipment.tsx`, `src/shell/discover.tsx`, `src/shell/constraints.tsx`, `src/shell/print.tsx`, `src/shell/files.tsx`, `src/scope.ts`, `HANDOFF.md` (top ~60 lines only), `research/design/unified-setup-plan.md`.
 
+## Competitor research (added 2026-11-25)
+`research/competitors/SUMMARY.md` surveys 23 competing planners: what users love (realistic animation, relaxing to watch, trying a setup before buying, warnings that stop bad pairings) and what they complain about (stocking numbers they don't trust, clunky placement, paywalls). Use it to judge what a first visit must show to beat them.
+
 ## The question again
 
 "Walk through these screens as a brand-new hobbyist and, separately, as an expert with many tanks. Where does each get lost, bored, or misled? Give the 5 changes that would matter most, ranked, each with the screen it affects and what 'fixed' looks like - judged against the product vision."

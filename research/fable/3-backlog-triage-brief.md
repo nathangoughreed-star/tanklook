@@ -155,6 +155,9 @@ Most are finished work from 2026-10-13 to 11-18, listed so you can see what alre
 
 **visuals/art** (14): DF1 look-step-next [S;landed c0a15613 11-03]; GS3 look-first-tail [M;landed d205a68c 11-16]; GV5 look-after-stocking [M;landed e2d3673d 11-02]; LB1 lid-and-background [L;landed 40f30e8b 11-03]; P6b scape-plan [M;landed 4af5d701 10-20]; QP4 archetype-backgrounds [S;landed b9b4a7c9 11-10]; RK1 rock-weight-budget [M;landed 40f30e8b 11-03]; SD scape-density [M;cited: 37c8058b 10-19]; SG stone-grain [M;cited: e5ff62d5 10-16] *; SM1 substrate-mix-gradient [M;landed a5d607f0 11-14]; SS scape-styles [M;cited: f0b65e07 10-16] *; VF C-ground [M;cited: f7cb679e 11-13] *; VF C2-substrate-embed [M;cited: f7cb679e 11-13]; VF9 shadow-lines [S;landed a0b0e687 11-13]
 
+## Competitor research (added 2026-11-25, after this brief was written)
+A separate chat surveyed 23 competing products. Read `research/competitors/SUMMARY.md` (one file per product in the same folder) and weigh it in your ranking. Its top 10 ideas are logged as requests R152-R161 in `research/requests.md`; they are open and not in the tables above. Headlines: no competitor combines 3D, real-brand gear, calibrated stocking, marine and herps, and real prices in one free tool, and the one to watch is TankMates. Gaps it ranks: species-specific fish behavior, shareable links and a gallery, plant growth over time, list size, native iOS, AR. Its top idea: explain the stocking % factor by factor, with sources.
+
 ## What a good answer looks like
 
 1. A ranked table (value to users ÷ effort, against the vision) covering every OPEN or PROPOSED row above, with a one-line reason and the factor that moved it (for example "chatbot-hard", "deals pillar", "adds load size", "only advanced users").
