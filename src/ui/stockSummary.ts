@@ -20,15 +20,16 @@ import { plural } from '../scene/stocking';
 import { AIR } from '../data/climate';
 import { rangeLine, sharedRange } from '../scene/temprange';
 import { coverAdvice, crowdWarnings } from '../scene/territory';
+import { isJudgment } from '../data/ruleStatus';
 import { lifeSupportOf, notChosenLine, type Missing, type SupportKind } from '../scene/lifeSupport';
 import type { TankSetup, Units } from '../scene/types';
 import { notesOf } from './stockPlanLogic';
 
 /** `rec`: the "below recommended size" line, said under the bar only; the category summary (and so the suggester's welfare gate) leaves it out. */
-export interface MinWarn { level: 'over' | 'near'; text: string; rec?: true }
+export interface MinWarn { level: 'over' | 'near'; text: string; rec?: true; /** the species whose minimum it is (ruleStatus: a minimum that rests on judgment is capped at Caution) */ ids?: string[] }
 export type CatId = 'minimums' | 'social' | 'environment' | 'behaviour' | 'fullness';
 export type CatLevel = 'ok' | 'caution' | 'problem' | 'unknown';
-export interface CatItem { level: 'caution' | 'problem' | 'unknown'; text: string; /** a cross-link: the item is counted here, also relevant there */ also?: string; /** a load percent: the line is tinted along the gauge's green-amber-red scale */ pct?: number; /** R117: where the shell sends the user to fix it (a "Fix it" button): 'lid' = Tank > Lid and top, 'filter' = Equipment > Filter */ go?: 'lid' | 'filter' | 'heater'; /** HV: this line is a missing heater or filter (scene/lifeSupport.ts); a generated design supplies its own gear, so the suggester ignores it */ support?: SupportKind }
+export interface CatItem { level: 'caution' | 'problem' | 'unknown'; text: string; /** a cross-link: the item is counted here, also relevant there */ also?: string; /** a load percent: the line is tinted along the gauge's green-amber-red scale */ pct?: number; /** R117: where the shell sends the user to fix it (a "Fix it" button): 'lid' = Tank > Lid and top, 'filter' = Equipment > Filter */ go?: 'lid' | 'filter' | 'heater'; /** HV: this line is a missing heater or filter (scene/lifeSupport.ts); a generated design supplies its own gear, so the suggester ignores it */ support?: SupportKind; /** HV: the species and rule fields behind a line (data/ruleStatus.ts); a Problem whose fields rest on judgment alone is capped at Caution and marked `judgment` */ basis?: { ids: string[]; fields: string[] }; judgment?: true }
 export interface Category { id: CatId; label: string; what: string; level: CatLevel; word: string; items: CatItem[]; /** the category's one-line answer (Tank minimums: the smallest tank holding every species' minimum group) */ answer?: string }
 export interface StockSummary {
   cats: Category[];
@@ -54,6 +55,20 @@ const LABELS: Record<CatId, [string, string]> = {
   fullness: ['Spatial fullness', 'how many fit comfortably'],
 };
 
+/** Which species' rule fields a pair reason rests on (reason texts as animalfit.ts words them; the other side's rule when the text starts "it ..."). Undefined = a physical fact (a dry enclosure) or no data field. */
+export function pairBasis(t: string, s: string, o: string): CatItem['basis'] | undefined {
+  const other = /^it /.test(t), owner = other ? o : s, both = [s, o];
+  if (/eat (it|its small)|eat this one|eat small ones/.test(t)) return { ids: [owner], fields: ['prey'] };
+  if (/harass/.test(t)) return { ids: both, fields: ['temper', 'nip', 'slow'] };
+  if (/nip/.test(t)) return { ids: both, fields: ['nip', 'temper', 'feelers'] };
+  if (/aggressive/.test(t)) return { ids: both, fields: ['temper'] };
+  if (/one per tank/.test(t)) return { ids: [s], fields: ['solo'] };
+  if (/look-alike/.test(t)) return { ids: [s], fields: ['fam'] };
+  if (/species-only/.test(t)) return { ids: both, fields: ['alone'] };
+  if (/^water chemistry|^prefers pH/.test(t)) return { ids: both, fields: ['ph', 'phOk'] };
+  if (/^water hardness|^prefers GH/.test(t)) return { ids: both, fields: ['gh', 'ghOk'] };
+  return undefined;
+}
 const levelOf = (items: CatItem[]): CatLevel => items.some(i => i.level === 'problem') ? 'problem' : items.some(i => i.level === 'caution') ? 'caution' : items.some(i => i.level === 'unknown') ? 'unknown' : 'ok';
 export const worstOf = (ls: CatLevel[]): CatLevel => ls.reduce((a, b) => RANK[b] > RANK[a] ? b : a, 'ok' as CatLevel);
 
@@ -90,7 +105,11 @@ function airChecks(land: Species[], add: (c: CatId, level: CatItem['level'], tex
 export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: Units = 'cm'): StockSummary {
   const us = units === 'in';
   const by: Record<CatId, CatItem[]> = { minimums: [], social: [], environment: [], behaviour: [], fullness: [] };
-  const add = (c: CatId, level: CatItem['level'], text: string, also?: string, pct?: number, go?: CatItem['go'], support?: SupportKind) => by[c].push({ level, text, ...(also ? { also } : {}), ...(pct !== undefined ? { pct } : {}), ...(go ? { go } : {}), ...(support ? { support } : {}) });
+  const add = (c: CatId, level: CatItem['level'], text: string, also?: string, pct?: number, go?: CatItem['go'], support?: SupportKind, basis?: CatItem['basis']) => {
+    // HV: a judgment-only rule never renders red
+    const judg = !!basis && isJudgment(basis.ids, basis.fields), lv: CatItem['level'] = level === 'problem' && judg ? 'caution' : level;
+    by[c].push({ level: lv, text, ...(also ? { also } : {}), ...(pct !== undefined ? { pct } : {}), ...(go ? { go } : {}), ...(support ? { support } : {}), ...(basis ? { basis } : {}), ...(judg ? { judgment: true as const } : {}) });
+  };
   const count = new Map<string, number>(), fem = new Map<string, number>();
   for (const f of S.fish) { const sp = getSpecies(f.species); if (!sp || !countsAgainstWater(sp)) continue; count.set(sp.id, (count.get(sp.id) ?? 0) + 1); if (f.sex === 'f' || f.gender === 'f') fem.set(sp.id, (fem.get(sp.id) ?? 0) + 1); }
   const sp = [...count.keys()].map(id => getSpecies(id)!) as Species[];
@@ -98,7 +117,7 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: 
   const none = (s: Species, check: string) => { if (!noData.has(s.name)) noData.set(s.name, new Set()); noData.get(s.name)!.add(check); };
 
   // (a) tank minimums: the species' own red line; a species with none on record simply has no check
-  for (const w of mins) if (!w.rec) add('minimums', w.level === 'over' ? 'problem' : 'caution', w.text);
+  for (const w of mins) if (!w.rec) add('minimums', w.level === 'over' ? 'problem' : 'caution', w.text, undefined, undefined, undefined, undefined, w.ids ? { ids: w.ids, fields: ['tankmin'] } : undefined);
   for (const s of sp) if (!groupMinimum(s)) none(s, 'tank minimum');
 
   // (b) social: group band, sex ratio, pairs
@@ -122,7 +141,7 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: 
       if (seen.has(key)) continue;
       seen.add(key);
       const env = /^water (chemistry|hardness)|dry enclosure/.test(t);
-      add(env ? 'environment' : 'behaviour', w.concern ? 'caution' : 'problem', `${s.name} with ${o.name}: ${t.replace(/ \([^)]*\)$/, '')}`);
+      add(env ? 'environment' : 'behaviour', w.concern ? 'caution' : 'problem', `${s.name} with ${o.name}: ${t.replace(/ \([^)]*\)$/, '')}`, undefined, undefined, undefined, undefined, pairBasis(t, s.id, o.id));
     }
   }
   for (const s of sp) { const c = CARE[s.id]; if (c && !c.gh) none(s, 'hardness range'); }
@@ -140,7 +159,7 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: 
   else if (sh.state === 'none') add('environment', 'problem', rangeLine(sh, us));
   else if (sh.state === 'single') add('environment', 'caution', rangeLine(sh, us));
   else if (sh.state === 'unknown') add('environment', 'unknown', 'No recorded temperature range for some of these animals');
-  airChecks(land, add, us);
+  airChecks(land, (c, l, t) => add(c, l, t, undefined, undefined, undefined, undefined, { ids: land.map(x => x.id), fields: ['air'] }), us);
   for (const t of coverAdvice(S)) add('environment', 'caution', t.replace(/\.$/, ''), 'it also limits fighting: see Behavior');
   // the lid IS checked (lane LB1, data/lidNeed.ts): an open top with an animal that needs one is a Problem, named; the old "Lid:" lines are no longer "cannot check"
   const openTop = openTopProblem(S); if (openTop) add('environment', 'problem', openTop.text, undefined, undefined, 'lid');
@@ -189,7 +208,7 @@ export const fmtOf = (units: Units) => ({ len: (mm: number) => fmtLenShort(mm, u
  */
 export function minWarnings(m: TankMinimum, units: Units): MinWarn[] {
   const f = fmtOf(units), name = (x: MinRow) => plural(x.n, x.name), out: MinWarn[] = [];
-  for (const x of [...m.rows].sort((a, b) => b.pct - a.pct)) if (x.pct > MIN_SLACK_PCT) out.push({ level: 'over', text: `${name(x)}: ${reasonIn(x, f)}` });
+  for (const x of [...m.rows].sort((a, b) => b.pct - a.pct)) if (x.pct > MIN_SLACK_PCT) out.push({ level: 'over', text: `${name(x)}: ${reasonIn(x, f)}`, ids: [x.id] });
   for (const x of [...m.rows].sort((a, b) => b.comfortPct - a.comfortPct)) if (x.pct <= MIN_SLACK_PCT) {
     const rec = x.comfortPct > 100, near = [...(rec ? [recommendedOf(x.comfort, f)] : []), ...notesIn(x, f)];
     if (near.length) out.push({ level: 'near', text: `${name(x)}: ${near.join('; ')}`, ...(rec && !notesIn(x, f).length ? { rec: true as const } : {}) });
