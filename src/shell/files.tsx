@@ -199,7 +199,7 @@ export function FileMenu({ files }: { files: Files }) {
   );
 }
 
-function Dialog({ title, onClose, children, wide, full, top, dock }: { title: string; onClose: () => void; children: preact.ComponentChildren; wide?: boolean; full?: boolean; /** the landing's docked variant (?landing=dock): not modal, the tank stays lit beside it */ dock?: boolean; /** a question that must show above any other dialog (the animal door's own window) */ top?: boolean }) {
+function Dialog({ title, onClose, children, wide, full, top, dock }: { title: string; onClose: () => void; children: preact.ComponentChildren; wide?: boolean; full?: boolean; /** the landing sheet: not modal, docked beside the lit tank (a bottom sheet on a phone) */ dock?: boolean; /** a question that must show above any other dialog (the animal door's own window) */ top?: boolean }) {
   useEffect(() => { if (!dock) return; document.body.classList.add('landdock'); return () => document.body.classList.remove('landdock'); }, [dock]);
   return (
     <div class={`scrim${top ? ' top' : ''}${dock ? ' dock' : ''}`} onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}>

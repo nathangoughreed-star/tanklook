@@ -4,7 +4,7 @@
 import type { ComponentChildren } from 'preact';
 import type { Files } from './files';
 import { listLib } from '../scene/library';
-import { doorsFor, linksFor, markWelcomed, landingDock, HEADLINE, SUBLINE, type DoorId } from './logic/start';
+import { doorsFor, linksFor, markWelcomed, HEADLINE, SUBLINE, type DoorId } from './logic/start';
 import { PRODUCT_NAME } from './productName';
 import plantedPic from '../examples/planted.jpg?url';
 import bettaPic from '../examples/betta-bowl.jpg?url';
@@ -27,7 +27,7 @@ export function StartSheet({ files, Dialog }: { files: Files; Dialog: DialogC })
   const PICS: Record<DoorId, string> = { examples: plantedPic, animal: bettaPic, have: iwagumiPic, blank: blankPic };   // four rendered pictures of the same kind
   const pic = (id: DoorId) => <img class="doorpic" src={PICS[id]} alt="" loading="lazy" />;
   return (
-    <Dialog title={PRODUCT_NAME} wide dock={landingDock()} onClose={() => files.close()}>
+    <Dialog title={PRODUCT_NAME} wide dock onClose={() => files.close()}>
       <h2 class="startline">{HEADLINE}</h2>
       <p class="hint startsub">{SUBLINE}</p>
       <div class="libgrid startdoors">{doorsFor().map(d => (

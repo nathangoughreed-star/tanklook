@@ -951,7 +951,7 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 @keyframes loadflow { to { stroke-dashoffset: -48; } } @media (prefers-reduced-motion: reduce) { .loadbar .loadwave { animation: none; } }
 
 .ov.loadbar { top: 10px; z-index: calc(var(--z-toast) + 6); }   /* above a dialog's scrim (it sat under the sheet), in the gap over the dialog */
-/* the docked landing (?landing=dock): not modal, no dimming; the sheet is a left column on a desktop, a bottom sheet on a phone, and the lit tank shows beside it */
+/* the landing sheet (docked, Nathan 2026-11-26): not modal, no dimming; the sheet is a left column on a desktop, a bottom sheet on a phone, and the lit tank shows beside it */
 .scrim.dock { background: none; pointer-events: none; display: block; } .scrim.dock .dlg { pointer-events: auto; position: fixed; left: 64px; top: 48px; bottom: 0; width: 400px; max-width: none; max-height: none; height: auto; border-radius: 0; box-shadow: 4px 0 18px rgba(0,0,0,.35); }
 .scrim.dock .dlg .startdoors { grid-template-columns: repeat(2, minmax(0, 1fr)); } .scrim.dock .startline { font-size: 1.05em; }
 body.landdock .ui2app .viewer { margin-left: 400px; }
