@@ -5,6 +5,7 @@ import { render } from 'preact';
 import tokens from './tokens.css?inline';
 import layout from './shell.css?inline';
 import { Store } from '../scene/store';
+import type { Scene } from '../scene/types';
 import { freshScene } from '../scene/freshScene';
 import { Viewer } from '../render/viewer';
 import { applySavedFx } from '../render/fxPrefs';
@@ -22,10 +23,12 @@ import { pickable } from './animals';
 import { pickItems } from './scape';
 import { scapeSec } from './logic/scape';
 import { openClicked } from './clickOpen';
-import { shouldWelcome } from './logic/start';
+import { shouldWelcome, landing, LANDING_EXAMPLE } from './logic/start';
+import { exampleScenes } from '../examples';
+import { parseScene } from '../scene/validate';
 import { watchLiveArt } from '../art/liveFish';
 
-export function bootShell() {
+export async function bootShell() {
   document.documentElement.classList.remove('gb-new'); // BF1: the index.html pre-paint guard (hid the old markup, set a plain background)
   // the old shell off: its markup removed (no old id stays in the page), its stylesheet disabled (kept in place so dev HMR has a node to update)
   for (const el of [...document.body.children]) if (el.tagName !== 'SCRIPT') el.remove();
@@ -37,7 +40,13 @@ export function bootShell() {
   const { scene: restored, error: saveError } = Store.loadLocalChecked(); // a return visit resumes the autosave; a first visit opens an empty tank (shell step 2)
   const start = startMode(restored, saveError);
   applySavedFx();
-  const store = new Store(restored ?? freshScene());
+  // R162: a first visit sees a stocked, priced, checked example behind the sheet (no panel open), not an empty tank. A slow connection falls back to the empty tank after 1.5 s.
+  let first: Scene | null = null;
+  if (!restored && !start.message && !isShareHash(location.hash) && shouldWelcome(restored, saveError)) {
+    try { const sc = await Promise.race([exampleScenes(), new Promise<null>(r => setTimeout(() => r(null), 1500))]); if (sc?.[LANDING_EXAMPLE]) first = parseScene(sc[LANDING_EXAMPLE]).scene; } catch { /* the empty tank */ }
+  }
+  const store = new Store(restored ?? first ?? freshScene());
+  if (first) { landing.untouched = true; store.subscribe(kind => { if (kind === 'scene') landing.untouched = false; }); }
 
   // the existing viewer, unchanged: a host with its canvas, moved into the view area by App
   const viewHost = document.createElement('div'); viewHost.className = 'vhost';

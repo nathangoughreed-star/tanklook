@@ -28,7 +28,7 @@ export function StartSheet({ files, Dialog }: { files: Files; Dialog: DialogC })
   const go = (id: DoorId) => {
     if (id === 'examples') files.openExamples();
     else if (id === 'animal') { files.close(); dispatchEvent(new Event(ANIMAL_DOOR_EVENT)); }
-    else { files.close(); dispatchEvent(new Event(PICKER_EVENT)); }   // 'have' and 'blank'
+    else { files.freshIfLanding(); files.close(); dispatchEvent(new Event(PICKER_EVENT)); }   // 'have' and 'blank': an empty tank, then the picker
   };
   const pic = (id: DoorId) => id === 'examples' ? <img class="doorpic" src={plantedPic} alt="" loading="lazy" /> : id === 'animal' ? <img class="doorpic" src={bettaPic} alt="" loading="lazy" /> : <Draw kind={id} />;
   return (

@@ -36,3 +36,9 @@ export function linksFor(savedCount: number): StartLink[] {
 }
 /** The water choices on the Blank door (aquarium scope only, from the old start screen's rules). */
 export const blankKinds = (): { kind: SetupKind; label: string; tip: string }[] => habitatChoices().map(c => ({ kind: kindOfDirection(c.id), label: c.label.replace(' aquarium', ''), tip: c.tip }));
+
+/** FD unit 2 (R162): a first visit shows a stocked example behind the sheet. While nothing has been changed in it, the Build my own and I already have a
+ *  tank doors start from an empty tank without asking "Replace your project?". boot.tsx sets it; the first edit clears it. */
+export const landing = { untouched: false };
+/** The example behind a first visit's sheet: a house example with only approved fish, priced and checked. */
+export const LANDING_EXAMPLE = 'planted';

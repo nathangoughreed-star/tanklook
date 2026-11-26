@@ -31,6 +31,7 @@ import { ProjectName, FileMenu, FileLayer, type Files } from './files';
 import { DiscoverSection, IdeasButton, AnimalDoor } from './discover';
 import { GetStarted } from './checklist';
 import { ANIMAL_DOOR_EVENT, PICKER_EVENT } from './start';
+import { landing } from './logic/start';
 import { resetChecklist } from './logic/checklist';
 import { ConstraintsSection } from './constraints';
 import { PreferencesSection } from './prefs';
@@ -211,7 +212,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const slow = useStore(store);
   const phone = usePhone();
   const fs = useFs();
-  const [section, setSection] = useState<SectionId | null>(phone ? null : 'tank');
+  const [section, setSection] = useState<SectionId | null>(phone || landing.untouched ? null : 'tank');
   const [more, setMore] = useState(false);
   const [drawer, setDrawer] = useState<CheckId | 'selection' | null>(null);
   const [saved, setSaved] = useState(true);
