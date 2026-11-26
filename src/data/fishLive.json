@@ -260,6 +260,26 @@
     "mandarin": {
       "look": "mandarinb",
       "approved": "2026-11-26"
+    },
+    "discus": {
+      "look": "discusc",
+      "approved": "2026-11-26"
+    },
+    "swordtail": {
+      "look": "swordtailb",
+      "approved": "2026-11-26"
+    },
+    "betta": {
+      "look": "bettab",
+      "approved": "2026-11-26"
+    },
+    "blackskirt": {
+      "look": "blackskirtb",
+      "approved": "2026-11-26"
+    },
+    "royalgramma": {
+      "look": "royalgrammab",
+      "approved": "2026-11-26"
     }
   }
 }
