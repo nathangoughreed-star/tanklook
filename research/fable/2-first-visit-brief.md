@@ -4,7 +4,17 @@ Read cold. Self-contained. Screens are in `research/fable/2-first-visit/` (paths
 
 ## The question (restated at the end)
 
-"Walk through these screens as a brand-new hobbyist and, separately, as an expert with many tanks. Where does each get lost, bored, or misled? Give the 5 changes that would matter most, ranked, each with the screen it affects and what 'fixed' looks like - judged against the product vision."
+"Walk these screens as each of the three customer jobs: a beginner asking 'what should I build?', an owner asking 'what can I do with what I have?', and an enthusiast asking 'will this exact design work?'. Where does each get lost, bored or misled, and where does each fail to see, within the first minute, why TankLook beats the free alternatives (AqAdvisor, Scape It, App-aquatic, TankMates)? Judge against the product vision and the competitor findings (what users love and complain about). Give the 5 changes that matter most, ranked, each with the screen it affects and what 'fixed' looks like, and say what the landing screen should promise in one sentence."
+
+## Competitor research: read this first (added 2026-11-25; it reframes the question)
+A separate chat surveyed 23 competing products; read `research/competitors/SUMMARY.md` (per-product files `01`-`23` in the same folder) and `research/competitors/chatgpt-report-delta.md`. Its top 10 ideas are open requests R152-R161 in `research/requests.md`. The findings that bear on every question:
+- **No rival combines** orbitable 3D, real-brand gear in true colors, calibrated growth-aware stocking, marine + brackish + herps, and real prices in one free, no-account tool. Most rivals are tiny, with no user feedback anywhere; real review volume exists only for the Steam games (Behind Glass 95% of 389, Fish Game 92% of 606, Aquarium Designer 84% of ~1,100, Aquarist 81% of 961) and My Aquarium Guide (~14K ratings).
+- **Closest overlap: TankMates** (tankmates.io, new, free while testing, freshwater only): 3D planner, compatibility checks, local-shop prices, a shareable blueprint, 111 tank templates, a claimed 932 species / 396 plants, photo fish ID, no visible audience yet (`21-tankmates.md`).
+- **What users love:** fish animation that looks like a real tank; relaxing ambient viewing; trying a setup before buying; species-accurate behavior with a live "what is it doing" status (Fish Game); warnings that stop bad pairings; "a general idea in minutes".
+- **Category complaints:** every fish behaves the same; stocking numbers nobody trusts (AqAdvisor's % called "hocus-pocus", ignores plants; yet the top Reddit reply says calculators are too conservative: 10 cardinals = 80% of a 40 breeder); thin plant lists with no growth; clunky placement, no top/side views; paywalls and credits; a wrong husbandry rule (goldfish habitat, Anubias planted in substrate) costs trust even in a game.
+- **TankLook's ranked gaps:** (1) species-specific behavior and visible status; (2) share links and a gallery: no sharing means no growth loop, and TankLook has no users yet; (3) plant growth over time (App-aquatic, Underglass, Scapesome paid); (4) roster size (AqAdvisor 917 species, Scapesome 188 plants; ours unchecked against them); (5) native iOS; (6) AR (Shrimpspin ships it); explainable stocking.
+- **Strategy points from the ChatGPT report:** three customer jobs: beginner "what should I build?" (Discover), owner "what can I do with what I have?" (Guided, Available/Required gear), enthusiast "will this exact design work?" (Sandbox). Warnings in hard / conditional / preference tiers, each with reason, source, confidence and fix; no lone "92% safe" score. r/Aquascape is hostile to AI-generated planners: say plainly the generator is rules + data. Benchmark method: 6 scripted scenarios with a 0-4 weighted scorecard where a husbandry failure can't be averaged away by good rendering. Go-to-market: "design your dream aquarium before you buy a thing", SEO pages for high-intent searches, share images that link back.
+- Evidence caution: confidence is low for most web planners; threat levels are researcher judgment.
 
 Only the judgment is wanted. Below is evidence: what I clicked, the visible text, and observations of confusing, slow or broken behaviour (an observation like "button X was below the fold" is a fact about the screen, not a verdict).
 
@@ -74,12 +84,9 @@ Each item: what I did -> visible main prompt/text -> observations.
 
 `src/shell/start.tsx`, `src/shell/logic/start.ts`, `src/shell/checklist.tsx` (+ `logic/checklist.ts`), `src/shell/shell.css` (line 688 and the `max-width: 699px` block), `src/shell/App.tsx`, `src/shell/tank.tsx`, `src/shell/animals.tsx`, `src/shell/equipment.tsx`, `src/shell/discover.tsx`, `src/shell/constraints.tsx`, `src/shell/print.tsx`, `src/shell/files.tsx`, `src/scope.ts`, `HANDOFF.md` (top ~60 lines only), `research/design/unified-setup-plan.md`.
 
-## Competitor research (added 2026-11-25)
-`research/competitors/SUMMARY.md` surveys 23 competing planners: what users love (realistic animation, relaxing to watch, trying a setup before buying, warnings that stop bad pairings) and what they complain about (stocking numbers they don't trust, clunky placement, paywalls). Use it to judge what a first visit must show to beat them.
-
 ## The question again
 
-"Walk through these screens as a brand-new hobbyist and, separately, as an expert with many tanks. Where does each get lost, bored, or misled? Give the 5 changes that would matter most, ranked, each with the screen it affects and what 'fixed' looks like - judged against the product vision."
+"Walk these screens as each of the three customer jobs: a beginner asking 'what should I build?', an owner asking 'what can I do with what I have?', and an enthusiast asking 'will this exact design work?'. Where does each get lost, bored or misled, and where does each fail to see, within the first minute, why TankLook beats the free alternatives (AqAdvisor, Scape It, App-aquatic, TankMates)? Judge against the product vision and the competitor findings (what users love and complain about). Give the 5 changes that matter most, ranked, each with the screen it affects and what 'fixed' looks like, and say what the landing screen should promise in one sentence."
 
 ## What a good answer looks like
 
