@@ -29,7 +29,7 @@ import { notesOf } from './stockPlanLogic';
 export interface MinWarn { level: 'over' | 'near'; text: string; rec?: true; /** the species whose minimum it is (ruleStatus: a minimum that rests on judgment is capped at Caution) */ ids?: string[] }
 export type CatId = 'minimums' | 'social' | 'environment' | 'behaviour' | 'fullness';
 export type CatLevel = 'ok' | 'caution' | 'problem' | 'unknown';
-export interface CatItem { level: 'caution' | 'problem' | 'unknown'; text: string; /** a cross-link: the item is counted here, also relevant there */ also?: string; /** a load percent: the line is tinted along the gauge's green-amber-red scale */ pct?: number; /** R117: where the shell sends the user to fix it (a "Fix it" button): 'lid' = Tank > Lid and top, 'filter' = Equipment > Filter */ go?: 'lid' | 'filter' | 'heater'; /** HV: this line is a missing heater or filter (scene/lifeSupport.ts); a generated design supplies its own gear, so the suggester ignores it */ support?: SupportKind; /** HV: the species and rule fields behind a line (data/ruleStatus.ts); a Problem whose fields rest on judgment alone is capped at Caution and marked `judgment` */ basis?: { ids: string[]; fields: string[] }; judgment?: true }
+export interface CatItem { /** HV: a judgment-only predation / aggression Problem kept red and tagged "our judgment" */ keptRed?: true; /** HV: was a Problem, capped to Caution because it rests on judgment */ capped?: true; level: 'caution' | 'problem' | 'unknown'; text: string; /** a cross-link: the item is counted here, also relevant there */ also?: string; /** a load percent: the line is tinted along the gauge's green-amber-red scale */ pct?: number; /** R117: where the shell sends the user to fix it (a "Fix it" button): 'lid' = Tank > Lid and top, 'filter' = Equipment > Filter */ go?: 'lid' | 'filter' | 'heater'; /** HV: this line is a missing heater or filter (scene/lifeSupport.ts); a generated design supplies its own gear, so the suggester ignores it */ support?: SupportKind; /** HV: the species and rule fields behind a line (data/ruleStatus.ts); a Problem whose fields rest on judgment alone is capped at Caution and marked `judgment` */ basis?: { ids: string[]; fields: string[] }; judgment?: true }
 export interface Category { id: CatId; label: string; what: string; level: CatLevel; word: string; items: CatItem[]; /** the category's one-line answer (Tank minimums: the smallest tank holding every species' minimum group) */ answer?: string }
 export interface StockSummary {
   cats: Category[];
@@ -56,6 +56,8 @@ const LABELS: Record<CatId, [string, string]> = {
 };
 
 /** Which species' rule fields a pair reason rests on (reason texts as animalfit.ts words them; the other side's rule when the text starts "it ..."). Undefined = a physical fact (a dry enclosure) or no data field. */
+/** Rule fields whose Problem stays red even when judgment-only (predation, aggression); the line is tagged instead. */
+const KEEP_RED = ['prey', 'temper', 'nip', 'slow'];
 export function pairBasis(t: string, s: string, o: string): CatItem['basis'] | undefined {
   const other = /^it /.test(t), owner = other ? o : s, both = [s, o];
   if (/eat (it|its small)|eat this one|eat small ones/.test(t)) return { ids: [owner], fields: ['prey'] };
@@ -106,9 +108,12 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: 
   const us = units === 'in';
   const by: Record<CatId, CatItem[]> = { minimums: [], social: [], environment: [], behaviour: [], fullness: [] };
   const add = (c: CatId, level: CatItem['level'], text: string, also?: string, pct?: number, go?: CatItem['go'], support?: SupportKind, basis?: CatItem['basis']) => {
-    // HV: a judgment-only rule never renders red
-    const judg = !!basis && isJudgment(basis.ids, basis.fields), lv: CatItem['level'] = level === 'problem' && judg ? 'caution' : level;
-    by[c].push({ level: lv, text, ...(also ? { also } : {}), ...(pct !== undefined ? { pct } : {}), ...(go ? { go } : {}), ...(support ? { support } : {}), ...(basis ? { basis } : {}), ...(judg ? { judgment: true as const } : {}) });
+    // HV: a judgment-only rule never renders red, EXCEPT predation and aggression (prey, temper, nip, slow): an animal that would be eaten or hurt is never
+    // softened for lack of a source. Those stay red and carry an "our judgment" tag (coordinator 2026-11-26; Nathan decides each, see research/hv-pair-severity.md).
+    const judg = !!basis && isJudgment(basis.ids, basis.fields), keep = judg && level === 'problem' && basis!.fields.some(f => KEEP_RED.includes(f));
+    const lv: CatItem['level'] = level === 'problem' && judg && !keep ? 'caution' : level;
+    if (keep) text += ' (our judgment: no source on file)';
+    by[c].push({ level: lv, text, ...(also ? { also } : {}), ...(pct !== undefined ? { pct } : {}), ...(go ? { go } : {}), ...(support ? { support } : {}), ...(basis ? { basis } : {}), ...(judg ? { judgment: true as const } : {}), ...(keep ? { keptRed: true as const } : {}), ...(lv !== level ? { capped: true as const } : {}) });
   };
   const count = new Map<string, number>(), fem = new Map<string, number>();
   for (const f of S.fish) { const sp = getSpecies(f.species); if (!sp || !countsAgainstWater(sp)) continue; count.set(sp.id, (count.get(sp.id) ?? 0) + 1); if (f.sex === 'f' || f.gender === 'f') fem.set(sp.id, (fem.get(sp.id) ?? 0) + 1); }
