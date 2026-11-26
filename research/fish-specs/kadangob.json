@@ -370,9 +370,9 @@
   16.0,
   17.9
  ],
+ "sat": 0.78,
+ "sat_auto": true,
  "fin_opacity": {
   "preset": "solid"
- },
- "sat": 0.78,
- "sat_auto": true
+ }
 }

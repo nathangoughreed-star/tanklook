@@ -28,7 +28,7 @@ def map_mask(sheet):
     return a, M, bands, o, colw
 
 
-def clamp_profile(sheet, A, margin=1.0):
+def clamp_profile(sheet, A, margin=1.0, skip_x=()):
     """Clamp a built depth profile (anatomy A, half-res side.png measures) to panel 5's grey body: no station's top / bottom past the map's
     back / belly + margin % SL. The side outline cannot tell a fin root from the body where a fin runs along it (cherry barb anal fin
     80-90 % SL: the solid filled its root, a dark strip under the stalk; Nathan 2026-11-24). Only ever lowers. Returns the stations changed."""
@@ -40,6 +40,7 @@ def clamp_profile(sheet, A, margin=1.0):
     for i, s in enumerate(d['stations']):
         x = int(round(sx - s / 100 * SL))
         if not (0 <= x < o.shape[1]): continue
+        if any(x0 <= x <= x1 for x0, x1 in skip_x): continue   # paired fins sit ON the body: panel 5's grey body has a hole there, and clamping to it gave a waist (Nathan 2026-11-25, method row 65)
         ys = np.nonzero(o[:, x])[0]
         if len(ys) < 3: continue
         mt, mb = (sy - ys.min()) / SL * 100 + margin, (ys.max() - sy) / SL * 100 + margin

@@ -106,14 +106,14 @@
     9.02,
     8.86,
     9.43,
-    0.728,
-    0.046,
-    0.728,
-    8.629,
+    10.07,
+    11.04,
+    11.63,
+    10.63,
     8.58,
-    8.221,
-    7.948,
-    7.676,
+    11.63,
+    11.15,
+    10.15,
     6.13,
     6.05,
     5.632,
@@ -874,7 +874,7 @@
       257.0
      ]
     ],
-    "ver": "45faacaf"
+    "ver": "16bd1e8d"
    },
    "fit": "{'thick': 1.59, 'pedT': 0.18, 'rmsPctSL': 0.88, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }
