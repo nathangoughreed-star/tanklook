@@ -213,6 +213,7 @@ export function Drawer({ id, model, onClose, onFix, bundle }: { id: CheckId; mod
       <div class="sec-body">
         {id === 'habitat' ? <Habitat v={model.habitat} aq /> : id === 'cost' ? <Cost v={model.cost} bundle={bundle} /> : id === 'water' ? <Water v={model.water} /> : <Notes v={model.notes} onFix={onFix} />}
         <div class="hint dro">{id === 'notes' ? (model.notes.fixes.length && onFix ? 'Each button makes one change and is one undo step. A note with no button has no exact fix: change it in its own section.' : 'These notes have no exact one-click fix: change each in its own section.') : 'Read-only for now: each setting is changed in its own section.'}</div>
+        {id === 'habitat' ? <div class="hint dro"><a href="./how-we-calculate.html" target="_blank" rel="noopener" data-method>How we calculate</a>: the rules, the numbers and how sure we are of each.</div> : null}
       </div>
     </aside>
   );
