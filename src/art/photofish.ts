@@ -80,6 +80,20 @@ export async function loadPhotoFish(only?: ReadonlySet<string>): Promise<Set<str
     const ws = R.measuredWidth ? widthScale(A.thickness.halfWidthPctSL, R.thickx ?? 1, R.widthFit) : null;
     if (R.measuredWidth) P.halfWidth = d.stations.map((s: number, i: number) => [U(s), Wd(A.thickness.halfWidthPctSL[i]) * ws![i]] as [number, number]).sort((a: number[], b: number[]) => a[0] - b[0]);
     P.tail = { ...P.tail, h: R.noTail ? 0.0005 : Wd(Math.max(...F.caudal.outline.map((c: number[]) => (c[1] + c[2]) / 2))) };
+    // the caudal's own outline per station, for the fin fold (drapedCard): one symmetric height (the mean of top and bottom,
+    // x 0.95) cut the taller lobe of nearly every build-B tail, and the fold laid it back as a strip past the tail (Nathan
+    // 2026-11-26, chromis: lower lobe). The fin map's caudal mask also takes in dorsal / anal tips that overlap the tail root
+    // (ram, cockatoo, angel): in the root half a station more than 2 % SL taller than the tail behind it is such a tip, and is
+    // left out (-1: drapedCard's ramp from the peduncle decides there, as before). The rear half is kept as measured, + 2 % SL
+    if (R.noTail || !F.caudal?.outline?.length) delete P.tailOutline;
+    else {
+      const o = [...F.caudal.outline].sort((a: number[], b: number[]) => Math.abs(b[0]) - Math.abs(a[0])); // rear first
+      const half = Math.abs(o[0][0]) / 2, m = [-Infinity, -Infinity];
+      P.tailOutline = o.map(([s, ...tb]: number[]) => [pedU - Wd(Math.abs(s)), ...tb.map((x, j) => {
+        if (Math.abs(s) < half && x > m[j] + 2) return -1;
+        m[j] = Math.max(m[j], x); return Wd(x + 2); // + 2 % SL: the stations sit 2-5 % SL apart and a lobe's corner can fall between them (angel)
+      })] as [number, number, number]);
+    }
     if (F.dorsal) P.dorsal = { ...P.dorsal, at: U(F.dorsal.baseStartPctSL), len: Wd(F.dorsal.baseEndPctSL - F.dorsal.baseStartPctSL), h: Wd(F.dorsal.maxHeightPctSL) };
     // a row of finlets (bichir): one plain band over all of them, its height the tallest finlet; the fin card's alpha cuts each finlet out.
     // The template plan's spiny front (oscar: spines 0.6, spineH 0.05-0.07) drew a dark block in front of the first finlet (method row 57)

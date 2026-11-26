@@ -81,6 +81,7 @@ export interface Plan {
   // split (3D, off by default): a double caudal (fantail goldfish), two copies of the tail joined along the top whose
   // lower parts flare out sideways by this many degrees, more toward the rear (fish3d `splitTail`); the card draws it flat
   tail: { type: Tail; h: number; tint?: string; a?: number; edge?: string; cut?: number; sword?: number; split?: number };
+  tailOutline?: [number, number, number][]; // photo fish: the caudal fin's own outline, [u, top, bottom] in card widths from the axis (v 0), rear to root; drapedCard keeps it unfolded
   dorsal?: AnyFin; anal?: AnyFin; adipose?: boolean;
   dorsal2?: MedianFin; // a second, separate dorsal behind the first (gobies, cardinals)
   // male livebearers: the anal fin is a gonopodium, a slim rod from `at` lying back along the belly, `len` long

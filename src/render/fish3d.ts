@@ -494,6 +494,7 @@ function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = f
     // fin length from the root (card widths): the farthest outline point
     const len = Math.max(...f.pts.map(q => Math.hypot(q[0] - f.root[0], q[1] - f.root[1])));
     const mat = cardMaterial(key, pairedFinTexture(art, f, box, edge), edge, THREE.DoubleSide, pairedFinOpacity(art, f, box)); mat.userData.fishCard = true; // outlined by fish stand out
+    if (f.kind === 'pectoral') mat.userData.noRing = true; // except the pectorals: over the body the dark ring read as an inked outline (Nathan 2026-11-26)
     if (!mat.userData.fin) { mat.userData.fin = true; mat.userData.pre = flexPatch; } // lighting runs `pre` (lighting.ts aqPatch)
     for (const side of [1, -1]) {
       // flat (plan option, off by default): held out flat like a fish on the glass all the time (hillstream loach)
@@ -1013,6 +1014,20 @@ export function cardFinHeights(art: string, g: THREE.BufferGeometry, w: number) 
   g.setAttribute('aFinH', new THREE.Float32BufferAttribute(h, 1));
 }
 
+/**
+ * How far (card widths) a card point behind the peduncle lies outside the caudal fin (photo fish); negative inside. Per side
+ * (above / below the axis at v 0) the fin is the larger of: the measured outline `tailOutline` (stations rear first, [u, top,
+ * bottom]; the larger of the two stations around u, so a forked lobe's tip between stations stays inside; -1 where a dorsal /
+ * anal tip overlapped the root) and the old ramp from the peduncle's half-height (pt, pb) to that side's tallest station by
+ * 0.35 pedU behind it, which folds those overlapping tips (the ram fix, 4dcda498).
+ */
+function outsideTail(o: [number, number, number][], pedU: number, pt: number, pb: number, u: number, v: number) {
+  let i = 0; while (i < o.length - 1 && o[i + 1][0] <= u) i++; // o[i]: the station at or behind u
+  const j = v < 0 ? 1 : 2, a = o[i][j], b = o[Math.min(i + 1, o.length - 1)][j], ped = v < 0 ? pt : pb;
+  const top = Math.max(...o.map(r => r[j])), ramp = ped + (top - ped) * smooth(pedU, pedU * 0.65, u);
+  return Math.abs(v) - Math.max(a, b, ramp);
+}
+
 export function drapedCard(art: string, w: number, h: number, bend: number, fin = 1): THREE.BufferGeometry | null {
   const p = bodyPlan(art), fold = p && finRange(art) ? (1 - Math.min(1, Math.max(0, fin))) * FOLD_MAX : 0;
   if (!p || !(p.drape || fold > 0.01)) return null;
@@ -1025,7 +1040,10 @@ export function drapedCard(art: string, w: number, h: number, bend: number, fin 
     // Weight 0 inside the caudal's outline (its half-height ramping from the peduncle's to the plan's tail.h), 1 just outside it.
     // Folding nothing back there left those tips standing as a stub with the folded fin lying over it (Nathan 2026-11-25:
     // the blue ram's rear dorsal and anal tips "look folded over on themselves")
-    const k = !fold ? 0 : u > p.pedU ? 1 : smooth(0.005, 0.02, Math.abs(v - (t + b) / 2) - ((b - t) / 2 + (p.tail.h * 0.95 - (b - t) / 2) * smooth(p.pedU, p.pedU * 0.65, u)));
+    // Photo fish use the caudal's own measured outline (plan.tailOutline, top and bottom apart); the one symmetric height cut
+    // the taller lobe of every build-B tail, and the fold laid that lobe back as a strip past the tail (Nathan 2026-11-26, chromis)
+    const k = !fold ? 0 : u > p.pedU ? 1 : p.tailOutline ? smooth(0.005, 0.02, outsideTail(p.tailOutline, p.pedU, -t, b, u, v))
+      : smooth(0.005, 0.02, Math.abs(v - (t + b) / 2) - ((b - t) / 2 + (p.tail.h * 0.95 - (b - t) / 2) * smooth(p.pedU, p.pedU * 0.65, u)));
     if (k > 0) {
       const up = t - v, dn = v - b;
       if (up > 0 || dn > 0) {

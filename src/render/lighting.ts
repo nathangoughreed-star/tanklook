@@ -294,7 +294,7 @@ const AQ_FRAG = `
 uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uBeamM, uRef, uCard, uSub, uFish, uPane; uniform vec3 uLCol;
 float aqSpec = 0.0;
 uniform float uFxTone, uFxCaus, uFxTime, uFxDepth, uFxLine; uniform sampler2D uCausTex; uniform vec4 uCausK; uniform float uCausOff;
-uniform float uFishCap; uniform float uRoomMat, uRoomK, uSpillR, uTankRound, uAlgH; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater, uWTint; uniform vec3 uWCol; uniform float uPop, uFishCard;
+uniform float uFishCap; uniform float uRoomMat, uRoomK, uSpillR, uTankRound, uAlgH; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater, uWTint; uniform vec3 uWCol; uniform float uPop, uFishCard, uFishRing;
 varying vec3 vAqP; varying vec3 vAqN;
 ${BOW_GLSL}
 ${WATER_FILTER_GLSL}
@@ -480,7 +480,7 @@ const AQ_MAP = `#ifdef USE_MAP
   // 2.5 px wide on screen (at least 1 px), so its edge reads against sand or leaves. Drawn where the alpha drops off, not
   // only where it reaches zero, so soft, feathered fin edges get it too. The same width as the body's line (fish3d
   // outlineMat); an opaque fin's line is as dark as the body's, a see-through fin's fainter (Nathan 2026-10-13)
-  if (uFishCard > 0.5 && uPop > 0.01) {
+  if (uFishCard > 0.5 && uFishRing > 0.5 && uPop > 0.01) { // not on pectorals (userData.noRing): they lie over the body, where the ring read as an inked outline (Nathan 2026-11-26, chromis)
     vec2 aqD = fwidth(vMapUv) * max(2.5 * uPop, 1.0); float aqA = 0.0;
     for (int i = 0; i < 8; i++) { float a = float(i) * 0.785398; aqA = max(aqA, texture2D(map, vMapUv + aqD * vec2(cos(a), sin(a))).a); }
     float aqO = smoothstep(0.1, 0.35, aqA - aqTex.a);
@@ -538,7 +538,7 @@ export const FISH_CAP = { value: 1 };
 if (import.meta.env?.DEV && typeof window !== 'undefined') (window as unknown as { __fishCap: unknown }).__fishCap = FISH_CAP;
 function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithUniforms) {
   this.userData.pre?.(shader); // the material's own patch (hardscape: glass clip and grit) still applies under the lighting
-  Object.assign(shader.uniforms, LU, AU, FXU, CAUS(), { uAlgH: { value: this.userData.solid ? 1 : 0 }, uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uPane: { value: this.userData.pane ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uFishCard: { value: this.userData.fishCard ? 1 : 0 }, uFishCap: FISH_CAP });
+  Object.assign(shader.uniforms, LU, AU, FXU, CAUS(), { uAlgH: { value: this.userData.solid ? 1 : 0 }, uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uPane: { value: this.userData.pane ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uFishCard: { value: this.userData.fishCard ? 1 : 0 }, uFishRing: { value: this.userData.noRing ? 0 : 1 }, uFishCap: FISH_CAP });
   shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\n' + AQ_VERT)
     // an instanced mesh (leaf litter, render/scatter.ts) places each copy by its instance matrix too
     .replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef USE_INSTANCING\nvAqP = (modelMatrix * instanceMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * mat3(instanceMatrix) * normal);\n#else\nvAqP = (modelMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * normal);\n#endif');
@@ -632,7 +632,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
   }
 }
 // one cache key per material kind keeps one compiled program per kind
-const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.clear ? 'C' : '') + (this.userData.soft ? 'S' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.post ? 'b' + (this.userData.ng ?? '') : '') + (this.userData.fishCard ? 'k' : '') + (this.userData.plantClip ? 'g' : '') + (this.userData.pane ? 'w' : '') + (this.userData.swim ? 'm' : '') + (this.userData.fin ? 'n' : '') + (this.userData.fake ? 'z' + this.userData.fake : ''); };
+const progKey = function (this: THREE.Material) { return 'aq' + (this.userData.card ? 'c' : '') + (this.userData.sub ? 's' : '') + (this.userData.room ? 'r' : '') + (this.userData.fish ? 'f' : '') + (this.userData.plain ? 'p' : '') + (this.userData.clear ? 'C' : '') + (this.userData.soft ? 'S' : '') + (this.userData.frost ? 'F' : '') + (this.userData.solid ? 'h' : '') + (this.userData.post ? 'b' + (this.userData.ng ?? '') : '') + (this.userData.fishCard ? 'k' + (this.userData.noRing ? 'R' : '') : '') + (this.userData.plantClip ? 'g' : '') + (this.userData.pane ? 'w' : '') + (this.userData.swim ? 'm' : '') + (this.userData.fin ? 'n' : '') + (this.userData.fake ? 'z' + this.userData.fake : ''); };
 
 /** Light every opaque surface inside the tank (substrate, background, fish, plant); glass, rim, lines and the fixture stay unlit. */
 export function applyLighting(sc: THREE.Scene) {
