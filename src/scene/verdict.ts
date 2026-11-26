@@ -13,7 +13,7 @@ import type { CostTotals } from './constraints';
 import { compliance, effectiveLimits } from './constraints';
 import { conflictsOf, constraintOf, requiredEquipment, type ConstraintId } from './project';
 import { isOver, stockingOf } from './stocking';
-import { summaryOf } from '../ui/stockSummary';
+import { summaryOf, avoidedLine } from '../ui/stockSummary';
 import { herpCheck, type StockIssue } from './herpcheck';
 import { growthCheck } from './growcheck';
 import { ownedFit } from './ownedFit';
@@ -44,6 +44,8 @@ export interface VerdictOpts {
   /** the person's profile limits (a tank's own guardrails win over them) */
   limits?: Limits;
   units?: 'cm' | 'in';
+  /** the caller is a generator / suggester: lines the audit capped from Problem to Caution still gate (stockSummary.avoidedLine); the user-facing verdict leaves this off */
+  avoid?: boolean;
 }
 
 const fishUids = (S: TankSetup, pred: (f: TankSetup['fish'][number]) => boolean = () => true) => S.fish.filter(pred).map(f => `fish:${f.id}`);
@@ -67,7 +69,7 @@ function compute(S: TankSetup, b: Brief, o: VerdictOpts): Verdict {
     for (const c of summaryOf(S, o.units ?? 'cm').cats) {
       if (c.id === 'fullness') continue;
       for (const it of c.items) {
-        if (it.level === 'problem') put(gates, { id: `cat:${c.id}`, tab: 'animals', uids: fishUids(S), text: it.text });
+        if (o.avoid ? avoidedLine(it) : it.level === 'problem') put(gates, { id: `cat:${c.id}`, tab: 'animals', uids: fishUids(S), text: it.text });
         else if (it.level === 'caution') put(advisories, { id: `cat:${c.id}:caution`, tab: 'animals', uids: fishUids(S), text: it.text });
       }
     }
@@ -127,7 +129,7 @@ function compute(S: TankSetup, b: Brief, o: VerdictOpts): Verdict {
 let memo: { key: string; v: Verdict } | undefined;
 const keyOf = (S: TankSetup, b: Brief, o: VerdictOpts): string => {
   const rev = (S as { rev?: number }).rev;
-  return JSON.stringify([rev !== undefined ? rev : S, b, o.totals, o.limits, o.units]);
+  return JSON.stringify([rev !== undefined ? rev : S, b, o.totals, o.limits, o.units, o.avoid]);
 };
 
 export function verdictOf(S: TankSetup, b: Brief, o: VerdictOpts = {}): Verdict {

@@ -11,6 +11,7 @@ import { planHtml } from '../src/ui/planSheet';
 import { roomWorking } from '../src/ui/logic/room';
 import { stockingMemo } from '../src/scene/stocking';
 import { overWarn } from '../src/ui/stockPlanLogic';
+import { lifeFixPlans } from '../src/shell/logic/lifeFix';
 import { paperOf } from '../src/shell/logic/print';
 import { defaultProfile } from '../src/demand/types';
 import type { TankSetup } from '../src/scene/types';
@@ -90,5 +91,18 @@ describe('HV life support', () => {
     const w = waterView(mk([['cardinal', 10]], { heater: 'none', filter: 'hob' }), 'in');
     expect(w.temp).toMatch(/70 °F \(assumed\) room/); expect(w.pill.word).toBe('no heater'); expect(w.pill.tone).toBe('warn');
     expect(waterView(mk([['cardinal', 10]], { heater: 'one', filter: 'hob' }), 'in').pill.word).toBe('fits');
+  });
+  it('Fix it states its effect and clears exactly that line: heater and filter', () => {
+    const S = mk([['cardinal', 10]], { heater: 'none', filter: 'none' }), plans = lifeFixPlans(S, 'in');
+    expect(plans.heater?.what).toMatch(/^Add a \d+ W heater/); expect(plans.heater?.describe).toMatch(/W heater/);
+    expect(plans.filter?.what).toMatch(/^Add a .*filter/);
+    const T = structuredClone(S); plans.heater!.apply(T); expect(lifeSupportOf(T).map(m => m.kind)).toEqual(['filter']);
+    plans.filter!.apply(T); expect(lifeSupportOf(T)).toEqual([]);
+    expect(habitatView(S, 'in').cats.flatMap(c => c.items).filter(i => i.fix).length).toBe(2);
+  });
+  it('R153: the Filtration meter shows with the plant credit tagged as our judgment, and never goes red', () => {
+    const S = mk([['cardinal', 10]], { heater: 'one', filter: 'hob' }), b = habitatView(S, 'in').bars.find(x => x.key === 'filter')!;
+    expect(b).toBeDefined(); expect(b.topLines.join(' ')).toMatch(/our judgment/); expect(b.tone).not.toBe('bad');
+    const noFilter = mk([['cardinal', 10]], { heater: 'one', filter: 'none' }); expect(habitatView(noFilter, 'in').bars.some(x => x.key === 'filter')).toBe(false);
   });
 });

@@ -18,9 +18,10 @@ import { CARE, EXPERTISE_NAME } from '../../data/care';
 import { CONTINENTS, continentText, inContinent, originOf, regionText, type Continent } from '../../data/origin';
 import { CHEM } from '../../data/waterchem';
 import { zoneOf, recommendedMin } from '../../scene/zone';
-import { fmtTemp, fmtVol } from '../../units';
+import { fmtLenShort, fmtTemp, fmtVol } from '../../units';
 import type { Rules } from '../../scene/brief';
 import { LIMITS } from '../../scene/validate';
+import { ADULT_SHARE, monthsToAdult } from '../../data/growth';
 import type { Fish, Pairing, TankSetup, Units } from '../../scene/types';
 import type { Store } from '../../scene/store';
 
@@ -119,12 +120,25 @@ function pickRow(S: TankSetup, sp: Species, fit: Fit, units: Units): PickRow {
 
 export interface StockRow {
   key: string; id: string; sex?: Sex; name: string; sci: string; n: number;
+  /** R156: adult size, and the animals' own size now when they are still growing ("Adult about 5\"; yours are 2\" now, about 14 months to grow") */
+  size: string;
   /** does not live in this tank's water */
   off: boolean;
   /** greyed: the one-line reason (the engine's fit text, e.g. "tight with 2"), '' when fine */
   reason: string; level: Fit['level']; more: string[];
 }
 export interface StockView { rows: StockRow[]; total: number; misfits: number; misfitText: string; misfitNames: string; atLimit: boolean; empty: string }
+
+/** R156: adult length, and where the animals are now. A fish with no recorded length is an adult for the engine, so only an entered young size shows a growing line. */
+export function sizeLine(S: TankSetup, sp: Species, sex: Sex | undefined, units: Units): string {
+  const adult = sex === 'f' && sp.female ? sp.female.tl : sp.tl, mine = S.fish.filter(f => f.species === sp.id && (sex === 'f') === (f.sex === 'f') && f.tl !== undefined).map(f => f.tl!);
+  const base = `Adult about ${fmtLenShort(adult, units)}`;
+  if (!mine.length) return base;
+  const now = Math.min(...mine);
+  if (now >= adult * ADULT_SHARE) return base;
+  const mo = Math.max(1, Math.round(monthsToAdult(sp, now, adult)));
+  return `${base}; yours are ${fmtLenShort(now, units)} now${Number.isFinite(mo) && mo > 0 ? `, about ${mo} month${mo === 1 ? '' : 's'} to grow` : ''}`;
+}
 
 /** One row per species (a dimorphic species has a row per sex present), in order of arrival. */
 export function stockView(S: TankSetup, rules: Rules, units: Units, fitter: Fitter): StockView {
@@ -135,7 +149,7 @@ export function stockView(S: TankSetup, rules: Rules, units: Units, fitter: Fitt
   for (const [key, n] of counts) {
     const [id, fem] = key.split('~'), sp = getSpecies(id); if (!sp) continue;
     const sex: Sex | undefined = fem ? 'f' : undefined, off = !stockEdit.fitsWater(sp, S), fit = fitOf(sp);
-    rows.push({ key, id, sex, name: stockEdit.rowName(sp, sex), sci: sp.sci, n, off, reason: off ? `does not live in ${salt ? 'saltwater' : 'freshwater'}` : fit.level === 'ok' ? '' : fit.text, level: off ? 'problem' : fit.level, more: off ? [] : fit.more });
+    rows.push({ key, id, sex, name: stockEdit.rowName(sp, sex), sci: sp.sci, n, size: sizeLine(S, sp, fem ? 'f' : undefined, units), off, reason: off ? `does not live in ${salt ? 'saltwater' : 'freshwater'}` : fit.level === 'ok' ? '' : fit.text, level: off ? 'problem' : fit.level, more: off ? [] : fit.more });
   }
   const mis = stockEdit.misfits(S), by = new Map<string, number>();
   for (const f of mis) { const nm = getSpecies(f.species)?.name ?? f.species; by.set(nm, (by.get(nm) ?? 0) + 1); }

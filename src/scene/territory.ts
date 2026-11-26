@@ -39,9 +39,9 @@ export function crowdWarnings(S: TankSetup): string[] {
  *  over pea puffers, a dwarf gourami and a breeding krib pair). Kept apart from the percents: load and compatibility are separate.
  *  `high`: any blocking pair (each pair said once, from the side that acts), else `concern`; the breeding-pair floor rule (care
  *  `guard`) is a concern. Null when nothing applies. Temperature, size and expertise are said elsewhere. */
-export function compatRisks(S: TankSetup): { level: 'high' | 'concern'; items: string[] } | null {
+export function compatRisks(S: TankSetup): { level: 'high' | 'concern'; items: string[]; /** the blocker lines' species ids and reason, parallel to the first items (HV: the headline tags judgment-only ones) */ blockMeta?: { s: string; o: string; t: string }[] } | null {
   const ids = [...new Set(S.fish.map(f => f.species))], sp = ids.flatMap(id => { const s = getSpecies(id); return s && s.habitat !== 'land' ? [s] : []; });
-  const block: string[] = [], concern: string[] = [], tl = youngLengths(S.fish); // S228: young animals by their own length (the prey gate)
+  const block: string[] = [], blockMeta: { s: string; o: string; t: string }[] = [], concern: string[] = [], tl = youngLengths(S.fish); // S228: young animals by their own length (the prey gate)
   for (const s of sp) for (const o of sp) {
     if (o === s) continue;
     const ws = whysAnimal(s, Infinity, 3, [o], { tl }), blocked = ws.some(w => !w.concern && !w.temp);
@@ -50,6 +50,7 @@ export function compatRisks(S: TankSetup): { level: 'high' | 'concern'; items: s
       const t = w.text.replace(/^compatibility: /, '');
       // the passive mirror ("it would ...") is the other side's line; chemistry is symmetric, said once
       if (w.kind !== 'compat' || w.temp || /^it /.test(t) || (/^water (chemistry|hardness)/.test(t) && s.id > o.id)) continue;
+      if (!w.concern) blockMeta.push({ s: s.id, o: o.id, t });
       (w.concern ? concern : block).push(`${s.name} with ${o.name}: ${t.replace(/ \([^)]*\)$/, '')}`);
     }
   }
@@ -60,10 +61,11 @@ export function compatRisks(S: TankSetup): { level: 'high' | 'concern'; items: s
     const pair = pairingIn(S, s.id) === 'established' || (mine.some(f => f.sex === 'f') && mine.some(f => f.sex !== 'f'));
     if (pair) concern.push(`${s.name} breeding pair defends much of this floor (${Math.round(area / 6.4516)} sq in): tankmates need caves and sight breaks elsewhere`);
   }
-  return block.length ? { level: 'high', items: [...block, ...concern] } : concern.length ? { level: 'concern', items: concern } : null;
+  return block.length ? { level: 'high', items: [...block, ...concern], blockMeta } : concern.length ? { level: 'concern', items: concern } : null;
 }
 /** The tile's headline line for compatRisks. */
-export const compatLine = (r: NonNullable<ReturnType<typeof compatRisks>>) => `${r.level === 'high' ? 'High compatibility risk' : 'Compatibility concern'}: ${r.items.join('; ')}.`;
+/** `tag` says whether a blocker line rests on judgment only (HV: it stays red and says so). */
+export const compatLine = (r: NonNullable<ReturnType<typeof compatRisks>>, tag?: (m: { s: string; o: string; t: string }) => boolean) => `${r.level === 'high' ? 'High compatibility risk' : 'Compatibility concern'}: ${r.items.map((x, i) => r.blockMeta?.[i] && tag?.(r.blockMeta[i]) ? `${x} (our judgment: no source on file)` : x).join('; ')}.`;
 
 /** Plants per 100 L that read as densely planted for cover (lane CP2): two thirds of the stocking engine's "fully planted" 15. */
 export const DENSE_PLANTS_PER_100L = 10;

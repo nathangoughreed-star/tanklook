@@ -1,6 +1,8 @@
 // Habitat check helpers (UI2 §7 P6, lane S1, 2026-11-13): the pure view-model behind the habitat check, moved out of
 // ui/fullnessTile.ts so the old tile and the new shell's Habitat drawer (src/shell/) share one copy. No DOM here.
 import { compatLine, compatRisks } from '../../scene/territory';
+import { pairBasis } from '../stockSummary';
+import { isJudgment } from '../../data/ruleStatus';
 import { spaceFit, tankExtent, type SpaceFit } from '../../scene/space';
 import { IDEAL_MAX, isOver, plural, type Stocking } from '../../scene/stocking';
 import { MIN_SLACK_PCT } from '../../scene/animalfit';
@@ -90,7 +92,7 @@ export function tileState(S: TankSetup, r: Stocking, units: Units = 'cm'): TileS
     space: bar(r.spacePercent), min: minBar(m), mins, head: tooSmall && head.level !== 'over' ? { ...head, level: 'over', text: 'Too small' } : head,
     water: bar(r.waterPercent), floor: bar(r.floorPercent), spaceBy: r.spaceBy, topFloor: topBy(r, 'floor'),
     topSpace: topBy(r, r.spaceBy === 'floor' ? 'floor' : 'space'), topMin: topMin(m, units), reason: r.reasons.join(' '), filter, // every reason, the fix that would bring it under 100 % too (the sidebar line moved here, Nathan 2026-10-22)
-    ...(limit ? { limit, fit } : {}), ...(cr ? { compat: { level: cr.level === 'high' ? 'over' as const : 'near' as const, text: compatLine(cr) } } : {}),
+    ...(limit ? { limit, fit } : {}), ...(cr ? { compat: { level: cr.level === 'high' ? 'over' as const : 'near' as const, text: compatLine(cr, m => { const b = pairBasis(m.t, m.s, m.o); return !!b && isJudgment(b.ids, b.fields); }) } } : {}),
   };
 }
 

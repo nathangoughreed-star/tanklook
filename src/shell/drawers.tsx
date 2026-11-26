@@ -13,8 +13,8 @@ import { aqView, aqCheck, onAq } from './logic/aq';
 import type { TankSetup } from '../scene/types';
 
 /** R117: "Fix it" takes the user to the section where the problem is fixed by hand. It navigates only: nothing is applied. */
-function GoButton({ to }: { to: GoTarget }) {
-  return <button type="button" class="btn fixit" data-goto={`${to.section}:${to.group}`} title={`Open ${to.label}`} onClick={() => openSection(to.section, to.group)}>Fix it</button>;
+function GoButton({ to, label = 'Fix it' }: { to: GoTarget; label?: string }) {
+  return <button type="button" class="btn fixit" data-goto={`${to.section}:${to.group}`} title={`Open ${to.label}`} onClick={() => openSection(to.section, to.group)}>{label}</button>;
 }
 
 /** HV: the AqAdvisor Check lives here, under our own reasons (it was on the animals panel): our number first, theirs beside it. */
@@ -32,7 +32,7 @@ function AqRow({ S }: { S: TankSetup }) {
   );
 }
 
-function Habitat({ v, aq }: { v: HabitatView; aq?: boolean }) {
+function Habitat({ v, aq, onFix }: { v: HabitatView; aq?: boolean; onFix?: (p: FixPlan) => void }) {
   return (
     <>
       <div class="drow"><span class="cap">Verdict</span><Pill tone={v.pill.tone}>{v.pill.word}</Pill></div>
@@ -53,7 +53,7 @@ function Habitat({ v, aq }: { v: HabitatView; aq?: boolean }) {
       {v.cats.map(c => (
         <div class="dcat">
           <div class="drow"><span>{c.label}</span><Pill tone={c.tone}>{c.word}</Pill></div>
-          {c.items.length ? <ul class="dlist">{c.items.map(t => <li>{t.text}{t.go ? <> <GoButton to={t.go} /></> : null}</li>)}</ul> : null}
+          {c.items.length ? <ul class="dlist">{c.items.map(t => <li>{t.text}{t.fix && onFix ? <> <button type="button" class="btn sm primary fixit" data-lifefix={t.fix.ids[0]} title={t.fix.describe} onClick={() => onFix(t.fix!)}>{t.fix.what}</button>{t.go ? <> <GoButton to={t.go} label="Choose yourself" /></> : null}</> : t.go ? <> <GoButton to={t.go} /></> : null}</li>)}</ul> : null}
         </div>
       ))}
       {v.reason ? <div class="hint">{v.reason}</div> : null}
@@ -211,7 +211,7 @@ export function Drawer({ id, model, onClose, onFix, bundle }: { id: CheckId; mod
     <aside class="drawer" aria-label={title}>
       <div class="sec-head"><h2>{title}</h2><button type="button" class="btn icon ghost" title="Close (Esc)" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
       <div class="sec-body">
-        {id === 'habitat' ? <Habitat v={model.habitat} aq /> : id === 'cost' ? <Cost v={model.cost} bundle={bundle} /> : id === 'water' ? <Water v={model.water} /> : <Notes v={model.notes} onFix={onFix} />}
+        {id === 'habitat' ? <Habitat v={model.habitat} aq onFix={onFix} /> : id === 'cost' ? <Cost v={model.cost} bundle={bundle} /> : id === 'water' ? <Water v={model.water} /> : <Notes v={model.notes} onFix={onFix} />}
         <div class="hint dro">{id === 'notes' ? (model.notes.fixes.length && onFix ? 'Each button makes one change and is one undo step. A note with no button has no exact fix: change it in its own section.' : 'These notes have no exact one-click fix: change each in its own section.') : 'Read-only for now: each setting is changed in its own section.'}</div>
         {id === 'habitat' ? <div class="hint dro"><a href="./how-we-calculate.html" target="_blank" rel="noopener" data-method>How we calculate</a>: the rules, the numbers and how sure we are of each.</div> : null}
       </div>

@@ -17,7 +17,7 @@ const cardinals = (n: number): TankSetup => { const S = base(), f0 = S.fish[0]; 
 
 describe('How we calculate page', () => {
   it('is in step with research/source-baseline.json (regenerate with node scripts/gen-method-page.mjs)', () => {
-    expect(page).toBe(methodPageHtml(baseline));
+    expect(page.replace(/\r\n/g, '\n')).toBe(methodPageHtml(baseline).replace(/\r\n/g, '\n'));
   });
   it('states the engine constants the engine really has', () => {
     expect([ENGINE.schoolRef, ENGINE.schoolExp, ENGINE.idealMax, ENGINE.tinyExpert]).toEqual([SCHOOL_REF, SCHOOL_EXP, IDEAL_MAX, TINY_EXPERT]);

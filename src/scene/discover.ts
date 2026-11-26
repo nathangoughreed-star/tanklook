@@ -184,7 +184,7 @@ export function propose(project: Store | TankSetup, brief: Brief, request: Disco
   const orig = ensureUids(structuredClone(isStore(project) ? project.tank : project)), baseRev = isStore(project) ? project.rev : 0;
   const scope = TABS.filter(t => request.scope.includes(t) && (!request.focus || request.objective !== 'refine' || t === request.focus.tab));
   if (!scope.length) return { proposals: [] };
-  const baseV = verdictOf(orig, brief, opts), baseIds = idsOf(baseV);
+  const baseV = verdictOf(orig, brief, { ...opts, avoid: true }), baseIds = idsOf(baseV);
   const variants = opts.variants ?? 4, seed0 = opts.seed ?? orig.layout.seed;
   type Cand = { source: string; family: string; w: TankSetup };
   const cands: Cand[] = [];
@@ -224,7 +224,7 @@ export function propose(project: Store | TankSetup, brief: Brief, request: Disco
     if (eqWhy) { rejected.push({ why: [], issues: [{ id: 'equip:rule', tab: 'equipment', uids: [], text: eqWhy, relax: noNewEquipment(brief) && !plan.infeasible ? 'Allow new equipment for this run' : 'Mark the item Have available instead of Must use' }], text: c.source }); continue; }
     const gated = gateReason(chk.after, orig);   // S5: experience on -> leave out plants / gear rated harder than the keeper said
     if (gated) { rejected.push({ why: [], issues: [], text: `${c.source}: ${gated}` }); continue; }
-    const v = verdictOf(chk.after, brief, opts), bad = (opts.rules ? blockingIssues(v, opts.rules) : [...v.gates, ...v.hard]).filter(i => !baseIds.has(i.id));
+    const v = verdictOf(chk.after, brief, { ...opts, avoid: true }), bad = (opts.rules ? blockingIssues(v, opts.rules) : [...v.gates, ...v.hard]).filter(i => !baseIds.has(i.id));
     const sig = JSON.stringify(delta); if (seen.has(sig)) continue; seen.add(sig);
     if (bad.length || (request.objective === 'solve' && !v.feasible)) { rejected.push({ why: [], issues: bad.length ? bad : [...v.gates, ...v.hard], text: c.source }); continue; }
     if (request.objective === 'solve' && baseV.feasible) continue; // nothing to solve
