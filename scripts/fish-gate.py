@@ -30,15 +30,15 @@ def last_mass(log):
     return (float(m[-1][0]), float(m[-1][1])) if m else None
 
 
-def gate(folder, fid, legacy=False):
+def gate(folder, fid, legacy=False, root=ROOT):  # root: another checkout or scratch tree whose scripts built the fish
     """legacy=True (backtest of stored builds): the root-band step did not exist for 50 of the 81, so its absence is only soft.
     -> {'mode', 'pass', 'flags': [short strings], 'facts': {...}}. Never raises: a missing input is itself a flag."""
     flags, soft, facts = [], [], {}
     log = ''
     try: log = open(os.path.join(folder, 'build.log'), encoding='utf-8', errors='replace').read()
     except Exception: flags.append('no-build-log')
-    spec = _j(os.path.join(ROOT, 'research', 'fish-specs', fid + '.json')) or {}
-    anat = _j(os.path.join(ROOT, 'src', 'data', 'fishart', fid + '.anatomy.json'))
+    spec = _j(os.path.join(root, 'research', 'fish-specs', fid + '.json')) or {}
+    anat = _j(os.path.join(root, 'src', 'data', 'fishart', fid + '.anatomy.json'))
     sheet = _j(os.path.join(folder, 'sheet.json')) or {}
     shapes = _j(os.path.join(folder, 'fishshapes.json')) or {}
     if not anat: soft.append('no-anatomy'); anat = {'anatomy': {}}
@@ -52,6 +52,7 @@ def gate(folder, fid, legacy=False):
     elif log: flags.append('no-mass-check')
     # 2 tail length
     t = a.get('tlOverSl'); facts['tlOverSl'] = t
+    cd_ = (a.get('fins') or {}).get('caudal') or {}; facts['caudal'] = cd_.get('type') + (' notch %.2f' % cd_['notchFrac'] if 'notchFrac' in cd_ else ' (never measured: older build)') if cd_.get('type') else None
     if t is not None and t < TL_SL_MIN: flags.append('tlOverSl %.2f' % t)
     # 3 head vs mid-body width (row 65): drawn head half-width at ~12 % SL against the widest half-width, before the load-time soft cap
     th = a.get('thickness') or {}; st, hw = th.get('stations'), th.get('halfWidthPctSL')
@@ -71,10 +72,15 @@ def gate(folder, fid, legacy=False):
     if pec is not None and pec.get('spread') is not None:
         sp = pec['spread']; facts['pecSpread'] = sp
         if not PEC_SPREAD[0] <= sp <= PEC_SPREAD[1]: flags.append('pec spread %.2f' % sp)
+    pd = _j(os.path.join(folder, 'proxy-depth.json'))   # scripts/fish-proxy-depth.py
+    if pd and pd.get('flag'): flags.append('proxy depth: photo %.1f vs %.1f (%+.0f%%)' % (pd['photo_depth'], pd['proxy_depth'], pd['off_pct']))
+    elif (shapes.get('proxy_for') or (spec.get('fishshapes') or {}).get('proxy_for')) and not pd: soft.append('proxy-depth-unchecked')
     # 7 records present
     if not sheet.get('visual_check'): soft.append('no-visual-check')
     fo = spec.get('fin_opacity')
-    if fo is not False and not spec.get('fin_opacity_source'): soft.append('fin-class-unconfirmed')   # unit 3 seeds a family table that can confirm it
+    src = spec.get('fin_opacity_source') or ''
+    if fo is not False and not src: soft.append('fin-class-unconfirmed')
+    elif src.startswith('family table'): soft.append('fin-class-from-family-table')   # unit 3 seeds a family table that can confirm it
     if shapes.get('proxy_for') or spec.get('fishshapes', {}).get('proxy_for'): facts['proxy_for'] = shapes.get('proxy_for') or spec['fishshapes']['proxy_for']
     return {'mode': MODE, 'pass': not flags, 'flags': flags, 'soft': soft, 'facts': facts}
 

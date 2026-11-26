@@ -338,6 +338,13 @@ def main():
            for x in cx[::6] if not np.isnan(tf[x])]
     cau.reverse()
     cau_top = [(c[1], c[0]) for c in cau]
+    # tail shape (FG1): a forked tail leaves a gap in the middle of the columns nearest the tip. notch = share of the tail's length, counted from the tip, whose
+    # columns are less than 85 % filled between their top and bottom edge (the first 3 % are lobe tips and skipped). 'forked' from 0.12; else 'round' (= not forked: rounded, truncate, pointed).
+    tspan = max(pedx - int(tail_x), 1); notch = 0
+    for x_ in range(int(tail_x) + int(0.03 * tspan), pedx):
+        if np.isnan(tf[x_]) or fullr[:, x_].sum() / max(bf[x_] - tf[x_] + 1, 1) >= 0.85: break
+        notch += 1
+    notch = round(notch / tspan, 3)
     # pelvic: pixels below the body edge in the head half, as one run (belly region)
     pel = None
     if ai is not None:
@@ -377,7 +384,7 @@ def main():
                           'pedunclePxOriginal': [round(float(snout[0] + (pedx - sx) * np.cos(np.radians(ang))), 1), round(float(snout[1] + (pedx - sx) * np.sin(np.radians(ang))), 1)],
                           'eye': eye_c},
             'fins': {**fins, 'pelvicOrPectoral': pel,
-                     'caudal': {'type': 'round', 'tipUPctSL': round(float((tail_x - pedx) / SL * 100), 2),
+                     'caudal': {'type': 'forked' if notch >= 0.12 else 'round', 'notchFrac': notch, 'tipUPctSL': round(float((tail_x - pedx) / SL * 100), 2),
                                 'outline': cau, 'outlineCols': '[u % SL from the peduncle (negative = behind), top, bottom] distance from the axis in % SL; full mask',
                                 }},
         },

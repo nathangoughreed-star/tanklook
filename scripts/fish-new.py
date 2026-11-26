@@ -55,6 +55,10 @@ def main(argv):
     # than TOL, stretch the original sheet by the corrected factor and build once more.
     sheet0 = os.path.join(W, 'sheet.webp'); W0 = W
     run(S('fish-sheet-audit5.py'), sheet0, '--real', ','.join(str(v) for v in real))
+    pdj = os.path.join(W, 'proxy-depth.json')   # from scripts/fish-proxy-depth.py (photos of the species itself); a flag only, the depth rule below is unchanged
+    if fsh.get('proxy_for') and os.path.exists(pdj):
+        pd = json.load(open(pdj))
+        print('%s: photo depth %.1f %% SL vs proxy %.1f (%s): %+.0f %%' % ('PROXY DEPTH FLAG' if pd.get('flag') else 'proxy depth ok', pd['photo_depth'], pd['proxy_depth'], pd['proxy_for'], pd['off_pct']))
     aud = mod('fish-sheet-audit5').audit(sheet0); drawn = aud['depth']
     proxy = bool(fsh.get('proxy_for'))
     lo, hi = (fsh.get('range') or {}).get('depth', [fsh['depth'] * (1 - STRETCH_AT), fsh['depth'] * (1 + STRETCH_AT)])
@@ -121,6 +125,13 @@ def build_once(W, ID, NAME, SCI, TL, fsh, flags, S):
             if '.' not in kk: spec[kk] = v
         if kept: print('kept from the existing spec:', kept)
     if 'fin_opacity' not in spec: spec['fin_opacity'] = {'preset': 'solid'}   # solid until the photo check sets the class: the translucent type defaults washed out coloured fins (oscar, guppy, gramma; sweep 2026-11-24)
+    if spec.get('fin_opacity') is not False and not spec.get('fin_opacity_source'):
+        try:   # family table (FG1 unit 3): a photo-checked family gives its default; the fish is then marked 'family table' and a human confirms exceptions
+            fd = mod('fish-fin-family').family_default(spec.get('species', {}).get('sci', SCI))
+        except Exception: fd = None
+        if fd:
+            spec['fin_opacity'] = fd[0]; spec['fin_opacity_source'] = 'family table: ' + fd[1] + '; not photo-checked for this species'
+            print('FIN CLASS from the family table: %s -> %s (confirm with fish-fin-class.py if the photos disagree)' % (fd[1], fd[0]))
     if spec.get('fin_opacity') is not False and not spec.get('fin_opacity_source'):
         print('PHOTO CHECK NEEDED: fin transparency is on defaults. Look at reference photos, then record the class:')
         print('  python -I scripts/fish-fin-class.py %s --urls' % ID)
