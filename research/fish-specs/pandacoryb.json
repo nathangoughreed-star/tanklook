@@ -1,0 +1,358 @@
+{
+ "id": "pandacoryb",
+ "sheet": "C:/Users/nreed/fish-sheets/pandacory-b6-gen/sheet3.png",
+ "species": {
+  "name": "Panda corydoras",
+  "sci": "Corydoras panda",
+  "tl": 46
+ },
+ "measured_width": true,
+ "plan": "pepperedcory",
+ "landmarks": {
+  "ped": [
+   272,
+   219
+  ],
+  "dorsalBase": [
+   [
+    284,
+    176
+   ],
+   [
+    314,
+    178
+   ],
+   [
+    358,
+    159
+   ],
+   [
+    388,
+    144
+   ],
+   [
+    408,
+    135
+   ],
+   [
+    438,
+    131
+   ],
+   [
+    468,
+    122
+   ],
+   [
+    509,
+    104
+   ],
+   [
+    538,
+    99
+   ],
+   [
+    568,
+    96
+   ],
+   [
+    598,
+    94
+   ],
+   [
+    628,
+    95
+   ],
+   [
+    651,
+    98
+   ]
+  ],
+  "analBase": [
+   [
+    284,
+    264
+   ],
+   [
+    314,
+    259
+   ],
+   [
+    351,
+    266
+   ],
+   [
+    381,
+    275
+   ],
+   [
+    410,
+    284
+   ],
+   [
+    427,
+    287
+   ]
+  ]
+ },
+ "eye": [
+  791,
+  208,
+  15
+ ],
+ "pectoral": {
+  "root": [
+   693,
+   255
+  ],
+  "poly": [
+   [
+    693,
+    255
+   ],
+   [
+    693,
+    268
+   ],
+   [
+    665,
+    274
+   ],
+   [
+    649,
+    277
+   ],
+   [
+    640,
+    280
+   ],
+   [
+    630,
+    281
+   ],
+   [
+    624,
+    281
+   ],
+   [
+    612,
+    280
+   ],
+   [
+    604,
+    279
+   ],
+   [
+    595,
+    276
+   ],
+   [
+    584,
+    272
+   ],
+   [
+    571,
+    263
+   ],
+   [
+    559,
+    248
+   ],
+   [
+    558,
+    242
+   ],
+   [
+    568,
+    233
+   ],
+   [
+    587,
+    229
+   ],
+   [
+    602,
+    229
+   ],
+   [
+    611,
+    230
+   ],
+   [
+    620,
+    233
+   ],
+   [
+    628,
+    235
+   ],
+   [
+    635,
+    237
+   ],
+   [
+    643,
+    239
+   ],
+   [
+    653,
+    242
+   ],
+   [
+    677,
+    248
+   ]
+  ],
+  "spread": 0.35
+ },
+ "pelvic": {
+  "root": [
+   612,
+   299
+  ],
+  "len": 94,
+  "poly": [
+   [
+    612,
+    299
+   ],
+   [
+    595,
+    309
+   ],
+   [
+    582,
+    319
+   ],
+   [
+    575,
+    323
+   ],
+   [
+    569,
+    326
+   ],
+   [
+    563,
+    329
+   ],
+   [
+    559,
+    331
+   ],
+   [
+    552,
+    333
+   ],
+   [
+    546,
+    335
+   ],
+   [
+    537,
+    337
+   ],
+   [
+    527,
+    335
+   ],
+   [
+    524,
+    332
+   ],
+   [
+    522,
+    327
+   ],
+   [
+    520,
+    318
+   ],
+   [
+    521,
+    308
+   ],
+   [
+    525,
+    302
+   ],
+   [
+    532,
+    297
+   ],
+   [
+    542,
+    298
+   ],
+   [
+    548,
+    298
+   ],
+   [
+    556,
+    298
+   ],
+   [
+    560,
+    298
+   ],
+   [
+    565,
+    299
+   ],
+   [
+    573,
+    299
+   ],
+   [
+    590,
+    299
+   ]
+  ]
+ },
+ "card_sheet": "C:/Users/nreed/fish-sheets/pandacory-b6-gen/sheet3card.png",
+ "dorsals": 2,
+ "dense": true,
+ "eye_iris": [
+  "#201e1f",
+  "#090a0c"
+ ],
+ "eye_pupil": "#070809",
+ "eye_full": 20,
+ "eye_pupil_frac": 0.247,
+ "width_pct_sl": 30.5,
+ "fishshapes": {
+  "n": 3,
+  "depth": 39.2,
+  "width": 30.5,
+  "specimens": [
+   [
+    37.99,
+    3.1
+   ],
+   [
+    50.58,
+    6.9
+   ],
+   [
+    52.31,
+    8.1
+   ]
+  ]
+ },
+ "width_range": [
+  30.3,
+  31.8
+ ],
+ "outline": "--level --thr 8 --open 9 --snout-open 15",
+ "plan_extra": {
+  "barbels": 0.045,
+  "barbelR": 0.006
+ },
+ "fin_opacity": {
+  "preset": "translucent",
+  "dorsal": {
+   "preset": "pigmented"
+  }
+ },
+ "fin_opacity_source": "translucent, dorsal pigmented (photo check): Wikimedia Commons: Panda_Corydoras.jpg (Chronotopian, 2009) and two more Commons thumbnails over gravel: dorsal black, near opaque at the front, smoky toward the rear; caudal, anal, pelvic, pectoral show the gravel faintly through"
+}
