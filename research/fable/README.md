@@ -34,8 +34,9 @@ Wave 2, synthesis (run after wave 1):
 ## Nathan's decisions on the strategy answer (2026-11-26)
 
 - **No pause.** Fable said to pause new fish batches after b8, new plant families and the R147 colour work for two weeks. Nathan: "no need to pause". Those keep running beside lanes FD, HV and BR.
-- **Rename before launch: yes.** "I think we are going with Urquarium" (R168; spelling and domain to confirm, earlier docs say Yourarium).
+- **Rename before launch: yes.** "I think we are going with Urquarium" (R168; name confirmed 2026-11-26; domain status not stated).
 - **Old UI: delete now** (lane FD).
-- **R144 (fish art style):** not decided; Nathan asked what it is.
+- **R144 (fish art style):** closed (Nathan, yes).
 - **Nathan's own inputs** (competitor dogfooding R166, timed b8 fish review, five watched sessions) are wanted but his time is scarce over Thanksgiving: plan work that does not block on them, and remind him.
 - **Handoff:** after the running chats finish, not before.
+- **FD unit 2:** started 2026-11-26 on Nathan's yes.
