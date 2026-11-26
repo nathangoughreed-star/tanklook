@@ -150,6 +150,7 @@ export function AnimalsSection({ store, getViewer, pending }: { store: Store; ge
               <div class={`srow${r.off ? ' misfit' : ''}${r.level !== 'ok' ? ' gated' : ''}${store.selected && rowKeyOf(store.selected) === r.key ? ' sel' : ''}`} data-sp={r.key}>
                 <button type="button" class="nm" title={`${r.sci}${r.more.length ? ' · ' + r.more.join('; ') : ''}`} onClick={() => pick(r.key)}>
                   <span class="t">{r.name}</span>
+                  <small class="size" data-size>{r.size}</small>
                   {r.reason ? <small class={`why ${tone(r.level)}`}>{r.off ? '✕ ' : ''}{r.reason}{r.more.length ? ` (+${r.more.length} more)` : ''}</small> : null}
                 </button>
                 <button type="button" class="btn icon sm" aria-label={`One fewer ${r.name}`} title="One fewer (the last one takes it off the list)"

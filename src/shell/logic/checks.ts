@@ -9,6 +9,7 @@ import { emptyBrief, rulesOf } from '../../scene/brief';
 import { checksNote } from '../../scene/rules';
 import { stockingMemo, plural, type Stocking } from '../../scene/stocking';
 import { roomWorking, type RoomWorking } from '../../ui/logic/room';
+import { bar as barOf } from '../../ui/logic/habitat';
 import { tileState, topBy, tankSizeLine, type Bar, type TileState, type TopRow } from '../../ui/logic/habitat';
 import { stockSummary, type StockSummary, type CatLevel } from '../../ui/stockSummary';
 import { demandOf, drivers, type Demand, type UserProfile } from '../../demand';
@@ -26,6 +27,7 @@ import { climateOf, climateText, climateChart, type Climate, type Status } from 
 import { fixPlans, GO_LID, GO_FILTER, GO_HEATER, type FixPlan, type GoTarget } from './noteFixes';
 import { lidIssues, tempIssues } from './lidTemp';
 import { tempEvidence } from '../../scene/tech';
+import { lifeFixPlans } from './lifeFix';
 import { lifeSupportOf, notChosenLine, type Missing } from '../../scene/lifeSupport';
 import { verdictOf, type Issue, type Verdict } from '../../scene/verdict';
 
@@ -46,7 +48,7 @@ export interface HabitatView {
   empty: boolean;
   pill: { tone: Tone; word: string };
   sizeLine: string;
-  cats: { label: string; word: string; tone: Tone; items: { text: string; /** R117: the "Fix it" button's destination, when the row has an obvious section */ go?: GoTarget }[] }[];
+  cats: { label: string; word: string; tone: Tone; items: { text: string; /** HV: the one-click fix that states its effect (shell/logic/lifeFix.ts), for a missing heater or filter */ fix?: FixPlan; /** R117: the "Fix it" button's destination, when the row has an obvious section */ go?: GoTarget }[] }[];
   bars: { key: string; label: string; bar: Bar; tone: Tone; top: TopRow[]; topLines: string[]; /** HV: the Room bar's working: ticks at 75 and 100, the count-as line, the headroom */ room?: RoomWorking }[];
   warnings: { tone: Tone; text: string }[];
   reason: string;
@@ -58,17 +60,25 @@ export interface HabitatView {
 export function habitatView(S: TankSetup, units: Units, r: Stocking = stockingMemo(S)): HabitatView {
   const st: TileState = tileState(S, r, units), sm: StockSummary = stockSummary(S, r, st.mins, units);
   const empty = !S.water.on || !r.contributors.length, support = lifeSupportOf(S, units === 'in');
+  const fixes = empty ? {} : lifeFixPlans(S, units);
   const tooBig = st.fit?.fits === false;
   const pill = empty ? { tone: 'neutral' as Tone, word: S.water.on ? 'No animals' : 'No water' }
     : { tone: tooBig && sm.worst === 'ok' ? 'bad' as Tone : TONE[sm.worst], word: `${sm.worstWord}${tooBig ? ' · too big' : ''}${sm.unchecked ? ` · ${sm.unchecked} not checked` : ''}` };
   // HV: a share of the bar's fill, not of the tank: one species fills all of what is used ("all of the room used"), several say their part of it
   const lines = (top: TopRow[], what = 'the load') => top.length === 1 && top[0].share > 0.995 && !top[0].note ? [`All of ${what} is ${plural(top[0].n, top[0].name)}`]
     : top.map(t => `${plural(t.n, t.name)}: ${t.note ?? `${Math.round(t.share * 100)}% of ${what}`}`);
-  const bars = empty ? [] : [
+  const bars: HabitatView['bars'] = empty ? [] : [
     { key: 'water', label: 'Room used', bar: st.water, top: topBy(r, 'space') },
     { key: 'floor', label: 'Floor', bar: st.floor, top: st.topFloor },
     ...(st.topMin.length ? [{ key: 'min', label: 'Tank minimum', bar: st.min, top: st.topMin }] : []),
   ].map(b => ({ ...b, tone: toneOfBar(b.bar), topLines: lines(b.top, b.key === 'water' ? 'the room used' : b.key === 'floor' ? 'the floor used' : 'the load'), ...(b.key === 'water' ? { room: roomWorking(S, r) } : {}) }));
+  // R153: the filtration meter back in the drawer, with the live-plant credit visible and tagged as our judgment (stocking.ts PLANT_MAX: up to +25 % filter capacity, a documented guess).
+  // It is a meter of how hard the filter works, never the verdict; its colour stops at amber because the waste classes behind it are our judgment (no red from an unsourced rule).
+  if (!empty && st.filter === 'chosen' && Number.isFinite(r.filtrationPercent)) {
+    const fb = barOf(r.filtrationPercent), credit = Math.round((r.capacity.plants - 1) * 100), n = r.capacity.plantCount;
+    const lines = [credit > 0 ? `Live plants (${n}) add about ${credit}% to the filter's capacity here: our judgment, a documented guess, up to 25%` : 'No live plants are counted toward the filter (up to 25% extra capacity with about 15 plants per 26 gal: our judgment)'];
+    bars.push({ key: 'filter', label: 'Filtration', bar: fb, tone: fb.level === 'ok' ? 'ok' : 'warn', top: [], topLines: lines });
+  }
   const warnings = [
     ...(st.compat ? [{ tone: st.compat.level === 'over' ? 'bad' as Tone : 'warn' as Tone, text: st.compat.text }] : []),
     ...st.mins.map(w => ({ tone: w.level === 'over' ? 'bad' as Tone : 'warn' as Tone, text: w.text })),
@@ -77,7 +87,7 @@ export function habitatView(S: TankSetup, units: Units, r: Stocking = stockingMe
   if (sc) warnings.push({ tone: sc.level === 'over' ? 'bad' as Tone : 'warn' as Tone, text: sc.text });
   return {
     empty, tank: S, support: empty ? [] : support, pill, sizeLine: tankSizeLine(S, r, units), reason: st.reason, warnings, bars,
-    cats: empty ? [] : sm.cats.map(c => ({ label: c.label, word: c.word, tone: TONE[c.level], items: c.items.map(i => ({ text: i.text, ...(i.go ? { go: i.go === 'lid' ? GO_LID : i.go === 'heater' ? GO_HEATER : GO_FILTER } : {}) })) })),
+    cats: empty ? [] : sm.cats.map(c => ({ label: c.label, word: c.word, tone: TONE[c.level], items: c.items.map(i => ({ text: i.text, ...(i.support && fixes[i.support] ? { fix: fixes[i.support] } : {}), ...(i.go ? { go: i.go === 'lid' ? GO_LID : i.go === 'heater' ? GO_HEATER : GO_FILTER } : {}) })) })),
   };
 }
 

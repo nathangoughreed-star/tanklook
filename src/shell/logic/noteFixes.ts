@@ -19,7 +19,7 @@ import type { TankSetup } from '../../scene/types';
 import { lidFix, tempFixes, type PriceOf } from './lidTemp';
 import { emptyBrief, setBudget, setCareTime, setMonthly, syncCaps } from '../../ui/setupBrief';
 
-export type FixKindId = 'deepen' | 'time' | 'budget' | 'monthly' | 'lid' | 'heater' | 'chiller';
+export type FixKindId = 'deepen' | 'time' | 'budget' | 'monthly' | 'lid' | 'heater' | 'chiller' | 'filter';
 export interface FixPlan {
   kind: FixKindId;
   /** the button's headline: "Fix these (6)" / "Fix this" */
