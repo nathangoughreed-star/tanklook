@@ -797,7 +797,22 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     // it (Nathan 2026-11-25: the sac "looks like a sticker"); its own face layers last (5)
     const back = new THREE.Mesh(g, fishMat(bodyKey + ':back', bodyMake(THREE.BackSide))); back.renderOrder = 2; grp.add(back);
     const front = new THREE.Mesh(g, fishMat(bodyKey + ':front', bodyMake(THREE.FrontSide))); front.renderOrder = 4; grp.add(front);
-  } else grp.add(new THREE.Mesh(g, fishMat(bodyKey, bodyMake(THREE.FrontSide))));
+  } else {
+    grp.add(new THREE.Mesh(g, fishMat(bodyKey, bodyMake(THREE.FrontSide))));
+    // tail-blend fish: the body's fade (vertex alpha, alpha to coverage) is also written to the canvas alpha, so each covered sample is alpha t, not 1,
+    // and the resolved alpha dips to 1 - t + t^2 (down to 0.75) over the blend: a see-through band at the tail root on a pale (alpha) background
+    // (review "Preview light"; hidden by the tank's opaque background; Nathan 2026-11-26). This pass raises the alpha of exactly the covered samples
+    // to 1 and leaves the colour alone (blend: colour x0 + dst x1, alpha src + dst), after the body (renderOrder 1), same shape and swim bend.
+    if (p.tailBlend) {
+      const fix = new THREE.Mesh(g, fishMat(bodyKey + ':afix', () => {
+        const m = new THREE.MeshBasicMaterial({ colorWrite: true }); m.userData.swim = true; m.userData.noLight = true;
+        m.blending = THREE.CustomBlending; m.blendEquation = THREE.AddEquation; m.blendSrc = THREE.ZeroFactor; m.blendDst = THREE.OneFactor;
+        m.blendSrcAlpha = THREE.OneFactor; m.blendDstAlpha = THREE.OneFactor; m.depthWrite = false; m.depthFunc = THREE.LessEqualDepth;
+        m.polygonOffset = true; m.polygonOffsetFactor = -1; m.polygonOffsetUnits = -1; return m;
+      }));
+      fix.renderOrder = 1; grp.add(fix);
+    }
+  }
   // the dark outline hull is the body's back faces: through a see-through body it would show as a dark lining, so clear fish go without
   if (p.bodyA === undefined && !st) { const o = new THREE.Mesh(g, outlineMat); o.userData.nolight = true; grp.add(o); }
   if (st?.inner.length) for (const m of innerMeshes(art, st.inner, b, swim)) grp.add(m);

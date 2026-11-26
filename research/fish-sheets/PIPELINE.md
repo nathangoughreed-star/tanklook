@@ -88,6 +88,7 @@ One runbook, start to finish. Entry point for every fish chat. Written 2026-11-2
 - **Pale band at the body / tail-fin join** (Nathan 2026-11-25, every b7 fish and the live danio; ChatGPT draws a crescent row of pale scales across the tail root):
   `fish-build.py` now runs `scripts/fishroot.py` on the side image and the card sheet, on by default (`"root_band": 0` in the spec turns it off). Check the tail root
   in the side render. Fish built before 2026-11-25 (the 25 live ones) still have the band until rebuilt with `fish-build.py`.
+- **See-through band at the tail root in Preview light** (Nathan 2026-11-26, method row 66): a runtime issue (tail-blend body wrote its fade into the canvas alpha), fixed in `fish3d.ts` for every fish; no rebuild. If a new fish shows it again, check `p.tailBlend` and the alpha-restore mesh before touching the sheet.
 - **Card blob below the belly** (bristlenose): a pocket left where the sheet's pelvic was erased can hang below the belly; spec `erase: [[x0,y0,x1,y1]]` (sheet px) blacks it out before the cutout.
 - Rows: 44 (fish-new), 56 (depth), 58 (colour), 61 (batch).
 
