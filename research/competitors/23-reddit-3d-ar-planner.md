@@ -1,33 +1,37 @@
-# 23. Unnamed 2026 3D aquascape planner with rendering and AR (Reddit launch post; web or app unknown)
-Researched 2026-11-25. Confidence: low. The product could not be identified and no user feedback was found. Reddit blocked every fetch (WebFetch refused www.reddit.com; WebSearch refuses reddit.com as a domain; I did not try to get around the block). Nothing below comes from the launch post or its comments.
+# 23. Shrimpspin Aquascape-Planer (web, German) + two "what do you want" threads
+Researched 2026-11-25 from thread text Nathan pasted (the agents and both browsers are blocked from reddit.com). Confidence: low-medium (one launch thread, ~8 comments; product site not visited).
 
 ## Snapshot
-- Launch post: https://www.reddit.com/r/Aquascape/comments/1sgmx6b/we_built_a_3d_aquascape_planner_with_rendering_ar/ (title only; body, product name, maker and comments unreadable).
-- "We built" means a small team or a solo maker. The post ID suggests spring 2026, but that is a guess.
-- Web searches for the title phrases found no page matching "3D planner + rendering + AR" for aquascaping. That may mean the product is very new and barely indexed, or that it goes by a name I did not search.
+- Product: Shrimpspin 3D Aquascape-Planer, https://www.shrimpspin.de/aquascape-planer . German-only UI at launch, English promised. Launch post on r/Aquascape about 8 months ago (https://www.reddit.com/r/Aquascape/comments/1sgmx6b/), roughly 5 upvotes.
+- Small team / solo developer; a free account saves multiple layouts; a community system (share, like, comment on 3D scapes and photos) was being built at launch.
 
-## Candidates checked (none confirmed as the product)
-No candidate listed AR. None mentions the Reddit post. Each is a possible match or a neighbouring product.
-- Scapesome (https://scapesome.com/): browser 3D planner for rocks, wood, plants, fish; shows the scape "grown in" at months 0 to 12; AI credits; free plan covers 1 tank; no AR on the page.
-- Aquascaper Studio (https://aquascaperstudio.com/): free low-poly 3D builder in the browser by one maker (Nyein Chan Soe); fish swim; no saving or sharing yet; phone layout still being tuned; no AR.
-- Skapelab (https://skapelab.com/): Skapelab LLC; illustrated render (explicitly not 3D), planting map, stocking check, priced shopping list with buy links, PDF; free, no account; no AR.
-- Aquascape 3D Designer (https://www.aquascape3d.app/): free 3D web planner for terrain, hardscape, planting; revision replay timeline; shareable build pages; maker not named; no rendering or AR named.
-- Vivarium: Nature Design (https://apps.apple.com/us/app/vivarium-nature-design/id6758380171): iPhone only, free with in-app purchases, Pro monthly listed at $23.99 plus credit packs up to $129.99, 4.3 stars from 112 ratings, updated 2 days before the fetch. Style library, hardscape planner, livestock preview, compare. The listing reads like an AI image generator, not 3D or AR. Reviews: one says it never loaded (https://apps.apple.com/us/app/id6758380171).
-- Aquarium Planner AR (https://apps.apple.com/app/id1290236851): the only one with real AR (places a 3D tank in a room, procedural aquascaping, powerhead and rock placement), but it dates from before 2026 (listing about 213 to 284 days old in a search snippet, https://mwm.ai/apps/aquarium-planner-ar/1290236851), so it is not "unnamed 2026".
-- Aquaria Designer (https://aquaria-designer.com/): claims realistic 3D rendering; the site returned HTTP 530 twice, so I could not read it.
-- Not 3D: Scape It (https://scape-it.io/en), a 2D drag-and-drop layout editor with shopping list.
+## What it does
+- Full 3D placement of hardscape and plants, chosen substrate, adjustable lighting; all placement manual (no auto-generation).
+- A "realistic rendering" mode that produces high-quality still images.
+- **AR mode: puts the planned scape in your room on a phone or tablet** to check size and placement. This is the AR competitor ChatGPT's report pointed to.
+- Models built by hand from generated reference images (the developer used AI for coding and reference images only).
 
-## What it does, what users love, complaints
-Unknown. Not found.
+## What users love
+- One user (2 months ago) prefers it to Scape It because Scape It is barely usable without Pro.
+- A "catch the shrimp" mini-game while it loads was liked.
 
-## What users wish it had
-Unknown for this product. See the last section for the two fishkeeping threads, which I also could not read.
+## Complaints and weak spots
+- Loading takes far too long (the developer blamed maintenance at the time).
+- German only.
+- **Hardscape realism critique (applies to every planner, including ours):** every rock and piece of wood is unique, so a planned layout can't be rebuilt from real pieces. The commenter's wish: photograph your own pieces from all sides and load them into the planner. The developer's reply: the tool is for proportion, depth and balance (e.g. a 16 in stone in a small tank), not a 1:1 copy.
+- **Community attitude to AI:** a top-1% r/Aquascape commenter warned the sub "heavily frowns upon" AI-based planners (energy and carbon concerns). The developer stressed that design is 100% manual.
 
 ## vs YourArium
-- They have, we lack: AR (the launch title advertises it); YourArium's AR view is still planned. Nothing else is verifiable.
-- We have, they lack: unverifiable. Among the candidate neighbours, none combines a real tank catalogue, a stocking engine with compatibility gates, brand-accurate gear and priced deals with a free, no-account 3D tank.
-- Ideas worth taking (ranked): (1) Skapelab's priced shopping list with buy links and PDF plan, already close to ours; (2) Scapesome's "grown in" months 0 to 12 views, matching our growth-timeline plan; (3) Aquascape 3D Designer's design replay timeline and shareable build pages.
-- Threat level: unknown, probably low to medium. An AR plus rendering planner is a direct overlap with our AR plans, but I can't size it. Someone with a Reddit login should open the post, read the product name, then rerun this file.
+- They have, we lack: AR placement in a room (our AR lanes Q / T are planned), a photo-quality render mode, account-based saves and a community feed.
+- We have, they lack: generated setups, stocking engine and gates, animals, real products and prices, marine and herps, English and US units.
+- Ideas worth taking: (1) state plainly how setups are generated (rules and data, not generative AI) wherever we say "suggest" or "generate", because r/Aquascape is hostile to AI planners; (2) a "my own rock / wood" slot: rough dimensions or a few photos of a piece the user owns, so plans use what they have (fits our Available/Required gear model); (3) a still-render export for sharing.
+- Threat: low (German-only, small reach), but it shipped AR first.
 
-## What people ask app builders for (the two fishkeeping threads)
-Not available: both threads (https://www.reddit.com/r/fishkeeping/comments/1ti9ouj/ and https://www.reddit.com/r/fishkeeping/comments/1sw4mpn/) were blocked, and I won't invent asks. A person can paste the top comments of those two threads and this section can be filled in.
+## What people ask app builders for
+**Aqua Keeper launch thread** (https://www.reddit.com/r/fishkeeping/comments/1ti9ouj/, ~6 months ago; a freshwater keeper app with fish ID, tank evaluation, tracking, care guides, compatibility, reminders). One answer, but a clear one: disease ID with treatment; stocking / pairing recommendations; aquatic plant ID with care. (Disease and care are out of scope for us; stocking recommendations are core.)
+
+**Modern stocking calculator thread** (https://www.reddit.com/r/fishkeeping/comments/1sw4mpn/, ~7 months ago):
+- The builders' complaints about AqAdvisor: dated UI, a page reload for every tweak, missing newer species and colour morphs.
+- Their planned features: instant recalculation; **top / middle / bottom zone capacity** (so plecos and corys don't overload the bottom while the top sits empty); a nitrate build-up forecast with a water-change schedule; planted-tank toggle offsetting nitrate; temperature, fin-nipping, substrate-digging and lid warnings; US / metric toggle.
+- **The top reply:** calculators are too conservative. Its example: one reads 80% for 10 cardinals in a 40 breeder, where experienced keepers run 30-40 cardinals plus apistos, corys and a pleco. It recommends forums and a parameter / water-change tracker instead. The builder agreed accuracy has limits and aims at beginners' UX.
+- What it means for us: our stocking engine is calibrated against expert stockings (research/expert-curve.md), which answers exactly this complaint; say so where the % is shown (ties to R152). Zone capacity by level is worth checking against our habitat model. Parameter tracking stays out of scope.
