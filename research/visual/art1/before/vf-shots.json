@@ -1,0 +1,174 @@
+{
+ "commit": "2f612e7d",
+ "build": 2807,
+ "dirty": false,
+ "when": "2026-11-26T15:24:00.096Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "none"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "planted4": {
+   "shots": [
+    "planted4-front-none.png"
+   ],
+   "ab": {},
+   "measure": {
+    "grass": {
+     "px": 19396,
+     "medS": 0.905,
+     "medL": 0.565,
+     "pctS80": 0.681,
+     "bottomVsTop": -0.115
+    },
+    "sword": {
+     "px": 2432,
+     "medS": 0.908,
+     "medL": 0.524,
+     "pctS80": 0.768,
+     "bottomVsTop": -0.202
+    },
+    "crypt": {
+     "px": 1285,
+     "medS": 0.746,
+     "medL": 0.445,
+     "pctS80": 0.384,
+     "bottomVsTop": -0.179
+    },
+    "fern": {
+     "px": 950,
+     "medS": 0.848,
+     "medL": 0.484,
+     "pctS80": 0.612,
+     "bottomVsTop": 0.053
+    },
+    "*": {
+     "px": 23841,
+     "medS": 0.901,
+     "medL": 0.551,
+     "pctS80": 0.673,
+     "bottomVsTop": -0.148
+    }
+   }
+  },
+  "nano": {
+   "shots": [
+    "nano-front-none.png"
+   ],
+   "ab": {},
+   "measure": {
+    "stemred": {
+     "px": 20880,
+     "medS": 0.722,
+     "medL": 0.372,
+     "pctS80": 0.304,
+     "bottomVsTop": 0.3
+    },
+    "stem": {
+     "px": 10222,
+     "medS": 0.911,
+     "medL": 0.55,
+     "pctS80": 0.729,
+     "bottomVsTop": 0.021
+    },
+    "carpet": {
+     "px": 1881,
+     "medS": 0.636,
+     "medL": 0.603,
+     "pctS80": 0.301,
+     "bottomVsTop": -0.104
+    },
+    "anubias": {
+     "px": 1181,
+     "medS": 0.911,
+     "medL": 0.544,
+     "pctS80": 0.805,
+     "bottomVsTop": -0.294
+    },
+    "*": {
+     "px": 34164,
+     "medS": 0.782,
+     "medL": 0.429,
+     "pctS80": 0.448,
+     "bottomVsTop": 0.437
+    }
+   }
+  },
+  "iwagumi": {
+   "shots": [
+    "iwagumi-front-none.png"
+   ],
+   "ab": {},
+   "measure": {
+    "carpet": {
+     "px": 2003,
+     "medS": 0.454,
+     "medL": 0.747,
+     "pctS80": 0.193,
+     "bottomVsTop": -0.006
+    },
+    "grass": {
+     "px": 25104,
+     "medS": 0.917,
+     "medL": 0.662,
+     "pctS80": 0.583,
+     "bottomVsTop": -0.109
+    },
+    "*": {
+     "px": 27085,
+     "medS": 0.914,
+     "medL": 0.666,
+     "pctS80": 0.554,
+     "bottomVsTop": -0.096
+    }
+   }
+  },
+  "nathan-40g-breeder-2026-11-15": {
+   "shots": [
+    "nathan-40g-breeder-2026-11-15-front-none.png"
+   ],
+   "ab": {},
+   "measure": {
+    "grass": {
+     "px": 10458,
+     "medS": 0.802,
+     "medL": 0.651,
+     "pctS80": 0.502,
+     "bottomVsTop": 0.129
+    },
+    "sword": {
+     "px": 4279,
+     "medS": 0.924,
+     "medL": 0.681,
+     "pctS80": 0.753,
+     "bottomVsTop": -0.005
+    },
+    "anubias": {
+     "px": 1201,
+     "medS": 0.892,
+     "medL": 0.5,
+     "pctS80": 0.809,
+     "bottomVsTop": 0.026
+    },
+    "carpet": {
+     "px": 2435,
+     "medS": 0.545,
+     "medL": 0.763,
+     "pctS80": 0.181,
+     "bottomVsTop": -0.079
+    },
+    "*": {
+     "px": 18192,
+     "medS": 0.839,
+     "medL": 0.667,
+     "pctS80": 0.535,
+     "bottomVsTop": 0.137
+    }
+   }
+  }
+ }
+}

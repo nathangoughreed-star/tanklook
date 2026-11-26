@@ -703,6 +703,10 @@ function capPasses(m: THREE.Mesh, T: Tank, id: number) {
  *  its shader shows each plant at its own growth (plant3d growShader, lane GR4). */
 /** How much of a lamp behind a leaf shines through it (plantMaterial's `post`). */
 const LEAF_GLOW = 0.5, LEAF_SHEEN = 0.35;
+/** Plant tone (lane ART1, art-direction answer row 2): the leaves are painted at the fish's level but rendered twice as saturated and bright.
+ *  EXPOSURE scales the lit leaf, SAT is how much of its colour stays (1 = as painted; the rest goes to its own grey), and a leaf near the
+ *  substrate is LOW x as bright as one at the water line (the crown sits in the shade of its own leaves; smooth over the lower 70 % of the water). */
+export const PLANT_TONE = { exposure: 0.55, sat: 0.8, low: 0.55 };
 /** Relief from the painted texture's luminance (plantMaterial's `post`): the bump height in mm per unit luminance, and how strongly the lamps' facing change shows. */
 const LEAF_RELIEF = 6.0, LEAF_RELIEF_K = 1.8;
 /** Review switch (lane PT): off = the plant shader without the glow and relief (frame-time A/B; set, then `needsUpdate` on the plant materials). */
@@ -723,6 +727,13 @@ function plantMaterial(T: Tank, free = false) {
   // mm, so leaves lying at the surface keep theirs
   const post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
     sh.fragmentShader = sh.fragmentShader.replace('float aqF = smoothstep(0.0, 0.5, aqWaterPath())', '$& * (1.0 - smoothstep(uWater.y + 6.0, uWater.y + 14.0, vAqP.y))');
+    // plant tone (lane ART1): last, after the light is shared out (lighting.ts's `outgoingLight /= aqM` rescales a brightly lit leaf back to
+    // full strength, so an earlier exposure is undone) and after the water filter: exposure, a pull toward the leaf's own grey, darker low down.
+    // (Matched on the light-map test that follows the water step: the one-line `vec3 aqLt = aqLight(); outgoingLight *= aqLt;` anchor the glow below uses no longer exists there.)
+    sh.fragmentShader = sh.fragmentShader.replace('if (uMapOn > 0.5 && uSub > 0.5)', `{ float atG = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722));
+    outgoingLight = mix(vec3(atG), outgoingLight, ${PLANT_TONE.sat.toFixed(2)}) * ${PLANT_TONE.exposure.toFixed(2)}
+      * mix(${PLANT_TONE.low.toFixed(2)}, 1.0, smoothstep(0.0, 0.7, vAqP.y / max(uWater.y, 1.0))); }
+  if (uMapOn > 0.5 && uSub > 0.5)`);
     // light through the leaf (lane PT step 6): a lamp on the far side of the blade from the eye shines through it, tinted by the
     // leaf's own colour, strongest looking toward the lamp (flat light: one soft key from above, as the fish have).
     // Relief (step 7): the painted texture's light and dark read as height (veins, blisters): the normal is tipped by the
