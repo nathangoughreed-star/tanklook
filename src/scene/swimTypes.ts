@@ -44,6 +44,16 @@ export interface SwimmerSpec {
   dig?: { rate: number; depth: number; pitch: number; hold: [number, number]; hide: number; hideT: [number, number]; k: number; dark: number; rest: number };
   /** FB3 (R118): home, range, posture and small actions (fishBehavior.ts HABIT). The sim picks a home spot in the tank (the species' rock, cave, bolt-hole, burrow, host or a patch; see swimHome.ts) and keeps the fish within `leash` body lengths of it. Absent = roams as before. */
   habit?: { home: 'crevice' | 'bolt' | 'burrow' | 'host' | 'open'; post: 'mid' | 'perch' | 'hoverLow' | 'hug'; leash: number; gap: number; orient: number; hoverH: number; act: number; dart: number; peck: number; patrol: number; flick: number; hop: number; hold: [number, number] };
+  /** BR: half the body's height (mm), as drawn (fins included). The surface clamp, the band and the goals use it, so no fin rises above the water line; absent = the body radius. */
+  tall?: number;
+  /** BR: species key (opaque: the sim only compares keys). With `foes` it says who this fish may rush. */
+  kind?: string;
+  /** BR: kinds this fish rushes now and then: built by foes.ts from the same pair rule the compatibility chips use, so a tank shows only the trouble its verdict flags. Absent / empty = peaceful. */
+  foes?: string[];
+  /** BR: a home keeper that rushes an intruder (a different kind, not much bigger) within about half its leash of home (care.temper >= 1 or care.guard). Needs `habit` with a short leash. */
+  guard?: boolean;
+  /** BR: a pair former (groups.ts PAIR_FORMERS) of which exactly two are in the tank: both carry the same key, share one home and stay within about 3 body lengths. */
+  pair?: string;
   /** Same school / shoal = same key (species id + split index); undefined = loner. `tight` = a school (aligned), else a shoal (loose). */
   group?: { key: string; tight: boolean };
   /** Where it was placed: its Reset pose. yaw/pitch/roll in degrees as in the scene's Fish. */
@@ -60,6 +70,12 @@ export interface SwimPose { x: number; y: number; z: number; yaw: number; pitch:
   breath?: number }
 
 export interface SwimSim {
+  /** BR: counts since the sim was made: rushes started, of them guard rushes, and alarms (random, clicks and chases). For tests and the debug page. */
+  readonly events: { chases: number; guards: number; startles: number };
+  /** BR: an alarm at a point (mm): animals within about `radius` bolt away, schools tighten and turn together, bottom fish freeze. A click on open water outside edit mode. */
+  startle(x: number, y: number, z: number, radius?: number): void;
+  /** BR: false = no random alarms and no rushes (edit mode with something selected or dragged); default true. */
+  setEvents(on: boolean): void;
   /** Advance by dt seconds (the caller clamps dt to about 0.1). Writes into the poses returned by `pose`. */
   step(dt: number): void;
   /** Current pose of fish `id` (a stable object, updated in place); null if unknown. */

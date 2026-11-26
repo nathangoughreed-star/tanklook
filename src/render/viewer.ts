@@ -1060,6 +1060,11 @@ export class Viewer {
     const h = this.hitTest0(clientX, clientY); if (!h || !this.pair) return h;
     return { ...h, fishId: null, itemId: null, dot: null, pool: null, mesh: undefined } as typeof h;
   }
+  /** BR: a click on open water in the look-only view sets off an alarm there (fish bolt, schools tighten); false when it hit an animal or a piece, or missed the water. */
+  startleAtPoint(clientX: number, clientY: number): boolean {
+    const h = this.hitTest0(clientX, clientY); if (!h || h.fishId != null || h.itemId != null) return false;
+    return this.roam.startleRay(h.ray);
+  }
   private hitTest0(clientX: number, clientY: number) {
     const r = this.host.getBoundingClientRect(), x = clientX - r.left, y = clientY - r.top;
     const vp = this.active.find(v => x >= v.x && x <= v.x + v.w);

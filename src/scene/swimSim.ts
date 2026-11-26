@@ -39,6 +39,12 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
   const fanIdx = new Int8Array(n), mode = new Uint8Array(n), gi = new Int32Array(n).fill(-1), bottom = new Uint8Array(n), tight = new Uint8Array(n);
   // FB2: which of pulse-glide / slow cruise / hover comes next (seeded, by the species' time shares; each lasts 5-15 s so the shares are time shares)
   const pickSub = (i: number) => { const u = R(); return u < mx0[i] ? 0 : u < mx0[i] + mx1[i] ? 1 : 2; };
+  // BR: relations. rv = vertical half-extent (half the drawn body height); prt = pair partner; kd = kind index; stT = alarm time left (stX/Y/Z where it came from);
+  // chT = rush time left (chTg its target, chGuard 1 = a guard rush); chCd / gdCd = cooldowns. A stream of its own (RE): a peaceful tank's other randomness does not move.
+  const RE = rng(seed ^ 0x2545f491);
+  const rv = F(), stT = F(), stX = F(), stY = F(), stZ = F(), chT = F(), chCd = F(), gdCd = F();
+  const prt = new Int32Array(n).fill(-1), kd = new Int32Array(n).fill(-1), chTg = new Int32Array(n).fill(-1), chGuard = new Uint8Array(n), hasFoe = new Uint8Array(n), guardF = new Uint8Array(n);
+  const events = { chases: 0, guards: 0, startles: 0 }; let eventsOn = true, evT = 40 + RE() * 80, K = 0, foeM = new Uint8Array(0);
   const poses: SwimPose[] = [], idIndex = new Map<number, number>();
   const grad: V3 = [0, 0, 0];
 
@@ -65,7 +71,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
 
   // Pick a wander goal (3 valid samples, the farthest from (fx, fz) wins) into the given arrays at index k.
   const cx3 = [0, 0, 0, 0], cz3 = [0, 0, 0, 0], cy3 = [0, 0, 0, 0];
-  function pickGoal(ax: Float64Array, ay: Float64Array, az: Float64Array, k: number, fx: number, fz: number, lo: number, hi: number, margin: number, isBottom: boolean, r: number) {
+  function pickGoal(ax: Float64Array, ay: Float64Array, az: Float64Array, k: number, fx: number, fz: number, lo: number, hi: number, margin: number, isBottom: boolean, r: number, rt: number) {
     const need = Math.min(margin, r * 4 + 24);
     let found = 0;
     for (let t = 0; t < 16 && found < 4; t++) {
@@ -73,7 +79,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       const z = field.min[2] + margin + R() * Math.max(1, field.max[2] - field.min[2] - 2 * margin);
       const fl = field.floorAt(x, z), free = field.waterTop - fl;
       if (free < r * 2.5) continue;
-      const y = isBottom ? fl + r * 1.3 : fl + (lo + R() * (hi - lo)) * free;
+      const y = isBottom ? fl + r * 1.3 : Math.min(fl + (lo + R() * (hi - lo)) * free, field.waterTop - Math.min(rt, free * 0.45)); // BR: the tallest part stays under the water line
       if (field.clearance(x, y, z, undefined, need) < (isBottom ? r * 1.5 : need)) continue;
       cx3[found] = x; cy3[found] = y; cz3[found] = z; found++;
     }
@@ -95,7 +101,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       else if (post === 2) y = hmy[i] + hHov[i] * L * (0.5 + RH()) - (hHov[i] < 0.5 ? L * RH() * 0.8 : 0); // a hoverer with no hover height (clownfish) works down into its host
       else if (post === 3) y = hmy[i] + (RH() - 0.5) * Math.min(rr, L * 5);
       else y = hmy[i] + hHov[i] * L + (RH() - 0.5) * Math.min(rr, L * 6);
-      y = clamp(y, fl + r * 1.3, field.waterTop - r * 2);
+      y = clamp(y, fl + r * 1.3, field.waterTop - Math.max(r * 2, bottom[i] ? 0 : Math.min(rv[i], (field.waterTop - fl) * 0.45)));
       const need = post === 3 ? r * 1.05 : r * 2, c = field.clearance(x, y, z, undefined, r * (hGap[i] + 1.2));
       if (c < need) continue;
       if (post === 3 && t < 10 && (c > r * (hGap[i] + 0.6) || !isItem(x, y, z, c, r))) continue; // a hugger wants a point near a rock face, not the glass
@@ -104,11 +110,11 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
     ax[k] = hmx[i] + hnx[i] * r * 2; ay[k] = clamp(hmy[i] + hHov[i] * L, field.floorAt(hmx[i], hmz[i]) + r * 1.3, field.waterTop - r * 2); az[k] = hmz[i] + hnz[i] * r * 2;
     return true;
   }
-  const fishGoal = (i: number) => { if (hb[i]) { habitGoal(gx, gy, gz, i, i); goalT[i] = 0; return; } goalT[i] = pickGoal(gx, gy, gz, i, px[i], pz[i], band0[i], band1[i], gmarg[i], !!bottom[i], rad[i]) ? 0 : 35; };
+  const fishGoal = (i: number) => { if (hb[i]) { habitGoal(gx, gy, gz, i, i); goalT[i] = 0; return; } goalT[i] = pickGoal(gx, gy, gz, i, px[i], pz[i], band0[i], band1[i], gmarg[i], !!bottom[i], rad[i], rv[i]) ? 0 : 35; };
   const groupGoal = (g: number) => {
     const f = gFirst[g];
     if (hb[f]) { habitGoal(ggx, ggy, ggz, g, f); ggT[g] = 0; return; }
-    ggT[g] = pickGoal(ggx, ggy, ggz, g, gcx[g], gcz[g], band0[f], band1[f], gmarg[f] + Math.min(len[f] * 4, Math.sqrt(gN[g]) * len[f] * 0.5), !!gBottom[g], rad[f]) ? 0 : 35;
+    ggT[g] = pickGoal(ggx, ggy, ggz, g, gcx[g], gcz[g], band0[f], band1[f], gmarg[f] + Math.min(len[f] * 4, Math.sqrt(gN[g]) * len[f] * 0.5), !!gBottom[g], rad[f], rv[f]) ? 0 : 35;
   };
 
   function setMode(i: number, m: number) {
@@ -136,13 +142,14 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
     else { mode[i] = gMode[gi[i]]; modeT[i] = 0; }
     if (!bottom[i]) modeT[i] = 5 + R() * 30; // loners hover later, not at once
     hS[i] = 0; hT[i] = 0; flickS[i] = 0; if (hb[i]) hCd[i] = 2 + RH() * 15;
+    stT[i] = 0; chT[i] = 0; chTg[i] = -1; chGuard[i] = 0; chCd[i] = hasFoe[i] ? 6 + RE() * 55 : 1e9; gdCd[i] = 3 + RE() * 12;
   }
 
   for (let i = 0; i < n; i++) {
     const s = fish[i];
     idIndex.set(s.id, i);
     poses.push({ x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0, fan: 0, calm: 1, dig: 0 });
-    len[i] = s.len; rad[i] = s.len * 0.12; bottom[i] = s.zone === 'bottom' ? 1 : 0; tight[i] = s.group?.tight ? 1 : 0;
+    len[i] = s.len; rad[i] = s.len * 0.12; rv[i] = Math.max(rad[i], s.tall ?? 0); bottom[i] = s.zone === 'bottom' ? 1 : 0; tight[i] = s.group?.tight ? 1 : 0;
     const bl = 1.2 * Math.pow(40 / Math.max(10, s.len), 0.25); // body lengths per second, cruising
     pace[i] = s.pace ?? 1;
     cruise[i] = s.len * bl * (0.85 + R() * 0.3) * pace[i];
@@ -172,6 +179,18 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       if (!bottom[i]) { band0[i] = 0; band1[i] = 1; } // its height comes from its home, not the species' band
       if (h.post === 'hug' || h.post === 'hoverLow') marg[i] = rad[i] * 2.2 + len[i] * 0.1; // may work close to a face
     }
+  }
+  { // BR: kinds, foes (who it rushes), guards, and pair partners
+    const kindIx = new Map<string, number>();
+    for (let i = 0; i < n; i++) { const k = fish[i].kind; if (k !== undefined) { let x = kindIx.get(k); if (x === undefined) { x = kindIx.size; kindIx.set(k, x); } kd[i] = x; } }
+    K = kindIx.size; foeM = new Uint8Array(K * K);
+    for (let i = 0; i < n; i++) {
+      const fs = fish[i].foes; if (kd[i] >= 0 && fs) for (const key of fs) { const b = kindIx.get(key); if (b !== undefined && b !== kd[i]) { foeM[kd[i] * K + b] = 1; hasFoe[i] = 1; } }
+      if (fish[i].guard && hb[i] && hLeash[i] < 30) guardF[i] = 1;
+    }
+    const prs = new Map<string, number[]>();
+    for (let i = 0; i < n; i++) { const k = fish[i].pair; if (k) { const a = prs.get(k); if (a) a.push(i); else prs.set(k, [i]); } }
+    for (const a of prs.values()) if (a.length === 2) { prt[a[0]] = a[1]; prt[a[1]] = a[0]; }
   }
   for (let g = 0; g < G; g++) {
     const f = gFirst[g]; gHov[g] = hov[f]; gRest[g] = restS[f]; gTight[g] = tight[f]; gBottom[g] = bottom[f]; gSide[g] = R() < 0.5 ? -1 : 1; gPh[g] = R() * 6.28; gSpeedW[g] = 0.2 + R() * 0.3;
@@ -311,6 +330,77 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
     } else { ovOn = 1; ovx = px[i]; ovy = py[i]; ovz = pz[i]; ovSpd = 0; if (hT[i] > hDur[i]) { hS[i] = 0; hT[i] = 0; } }
   }
 
+  // ---- BR: alarms, rushes, pairs. Steering only: nothing here feeds, hurts or kills.
+  /** Alarm fish i: it bolts away from (x, y, z) for 2-4 s; a burst-and-coast fish pulses at once, a home keeper darts home. */
+  function alarm(i: number, x: number, y: number, z: number) {
+    if (stT[i] > 1.5) return;
+    stT[i] = 2 + RE() * 2; stX[i] = x; stY[i] = y; stZ[i] = z;
+    if (sRate[i] > 0 && !bottom[i]) { pulseT[i] = 0; const g = gi[i]; if (g >= 0) { gSub[g] = 0; gSubT[g] = 3 + RE() * 4; } else { subMode[i] = 0; subT[i] = 4 + RE() * 4; } }
+    if (hb[i] && chT[i] <= 0 && hS[i] < 2) { hS[i] = 1; hT[i] = 0; hDur[i] = hH0[i] + RE() * (hH1[i] - hH0[i]); }
+  }
+  /** An alarm at a point: everyone within `radius` (mm) bolts; a school turns together (all of it goes if any of it was in range). */
+  function startleAt(x: number, y: number, z: number, radius: number, except: number) {
+    events.startles++;
+    const r2 = radius * radius, hit = new Uint8Array(G);
+    for (let i = 0; i < n; i++) {
+      if (i === except) continue;
+      const dx = px[i] - x, dy = (bottom[i] ? 0 : py[i] - y), dz = pz[i] - z;
+      if (dx * dx + dy * dy + dz * dz < r2) { alarm(i, x, y, z); if (gi[i] >= 0 && tight[i]) hit[gi[i]] = 1; }
+    }
+    for (let g = 0; g < G; g++) if (hit[g]) for (let m = gStart[g]; m < gStart[g + 1]; m++) if (gMem[m] !== except) alarm(gMem[m], x, y, z);
+  }
+  function endChase(i: number) {
+    chT[i] = 0; chTg[i] = -1;
+    if (hb[i] && Math.hypot(px[i] - hmx[i], pz[i] - hmz[i]) > len[i] * 0.8) { hS[i] = 1; hT[i] = 0; hDur[i] = hH0[i] + RE() * (hH1[i] - hH0[i]); } // back to its post
+  }
+  function startChase(i: number, j: number, guard: boolean) {
+    chT[i] = (guard ? 1 : 1.2) + RE() * 0.9; chTg[i] = j; chGuard[i] = guard ? 1 : 0; events.chases++; if (guard) events.guards++;
+    alarm(j, px[i], py[i], pz[i]); stT[j] = Math.max(stT[j], 2.5); startleAt(px[j], py[j], pz[j], len[j] * 5, i); // the victim bursts away and its neighbours (its school) with it
+  }
+  /** This fish's rush this step: starts one (a foe in range; a guard's intruder) or steers the one under way. Sets the override (ovOn ...). */
+  function chaseStep(i: number, dt: number) {
+    const L = len[i], isB = bottom[i] === 1;
+    if (chT[i] > 0) {
+      const j = chTg[i]; chT[i] -= dt;
+      const dx = px[j] - px[i], dy = isB ? 0 : py[j] - py[i], dz = pz[j] - pz[i], d = Math.sqrt(dx * dx + dy * dy + dz * dz) + 1e-6;
+      if (chT[i] <= 0 || d < L * 1.3 || !eventsOn) { endChase(i); return; }
+      ovOn = 1; ovx = px[j] - dx / d * L; ovy = isB ? py[i] : py[j] - dy / d * L; ovz = pz[j] - dz / d * L; ovSpd = Math.min(cruise[i] * 3.2 + L * 1.2, 6 + 2.5 * d); // a length short of it
+      return;
+    }
+    if (!eventsOn || (!hasFoe[i] && !guardF[i]) || digSt[i] !== 0 || stT[i] > 0 || (hb[i] && hS[i] !== 0)) return;
+    if (guardF[i]) {
+      gdCd[i] -= dt;
+      if (gdCd[i] <= 0) {
+        gdCd[i] = 0.5; const rr = clamp(hLeash[i] * L * 0.5, L * 2, L * 12); let bj = -1, bd = 1e18;
+        for (let j = 0; j < n; j++) {
+          if (j === i || (kd[i] >= 0 && kd[j] === kd[i]) || len[j] > L * 2 || stT[j] > 0) continue;
+          const d = Math.hypot(px[j] - hmx[i], pz[j] - hmz[i], bottom[j] ? 0 : py[j] - hmy[i]); if (d < rr && d < bd) { bd = d; bj = j; }
+        }
+        if (bj >= 0) { startChase(i, bj, true); gdCd[i] = 15 + RE() * 20; return; }
+      }
+    }
+    if (hasFoe[i]) {
+      chCd[i] -= dt;
+      if (chCd[i] <= 0) {
+        let bj = -1, bd = (L * 14) ** 2;
+        for (let j = 0; j < n; j++) {
+          if (kd[j] < 0 || !foeM[kd[i] * K + kd[j]] || stT[j] > 0) continue;
+          const dx = px[j] - px[i], dy = isB ? 0 : py[j] - py[i], dz = pz[j] - pz[i], d2 = dx * dx + dy * dy + dz * dz; if (d2 < bd) { bd = d2; bj = j; }
+        }
+        if (bj >= 0) { startChase(i, bj, false); chCd[i] = 30 + RE() * 90; } else chCd[i] = 5;
+      }
+    }
+  }
+  /** A pair former of exactly two: too far from its partner (over 2.2 body lengths) it drops what it was doing and the two close up. */
+  function pairStep(i: number) {
+    const j = prt[i]; if (j < 0 || chT[i] > 0 || digSt[i] !== 0) return;
+    const L = len[i], isB = bottom[i] === 1, dx = px[j] - px[i], dy = isB ? 0 : py[j] - py[i], dz = pz[j] - pz[i];
+    if (dx * dx + dy * dy + dz * dz > (L * 2.2) ** 2) {
+      if (hb[i]) { hS[i] = 0; hT[i] = 0; }
+      ovOn = 1; ovx = (px[i] + px[j]) / 2; ovy = (py[i] + py[j]) / 2; ovz = (pz[i] + pz[j]) / 2; ovSpd = slow(i, cruise[i] * 1.5 + L * 0.4, ovx, ovy, ovz);
+    }
+  }
+
   function inner(dt: number, T: number, tick: number) {
     // ---- group statistics, goals, modes
     for (let g = 0; g < G; g++) {
@@ -360,7 +450,9 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
         else digStep(i, dt, L, T);
       }
       const dst = digSt[i];
-      ovOn = 0; if (hb[i]) habitStep(i, dt); // FB3
+      ovOn = 0; if (hb[i] && chT[i] <= 0) habitStep(i, dt); // FB3
+      chaseStep(i, dt); pairStep(i); // BR
+      let sk = 0; if (stT[i] > 0) { stT[i] -= dt; sk = clamp(stT[i] / 2, 0, 1); } // BR: alarm strength: full for the first 0-2 s, then fading
       if (sRate[i] > 0) {
         const was = subMode[i];
         if (g >= 0) subMode[i] = gSub[g]; else { subT[i] -= dt; if (subT[i] <= 0) { subMode[i] = pickSub(i); subT[i] = 5 + R() * 10; } }
@@ -396,7 +488,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       } else if (dst > 0) {
         if (dst === 5) { wx = hgx[i] - px[i]; wz = hgz[i] - pz[i]; wy = 0; wm = Math.sqrt(wx * wx + wz * wz) || 1; wx /= wm; wz /= wm; } else { wx = dgx[i]; wz = dgz[i]; wy = 0; }
         held = true;
-      } else if ((hov[i] > 0 && mode[i] === REST) || (sRate[i] > 0 && mode[i] === MOVE && subMode[i] === 2)) {
+      } else if (sk === 0 && ((hov[i] > 0 && mode[i] === REST) || (sRate[i] > 0 && mode[i] === MOVE && subMode[i] === 2))) {
         if (!restFlag[i]) { restFlag[i] = 1; setHold(i, 0.4); nudgeT[i] = 1 + R() * 2.5; kick[i] = 0; }
         else { nudgeT[i] -= dt; if (nudgeT[i] <= 0) { setHold(i, 0.5); kick[i] = 0.35 + R() * 0.3; nudgeT[i] = 1.5 + R() * 4; } }
         wx = holdX[i]; wz = holdZ[i]; wy = 0; held = true;
@@ -417,7 +509,8 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
         if (over > 0.8) ownT[i] = 0;
         let wg = (t ? 0.7 : 0.6), wa = (t ? 1 : 0.35);
         if (ownT[i] > 0) { wg = 1; wa = 0.1; }
-        let wc = (t ? 0.35 : 0.12) + (t ? 2 : 1.2) * over; wc *= dc < r0 ? dc / r0 : 1; if (ownT[i] > 0 && over < 0.8) wc *= 0.3; wc = Math.min(wc, 2.5);
+        let wc = (t ? 0.35 : 0.12) + (t ? 2 : 1.2) * over; wc *= dc < r0 ? dc / r0 : 1; if (ownT[i] > 0 && over < 0.8) wc *= 0.3; wc = Math.min(wc, 2.5 * (1 + sk));
+        if (sk > 0 && t) wc *= 1 + 1.5 * sk; // a school tightens when alarmed
         let vx = wx * wg, vy = wy * wg, vz = wz * wg;
         vx += ghx[g] * wa; vy += (isB ? 0 : ghy[g]) * wa; vz += ghz[g] * wa;
         if (dc > 1e-3) { vx += dxc / dc * wc; vy += dyc / dc * wc; vz += dzc / dc * wc; }
@@ -428,18 +521,35 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       for (let j = 0; j < n; j++) {
         if (j === i) continue;
         const same = g >= 0 && gi[j] === g;
-        const sr = same ? L * (tight[i] ? 1.7 : 2.4) : (L + len[j]) * 0.8;
+        const big = !same && len[j] >= L * 2.5; // BR: give way to a fish 2.5 times longer: a school parts around the angel
+        const sr = same ? L * (tight[i] ? 1.7 : 2.4) : big ? len[j] * 1.2 + L * 1.6 : (L + len[j]) * 0.8;
         const dx = px[i] - px[j]; if (dx > sr || dx < -sr) continue;
         const dz = pz[i] - pz[j]; if (dz > sr || dz < -sr) continue;
         const dy = py[i] - py[j]; if (dy > sr || dy < -sr) continue;
         const d2 = dx * dx + dy * dy + dz * dz; if (d2 >= sr * sr) continue;
-        const d = Math.sqrt(d2) + 1e-3, k = (same ? 2 : 1.2) * (1 - d / sr) / d;
+        const d = Math.sqrt(d2) + 1e-3, k = (same ? 2 : big ? 2.4 : 1.2) * (1 - d / sr) / d;
         wx += dx * k; wy += (isB ? 0 : dy) * k; wz += dz * k;
+      }
+      // BR: groups of different species keep apart (soft push from the other group's centre while the two overlap)
+      if (g >= 0 && !isB && G > 1) {
+        for (let h = 0; h < G; h++) {
+          if (h === g || gBottom[h] || (kd[i] >= 0 && kd[gFirst[h]] === kd[i])) continue;
+          const ex = px[i] - gcx[h], ey = py[i] - gcy[h], ez = pz[i] - gcz[h], need = (gspread[g] + gspread[h]) * 1.2 + (L + len[gFirst[h]]) * 1.5, e2 = ex * ex + ey * ey + ez * ez;
+          if (e2 >= need * need) continue;
+          const e = Math.sqrt(e2) + 1e-3, k = (1 - e / need) / e;
+          wx += ex * k; wy += ey * k; wz += ez * k;
+        }
+      }
+      // BR: alarm / flight: away from where it came from
+      if (sk > 0) {
+        let ex = px[i] - stX[i], ey = isB ? 0 : py[i] - stY[i], ez = pz[i] - stZ[i], em = Math.sqrt(ex * ex + ey * ey + ez * ez);
+        if (em < 1e-3) { ex = hx[i]; ey = 0; ez = hz[i]; em = Math.sqrt(ex * ex + ez * ez) || 1; }
+        const w = isB ? 0.5 : 2.2; wx += ex / em * w * sk; wy += ey / em * w * sk * 0.6; wz += ez / em * w * sk;
       }
       // keep to the preferred band of the water column
       if (!isB) {
         const fl = field.floorAt(px[i], pz[i]), free = Math.max(1, field.waterTop - fl);
-        const lo = fl + band0[i] * free, hi = fl + band1[i] * free;
+        const rt = Math.min(rv[i], free * 0.45), lo0 = fl + band0[i] * free, hi = Math.min(fl + band1[i] * free, field.waterTop - rt), lo = Math.min(lo0, hi); // BR: the band stops a half body height under the surface
         const out = py[i] < lo ? lo - py[i] : py[i] > hi ? hi - py[i] : 0;
         if (out !== 0) wy += clamp(out / (L * 3), -1, 1) * 0.8;
       }
@@ -554,6 +664,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
         if (burstT[i] > 0) target *= pace[i] < 1 ? 1.5 : 2.6;
       }
       if (sRate[i] > 0 && mode[i] === MOVE && dst === 0 && !isB) { if (subMode[i] === 1) target = cruise[i] * sv * boost * 0.5; else if (subMode[i] === 2) target = L * 0.04; } // FB2: slow steady cruise / hover
+      if (sk > 0 && !(ovOn && ovSpd >= 0)) target = isB ? Math.min(target, L * 0.01) : Math.max(target, cruise[i] * (1 + 2.2 * sk) * sv); // BR: bolt, or (a bottom fish) freeze
       if (held && kick[i] > 0 && dst === 0) target += L * 0.2; // a small shift in the water
       if (ovOn && ovSpd >= 0) target = ovSpd; // FB3
       if (dst > 0) target = dst === 1 ? L * 0.12 : dst === 2 ? L * 0.05 : dst === 4 ? L * 0.28 : dst === 5 ? L * 0.4 : 0; // approach, push in, wriggle out, walk to cover, hold still
@@ -563,7 +674,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
         if (burstLeft[i] > 0) { burstLeft[i] -= dt; spd[i] += (pv0[i] - spd[i]) * Math.min(1, dt * 18); } // the burst: quick acceleration
         else spd[i] *= Math.exp(-dt / sTau[i]);                                                              // the glide: the speed decays
       } else {
-      const ac = (target > spd[i] ? 2.5 : 3.5) * L * (1 + K) * dt * (ovOn && hS[i] === 1 ? 4 : 1);
+      const ac = (target > spd[i] ? 2.5 : 3.5) * L * (1 + K) * dt * (ovOn && hS[i] === 1 ? 4 : 1) * (chT[i] > 0 || sk > 0 ? 3 : 1);
       spd[i] += clamp(target - spd[i], -ac, ac);
       }
       if (spd[i] < 0) spd[i] = 0;
@@ -581,7 +692,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       } else py[i] += hy[i] * spd[i] * dt;
 
       // ---- hard guarantee: centre never ends a step inside its body radius of anything solid
-      px[i] = clamp(px[i], field.min[0] + r, field.max[0] - r); pz[i] = clamp(pz[i], field.min[2] + r, field.max[2] - r); py[i] = clamp(py[i], field.min[1] + r, field.max[1] - r);
+      px[i] = clamp(px[i], field.min[0] + r, field.max[0] - r); pz[i] = clamp(pz[i], field.min[2] + r, field.max[2] - r); py[i] = clamp(py[i], field.min[1] + r, Math.min(field.max[1], field.waterTop) - (isB ? r : Math.min(rv[i], Math.max(r, (field.waterTop - field.floorAt(px[i], pz[i])) * 0.45)))); // BR: a half body height under the surface
       for (let it = 0; it < 5; it++) {
         grad[0] = 0; grad[1] = 0; grad[2] = 0;
         const c = field.clearance(px[i], py[i], pz[i], grad, m);
@@ -599,15 +710,15 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
 
       // ---- pose
       const P = poses[i];
-      let pt: number, sk = 0;
+      let pt: number, sunk = 0;
       if (digK[i] > 0.001) { // FB1: sunk into the bed, nose down; never deeper than the bed under it
         const bed = bedAt(px[i], pz[i]) - 0.5, full = Math.max(0, r * 1.3 - dRest[i]) + dRest[i] * dDepth[i];
-        let k = digK[i], head = 0.45 * L * Math.sin(dPitch[i] * k * D2R); sk = full * k;
-        if (sk + head > bed) { const f = bed > 0 ? bed / (sk + head) : 0; k *= f; sk *= f; }
+        let k = digK[i], head = 0.45 * L * Math.sin(dPitch[i] * k * D2R); sunk = full * k;
+        if (sunk + head > bed) { const f = bed > 0 ? bed / (sunk + head) : 0; k *= f; sunk *= f; }
         sinkS[i] = k; pt = -dPitch[i] * k;
       } else { sinkS[i] = 0; pt = 0; }
       if (digK[i] <= 0.001) pt = isB ? (mode[i] === REST ? -20 : clamp(Math.atan2(vyB[i], Math.max(spd[i], 1)) * R2D * 0.5, -15, 15) - 5) : clamp(Math.asin(clamp(hy[i], -1, 1)) * R2D, -28, 28);
-      P.x = px[i]; P.y = py[i] - sk; P.z = pz[i];
+      P.x = px[i]; P.y = py[i] - sunk; P.z = pz[i];
       P.yaw = Math.atan2(-hz[i], hx[i]) * R2D + (wig[i] > 0 ? wig[i] * 11 * Math.sin(T * 9 + ph2[i]) * (dst === 2 ? 1 : 0.6) : 0);
       // pectoral fanning and tail beat: a hovering fish fans while it is slow, and its tail follows its speed; a digger wriggles in and out and lies still in between
       { const hover2 = sRate[i] > 0 && mode[i] === MOVE && dst === 0 && subMode[i] === 2, pulsing2 = sRate[i] > 0 && mode[i] === MOVE && dst === 0 && subMode[i] === 0 && pv0[i] > 0, rel = spd[i] / L, fanT = dst > 0 ? 0 : hovPec[i] * clamp(1 - rel / 0.3, 0, 1);
@@ -619,7 +730,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
         else if (hov[i] > 0 || hover2) calmT = hovCau[i] + (1 - hovCau[i]) * clamp(rel / 0.35, 0, 1);
         calmS[i] += (calmT - calmS[i]) * Math.min(1, dt * (pulsing2 ? 14 : 3));
         { const bT = restS[i] > 0 && isB && mode[i] === REST && dst === 0 && spd[i] < L * 0.05 ? 1 : 0; breathS[i] += (bT - breathS[i]) * Math.min(1, dt * 2); if (restS[i] > 0) P.breath = breathS[i]; }
-        P.fan = fanS[i]; P.calm = calmS[i]; P.dig = sk; if (sRate[i] > 0) P.sub = mode[i] === MOVE ? subMode[i] : 2; }
+        P.fan = fanS[i]; P.calm = calmS[i]; P.dig = sunk; if (sRate[i] > 0) P.sub = mode[i] === MOVE ? subMode[i] : 2; }
       if (hb[i] && hS[i] === 5) pt += -22 + 8 * Math.sin(T * 15 + ph1[i]); // FB3: pecking: the snout bobs at the surface
       pitchS[i] += (pt - pitchS[i]) * Math.min(1, dt * 4);
       let rollT = clamp(-yawRate[i] * R2D * 0.12, -12, 12);
@@ -645,11 +756,15 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
 
   let T = 0, tick = 0;
   return {
+    events,
+    startle(x: number, y: number, z: number, radius = 380) { startleAt(x, y, z, radius, -1); },
+    setEvents(on: boolean) { eventsOn = on; if (!on) for (let i = 0; i < n; i++) if (chT[i] > 0) endChase(i); },
     step(dt: number) {
       if (!(dt > 0)) return;
       if (dt > 0.25) dt = 0.25;
-      const sub = Math.ceil(dt / MAX_SUB), h = dt / sub;
+      const sub = Math.min(Math.ceil(dt / MAX_SUB), n >= 200 ? 3 : 99), h = dt / sub; // BR: a big tank on a slow device runs at most 3 substeps a frame (the step measured over 1 ms at 200+ fish)
       for (let s = 0; s < sub; s++) { T += h; inner(h, T, tick++); }
+      if (eventsOn && n > 0) { evT -= dt; if (evT <= 0) { evT = 60 + RE() * 120; startleAt(field.min[0] + RE() * (field.max[0] - field.min[0]), field.waterTop * (0.2 + 0.6 * RE()), field.min[2] + RE() * (field.max[2] - field.min[2]), Math.max(250, (field.max[0] - field.min[0]) * 0.28), -1); } } // a seeded alarm every 1-3 minutes
     },
     pose(id: number) { const k = idIndex.get(id); return k === undefined ? null : poses[k]; },
     reset(ids?: number[]) {
