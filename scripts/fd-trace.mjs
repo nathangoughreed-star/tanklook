@@ -7,12 +7,14 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync 
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { gzipSync } from 'node:zlib';
 
 const argv = process.argv.slice(2);
 const opt = (k, d) => { const i = argv.indexOf('--' + k); return i < 0 ? d : argv[i + 1]; };
 const DIRS = opt('dirs', 'dist').split(',').map(s => { const [n, p] = s.includes('=') ? s.split('=') : [s, s]; return { name: n, dir: p }; });
 const NETS = { lte: { down: 12e6 / 8, up: 5e6 / 8, lat: 70 }, slow4g: { down: 1.6e6 / 8, up: 0.75e6 / 8, lat: 150 }, none: null };
 const NET = NETS[opt('net', 'lte')], CPU = +opt('cpu', 1), ROUNDS = +opt('rounds', 3), VIEW = opt('view', 'betta-bowl'), OUT = opt('out', null);
+const SHOTS = opt('shots', null);
 const [W, H] = opt('size', '1050x850').split('x').map(Number);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const TYPES = { html: 'text/html', js: 'text/javascript', css: 'text/css', json: 'application/json', svg: 'image/svg+xml', png: 'image/png', webp: 'image/webp', webmanifest: 'application/manifest+json', woff2: 'font/woff2' };
@@ -21,7 +23,8 @@ for (const d of DIRS) {
     const p = decodeURIComponent(req.url.split('?')[0]).replace(/^\/+/, '') || 'index.html', f = join(d.dir, p);
     if (p === '__none') { res.writeHead(200, { 'content-type': 'text/html' }); res.end('<!doctype html><title>blank</title>'); return; }
     if (p.includes('..') || !existsSync(f) || !statSync(f).isFile()) { res.writeHead(404); res.end(); return; }
-    res.writeHead(200, { 'content-type': TYPES[p.split('.').pop()] ?? 'application/octet-stream', 'cache-control': 'no-store' }); res.end(readFileSync(f));
+    const ext = p.split('.').pop(), buf = readFileSync(f), gz = ['js', 'css', 'json', 'html', 'svg'].includes(ext);   // gzip like the host does
+    res.writeHead(200, { 'content-type': TYPES[ext] ?? 'application/octet-stream', 'cache-control': 'no-store', ...(gz ? { 'content-encoding': 'gzip' } : {}) }); res.end(gz ? gzipSync(buf) : buf);
   });
   await new Promise(r => srv.listen(0, '127.0.0.1', r)); d.base = `http://127.0.0.1:${srv.address().port}/`; d.srv = srv;
 }
@@ -53,10 +56,13 @@ async function load(d) {
     events.length = 0;
     const t0 = Date.now(); await s('Page.navigate', { url: d.base }); const nav0 = performance.now();
     let r = null;
+    let shotShell = false;
     for (let i = 0; i < 1200 && !r; i++) {
       await sleep(100);
+      if (SHOTS && !shotShell && await ev("!!document.getElementById('ui2')").catch(() => false)) { shotShell = true; writeFileSync(`${SHOTS}/${VIEW}-${d.name}-1-shell.png`, Buffer.from((await s('Page.captureScreenshot', { format: 'png' })).data, 'base64')); }
       r = await ev(`(() => { const m = performance.getEntriesByType('mark').filter(x => /^tank (part|at once)/.test(x.name)); const T = window.__t; return T && m.length ? { shell: T.shell, part0: m[0].startTime, name: m[0].name } : null; })()`).catch(() => null);
     }
+    if (SHOTS && r) { await sleep(5000); writeFileSync(`${SHOTS}/${VIEW}-${d.name}-2-settled.png`, Buffer.from((await s('Page.captureScreenshot', { format: 'png' })).data, 'base64')); }
     const reqs = new Map();
     for (const e of events) {
       const p = e.params;
@@ -69,7 +75,7 @@ async function load(d) {
     // the page clock and this process's clock differ: the shell / part times are on the page's clock, request times on the navigation's; align by the first request
     const first = [...reqs.values()][0]?.t ?? 0, off = 0 * first;
     const shell = r.shell, part0 = r.part0;
-    return { shellMs: Math.round(shell), partMs: Math.round(part0), partName: r.name, kbBeforeShell: { jscss: sum(shell + off, 'jscss'), fish: sum(shell + off, 'fish'), all: sum(shell + off) }, kbBeforePart: { jscss: sum(part0 + off, 'jscss'), fish: sum(part0 + off, 'fish'), all: sum(part0 + off) }, fishFiles: [...reqs.values()].filter(q => kind(q.url) === 'fish').length };
+    return { shellMs: Math.round(shell), partMs: Math.round(part0), partName: r.name, kbBeforeShell: { jscss: sum(shell + off, 'jscss'), fish: sum(shell + off, 'fish'), all: sum(shell + off) }, kbBeforePart: { jscss: sum(part0 + off, 'jscss'), fish: sum(part0 + off, 'fish'), all: sum(part0 + off) }, fishFiles: [...reqs.values()].filter(q => kind(q.url) === 'fish').length, fishDoneMs: Math.round(Math.max(0, ...[...reqs.values()].filter(q => kind(q.url) === 'fish' && q.done != null).map(q => q.done))), fishKB: sum(1e9, 'fish') };
   } finally { try { await send('Browser.close'); } catch { /* gone */ } proc.kill(); await sleep(800); try { rmSync(profile, { recursive: true, force: true }); } catch { /* locked */ } }
 }
 const runs = [];

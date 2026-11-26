@@ -1,0 +1,38 @@
+{
+ "at": "2026-11-26T04:47:54.857Z",
+ "net": "lte",
+ "cpu": 4,
+ "view": "betta-bowl",
+ "runs": [
+  {
+   "round": 0,
+   "build": "before",
+   "error": "no tank part in 120 s",
+   "ms": 138639
+  },
+  {
+   "round": 1,
+   "build": "before",
+   "error": "no tank part in 120 s",
+   "ms": 137880
+  },
+  {
+   "round": 2,
+   "build": "before",
+   "shellMs": 0,
+   "partMs": 17289,
+   "partName": "tank part 0",
+   "kbBeforeShell": {
+    "jscss": 0,
+    "fish": 0,
+    "all": 0
+   },
+   "kbBeforePart": {
+    "jscss": 5076,
+    "fish": 8497,
+    "all": 14069
+   },
+   "fishFiles": 266
+  }
+ ]
+}

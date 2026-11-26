@@ -25,7 +25,7 @@ for (const [f, why] of files) {
 }
 rows.sort((a, b) => b[2] - a[2]);
 console.log('cold-load JS + CSS, gzip (largest 8 of ' + rows.length + '):');
-for (const [f, why, kb] of rows.slice(0, 8)) console.log(`  ${kb.toFixed(0).padStart(5)} KB  ${f}  (${why})`);
+for (const [f, why, kb] of rows.slice(0, +(process.env.ROWS||8))) console.log(`  ${kb.toFixed(0).padStart(5)} KB  ${f}  (${why})`);
 console.log(`  ${total.toFixed(0).padStart(5)} KB  TOTAL before the first tank (budget ${BUDGET_KB} KB)`);
 let bad = 0;
 if (total > BUDGET_KB) { console.error(`size-budget: FAIL, ${total.toFixed(0)} KB > ${BUDGET_KB} KB. Split the new code behind a dynamic import() or raise the budget on purpose (scripts/size-budget.mjs).`); bad = 1; }
