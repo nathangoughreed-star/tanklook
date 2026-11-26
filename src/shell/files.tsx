@@ -199,9 +199,10 @@ export function FileMenu({ files }: { files: Files }) {
   );
 }
 
-function Dialog({ title, onClose, children, wide, full, top }: { title: string; onClose: () => void; children: preact.ComponentChildren; wide?: boolean; full?: boolean; /** a question that must show above any other dialog (the animal door's own window) */ top?: boolean }) {
+function Dialog({ title, onClose, children, wide, full, top, dock }: { title: string; onClose: () => void; children: preact.ComponentChildren; wide?: boolean; full?: boolean; /** the landing's docked variant (?landing=dock): not modal, the tank stays lit beside it */ dock?: boolean; /** a question that must show above any other dialog (the animal door's own window) */ top?: boolean }) {
+  useEffect(() => { if (!dock) return; document.body.classList.add('landdock'); return () => document.body.classList.remove('landdock'); }, [dock]);
   return (
-    <div class={`scrim${top ? ' top' : ''}`} onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}>
+    <div class={`scrim${top ? ' top' : ''}${dock ? ' dock' : ''}`} onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div class={`dlg${wide ? ' wide' : ''}${full ? ' full' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
         <div class="sec-head"><h2>{title}</h2><button type="button" class="btn icon ghost" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
         <div class="dlgbody">{children}</div>

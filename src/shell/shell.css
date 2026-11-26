@@ -615,6 +615,7 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 
 /* SS1: the Start sheet's doors */
 .startdoors { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.dlg .startdoors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .card.door { display: grid; gap: 4px; text-align: left; padding: var(--s3); min-height: 84px; cursor: pointer; align-content: start; }
 .card.door:hover, .card.door:focus-visible { border-color: var(--accent); }
 .card.door .t { font-size: 1.05em; }
@@ -948,3 +949,14 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .ov.loadbar { left: 50%; top: var(--s3); transform: translateX(-50%); display: grid; justify-items: center; gap: 4px; padding: var(--s2) var(--s3); border-radius: var(--r-card, 10px); z-index: calc(var(--z-overlay) + 3); max-width: min(380px, calc(100% - 2 * var(--s3))); text-align: center; color: var(--text-2); font-size: var(--fs-sm); }
 .loadbar .loadwave { width: 120px; height: 14px; color: var(--accent); stroke-dasharray: 18 6; animation: loadflow 1.6s linear infinite; } .loadbar .loadtip { color: var(--text-3); }
 @keyframes loadflow { to { stroke-dashoffset: -48; } } @media (prefers-reduced-motion: reduce) { .loadbar .loadwave { animation: none; } }
+
+.ov.loadbar { top: 10px; z-index: calc(var(--z-toast) + 6); }   /* above a dialog's scrim (it sat under the sheet), in the gap over the dialog */
+/* the docked landing (?landing=dock): not modal, no dimming; the sheet is a left column on a desktop, a bottom sheet on a phone, and the lit tank shows beside it */
+.scrim.dock { background: none; pointer-events: none; display: block; } .scrim.dock .dlg { pointer-events: auto; position: fixed; left: 64px; top: 48px; bottom: 0; width: 400px; max-width: none; max-height: none; height: auto; border-radius: 0; box-shadow: 4px 0 18px rgba(0,0,0,.35); }
+.scrim.dock .dlg .startdoors { grid-template-columns: repeat(2, minmax(0, 1fr)); } .scrim.dock .startline { font-size: 1.05em; }
+body.landdock .ui2app .viewer { margin-left: 400px; }
+@media (max-width: 699px) {
+  .scrim.dock .dlg { left: 0; right: 0; top: auto; bottom: 56px; width: auto; height: 46dvh; border-radius: 14px 14px 0 0; box-shadow: 0 -6px 20px rgba(0,0,0,.4); }
+  body.landdock .ui2app .viewer { margin-left: 0; margin-bottom: 46dvh; }
+}
+@media (max-width: 640px) { .dlg .startdoors, .scrim.dock .dlg .startdoors { grid-template-columns: 1fr; } }

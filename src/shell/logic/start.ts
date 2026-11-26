@@ -40,5 +40,7 @@ export const blankKinds = (): { kind: SetupKind; label: string; tip: string }[] 
 /** FD unit 2 (R162): a first visit shows a stocked example behind the sheet. While nothing has been changed in it, the Build my own and I already have a
  *  tank doors start from an empty tank without asking "Replace your project?". boot.tsx sets it; the first edit clears it. */
 export const landing = { untouched: false };
+/** The landing's layout: the modal sheet (default) or the docked variant (`?landing=dock`: the sheet beside the lit tank, a bottom sheet on a phone). Nathan picks one. */
+export const landingDock = (search: string = typeof location === 'undefined' ? '' : location.search): boolean => new URLSearchParams(search).get('landing') === 'dock';
 /** The example behind a first visit's sheet: a house example with only approved fish, priced and checked. */
 export const LANDING_EXAMPLE = 'planted';

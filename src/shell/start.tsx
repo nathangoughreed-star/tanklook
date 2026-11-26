@@ -4,23 +4,17 @@
 import type { ComponentChildren } from 'preact';
 import type { Files } from './files';
 import { listLib } from '../scene/library';
-import { doorsFor, linksFor, markWelcomed, HEADLINE, SUBLINE, type DoorId } from './logic/start';
+import { doorsFor, linksFor, markWelcomed, landingDock, HEADLINE, SUBLINE, type DoorId } from './logic/start';
 import { PRODUCT_NAME } from './productName';
 import plantedPic from '../examples/planted.jpg?url';
 import bettaPic from '../examples/betta-bowl.jpg?url';
+import iwagumiPic from '../examples/iwagumi.jpg?url';
+import blankPic from './doors/blank.jpg?url';
 
 export const ANIMAL_DOOR_EVENT = 'ui2:animaldoor';
 /** "Build my own" and "I already have a tank or gear": open the Tank section on its picker. */
 export const PICKER_EVENT = 'ui2:tankpicker';
-type DialogC = (p: { title: string; onClose: () => void; children: ComponentChildren; wide?: boolean }) => preact.VNode;
-
-/** Hand-drawn door pictures (no library): an empty tank on a stand, and a tank with a filter and heater beside it. */
-const Draw = ({ kind }: { kind: 'blank' | 'have' }) => (
-  <svg class="doorpic" viewBox="0 0 160 96" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="28" y="18" width="104" height="52" rx="3" /><path d="M24 70h112M40 70v14M120 70v14" />
-    {kind === 'have' ? <><rect x="102" y="24" width="8" height="34" rx="2" /><path d="M106 24v-6M44 52c8-6 14 6 22 0s14 6 22 0" /></> : <path d="M36 56h88" stroke-dasharray="2 6" />}
-  </svg>
-);
+type DialogC = (p: { title: string; onClose: () => void; children: ComponentChildren; wide?: boolean; dock?: boolean }) => preact.VNode;
 
 export function StartSheet({ files, Dialog }: { files: Files; Dialog: DialogC }) {
   markWelcomed();
@@ -30,9 +24,10 @@ export function StartSheet({ files, Dialog }: { files: Files; Dialog: DialogC })
     else if (id === 'animal') { files.close(); dispatchEvent(new Event(ANIMAL_DOOR_EVENT)); }
     else { files.freshIfLanding(); files.close(); dispatchEvent(new Event(PICKER_EVENT)); }   // 'have' and 'blank': an empty tank, then the picker
   };
-  const pic = (id: DoorId) => id === 'examples' ? <img class="doorpic" src={plantedPic} alt="" loading="lazy" /> : id === 'animal' ? <img class="doorpic" src={bettaPic} alt="" loading="lazy" /> : <Draw kind={id} />;
+  const PICS: Record<DoorId, string> = { examples: plantedPic, animal: bettaPic, have: iwagumiPic, blank: blankPic };   // four rendered pictures of the same kind
+  const pic = (id: DoorId) => <img class="doorpic" src={PICS[id]} alt="" loading="lazy" />;
   return (
-    <Dialog title={PRODUCT_NAME} wide onClose={() => files.close()}>
+    <Dialog title={PRODUCT_NAME} wide dock={landingDock()} onClose={() => files.close()}>
       <h2 class="startline">{HEADLINE}</h2>
       <p class="hint startsub">{SUBLINE}</p>
       <div class="libgrid startdoors">{doorsFor().map(d => (
