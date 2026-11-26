@@ -249,7 +249,10 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
         // (Sheets.grid's first side has its front face turned DOWN, so from above it is the second side that shows: the upper
         // texture goes on that one and the underside's on the first. Plants without a texture are left as they always were.)
         const ku = cs.pop()!.clone(), kb = bs.pop()!.clone(), cap = (x: number, m: number) => Math.min(4, x / m);
-        if (lum) { cs.push(kb.setRGB(cap(kb.r, mn[0]), cap(kb.g, mn[1]), cap(kb.b, mn[2]))); bs.push(ku.setRGB(cap(ku.r, mu[0]), cap(ku.g, mu[1]), cap(ku.b, mu[2]))); } else { cs.push(new THREE.Color(bright, bright, bright)); bs.push(new THREE.Color(bright, bright, bright)); }
+        // ambient occlusion by hand: a leaf is darker where it springs from the crown (the other leaves shade it), full by ~45 % of the blade
+        const ao = blade ? 0.6 + 0.4 * Math.min(1, s / 0.45) ** 0.8 : 0.55;
+        ku.multiplyScalar(ao); kb.multiplyScalar(ao);
+        if (lum) { cs.push(kb.setRGB(cap(kb.r, mn[0]), cap(kb.g, mn[1]), cap(kb.b, mn[2]))); bs.push(ku.setRGB(cap(ku.r, mu[0]), cap(ku.g, mu[1]), cap(ku.b, mu[2]))); } else { cs.push(new THREE.Color(bright * ao, bright * ao, bright * ao)); bs.push(new THREE.Color(bright * ao, bright * ao, bright * ao)); }
       }
     }
     if (blade && f.pinnae) rowsAt.push({ c: c.clone(), d, side: side.clone(), up: up.clone(), s, i });
