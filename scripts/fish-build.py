@@ -104,7 +104,7 @@ if EDGE:   # the whole depth profile against panel 5's grey body (method row 61)
     sp_se = ilu_se.spec_from_file_location('stalkedge', S('fish-stalk-edge.py')); se_ = ilu_se.module_from_spec(sp_se); sp_se.loader.exec_module(se_)
     A['_rotationDeg'] = J['method']['rotationDeg']
     SW_ = os.path.join(os.path.dirname(spec['sheet']), 'sheet.webp')
-    skip_ = [(min(q[0] for q in spec[k_]['poly']) - 8, max(q[0] for q in spec[k_]['poly']) + 8) for k_ in ('pectoral', 'pelvic') if spec.get(k_, {}).get('poly')]
+    skip_ = [(min(q[0] for q in spec[k_]['poly']) - 8, max(q[0] for q in spec[k_]['poly']) + 8) for k_ in spec.get('clamp_skip', ['pectoral', 'pelvic']) if spec.get(k_, {}).get('poly')]   # spec 'clamp_skip': ['pectoral'] when the pelvic fin lies along the belly and its stations read as body (afrab, method row 67)
     ch_ = se_.clamp_profile(SW_, A, skip_x=skip_)   # paired-fin stations are not clamped to the fin map (the waist at the pectoral, method row 65)
     for fk_, runs_ in se_.fin_bases(SW_, A).items():   # fin bases from the fin map: only ever widened (a short base cut the fin's front off)
         cand_ = [(n_, r_) for n_ in (fk_, fk_ + '2') if A['fins'].get(n_) and A['fins'][n_].get('baseStartPctSL') is not None for r_ in runs_]

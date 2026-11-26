@@ -370,5 +370,8 @@
  "sat_auto": true,
  "fin_opacity": {
   "preset": "solid"
- }
+ },
+ "clamp_skip": [
+  "pectoral"
+ ]
 }
