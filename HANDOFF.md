@@ -1407,3 +1407,7 @@ Branch pb3-plumbing-detail off origin/main. (1) Sponge filter drawn as it works:
 
 ### ART1 decision (2026-11-26)
 - Nathan preferred the ORIGINAL plant colours over the muted tone (and, asked about a middle, said "maybe somewhere in between"). Fable's plant saturation gate (green median S at most 0.60, L at most 0.45) is therefore NOT a target. `PLANT_TONE.on` is 0 by default: rendering is pixel-identical to origin/main (planted4 and nano front views, 0 of 446250 pixels differ; research/visual/art1/off vs before). The anchor guard (`npm run check:anchors`) and the glow flag (off) stay. The tone block and `--plant` / `--measure` remain as tools for the in-between strips.
+
+## FG2 fish tiers and review log (2026-11-26, R174, units 1-2)
+- `scripts/fish-tiers.py` writes `research/fish-sheets/tiers.json` (rule per Fable answer 5). Real roster: 99 fish species (species.json's 163 fish rows include 64 build-B look rows such as `angelb`). Tier 1: 37, tier 2: 57, tier 3: 5 (kuhli, hillstream, goldfish, bambooshark, clownknife). New species enter at tier 2.
+- `scripts/fish-review-log.py <species> --minutes N --rounds N --first-pass yes|no` writes `review_minutes`, `review_rounds`, `first_pass`, `verdict_date` into the fish's `build.json` and `research/fish-sheets/review-log.csv`; `--seed` fills one row per look from git (rounds = commits, an upper bound); `--baseline b8` prints the b8 medians. b8 baseline: 0 of 21 recorded (needs Nathan's numbers). Unit 3 (contact sheet) not started.

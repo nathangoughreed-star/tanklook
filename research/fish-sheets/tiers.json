@@ -1,0 +1,500 @@
+{
+ "_about": "Review tier per fish species (FG2, R174): 1 close one-by-one review, 2 batch contact sheet, 3 old model kept. Regenerate with scripts/fish-tiers.py. New species enter at tier 2. Does not change any live fish.",
+ "tiers": {
+  "afra": {
+   "tier": 2,
+   "reason": "100 mm (3.9 in), small/nano or congener",
+   "live": false
+  },
+  "angel": {
+   "tier": 1,
+   "reason": "150 mm (5.9 in), 4 in and up",
+   "live": true
+  },
+  "auratus": {
+   "tier": 1,
+   "reason": "110 mm (4.3 in), 4 in and up",
+   "live": false
+  },
+  "balashark": {
+   "tier": 1,
+   "reason": "330 mm (13.0 in), 4 in and up",
+   "live": true
+  },
+  "bambooshark": {
+   "tier": 3,
+   "reason": "shark body, loft cannot draw",
+   "live": false
+  },
+  "banggai": {
+   "tier": 1,
+   "reason": "marine showpiece under 4 in",
+   "live": false
+  },
+  "betta": {
+   "tier": 2,
+   "reason": "65 mm (2.6 in), small/nano or congener",
+   "live": false
+  },
+  "bichirb": {
+   "tier": 1,
+   "reason": "305 mm (12.0 in), 4 in and up",
+   "live": false
+  },
+  "blackskirt": {
+   "tier": 2,
+   "reason": "70 mm (2.8 in), small/nano or congener",
+   "live": false
+  },
+  "bluetang": {
+   "tier": 1,
+   "reason": "310 mm (12.2 in), 4 in and up, marine",
+   "live": true
+  },
+  "boesemani": {
+   "tier": 1,
+   "reason": "108 mm (4.3 in), 4 in and up",
+   "live": false
+  },
+  "bolivianram": {
+   "tier": 2,
+   "reason": "89 mm (3.5 in), small/nano or congener",
+   "live": false
+  },
+  "bristlenose": {
+   "tier": 1,
+   "reason": "125 mm (4.9 in), 4 in and up",
+   "live": true
+  },
+  "bronzecory": {
+   "tier": 2,
+   "reason": "65 mm (2.6 in), small/nano or congener",
+   "live": true
+  },
+  "cardinal": {
+   "tier": 2,
+   "reason": "45 mm (1.8 in), small/nano or congener",
+   "live": true
+  },
+  "cherrybarb": {
+   "tier": 2,
+   "reason": "55 mm (2.2 in), small/nano or congener",
+   "live": true
+  },
+  "chili": {
+   "tier": 2,
+   "reason": "23 mm (0.9 in), small/nano or congener",
+   "live": false
+  },
+  "chromis": {
+   "tier": 2,
+   "reason": "100 mm (3.9 in), small/nano or congener, marine",
+   "live": true
+  },
+  "clownkilli": {
+   "tier": 2,
+   "reason": "42 mm (1.7 in), small/nano or congener",
+   "live": true
+  },
+  "clownknife": {
+   "tier": 3,
+   "reason": "knifefish (ribbon anal fin), loft cannot draw",
+   "live": false
+  },
+  "clownloach": {
+   "tier": 1,
+   "reason": "230 mm (9.1 in), 4 in and up",
+   "live": true
+  },
+  "clownpleco": {
+   "tier": 2,
+   "reason": "100 mm (3.9 in), small/nano or congener",
+   "live": false
+  },
+  "cockatoo": {
+   "tier": 2,
+   "reason": "85 mm (3.3 in), small/nano or congener",
+   "live": true
+  },
+  "comet": {
+   "tier": 1,
+   "reason": "250 mm (9.8 in), 4 in and up",
+   "live": true
+  },
+  "convict": {
+   "tier": 1,
+   "reason": "150 mm (5.9 in), 4 in and up",
+   "live": true
+  },
+  "coralbeauty": {
+   "tier": 1,
+   "reason": "115 mm (4.5 in), 4 in and up, marine",
+   "live": false
+  },
+  "cpd": {
+   "tier": 2,
+   "reason": "25 mm (1.0 in), small/nano or congener",
+   "live": false
+  },
+  "croakinggourami": {
+   "tier": 2,
+   "reason": "80 mm (3.1 in), small/nano or congener",
+   "live": false
+  },
+  "danio": {
+   "tier": 2,
+   "reason": "50 mm (2.0 in), small/nano or congener",
+   "live": true
+  },
+  "demasoni": {
+   "tier": 2,
+   "reason": "70 mm (2.8 in), small/nano or congener",
+   "live": false
+  },
+  "discus": {
+   "tier": 1,
+   "reason": "150 mm (5.9 in), 4 in and up",
+   "live": false
+  },
+  "dwarfgourami": {
+   "tier": 2,
+   "reason": "80 mm (3.1 in), small/nano or congener",
+   "live": true
+  },
+  "dwarfpencil": {
+   "tier": 2,
+   "reason": "35 mm (1.4 in), small/nano or congener",
+   "live": true
+  },
+  "dwarfrasbora": {
+   "tier": 2,
+   "reason": "30 mm (1.2 in), small/nano or congener",
+   "live": false
+  },
+  "electricblueacara": {
+   "tier": 1,
+   "reason": "175 mm (6.9 in), 4 in and up",
+   "live": true
+  },
+  "ember": {
+   "tier": 2,
+   "reason": "23 mm (0.9 in), small/nano or congener",
+   "live": false
+  },
+  "endler": {
+   "tier": 2,
+   "reason": "28 mm (1.1 in), small/nano or congener",
+   "live": true
+  },
+  "exclamation": {
+   "tier": 2,
+   "reason": "19 mm (0.7 in), small/nano or congener",
+   "live": false
+  },
+  "falsejulii": {
+   "tier": 2,
+   "reason": "66 mm (2.6 in), small/nano or congener",
+   "live": false
+  },
+  "firefish": {
+   "tier": 2,
+   "reason": "90 mm (3.5 in), small/nano or congener, marine",
+   "live": false
+  },
+  "firemouth": {
+   "tier": 1,
+   "reason": "144 mm (5.7 in), 4 in and up",
+   "live": true
+  },
+  "flameangel": {
+   "tier": 1,
+   "reason": "150 mm (5.9 in), 4 in and up, marine",
+   "live": false
+  },
+  "foxface": {
+   "tier": 1,
+   "reason": "250 mm (9.8 in), 4 in and up, marine",
+   "live": false
+  },
+  "gbr": {
+   "tier": 2,
+   "reason": "50 mm (2.0 in), small/nano or congener",
+   "live": true
+  },
+  "glasscatfish": {
+   "tier": 2,
+   "reason": "78 mm (3.1 in), small/nano or congener",
+   "live": true
+  },
+  "glowlight": {
+   "tier": 2,
+   "reason": "48 mm (1.9 in), small/nano or congener",
+   "live": true
+  },
+  "goldfish": {
+   "tier": 3,
+   "reason": "fancy goldfish (twin tail), loft cannot draw",
+   "live": false
+  },
+  "gourami": {
+   "tier": 1,
+   "reason": "120 mm (4.7 in), 4 in and up",
+   "live": true
+  },
+  "greenneon": {
+   "tier": 2,
+   "reason": "30 mm (1.2 in), small/nano or congener",
+   "live": true
+  },
+  "guppy": {
+   "tier": 2,
+   "reason": "38 mm (1.5 in), small/nano or congener",
+   "live": true
+  },
+  "harlequin": {
+   "tier": 2,
+   "reason": "50 mm (2.0 in), small/nano or congener",
+   "live": true
+  },
+  "hatchet": {
+   "tier": 2,
+   "reason": "40 mm (1.6 in), small/nano or congener",
+   "live": false
+  },
+  "hillstream": {
+   "tier": 3,
+   "reason": "flat hillstream loach, loft cannot draw",
+   "live": false
+  },
+  "honeygourami": {
+   "tier": 2,
+   "reason": "60 mm (2.4 in), small/nano or congener",
+   "live": true
+  },
+  "kadango": {
+   "tier": 1,
+   "reason": "170 mm (6.7 in), 4 in and up",
+   "live": false
+  },
+  "koletang": {
+   "tier": 1,
+   "reason": "185 mm (7.3 in), 4 in and up, marine",
+   "live": false
+  },
+  "kribensis": {
+   "tier": 1,
+   "reason": "110 mm (4.3 in), 4 in and up",
+   "live": true
+  },
+  "kuhli": {
+   "tier": 3,
+   "reason": "eel-shaped loach, loft cannot draw",
+   "live": false
+  },
+  "labeo": {
+   "tier": 1,
+   "reason": "120 mm (4.7 in), 4 in and up",
+   "live": false
+  },
+  "lawnmowerblenny": {
+   "tier": 1,
+   "reason": "150 mm (5.9 in), 4 in and up, marine",
+   "live": false
+  },
+  "livingstonii": {
+   "tier": 1,
+   "reason": "250 mm (9.8 in), 4 in and up",
+   "live": false
+  },
+  "mandarin": {
+   "tier": 1,
+   "reason": "marine showpiece under 4 in",
+   "live": false
+  },
+  "merah": {
+   "tier": 2,
+   "reason": "24 mm (0.9 in), small/nano or congener",
+   "live": false
+  },
+  "molly": {
+   "tier": 2,
+   "reason": "85 mm (3.3 in), small/nano or congener",
+   "live": false
+  },
+  "neon": {
+   "tier": 2,
+   "reason": "38 mm (1.5 in), small/nano or congener",
+   "live": true
+  },
+  "neonrainbow": {
+   "tier": 2,
+   "reason": "96 mm (3.8 in), small/nano or congener",
+   "live": true
+  },
+  "ocellaris": {
+   "tier": 2,
+   "reason": "100 mm (3.9 in), small/nano or congener, marine",
+   "live": true
+  },
+  "orchiddottyback": {
+   "tier": 2,
+   "reason": "76 mm (3.0 in), small/nano or congener, marine",
+   "live": false
+  },
+  "oscar": {
+   "tier": 1,
+   "reason": "300 mm (11.8 in), 4 in and up",
+   "live": true
+  },
+  "oto": {
+   "tier": 2,
+   "reason": "33 mm (1.3 in), small/nano or congener",
+   "live": true
+  },
+  "pajamacardinal": {
+   "tier": 2,
+   "reason": "85 mm (3.3 in), small/nano or congener, marine",
+   "live": false
+  },
+  "pandacory": {
+   "tier": 2,
+   "reason": "46 mm (1.8 in), small/nano or congener",
+   "live": false
+  },
+  "peacock": {
+   "tier": 1,
+   "reason": "118 mm (4.6 in), 4 in and up",
+   "live": true
+  },
+  "peacockgudgeon": {
+   "tier": 2,
+   "reason": "90 mm (3.5 in), small/nano or congener",
+   "live": false
+  },
+  "peapuffer": {
+   "tier": 2,
+   "reason": "30 mm (1.2 in), small/nano or congener",
+   "live": true
+  },
+  "pepperedcory": {
+   "tier": 2,
+   "reason": "70 mm (2.8 in), small/nano or congener",
+   "live": true
+  },
+  "platy": {
+   "tier": 2,
+   "reason": "40 mm (1.6 in), small/nano or congener",
+   "live": true
+  },
+  "pleco": {
+   "tier": 1,
+   "reason": "380 mm (15.0 in), 4 in and up",
+   "live": false
+  },
+  "pygmycory": {
+   "tier": 2,
+   "reason": "25 mm (1.0 in), small/nano or congener",
+   "live": false
+  },
+  "rainbowshark": {
+   "tier": 1,
+   "reason": "150 mm (5.9 in), 4 in and up",
+   "live": true
+  },
+  "redtailshark": {
+   "tier": 1,
+   "reason": "150 mm (5.9 in), 4 in and up",
+   "live": false
+  },
+  "royalgramma": {
+   "tier": 2,
+   "reason": "80 mm (3.1 in), small/nano or congener, marine",
+   "live": false
+  },
+  "rummynose": {
+   "tier": 2,
+   "reason": "50 mm (2.0 in), small/nano or congener",
+   "live": false
+  },
+  "sae": {
+   "tier": 1,
+   "reason": "150 mm (5.9 in), 4 in and up",
+   "live": false
+  },
+  "saltpepper": {
+   "tier": 2,
+   "reason": "42 mm (1.7 in), small/nano or congener",
+   "live": false
+  },
+  "sixline": {
+   "tier": 2,
+   "reason": "100 mm (3.9 in), small/nano or congener, marine",
+   "live": false
+  },
+  "sparklinggourami": {
+   "tier": 2,
+   "reason": "48 mm (1.9 in), small/nano or congener",
+   "live": false
+  },
+  "sterbai": {
+   "tier": 2,
+   "reason": "65 mm (2.6 in), small/nano or congener",
+   "live": false
+  },
+  "swordtail": {
+   "tier": 1,
+   "reason": "110 mm (4.3 in), 4 in and up",
+   "live": false
+  },
+  "syno": {
+   "tier": 1,
+   "reason": "190 mm (7.5 in), 4 in and up",
+   "live": false
+  },
+  "tailspotblenny": {
+   "tier": 2,
+   "reason": "65 mm (2.6 in), small/nano or congener, marine",
+   "live": true
+  },
+  "threespot": {
+   "tier": 1,
+   "reason": "180 mm (7.1 in), 4 in and up",
+   "live": true
+  },
+  "tigerbarb": {
+   "tier": 2,
+   "reason": "70 mm (2.8 in), small/nano or congener",
+   "live": true
+  },
+  "watchman": {
+   "tier": 1,
+   "reason": "120 mm (4.7 in), 4 in and up, marine",
+   "live": false
+  },
+  "whitecloud": {
+   "tier": 2,
+   "reason": "40 mm (1.6 in), small/nano or congener",
+   "live": true
+  },
+  "yellowlab": {
+   "tier": 2,
+   "reason": "100 mm (3.9 in), small/nano or congener",
+   "live": true
+  },
+  "yellowtailblue": {
+   "tier": 2,
+   "reason": "76 mm (3.0 in), small/nano or congener, marine",
+   "live": false
+  },
+  "yellowtang": {
+   "tier": 1,
+   "reason": "200 mm (7.9 in), 4 in and up, marine",
+   "live": true
+  },
+  "yoyoloach": {
+   "tier": 1,
+   "reason": "160 mm (6.3 in), 4 in and up",
+   "live": true
+  }
+ }
+}
