@@ -346,7 +346,7 @@
  "fin_opacity": {
   "preset": "solid"
  },
- "sat": 0.88,
+ "sat": 1.02,
  "sat_auto": true,
  "outline": "--level --thr 8 --open 9 --snout-open 15",
  "plan_extra": {
