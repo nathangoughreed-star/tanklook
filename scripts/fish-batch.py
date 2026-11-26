@@ -36,6 +36,11 @@ def build(d, base, batch):
                            cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace', shell=os.name == 'nt')
         line = [l for l in s.stdout.splitlines() if l.startswith('{')]
         res['shots'] = json.loads(line[-1]) if line else {'ok': [], 'fail': [s.stderr.strip()[-300:]]}
+        try:   # build gate (fish-gate.py): REPORT mode, flags are recorded and printed, never block `ok`
+            import importlib.util as ilu; sp_ = ilu.spec_from_file_location('fishgate', os.path.join(HERE, 'fish-gate.py')); g_ = ilu.module_from_spec(sp_); sp_.loader.exec_module(g_)
+            res['gate'] = g_.gate(d, ID)
+            if g_.MODE == 'block' and not res['gate']['pass']: res['ok'] = False
+        except Exception as e: res['gate'] = {'mode': 'report', 'pass': None, 'flags': ['gate-error: ' + str(e)[:120]], 'soft': [], 'facts': {}}
     return res
 
 
