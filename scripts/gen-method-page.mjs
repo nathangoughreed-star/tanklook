@@ -5,7 +5,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-export const ENGINE = { schoolRef: 10, schoolExp: 0.72, idealMax: 75, tinyExpert: 0.8, tinyGrams: 2, fitMedianRatio: 1.01, fitCases: 31, expertLists: 37, expertMedianPct: 74 };
+export const ENGINE = { schoolRef: 10, schoolExp: 0.72, idealMax: 75, tinyExpert: 0.8, tinyGrams: 2, fitMedianRatio: 1.01, fitCases: 31, fitHigher: 8, fitLower: 11, fitWithin: 12, noRedAudited: false, expertLists: 37, expertMedianPct: 74 };
 // the worked example (test/hvMethodPage.test.ts re-runs the engine and asserts these)
 export const EXAMPLE = { tank: '36 × 18 × 16 in, 44.9 gal', ten: 27, forty: 73, fortyCountsAs: 27, aqTen: 29 };
 
@@ -88,13 +88,14 @@ The same tank gives the same answer every time, and every line the check shows c
 <tr><td><b>Estimated</b></td><td class="num">${n(estimated)}</td><td class="num">${pct(estimated, t)}</td><td>A sourced number run through our formula, fitted to published lists, or a page that states a figure without its conditions.</td></tr>
 <tr><td><b>Our judgment</b></td><td class="num">${n(judgment)}</td><td class="num">${pct(judgment, t)}</td><td>Our reading of a source, an assumption, or no source yet.</td></tr>
 </table></div>
-<p>A rule that rests only on our judgment is shown as a Caution at most, never as a red Problem. A rule that depends on something we cannot see, such as the sex of your animals or your room temperature, says what it depends on, and stays a Caution until you state it.</p>
+${E.noRedAudited ? '<p>A rule that rests only on our judgment is shown as a Caution at most, never as a red Problem. Every rule has been checked against that.</p>' : '<p>Today, two kinds of line are held to Caution and never shown as a red Problem: a rule that depends on something we cannot see (the sex of your animals, a room temperature you did not enter), and a heater or filter that is simply not chosen yet. We are auditing the remaining rules one by one, and this page will say so plainly when that is finished.</p>'}
+<p>A rule that depends on something we cannot see, such as the sex of your animals or your room temperature, says what it depends on, and stays a Caution until you state it.</p>
 
 <h2>What it does not do</h2>
 <ul>
 <li>It does not measure your water. Temperatures are expected from the heater and the room you enter (70 °F is assumed if you do not), never measured.</li>
 <li>It does not count feeding, water-change habits or how long the tank has run, except where a line says so.</li>
-<li>It is good to about a factor of two, and it is not a promise. Treat Caution as a reason to read the line, and ask a keeper you trust.</li>
+<li>It is a guide, not a promise. On the ${E.fitCases} AqAdvisor tanks we compared against, our room number was more than 10% above theirs on ${E.fitHigher}, more than 10% below on ${E.fitLower}, and within 10% on ${E.fitWithin}. Treat Caution as a reason to read the line, and ask a keeper you trust.</li>
 </ul>
 
 <footer>Counts on this page are generated from the project's source audit (${n(t)} values). TankLook is a personal learning project; prices and stock lists are guides, not offers.</footer>

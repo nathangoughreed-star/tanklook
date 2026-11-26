@@ -9,7 +9,7 @@ import { inferTech } from '../src/scene/tech';
 import type { TankSetup } from '../src/scene/types';
 
 // @ts-expect-error node only (no node types in this project)
-const { readFileSync } = await import('node:fs');
+const { readFileSync, existsSync } = await import('node:fs');
 const baseline = JSON.parse(readFileSync('research/source-baseline.json', 'utf8'));
 const page = readFileSync('public/how-we-calculate.html', 'utf8');
 const base = (): TankSetup => { const sc = parseScene(JSON.parse(SCENES[Object.keys(SCENES).find(k => { const t = parseScene(JSON.parse(SCENES[k])).scene; return t.tanks[t.active].water.on; })!])).scene; return sc.tanks[sc.active]; };
@@ -34,5 +34,13 @@ describe('How we calculate page', () => {
   });
   it('is a standalone page: viewport meta, title, link back, no script', () => {
     expect(page).toMatch(/<meta name="viewport"/); expect(page).toMatch(/<title>How we calculate/); expect(page).toContain('href="./"'); expect(page).not.toMatch(/<script/);
+  });
+  it('the stronger sentence "judgment-only rules never render red" appears only once ENGINE.noRedAudited is true, and that flag needs the passing audit test', () => {
+    const strong = 'A rule that rests only on our judgment is shown as a Caution at most, never as a red Problem';
+    expect(page.includes(strong)).toBe(ENGINE.noRedAudited);
+    if (ENGINE.noRedAudited) expect(existsSync('test/hvNoRedAudit.test.ts')).toBe(true);
+  });
+  it('states a measured spread, not a "factor of two"', () => {
+    expect(page).not.toMatch(/factor of two/i); expect(page).toContain('more than 10% above theirs on 8');
   });
 });
