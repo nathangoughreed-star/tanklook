@@ -31,16 +31,34 @@ export class Roam {
   ms = 0; // the last field + sim build, for the debug page
   /** Put every fish back at its placed spot at the next update, and start the roam afresh. */
   reset() { this.sim?.reset(); this.seed++; this.key = ''; }
+  /** BR: an alarm at a point in the tank (mm): a click on open water. No-op until the sim exists. */
+  startle(x: number, y: number, z: number, radius?: number) { this.sim?.startle(x, y, z, radius); }
+  private zMid = 0; private xr: [number, number] = [0, 0]; private yr: [number, number] = [0, 0];
+  /** BR: a click ray into the tank: the alarm goes off where the ray crosses the tank's middle depth (false when it misses the water). */
+  startleRay(ray: THREE.Ray): boolean {
+    if (!this.sim || Math.abs(ray.direction.z) < 1e-6) return false;
+    const t = (this.zMid - ray.origin.z) / ray.direction.z; if (t < 0) return false;
+    const x = ray.origin.x + ray.direction.x * t, y = ray.origin.y + ray.direction.y * t;
+    if (x < this.xr[0] || x > this.xr[1] || y < this.yr[0] || y > this.yr[1]) return false;
+    this.sim.startle(x, y, this.zMid); return true;
+  }
+  /** BR: rushes and random alarms on or off (off while something is selected or dragged in edit mode). */
+  setEvents(on: boolean) { this.sim?.setEvents(on); this.eventsOn = on; }
+  private eventsOn = true;
+  /** BR: counts of rushes / alarms since the sim was made, for the debug page. */
+  get events() { return this.sim?.events; }
   /** `on` = move them; off puts them home. `paused` = hold where they are (a fish is selected). */
   update(meshes: THREE.Object3D[], dt: number, on: boolean, paused: boolean) {
     if (!on || !meshes.length) { this.home(); return; }
     const specs: SwimmerSpec[] = [], world = (meshes[0].userData.roam as RoamData).world;
     for (const m of meshes) specs.push((m.userData.roam as RoamData).spec);
     const wf = swimFieldFor(world);
-    const key = specs.map(s => `${s.id}|${s.len}|${s.zone}|${s.pace ?? 1}|${s.style ? [s.style.rate, s.style.tau, s.style.turn, s.style.mix] : ''}|${s.rest ?? ''}|${s.hover ? [s.hover.w, s.hover.pec, s.hover.caudal] : ''}|${s.dig ? [s.dig.k, s.dig.dark, s.dig.rest, s.dig.rate] : ''}|${s.habit ? [s.habit.home, s.habit.post, s.habit.leash, s.habit.act, s.habit.dart, s.habit.peck, s.habit.patrol, s.habit.flick, s.habit.hop] : ''}|${s.band}|${s.group?.key}|${s.home.x},${s.home.y},${s.home.z},${s.home.yaw},${s.home.pitch},${s.home.roll}`).join(';') + '#' + wf.key;
+    const key = specs.map(s => `${s.id}|${s.len}|${s.zone}|${s.pace ?? 1}|${s.style ? [s.style.rate, s.style.tau, s.style.turn, s.style.mix] : ''}|${s.rest ?? ''}|${s.hover ? [s.hover.w, s.hover.pec, s.hover.caudal] : ''}|${s.dig ? [s.dig.k, s.dig.dark, s.dig.rest, s.dig.rate] : ''}|${s.habit ? [s.habit.home, s.habit.post, s.habit.leash, s.habit.act, s.habit.dart, s.habit.peck, s.habit.patrol, s.habit.flick, s.habit.hop] : ''}|${s.band}|${s.tall ?? ''}|${s.kind ?? ''}|${s.foes ?? ''}|${s.guard ?? ''}|${s.pair ?? ''}|${s.group?.key}|${s.home.x},${s.home.y},${s.home.z},${s.home.yaw},${s.home.pitch},${s.home.roll}`).join(';') + '#' + wf.key;
     if (key !== this.key || !this.sim) {
       const t0 = performance.now();
       this.sim = makeSwimSim(specs, wf.field, this.seed); this.key = key;
+      if (!this.eventsOn) this.sim.setEvents(false);
+      this.zMid = (wf.field.min[2] + wf.field.max[2]) / 2; this.xr = [wf.field.min[0], wf.field.max[0]]; this.yr = [wf.field.min[1], wf.field.waterTop];
       this.ms = performance.now() - t0;
     }
     if (!paused && dt > 0) { this.sim.step(Math.min(dt, 0.2)); this.t += Math.min(dt, 0.2); }

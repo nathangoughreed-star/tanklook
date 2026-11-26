@@ -26,7 +26,7 @@ export function pickHomes(fish: SwimmerSpec[], field: SwimField, R: () => number
   const g: V3 = [0, 0, 0], an = field.anchors, isItem = makeIsItem(field);
   for (let i = 0; i < fish.length; i++) {
     const hb = fish[i].habit; if (!hb || hb.home === 'open') continue;
-    const key = fish[i].group?.key, shared = key ? byKey.get(key) : undefined;
+    const key = fish[i].group?.key ?? (fish[i].pair ? 'pair:' + fish[i].pair : undefined), shared = key ? byKey.get(key) : undefined;
     if (shared) { const a = R() * 6.283, j = fish[i].len * 0.6; out[i] = { ...shared, x: shared.x + Math.cos(a) * j, z: shared.z + Math.sin(a) * j }; continue; }
     const L = fish[i].len, r = L * 0.12, floorKind = hb.home === 'bolt' || hb.home === 'burrow';
     let best: HomeSpot | null = null, bs = -1e9;

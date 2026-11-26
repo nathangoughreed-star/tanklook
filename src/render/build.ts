@@ -26,7 +26,7 @@ import { bermRise, contactKey, contactObjects } from './contact';
 import { FX } from './fx';
 import { glassGrains, grainLook, grainMeshes, grainPatchy, grainTop, groundTint } from './grains';
 import { snailAspect } from '../art/snails';
-import { fishTL, leafUp, needsWater, speciesOf, type Species } from '../data/species';
+import { fishTL, getSpecies, leafUp, needsWater, speciesOf, type Species } from '../data/species';
 import { finRange } from '../art/fishgen';
 import { PERCHES, anchors, limbPaths, type Anchor, type Anchors, type V3 } from '../scene/anchors';
 import { glassBand, restsOnGround } from '../scene/water';
@@ -46,6 +46,10 @@ import { rootsKey, rootsMesh } from './roots';
 import { outlineKey, spaceOutline } from './spaceOutline';
 import { addBackdrop, backdropGeometry } from './backdrop';
 import { cardFinHeights, drapedCard, fish3d, fishBody, hullMaterial, seeThroughCard, swims } from './fish3d';
+import { foesOf } from '../scene/foes';
+import { youngLengths } from '../data/growth';
+import { CARE } from '../data/care';
+import { pairRule } from '../data/groups';
 import { BANDS } from '../scene/scatter';
 import { herpBody, herpFloatTop, isHerp3D } from './herp3d';
 import { isLizard } from './lizard3d';
@@ -1784,6 +1788,12 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
       home: { surf: glass ? 'pane' as const : 'floor' as const, x: m.position.x, y: m.position.y, z: m.position.z, n: [n.x, n.y, n.z] as [number, number, number], h: [hd.x, hd.y, hd.z] as [number, number, number] } };
     m.userData.cling = { spec, world: { S, T, rise } } as ClingData; m.userData.swimmer = true;
   };
+  // BR: who rushes whom, built once per tank by CALLING the pair rule the compatibility chips use (scene/foes.ts), and which pair formers are exactly two
+  const behave = (() => {
+    const sps = [...new Set(S.fish.map(f => f.species))].flatMap(id => { const x = getSpecies(id); return x && x.habitat !== 'land' ? [x] : []; });
+    const n = new Map<string, number>(); for (const f of S.fish) n.set(f.species, (n.get(f.species) ?? 0) + 1);
+    return { foes: foesOf(sps, youngLengths(S.fish)), n };
+  })();
   // one animal's meshes (`register`: picked, outlined when selected) and its contact shadow (`add`)
   const animal = (f: Fish, register0: (m: THREE.Mesh, w: number, h: number) => void, add: (o: THREE.Object3D | null) => void) => {
     const sp = speciesOf(f); if (!sp) return;
@@ -1844,7 +1854,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     } else if (rests) restOn(p, m, w, sp.rest * w - (isArachnid(sp.art) ? 0 : 1));
     if (swim) { // free roam (render/roam.ts): the sim moves this mesh from the spot it was placed at, which is its Reset pose
       const e = new THREE.Euler().setFromQuaternion(m.quaternion, 'YXZ'), R2D = 180 / Math.PI;
-      m.userData.roam = { spec: { id: f.id, len: w, zone: sp.zone === 'bottom' ? 'bottom' : 'water', pace: swimPace(sp.id), hover: HOVER[sp.id], habit: HABIT[sp.id], rest: sp.zone === 'bottom' ? BENTHIC[sp.id] : undefined, style: STYLE[sp.id], dig: sp.zone === 'bottom' && DIG[sp.id] ? { ...DIG[sp.id], k: digGrainK(DIG[sp.id], bedOf(S)?.grain), dark: hasTankLight(S.light) ? 0 : 1, rest: sp.rest * w } : undefined, band: [...BANDS[sp.level ?? 'mid']] as [number, number], group: sp.group ? { key: sp.id, tight: sp.group === 'school' } : undefined,
+      m.userData.roam = { spec: { id: f.id, len: w, zone: sp.zone === 'bottom' ? 'bottom' : 'water', pace: swimPace(sp.id), hover: HOVER[sp.id], habit: HABIT[sp.id], rest: sp.zone === 'bottom' ? BENTHIC[sp.id] : undefined, style: STYLE[sp.id], dig: sp.zone === 'bottom' && DIG[sp.id] ? { ...DIG[sp.id], k: digGrainK(DIG[sp.id], bedOf(S)?.grain), dark: hasTankLight(S.light) ? 0 : 1, rest: sp.rest * w } : undefined, band: [...BANDS[sp.level ?? 'mid']] as [number, number], tall: h / 2, kind: sp.id, foes: behave.foes.get(sp.id), guard: (CARE[sp.id]?.temper ?? 0) >= 1 || !!CARE[sp.id]?.guard || undefined, pair: pairRule(sp.id) && behave.n.get(sp.id) === 2 ? sp.id : undefined, group: sp.group ? { key: sp.id, tight: sp.group === 'school' } : undefined,
         home: { x: m.position.x, y: m.position.y, z: m.position.z, yaw: e.y * R2D, pitch: e.z * R2D, roll: e.x * R2D } }, world: { S, T, rise } };
       hookCalm(m); // the tail beat is set per fish while it hovers or digs (render/swim.ts)
     }

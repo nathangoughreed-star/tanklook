@@ -440,6 +440,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     // a plain click on empty space (no orbit drag) clears the selection, so nothing is highlighted
     // a click on a cabinet stand opens or closes its doors (lane SF, Nathan 2026-10-26: "have the doors open on click to reveal beneath")
     // a click on an animal, piece, gear, the light, stand or lid opens its menu at its options (Nathan 2026-11-11)
+    if (orbit && viewLocked() && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) viewer.startleAtPoint(e.clientX, e.clientY); // BR: a tap on open water in Tank only / Full screen startles the fish
     if (orbit && !viewLocked() && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) {
       const hit = focus ? viewer.hitTest(e.clientX, e.clientY) : null, t = hit && store.isEditing(hit.vp.i) ? clickTarget(viewer, store, hit) : null;
       if (viewer.handleAt(e.clientX, e.clientY) && viewer.standAt(e.clientX, e.clientY) && (!t || t.kind === 'stand')) { tankView.standOpen = !tankView.standOpen; viewer.rebuild(); } // only from the handle box (CB1); the stand's options open on any other click

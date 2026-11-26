@@ -1,0 +1,13 @@
+{
+ "samples": 120,
+ "worstOverWaterMm": -4.406974533541813,
+ "simSeconds": 47.7964999999997,
+ "ocellarisMaxLen": null,
+ "ocellarisMaxLenAfter12s": null,
+ "neonHarlMixedFrac": 0.026449275362318846,
+ "events": {
+  "chases": 0,
+  "guards": 0,
+  "startles": 0
+ }
+}
