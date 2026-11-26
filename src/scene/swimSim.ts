@@ -373,7 +373,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       if (gdCd[i] <= 0) {
         gdCd[i] = 0.5; const rr = clamp(hLeash[i] * L * 0.5, L * 2, L * 12); let bj = -1, bd = 1e18;
         for (let j = 0; j < n; j++) {
-          if (j === i || (kd[i] >= 0 && kd[j] === kd[i]) || len[j] > L * 2 || stT[j] > 0) continue;
+          if (j === i || kd[i] < 0 || kd[j] < 0 || !foeM[kd[i] * K + kd[j]] || len[j] > L * 2 || stT[j] > 0) continue; // only a flagged pair: an unflagged neighbour is never rushed
           const d = Math.hypot(px[j] - hmx[i], pz[j] - hmz[i], bottom[j] ? 0 : py[j] - hmy[i]); if (d < rr && d < bd) { bd = d; bj = j; }
         }
         if (bj >= 0) { startChase(i, bj, true); gdCd[i] = 15 + RE() * 20; return; }
@@ -391,11 +391,11 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       }
     }
   }
-  /** A pair former of exactly two: too far from its partner (over 2.2 body lengths) it drops what it was doing and the two close up. */
+  /** A pair former of exactly two: too far from its partner (over 1.6 body lengths) it drops what it was doing and the two close up. */
   function pairStep(i: number) {
     const j = prt[i]; if (j < 0 || chT[i] > 0 || digSt[i] !== 0) return;
     const L = len[i], isB = bottom[i] === 1, dx = px[j] - px[i], dy = isB ? 0 : py[j] - py[i], dz = pz[j] - pz[i];
-    if (dx * dx + dy * dy + dz * dz > (L * 2.2) ** 2) {
+    if (dx * dx + dy * dy + dz * dz > (L * 1.6) ** 2) {
       if (hb[i]) { hS[i] = 0; hT[i] = 0; }
       ovOn = 1; ovx = (px[i] + px[j]) / 2; ovy = (py[i] + py[j]) / 2; ovz = (pz[i] + pz[j]) / 2; ovSpd = slow(i, cruise[i] * 1.5 + L * 0.4, ovx, ovy, ovz);
     }

@@ -102,6 +102,21 @@ describe('BR phase 1: foes are the verdict\'s flagged pairs', () => {
     expect(foes.get('neon')).toBeUndefined(); // a neon rushes nobody
     expect(foes.get('bronzecory')).toBeUndefined();
   });
+  it('LOUD: the known flagged pairs still yield foes (a reworded reason in animalfit.ts must not silently switch the behavior off)', () => {
+    const known: [string, string][] = [['betta', 'guppy'], ['angel', 'betta'], ['angel', 'guppy'], ['ocellaris', 'angel'], ['tigerbarb', 'neon'], ['tigerbarb', 'honeygourami']];
+    for (const [a, b] of known) expect(foes.get(a)?.includes(b), `${a} -> ${b} lost its foe entry: has the reason text in animalfit.ts changed (see ACTS in foes.ts)?`).toBe(true);
+  });
+  it('a clean tank with a home keeper (kribensis, neons, corys): the keeper is a guard but nothing is rushed in 10 minutes', () => {
+    const field = tank(36, 18, 16), s = cast({ kribensis: 1, neon: 8, bronzecory: 4 }, field, 6);
+    expect(s.find(x => x.kind === 'kribensis')!.guard).toBe(true);
+    expect(s.every(x => !x.foes || x.foes.length === 0)).toBe(true);
+    expect(run(s, field, 600, 6).events.chases).toBe(0);
+  });
+  it('a home keeper with a flagged neighbour does rush it (kribensis and guppies)', () => {
+    const field = tank(36, 18, 16);
+    let n = 0; for (const seed of [1, 2, 3]) n += run(cast({ kribensis: 1, guppy: 6 }, field, seed), field, 300, seed).events.chases;
+    expect(n).toBeGreaterThanOrEqual(3);
+  });
   it('a 20 gal with a betta and guppies shows a rush within 2 minutes, for every seed', () => {
     for (const seed of [1, 2, 3, 4, 5, 6]) {
       const field = tank(24, 12, 16), specs = cast({ betta: 1, guppy: 6 }, field, seed), sim = run(specs, field, 120, seed);

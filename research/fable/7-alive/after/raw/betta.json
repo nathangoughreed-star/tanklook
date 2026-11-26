@@ -1,0 +1,14 @@
+{
+ "rushSeen": true,
+ "samples": 84,
+ "worstOverWaterMm": 0,
+ "simSeconds": 33.78230000002682,
+ "ocellarisMaxLen": null,
+ "ocellarisMaxLenAfter12s": null,
+ "neonHarlMixedFrac": 0,
+ "events": {
+  "chases": 1,
+  "guards": 0,
+  "startles": 1
+ }
+}
