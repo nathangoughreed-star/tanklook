@@ -13,6 +13,10 @@
 //          --times 7.3,7.8,8.3   shoot each view at these caustic-clock times (a strip of the motion)
 //          --size 1050x850   --pairs 40   --no-shots   --no-numbers   --sheet (one side-by-side PNG per tank and view)
 //          --rest 20 [--throttle 4]   tank left alone / orbiting / idle for 20 s per fx set, normal CPU and 4x slower (caustic safeguards)
+//          --measure   (lane ART1) per-plant-variant S / L / S>0.8 share / low-vs-top darkening, pass / fail against the gates, into vf-shots.json
+//          --plant "sat=0.9,glow=1"   (lane ART1) set plant tone constants / the PT glow switch for the run
+//          --abplant "on=0|on=1"   (lane ART1) frame-time A/B of two plant specs on alternating frames (--pairs N)
+//          --anchors   (lane ART1) list every string-anchored shader patch that matched nothing (exit code 3 if any)
 //          --perf   also run scripts/perf-baseline.mjs on the tanks (steady draw, programs, first frame) into <out>/perf-baseline.json
 //          --cold <dist dir>   also run scripts/cold-ab.mjs: cold first frame (program link) of <dist dir> (before) vs a fresh `npm run build` (after)
 // Headless Edge / Chrome on the hardware GPU (--use-angle=d3d11), as perf-baseline.mjs.
@@ -164,6 +168,79 @@ const KIT = () => {
       __fx.time(7.3);
       return { drawsPerS: +(n / el).toFixed(1), cpuBusyPct: +(cpu / el / 10).toFixed(1), gpuBusyPct: ok ? +((gpu / ok) * n / el / 10).toFixed(1) : null, gpuMsPerDraw: ok ? +(gpu / ok).toFixed(2) : null, gapMed: q(gaps, 0.5), gapP95: q(gaps, 0.95), caustics: V.causState() };
     },
+    /**
+     * ART1: plant colour per variant (HSV S, Rec.709 luma L of the sRGB pixels, 0..1), as rendered. A plant's pixels = those that change when
+     * its meshes are hidden (the same draw, same light), so occlusion, haze and glass are all in. Per variant: pixel count, median S and L,
+     * share of pixels above S 0.8, and 'low' = median L of the lowest third of the plant's pixel rows minus the top third's, as a share
+     * of the top third's (negative = darker near the substrate; the gate wants at most -15 %).
+     */
+    async measure() {
+      const px = async () => { const u = await this.shot(); const im = await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = u; }); const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0); return x.getImageData(0, 0, c.width, c.height); };
+      const items = new Map(st().scene.tanks[0].items.map(i => [i.id, i.variant])), meshes = [];
+      for (const vp of v().vps) vp.scene?.traverse(o => { if (o.userData.plant && items.has(o.userData.item)) meshes.push(o); });
+      const A = await px(), out = {}, variants = [...new Set(meshes.map(m => items.get(m.userData.item)))];
+      const med = a => { if (!a.length) return null; const s = Float32Array.from(a).sort(); return s[s.length >> 1]; };
+      for (const va of [...variants, '*']) {
+        const hid = meshes.filter(m => va === '*' || items.get(m.userData.item) === va);
+        hid.forEach(m => { m.visible = false; }); const B = await px(); hid.forEach(m => { m.visible = true; });
+        const S = [], L = [], rows = []; let hi = 0;
+        for (let i = 0; i < A.data.length; i += 4) {
+          const dr = A.data[i] - B.data[i], dg = A.data[i + 1] - B.data[i + 1], db = A.data[i + 2] - B.data[i + 2];
+          if (Math.abs(dr) + Math.abs(dg) + Math.abs(db) < 24) continue;
+          const r = A.data[i] / 255, g = A.data[i + 1] / 255, b = A.data[i + 2] / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), s = mx ? (mx - mn) / mx : 0;
+          S.push(s); L.push(0.2126 * r + 0.7152 * g + 0.0722 * b); rows.push((i >> 2) / A.width | 0); if (s > 0.8) hi++;
+        }
+        const n = S.length; let low = null;
+        if (n > 300) { const ys = [...rows].sort((a, b) => a - b), y0 = ys[0], y1 = ys[n - 1], top = [], bot = []; rows.forEach((y, k) => { const f = (y - y0) / Math.max(1, y1 - y0); if (f < 1 / 3) top.push(L[k]); else if (f > 2 / 3) bot.push(L[k]); }); const t = med(top), b = med(bot); low = t && b ? +((b - t) / t).toFixed(3) : null; }
+        out[va] = { px: n, medS: n ? +med(S).toFixed(3) : null, medL: n ? +med(L).toFixed(3) : null, pctS80: n ? +(hi / n).toFixed(3) : null, bottomVsTop: low };
+      }
+      return out;
+    },
+    /** ART1 --plant "sat=0.9,exposure=0.55,low=0.55,glow=1": set the plant tone constants (items.ts PLANT_TONE) and the PT glow switch, recompile the plant materials. */
+    async plant(spec) {
+      const T = globalThis.__plantTone, F = globalThis.__plantFx;
+      for (const kv of spec.split(',').filter(Boolean)) { const [k, x] = kv.split('='); if (k === 'glow') F.glow = x === '1'; else T[k] = +x; }
+      for (const vp of v().vps) vp.scene?.traverse(o => { if (o.userData.plant && o.material) o.material.needsUpdate = true; });
+      await this.settle(300);
+    },
+    /**
+     * ART1 --anchors: every string-anchored shader patch that finds nothing. All materials are recompiled (needsUpdate re-runs every onBeforeCompile) with
+     * String.prototype.replace watched: a string or RegExp pattern that leaves a shader source (anything with `void main`) unchanged is a missing anchor.
+     */
+    async anchors() {
+      const orig = String.prototype.replace, miss = new Map();
+      String.prototype.replace = function (p, r) {
+        const src = String(this), out = orig.call(src, p, r); 
+        if (out === src && (typeof p === 'string' || p instanceof RegExp) && src.includes('void main')) {
+          const fr = (new Error().stack || '').split('\n').slice(2, 7).map(l => l.trim().replace(/^at /, '').replace(/https?:\/\/[^/]+\/(src\/)?/, '').replace(/\?t=\d+/, ''));
+          if (/node_modules/.test(fr.find(l => !/String\.replace/.test(l)) ?? '')) return out; // three's own replaces
+          const k = String(p).slice(0, 110) + ' @ ' + (fr.find(l => !/String\.replace|lighting\.ts.*aqPatch$/.test(l) && /\.ts/.test(l)) ?? fr[0]);
+          miss.set(k, (miss.get(k) ?? 0) + 1);
+        }
+        return out;
+      };
+      const saved = [];
+      try {
+        const seen = new Set(); // (three runs onBeforeCompile only for a program it has not cached: the key is changed for this pass)
+        for (const vp of v().vps) vp.scene?.traverse(o => { for (const m of [].concat(o.material ?? [])) if (!seen.has(m)) { seen.add(m); const k0 = m.customProgramCacheKey; m.customProgramCacheKey = function () { return (k0 ? k0.call(this) : '') + '|anchors'; }; m.needsUpdate = true; saved.push([m, k0]); } });
+        for (let i = 0; i < 3; i++) { v().draw(); await raf(); }
+      } finally { String.prototype.replace = orig; for (const [m, k0] of saved) { m.customProgramCacheKey = k0; m.needsUpdate = true; } }
+      return [...miss.entries()];
+    },
+    /** ART1: plant spec B against plant spec A (`--plant` syntax, plus on=0) on alternating frames: GPU ms median / p95 of each and the paired delta. */
+    async abPlant(a, b, pairs) {
+      const T = globalThis.__plantTone, F = globalThis.__plantFx, base = { ...T, glow: F.glow };
+      const set = spec => { Object.assign(T, base); F.glow = base.glow; for (const kv of spec.split(',').filter(Boolean)) { const [k, x] = kv.split('='); if (k === 'glow') F.glow = x === '1'; else T[k] = +x; } for (const vp of v().vps) vp.scene?.traverse(o => { if (o.userData.plant && o.material) o.material.needsUpdate = true; }); };
+      const r = { A: [], B: [], d: [], ca: [], cb: [] };
+      for (let i = 0; i < 6; i++) { set(i % 2 ? b : a); v().draw(); await raf(); }
+      for (let i = 0; i < pairs; i++) {
+        set(a); v().draw(); await raf(); const fa = frame(); await raf(); const ga = await resolve(fa.qq);
+        set(b); v().draw(); await raf(); const fb = frame(); await raf(); const gb = await resolve(fb.qq);
+        r.A.push(ga); r.B.push(gb); if (ga != null && gb != null) r.d.push(gb - ga);
+      }
+      set(a);
+      return { A: q(r.A, 0.5), B: q(r.B, 0.5), A95: q(r.A, 0.95), B95: q(r.B, 0.95), delta: q(r.d, 0.5), delta95: q(r.d, 0.95), n: r.d.length };
+    },
     gpu() { const g = gl(), d = g.getExtension('WEBGL_debug_renderer_info'); return d ? g.getParameter(d.UNMASKED_RENDERER_WEBGL) : g.getParameter(g.RENDERER); },
     /** Side-by-side sheet of data URLs with labels (drawn in the page: no image library needed). */
     async sheet(urls, labels, title) {
@@ -203,6 +280,9 @@ try {
     await br.ev(`window.__vf = (${KIT})(); 1`);
     await br.ev('__vf.settle(2500)');
     result.gpu ??= await br.ev('__vf.gpu()');
+    if (opt('plant', '')) await br.ev(`__vf.plant(${JSON.stringify(opt('plant', ''))})`); // ART1: plant tone / glow values for this run
+    if (opt('abplant', '')) { const [a, b] = opt('abplant', '').split('|'); await br.ev('__vf.view("front")'); const r = (result.abPlant ??= {})[name] = await br.ev(`__vf.abPlant(${JSON.stringify(a)}, ${JSON.stringify(b)}, ${PAIRS})`, 900_000); log(`  plant A/B [${a}] -> [${b}]: GPU ${r.A} -> ${r.B} ms (paired delta ${r.delta}, p95 ${r.delta95}, n ${r.n})`); }
+    if (flag('anchors')) { const m = (result.anchors ??= {})[name] = await br.ev('__vf.anchors()'); for (const [k, n] of m) log(`  MISSING ANCHOR x${n}: ${k}`); log(`  ${name}: ${m.length} missing shader anchor(s)`); if (m.length) process.exitCode = 3; }
     const row = result.scenes[name] = { shots: [], ab: {} };
     if (!flag('no-shots')) {
       const grid = {}, labels = {};
@@ -222,6 +302,14 @@ try {
       await br.ev('__vf.view("front")');
       if (flag('sheet') && (FXSETS.length > 1 || TIMES.length > 1)) for (const [view, urls] of Object.entries(grid)) {
         save(`sheet-${name}-${view.replace(":", "-")}.png`, await br.ev(`__vf.sheet(${JSON.stringify(urls)}, ${JSON.stringify(labels[view])}, ${JSON.stringify(`${name} ${view} (build ${build} ${commit})`)})`, 600_000));
+      }
+    }
+    if (flag('measure')) { // ART1: plant colour per variant against the gates (green median S <= 0.60 and L <= 0.45, <= 15 % of pixels above S 0.8, >= 15 % darker low than high)
+      await br.ev('__vf.view("front")'); await br.ev('__vf.setFx(' + JSON.stringify(FXSETS[0]) + ')');
+      const m = row.measure = await br.ev('__vf.measure()', 600_000), G = { S: 0.60, L: 0.45, hi: 0.15, low: -0.15 };
+      for (const [va, r] of Object.entries(m)) {
+        const bad = r.px < 300 ? 'too few pixels' : [r.medS > G.S && 'S', r.medL > G.L && 'L', r.pctS80 > G.hi && 'S>0.8 share', (r.bottomVsTop == null || r.bottomVsTop > G.low) && 'no low darkening'].filter(Boolean).join(', ');
+        log(`  ${name} ${va === '*' ? 'ALL plants' : va.padEnd(10)} px ${String(r.px).padStart(6)}  S ${r.medS}  L ${r.medL}  S>0.8 ${r.pctS80}  low-vs-top ${r.bottomVsTop}  ${bad ? 'FAIL: ' + bad : 'pass'}`);
       }
     }
     if (opt('rest', '')) { // --rest SECS [--throttle N]: at rest, orbiting, idle; each fx set; normal CPU and N x slower
