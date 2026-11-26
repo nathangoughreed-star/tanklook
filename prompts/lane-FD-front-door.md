@@ -25,6 +25,7 @@ Record one cold trace (desktop throttled to LTE, and Nathan's phone if he can ru
 4. Dock the checklist line in the panel header (`checklist.tsx`, `shell.css` near line 688). It reads lane HV's "what is missing" function; do not write your own. Until HV lands it, keep the current source.
 5. Defects from answer 2's table: the "Replace your project?" dialog hidden behind the first dialog, the wrong Cardinal tetra tile, "40 breeder" opening as Custom 45 gal, the clipped phone strip, UK spellings. House examples use approved (fishLive) fish only.
 6. Share link (R155 part 1): verify the existing `#tank=` link on a cold load in a fresh profile (`boot.tsx`), land it the same full-width way, put the URL on the PNG export.
+7. Loading states (R165, Nathan 2026-11-26: "better loading icons or bars instead of the tool getting stuck. Maybe with tips or fun facts"). Measure first: with the trace script from unit 1, time every wait a user meets (cold boot, opening an example, the animal door's "Plan a tank for these", Discover / Explore generation, switching tanks, the plant worker, fish art arriving, export and print) on desktop and throttled phone, and list them longest first. Add a loading state only where the wait is over about 1 s on the throttled phone: real progress where progress is known (bytes or steps), otherwise a quiet indeterminate bar; never a frozen screen. Where the wait is over about 3 s, show one short line under it from a small hand-checked list (a fact about a species in the tank being loaded, or a tip about the tool); the list lives in one data file, each line with its source, no care-guide advice. Under 1 s gets nothing. Hand-drawn, in the app's own style: no stock spinner, no sparkle icons, no emoji (see R167). Pictures of each state for Nathan.
 
 ## Done when (on a named live build, with screenshots in the report)
 - Cold phone load on LTE shows the first tank part in 5 s or less (8 s throttled); no fish art is fetched before the shell; the size budget passes.
@@ -40,4 +41,4 @@ Record one cold trace (desktop throttled to LTE, and Nathan's phone if he can ru
 - Perf claims: alternate A/B per frame (sequential timings lie on this machine).
 - Verify on screen or a saved screenshot before saying done; say merged vs live separately.
 - Any question for Nathan about a screen comes with a cropped, labelled picture.
-- Add a dated FD section to HANDOFF.md and set your rows in `research/requests.md` (R162, R155 part 1).
+- Add a dated FD section to HANDOFF.md and set your rows in `research/requests.md` (R162, R155 part 1, R165).
