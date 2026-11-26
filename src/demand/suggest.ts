@@ -519,7 +519,7 @@ function conceptMaker(w: Wants, P0: UserProfile, units: Units, now: number) {
   const ownsKitPart = (inc: readonly string[]) => OWNED.some(o => o.id in ownedMap && o.rows.some(r => inc.includes(r)));
   const scenOf = (b: Build, own: ReturnType<typeof ownedAssess>, needStand: boolean): TankSetup => ({ ...b.setup, ...(needStand ? {} : { stand: { ...b.setup.stand, show: false } }), ...(own.tech ? { tech: own.tech } : {}), constraints: C, layout: { ...b.setup.layout, ...(w.space ? { space: w.space } : {}) } });
   const taxOf = (preTax: number) => Math.round(Math.max(0, preTax) * taxPct / 100);
-  const wordsOf = (cats: ReturnType<typeof summaryOf>['cats']) => cats.some(c => c.level === 'problem' || c.level === 'caution');
+  const wordsOf = (cats: ReturnType<typeof summaryOf>['cats']) => cats.some(c => c.items.some(i => !i.support && (i.level === 'problem' || i.level === 'caution'))); // HV: a missing heater / filter is the design's own gear to supply, not a welfare problem of the animals
 
   // one concept: these animals in this tank, this build, at most this finish tier -> the best passing tier, or why not. Remembered for the call (strategies often meet on one concept).
   // `planted` (default on): a forced style must still be a planted (or reefed) tank; a narrowing variation that only keeps the anchor's own style turns it off.
@@ -609,7 +609,7 @@ function conceptMaker(w: Wants, P0: UserProfile, units: Units, now: number) {
     const { tank, build: b } = c, needStand = standFor(tank, !!c.noStand), own = ownedAssess(b, ownedMap, needStand, P0, ownIs(tank), oOpts);
     const base = c.scene ?? b.setup, kit = b.bundle ? { kit: dealAsKit(b.bundle) } : {};
     const scene: TankSetup = { ...base, ...(needStand ? {} : { stand: { ...base.stand, show: false } }), ...(own.tech ? { tech: own.tech } : {}), constraints: C, layout: { ...base.layout, ...(w.space ? { space: w.space } : {}) } };
-    const sm = summaryOf(scene, units), words = sm.cats.flatMap(k => k.items.filter(i => i.level === 'problem' || i.level === 'caution').map(i => i.text));
+    const sm = summaryOf(scene, units), words = sm.cats.flatMap(k => k.items.filter(i => !i.support && (i.level === 'problem' || i.level === 'caution')).map(i => i.text));
     const D = demandOf(scene, P0, { ...kit, now }), D0 = c.scene ? demandOf(b.setup, P0, { ...kit, now }) : D;
     const k = D0.totals.setupUsd > 0 ? b.setupUsd / D0.totals.setupUsd : 1, gross = c.scene ? Math.round(D.totals.setupUsd * k) : b.setupUsd;
     const saved = Math.min(gross, own.saved), preTax = gross - saved, tax = taxOf(preTax);

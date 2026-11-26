@@ -109,6 +109,7 @@ function Cost({ v, bundle }: { v: CostView | null; bundle?: BundleApply }) {
       ) : null}
       {ask && bundle ? <ApplyConfirm plan={ask} onNo={() => setAsk(null)} onYes={() => { bundle.apply(ask); setAsk(null); }} /> : null}
       {v.gearSales ? <div class="hint">{v.gearSales.n === 1 ? '1 gear sale fits' : `${v.gearSales.n} gear sales fit`} this tank{v.gearSales.first ? `, such as ${v.gearSales.first.title} (${v.gearSales.first.off}% off)` : ''}: see On sale now in Equipment.</div> : null}
+      {v.notChosen ? <div class="hint warn" data-notchosen>{v.notChosen}. The price above leaves {v.notChosen.includes(' and ') ? 'them' : 'it'} out.</div> : null}
       <LowerIt v={v} />
       <div class="cap">{d ? d.title : 'Costs most to set up'}</div>
       {d ? (

@@ -22,8 +22,9 @@ import { standOf, standCheck } from '../../data/stands';
 import { filledLb } from './tank';
 import { volume } from '../../scene/physics';
 import { climateOf, climateText, climateChart, type Climate, type Status } from '../../data/climate';
-import { fixPlans, GO_LID, GO_FILTER, type FixPlan, type GoTarget } from './noteFixes';
+import { fixPlans, GO_LID, GO_FILTER, GO_HEATER, type FixPlan, type GoTarget } from './noteFixes';
 import { lidIssues, tempIssues } from './lidTemp';
+import { lifeSupportOf, notChosenLine, type Missing } from '../../scene/lifeSupport';
 import { verdictOf, type Issue, type Verdict } from '../../scene/verdict';
 
 /** One look for every status pill in the shell (tokens.css .pill). */
@@ -47,13 +48,15 @@ export interface HabitatView {
   bars: { key: string; label: string; bar: Bar; tone: Tone; top: TopRow[]; topLines: string[] }[];
   warnings: { tone: Tone; text: string }[];
   reason: string;
+  /** HV: the heater / filter the animals need and the tank lacks (scene/lifeSupport.ts), the same list the checklist, cost drawer and plan sheet read */
+  support: Missing[];
 }
 export function habitatView(S: TankSetup, units: Units, r: Stocking = stockingMemo(S)): HabitatView {
   const st: TileState = tileState(S, r, units), sm: StockSummary = stockSummary(S, r, st.mins, units);
-  const empty = !S.water.on || !r.contributors.length;
+  const empty = !S.water.on || !r.contributors.length, support = lifeSupportOf(S, units === 'in');
   const tooBig = st.fit?.fits === false;
   const pill = empty ? { tone: 'neutral' as Tone, word: S.water.on ? 'No animals' : 'No water' }
-    : { tone: tooBig && sm.worst === 'ok' ? 'bad' as Tone : TONE[sm.worst], word: tooBig ? `${sm.worstWord} · too big` : sm.worstWord };
+    : { tone: tooBig && sm.worst === 'ok' ? 'bad' as Tone : TONE[sm.worst], word: `${sm.worstWord}${tooBig ? ' · too big' : ''}${sm.unchecked ? ` · ${sm.unchecked} not checked` : ''}` };
   const lines = (top: TopRow[]) => top.map(t => `${plural(t.n, t.name)}: ${t.note ?? `${Math.round(t.share * 100)}%`}`);
   const bars = empty ? [] : [
     { key: 'water', label: 'Water column', bar: st.water, top: topBy(r, 'space') },
@@ -63,13 +66,13 @@ export function habitatView(S: TankSetup, units: Units, r: Stocking = stockingMe
   const warnings = [
     ...(st.compat ? [{ tone: st.compat.level === 'over' ? 'bad' as Tone : 'warn' as Tone, text: st.compat.text }] : []),
     ...st.mins.map(w => ({ tone: w.level === 'over' ? 'bad' as Tone : 'warn' as Tone, text: w.text })),
-    ...(st.filter === 'unset' && !empty ? [{ tone: 'warn' as Tone, text: 'No filter chosen: a filter sized for this tank is strongly recommended.' }] : []),
+    ...(empty ? [] : support.map(m => ({ tone: 'warn' as Tone, text: m.text }))),
   ];
   const sc = (() => { try { const sp = standOf(S); return sp ? standCheck(sp, filledLb(S), volume(S.tank).gallons) : undefined; } catch { return undefined; } })();
   if (sc) warnings.push({ tone: sc.level === 'over' ? 'bad' as Tone : 'warn' as Tone, text: sc.text });
   return {
-    empty, pill, sizeLine: tankSizeLine(S, r, units), reason: st.reason, warnings, bars,
-    cats: empty ? [] : sm.cats.map(c => ({ label: c.label, word: c.word, tone: TONE[c.level], items: c.items.map(i => ({ text: i.text, ...(i.go ? { go: i.go === 'lid' ? GO_LID : GO_FILTER } : {}) })) })),
+    empty, support: empty ? [] : support, pill, sizeLine: tankSizeLine(S, r, units), reason: st.reason, warnings, bars,
+    cats: empty ? [] : sm.cats.map(c => ({ label: c.label, word: c.word, tone: TONE[c.level], items: c.items.map(i => ({ text: i.text, ...(i.go ? { go: i.go === 'lid' ? GO_LID : i.go === 'heater' ? GO_HEATER : GO_FILTER } : {}) })) })),
   };
 }
 
@@ -80,6 +83,8 @@ export function demandFor(S: TankSetup, active: number, P: UserProfile): Demand 
 }
 export interface CostView {
   /** DL1: the one bundle worth a line (same tank, saves money, read within 14 days) and how many gear sales fit */
+  /** HV: "Not chosen yet: a heater" when the animals need gear the price leaves out (scene/lifeSupport.ts) */
+  notChosen?: string;
   deal?: BundleLine; gearSales?: { n: number; first?: GearSale };
   setup: string; monthly: string; minutes: string;
   /** 0-10, the old panel's "Relative difficulty" */
@@ -121,6 +126,7 @@ export const riskWord = (r: number) => r < 3 ? 'Easy' : r < 6 ? 'Moderate' : 'De
 export function costView(D: Demand, k = 8, ctx?: { S: TankSetup; P: UserProfile }): CostView {
   const t = D.totals, deal = ctx ? bundleLine(ctx.S, ctx.P) : undefined, gs = ctx ? gearSaleCount(ctx.S) : undefined;
   return {
+    ...(ctx && notChosenLine(lifeSupportOf(ctx.S)) ? { notChosen: notChosenLine(lifeSupportOf(ctx.S)) } : {}),
     ...(deal ? { deal } : {}), ...(gs?.n ? { gearSales: gs } : {}),
     setup: usd(t.setupUsd), monthly: `${usd(t.upkeepUsdMo)}/mo`, minutes: `${fmtMin(t.minPerWeek)}/wk`,
     risk: Math.round(t.risk * 10) / 10, riskWord: riskWord(t.risk),

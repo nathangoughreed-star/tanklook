@@ -3,6 +3,7 @@
 import { layerOf } from '../../scene/items';
 import { bareSetup } from '../../scene/defaults';
 import { filterState } from '../../scene/tech';
+import { lifeSupportOf } from '../../scene/lifeSupport';
 import type { TankSetup } from '../../scene/types';
 import type { SectionId } from './sections';
 
@@ -14,7 +15,7 @@ const sameBox = (a: TankSetup['tank'], b: TankSetup['tank']) => a.L === b.L && a
 export function checklistOf(T: TankSetup): Checklist {
   const plants = T.items.some(i => layerOf(i) === 'plant'), hard = T.items.some(i => layerOf(i) !== 'plant');
   const light = !!(T.light?.product || T.light?.owned), filter = filterState(T) !== 'unset';
-  const missing = [light ? '' : 'a light', filter ? '' : 'a filter'].filter(Boolean);
+  const heater = !lifeSupportOf(T).some(m => m.kind === 'heater'), missing = [light ? '' : 'a light', filter ? '' : 'a filter', heater ? '' : 'a heater'].filter(Boolean);
   const steps: Step[] = [
     { id: 'tank', label: 'Pick a tank', hint: 'A real model or your own size', section: 'tank', done: !!T.product || !sameBox(T.tank, bareSetup().tank) },
     { id: 'scape', label: 'Shape the hardscape', hint: 'Rocks, wood and substrate', section: 'scape', done: hard },

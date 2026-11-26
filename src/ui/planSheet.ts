@@ -41,7 +41,7 @@ export function planHtml(p: Plan, needs: { severity: string; text: string }[] = 
   const needRows = p.rows.map(r => `<tr class="${r.kind}"><th scope="row">${esc(r.item)}${r.kind === 'extra' ? ' <em>(not needed)</em>' : ''}</th><td class="q">${usd(r.usd)}</td><td>${esc(r.serves)}</td></tr>`).join('');
   return `<h1>${esc(p.title)}</h1><p class="sheetSub">${esc(p.tank)}: ${esc(p.animals.join(', '))}</p>
 <h2>Does it fit?</h2>
-<p class="planVerdict ${p.fits ? needs.length ? 'warn' : 'ok' : 'bad'}"><b>${p.fits ? needs.length ? 'It fits the tank, with care needs to confirm.' : 'Yes, it fits.' : 'Not yet.'}</b></p>
+${sm?.missing.length ? `<p class="planVerdict warn"><b>Not chosen yet: ${esc(sm.missing.map(m => m.label).join(' and '))}.</b> The list and the prices below leave ${sm.missing.length === 1 ? 'it' : 'them'} out.</p>` : ''}<p class="planVerdict ${p.fits ? needs.length ? 'warn' : 'ok' : 'bad'}"><b>${p.fits ? needs.length ? 'It fits the tank, with care needs to confirm.' : 'Yes, it fits.' : 'Not yet.'}</b></p>
 ${sm ? `<h3>Stocking summary: ${esc(sm.worstWord)}</h3>${summaryHtml(sm, esc)}` : ''}${bar('Water column', p.waterPct)}${bar('Floor', p.floorPct)}
 <ul class="planTruths">${p.verdict.slice(2).map(v => `<li class="${v.level}"><b>${MARK[v.level]}</b> ${esc(v.text)}${v.more?.length ? `<ul class="planMore">${v.more.map(m => `<li>also: ${esc(m)}</li>`).join('')}</ul>` : ''}</li>`).join('')}${p.missing.map(m => `<li class="bad"><b>${MARK.bad}</b> ${esc(m)}</li>`).join('')}</ul>
 ${needs.length ? `<h3>Care needs the tool cannot check</h3><ul class="planTruths">${needs.map(n => `<li class="${n.severity === 'S3' ? 'bad' : 'warn'}"><b>?</b> ${esc(n.text)}</li>`).join('')}</ul>` : ''}
