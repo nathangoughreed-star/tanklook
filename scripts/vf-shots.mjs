@@ -197,10 +197,11 @@ const KIT = () => {
       return out;
     },
     /** ART1 --plant "sat=0.9,exposure=0.55,low=0.55,glow=1": set the plant tone constants (items.ts PLANT_TONE) and the PT glow switch, recompile the plant materials. */
+    /* (lighting's progKey replaces a material's own cache key: userData.ng is the part of it a material can still vary, so the plant materials get it) */
     async plant(spec) {
       const T = globalThis.__plantTone, F = globalThis.__plantFx;
       for (const kv of spec.split(',').filter(Boolean)) { const [k, x] = kv.split('='); if (k === 'glow') F.glow = x === '1'; else T[k] = +x; }
-      for (const vp of v().vps) vp.scene?.traverse(o => { if (o.userData.plant && o.material) o.material.needsUpdate = true; });
+      for (const vp of v().vps) vp.scene?.traverse(o => { if (o.userData.plant && o.material) { o.material.userData.ng = JSON.stringify([T, F.glow]); o.material.needsUpdate = true; } });
       await this.settle(300);
     },
     /**
@@ -230,7 +231,7 @@ const KIT = () => {
     /** ART1: plant spec B against plant spec A (`--plant` syntax, plus on=0) on alternating frames: GPU ms median / p95 of each and the paired delta. */
     async abPlant(a, b, pairs) {
       const T = globalThis.__plantTone, F = globalThis.__plantFx, base = { ...T, glow: F.glow };
-      const set = spec => { Object.assign(T, base); F.glow = base.glow; for (const kv of spec.split(',').filter(Boolean)) { const [k, x] = kv.split('='); if (k === 'glow') F.glow = x === '1'; else T[k] = +x; } for (const vp of v().vps) vp.scene?.traverse(o => { if (o.userData.plant && o.material) o.material.needsUpdate = true; }); };
+      const set = spec => { Object.assign(T, base); F.glow = base.glow; for (const kv of spec.split(',').filter(Boolean)) { const [k, x] = kv.split('='); if (k === 'glow') F.glow = x === '1'; else T[k] = +x; } for (const vp of v().vps) vp.scene?.traverse(o => { if (o.userData.plant && o.material) { o.material.userData.ng = JSON.stringify([T, F.glow]); o.material.needsUpdate = true; } }); };
       const r = { A: [], B: [], d: [], ca: [], cb: [] };
       for (let i = 0; i < 6; i++) { set(i % 2 ? b : a); v().draw(); await raf(); }
       for (let i = 0; i < pairs; i++) {

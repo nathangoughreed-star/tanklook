@@ -1,0 +1,24 @@
+[   0 s] vf-shots at ed4cf0ee (build 2810, src dirty); fx sets: none
+[   4 s] planted4
+[  22 s]   planted4 grass      px  19369  S 0.892  L 0.528  S>0.8 0.671  low-vs-top -0.21  FAIL: S, L, S>0.8 share
+[  22 s]   planted4 sword      px   2403  S 0.901  L 0.486  S>0.8 0.762  low-vs-top -0.291  FAIL: S, L, S>0.8 share
+[  22 s]   planted4 crypt      px   1251  S 0.741  L 0.381  S>0.8 0.376  low-vs-top -0.195  FAIL: S, S>0.8 share
+[  22 s]   planted4 fern       px    948  S 0.839  L 0.463  S>0.8 0.61  low-vs-top 0.004  FAIL: S, L, S>0.8 share, no low darkening
+[  22 s]   planted4 ALL plants px  23800  S 0.889  L 0.513  S>0.8 0.664  low-vs-top -0.243  FAIL: S, L, S>0.8 share
+[  22 s] nano
+[  29 s]   nano stemred    px  20873  S 0.72  L 0.356  S>0.8 0.301  low-vs-top 0.189  FAIL: S, S>0.8 share, no low darkening
+[  29 s]   nano stem       px  10214  S 0.905  L 0.519  S>0.8 0.728  low-vs-top -0.069  FAIL: S, L, S>0.8 share, no low darkening
+[  29 s]   nano carpet     px   1882  S 0.594  L 0.536  S>0.8 0.271  low-vs-top -0.118  FAIL: L, S>0.8 share, no low darkening
+[  29 s]   nano anubias    px   1180  S 0.907  L 0.523  S>0.8 0.796  low-vs-top -0.305  FAIL: S, L, S>0.8 share
+[  29 s]   nano ALL plants px  34149  S 0.781  L 0.406  S>0.8 0.444  low-vs-top 0.298  FAIL: S, S>0.8 share, no low darkening
+[  29 s] iwagumi
+[  41 s]   iwagumi carpet     px   2002  S 0.414  L 0.696  S>0.8 0.184  low-vs-top 0.002  FAIL: L, S>0.8 share, no low darkening
+[  41 s]   iwagumi grass      px  25094  S 0.909  L 0.632  S>0.8 0.583  low-vs-top -0.196  FAIL: S, L, S>0.8 share
+[  41 s]   iwagumi ALL plants px  27076  S 0.904  L 0.635  S>0.8 0.554  low-vs-top -0.189  FAIL: S, L, S>0.8 share
+[  41 s] nathan-40g-breeder-2026-11-15
+[  50 s]   nathan-40g-breeder-2026-11-15 grass      px  10454  S 0.8  L 0.63  S>0.8 0.499  low-vs-top 0.041  FAIL: S, L, S>0.8 share, no low darkening
+[  50 s]   nathan-40g-breeder-2026-11-15 sword      px   4274  S 0.92  L 0.647  S>0.8 0.753  low-vs-top -0.082  FAIL: S, L, S>0.8 share, no low darkening
+[  50 s]   nathan-40g-breeder-2026-11-15 anubias    px   1200  S 0.876  L 0.436  S>0.8 0.789  low-vs-top -0.009  FAIL: S, S>0.8 share, no low darkening
+[  50 s]   nathan-40g-breeder-2026-11-15 carpet     px   2433  S 0.507  L 0.694  S>0.8 0.172  low-vs-top -0.06  FAIL: L, S>0.8 share, no low darkening
+[  50 s]   nathan-40g-breeder-2026-11-15 ALL plants px  18188  S 0.831  L 0.635  S>0.8 0.531  low-vs-top 0.027  FAIL: S, L, S>0.8 share, no low darkening
+[  50 s] wrote research\visual\art1\depth\vf-shots.json
