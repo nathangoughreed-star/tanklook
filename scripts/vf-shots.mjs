@@ -14,6 +14,9 @@
 //          --size 1050x850   --pairs 40   --no-shots   --no-numbers   --sheet (one side-by-side PNG per tank and view)
 //          --rest 20 [--throttle 4]   tank left alone / orbiting / idle for 20 s per fx set, normal CPU and 4x slower (caustic safeguards)
 //          --measure   (lane ART1) per-plant-variant S / L / S>0.8 share / low-vs-top darkening, pass / fail against the gates, into vf-shots.json
+//          --plant "sat=0.9,glow=1"   (lane ART1) set plant tone constants / the PT glow switch for the run
+//          --abplant "on=0|on=1"   (lane ART1) frame-time A/B of two plant specs on alternating frames (--pairs N)
+//          --anchors   (lane ART1) list every string-anchored shader patch that matched nothing (exit code 3 if any)
 //          --perf   also run scripts/perf-baseline.mjs on the tanks (steady draw, programs, first frame) into <out>/perf-baseline.json
 //          --cold <dist dir>   also run scripts/cold-ab.mjs: cold first frame (program link) of <dist dir> (before) vs a fresh `npm run build` (after)
 // Headless Edge / Chrome on the hardware GPU (--use-angle=d3d11), as perf-baseline.mjs.
@@ -193,6 +196,51 @@ const KIT = () => {
       }
       return out;
     },
+    /** ART1 --plant "sat=0.9,exposure=0.55,low=0.55,glow=1": set the plant tone constants (items.ts PLANT_TONE) and the PT glow switch, recompile the plant materials. */
+    async plant(spec) {
+      const T = globalThis.__plantTone, F = globalThis.__plantFx;
+      for (const kv of spec.split(',').filter(Boolean)) { const [k, x] = kv.split('='); if (k === 'glow') F.glow = x === '1'; else T[k] = +x; }
+      for (const vp of v().vps) vp.scene?.traverse(o => { if (o.userData.plant && o.material) o.material.needsUpdate = true; });
+      await this.settle(300);
+    },
+    /**
+     * ART1 --anchors: every string-anchored shader patch that finds nothing. All materials are recompiled (needsUpdate re-runs every onBeforeCompile) with
+     * String.prototype.replace watched: a string or RegExp pattern that leaves a shader source (anything with `void main`) unchanged is a missing anchor.
+     */
+    async anchors() {
+      const orig = String.prototype.replace, miss = new Map();
+      String.prototype.replace = function (p, r) {
+        const src = String(this), out = orig.call(src, p, r); 
+        if (out === src && (typeof p === 'string' || p instanceof RegExp) && src.includes('void main')) {
+          const fr = (new Error().stack || '').split('\n').slice(2, 7).map(l => l.trim().replace(/^at /, '').replace(/https?:\/\/[^/]+\/(src\/)?/, '').replace(/\?t=\d+/, ''));
+          if (/node_modules/.test(fr.find(l => !/String\.replace/.test(l)) ?? '')) return out; // three's own replaces
+          const k = String(p).slice(0, 110) + ' @ ' + (fr.find(l => !/String\.replace|lighting\.ts.*aqPatch$/.test(l) && /\.ts/.test(l)) ?? fr[0]);
+          miss.set(k, (miss.get(k) ?? 0) + 1);
+        }
+        return out;
+      };
+      const saved = [];
+      try {
+        const seen = new Set(); // (three runs onBeforeCompile only for a program it has not cached: the key is changed for this pass)
+        for (const vp of v().vps) vp.scene?.traverse(o => { for (const m of [].concat(o.material ?? [])) if (!seen.has(m)) { seen.add(m); const k0 = m.customProgramCacheKey; m.customProgramCacheKey = function () { return (k0 ? k0.call(this) : '') + '|anchors'; }; m.needsUpdate = true; saved.push([m, k0]); } });
+        for (let i = 0; i < 3; i++) { v().draw(); await raf(); }
+      } finally { String.prototype.replace = orig; for (const [m, k0] of saved) { m.customProgramCacheKey = k0; m.needsUpdate = true; } }
+      return [...miss.entries()];
+    },
+    /** ART1: plant spec B against plant spec A (`--plant` syntax, plus on=0) on alternating frames: GPU ms median / p95 of each and the paired delta. */
+    async abPlant(a, b, pairs) {
+      const T = globalThis.__plantTone, F = globalThis.__plantFx, base = { ...T, glow: F.glow };
+      const set = spec => { Object.assign(T, base); F.glow = base.glow; for (const kv of spec.split(',').filter(Boolean)) { const [k, x] = kv.split('='); if (k === 'glow') F.glow = x === '1'; else T[k] = +x; } for (const vp of v().vps) vp.scene?.traverse(o => { if (o.userData.plant && o.material) o.material.needsUpdate = true; }); };
+      const r = { A: [], B: [], d: [], ca: [], cb: [] };
+      for (let i = 0; i < 6; i++) { set(i % 2 ? b : a); v().draw(); await raf(); }
+      for (let i = 0; i < pairs; i++) {
+        set(a); v().draw(); await raf(); const fa = frame(); await raf(); const ga = await resolve(fa.qq);
+        set(b); v().draw(); await raf(); const fb = frame(); await raf(); const gb = await resolve(fb.qq);
+        r.A.push(ga); r.B.push(gb); if (ga != null && gb != null) r.d.push(gb - ga);
+      }
+      set(a);
+      return { A: q(r.A, 0.5), B: q(r.B, 0.5), A95: q(r.A, 0.95), B95: q(r.B, 0.95), delta: q(r.d, 0.5), delta95: q(r.d, 0.95), n: r.d.length };
+    },
     gpu() { const g = gl(), d = g.getExtension('WEBGL_debug_renderer_info'); return d ? g.getParameter(d.UNMASKED_RENDERER_WEBGL) : g.getParameter(g.RENDERER); },
     /** Side-by-side sheet of data URLs with labels (drawn in the page: no image library needed). */
     async sheet(urls, labels, title) {
@@ -232,6 +280,9 @@ try {
     await br.ev(`window.__vf = (${KIT})(); 1`);
     await br.ev('__vf.settle(2500)');
     result.gpu ??= await br.ev('__vf.gpu()');
+    if (opt('plant', '')) await br.ev(`__vf.plant(${JSON.stringify(opt('plant', ''))})`); // ART1: plant tone / glow values for this run
+    if (opt('abplant', '')) { const [a, b] = opt('abplant', '').split('|'); await br.ev('__vf.view("front")'); const r = (result.abPlant ??= {})[name] = await br.ev(`__vf.abPlant(${JSON.stringify(a)}, ${JSON.stringify(b)}, ${PAIRS})`, 900_000); log(`  plant A/B [${a}] -> [${b}]: GPU ${r.A} -> ${r.B} ms (paired delta ${r.delta}, p95 ${r.delta95}, n ${r.n})`); }
+    if (flag('anchors')) { const m = (result.anchors ??= {})[name] = await br.ev('__vf.anchors()'); for (const [k, n] of m) log(`  MISSING ANCHOR x${n}: ${k}`); log(`  ${name}: ${m.length} missing shader anchor(s)`); if (m.length) process.exitCode = 3; }
     const row = result.scenes[name] = { shots: [], ab: {} };
     if (!flag('no-shots')) {
       const grid = {}, labels = {};

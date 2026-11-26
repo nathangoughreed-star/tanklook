@@ -9,6 +9,7 @@
     "build": "tsc --noEmit && vite build && node scripts/size-budget.mjs",
     "preview": "vite preview",
     "test": "vitest run",
+    "check:anchors": "node scripts/vf-shots.mjs --scenes planted4,reef,nano,glass-edge --views front --no-shots --no-numbers --anchors --plant glow=1 --dir %TEMP%/anchors",
     "typecheck": "tsc --noEmit",
     "build:single": "npm run build && vite build --mode single && node scripts/build-single.mjs",
     "sheets": "node scripts/export-sheets.mjs"
