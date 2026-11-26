@@ -944,3 +944,7 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 
 /* FD: the phone strip fits four chips on a 390 px screen (it clipped the Notes count); a narrower one scrolls rather than cuts */
 .ui2app.phone .checkstrip .checkbar { overflow-x: auto; scrollbar-width: none; gap: 4px; padding: 6px 6px; } .ui2app.phone .checkstrip .check { padding: 0 8px; font-size: 13px; gap: 4px; white-space: nowrap; } .ui2app.phone .checkstrip .check .dim { display: none; } .ui2app.phone .checkstrip .vsep { display: none; }
+
+.ov.loadbar { left: 50%; top: var(--s3); transform: translateX(-50%); display: grid; justify-items: center; gap: 4px; padding: var(--s2) var(--s3); border-radius: var(--r-card, 10px); z-index: calc(var(--z-overlay) + 3); max-width: min(380px, calc(100% - 2 * var(--s3))); text-align: center; color: var(--text-2); font-size: var(--fs-sm); }
+.loadbar .loadwave { width: 120px; height: 14px; color: var(--accent); stroke-dasharray: 18 6; animation: loadflow 1.6s linear infinite; } .loadbar .loadtip { color: var(--text-3); }
+@keyframes loadflow { to { stroke-dashoffset: -48; } } @media (prefers-reduced-motion: reduce) { .loadbar .loadwave { animation: none; } }

@@ -34,6 +34,7 @@ import { ANIMAL_DOOR_EVENT, PICKER_EVENT } from './start';
 import { landing } from './logic/start';
 import { getResult, setResult, subscribeResult } from './logic/result';
 import { ResultCard } from './result';
+import { BuildingBar } from './loading';
 import { resetChecklist } from './logic/checklist';
 import { ConstraintsSection } from './constraints';
 import { PreferencesSection } from './prefs';
@@ -297,6 +298,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
         {split ? <CompareLayer store={store} models={models} drawer={cmpDrawer} onPick={check} phone={phone} say={files.say} /> : null}
         {plumb && inEquipment ? <PlumbingView store={store} phone={phone} /> : null}
         {split || !inEquipment ? null : <PlumbSwitch on={plumb} onChange={setPlumb} />}
+        <BuildingBar />
         {result ? <ResultCard store={store} model={model} result={result} onMine={() => { landing.untouched = false; setResult(null); pick('tank'); }} onAnother={r => r.kind === 'example' ? void files.peekExample(r.i) : r.kind === 'animal' ? setDoor(true) : files.openStart()} /> : null}
         <ChecklistDock tank={store.tank} open={section} onOpen={pick} onAnimal={() => setDoor(true)} phone={phone} on={!result && !!section && !more} />
         <ScapeBars store={store} getViewer={viewer} />

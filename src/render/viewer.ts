@@ -594,7 +594,7 @@ export class Viewer {
     this.overlay?.remove(); this.overlay = null; this.lastFrame = null;
   }
   /** The small "Building the tank…" note while a reveal runs (index.html #buildHint). */
-  private hint(on: boolean) { const h = document.getElementById('buildHint'); if (h) h.hidden = !on; }
+  private hint(on: boolean) { const h = document.getElementById('buildHint'); if (h) h.hidden = !on; dispatchEvent(new CustomEvent('tank:building', { detail: { on } })); }   // FD (R165): the shell's own loading bar listens (shell/loading.tsx)
   /** During a reveal, keep a copy of each frame (the canvas is cleared once shown): the next part fades in over it. */
   private keepFrame() {
     const c = this.canvas, l = this.lastFrame ??= document.createElement('canvas');
