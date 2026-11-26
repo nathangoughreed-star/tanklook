@@ -65,7 +65,7 @@ function RoomGroup({ store }: { store: Store }) {
         {S.wall.show ? <>
           <Seg label="Wall" value={S.wall.side} opts={[['back', 'Behind'], ['left', 'Peninsula (left end)'], ['right', 'Peninsula (right end)'], ['corner', 'Corner']]} onPick={wallSide} />
           <LenRow label="Ceiling" mm={ceilingH(S.wall)} min={CEILING_MIN} max={CEILING_MAX} u={u} step={1} onMm={(mm, done) => store.edit(s => { s.wall.height = mm; }, done ? {} : { coalesce: 'ceilH' })} />
-          <div class="row"><span class="lbl">Wall colour</span><input type="color" aria-label="Wall colour" value={S.wall.color} onInput={e => store.edit(s => { s.wall.color = (e.target as HTMLInputElement).value; }, { coalesce: 'wallColor' })} /><span /></div>
+          <div class="row"><span class="lbl">Wall color</span><input type="color" aria-label="Wall color" value={S.wall.color} onInput={e => store.edit(s => { s.wall.color = (e.target as HTMLInputElement).value; }, { coalesce: 'wallColor' })} /><span /></div>
         </> : null}
         <Toggle on={S.person.show} label={<>You, for scale <span class="hint">{heightText(S.person.height, u)}</span></>} onFlip={on => store.edit(s => { s.person.show = on; })} />
         {S.person.show ? <>
@@ -131,7 +131,7 @@ export function ViewCluster({ store, getViewer, phone, compare }: { store: Store
         {swimming ? null : <button type="button" class="btn sm chip" disabled={!store.tank.fish.length} title={store.tank.fish.length ? 'Every animal in a new spot, as if the tank were photographed a little later. Plants and scape stay.' : 'Add an animal first'} onClick={moment}><Icon name="shuffle" /><span class="lb"> {phone ? 'Moment' : 'Another moment'}</span></button>}</div></div> : null}
           <div class="vsec"><h3>Camera</h3>
             <div class="chips">{CAM_PRESETS.map(p => <button type="button" class={`btn sm chip${on === p.id ? ' on' : ''}`} aria-pressed={on === p.id} onClick={() => store.cam(c => Object.assign(c, presetOf(p.id)!.cam))}>{p.label}</button>)}
-              <button type="button" class="btn sm chip" title="Re-centre the panned view (Home)" onClick={() => v?.resetPan()}>⌖ Re-centre</button></div>
+              <button type="button" class="btn sm chip" title="Re-center the panned view (Home)" onClick={() => v?.resetPan()}>⌖ Re-center</button></div>
             {CAM_SLIDERS.map(s => (
               <div class="row"><span class="lbl">{s.label}</span>
                 <input class="slider" type="range" min={s.min} max={s.max} step={s.step} value={cam[s.key]} aria-label={s.label} onInput={e => sheetOf(s.key, +(e.target as HTMLInputElement).value)} onChange={() => store.seal()} />

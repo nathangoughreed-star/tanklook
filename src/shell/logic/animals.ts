@@ -299,7 +299,7 @@ function formsView(S: TankSetup, f: Fish, sp: Species): SelectionView['forms'] {
   const list = (axis: 'colour' | 'fin', own: string) => [{ id: '', name: own, est: false, art: speciesOf({ species: f.species, sex: f.sex, ...(axis === 'colour' ? { finForm: f.finForm } : { form: f.form }) })!.art, aspect: base.aspect },
     ...F[axis].map(x => { const s = speciesOf({ species: f.species, sex: f.sex, form: f.form, finForm: f.finForm, [axis === 'colour' ? 'form' : 'finForm']: x.id })!; return { id: x.id, name: x.name, est: !!x.est, art: s.art, aspect: s.aspect }; })];
   const axes: NonNullable<SelectionView['forms']>['axes'] = [];
-  if (F.colour.length) axes.push({ axis: 'colour', title: sp.id === 'cherryshrimp' ? 'Colour' : 'Colour / pattern', on: f.form ?? '', list: list('colour', 'Standard') });
+  if (F.colour.length) axes.push({ axis: 'colour', title: sp.id === 'cherryshrimp' ? 'Color' : 'Color / pattern', on: f.form ?? '', list: list('colour', 'Standard') });
   if (F.fin.length) axes.push({ axis: 'fin', title: 'Fins', on: f.finForm ?? '', list: list('fin', 'Standard') });
   return { n: S.fish.filter(x => x.species === f.species).length, src: F.src, note: [F.finNote, F.colourNote].filter((x): x is string => !!x), axes };
 }

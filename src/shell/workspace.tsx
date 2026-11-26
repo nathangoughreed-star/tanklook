@@ -46,7 +46,7 @@ export function WorkspaceFrame({ title, sub, mode, phone, dirty, onDone, onUndoA
       {phone ? (
         <>
           <div class="wsstrip"><button type="button" class="btn sm wsbig" aria-pressed={big} onClick={() => setBig(!big)}>{big ? 'Smaller' : 'Bigger'}</button></div>
-          <section class="wscat sheet" aria-label={`${title} catalogue`}>{children}</section>
+          <section class="wscat sheet" aria-label={`${title} catalog`}>{children}</section>
           <footer class="wsfoot">
             <button type="button" class="btn sm wscount" aria-expanded={sheet} onClick={() => setSheet(!sheet)}>{count ?? ''} {side ? (sheet ? '▾' : '▴') : ''}</button>
             <span class="grow" />{revert}{done}
@@ -56,7 +56,7 @@ export function WorkspaceFrame({ title, sub, mode, phone, dirty, onDone, onUndoA
       ) : (
         <>
           <aside class="wsside" aria-label="In this tank">{side}</aside>
-          <section class="wscat" aria-label={`${title} catalogue`}>{children}</section>
+          <section class="wscat" aria-label={`${title} catalog`}>{children}</section>
         </>
       )}
     </>

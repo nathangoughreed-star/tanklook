@@ -48,8 +48,8 @@ export function PlantNeedsCard({ store, profile }: { store: Store; profile: () =
       {done ? <div class="hint" role="status">Done: {done}. Ctrl+Z undoes it.</div> : null}
       {v.co2Sys ? <div class="pnrowx"><span>CO2 system added: {v.co2Sys.label}.</span> <button type="button" class="linkbtn" onClick={() => openSection('equipment', 'co2')}>Edit it further in Equipment</button></div> : null}
       {v.fert ? (
-        <div class="pnrowx pnfert"><span class="lbl">Fertiliser</span>
-          <select class="select" aria-label="Fertiliser" value={v.fert.current?.id} onChange={e => run('Fertiliser changed', t => v.fert!.pick(t, (e.target as HTMLSelectElement).value))}>
+        <div class="pnrowx pnfert"><span class="lbl">Fertilizer</span>
+          <select class="select" aria-label="Fertilizer" value={v.fert.current?.id} onChange={e => run('Fertilizer changed', t => v.fert!.pick(t, (e.target as HTMLSelectElement).value))}>
             {v.fert.options.map(o => <option value={o.id}>{o.label}</option>)}</select>
           <span class="hint">{v.fert.current ? `${v.fert.current.dose} · about $${Math.round(v.fert.current.monthlyUsd)}/mo${v.fert.current.setupUsd >= 0.5 ? ` + $${Math.round(v.fert.current.setupUsd)} to set up` : ''}` : ''}</span></div>
       ) : null}

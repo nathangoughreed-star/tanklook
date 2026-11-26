@@ -99,7 +99,7 @@ export function createFiles(store: Store, thumb: () => string, afterReplace: () 
       pinDeal(deal);
       if (!await startProject(store, scene, P7.savedText())) return;
       store.update(s => { const t = s.tanks[s.active]; if (t) lockKitParts(t, deal.includes); }, { history: false });   // R125: what the bundle includes is held until the user unlocks it
-      P7.setLibId(null); say(`Opened the deal "${scene.name}". Customise it; Cost and time prices the bundle. Undo brings the previous tank back.`); replaced(); openSection('tank');
+      P7.setLibId(null); say(`Opened the deal "${scene.name}". Customize it; Cost and time prices the bundle. Undo brings the previous tank back.`); replaced(); openSection('tank');
     },
     async peekExample(i0) {
       const list = examplesInScope().map(x => x.id), n = list.length; if (!n) return;

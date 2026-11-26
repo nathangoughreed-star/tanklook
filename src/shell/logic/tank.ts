@@ -533,7 +533,7 @@ export const setEdges = (s: TankSetup, on: boolean) => { s.render.edges = on; };
 export const PIC_MAX = 4;
 export const PIC_SIDES: [BgSide, string][] = [['left', 'Left'], ['back', 'Back'], ['right', 'Right'], ['front', 'Front']];
 export const PIC_FITS: [BgFit, string, string][] = [
-  ['fill', 'Fill', 'Covers the glass; the picture is cropped to fit'], ['fit', 'Fit', 'The whole picture, on the background colour'],
+  ['fill', 'Fill', 'Covers the glass; the picture is cropped to fit'], ['fit', 'Fit', 'The whole picture, on the background color'],
   ['stretch', 'Stretch', 'Stretched to the glass'], ['tile', 'Tile', 'Repeated, at the size you set'],
 ];
 const sideName = (k: BgSide) => k[0].toUpperCase() + k.slice(1);
@@ -563,7 +563,7 @@ export const picSummary = (S: TankSetup): string => S.render.bgImages.length ? `
 /** Where the tank sits on a table or custom stand: the sliders' ranges (mm) and the words, as the old panel showed them. */
 export function tablePos(S: TankSetup, fmt: (mm: number) => string) {
   const tb = S.stand.table, r = tableRange(S);
-  const off = (v: number, neg: string, pos: string) => Math.abs(v) < 1 ? 'Centred' : `${fmt(Math.abs(v))} ${v < 0 ? neg : pos}`;
+  const off = (v: number, neg: string, pos: string) => Math.abs(v) < 1 ? 'Centered' : `${fmt(Math.abs(v))} ${v < 0 ? neg : pos}`;
   return { x: tb.x, z: tb.z, x0: Math.floor(r.x0), x1: Math.ceil(r.x1), z0: Math.floor(r.z0), z1: Math.ceil(r.z1), xText: off(tb.x, 'left', 'right'), zText: off(tb.z, 'forward', 'back') };
 }
 export const setTableX = (s: TankSetup, v: number) => editTable(s, tb => { tb.x = v; });
