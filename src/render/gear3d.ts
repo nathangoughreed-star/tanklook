@@ -10,7 +10,7 @@ import { filterProduct, genericHeaterW, pumpProduct } from '../data/gearCatalog'
 import { backdropDepth, clamp } from '../scene/physics';
 import type { Tank, TankSetup } from '../scene/types';
 import { tankView } from './tankView';
-import { GearSpot, GearPick, GearSide, Bucket, Kit, GearWall, Frame, frame, Spot } from './gear/common';
+import { GearSpot, GearPick, GearSide, Bucket, Kit, GearWall, Frame, frame, hobPane, Spot } from './gear/common';
 import { heater } from './gear/heater';
 import { hob, sponge, internal, canister } from './gear/filter';
 import { sump, skimmerHob, uv, ato, surfaceSkim, chillerFan } from './gear/reef';
@@ -127,6 +127,9 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
   const kit = new Kit(), dflt = side ?? gearSide(T, solids), frames = new Map<string, Frame>(), pieces: GearPiece[] = [];
   const fr = (wall: GearWall) => { const k = wall; let f = frames.get(k); if (!f) frames.set(k, f = frame(S, T, kit, dflt, solids, wall)); return f; };
   const back = fr('back'), opp: GearWall = dflt === 'left' ? 'right' : 'left';
+  // hang-on-back gear on a tank with no flat back (odd polygon, pie): the gear-side back pane, square to it (Nathan 2026-11-25)
+  const pane = hobPane(T, dflt); let pf: Frame | undefined;
+  const paneF = () => (pane ? (pf ??= frame(S, T, kit, dflt, solids, 'back', pane)) : undefined);
   // a placed piece on the back wall or the floor: its spot in the back frame's u (which runs from the default corner)
   // lane GM8: suction cups only hold on glass, and a 3D backdrop covers the back glass: glass-mount gear goes to a side glass
   const bd3 = backdropDepth(S.backdrop, T) > 0, Dbg = T.D - backdropDepth(S.backdrop, T);
@@ -169,7 +172,8 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
     for (const hp of hps) { const hm = isHeater(hp.id); if (!hm || !go(hp)) continue; for (let i = 0; i < (hp.n ?? 1); i++) { const { f, sp } = spot(hp, i ? after() : cursor); if (i && hp.place) sp.u += 90 * i; /* a second placed heater beside the first */ track(hp, () => heater(f, hp.watts ?? hm.watts, sp, hp.product)); if (!pass) cursor = after(); } }
     fps.forEach((fp, k) => {
       const fk = isFilter(fp.id); if (!fk || !go(fp)) return;
-      const { f, sp } = spot(fp, k && !fp.place ? after() : cursor), n0 = f.taken.length;
+      const onPane = fk.kind === 'hob' && !fp.place && paneF();
+      const { f, sp } = onPane ? { f: onPane, sp: { u: Math.max(22, onPane.len / 2 - 80) } as Spot } : spot(fp, k && !fp.place ? after() : cursor), n0 = f.taken.length;
       const prod = filterProduct(fp.product), pk = prod?.kind === fk.kind ? prod : undefined;
       track(fp, () => { if (fk.kind === 'hob') hob(f, fk, sp, pk); else if (fk.kind === 'canister') canister(f, fk, sp, pk, fp.inline); else if (fk.kind === 'sponge') sponge(f, fk, sp, pk); else internal(f, fk, sp, pk); });
       const mine = f.taken.slice(n0);
@@ -178,7 +182,9 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
     if (!pass) cursor = after();
     const one = (id: string, b: (f: Frame, sp: Spot, pk?: GearPick) => void, u = () => after()) => { const p = get(id); if (!go(p)) return; const { f, sp } = spot(p!, u()); track(p!, () => b(f, sp, p)); };
     one('uv', (f, sp, pk) => uv(f, sp, has('sump') ? undefined : fm, pk), () => fm?.kind === 'canister' || has('sump') ? outlet.u + 40 : cursor);
-    if (!has('sump')) one('skimmer', skimmerHob);
+    const sk = get('skimmer'), skPane = !has('sump') && go(sk) && !sk!.place && paneF();
+    if (skPane) track(sk!, () => skimmerHob(skPane, { u: Math.max(22, skPane.len / 2 - 80) }, sk));
+    else if (!has('sump')) one('skimmer', skimmerHob);
     one('surfskim', surfaceSkim); one('chillerfan', chillerFan);
     one('airstone', airstone);
     if (!has('sump')) one('ato', ato);
