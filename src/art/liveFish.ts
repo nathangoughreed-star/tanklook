@@ -32,6 +32,7 @@ async function dogfood() {
 }
 
 const speciesIn = (store: Store) => store.scene.tanks.flatMap(S => (S.fish ?? []).map(f => f.species));
+const ADD_MS = 3000;    // a fish added from the picker: how long its edit waits for its art
 const FIRST_MS = 4000;   // how long the first build waits for in-scene art before it draws the old model
 
 /**
@@ -51,14 +52,16 @@ export function watchLiveArt(store: Store, viewer: Viewer) {
   if (dog) viewer.holdBuild(dogfood().catch(e => console.warn(e)), 20000); else hold(FIRST_MS);
   store.subscribe(kind => {
     if (kind === 'load') hold(FIRST_MS);
-    else if (kind === 'scene') {   // a fish added from the picker whose art is not in yet: old model for a moment, then the new one
+    else if (kind === 'scene') {   // a fish added from the picker whose art is not in yet: the edit waits for it
       const need = speciesIn(store).filter(id => LIVE[id] && !swapped.has(id));
-      if (need.length) void ensureLive(need).then(c => { if (c) viewer.rebuild(); }).catch(e => console.warn(e));
+      if (need.length) { const p = ensureLive(need).catch(e => console.warn(e)); viewer.holdBuild(p, ADD_MS); }   // no old-model flash: the edit shows once the art is in (or after ADD_MS, with the old model)
     }
   });
   if (!dog) {
+    // the other looks load once the first reveal is over ('tank complete' / 'tank at once', viewer.ts), so their image decode never overlaps it
     const idle = () => void ensureLive().then(redraw).catch(e => console.warn(e));
-    addEventListener('load', () => { if ('requestIdleCallback' in window) requestIdleCallback(idle, { timeout: 15000 }); else setTimeout(idle, 8000); });
-    if (document.readyState === 'complete') setTimeout(idle, 8000);
+    let tries = 0;
+    const wait = () => { if (performance.getEntriesByType('mark').some(m => /^tank (complete|at once)/.test(m.name)) || ++tries > 120) setTimeout(idle, 500); else setTimeout(wait, 500); };
+    wait();
   }
 }
