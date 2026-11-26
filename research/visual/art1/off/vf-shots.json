@@ -1,8 +1,8 @@
 {
- "commit": "d6c6c4ad",
- "build": 2808,
+ "commit": "03f0e841",
+ "build": 2809,
  "dirty": true,
- "when": "2026-11-26T15:45:20.115Z",
+ "when": "2026-11-26T15:58:07.615Z",
  "size": [
   1050,
   850
@@ -21,18 +21,6 @@
   "nano": {
    "shots": [
     "nano-front-none.png"
-   ],
-   "ab": {}
-  },
-  "iwagumi": {
-   "shots": [
-    "iwagumi-front-none.png"
-   ],
-   "ab": {}
-  },
-  "nathan-40g-breeder-2026-11-15": {
-   "shots": [
-    "nathan-40g-breeder-2026-11-15-front-none.png"
    ],
    "ab": {}
   }

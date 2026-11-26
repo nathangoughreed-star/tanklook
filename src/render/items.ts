@@ -707,7 +707,7 @@ const LEAF_GLOW = 0.5, LEAF_SHEEN = 0.35;
  *  EXPOSURE scales the lit leaf, SAT is how much of its colour stays (1 = as painted; the rest goes to its own grey), and a leaf near the
  *  substrate is LOW x as bright as one at the water line (the crown sits in the shade of its own leaves; smooth over the lower 70 % of the water). */
 /** (`on` 0 = the block left out, for the frame-time A/B.) */
-export const PLANT_TONE = { on: 1, exposure: 0.55, sat: 0.8, low: 0.55 };
+export const PLANT_TONE = { on: 0, exposure: 0.55, sat: 0.8, low: 0.55 };
 if (import.meta.env?.DEV) (globalThis as { __plantTone?: typeof PLANT_TONE }).__plantTone = PLANT_TONE; // (the shot scripts try other values: set, then `needsUpdate` on the plant materials)
 /** Relief from the painted texture's luminance (plantMaterial's `post`): the bump height in mm per unit luminance, and how strongly the lamps' facing change shows. */
 const LEAF_RELIEF = 6.0, LEAF_RELIEF_K = 1.8;
