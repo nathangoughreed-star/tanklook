@@ -960,3 +960,6 @@ body.landdock .ui2app .viewer { margin-left: 400px; }
   body.landdock .ui2app .viewer { margin-left: 0; margin-bottom: 46dvh; }
 }
 @media (max-width: 640px) { .dlg .startdoors, .scrim.dock .dlg .startdoors { grid-template-columns: 1fr; } }
+
+.startdoors .doorpic { aspect-ratio: 16 / 7; } .dlg .dlgbody { scrollbar-color: var(--line) transparent; }
+@media (max-width: 640px) { .startdoors .doorpic { aspect-ratio: 5 / 3; } }
