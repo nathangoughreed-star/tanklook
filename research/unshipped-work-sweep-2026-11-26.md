@@ -48,6 +48,20 @@ origin/main's copy of the same file, then commit subjects matched against origin
 - Fable answers F1-F7: on main.
 - `prompts/lane-*.md` (45 untracked Oct lane briefs) and `agentC/plant-audit-*.json`: history only, not on main.
 
+## Shared folder reset (Nathan's yes, 2026-11-26)
+
+`ship.sh` from the shared folder was conflicting on every run. Local main carried 7 old commits that had reached
+origin/main in another form, and ship.sh merges the whole local history. The folder was reset with
+`git reset --keep origin/main` (build 2833), after these steps:
+- All 9 uncommitted files went to branch `backup/shared-folder-uncommitted-2026-11-26` (7b2140c8), built on a
+  temporary index so the working tree was not touched.
+- The 5 stale edits (deals, style, fullness tile, tech menu, equipment step) take main's newer version.
+- The HOB edits (item 4) were three-way merged onto the new base. There was one small overlap per file with GD1/front-wall
+  work; the ripple ring rotates only on the back wall. tsc passes and 197/197 gear tests pass. They are still
+  uncommitted and unchecked on screen, and wait for the HOB chat.
+- `.claude/launch.json` was kept as is.
+- The 25 untracked competitor files were identical to main's and were moved aside so the reset could write main's copies.
+
 ## Housekeeping the sweep turned up
 
 - 340 worktrees and 677 local branches make every sweep slow. 22 worktrees point at emptied Temp scratchpads and can be pruned.
