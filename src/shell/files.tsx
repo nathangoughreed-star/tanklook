@@ -8,7 +8,8 @@ import type { Scene } from '../scene/types';
 import { listLib } from '../scene/library';
 import { readShare, shareUrl } from '../scene/share';
 import { parseScene } from '../scene/validate';
-import { EXAMPLES, exampleScenes } from '../examples';
+import { EXAMPLES, examplesInScope, exampleScenes } from '../examples';
+import { setResult } from './logic/result';
 import { freshScene } from '../scene/freshScene';
 import { landing } from './logic/start';
 import { restoreChecklist } from './logic/checklist';
@@ -30,7 +31,7 @@ export interface Files {
   say(text: string, bad?: boolean): void; close(): void; dismissToast(): void;
   run(a: FileAction): void; save(): void;
   /** SS1: the Start sheet, its Blank door (a new empty tank of that water) and its Open doors (the Open window at a tab) */
-  openStart(): void; openKits(back?: 'start' | 'close'): void; openExamples(): void; startDeal(deal: Deal, scene: Scene): Promise<void>; newTank(kind: SetupKind): void; /** the landing's example, still untouched, gives way to an empty tank (no question asked) */ freshIfLanding(): void; openAt(tab: 'saved' | 'examples' | 'file'): void;
+  openStart(): void; openKits(back?: 'start' | 'close'): void; openExamples(): void; startDeal(deal: Deal, scene: Scene): Promise<void>; newTank(kind: SetupKind): void; /** the landing's example, still untouched, gives way to an empty tank (no question asked) */ freshIfLanding(): void; /** open example i of the in-scope list full-width with the result card */ peekExample(i: number): Promise<void>; openAt(tab: 'saved' | 'examples' | 'file'): void;
   rename(v: string): void;
   openSaved(id: string): Promise<void>; deleteSaved(id: string): void; openExample(id: string): Promise<void>;
   openFile(file: File): Promise<void>; openShared(hash: string): Promise<void>;
@@ -99,6 +100,13 @@ export function createFiles(store: Store, thumb: () => string, afterReplace: () 
       if (!await startProject(store, scene, P7.savedText())) return;
       store.update(s => { const t = s.tanks[s.active]; if (t) lockKitParts(t, deal.includes); }, { history: false });   // R125: what the bundle includes is held until the user unlocks it
       P7.setLibId(null); say(`Opened the deal "${scene.name}". Customise it; Cost and time prices the bundle. Undo brings the previous tank back.`); replaced(); openSection('tank');
+    },
+    async peekExample(i0) {
+      const list = examplesInScope().map(x => x.id), n = list.length; if (!n) return;
+      const i = ((i0 % n) + n) % n, id = list[i];
+      let text: string; try { text = (await exampleScenes())[id]; } catch { say('Could not load the examples (no connection?). Try again in a moment.', true); return; }
+      if (!landing.untouched && !await confirmStart(store.scene, P7.savedText())) return;
+      try { const { scene } = parseScene(text); store.replace(scene); P7.setLibId(null); landing.untouched = true; set({ dlg: null }); afterReplace(); setResult({ kind: 'example', list, i }); } catch { say('Could not open that example.', true); }
     },
     freshIfLanding() { if (!landing.untouched) return; landing.untouched = false; store.replace(freshScene()); P7.setLibId(null); afterReplace(); },
     newTank(kind) {

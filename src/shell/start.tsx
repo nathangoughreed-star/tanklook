@@ -26,7 +26,7 @@ export function StartSheet({ files, Dialog }: { files: Files; Dialog: DialogC })
   markWelcomed();
   const saved = listLib().length;
   const go = (id: DoorId) => {
-    if (id === 'examples') files.openExamples();
+    if (id === 'examples') { files.close(); void files.peekExample(0); }
     else if (id === 'animal') { files.close(); dispatchEvent(new Event(ANIMAL_DOOR_EVENT)); }
     else { files.freshIfLanding(); files.close(); dispatchEvent(new Event(PICKER_EVENT)); }   // 'have' and 'blank': an empty tank, then the picker
   };

@@ -32,6 +32,8 @@ import { DiscoverSection, IdeasButton, AnimalDoor } from './discover';
 import { GetStarted } from './checklist';
 import { ANIMAL_DOOR_EVENT, PICKER_EVENT } from './start';
 import { landing } from './logic/start';
+import { getResult, setResult, subscribeResult } from './logic/result';
+import { ResultCard } from './result';
 import { resetChecklist } from './logic/checklist';
 import { ConstraintsSection } from './constraints';
 import { PreferencesSection } from './prefs';
@@ -222,6 +224,10 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const [scope, setScope] = useState<Tab[] | undefined>(undefined);   // S10: "Ideas for Plants" scopes Discover
   const [plumb, setPlumb0] = useState(() => { try { return localStorage.getItem('tanklook.plumbView') === 'on'; } catch { return false; } });   // PB1: the Plumbing view over the viewer; PB3: remembered per browser, one state for the viewer switch and the Equipment workspace's toggle
   const setPlumb = (v: boolean) => { setPlumb0(v); try { localStorage.setItem('tanklook.plumbView', v ? 'on' : 'off'); } catch { /* not remembered */ } };
+  const [, bumpResult] = useState(0);
+  useEffect(() => subscribeResult(() => bumpResult(n => n + 1)), []);
+  const result = landing.untouched ? getResult() : null;   // FD: the result card shows until the first edit
+  useEffect(() => { if (result) { setSection(null); setPicker(false); setMore(false); setDrawer(null); } }, [result]);   // full-width: no panel open behind it
   const [door, setDoor] = useState(false);   // S10: the start door "From an animal I want"
   useEffect(() => { const f = () => setDoor(true); addEventListener(ANIMAL_DOOR_EVENT, f); return () => removeEventListener(ANIMAL_DOOR_EVENT, f); }, []);   // SS1: the Start sheet's animal door
   useEffect(() => { const f = () => { setMore(false); setSection('tank'); setPicker(true); if (phone) setDrawer(null); }; addEventListener(PICKER_EVENT, f); return () => removeEventListener(PICKER_EVENT, f); }, [phone]);   // FD: the landing's Build my own and I already have a tank doors open the tank picker
@@ -291,7 +297,8 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
         {split ? <CompareLayer store={store} models={models} drawer={cmpDrawer} onPick={check} phone={phone} say={files.say} /> : null}
         {plumb && inEquipment ? <PlumbingView store={store} phone={phone} /> : null}
         {split || !inEquipment ? null : <PlumbSwitch on={plumb} onChange={setPlumb} />}
-        <GetStarted tank={store.tank} open={section} onOpen={pick} onAnimal={() => setDoor(true)} phone={phone} />
+        {result ? <ResultCard store={store} model={model} result={result} onMine={() => { landing.untouched = false; setResult(null); pick('tank'); }} onAnother={r => r.kind === 'example' ? void files.peekExample(r.i) : setDoor(true)} /> : null}
+        {result ? null : <GetStarted tank={store.tank} open={section} onOpen={pick} onAnimal={() => setDoor(true)} phone={phone} />}
         <ScapeBars store={store} getViewer={viewer} />
       </main>
       {phone && !ws ? <div class="checkstrip">{split ? <CompareStrip store={store} models={models} side={cmpSide} setSide={setCmpSide} drawer={cmpDrawer} onPick={check} /> : <CheckBar m={model} on={drawer === 'selection' ? null : drawer} onPick={check} />}</div> : null}

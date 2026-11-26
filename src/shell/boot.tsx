@@ -46,7 +46,8 @@ export async function bootShell() {
     try { const sc = await Promise.race([exampleScenes(), new Promise<null>(r => setTimeout(() => r(null), 1500))]); if (sc?.[LANDING_EXAMPLE]) first = parseScene(sc[LANDING_EXAMPLE]).scene; } catch { /* the empty tank */ }
   }
   const store = new Store(restored ?? first ?? freshScene());
-  if (first) { landing.untouched = true; store.subscribe(kind => { if (kind === 'scene') landing.untouched = false; }); }
+  if (first) landing.untouched = true;
+  store.subscribe(kind => { if (kind === 'scene') landing.untouched = false; });   // the first edit makes the tank the visitor's: no result card, no silent swap
 
   // the existing viewer, unchanged: a host with its canvas, moved into the view area by App
   const viewHost = document.createElement('div'); viewHost.className = 'vhost';
