@@ -68,6 +68,7 @@ Answered 11-13: decisions 2, 3, 5 (mock up Print), 6-14, most of 4; R8 fix; R10 
 | R165 | 11-26 | Loading states: "better loading icons or bars instead of the tool getting stuck", maybe with tips or fun facts. Measure where waits are significant first, add them only there. | (Nathan 2026-11-26, coordinator chat) | FD | - | - | in lane FD unit 2: prompts/lane-FD-front-door.md |
 | R166 | 11-26 | Nathan dogfoods the competitors: what he likes vs finds annoying or lackluster in UI and overall experience. Sheet: research/competitors/dogfood-sheet.md. | (Nathan 2026-11-26, coordinator chat) | Nathan | - | - | sheet ready; waiting on Nathan |
 | R167 | 11-26 | Reduce AI tells ("claude-isms") in the build so it looks artisan: Nathan noticed similarities with a few competitor programs "that didn't have to be that way". Audit our UI and copy against the competitors for shared tells, then a distinct look and voice. "That could be a great differentiator." | (Nathan 2026-11-26, coordinator chat) | - | - | - | needs an audit, then a lane brief; Nathan's dogfood notes (R166) feed it |
+| R168 | 11-26 | Rename before launch: Nathan, "yes, I think we are going with Urquarium". Earlier docs say Yourarium with a domain bought; confirm the spelling and the domain with Nathan before any rename work. Fable: do it before the first public post, since renaming after links exist throws them away. | (Nathan 2026-11-26, coordinator chat) | - | - | - | name to confirm, then a lane brief |
 
 ## Closed (seen on live)
 
