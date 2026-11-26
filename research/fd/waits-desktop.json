@@ -1,0 +1,247 @@
+{
+ "at": "2026-11-26T14:59:31.949Z",
+ "profile": "desktop",
+ "out": [
+  {
+   "group": "example-planted",
+   "profile": "desktop",
+   "label": "(open Example tank list)",
+   "ms": 75,
+   "first": 3,
+   "lt": 0,
+   "ltMax": 0,
+   "ltSum": 0,
+   "marks": ""
+  },
+  {
+   "group": "example-planted",
+   "profile": "desktop",
+   "label": "open example: Planted community (to reveal complete)",
+   "ms": 14708,
+   "first": 3080,
+   "lt": 7,
+   "ltMax": 3522,
+   "ltSum": 8924,
+   "marks": "part 0@10294,part 1@10990,part 2@11154,part 3@13486,part 4@13659,part 5@14165,complete@14653"
+  },
+  {
+   "group": "example-reef",
+   "profile": "desktop",
+   "label": "(open Example tank list)",
+   "ms": 66,
+   "first": 4,
+   "lt": 0,
+   "ltMax": 0,
+   "ltSum": 0,
+   "marks": ""
+  },
+  {
+   "group": "example-reef",
+   "profile": "desktop",
+   "label": "open example: Reef (to reveal complete)",
+   "ms": 13578,
+   "first": 3259,
+   "lt": 3,
+   "ltMax": 2253,
+   "ltSum": 4764,
+   "marks": "part 0@10276,part 1@10446,part 2@10618,part 3@12771,part 4@12945,part 5@13117,complete@13519"
+  },
+  {
+   "group": "animal-door",
+   "profile": "desktop",
+   "label": "open \"From an animal I want\" dialog",
+   "ms": 157,
+   "first": 105,
+   "lt": 0,
+   "ltMax": 0,
+   "ltSum": 0,
+   "marks": ""
+  },
+  {
+   "group": "animal-door",
+   "profile": "desktop",
+   "label": "pick an animal",
+   "ms": 979,
+   "first": 53,
+   "lt": 3,
+   "ltMax": 599,
+   "ltSum": 869,
+   "marks": ""
+  },
+  {
+   "group": "animal-door",
+   "profile": "desktop",
+   "label": "\"Plan a tank for these\" (to reveal complete)",
+   "ms": 3429,
+   "first": 27,
+   "lt": 3,
+   "ltMax": 101,
+   "ltSum": 245,
+   "marks": "part 0@341,part 1@524,part 2@2629,part 3@2802,part 4@2975,part 5@3147,complete@3421"
+  },
+  {
+   "group": "discover",
+   "profile": "desktop",
+   "label": "open Discover section",
+   "ms": 485,
+   "first": 23,
+   "lt": 1,
+   "ltMax": 450,
+   "ltSum": 450,
+   "marks": ""
+  },
+  {
+   "group": "discover",
+   "profile": "desktop",
+   "label": "pick Explore mode",
+   "ms": 727,
+   "first": 40,
+   "lt": 1,
+   "ltMax": 685,
+   "ltSum": 685,
+   "marks": ""
+  },
+  {
+   "group": "discover",
+   "profile": "desktop",
+   "label": "Discover Explore: Show me an idea",
+   "ms": 8735,
+   "first": 2,
+   "lt": 2,
+   "ltMax": 6278,
+   "ltSum": 8696,
+   "marks": ""
+  },
+  {
+   "group": "discover",
+   "profile": "desktop",
+   "label": "Discover: Show another",
+   "ms": 7398,
+   "first": 1,
+   "lt": 2,
+   "ltMax": 4587,
+   "ltSum": 7361,
+   "marks": ""
+  },
+  {
+   "group": "discover",
+   "profile": "desktop",
+   "label": "back to modes",
+   "ms": 346,
+   "first": 2,
+   "lt": 1,
+   "ltMax": 340,
+   "ltSum": 340,
+   "marks": ""
+  },
+  {
+   "group": "discover",
+   "profile": "desktop",
+   "label": "pick Whole tank mode",
+   "ms": 335,
+   "first": 17,
+   "lt": 1,
+   "ltMax": 309,
+   "ltSum": 309,
+   "marks": ""
+  },
+  {
+   "group": "discover",
+   "profile": "desktop",
+   "label": "Discover Whole tank: Show me three setups",
+   "ms": 9007,
+   "first": 2,
+   "lt": 7,
+   "ltMax": 2571,
+   "ltSum": 8975,
+   "marks": ""
+  },
+  {
+   "group": "discover",
+   "profile": "desktop",
+   "label": "Apply a Discover setup (to reveal complete, 20 s cap)",
+   "error": "timeout",
+   "first": 6,
+   "lt": 2,
+   "ltMax": 1099,
+   "ltSum": 1189
+  },
+  {
+   "group": "picker",
+   "profile": "desktop",
+   "label": "open Animals section",
+   "ms": 169,
+   "first": 23,
+   "lt": 1,
+   "ltMax": 50,
+   "ltSum": 50,
+   "marks": ""
+  },
+  {
+   "group": "picker",
+   "profile": "desktop",
+   "label": "add a fish from the picker (to quiet)",
+   "ms": 42517,
+   "first": 145,
+   "lt": 2,
+   "ltMax": 4628,
+   "ltSum": 5106,
+   "marks": ""
+  },
+  {
+   "group": "picker",
+   "profile": "desktop",
+   "label": "open Plants section",
+   "ms": 77,
+   "first": 25,
+   "lt": 0,
+   "ltMax": 0,
+   "ltSum": 0,
+   "marks": ""
+  },
+  {
+   "group": "picker",
+   "profile": "desktop",
+   "label": "add a plant (to quiet; plant worker)",
+   "ms": 429,
+   "first": 25,
+   "lt": 2,
+   "ltMax": 153,
+   "ltSum": 205,
+   "marks": ""
+  },
+  {
+   "group": "picker",
+   "profile": "desktop",
+   "label": "open Print section",
+   "ms": 280,
+   "first": 76,
+   "lt": 2,
+   "ltMax": 172,
+   "ltSum": 246,
+   "marks": ""
+  },
+  {
+   "group": "picker",
+   "profile": "desktop",
+   "label": "export .txt (to quiet)",
+   "ms": 3,
+   "first": 3,
+   "lt": 0,
+   "ltMax": 0,
+   "ltSum": 0,
+   "marks": ""
+  },
+  {
+   "group": "picker",
+   "profile": "desktop",
+   "label": "Compare",
+   "ms": 787,
+   "first": 72,
+   "lt": 3,
+   "ltMax": 538,
+   "ltSum": 704,
+   "marks": ""
+  }
+ ]
+}

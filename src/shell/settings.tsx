@@ -67,7 +67,6 @@ function download(text: string, name: string) {
   a.href = url; a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 10000);
 }
 
-import { oldUiHref } from '../uiChoice';
 
 export function SettingsSection({ store, getViewer }: { store: Store; getViewer: () => Viewer | undefined }) {
   const [open, setOpen] = useState(loadOpen);
@@ -96,7 +95,6 @@ export function SettingsSection({ store, getViewer }: { store: Store; getViewer:
           <button type="button" class="btn sm" onClick={async () => { try { await navigator.clipboard.writeText(sceneFile(store.scene).text); setCopied(true); setTimeout(() => setCopied(false), 2500); } catch { setCopied(false); } }}>{copied ? 'Copied' : 'Copy JSON'}</button>
         </div>
       </Group>
-      <div class="sgroup"><div class="hint">The old interface stays for two weeks. <a href={oldUiHref(location)}>Use the old interface</a></div></div>
       {specList ? <SpeciesListDialog store={store} onClose={() => setSpecList(false)} /> : null}
     </>
   );
