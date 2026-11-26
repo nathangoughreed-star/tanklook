@@ -1,0 +1,24 @@
+[   0 s] vf-shots at ed4cf0ee (build 2810, src dirty); fx sets: none
+[   3 s] planted4
+[  20 s]   planted4 grass      px  19332  S 0.728  L 0.525  S>0.8 0.001  low-vs-top -0.111  FAIL: S, L, no low darkening
+[  20 s]   planted4 sword      px   2406  S 0.729  L 0.488  S>0.8 0  low-vs-top -0.207  FAIL: S, L
+[  20 s]   planted4 crypt      px   1237  S 0.689  L 0.41  S>0.8 0.008  low-vs-top -0.176  FAIL: S
+[  20 s]   planted4 fern       px    944  S 0.669  L 0.45  S>0.8 0  low-vs-top 0.034  FAIL: S, no low darkening
+[  20 s]   planted4 ALL plants px  23753  S 0.728  L 0.513  S>0.8 0.001  low-vs-top -0.144  FAIL: S, L, no low darkening
+[  20 s] nano
+[  27 s]   nano stemred    px  20812  S 0.661  L 0.346  S>0.8 0.031  low-vs-top 0.294  FAIL: S, no low darkening
+[  27 s]   nano stem       px  10179  S 0.729  L 0.512  S>0.8 0  low-vs-top 0.018  FAIL: S, L, no low darkening
+[  27 s]   nano carpet     px   1875  S 0.5  L 0.572  S>0.8 0  low-vs-top -0.107  FAIL: L, no low darkening
+[  27 s]   nano anubias    px   1179  S 0.731  L 0.504  S>0.8 0  low-vs-top -0.273  FAIL: S, L
+[  27 s]   nano ALL plants px  34045  S 0.691  L 0.399  S>0.8 0.019  low-vs-top 0.453  FAIL: S, no low darkening
+[  27 s] iwagumi
+[  37 s]   iwagumi carpet     px   2003  S 0.355  L 0.721  S>0.8 0.001  low-vs-top 0.008  FAIL: L, no low darkening
+[  37 s]   iwagumi grass      px  25022  S 0.729  L 0.617  S>0.8 0.001  low-vs-top -0.107  FAIL: S, L, no low darkening
+[  37 s]   iwagumi ALL plants px  27002  S 0.728  L 0.621  S>0.8 0.001  low-vs-top -0.096  FAIL: S, L, no low darkening
+[  37 s] nathan-40g-breeder-2026-11-15
+[  46 s]   nathan-40g-breeder-2026-11-15 grass      px  10302  S 0.626  L 0.61  S>0.8 0  low-vs-top 0.11  FAIL: S, L, no low darkening
+[  46 s]   nathan-40g-breeder-2026-11-15 sword      px   4262  S 0.728  L 0.634  S>0.8 0  low-vs-top -0.007  FAIL: S, L, no low darkening
+[  46 s]   nathan-40g-breeder-2026-11-15 anubias    px   1200  S 0.731  L 0.464  S>0.8 0  low-vs-top 0.024  FAIL: S, L, no low darkening
+[  46 s]   nathan-40g-breeder-2026-11-15 carpet     px   2433  S 0.433  L 0.732  S>0.8 0  low-vs-top -0.064  FAIL: L, no low darkening
+[  46 s]   nathan-40g-breeder-2026-11-15 ALL plants px  18032  S 0.667  L 0.624  S>0.8 0  low-vs-top 0.134  FAIL: S, L, no low darkening
+[  47 s] wrote research\visual\art1\between\vf-shots.json
