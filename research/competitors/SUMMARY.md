@@ -120,3 +120,17 @@ Runners-up: setup import/export (08), per-plant "pots needed" on the shopping li
 5. **Behind Glass (06):** the realism bar for animation, and its review sample shows what a watching audience wants.
 
 Reason to skip the rest first: 01, 03, 05, 09, 11, 12 are tiny with no user evidence; 02 is credit-gated (try its free tier for the grown-in preview only if testing growth); 08, 14 and 18 matter mainly as mobile retention and iPhone-search context.
+
+## Addendum (2026-11-25, after Nathan's ChatGPT report): 6 more products
+Leads came from [chatgpt-report-delta.md](chatgpt-report-delta.md). 6 Sonnet agents, about 518k tokens. All are low confidence on user feedback.
+
+| Product | Platform | Status | Threat | What it changes |
+|---|---|---|---|---|
+| [04](04-underglass.md) Underglass (redone) | iOS/iPadOS | v1.0 2026-11-12, v1.1 2026-11-17 | Low | Plant growth that keeps running while the app is closed, home-screen widgets, photo/video export; a coin economy locks large tanks and rare fish. Only a warning panel for planning; no real products or prices. No ratings yet. |
+| [19](19-impossible-aquariums.md) Impossible Aquariums | Web | Early access, one developer, sells substrate kits | Low | Form-based chemistry calculator, no visuals. Each verdict gives its source and reason. |
+| [20](20-aquacompat.md) AquaCompat | Web | About 5 weeks old, 22-29 freshwater species | Low | Published methodology page citing 23 sources; the pairwise score is broken into named factors, not one %. |
+| [21](21-tankmates.md) TankMates | Web | New, free while in testing, freshwater | Low now, **closest feature overlap** | Pitches what we do: 3D planner, compatibility, local prices. Also 111 tank templates, photo fish ID, a claimed 932 species. No audience or feedback found yet. Watch it. |
+| [22](22-aqualayout.md) AquaLayout | Android | Play listing 404 | None | Probably delisted. Side leads: Vivarium: Nature Design (iPhone), Aquarium Planner AR (iPad). |
+| [23](23-reddit-3d-ar-planner.md) 2026 3D/AR planner (Reddit) | ? | Not identified | Unknown | Reddit refused automated fetches, so the launch post, its comments and both "what do you want in a fishkeeping app" threads were not read. No AR competitor is confirmed besides the older Aquarium Planner AR. |
+
+Effect on the main summary: TankMates is the first product that shows real prices, so the "nobody shows prices" advantage in section 5 now has one early exception. AquaCompat and Impossible Aquariums support R152 in a specific form: break the stocking % into named factors, each with its source. Underglass is the second product with plant growth (after App-aquatic, plus Scapesome's paid previews).
