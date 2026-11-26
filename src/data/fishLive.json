@@ -180,6 +180,86 @@
     "yoyoloach": {
       "look": "yoyoloachb",
       "approved": "2026-11-25"
+    },
+    "merah": {
+      "look": "merahb",
+      "approved": "2026-11-26"
+    },
+    "exclamation": {
+      "look": "exclamationb",
+      "approved": "2026-11-26"
+    },
+    "chili": {
+      "look": "chilib",
+      "approved": "2026-11-26"
+    },
+    "clownpleco": {
+      "look": "clownplecob",
+      "approved": "2026-11-26"
+    },
+    "pleco": {
+      "look": "plecob",
+      "approved": "2026-11-26"
+    },
+    "demasoni": {
+      "look": "demasonib",
+      "approved": "2026-11-26"
+    },
+    "kadango": {
+      "look": "kadangob",
+      "approved": "2026-11-26"
+    },
+    "livingstonii": {
+      "look": "livingstoniib",
+      "approved": "2026-11-26"
+    },
+    "syno": {
+      "look": "synob",
+      "approved": "2026-11-26"
+    },
+    "firefish": {
+      "look": "firefishb",
+      "approved": "2026-11-26"
+    },
+    "banggai": {
+      "look": "banggaib",
+      "approved": "2026-11-26"
+    },
+    "sixline": {
+      "look": "sixlineb",
+      "approved": "2026-11-26"
+    },
+    "koletang": {
+      "look": "koletangb",
+      "approved": "2026-11-26"
+    },
+    "foxface": {
+      "look": "foxfaceb",
+      "approved": "2026-11-26"
+    },
+    "lawnmowerblenny": {
+      "look": "lawnmowerblennyb",
+      "approved": "2026-11-26"
+    },
+    "pajamacardinal": {
+      "look": "pajamacardinalb",
+      "approved": "2026-11-26"
+    },
+    "yellowtailblue": {
+      "look": "yellowtailblueb",
+      "approved": "2026-11-26"
+    },
+    "coralbeauty": {
+      "look": "coralbeautyb",
+      "approved": "2026-11-26"
+    },
+    "watchman": {
+      "look": "watchmanb",
+      "approved": "2026-11-26"
+    },
+    "mandarin": {
+      "look": "mandarinb",
+      "approved": "2026-11-26"
     }
   }
 }
