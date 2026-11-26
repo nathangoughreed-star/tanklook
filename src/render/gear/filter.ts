@@ -50,7 +50,7 @@ export function hob(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
   const rk = Math.min(1, (Math.min(uL, f.len - uL) - 8) / (W * 0.9), (f.T.D - lipB - 20) / (W * 0.4));
   for (const [k, w] of [[1, 0.9], [1.7, 0.7], [2.5, 0.5]]) {
     const rr = W * 0.36 * k * Math.max(0.1, rk), ring = new THREE.RingGeometry(rr, rr + 1.6, 40, 1, 0, Math.PI);
-    ring.rotateX(-Math.PI / 2); ring.scale(1, 1, 0.45); ring.rotateY(f.wall === 'left' ? -Math.PI / 2 : f.wall === 'right' ? Math.PI / 2 : 0);
+    ring.rotateX(-Math.PI / 2); ring.scale(1, 1, 0.45); ring.rotateY(f.wall === 'left' ? -Math.PI / 2 : f.wall === 'right' ? Math.PI / 2 : f.wall === 'back' ? f.yaw : 0);
     const c = Pg(uL, f.wy + 0.6, lipB + 10);
     kit.put('clear', ring, C.water, new THREE.Matrix4().makeTranslation(c.x, c.y, c.z), 0.18 * w); kit.lines.add(kit.parts.clear[kit.parts.clear.length - 1]);
   }

@@ -4,7 +4,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { type FilterModel } from '../../demand/gear';
 import { type PartColour } from '../../data/gearCatalog';
 import { backdropDepth, glassThickness, tankUnderside, floorY, waterY, clamp } from '../../scene/physics';
-import { chord } from '../../scene/shape';
+import { chord, footprint, shapeOf } from '../../scene/shape';
 import { groundHeight } from '../../scene/terrain';
 import type { Tank, TankSetup } from '../../scene/types';
 
@@ -185,10 +185,34 @@ export interface Frame {
   taken: [number, number][];
 }
 
-export function frame(S: TankSetup, T: Tank, kit: Kit, side: GearSide, solids: THREE.Box3[], wall: GearWall = 'back'): Frame {
+/** A flat pane of the footprint ([x, depth] ends, outward normal) that rim gear can hang on. */
+export interface Pane { a: [number, number]; b: [number, number]; n: [number, number]; len: number }
+
+/** The flat pane a hang-on-back defaults to when the tank has no flat back (odd polygons, pie slices: an apex behind):
+ *  the back-facing pane on the gear side, long enough for a HOB. Null when the back is flat or no pane fits. */
+export function hobPane(T: Tank, side: GearSide): Pane | null {
+  const s = shapeOf(T);
+  if (s !== 'poly' && s !== 'pie') return null;
+  const fp = footprint(T), flat = fp.edges.filter(e => !fp.walls[e.wall].curved && e.len > 260);
+  if (flat.some(e => e.n[1] > 0.99)) return null; // a flat back: the back frame already sits square to it
+  const back = flat.filter(e => e.n[1] > 0.3);
+  if (!back.length) return null;
+  const mx = (e: Pane) => (e.a[0] + e.b[0]) / 2;
+  const e = back.reduce((p, q) => (side === 'left' ? mx(q) < mx(p) : mx(q) > mx(p)) ? q : p);
+  return { a: e.a, b: e.b, n: e.n, len: e.len };
+}
+
+export function frame(S: TankSetup, T: Tank, kit: Kit, side: GearSide, solids: THREE.Box3[], wall: GearWall = 'back', pane?: Pane): Frame {
   const bd = backdropDepth(S.backdrop, T), t = glassThickness(T, S.render.glass), Db = T.D - bd;
-  let P: Frame['P'], ground: Frame['ground'], along: THREE.Vector3, inward: THREE.Vector3, len: number;
-  if (wall === 'back') {
+  let P: Frame['P'], ground: Frame['ground'], along: THREE.Vector3, inward: THREE.Vector3, len: number, yaw = wallYaw(wall);
+  if (pane) {
+    // a slanted flat pane: u from end a toward b, b into the tank (against the outward normal)
+    const dx = (pane.b[0] - pane.a[0]) / pane.len, dd = (pane.b[1] - pane.a[1]) / pane.len, [nx, nd] = pane.n;
+    const at = (u: number, b: number): [number, number] => [pane.a[0] + dx * u - nx * b, pane.a[1] + dd * u - nd * b];
+    P = (u, y, b) => { const [x, d] = at(u, b); return V(x, y, -d); };
+    ground = (u, b) => { const [x, d] = at(u, b); return groundHeight(S, T, x, d); };
+    along = V(dx, 0, -dd); inward = V(-nx, 0, nd); len = pane.len; yaw = Math.atan2(inward.x, inward.z);
+  } else if (wall === 'back') {
     const ix = side === 'left' ? 1 : -1, xOf = (u: number) => side === 'left' ? u : T.L - u;
     const backD = (x: number) => (chord(T, 0, clamp(x, 1, T.L - 1))?.[1] ?? T.D) - bd;
     // b < 0 is outside the glass: with a 3D backdrop (b = 0 is its front face) that is behind the backdrop AND the glass, so it moves back by the backdrop's depth (lane CB1: a HOB's body cut a hole in the rock)
@@ -209,8 +233,8 @@ export function frame(S: TankSetup, T: Tank, kit: Kit, side: GearSide, solids: T
     along = V(0, 0, 1); inward = V(k, 0, 0); len = Db;
   }
   const f: Frame = {
-    S, T, kit, side: wall === 'back' || wall === 'front' ? side : wall, wall, along, inward, len, yaw: wallYaw(wall),
-    box: (bk, c, w, h, d, color, r = 0, base) => kit.box(bk, c, w, h, d, color, r, wallYaw(wall), base),
+    S, T, kit, side: wall === 'back' || wall === 'front' ? side : wall, wall, along, inward, len, yaw,
+    box: (bk, c, w, h, d, color, r = 0, base) => kit.box(bk, c, w, h, d, color, r, yaw, base),
     wy: waterY(T, S.water.level), H: T.H, t, top: tankUnderside(T, S.render), floor: floorY(T, S.render, S.stand),
     P, ground, taken: [],
     slot(u0, w, y0, y1, b0, b1, fixed = false) {
