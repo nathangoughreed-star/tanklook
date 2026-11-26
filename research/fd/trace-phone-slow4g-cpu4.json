@@ -1,0 +1,48 @@
+{
+ "at": "2026-11-26T20:05:11.553Z",
+ "net": "slow4g",
+ "cpu": 4,
+ "view": "planted",
+ "runs": [
+  {
+   "round": 0,
+   "build": "after",
+   "shellMs": 10785,
+   "partMs": 32609,
+   "partName": "tank part 0",
+   "kbBeforeShell": {
+    "jscss": 743,
+    "fish": 0,
+    "all": 769
+   },
+   "kbBeforePart": {
+    "jscss": 1212,
+    "fish": 0,
+    "all": 1239
+   },
+   "fishFiles": 30,
+   "fishDoneMs": 12252,
+   "fishKB": 0
+  },
+  {
+   "round": 1,
+   "build": "after",
+   "shellMs": 9081,
+   "partMs": 31638,
+   "partName": "tank part 0",
+   "kbBeforeShell": {
+    "jscss": 1212,
+    "fish": 0,
+    "all": 1239
+   },
+   "kbBeforePart": {
+    "jscss": 1212,
+    "fish": 0,
+    "all": 1239
+   },
+   "fishFiles": 30,
+   "fishDoneMs": 9257,
+   "fishKB": 0
+  }
+ ]
+}
