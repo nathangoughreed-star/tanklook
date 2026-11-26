@@ -702,7 +702,7 @@ function capPasses(m: THREE.Mesh, T: Tank, id: number) {
 /** 3D plants are cut off at the glass the same way (a leaf arching past a pane stops at it), one material per outline;
  *  its shader shows each plant at its own growth (plant3d growShader, lane GR4). */
 /** How much of a lamp behind a leaf shines through it (plantMaterial's `post`). */
-const LEAF_GLOW = 0.5;
+const LEAF_GLOW = 0.5, LEAF_SHEEN = 0.35;
 /** Relief from the painted texture's luminance (plantMaterial's `post`): the bump height in mm per unit luminance, and how strongly the lamps' facing change shows. */
 const LEAF_RELIEF = 6.0, LEAF_RELIEF_K = 1.8;
 /** Review switch (lane PT): off = the plant shader without the glow and relief (frame-time A/B; set, then `needsUpdate` on the plant materials). */
@@ -735,7 +735,9 @@ function plantMaterial(T: Tank, free = false) {
     vec3 gr = sign(det) * (dFdx(ptH) * r1 + dFdy(ptH) * r2), ptB = ptN;
     bool ptRel = dot(gr, gr) > 0.0;
     if (ptRel) ptB = normalize(abs(det) * ptN - ${LEAF_RELIEF.toFixed(2)} * gr);
-    float ptT = 0.0, rel = 0.0, wS = 0.0; vec3 ptL = vec3(0.0);
+    float ptT = 0.0, rel = 0.0, wS = 0.0, ptS = 0.0; vec3 ptL = vec3(0.0);
+    // wet sheen: dark leaves are the glossy ones (anubias, buce, fern, crypt), pale ones stay matte; the highlight follows the relief normal
+    float ptG = smoothstep(0.4, 0.06, ptH);
     if (uMode > 0.5 && uMode < 1.5) {
       ptL = uLCol * (uBright * uNorm);
       for (int i = 0; i < ${AQ_MAX}; i++) {
@@ -744,16 +746,18 @@ function plantMaterial(T: Tank, free = false) {
         vec3 tl = q - vAqP; float d = length(tl); vec3 ld = tl / max(d, 1.0);
         float cone = pow(max(ld.y, 0.0), uBeamM), r = d / uRef, w = cone * (e.w > 0.0 ? 1.0 / (1.0 + r) : 1.0 / (1.0 + r * r));
         ptT += w * max(-dot(ptN, ld), 0.0) * (0.35 + 0.65 * max(dot(-ptV, ld), 0.0));
+        ptS += w * pow(max(dot(ptB, normalize(ld + ptV)), 0.0), 48.0);
         if (ptRel) { rel += w * (abs(dot(ptB, ld)) - abs(dot(ptN, ld))); wS += w; }
       }
     } else if (uMode < 0.5) {
       vec3 ld = normalize(vec3(-0.2, 1.0, 0.35)); ptL = vec3(1.0);
       ptT = 0.6 * max(-dot(ptN, ld), 0.0) * (0.35 + 0.65 * max(dot(-ptV, ld), 0.0));
       if (ptRel) { rel = abs(dot(ptB, ld)) - abs(dot(ptN, ld)); wS = 1.0; }
+      ptS = 0.6 * pow(max(dot(ptB, normalize(ld + ptV)), 0.0), 48.0);
     }
     if (wS > 1e-4) outgoingLight *= clamp(1.0 + ${LEAF_RELIEF_K.toFixed(2)} * rel / wS, 0.5, 1.7);
     vec3 ptC = diffuseColor.rgb * mix(vec3(1.0), diffuseColor.rgb * 1.8 + 0.05, 0.6);
-    outgoingLight += ptC * ptL * (ptT * ${LEAF_GLOW.toFixed(2)});
+    outgoingLight += ptC * ptL * (ptT * ${LEAF_GLOW.toFixed(2)}) + ptL * (ptS * ptG * ${LEAF_SHEEN.toFixed(2)});
   }`);
     growShader(sh); // (after the lighting's vAqP: the haze and the light need the grown position)
   };
