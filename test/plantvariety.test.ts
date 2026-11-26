@@ -28,10 +28,11 @@ const CASES: [PlantType, number, number, { spread?: number; stems?: number }?][]
   ['fern', 5, 160], ['stem', 31, 260], ['carpet', 12, 200], ['anubias', 8, 110],
 ];
 // Shapes: origin/main 6e128a41 (variety did not exist), the same builds; positions only, since the greens retune
-// (VF2 item 2, 2026-11-12) changed the colours of grass, sword, stem and carpet and nothing else.
-const SHAPES: Record<string, string> = {"0:grass":"12498/48240/-1591015293","1:grass":"7368/28200/2073202265","2:sword":"19880/96768/-966899705","3:crypt":"8946/43992/192289920","4:fern":"6187/29904/187262587","5:stem":"44015/142608/843836865","6:carpet":"92502/246672/-947992290","7:anubias":"3247/15432/-1823626568"};
-// Colours: pinned after the greens retune (crypt, fern, anubias as on 6e128a41)
-const COLOURS: Record<string, number> = {"0:grass":808689901,"1:grass":45662753,"2:sword":339655657,"3:crypt":1839327576,"4:fern":1283638375,"5:stem":1657260957,"6:carpet":286083969,"7:anubias":900876781};
+// (VF2 item 2, 2026-11-12) changed the colours of grass, sword, stem and carpet and nothing else. All re-pinned 2026-11-25 on
+// 55ccf7c0: lane PT reshaped the crypt (21f2268d, 0918c3c4) and R151 plants 1-5 densified every painted type and tinted leaf bases.
+const SHAPES: Record<string, string> = {"0:grass":"16482/64176/-627965485","1:grass":"9714/37584/864266430","2:sword":"33660/172224/-1102481764","3:crypt":"27522/146760/702547838","4:fern":"8035/39408/2090217359","5:stem":"81039/313488/373360432","6:carpet":"164448/555012/862487683","7:anubias":"5635/28368/-28590337"};
+// Colours: pinned after the greens retune; re-pinned 2026-11-25 after R151 (darker bases, per-leaf age tint)
+const COLOURS: Record<string, number> = {"0:grass":563187723,"1:grass":784117909,"2:sword":1701071086,"3:crypt":958423397,"4:fern":747615033,"5:stem":161534891,"6:carpet":750655348,"7:anubias":487250616};
 
 afterEach(() => { plant3d.variety = false; });
 

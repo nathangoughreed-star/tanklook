@@ -50,8 +50,9 @@ describe('parseScene', () => {
     expect(scene.tanks[0].tank.L).toBe(5000);
     expect(scene.tanks[0].camera.zoom).toBe(12);
     expect(scene.tanks[0].fish.map(f => f.id)).toEqual([1, 3]);
-    expect(scene.tanks[0].fish[0].x).toBe(0);
-    expect(scene.tanks[0].fish[1].depth).toBe(scene.tanks[0].tank.D);
+    // the whole body stays behind the glass (61f6e8be): half the neon's length + 3 mm in from the end pane, half its thickness + 3 mm off the back
+    expect(scene.tanks[0].fish[0].x).toBeCloseTo(getSpecies('neon')!.tl / 2 + 3);
+    expect(scene.tanks[0].fish[1].depth).toBeCloseTo(scene.tanks[0].tank.D - (getSpecies('neon')!.tl * 0.06 + 3));
     expect(warnings.join()).toMatch(/unknown species/);
   });
 });
@@ -274,7 +275,9 @@ describe('water (scene v5)', () => {
     const id = st.tank.fish[0].id;
     st.edit(s => { const f = s.fish.find(f => f.id === id)!; f.x = 300; });
     st.edit(s => setWaterLevel(s, 1));
-    expect(st.tank.fish.find(f => f.id === id)!.x).toBe(300);
+    // where it was dropped, not back at its old spot (116). Since the body clamp (61f6e8be) keeps the angel off the front glass, it
+    // no longer fits the 10 % sliver there and fitFish moves it to the nearest deep-enough grid point (0.024 L apart): 304.8, not 300
+    expect(Math.abs(st.tank.fish.find(f => f.id === id)!.x - 300)).toBeLessThan(st.tank.tank.L * 0.96 / 40);
   });
   it('clamps a fish dragged above the water line', () => {
     const st = new Store(defaultScene()), id = st.tank.fish[0].id;
