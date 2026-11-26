@@ -58,6 +58,7 @@ function Sheet({ p }: { p: Paper }) {
   return (
     <>
       <h1>{p.title}</h1><p class="pp-sub">{p.sub}</p>
+      {p.notChosen ? <p class="pp-notchosen" data-notchosen><b>{p.notChosen}.</b> This page and its prices leave {p.notChosen.includes(' and ') ? 'them' : 'it'} out.</p> : null}
       {p.empty ? <p class="pp-none">Nothing is ticked: tick a part on the left to put it on the page.</p> : null}
       {p.kind === 'shopping' ? <>
         {p.shot ? <figure class="pp-shot"><img src={p.shot} alt="The tank from the front" /></figure> : null}

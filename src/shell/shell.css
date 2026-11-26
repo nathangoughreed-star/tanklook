@@ -883,3 +883,11 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .sltable .linkbtn:hover { text-decoration: underline; }
 .sltable td .hint { display: block; font-size: 11px; }
 .animals .endnote .linkbtn { color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; font: inherit; text-decoration: underline; }
+
+/* HV unit 1: the Room meter's marks at 75 and 100 and the zone words under it */
+.bar.ticked { overflow: visible; }
+.bar.ticked::before { content: ''; position: absolute; left: 75%; top: -3px; bottom: -3px; width: 1px; background: var(--fg-3, currentColor); opacity: .6; }
+.zones { display: grid; grid-template-columns: 75fr 25fr; gap: 4px; font-size: 11px; color: var(--fg-3, inherit); }
+.zones span:nth-child(2) { text-align: right; white-space: nowrap; }
+.aqrow a { color: var(--accent, #7aa7ff) }
+.paper .pp-notchosen { margin: 0 0 12px; padding: 6px 10px; border: 1px solid #c98a1a; background: #fff6e3; color: #6b4300; font-size: 13px; }

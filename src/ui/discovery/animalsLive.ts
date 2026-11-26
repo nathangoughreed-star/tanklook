@@ -141,7 +141,7 @@ export function speciesLive(chosen: readonly AnimalCount[], tank: TankModel, us 
   return chosen.map((c, i) => {
     const p = picks[i], sp = getSpecies(c.species), care = CARE[c.species], nt = notesOf(p, u), md = minDataOf(c.species), lines: Line[] = [], min = groupMin(c.species);
     if (nt.line) lines.push({ text: nt.line, tone: nt.tone });
-    const over = overWarn(p, litres, t.L); if (over) lines.push({ text: over, tone: 'warn' });
+    const over = overWarn(p, litres, t.L); if (over) lines.push({ text: over, tone: over.includes('if more than') ? 'note' : 'warn' }); // HV: a sex-conditional line ("if more than 1 of these 2 are males") stays amber until the sexes are stated
     if (nt.ratio) lines.push({ text: nt.ratio, tone: /Your mix/.test(nt.ratio) ? 'warn' : 'note' });
     if (nt.pairing && nt.pairing.status !== 'established') lines.push({ text: nt.pairing.line, tone: 'note' });
     if (care?.temp) lines.push({ text: `Water ${fmtC(care.temp, us)}`, tone: 'note' });

@@ -20,7 +20,7 @@ import { plural } from '../scene/stocking';
 import { AIR } from '../data/climate';
 import { rangeLine, sharedRange } from '../scene/temprange';
 import { coverAdvice, crowdWarnings } from '../scene/territory';
-import { filterState } from '../scene/tech';
+import { lifeSupportOf, notChosenLine, type Missing, type SupportKind } from '../scene/lifeSupport';
 import type { TankSetup, Units } from '../scene/types';
 import { notesOf } from './stockPlanLogic';
 
@@ -28,19 +28,23 @@ import { notesOf } from './stockPlanLogic';
 export interface MinWarn { level: 'over' | 'near'; text: string; rec?: true }
 export type CatId = 'minimums' | 'social' | 'environment' | 'behaviour' | 'fullness';
 export type CatLevel = 'ok' | 'caution' | 'problem' | 'unknown';
-export interface CatItem { level: 'caution' | 'problem' | 'unknown'; text: string; /** a cross-link: the item is counted here, also relevant there */ also?: string; /** a load percent: the line is tinted along the gauge's green-amber-red scale */ pct?: number; /** R117: where the shell sends the user to fix it (a "Fix it" button): 'lid' = Tank > Lid and top, 'filter' = Equipment > Filter */ go?: 'lid' | 'filter' }
+export interface CatItem { level: 'caution' | 'problem' | 'unknown'; text: string; /** a cross-link: the item is counted here, also relevant there */ also?: string; /** a load percent: the line is tinted along the gauge's green-amber-red scale */ pct?: number; /** R117: where the shell sends the user to fix it (a "Fix it" button): 'lid' = Tank > Lid and top, 'filter' = Equipment > Filter */ go?: 'lid' | 'filter' | 'heater'; /** HV: this line is a missing heater or filter (scene/lifeSupport.ts); a generated design supplies its own gear, so the suggester ignores it */ support?: SupportKind }
 export interface Category { id: CatId; label: string; what: string; level: CatLevel; word: string; items: CatItem[]; /** the category's one-line answer (Tank minimums: the smallest tank holding every species' minimum group) */ answer?: string }
 export interface StockSummary {
   cats: Category[];
   /** the worst of the five, for the minimized pill */
   worst: CatLevel; worstWord: string;
+  /** HV: lines that could not be checked (a missing input). They never change `worst`; the pill says "· N not checked" beside it. */
+  unchecked: number;
+  /** HV: the heater / filter not chosen yet (scene/lifeSupport.ts): the plan sheet opens with it */
+  missing: Missing[];
   /** species-checks that had no data and so did not fire (hardness range, tank minimum, ...) */
   noData: number;
   /** names of the species behind noData, for the tip */
   noDataFor: string[];
 }
 
-export const LEVEL_WORD: Record<CatLevel, string> = { ok: 'Compatible', caution: 'Caution', problem: 'Problem', unknown: 'Not enough information' };
+export const LEVEL_WORD: Record<CatLevel, string> = { ok: 'Compatible', caution: 'Caution', problem: 'Problem', unknown: 'Not checked' };
 const RANK: Record<CatLevel, number> = { ok: 0, unknown: 1, caution: 2, problem: 3 };
 const LABELS: Record<CatId, [string, string]> = {
   minimums: ['Tank minimums', 'the smallest tank each species is kept in, whatever the count'],
@@ -86,7 +90,7 @@ function airChecks(land: Species[], add: (c: CatId, level: CatItem['level'], tex
 export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: Units = 'cm'): StockSummary {
   const us = units === 'in';
   const by: Record<CatId, CatItem[]> = { minimums: [], social: [], environment: [], behaviour: [], fullness: [] };
-  const add = (c: CatId, level: CatItem['level'], text: string, also?: string, pct?: number, go?: CatItem['go']) => by[c].push({ level, text, ...(also ? { also } : {}), ...(pct !== undefined ? { pct } : {}), ...(go ? { go } : {}) });
+  const add = (c: CatId, level: CatItem['level'], text: string, also?: string, pct?: number, go?: CatItem['go'], support?: SupportKind) => by[c].push({ level, text, ...(also ? { also } : {}), ...(pct !== undefined ? { pct } : {}), ...(go ? { go } : {}), ...(support ? { support } : {}) });
   const count = new Map<string, number>(), fem = new Map<string, number>();
   for (const f of S.fish) { const sp = getSpecies(f.species); if (!sp || !countsAgainstWater(sp)) continue; count.set(sp.id, (count.get(sp.id) ?? 0) + 1); if (f.sex === 'f' || f.gender === 'f') fem.set(sp.id, (fem.get(sp.id) ?? 0) + 1); }
   const sp = [...count.keys()].map(id => getSpecies(id)!) as Species[];
@@ -147,10 +151,12 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: 
     if (g) add('environment', grazerLevel(s.id, count.get(s.id)!, litres) === 'severe' ? 'problem' : 'caution', `${s.name}: ${g.replace(/^algae: /, 'food: ')}`);
   }
 
+  // HV (Fable 2026-11-25): a heater or filter the animals need and the tank lacks is a Caution with a Fix it button, never green (scene/lifeSupport.ts, one function for every screen)
+  const missing = lifeSupportOf(S, us);
+  for (const m of missing) add('environment', 'caution', m.text, undefined, undefined, m.go, m.kind);
   // Filtration bar shelved (Nathan 2026-10-30): no filtration percent is shown. The missing choice is still "Not enough information" (never green, B1 audit), the nitrate lines stay
   if (r.contributors.length) {
-    const unset = filterState(S) === 'unset', wc = r.nitrogen.waterChange.state;
-    if (unset) add('environment', 'unknown', 'No filter chosen: a filter sized for this tank is strongly recommended, so pick one in Tech › Filtration', undefined, undefined, 'filter');
+    const wc = r.nitrogen.waterChange.state;
     if (wc === 'failure') add('environment', 'problem', 'Water changes cannot hold nitrate near 40 ppm for this stock (see the nitrate line)');
     else if (wc === 'high') add('environment', 'caution', 'High water-change maintenance to hold nitrate near 40 ppm (see the nitrate line)');
   }
@@ -165,8 +171,9 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: 
   const gm = stockingGroupMinimum(sp.map(x => x.id)).tank;
   const answer = gm ? `Smallest tank for them: ${gm.tank} (${gm.dims} in, ${gm.gal} gal), set by ${gm.by} in a group of ${gm.n}` : undefined;
   const cats = (Object.keys(by) as CatId[]).map((id): Category => { const level = levelOf(by[id]); return { id, label: LABELS[id][0], what: LABELS[id][1], level, word: LEVEL_WORD[level], items: by[id], ...(id === 'minimums' && answer ? { answer } : {}) }; });
-  const worst = worstOf(cats.map(c => c.level));
-  return { cats, worst, worstWord: LEVEL_WORD[worst], noData: [...noData.values()].reduce((a, s) => a + s.size, 0), noDataFor: [...noData.keys()] };
+  // HV: "Not checked" is not a verdict: the pill is the worst of the checks that ran, with the count of unchecked ones beside it
+  const worst = worstOf(cats.map(c => c.level === 'unknown' ? 'ok' : c.level)), unchecked = cats.reduce((n, c) => n + c.items.filter(i => i.level === 'unknown').length, 0);
+  return { cats, worst, worstWord: LEVEL_WORD[worst], unchecked, missing, noData: [...noData.values()].reduce((a, s) => a + s.size, 0), noDataFor: [...noData.keys()] };
 }
 
 /** mm in the scene's units: whole cm, or inches to a tenth. */
@@ -211,7 +218,8 @@ export const summaryOf = (S: TankSetup, units: Units = 'cm'): StockSummary => st
 
 /** The same summary as plain lines (the plan sheet's .txt): headline, then one line per category with its reasons indented. */
 export function summaryText(sm: StockSummary): string[] {
-  const L = [`Stocking summary: ${sm.worstWord}`];
+  const L = [`Stocking summary: ${sm.worstWord}${sm.unchecked ? ` · ${sm.unchecked} not checked` : ''}`];
+  const nc = notChosenLine(sm.missing); if (nc) L.unshift(nc);
   for (const c of sm.cats) { L.push(`  ${c.label}: ${c.word}`); if (c.answer) L.push(`      ${c.answer}`); for (const i of c.items) L.push(`      ${i.text}${i.also ? ` (${i.also})` : ''}`); }
   if (sm.noData) L.push(`  ${sm.noData} check${sm.noData === 1 ? '' : 's'} had no data for this species`);
   return L;

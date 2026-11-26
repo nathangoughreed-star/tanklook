@@ -92,7 +92,7 @@ export function attachFullnessTile(viewer: Viewer, store: Store, opts: FullnessO
     lastSig = sig;
     el.classList.toggle('over', st.head.level === 'over' || st.fit?.fits === false);
     // Nathan 2026-10-27: closed, the pill is the WORST of the five categories; the fullness number means room only
-    pill.textContent = st.fit?.fits === false ? `${sm.worstWord} · too big` : sm.worstWord;
+    pill.textContent = `${sm.worstWord}${st.fit?.fits === false ? ' · too big' : ''}${sm.unchecked ? ` · ${sm.unchecked} not checked` : ''}`;
     pill.title = [st.compat?.text, ...sm.cats.filter(c => c.level !== 'ok').map(c => `${c.label}: ${c.word}`)].filter(Boolean).join('\n');
     pill.className = `ftPill ftc-${sm.worst}`;
     pill.style.background = ''; pill.style.color = '';

@@ -41,6 +41,7 @@ export interface FixPlan {
 export interface GoTarget { section: 'tank' | 'equipment' | 'scape'; group: string; label: string }
 export const GO_LID: GoTarget = { section: 'tank', group: 'lid', label: 'Lid and top' };
 export const GO_FILTER: GoTarget = { section: 'equipment', group: 'filter', label: 'Filter' };
+export const GO_HEATER: GoTarget = { section: 'equipment', group: 'heater', label: 'Heater' };
 export function goTargetOf(issueId: string): GoTarget | undefined {
   if (issueId === 'lid:open') return GO_LID;
   if (issueId === 'temp:hold:noheater' || issueId === 'temp:hold:weak') return { section: 'equipment', group: 'heater', label: 'Heater' };
