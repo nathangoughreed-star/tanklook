@@ -21,6 +21,8 @@ export interface SwimField {
   clearance(x: number, y: number, z: number, grad?: V3, cap?: number): number;
   /** FB3: what the solids are (one per placed item), so a fish can pick a rock, a host or a plant as its home; absent = unknown (the sim then picks any solid that is not the glass, floor or surface). x, z = centre; y0..y1 = bottom..top; r = bounding radius. */
   anchors?: { kind: string; variant: string; x: number; z: number; y0: number; y1: number; r: number }[];
+  /** The water's velocity (mm/s) at a point, written into out (scene/flow.ts flowAt over the outlets' jets); absent = still water. */
+  flow?(x: number, y: number, z: number, out: V3): number;
 }
 
 /** What the sim needs to know about one animal. */
@@ -67,7 +69,9 @@ export interface SwimPose { x: number; y: number; z: number; yaw: number; pitch:
   /** FB2: for a burst-and-coast species, which style it is in now: 0 pulse-glide, 1 slow steady cruise, 2 hover. Absent for every other fish. */
   sub?: number;
   /** FB2: gill / mouth breathing 0..1 of a bottom dweller sitting still (the shader swells the head); absent = 0. */
-  breath?: number }
+  breath?: number;
+  /** The current (scene/flow.ts): how fast the tail beats against the usual (1; up to ~1.8 working hard against a strong flow). Absent = 1. */
+  beat?: number }
 
 export interface SwimSim {
   /** BR: counts since the sim was made: rushes started, of them guard rushes, and alarms (random, clicks and chases). For tests and the debug page. */

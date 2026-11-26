@@ -63,6 +63,9 @@ export interface TechSetup {
    *  (atomizers) and reactors, ids in data/gear/inline.json. Only a canister has one, and each must fit its hose (techOf drops the rest);
    *  the schematic Plumbing view draws the water path from this list. */
   returnInline?: string[];
+  /** how the canister's return enters the tank (Nathan 2026-11-26): the flared lily pipe (absent: the default), a spray bar along
+   *  the back glass, or the plain nozzle. It sets the current the plants and fish feel (scene/flow.ts) and what is drawn. */
+  returnOutlet?: 'lily' | 'spraybar' | 'nozzle';
   /** real pumps picked from the gear catalogue (lane GP): gear part (airpump, powerhead, wavemaker) -> product id. A chosen product
    *  replaces that part's generic price and watts, the flow rows count its gal/h, and it is drawn at its own size and colours;
    *  absent = the generic pump, priced and powered as before */

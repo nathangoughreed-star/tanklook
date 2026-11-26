@@ -110,6 +110,12 @@ export const addReturnInline = (S: TankSetup, id: string): TechSetup => {
   const keep = (t.returnInline ?? []).filter(x => { const q = inlineProduct(x); return q && (p.kind === 'heater' ? q.kind !== 'heater' || x !== id : q.kind === 'heater'); });
   return { ...t, preset: 'custom', returnInline: [...keep, id] };
 };
+/** How the canister's return enters the tank (Nathan 2026-11-26): 'lily' (the default) clears the field. */
+export const setReturnOutlet = (S: TankSetup, kind: 'lily' | 'spraybar' | 'nozzle'): TechSetup => {
+  const t = techOf(S), next: TechSetup = { ...t };
+  if (kind === 'lily') delete next.returnOutlet; else next.returnOutlet = kind;
+  return next;
+};
 /** Take an in-line product off the return. */
 export const removeReturnInline = (S: TankSetup, id: string): TechSetup => {
   const t = techOf(S), next = { ...t, preset: 'custom' }, left = (t.returnInline ?? []).filter(x => x !== id);

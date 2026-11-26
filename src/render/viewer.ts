@@ -20,7 +20,8 @@ import { wattsOf } from '../scene/lightout';
 import { placeShells } from './lightShells';
 import { onPictureLoad, setMaxAnisotropy } from './textures';
 import { OUTLINE } from './fish3d';
-import { SWAY } from './plant3d';
+import { SWAY, setFlowJets } from './plant3d';
+import type { FlowJet } from '../scene/flow';
 import { SWIM } from './swim';
 import { Roam } from './roam';
 import { Crawl } from './crawl';
@@ -300,6 +301,8 @@ export class Viewer {
   private swayCost = 8;
   private swayFrame = false;
   private drifters: THREE.Object3D[] = [];
+  /** Each viewport's outlet jets (scene/flow.ts), found by scanMovers. */
+  private jetsOf = new WeakMap<object, FlowJet[]>();
   readonly roam = new Roam();
   readonly crawl = new Crawl();
   private crawlers: THREE.Object3D[] = [];
@@ -312,7 +315,12 @@ export class Viewer {
   private scanMovers() {
     if (!this.swayScan) return;
     this.swayScan = false; let pl = false, fi = false; const dr: THREE.Object3D[] = [], cr: THREE.Object3D[] = [], cl: THREE.Object3D[] = [];
-    for (const vp of this.vps) vp.scene?.traverse(o => { if (o.userData.sway) pl = true; if (o.userData.swimmer) fi = true; if (o.userData.roam) dr.push(o); if (o.userData.crawl) cr.push(o); if (o.userData.cling) cl.push(o); });
+    for (const vp of this.vps) {
+      // the outlets' current in this tank (gear3d userData.jets, scene/flow.ts): the plants' sway and the roaming fish feel it
+      const jets: FlowJet[] = []; vp.scene?.traverse(o => { if (o.userData.jets) jets.push(...(o.userData.jets as FlowJet[])); });
+      this.jetsOf.set(vp, jets);
+      vp.scene?.traverse(o => { if (o.userData.sway) pl = true; if (o.userData.swimmer) fi = true; if (o.userData.roam) { dr.push(o); o.userData.flowJets = jets; } if (o.userData.crawl) cr.push(o); if (o.userData.cling) cl.push(o); });
+    }
     this.swayAny = pl; this.swimAny = fi; this.drifters = dr; this.crawlers = cr; this.clingers = cl;
   }
   private swayDue() {
@@ -924,6 +932,7 @@ export class Viewer {
       const mf = document.getElementById('app')?.classList.contains('collapsed') ? null : this.menuFocus; // the panel hidden: no menu to point at
       if (!focus.length && mf && !this.exporting) { focus = vp.scene!.children.filter(o => o.visible && inFocus(o, mf)); fade = MENU_FADE; }
       for (const o of focus) o.visible = false;
+      setFlowJets(this.jetsOf.get(vp)); // this tank's current for its plants (plant3d SWAY_VERT)
       r.render(vp.scene!, vp.cam);
       for (const o of focus) o.visible = true;
       if (focus.length) this.drawFocus(vp, focus, r.getClearColor(new THREE.Color()), fade);

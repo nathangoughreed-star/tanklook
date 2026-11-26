@@ -27,6 +27,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
   const digT = F(), digK = F(), digTgt = F(), digCd = F(), hgx = F(), hgz = F(), dgx = F(), dgz = F(), wig = F(), digHold = F(), sinkS = F();
   const sRate = F(), sTau = F(), sTurn = F(), pulseT = F(), pulseP = F(), burstLeft = F(), jitA = F(), pv0 = F(); // burst-and-coast
   const subMode = new Uint8Array(n), subT = F(), mx0 = F(), mx1 = F(), mx2 = F(); // FB2: 0 pulse-glide, 1 slow cruise, 2 hover
+  const effS = F(), fv: V3 = [0, 0, 0], flow = field.flow?.bind(field); // the current (scene/flow.ts): how hard each fish works against it (smoothed, 0 = still water)
   const restS = F(), breathS = F(); // FB2: a bottom dweller's share of time resting (0 = the old mix) and its breathing amount
   // FB3: habit (home spot, leash, posture, small actions). hS: 0 free, 1 dart to home, 2 hold in it, 3 peek out, 4 go to peck, 5 pecking, 6 patrol, 7 flick, 8 hop, 9 still after a hop
   const isItem = makeIsItem(field);
@@ -137,7 +138,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
     spd[i] = 0; vyB[i] = 0; yawRate[i] = 0; pitchS[i] = h.pitch; rollS[i] = h.roll; avK[i] = 0; c0[i] = 1e9; dsx[i] = 0; dsy[i] = 0; dsz[i] = 0; fanIdx[i] = 0; burstT[i] = 0; ownT[i] = 0; hopH[i] = 0;
     const P = poses[i]; P.x = h.x; P.y = h.y; P.z = h.z; P.yaw = h.yaw; P.pitch = h.pitch; P.roll = h.roll;
     subMode[i] = sRate[i] > 0 ? pickSub(i) : 0; subT[i] = 5 + R() * 10; if (sRate[i] > 0 && gi[i] >= 0) subMode[i] = gSub[gi[i]];
-    restFlag[i] = 0; nudgeT[i] = 0; kick[i] = 0; fanS[i] = 0; calmS[i] = 1; digSt[i] = 0; digK[i] = 0; digCd[i] = hasDig[i] ? 5 + R() * 40 : 0; wig[i] = 0; sinkS[i] = 0;
+    restFlag[i] = 0; effS[i] = 0; nudgeT[i] = 0; kick[i] = 0; fanS[i] = 0; calmS[i] = 1; digSt[i] = 0; digK[i] = 0; digCd[i] = hasDig[i] ? 5 + R() * 40 : 0; wig[i] = 0; sinkS[i] = 0;
     if (gi[i] < 0 || !bottom[i]) setMode(i, bottom[i] ? REST : MOVE);
     else { mode[i] = gMode[gi[i]]; modeT[i] = 0; }
     if (!bottom[i]) modeT[i] = 5 + R() * 30; // loners hover later, not at once
@@ -679,6 +680,26 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       }
       if (spd[i] < 0) spd[i] = 0;
 
+      // ---- the current (scene/flow.ts, Nathan 2026-11-26: "fish would have to swim vigorously to stay stationary in or go against
+      // the current, and much less vigorously to do the same far from the flow"). The fish keeps its course through the water it
+      // swims in up to about 6 body lengths a second, more effort the harder it pushes; past that it loses ground, and it always
+      // drifts a little. Slow in a current, it turns to face into it (rheotaxis). A bottom dweller at rest grips the bed.
+      let effT = 0;
+      if (flow && dst === 0 && digK[i] <= 0.001 && !(isB && mode[i] === REST)) {
+        flow(px[i], py[i], pz[i], fv);
+        const near = isB ? 0.5 : 1, fx = fv[0] * near, fy = isB ? 0 : fv[1], fz = fv[2] * near;
+        const wx = hx[i] * spd[i] - fx, wy = hy[i] * spd[i] - fy, wz = hz[i] * spd[i] - fz, wl = Math.sqrt(wx * wx + wy * wy + wz * wz), cap = L * 6, k = wl > cap ? cap / wl : 1;
+        px[i] += (0.12 * fx - (1 - k) * wx) * dt; pz[i] += (0.12 * fz - (1 - k) * wz) * dt; if (!isB) py[i] += (0.12 * fy - (1 - k) * wy) * dt;
+        effT = clamp((Math.min(wl, cap) - spd[i]) / (L * 3), 0, 1.2);
+        const fl = Math.sqrt(fx * fx + fz * fz);
+        if (fl > L * 0.4 && !ovOn) {
+          const a = clamp(1 - spd[i] / (L * 0.8), 0, 1) * clamp(fl / (L * 2), 0, 1) * Math.min(1, dt * 1.5);
+          hx[i] += (-fx / fl - hx[i]) * a; hz[i] += (-fz / fl - hz[i]) * a;
+          const hm = Math.sqrt(hx[i] * hx[i] + hy[i] * hy[i] + hz[i] * hz[i]); if (hm > 1e-6) { hx[i] /= hm; hy[i] /= hm; hz[i] /= hm; }
+        }
+      }
+      effS[i] += (effT - effS[i]) * Math.min(1, dt * 2);
+
       // ---- move
       px[i] += hx[i] * spd[i] * dt; pz[i] += hz[i] * spd[i] * dt;
       if (isB) {
@@ -728,9 +749,10 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
         else if (pulsing2) calmT = 0.1 + 1.3 * clamp((spd[i] / Math.max(pv0[i], 1e-3) - 0.3) / 0.7, 0, 1); // beating in the burst, nearly still in the glide
         else if (sRate[i] > 0 && mode[i] === MOVE && subMode[i] === 1) calmT = 0.4 + 0.6 * clamp(rel / 0.8, 0, 1);
         else if (hov[i] > 0 || hover2) calmT = hovCau[i] + (1 - hovCau[i]) * clamp(rel / 0.35, 0, 1);
+        if (effS[i] > 0.01) calmT = Math.min(2.2, Math.max(calmT, 0.5) + effS[i]); // working against the current: a wider beat
         calmS[i] += (calmT - calmS[i]) * Math.min(1, dt * (pulsing2 ? 14 : 3));
         { const bT = restS[i] > 0 && isB && mode[i] === REST && dst === 0 && spd[i] < L * 0.05 ? 1 : 0; breathS[i] += (bT - breathS[i]) * Math.min(1, dt * 2); if (restS[i] > 0) P.breath = breathS[i]; }
-        P.fan = fanS[i]; P.calm = calmS[i]; P.dig = sunk; if (sRate[i] > 0) P.sub = mode[i] === MOVE ? subMode[i] : 2; }
+        P.fan = fanS[i]; P.calm = calmS[i]; P.dig = sunk; P.beat = 1 + 0.7 * effS[i]; if (sRate[i] > 0) P.sub = mode[i] === MOVE ? subMode[i] : 2; }
       if (hb[i] && hS[i] === 5) pt += -22 + 8 * Math.sin(T * 15 + ph1[i]); // FB3: pecking: the snout bobs at the surface
       pitchS[i] += (pt - pitchS[i]) * Math.min(1, dt * 4);
       let rollT = clamp(-yawRate[i] * R2D * 0.12, -12, 12);

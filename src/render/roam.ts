@@ -6,6 +6,7 @@ import { swimFieldFor } from './swimWorld';
 import { makeSwimSim } from '../scene/swimSim';
 import type { SwimmerSpec, SwimSim } from '../scene/swimTypes';
 import type { Tank, TankSetup } from '../scene/types';
+import { flowAt, jetsKey, type FlowJet } from '../scene/flow';
 
 /** What build.ts leaves on a fish's card mesh so the viewer can roam it. */
 export interface RoamData { spec: SwimmerSpec; world: { S: TankSetup; T: Tank; rise?: (x: number, depth: number) => number } }
@@ -52,11 +53,13 @@ export class Roam {
     if (!on || !meshes.length) { this.home(); return; }
     const specs: SwimmerSpec[] = [], world = (meshes[0].userData.roam as RoamData).world;
     for (const m of meshes) specs.push((m.userData.roam as RoamData).spec);
-    const wf = swimFieldFor(world);
-    const key = specs.map(s => `${s.id}|${s.len}|${s.zone}|${s.pace ?? 1}|${s.style ? [s.style.rate, s.style.tau, s.style.turn, s.style.mix] : ''}|${s.rest ?? ''}|${s.hover ? [s.hover.w, s.hover.pec, s.hover.caudal] : ''}|${s.dig ? [s.dig.k, s.dig.dark, s.dig.rest, s.dig.rate] : ''}|${s.habit ? [s.habit.home, s.habit.post, s.habit.leash, s.habit.act, s.habit.dart, s.habit.peck, s.habit.patrol, s.habit.flick, s.habit.hop] : ''}|${s.band}|${s.tall ?? ''}|${s.kind ?? ''}|${s.foes ?? ''}|${s.guard ?? ''}|${s.pair ?? ''}|${s.group?.key}|${s.home.x},${s.home.y},${s.home.z},${s.home.yaw},${s.home.pitch},${s.home.roll}`).join(';') + '#' + wf.key;
+    const wf = swimFieldFor(world), jets = (meshes[0].userData.flowJets as FlowJet[] | undefined) ?? [];
+    const key = specs.map(s => `${s.id}|${s.len}|${s.zone}|${s.pace ?? 1}|${s.style ? [s.style.rate, s.style.tau, s.style.turn, s.style.mix] : ''}|${s.rest ?? ''}|${s.hover ? [s.hover.w, s.hover.pec, s.hover.caudal] : ''}|${s.dig ? [s.dig.k, s.dig.dark, s.dig.rest, s.dig.rate] : ''}|${s.habit ? [s.habit.home, s.habit.post, s.habit.leash, s.habit.act, s.habit.dart, s.habit.peck, s.habit.patrol, s.habit.flick, s.habit.hop] : ''}|${s.band}|${s.tall ?? ''}|${s.kind ?? ''}|${s.foes ?? ''}|${s.guard ?? ''}|${s.pair ?? ''}|${s.group?.key}|${s.home.x},${s.home.y},${s.home.z},${s.home.yaw},${s.home.pitch},${s.home.roll}`).join(';') + '#' + wf.key + '#' + jetsKey(jets);
     if (key !== this.key || !this.sim) {
       const t0 = performance.now();
-      this.sim = makeSwimSim(specs, wf.field, this.seed); this.key = key;
+      // the outlets' current (scene/flow.ts): the field answers flow() too; still water without outlets
+      const field = jets.length ? Object.assign(Object.create(wf.field) as typeof wf.field, { flow: (x: number, y: number, z: number, out: [number, number, number]) => flowAt(jets, x, y, z, out) }) : wf.field;
+      this.sim = makeSwimSim(specs, field, this.seed); this.key = key;
       if (!this.eventsOn) this.sim.setEvents(false);
       this.zMid = (wf.field.min[2] + wf.field.max[2]) / 2; this.xr = [wf.field.min[0], wf.field.max[0]]; this.yr = [wf.field.min[1], wf.field.waterTop];
       this.ms = performance.now() - t0;
@@ -68,6 +71,7 @@ export class Roam {
       m.position.set(p.x, p.y, p.z); m.quaternion.setFromEuler(_e.set(p.roll * D2R, p.yaw * D2R, p.pitch * D2R, 'YXZ'));
       const sp = (m.userData.roam as RoamData).spec, fan = p.fan ?? 0;
       m.userData.breath = p.breath ?? 0; m.userData.dig = p.dig ?? 0; m.userData.sub = p.sub; m.userData.fanA = fan; m.userData.calm = p.calm ?? 1; // the tail beat of this fish (swim.ts hookCalm)
+      m.userData.beatT = ((m.userData.beatT as number | undefined) ?? this.t) + Math.min(Math.max(dt, 0), 0.2) * (p.beat ?? 1); // its own beat clock: quicker against a current, never a jump in phase
       if (fan > 0.01 || m.userData.fanned) { // fanning pectorals: about 2.5-4 Hz, wider for a small fish's quick sculling
         fanPecs(m, fan * 0.42 * (sp.hover?.pec ?? 0), Math.min(4.2, Math.max(2.2, 3.4 * Math.pow(60 / Math.max(20, sp.len), 0.25))), this.t, sp.id);
         m.userData.fanned = fan > 0.01;

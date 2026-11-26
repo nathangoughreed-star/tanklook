@@ -3,7 +3,7 @@
 // in use marked, and an independent "Use this one for sure" lock per item. Pure: no DOM. Engine calls go only through scene/techEdit.ts (P4),
 // scene/gearOwn.ts (P8) and src/units.ts; the catalogue lists are read from data/gearCatalog.ts and data/hoods.ts.
 import { tempIssues } from './lidTemp';
-import { commitTech, withTech, addReturnInline, removeReturnInline, addHeater, pickHeaterProduct, tuneHeater, addFilter, pickFilterProduct, tuneFilter, setPump, setRowProduct, pickLightProduct, tuneLight, pickPreset, setHeaterWatts, setLightWatts } from '../../scene/techEdit';
+import { commitTech, withTech, addReturnInline, removeReturnInline, setReturnOutlet, addHeater, pickHeaterProduct, tuneHeater, addFilter, pickFilterProduct, tuneFilter, setPump, setRowProduct, pickLightProduct, tuneLight, pickPreset, setHeaterWatts, setLightWatts } from '../../scene/techEdit';
 import { editGear, gearOfTank, GENERIC, isLockedItem, isOwned, lockItem, ownItem, ownedFor, setInUse, unlockItem, unownItem, type GearModel } from '../../scene/gearOwn';
 import { deliveredFlow, filterUnits, heatLoss, heaterUnits, presetsFor, roomOf, rowsFor, specialHeaters, techOf, withChoice, rowProduct, GEAR } from '../../scene/tech';
 import {
@@ -342,7 +342,7 @@ export const ownSum = (n: number) => (n ? `$0, the planner prefers these when th
 
 export interface ReturnItem { id: string; name: string; kind: string; price: string; flow: string; shows: string; warn?: string }
 export interface ReturnOption { kind: string; label: string; rows: { id: string; name: string; sub: string; price: string; shows: string }[] }
-export interface ReturnView { hose: string; items: ReturnItem[]; delivered: string; options: ReturnOption[] }
+export interface ReturnView { hose: string; items: ReturnItem[]; delivered: string; options: ReturnOption[]; outlet: 'lily' | 'spraybar' | 'nozzle' }
 /** What sits on the canister's return hose and what could be added (only what fits the hose). Undefined without a canister. */
 export function returnView(S: TankSetup): ReturnView | undefined {
   const t = techOf(S), d = deliveredFlow(S, t); if (!d) return undefined;
@@ -352,7 +352,9 @@ export function returnView(S: TankSetup): ReturnView | undefined {
     ...(p.minFlowGph > d.delivered ? { warn: `needs ${p.minFlowGph}+ gph, the canister gives ${Math.round(d.delivered)}` } : {}) }));
   const on = new Set(d.items.map(p => p.id)), fit = inlineFor(d.hoseIn).filter(p => !on.has(p.id));
   const options = (['heater', 'diffuser', 'reactor'] as const).map((k): ReturnOption => ({ kind: k, label: inlineKinds[k], rows: fit.filter(p => p.kind === k).map(p => ({ id: p.id, name: productName(p), sub: `${p.watts ? `${p.watts} W · ` : ''}-${p.flowLossPct}% flow`, price: px(p), shows: shows(p) })) })).filter(o => o.rows.length);
-  return { hose: hoseLabel(d.hoseIn), items, delivered: `${Math.round(d.delivered)} of ${Math.round(d.rated)} gph delivered`, options };
+  return { hose: hoseLabel(d.hoseIn), items, delivered: `${Math.round(d.delivered)} of ${Math.round(d.rated)} gph delivered`, options, outlet: t.returnOutlet ?? 'lily' };
 }
 export const addInline = (S: TankSetup, id: string): void => commitTech(S, s => addReturnInline(s, id));
 export const removeInline = (S: TankSetup, id: string): void => commitTech(S, s => removeReturnInline(s, id));
+/** The canister's outlet in the tank: lily pipe, spray bar or nozzle (scene/flow.ts: it sets the current plants and fish feel). */
+export const setOutlet = (S: TankSetup, kind: 'lily' | 'spraybar' | 'nozzle'): void => commitTech(S, s => setReturnOutlet(s, kind));

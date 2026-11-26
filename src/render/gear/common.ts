@@ -1,5 +1,6 @@
 // Shared by every gear builder: the materials, the Kit that merges parts into four meshes, the wall Frame, colours and helpers. (render/gear3d.ts split per type, lane GM1, 2026-10-29: moved as is, no behaviour change).
 import * as THREE from 'three';
+import { outletJets, type FlowJet, type OutletKind } from '../../scene/flow';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { type FilterModel } from '../../demand/gear';
 import { type PartColour } from '../../data/gearCatalog';
@@ -47,6 +48,11 @@ export const UP = new THREE.Vector3(0, 1, 0);
 export const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
 
 /** Collects a set of gear's parts, each in its bucket, and merges each bucket into one mesh. */
+/** The jets of an outlet at p heading `dir`, a bar / lip along `al` of length `len` (scene/flow.ts outletJets), added to the kit. */
+export function addJets(kit: Kit, kind: OutletKind, gph: number, p: THREE.Vector3, dir: THREE.Vector3, al?: THREE.Vector3, len = 0) {
+  kit.jets.push(...outletJets(kind, gph, [p.x, p.y, p.z], [dir.x, dir.y, dir.z], al ? [al.x, al.y, al.z] : undefined, len));
+}
+
 export class Kit {
   /** EQ2 stills (render/gearStill.ts): leave out tubes (cords, hoses, wires), so the picture frames the product's body, not the cord's loop. */
   static noTubes = false;
@@ -63,6 +69,8 @@ export class Kit {
   cutouts: { u: number; y: number; r: number }[] = [];
   /** Notches the gear needs cut in the 3D background (lane HC1): tank x range and the height they reach down to. */
   backdropNotches: { x0: number; x1: number; yMin: number }[] = [];
+  /** Where water leaves each outlet into the tank (scene/flow.ts, Nathan 2026-11-26): plants and fish react to the current. */
+  jets: FlowJet[] = [];
   /** Parts that are only a line (a tube, a thin rod): left out of a piece's selection box (lane GD1: the box holds the body, not the whole hose). */
   lines = new WeakSet<THREE.BufferGeometry>();
   /** Add `geo` (consumed) in colour `color` (clear parts: `base` = face-on opacity), moved by `m`. */

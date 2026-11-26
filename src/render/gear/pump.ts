@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { type PumpProduct } from '../../data/gearCatalog';
 import { clamp } from '../../scene/physics';
-import { UP, V, along, hash, C, hexOr, Frame, Spot, lerp, line, overRim, behind, lineCutout, cutoutY } from './common';
+import { UP, V, along, hash, C, hexOr, Frame, Spot, lerp, line, overRim, behind, lineCutout, cutoutY, addJets } from './common';
 import { cabinetGear, PUMP_H } from '../../scene/cabinetGear';
 
 export function airPump(f: Frame, u: number, to: THREE.Vector3, bIn: number) {
@@ -61,6 +61,7 @@ export function powerhead(f: Frame, sp: Spot, big: boolean, prod?: PumpProduct) 
   const { kit } = f, r = dims ? clamp(dims[1] / 2, 12, 45) : big ? 32 : 26, len = dims ? clamp((dims[0] - 10) / 1.5, 24, 150) : big ? 50 : 42, u = f.slot(sp.u, 2 * r + 6, 0, f.H, 0, len + 10, true);
   const y = lerp(f.ground(u, 30) + r + 30, f.wy - r - 20, sp.y ?? 0.7), p0 = f.P(u, y, 0);
   const dir = f.inward.clone().addScaledVector(f.along, f.wall === 'back' ? 0.12 : -0.12).normalize();
+  addJets(kit, 'powerhead', prod?.gph ?? (big ? 1500 : 600), p0.clone().addScaledVector(dir, 10 + len), dir); // its current (scene/flow.ts)
   // the magnet mount on the glass, the motor body, the cage with its bars and the propeller hub inside
   kit.put('wet', new THREE.CylinderGeometry(r * 0.85, r * 0.85, 10, 28), C.black, along(p0, dir, 5));
   kit.rod('wet', p0.clone().addScaledVector(dir, 10), p0.clone().addScaledVector(dir, 10 + len * 0.5), r, mc, { seg: 28 });

@@ -5,7 +5,8 @@ import { inlineProduct, type FilterProduct, type InlineProduct } from '../../dat
 import { backdropDepth, clamp } from '../../scene/physics';
 import { standInside } from '../../scene/standspace';
 import { cabinetGear } from '../../scene/cabinetGear';
-import { Bucket, V, hash, C, flowScale, hexOr, partOf, Frame, Spot, lerp, sucker, overRim, behind, backCutout, cutoutY, CUT_R } from './common';
+import { Bucket, V, hash, C, flowScale, hexOr, partOf, Frame, Spot, lerp, sucker, overRim, behind, backCutout, cutoutY, CUT_R, addJets } from './common';
+import { techOf } from '../../scene/tech';
 import { airPump, bubbles } from './pump';
 
 /** Clear room kept between a hang-on-back body and the end of the wall it hangs on, mm. */
@@ -54,6 +55,8 @@ export function hob(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
     const c = Pg(uL, f.wy + 0.6, lipB + 10);
     kit.put('clear', ring, C.water, new THREE.Matrix4().makeTranslation(c.x, c.y, c.z), 0.18 * w); kit.lines.add(kit.parts.clear[kit.parts.clear.length - 1]);
   }
+  // the current it makes (scene/flow.ts): the sheet plunges in and runs forward and down from under the lip
+  addJets(kit, 'sheet', (pr?.gph ?? m.gph) * 0.85, Pg(uL, f.wy - 10, lipB + 10), f.inward.clone().add(V(0, -0.6, 0)), f.along, W * 0.66);
   // intake: a smoky tube from the box over the glass and down, its slotted strainer at the foot
   const ib = 22;
   kit.tube(inC.bk, [f.P(uI, yTop - 30, bF - 24), f.P(uI, f.H + 16, bF - 6), Pg(uI, f.H + 16, ib * 0.5), Pg(uI, f.H - 8, ib), Pg(uI, stY + sh + 20, ib)], it, inC.c, inC.bk === 'clear' ? inC.base : 0, 12);
@@ -141,6 +144,7 @@ export function internal(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct)
   for (let i = 0; i < 6; i++) f.box('wet', f.P(u, yB + 10 + i * 7, b + d / 2 + 0.2), w * 0.72, 2.2, 1, 0x0b0c0d);
   f.box(head.bk, f.P(u, yT - 14, b), w + 3, 28, d + 3, head.c, 6, head.base);
   kit.rod('wet', f.P(u, yT - 14, b + d / 2), f.P(u, yT - 14, b + d / 2 + 22), 7, noz, { r2: 9 });
+  addJets(kit, 'nozzle', (pr?.gph ?? m.gph) * 0.8, f.P(u, yT - 14, b + d / 2 + 22), f.inward);
   if (L?.accent) f.box('wet', f.P(u, yT + 1.5, b), w * 0.7, 3, d * 0.7, hexOr(L.accent.hex, C.grey), 1); // a coloured cartridge top (Tetra Whisper i: green)
   for (const k of [-0.25, 0.25]) sucker(f, u + k * w, yB + h * 0.55, 9, L?.cups);
   kit.tube('room', overRim(f, u + w * 0.3, f.P(u + w * 0.3, yT, b), b, f.top + 20), 2.6, C.black, 0, 6);
@@ -162,10 +166,27 @@ export function canister(f: Frame, m: FilterModel, sp: Spot, prod?: FilterProduc
   kit.rod(pipe.bk, f.P(uI, stY, ib), f.P(uI, stY + 80, ib), pr + 4, pipe.c, { base: pipe.base + 0.01, seg: 18 });
   for (let i = 0; i < 9; i++) f.box('wet', f.P(uI, stY + 14 + i * 6, ib + pr + 4), 8, 1.2, 0.6, 0x9fb2b4); // the slits, catching the light
   // outlet lily pipe: over the rim, down under the surface, turning forward into the flared lily
-  const oy = f.wy - 55;
-  const out = [f.P(uO, hoseY, outB), f.P(uO, f.H + 10, outB + 2), f.P(uO, f.H + 26, (ib - t) / 2), f.P(uO, f.H + 6, ib), f.P(uO, oy + 30, ib), f.P(uO, oy + 4, ib + 8), f.P(uO, oy, ib + 30)];
-  kit.tube(pipe.bk, out, pr, pipe.c, pipe.bk === 'clear' ? pipe.base : 0, 14);
-  kit.lathe(pipe.bk, [[pr, 0], [pr + 1, 6], [pr + 5, 14], [pr + 13, 20], [pr + 15, 21]], f.P(uO, oy, ib + 29), V(0, 0, 1), pipe.c, pipe.base + 0.02, 28);
+  // the owner's pick of outlet (Nathan 2026-11-26): the flared lily (default), a spray bar along the back glass, or the plain nozzle
+  const oy = f.wy - 55, kindO = techOf(f.S).returnOutlet ?? 'lily', gphO = (prod?.gph ?? m.gph) * 0.8, out0 = f.P(uO, hoseY, outB); // out0: where the return hose meets the pipe
+  if (kindO === 'spraybar') {
+    // down under the surface, then a bar along the glass, its row of holes facing into the tank
+    const by = f.wy - 45, bar = clamp(f.len * 0.45, 150, 600), bu0 = clamp(uO - bar / 2, 30, Math.max(30, f.len - 30 - bar)), bu1 = bu0 + bar;
+    kit.tube(pipe.bk, [f.P(uO, hoseY, outB), f.P(uO, f.H + 10, outB + 2), f.P(uO, f.H + 26, (ib - t) / 2), f.P(uO, f.H + 6, ib), f.P(uO, by + 14, ib), f.P(uO, by, ib)], pr, pipe.c, pipe.bk === 'clear' ? pipe.base : 0, 14);
+    kit.rod(pipe.bk, f.P(bu0, by, ib), f.P(bu1, by, ib), pr, pipe.c, { seg: 16, base: pipe.base + 0.02 });
+    kit.rod(pipe.bk, f.P(bu1, by, ib), f.P(bu1 + 3, by, ib), pr + 1.5, pipe.c, { seg: 16, base: pipe.base + 0.04 }); // the end cap
+    for (let x = bu0 + 12; x < bu1 - 6; x += 20) f.box('wet', f.P(x, by, ib + pr + 0.3), 2.4, 2.4, 0.6, 0x0b0c0d); // the holes
+    addJets(kit, 'spraybar', gphO, f.P((bu0 + bu1) / 2, by, ib + pr), f.inward.clone().add(V(0, 0.12, 0)), f.along, bar);
+  } else if (kindO === 'nozzle') {
+    // the plain outlet: the pipe turns forward into a short tapered nozzle
+    kit.tube(pipe.bk, [f.P(uO, hoseY, outB), f.P(uO, f.H + 10, outB + 2), f.P(uO, f.H + 26, (ib - t) / 2), f.P(uO, f.H + 6, ib), f.P(uO, oy + 30, ib), f.P(uO, oy + 4, ib + 8), f.P(uO, oy, ib + 22)], pr, pipe.c, pipe.bk === 'clear' ? pipe.base : 0, 14);
+    kit.lathe(pipe.bk, [[pr, 0], [pr - 1, 8], [pr - 3, 16], [pr - 3.5, 18]], f.P(uO, oy, ib + 21), V(0, 0, 1), pipe.c, pipe.base + 0.02, 24);
+    addJets(kit, 'nozzle', gphO, f.P(uO, oy, ib + 39), f.inward);
+  } else {
+    const out = [f.P(uO, hoseY, outB), f.P(uO, f.H + 10, outB + 2), f.P(uO, f.H + 26, (ib - t) / 2), f.P(uO, f.H + 6, ib), f.P(uO, oy + 30, ib), f.P(uO, oy + 4, ib + 8), f.P(uO, oy, ib + 30)];
+    kit.tube(pipe.bk, out, pr, pipe.c, pipe.bk === 'clear' ? pipe.base : 0, 14);
+    kit.lathe(pipe.bk, [[pr, 0], [pr + 1, 6], [pr + 5, 14], [pr + 13, 20], [pr + 15, 21]], f.P(uO, oy, ib + 29), V(0, 0, 1), pipe.c, pipe.base + 0.02, 28);
+    addJets(kit, 'lily', gphO, f.P(uO, oy, ib + 50), f.inward);
+  }
   // hoses down the back and the canister: in a cabinet, in through a cut-out in its back panel (lane CB1, Nathan 2026-11-12:
   // "have lines enter the cabinet through the back"); a canister too tall for the cabinet stands beside it on the floor
   const standY = f.S.stand.show ? f.top : f.floor, st = f.S.stand, cab = st.show && (st.style === 'cabinet' || st.style === 'custom');
@@ -175,7 +196,7 @@ export function canister(f: Frame, m: FilterModel, sp: Spot, prod?: FilterProduc
   const c0 = beside ? V(f.side === 'left' ? -f.t - r - 90 : f.T.L + f.t + r + 90, f.floor, -f.T.D * 0.3) : cg?.canisterX != null ? V(cg.canisterX, f.floor, f.P(cu, f.floor, cb).z) : f.P(cu, f.floor, cb); // cabinet: the gear row's place (scene/cabinetGear.ts)
   const valve = (k: number) => c0.clone().add(V(k * 12, ch + 40, 0));
   const hy = cutoutY(f); // the cut-outs' centre height in the cabinet's back panel, just under its top (lane CB2) (its outer face = the glass's, behind any backdrop: behind())
-  for (const [uu, p, k] of [[uI, intake[0], -1], [uO, out[0], 1]] as [number, THREE.Vector3, number][]) {
+  for (const [uu, p, k] of [[uI, intake[0], -1], [uO, out0, 1]] as [number, THREE.Vector3, number][]) {
     kit.rod('room', p, p.clone().add(V(0, -40, 0)), pr + 4, C.charcoal, { seg: 12 }); // the hose clamp / connector
     const s0 = p.clone().add(V(0, -40, 0)), v = valve(k);
     if (cab && !beside) {
@@ -192,7 +213,7 @@ export function canister(f: Frame, m: FilterModel, sp: Spot, prod?: FilterProduc
   // the hose going in at the top and out at the bottom; an atomizer's fine mist leaves the outlet in the tank (a reactor's and a heater's output is not seen)
   const items = inline.flatMap(id => { const q = inlineProduct(id); return q ? [q] : []; }) as InlineProduct[];
   const at = (y: number) => cab && !beside ? behind(f, uO, y, -14) : beside ? behind(f, uO, y, -24) : f.P(uO, y, outB - 6);
-  let yy = out[0].y - 90;
+  let yy = out0.y - 90;
   for (const ip of items) {
     const col = hexOr(ip.colors.body?.hex, C.grey), barb = hexOr(ip.colors.barb?.hex ?? ip.colors.cap?.hex, col), top = yy, bot = yy - ip.bodyMm.l, rr = ip.bodyMm.d / 2;
     kit.rod('room', at(bot), at(top), rr, col, { seg: 24 });

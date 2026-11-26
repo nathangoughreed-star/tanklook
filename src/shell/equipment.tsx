@@ -1,12 +1,13 @@
 // UI2 shell step 6 (lane S6, 2026-11-14): the Equipment section. The presets ladder, one sub-menu per category, and in each category an
 // "I own" group and a "Buy" group with the item in use marked and an independent "Use this one for sure" lock on every row (screen map §2a).
 // Components only draw logic/equipment.ts and call its edits, each as one store.edit (one undo step).
+import { RETURN_OUTLETS } from '../scene/flow';
 import { useEffect, useState } from 'preact/hooks';
 import type { ComponentChildren } from 'preact';
 import type { Store } from '../scene/store';
 import { GENERIC } from '../scene/gearOwn';
 import {
-  categoryGroups, groupOfKind, buyTree, returnView, addInline, removeInline, categoryView, presetLadder, applyPresetEdit, useItem, setOwned, setLock, ownSum, addOwnAny, specOf, isCat, type CatId, type GearRow,
+  categoryGroups, groupOfKind, buyTree, returnView, addInline, removeInline, setOutlet, categoryView, presetLadder, applyPresetEdit, useItem, setOwned, setLock, ownSum, addOwnAny, specOf, isCat, type CatId, type GearRow,
 } from './logic/equipment';
 import { LightingGroup, LightLayoutGroup } from './lighting';
 import { artOf } from './logic/gearArt';
@@ -163,6 +164,8 @@ function ReturnGroup({ store }: { store: Store }) {
   if (!v) return null;
   return (
     <Group title="On the return hose" sum={v.items.length ? `${v.items.length} in line · ${v.delivered}` : `${v.hose} hose · nothing in line`} open={open} onToggle={() => setOpen(!open)}>
+      <div class="row"><span class="lbl">Outlet</span><span class="chips" role="group" aria-label="Return outlet">{RETURN_OUTLETS.map(o => <button type="button" class={`chip${v.outlet === o.id ? ' on' : ''}`} aria-pressed={v.outlet === o.id} title={o.hint} data-outlet={o.id} onClick={() => store.edit(s => setOutlet(s, o.id))}>{o.label}</button>)}</span><span /></div>
+      <div class="hint">{RETURN_OUTLETS.find(o => o.id === v.outlet)?.hint}. Plants sway and fish work harder where the current is strong.</div>
       <div class="hint">In flow order on the canister's {v.hose} return hose, outside the tank: an in-line heater counts as the heater, an in-line CO2 diffuser or reactor as the CO2 diffuser (the kit's regulator and cylinder stay).</div>
       {v.items.map(i => (
         <div class="erow inuse" data-inline={i.id}>
