@@ -28,8 +28,8 @@ export function roomWorking(S: TankSetup, r: Stocking): RoomWorking {
   const p = r.spacePercent, top = r.spaceBy === 'floor' ? undefined : [...r.contributors].sort((a, b) => b.space - a.space)[0], proto = top && S.fish.find(f => f.species === top.id);
   if (proto && top && Number.isFinite(p) && Math.round(p) <= 100) {
     const bits: string[] = [], to75 = Math.round(p) < IDEAL_MAX ? fitsMore(S, proto, IDEAL_MAX) : -1, to100 = fitsMore(S, proto, 100);
-    const say = (k: number) => k >= CAP ? `${CAP}+` : `about ${k}`;
-    if (to75 > 0) bits.push(`${say(to75)} more ${top.name}s before 75 % (Full)`);
+    const say = (k: number) => k >= CAP ? `${CAP}+` : k === 1 ? '1' : `about ${k}`;
+    if (to75 > 0) bits.push(`${say(to75)} more ${to75 === 1 ? top.name : top.name + 's'} before 75 % (Full)`);
     if (to100 > 0) bits.push(`${say(to100)} more before 100 % (Over)`);
     if (bits.length) out.headroom = `Room for ${bits.join(', ')}.`;
     else if (to100 === 0) out.headroom = 'No room for more of these.';

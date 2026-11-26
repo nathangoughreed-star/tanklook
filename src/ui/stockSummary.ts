@@ -202,7 +202,9 @@ export function stockSummary(S: TankSetup, r: Stocking, mins: MinWarn[], units: 
 
 /** mm in the scene's units: whole cm, or inches to a tenth. */
 export { toUnits };
-export const fmtOf = (units: Units) => ({ len: (mm: number) => fmtLenShort(mm, units), area: (cm2: number) => fmtArea(cm2, units), vol: (l: number) => fmtVol(l, units) });
+/** Tank-minimum lengths: a source's round metric size (150 cm) is 59.06 in; within 0.1 in of a whole inch (from 20 in up) it reads as that round US size, without changing the threshold. */
+const fmtMinLen = (mm: number, units: Units) => units === 'in' && mm >= 508 && Math.abs(mm / 25.4 - Math.round(mm / 25.4)) < 0.1 ? `${Math.round(mm / 25.4)}"` : fmtLenShort(mm, units);
+export const fmtOf = (units: Units) => ({ len: (mm: number) => fmtMinLen(mm, units), area: (cm2: number) => fmtArea(cm2, units), vol: (l: number) => fmtVol(l, units) });
 
 /**
  * The tank-minimum lines under the bar (Nathan 2026-10-21): a red line per species below its minimum (or that cannot be assessed),
