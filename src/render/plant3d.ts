@@ -187,6 +187,9 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
   const tx = f.tex && plant3d.tex !== 'off' ? texOf(f.tex) : undefined, lum = plant3d.tex === 'lum';
   const cell = tx?.kind === 'leaf' ? tx.cells[cellIndex(f.cols.indexOf(cols), out.pos.length / 3, tx.cells.length)] : undefined, strap = tx?.kind === 'strap' ? strapAlong(tx, L) : undefined;
   const v0 = tx?.kind === 'leaf' ? tx.v0 : 0, mu = cell?.mu ?? (tx?.kind === 'strap' ? tx.mean : [1, 1, 1]), mn = cell?.mn ?? mu, uvF: number[] = [], uvB: number[] = [];
+  // leaf character (painted types only, no random draw: hashes of the leaf's place in the buffer): its own droop, and an age (older = a little yellower and darker)
+  const hz1 = (k: number) => { const x = Math.sin((out.pos.length / 3 + 1) * k) * 43758.5453; return x - Math.floor(x); };
+  const archK = tx ? 0.7 + 0.6 * hz1(12.9898) : 1, age = tx ? hz1(78.233) ** 2 : 0;
   // spots (optional): soft round blobs at (along, across), round on the leaf itself (across scaled by the width)
   const spot = f.spots ? new THREE.Color(f.spots.col) : null, blobs = f.spots ? Array.from({ length: Math.round(between(r, f.spots.n)) }, () => [0.08 + r() * 0.85, (r() - 0.5) * 1.6, 0.6 + r() * 0.4]) : [];
   const spotAt = (s: number, u: number) => {
@@ -195,7 +198,7 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
     return Math.min(1, k);
   };
   const dir = (t: number) => {
-    const a = rise + f.arch * t ** 1.5, w = bend.wob * Math.sin(t * Math.PI * 1.6 + bend.ph) * t;
+    const a = rise + archK * f.arch * t ** 1.5, w = bend.wob * Math.sin(t * Math.PI * 1.6 + bend.ph) * t;
     return V(Math.sin(a) * hx + bend.cx * bend.k * t ** 1.5 - hz * w, Math.cos(a), Math.sin(a) * hz + bend.cz * bend.k * t ** 1.5 + hx * w).normalize();
   };
   // a heart colour up from the base, a net of veins (lane T2: bromeliad, fittonia); no random draws
@@ -252,7 +255,8 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
         // ambient occlusion by hand: a leaf is darker where it springs from the crown (the other leaves shade it), full by ~45 % of the blade
         const ao = blade ? 0.6 + 0.4 * Math.min(1, s / 0.45) ** 0.8 : 0.55;
         ku.multiplyScalar(ao); kb.multiplyScalar(ao);
-        if (lum) { cs.push(kb.setRGB(cap(kb.r, mn[0]), cap(kb.g, mn[1]), cap(kb.b, mn[2]))); bs.push(ku.setRGB(cap(ku.r, mu[0]), cap(ku.g, mu[1]), cap(ku.b, mu[2]))); } else { cs.push(new THREE.Color(bright * ao, bright * ao, bright * ao)); bs.push(new THREE.Color(bright * ao, bright * ao, bright * ao)); }
+        const ag = new THREE.Color(1 - 0.16 * age, 1 - 0.1 * age, 1 - 0.3 * age); ku.multiply(ag); kb.multiply(ag);
+        if (lum) { cs.push(kb.setRGB(cap(kb.r, mn[0]), cap(kb.g, mn[1]), cap(kb.b, mn[2]))); bs.push(ku.setRGB(cap(ku.r, mu[0]), cap(ku.g, mu[1]), cap(ku.b, mu[2]))); } else { cs.push(new THREE.Color(bright * ao, bright * ao, bright * ao).multiply(ag)); bs.push(new THREE.Color(bright * ao, bright * ao, bright * ao).multiply(ag)); }
       }
     }
     if (blade && f.pinnae) rowsAt.push({ c: c.clone(), d, side: side.clone(), up: up.clone(), s, i });
