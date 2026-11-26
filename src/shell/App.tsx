@@ -30,7 +30,7 @@ import { Icon, Pill } from './ui';
 import { ProjectName, FileMenu, FileLayer, type Files } from './files';
 import { DiscoverSection, IdeasButton, AnimalDoor } from './discover';
 import { GetStarted } from './checklist';
-import { ANIMAL_DOOR_EVENT } from './start';
+import { ANIMAL_DOOR_EVENT, PICKER_EVENT } from './start';
 import { resetChecklist } from './logic/checklist';
 import { ConstraintsSection } from './constraints';
 import { PreferencesSection } from './prefs';
@@ -223,6 +223,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const setPlumb = (v: boolean) => { setPlumb0(v); try { localStorage.setItem('tanklook.plumbView', v ? 'on' : 'off'); } catch { /* not remembered */ } };
   const [door, setDoor] = useState(false);   // S10: the start door "From an animal I want"
   useEffect(() => { const f = () => setDoor(true); addEventListener(ANIMAL_DOOR_EVENT, f); return () => removeEventListener(ANIMAL_DOOR_EVENT, f); }, []);   // SS1: the Start sheet's animal door
+  useEffect(() => { const f = () => { setMore(false); setSection('tank'); setPicker(true); if (phone) setDrawer(null); }; addEventListener(PICKER_EVENT, f); return () => removeEventListener(PICKER_EVENT, f); }, [phone]);   // FD: the landing's Build my own and I already have a tank doors open the tank picker
   const openMaker = (h: MakerHow) => {
     const lib = loadLibrary();
     if (h.how === 'lib') { const e = lib.find(x => x.id === h.id); if (e) setMaker({ spec: specOfEntry(e), libId: e.id }); }
