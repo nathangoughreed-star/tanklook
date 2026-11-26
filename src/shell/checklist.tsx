@@ -41,8 +41,9 @@ export function ChecklistDock(p: { tank: TankSetup; open: SectionId | null; onOp
   useLayoutEffect(() => {
     document.querySelectorAll('.gsslot').forEach(n => { render(null, n); n.remove(); });
     if (!p.on) return;
-    const head = document.querySelector<HTMLElement>('.panel .sec-head'); if (!head) return;
-    const slot = document.createElement('div'); slot.className = 'gsslot'; head.after(slot);
+    const head = document.querySelector<HTMLElement>('.panel .sec-head'), bar = head ? null : document.querySelector<HTMLElement>('.wsbar'); if (!head && !bar) return;
+    const slot = document.createElement('div'); slot.className = `gsslot${bar ? ' inbar' : ''}`;
+    if (head) head.after(slot); else bar!.insertBefore(slot, bar!.querySelector('.grow'));   // a side panel: a line under its header; a workspace: a compact line in its bar
     render(<GetStarted tank={p.tank} open={p.open} onOpen={p.onOpen} onAnimal={p.onAnimal} phone={p.phone} />, slot);
     return () => { render(null, slot); slot.remove(); };
   });
