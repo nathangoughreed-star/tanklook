@@ -706,8 +706,8 @@ const LEAF_GLOW = 0.5, LEAF_SHEEN = 0.35;
 /** Plant tone (lane ART1, art-direction answer row 2): the leaves are painted at the fish's level but rendered twice as saturated and bright.
  *  EXPOSURE scales the lit leaf, SAT is how much of its colour stays (1 = as painted; the rest goes to its own grey), and a leaf near the
  *  substrate is LOW x as bright as one at the water line (the crown sits in the shade of its own leaves; smooth over the lower 70 % of the water). */
-/** (`on` 0 = the block left out: the default, Nathan preferred the original colours 2026-11-26. `ks` / `rs`: a soft knee on saturation, above `ks` only `rs` of the excess stays; `kl` / `rl` the same on brightness: the milder variant that tames only the most saturated, brightest pixels.) */
-export const PLANT_TONE = { on: 0, exposure: 0.55, sat: 0.8, low: 0.55, ks: 9, rs: 1, kl: 9, rl: 1 };
+/** (`on` 0 = the block left out. The default is strip D (Nathan 2026-11-26, shown the six strips: "this one looks the best"): the original colours, only darker near the substrate (`low` 0.6). Strip B (`exposure 0.8, ks 0.9, rs 0.5`) is the in-between colour variant. `ks` / `rs`: a soft knee on saturation, above `ks` only `rs` of the excess stays; `kl` / `rl` the same on brightness: the milder variant that tames only the most saturated, brightest pixels.) */
+export const PLANT_TONE = { on: 1, exposure: 1, sat: 1, low: 0.6, ks: 9, rs: 1, kl: 9, rl: 1 };
 if (import.meta.env?.DEV) (globalThis as { __plantTone?: typeof PLANT_TONE }).__plantTone = PLANT_TONE; // (the shot scripts try other values: set, then `needsUpdate` on the plant materials)
 /** Relief from the painted texture's luminance (plantMaterial's `post`): the bump height in mm per unit luminance, and how strongly the lamps' facing change shows. */
 const LEAF_RELIEF = 6.0, LEAF_RELIEF_K = 1.8;
