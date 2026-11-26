@@ -5,12 +5,14 @@ import { parseScene } from '../src/scene/validate';
 import { inferTech } from '../src/scene/tech';
 import { lifeSupportOf, notChosenLine } from '../src/scene/lifeSupport';
 import { summaryOf, summaryText } from '../src/ui/stockSummary';
-import { habitatView } from '../src/shell/logic/checks';
+import { habitatView, waterView } from '../src/shell/logic/checks';
 import { checklistOf } from '../src/shell/logic/checklist';
 import { planHtml } from '../src/ui/planSheet';
 import { roomWorking } from '../src/ui/logic/room';
 import { stockingMemo } from '../src/scene/stocking';
 import { overWarn } from '../src/ui/stockPlanLogic';
+import { paperOf } from '../src/shell/logic/print';
+import { defaultProfile } from '../src/demand/types';
 import type { TankSetup } from '../src/scene/types';
 
 const base = (): TankSetup => { const sc = parseScene(JSON.parse(SCENES[Object.keys(SCENES).find(k => { const t = parseScene(JSON.parse(SCENES[k])).scene; return t.tanks[t.active].water.on; })!])).scene; return sc.tanks[sc.active]; };
@@ -78,5 +80,15 @@ describe('HV life support', () => {
   });
   it('a rule with no source never speaks as a fight: schooling species (flat counts only) give no over-count warning at any count', () => {
     for (const id of ['neon', 'cardinal', 'ember', 'rummynose', 'danio', 'harlequin']) expect(overWarn({ id, n: 500 }), id).toBeUndefined();
+  });
+  it('the shell print list opens with Not chosen yet, and is silent once the heater is chosen', () => {
+    const run = (rows: Record<string, string>) => { const sc = parseScene(JSON.parse(SCENES[Object.keys(SCENES)[0]])).scene; sc.tanks[sc.active] = mk([['cardinal', 10]], rows); return paperOf('shopping', new Set(['tank', 'equipment', 'animals', 'prices']), { scene: sc, active: sc.active, profile: defaultProfile(), now: Date.parse('2026-11-13') }); };
+    expect(run({ heater: 'none', filter: 'hob' }).notChosen).toBe('Not chosen yet: a heater');
+    expect(run({ heater: 'one', filter: 'hob' }).notChosen).toBeNull();
+  });
+  it('the header water chip says the room, not the setpoint, and never "fits", while the heater is missing', () => {
+    const w = waterView(mk([['cardinal', 10]], { heater: 'none', filter: 'hob' }), 'in');
+    expect(w.temp).toMatch(/70 °F \(assumed\) room/); expect(w.pill.word).toBe('no heater'); expect(w.pill.tone).toBe('warn');
+    expect(waterView(mk([['cardinal', 10]], { heater: 'one', filter: 'hob' }), 'in').pill.word).toBe('fits');
   });
 });

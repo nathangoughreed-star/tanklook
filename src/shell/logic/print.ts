@@ -6,6 +6,7 @@ import type { Scene } from '../../scene/types';
 import { reportOf, reportHtml, REPORT_PARTS } from '../../ui/report';
 import { buildSheet, sheetCsv, sheetText, type Sheet } from '../../scene/setupsheet';
 import { planOf } from '../../scene/plan';
+import { lifeSupportOf, notChosenLine } from '../../scene/lifeSupport';
 import { KINDS } from '../../scene/items';
 import type { UserProfile } from '../../demand/types';
 
@@ -58,6 +59,7 @@ export interface PaperLine { qty: string; name: string; note: string; usd: numbe
 export interface PaperGroup { id: string; title: string; total: number | null; lines: PaperLine[] }
 export interface Paper {
   kind: PresetId; title: string; sub: string;
+  /** HV: "Not chosen yet: a heater" when the animals need gear the list leaves out (scene/lifeSupport.ts); the page opens with it */ notChosen: string | null;
   /** shopping list */ groups: PaperGroup[]; owned: PaperGroup | null; prices: boolean;
   totals: { toBuy: string; ownedCount: string; monthly: string; spread: string } | null;
   where: string[] | null; picture: boolean; /** the tank render as a data URL ('' = none) */ shot: string;
@@ -92,7 +94,7 @@ export interface PaperInput { scene: Scene; active: number; profile: UserProfile
 /** The page for a preset and its ticks. */
 export function paperOf(preset: PresetId, ticks: ReadonlySet<string>, inp: PaperInput): Paper {
   const { scene, active } = inp, S = scene.tanks[active] ?? scene.tanks[0], empty = ![...ticks].some(t => presetById(preset).parts.some(p => p.id === t));
-  const base: Paper = { kind: preset, title: scene.name || 'Your tank', sub: '', groups: [], owned: null, prices: false, totals: null, where: null, picture: false, shot: '', sheet: null, html: null, empty };
+  const base: Paper = { kind: preset, title: scene.name || 'Your tank', sub: '', notChosen: notChosenLine(lifeSupportOf(S, true)) ?? null, groups: [], owned: null, prices: false, totals: null, where: null, picture: false, shot: '', sheet: null, html: null, empty };
   if (preset === 'report') {
     const r = reportOf(scene, active, inp.profile, inp.now);
     return { ...base, title: r.title, sub: `${r.kind} · ${r.gallons} gal · ${r.dims}`, html: filterReportHtml(reportHtml(r, ticks.has('picture') ? inp.shot ?? '' : ''), ticks) };

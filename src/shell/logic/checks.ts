@@ -25,6 +25,7 @@ import { volume } from '../../scene/physics';
 import { climateOf, climateText, climateChart, type Climate, type Status } from '../../data/climate';
 import { fixPlans, GO_LID, GO_FILTER, GO_HEATER, type FixPlan, type GoTarget } from './noteFixes';
 import { lidIssues, tempIssues } from './lidTemp';
+import { tempEvidence } from '../../scene/tech';
 import { lifeSupportOf, notChosenLine, type Missing } from '../../scene/lifeSupport';
 import { verdictOf, type Issue, type Verdict } from '../../scene/verdict';
 
@@ -60,16 +61,17 @@ export function habitatView(S: TankSetup, units: Units, r: Stocking = stockingMe
   const tooBig = st.fit?.fits === false;
   const pill = empty ? { tone: 'neutral' as Tone, word: S.water.on ? 'No animals' : 'No water' }
     : { tone: tooBig && sm.worst === 'ok' ? 'bad' as Tone : TONE[sm.worst], word: `${sm.worstWord}${tooBig ? ' · too big' : ''}${sm.unchecked ? ` · ${sm.unchecked} not checked` : ''}` };
-  const lines = (top: TopRow[]) => top.map(t => `${plural(t.n, t.name)}: ${t.note ?? `${Math.round(t.share * 100)}%`}`);
+  // HV: a share of the bar's fill, not of the tank: one species fills all of what is used ("all of the room used"), several say their part of it
+  const lines = (top: TopRow[], what = 'the load') => top.length === 1 && top[0].share > 0.995 && !top[0].note ? [`All of ${what} is ${plural(top[0].n, top[0].name)}`]
+    : top.map(t => `${plural(t.n, t.name)}: ${t.note ?? `${Math.round(t.share * 100)}% of ${what}`}`);
   const bars = empty ? [] : [
     { key: 'water', label: 'Room used', bar: st.water, top: topBy(r, 'space') },
     { key: 'floor', label: 'Floor', bar: st.floor, top: st.topFloor },
     ...(st.topMin.length ? [{ key: 'min', label: 'Tank minimum', bar: st.min, top: st.topMin }] : []),
-  ].map(b => ({ ...b, tone: toneOfBar(b.bar), topLines: lines(b.top), ...(b.key === 'water' ? { room: roomWorking(S, r) } : {}) }));
+  ].map(b => ({ ...b, tone: toneOfBar(b.bar), topLines: lines(b.top, b.key === 'water' ? 'the room used' : b.key === 'floor' ? 'the floor used' : 'the load'), ...(b.key === 'water' ? { room: roomWorking(S, r) } : {}) }));
   const warnings = [
     ...(st.compat ? [{ tone: st.compat.level === 'over' ? 'bad' as Tone : 'warn' as Tone, text: st.compat.text }] : []),
     ...st.mins.map(w => ({ tone: w.level === 'over' ? 'bad' as Tone : 'warn' as Tone, text: w.text })),
-    ...(empty ? [] : support.map(m => ({ tone: 'warn' as Tone, text: m.text }))),
   ];
   const sc = (() => { try { const sp = standOf(S); return sp ? standCheck(sp, filledLb(S), volume(S.tank).gallons) : undefined; } catch { return undefined; } })();
   if (sc) warnings.push({ tone: sc.level === 'over' ? 'bad' as Tone : 'warn' as Tone, text: sc.text });
@@ -132,7 +134,7 @@ export function costView(D: Demand, k = 8, ctx?: { S: TankSetup; P: UserProfile 
     ...(ctx && notChosenLine(lifeSupportOf(ctx.S)) ? { notChosen: notChosenLine(lifeSupportOf(ctx.S)) } : {}),
     ...(deal ? { deal } : {}), ...(gs?.n ? { gearSales: gs } : {}),
     setup: usd(t.setupUsd), monthly: `${usd(t.upkeepUsdMo)}/mo`, minutes: `${fmtMin(t.minPerWeek)}/wk`,
-    risk: Math.round(t.risk * 10) / 10, riskWord: riskWord(t.risk),
+    risk: Math.round(t.risk * 10) / 10, riskWord: ctx && lifeSupportOf(ctx.S).length ? `Incomplete: ${lifeSupportOf(ctx.S).map(m => m.label.replace(/^a /, '')).join(' and ')} not chosen` : riskWord(t.risk), // HV: a tank missing life support is never "Easy"
     rows: D.items.filter(i => (i.setup?.mode ?? 0) >= 0.5).sort((a, b) => b.setup!.mode - a.setup!.mode).slice(0, k)
       .map(i => ({ label: i.n && i.n > 1 ? `${i.label} × ${i.n}` : i.label, setup: usd(i.setup!.mode) })),
     lower: () => (ctx ? lowerIt(ctx.S, ctx.P) : []),
@@ -156,8 +158,10 @@ export function waterView(S: TankSetup, units: Units, rows: Climate[] = climateO
   const worst = main?.fit?.per.reduce<Status>((w, p) => RANK[p.status] > RANK[w] ? p.status : w, 'ideal');
   const pill = !main ? { tone: 'neutral' as Tone, word: 'none' } : !main.fit ? { tone: 'neutral' as Tone, word: 'no data' }
     : worst === 'unsafe' ? { tone: 'bad' as Tone, word: 'does not fit' } : worst === 'stretch' ? { tone: 'warn' as Tone, word: 'tight' } : { tone: 'ok' as Tone, word: 'fits' };
+  // HV: the chip says what the water WOULD be, from the same list as the drawer: with the heater missing it is the room (assumed unless entered), never the setpoint the species want, and never "fits"
+  const noHeater = main && lifeSupportOf(S, units === 'in').some(m => m.kind === 'heater'), ev = noHeater ? tempEvidence(S, undefined, units === 'in') : undefined;
   return {
-    temp: main ? fmtTemp(main.at, units) : '-', pill,
+    temp: ev ? `${fmtTemp(ev.room, units)}${ev.roomSet ? '' : ' (assumed)'} room` : main ? fmtTemp(main.at, units) : '-', pill: ev ? { tone: 'warn' as Tone, word: 'no heater' } : pill,
     rows: rows.map(r => ({ label: r.label, line: climateText(r, units === 'in'), chart: climateChart(r, units === 'in'), ...(r.note ? { note: r.note } : {}), per: per(r) })),
   };
 }

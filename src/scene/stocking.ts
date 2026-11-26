@@ -357,7 +357,7 @@ export function stockingOf(S: TankSetup): Stocking {
     const dim = bySpace ? (spaceBy === 'floor' ? 'floor' : 'swimming room') : 'filtration', head = `${Math.round(percent)}% · limited by ${dim}.`;
     const past = Math.round(percent) >= IDEAL_MAX;
     reasons.push(bySpace
-      ? `${head} ${!past ? 'Ideal.' : spaceBy === 'floor' ? 'Past ideal: water changes do not add floor; fewer bottom dwellers or a tank with a bigger base would.' : 'Past ideal: water changes do not add room; fewer animals or a longer tank would.'}`
+      ? `${head} ${!past ? 'Comfortable: under the 75% mark.' : spaceBy === 'floor' ? 'Past 75%: water changes do not add floor; fewer bottom dwellers or a tank with a bigger base would.' : 'Past 75%: water changes do not add room; fewer animals or a longer tank would.'}`
       : `${head} ${past ? 'Doable with heavier than normal water changes and a tighter schedule; at 100% it needs a larger filter or less load.' : 'Normal water changes keep ammonia down; the fish get no toxin-induced stress from under-filtering.'}`);
   }
   return { nitrogen, percent, loadPercent, spacePercent, waterPercent, floorPercent, spaceBy, floor: { areaCm2, usedCm2: floorUse }, filtrationPercent, load, contributors, capacity: cap, reasons, ...(fixFilter ? { fixFilter } : {}) };
