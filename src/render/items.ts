@@ -716,7 +716,7 @@ function plantMaterial(T: Tank, free = false) {
   const { planes, patch } = glassClip(T);
   // above the rim (lane OG2) only the floor plane stays: leaves and vines spill past the glass and hang down its outside
   // (lane PT: the shared leaf atlas as `map`: a leaf's alpha is its outline; everything else samples a white texel)
-  m = new THREE.MeshBasicMaterial({ vertexColors: true, map: plantAtlas(), alphaTest: 0.5, clippingPlanes: free ? planes.slice(0, 1) : planes });
+  m = new THREE.MeshBasicMaterial({ vertexColors: true, map: plantAtlas(), alphaTest: 0.5, alphaToCoverage: true, clippingPlanes: free ? planes.slice(0, 1) : planes });
   m.onBeforeCompile = sh => { patch(sh); growShader(sh); };
   m.customProgramCacheKey = () => (free ? 'plant-rim' : 'plant-clip') + (plantFx.on ? '' : '-nofx');
   // above the water (an emersed stem or sword leaf, lane GR2) there is no water haze: it fades out over the first few
