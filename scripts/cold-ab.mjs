@@ -1,5 +1,5 @@
 // `node scripts/cold-ab.mjs --dirs before=<dist dir>,after=dist`: cold first-picture A/B of production builds (lane EF1,
-// 2026-10-15). Every load is a FRESH browser profile (a first-time visitor: no GPU program cache), on the hardware GPU
+// 2026-10-15; repointed 2026-11-26 when the old UI was deleted: it loads the shell now, ?ui=1 is gone). Every load is a FRESH browser profile (a first-time visitor: no GPU program cache), on the hardware GPU
 // (headless Edge / Chrome, --use-angle=d3d11). Per round, per example, the builds alternate (and swap order each round),
 // so load from other chats lands on both alike. Records navigation -> first frame (the first WebGL draw call + the next
 // animation frame) and the ms spent in WebGL calls before it, with the calls over 100 ms (the program: gritK marks the
@@ -99,7 +99,7 @@ async function cold(d, view) {
     // first start is already this example and nothing has warmed the program cache
     await br.s('Page.navigate', { url: d.base + '__none' }); await sleep(300);
     await br.ev(`localStorage.setItem('tanklook.scene', ${JSON.stringify(readFileSync(view.endsWith('.json') ? view : `src/examples/${view}.json`, 'utf8'))}); 1`);
-    await br.s('Page.navigate', { url: d.base + '?ui=1' });
+    await br.s('Page.navigate', { url: d.base });
     for (let i = 0; i < +opt('wait', 1500); i++) {
       // done once nothing has linked for 4 s after the first frame: 'settled' = the end of the last WebGL call over 20 ms
       // (a program link), i.e. when the whole picture is up even if the app draws in steps
@@ -110,7 +110,7 @@ async function cold(d, view) {
         if (SHOTS) writeFileSync(`${SHOTS}/${basename(view, '.json')}-${d.name}.png`, Buffer.from((await br.s('Page.captureScreenshot', { format: 'png' })).data, 'base64'));
         if (WARM) r.warm = [];
         for (let k = 0; k < WARM; k++) {
-          await br.s('Page.navigate', { url: d.base + '?ui=1' });
+          await br.s('Page.navigate', { url: d.base });
           for (let j = 0; j < 600; j++) {
             await sleep(50);
             const f = await br.ev('window.__perf && window.__perf.firstFrame').catch(() => null);

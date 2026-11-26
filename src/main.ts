@@ -1,5 +1,4 @@
 import './style.css';
-import { chooseUi } from './uiChoice';
 import { applyScopeToDom } from './ui/scopeDom';
 // Build-B fish art is no longer awaited here (lane FD, 2026-11-25): the shell starts at once and src/art/liveFish.ts loads the live fish
 // a scene holds while the viewer's first build waits for them. No top-level await in this file (scripts/size-budget.mjs checks).
@@ -20,8 +19,6 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator) addEventListener('load
 const view = document.getElementById('view')!;
 if (!webglAvailable()) {
   view.innerHTML = '<p class="nojs">Your browser or device has WebGL turned off, so the tank can\'t be drawn. Try a current Chrome, Edge, Firefox or Safari.</p>';
-} else if (chooseUi(location.search) === 'shell') {
-  void import('./shell/boot').then(m => m.bootShell()); // UI2 (lane S1; made the default by UF1, 2026-11-15): the new shell, its own lazy chunk. ?ui=1 keeps the old UI below until it is deleted
 } else {
-  void import('./oldUi').then(m => m.bootOldUi(view)); // ?ui=1: the old UI, its own lazy chunk until it is deleted
+  void import('./shell/boot').then(m => m.bootShell()); // the shell, its own lazy chunk (lane S1; default since UF1, 2026-11-15). The old UI and its ?ui=1 entry were deleted 2026-11-26 (lane FD)
 }

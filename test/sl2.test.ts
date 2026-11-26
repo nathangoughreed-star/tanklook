@@ -20,9 +20,8 @@ describe('SL2 resume where the last session left off', () => {
     for (const bad of ['{not json', '{"version":999,"tanks":[]}', '[]']) { const r = Store.loadLocalChecked(fake(bad)); expect(r.scene).toBeNull(); expect(r.error).toBeTruthy(); }
   });
   it('wiring: a saved tank resumes, a first visit or unreadable save shows the start screen', () => {
-    const m = read('src/oldUi.ts'), b = read('src/shell/boot.tsx');
+    const b = read('src/shell/boot.tsx');
     expect(b).toContain('loadLocalChecked'); expect(b).toMatch(/startMode\(restored, saveError\)/);   // the shell's boot path makes the same checked load
-    expect(m).toContain('loadLocalChecked'); expect(m).toMatch(/if \(restored\) ui\.resume\(\)/); expect(m).toMatch(/showStart\(saveError/);
   });
   it('header (HM1): New, Open…, Save (+ Discover); Open asks saved or starter; Save offers Save / Save as…; no My equipment, Starter or Download buttons', () => {
     const h = read('index.html'), p = read('src/ui/panels.ts');
