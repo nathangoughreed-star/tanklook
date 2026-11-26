@@ -56,6 +56,10 @@ const LABELS: Record<CatId, [string, string]> = {
 };
 
 /** Which species' rule fields a pair reason rests on (reason texts as animalfit.ts words them; the other side's rule when the text starts "it ..."). Undefined = a physical fact (a dry enclosure) or no data field. */
+/** What the generator and the suggester AVOID, as opposed to what the user SEES. The user sees the displayed severity: a judgment-only pH, GH or look-alike
+ *  line is capped to Caution (HV, 2026-11-26) and reads Caution everywhere. A generator must still never propose that stock (relabelling a line must not make it
+ *  start proposing a pH-mismatched tank), so it avoids a displayed Problem OR a line the audit capped from Problem. */
+export const avoidedLine = (i: Pick<CatItem, 'level' | 'capped'>): boolean => i.level === 'problem' || !!i.capped;
 /** Rule fields whose Problem stays red even when judgment-only (predation, aggression); the line is tagged instead. */
 const KEEP_RED = ['prey', 'temper', 'nip', 'slow'];
 export function pairBasis(t: string, s: string, o: string): CatItem['basis'] | undefined {

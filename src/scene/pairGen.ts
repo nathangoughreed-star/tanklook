@@ -227,7 +227,7 @@ export function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending[
   if (eqWhy) return drop(c, eqWhy, [{ id: 'equip:rule', tab: 'equipment', uids: [], text: eqWhy, relax: noNewEquipment(brief) && !plan.infeasible ? 'Allow new equipment for this run' : 'Mark the item Have available instead of Must use' }], ['Allow new equipment, or mark the item Have available instead of Must use']);
   const gated = gateReason(after, orig);   // S5: experience on -> a plant or gear rated harder than the keeper said is left out
   if (gated) return drop(c, `${label}: ${gated}`, [], ['Turn experience off in Constraints, or raise it']);
-  const v0 = verdictOf(after, brief, { units: c.units });
+  const v0 = verdictOf(after, brief, { units: c.units, avoid: true });
   const bad0 = blockers(c, v0); if (bad0.length) return drop(c, label, bad0, bad0.map(i => i.relax ?? `Relax: ${i.text}`));
   const sc = scoreScene(after, brief, c.w, c.P, c.now), blocked = sc.gate.reasons.filter(r => r.severity === 'blocked');
   if (blocked.length) return drop(c, `${label}: ${blocked[0].text}`, [], blocked.map(r => `Relax: ${r.text}`));
@@ -236,7 +236,7 @@ export function ingest(c: Ctx, scene: TankSetup, label: string, source: Pending[
     const why = !passesHard(c.prefs, { gallons: after.water.on ? volume(after.tank).gallons : null, floorSqIn: after.tank.L * after.tank.D / IN2, heightIn: after.tank.H / 25.4, plants: live >= 3 ? (art ? 'mixed' : 'live') : 'artificial', species: [...new Set(after.fish.map(f => f.species))], co2: after.grow.feed === 'co2', livePlants: live, setupUsd: sc.totals.setupUsd, weeklyMin: sc.totals.minPerWeek });
     if (why) return drop(c, `${label}: breaks something you said is required or not wanted`, [], ['Relax the requirement that rules this design out']);
   }
-  const v = verdictOf(after, brief, { totals: sc.totals, units: c.units });
+  const v = verdictOf(after, brief, { totals: sc.totals, units: c.units, avoid: true });
   const bad1 = blockers(c, v); if (bad1.length) return drop(c, label, bad1, bad1.map(i => i.relax ?? `Relax: ${i.text}`));
   const fin2 = finalCheck(after, c.w); if (fin2.blocked) return drop(c, `${label}: ${fin2.blocked}`, [], ['Use a larger tank or fewer animals']);
   const facts = factsOf(after, brief, sc, ids.name);
@@ -434,7 +434,7 @@ export function nextPair(project: PairProject, brief: Brief, session: DiscoveryS
       if (ad.ok) { opts.notes?.push(`Your favourite was adapted to your kept items: ${bad.slice(0, 3).join('; ')}.`); champ = ad.record; }
       else { opts.notes?.push(`Your favourite no longer fits: ${bad.slice(0, 3).join('; ')}. New designs are drawn instead.`); champ = undefined; type = 'first'; }
     } else {
-      const v = verdictOf(champ.snapshot, brief, { units: opts.units ?? 'in' });
+      const v = verdictOf(champ.snapshot, brief, { units: opts.units ?? 'in', avoid: true });
       if (!v.feasible) { opts.notes?.push(`Your favourite no longer fits: ${[...v.gates, ...v.hard].slice(0, 3).map(i => i.text).join('; ')}. New designs are drawn instead.`); champ = undefined; type = 'first'; }
     }
   }

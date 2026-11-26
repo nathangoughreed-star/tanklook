@@ -18,7 +18,7 @@ import { choiceOf, filterState, rowsFor, techOf, withChoice } from '../scene/tec
 import { volume } from '../scene/physics';
 import type { TankSetup, Units } from '../scene/types';
 import { getSpecies } from '../data/species';
-import { summaryOf } from '../ui/stockSummary';
+import { summaryOf, avoidedLine } from '../ui/stockSummary';
 import { minOf } from '../ui/stockPlanLogic';
 import { demandOf, type DemandOpts } from './engine';
 import type { UserProfile } from './types';
@@ -70,7 +70,7 @@ const totalsOf = (S: TankSetup, P: UserProfile, o: DemandOpts): Money => { const
 /** Husbandry Problems / unknown lines per category (counted, not matched by wording: a count in the text changes with the stocking). */
 interface Husb { p: Map<string, string[]>; u: Map<string, string[]> }
 const husbOf = (S: TankSetup, units: Units): Husb => { const h: Husb = { p: new Map(), u: new Map() };
-  for (const c of summaryOf(S, units).cats) for (const i of c.items) { const m = i.level === 'problem' ? h.p : i.level === 'unknown' ? h.u : undefined; if (m) m.set(c.id, [...(m.get(c.id) ?? []), i.text]); }
+  for (const c of summaryOf(S, units).cats) for (const i of c.items) { const m = avoidedLine(i) ? h.p : i.level === 'unknown' ? h.u : undefined; if (m) m.set(c.id, [...(m.get(c.id) ?? []), i.text]); }
   return h; };
 /** Lines in `to` beyond what `from` has in the same category. */
 const moreIn = (to: Map<string, string[]>, from: Map<string, string[]>) => [...to].flatMap(([k, v]) => v.length > (from.get(k)?.length ?? 0) ? [v[0]] : []);
