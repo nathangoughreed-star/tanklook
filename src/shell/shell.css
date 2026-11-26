@@ -941,3 +941,6 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .gsslot.inbar { border: 0; position: relative; } .gsslot.inbar .gsdock { padding: 0; } .gsslot.inbar .gslist, .gsslot.inbar .gsanimal { position: absolute; right: 0; top: calc(100% + 6px); z-index: 5; } .gsslot.inbar .gslist { min-width: 300px; background: var(--bg-panel); border: 1px solid var(--line); border-radius: 8px; padding: var(--s2); } .gsslot.inbar .gshead { gap: var(--s2); }
 
 .scrim.top { z-index: calc(var(--z-toast) + 5); }
+
+/* FD: the phone strip fits four chips on a 390 px screen (it clipped the Notes count); a narrower one scrolls rather than cuts */
+.ui2app.phone .checkstrip .checkbar { overflow-x: auto; scrollbar-width: none; gap: 4px; padding: 6px 6px; } .ui2app.phone .checkstrip .check { padding: 0 8px; font-size: 13px; gap: 4px; white-space: nowrap; } .ui2app.phone .checkstrip .check .dim { display: none; } .ui2app.phone .checkstrip .vsep { display: none; }

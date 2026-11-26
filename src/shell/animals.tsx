@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { Store } from '../scene/store';
 import type { Viewer } from '../render/viewer';
 import { getSpecies, type Sex } from '../data/species';
+import { ensureLive } from '../art/liveFish';
 import { emptyBrief, rulesOf } from '../scene/brief';
 import { LIMITS } from '../scene/validate';
 import { createFitter } from '../ui/logic/animalPicker';
@@ -111,6 +112,8 @@ export function AnimalsSection({ store, getViewer, pending }: { store: Store; ge
   useEffect(() => () => clearTimeout(timer.current), []);
 
   const pv = pickView(S, units, rules, fitter, query, pending ? { held: new Set(pending.picks.map(p => p.id)), free: true, heldWord: 'your list' } : {});
+  const tileIds = pv.groups.flatMap(g => g.rows.map(r => r.id)).join(',');
+  useEffect(() => { let on = true; void ensureLive(tileIds.split(',').filter(Boolean)).then(c => { if (on && c.length) setN(n => n + 1); }); return () => { on = false; }; }, [tileIds]);   // FD: a tile's build-B art is fetched when the tile shows, so it never shows the old model (the Cardinal tetra tile showed the wrong fish)
   const sv = stockView(S, rules, units, fitter);
   // the exact fit reading is worked out a slice at a time after the first paint, then redraws the list
   const detSp = pvId ? getSpecies(pvId) : undefined, det = detSp ? speciesDetail(S, detSp, pending ? OK_FIT : fitter.exactNow(S, units, rules, detSp), units) : null;
