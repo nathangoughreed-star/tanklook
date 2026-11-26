@@ -143,7 +143,7 @@ export function createFiles(store: Store, thumb: () => string, afterReplace: () 
       let parsed: Awaited<ReturnType<typeof readShare>>; try { parsed = await readShare(hash); } catch (e) { say(P7.shareFailMessage(e), true); return; }
       if (!await confirmStart(store.scene, P7.savedText())) return;
       try { store.replace(parsed.scene); } catch { say('Could not open that share link.', true); return; }
-      P7.setLibId(null); say(P7.sharedMessage(parsed.scene.name, parsed.warnings), parsed.warnings.length > 0); replaced();
+      P7.setLibId(null); say(P7.sharedMessage(parsed.scene.name, parsed.warnings), parsed.warnings.length > 0); replaced(); landing.untouched = true; setResult({ kind: 'shared', list: [], i: 0 });   // FD: a share link lands full-width with the result card
     },
     async saveAs(typed, how) {
       const v = saveAsView(typed, store.scene);

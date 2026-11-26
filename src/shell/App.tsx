@@ -297,7 +297,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
         {split ? <CompareLayer store={store} models={models} drawer={cmpDrawer} onPick={check} phone={phone} say={files.say} /> : null}
         {plumb && inEquipment ? <PlumbingView store={store} phone={phone} /> : null}
         {split || !inEquipment ? null : <PlumbSwitch on={plumb} onChange={setPlumb} />}
-        {result ? <ResultCard store={store} model={model} result={result} onMine={() => { landing.untouched = false; setResult(null); pick('tank'); }} onAnother={r => r.kind === 'example' ? void files.peekExample(r.i) : setDoor(true)} /> : null}
+        {result ? <ResultCard store={store} model={model} result={result} onMine={() => { landing.untouched = false; setResult(null); pick('tank'); }} onAnother={r => r.kind === 'example' ? void files.peekExample(r.i) : r.kind === 'animal' ? setDoor(true) : files.openStart()} /> : null}
         <ChecklistDock tank={store.tank} open={section} onOpen={pick} onAnimal={() => setDoor(true)} phone={phone} on={!result && !!section && !more} />
         <ScapeBars store={store} getViewer={viewer} />
       </main>

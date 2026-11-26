@@ -1161,7 +1161,7 @@ export class Viewer {
   private content: { x0: number; x1: number; y0: number; y1: number; vx: number; vw: number }[] = [];
 
   // ---------- Export: render bigger, crop to the tanks, label split views, then save ----------
-  exportPNG(mult: number): Promise<Blob> {
+  exportPNG(mult: number, credit?: string): Promise<Blob> {
     const dpr = this.fullRatio(), k = dpr * mult;
     this.govApplied = 1; this.renderer.setPixelRatio(k);
     this.exporting = true; this.draw(); this.exporting = false;
@@ -1178,6 +1178,10 @@ export class Viewer {
         g.fillStyle = 'rgba(20, 24, 30, 0.75)'; g.fillRect(x, y, w, fs * 1.5);
         g.fillStyle = '#fff'; g.fillText(label, x + fs * 0.4, y + fs * 0.25);
       });
+    }
+    if (credit) { // FD (R155): the site address in a corner, so a shared picture leads back to the tool
+      const fs = Math.round(Math.max(14, 0.024 * out.h) * k); g.font = `600 ${fs}px system-ui, "Segoe UI", sans-serif`; g.textBaseline = 'bottom'; g.textAlign = 'right';
+      const x = t.width - fs * 0.7, y = t.height - fs * 0.6; g.fillStyle = 'rgba(0, 0, 0, 0.45)'; g.fillText(credit, x + 1, y + 1); g.fillStyle = 'rgba(255, 255, 255, 0.85)'; g.fillText(credit, x, y);
     }
     return new Promise((resolve, reject) => {
       t.toBlob(b => {

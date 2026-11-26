@@ -1,6 +1,7 @@
 // UI2 shell step 8 (lane S8, 2026-11-13): the viewer cluster's View popover and Another moment (screen map §2a). Draws logic/view.ts; the viewer
 // itself is the unchanged render/viewer.ts. Compare comes in step 9 (its button is left out).
 import type { ComponentChildren } from 'preact';
+import { SITE_URL } from './productName';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { Store } from '../scene/store';
 import { SWIM_EVENT, type Viewer } from '../render/viewer';
@@ -113,7 +114,7 @@ export function ViewCluster({ store, getViewer, phone, compare }: { store: Store
   const setMap = (on: boolean) => { const cb = document.getElementById('mapOn') as HTMLInputElement | null; if (cb) cb.checked = on; saveMap(on); v?.invalidate(); bump(n => n + 1); };
   const sheetOf = (k: keyof typeof cam, val: number) => store.cam(c => { (c as unknown as Record<string, number>)[k] = val; });
   const on = presetNow(cam), room = roomRead(store);
-  const png = async (m: number) => { try { download(await v!.exportPNG(m), pngName(store.scene.name, m)); } catch (e) { setNote((e as Error).message); } };
+  const png = async (m: number) => { try { download(await v!.exportPNG(m, SITE_URL), pngName(store.scene.name, m)); } catch (e) { setNote((e as Error).message); } };
   const moment = () => { if (anotherMoment(store)) setNote('Another moment in the tank. Ctrl+Z brings the last one back.'); };
   const px = (m: number) => { const h = v?.host; return h ? pngTitle(h.clientWidth, h.clientHeight, devicePixelRatio || 1, m) : ''; };
 

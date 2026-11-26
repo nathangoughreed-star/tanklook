@@ -1,6 +1,6 @@
 // FD unit 2 (R162): the result card. An example from the landing, or a tank planned around animals, opens full-width (no panel) with one card:
 // name, cost, verdict with its reason, Make it mine / See another. This is the card's state; the card hides at the first edit (landing.untouched, logic/start.ts).
-export type ResultKind = 'example' | 'animal';
+export type ResultKind = 'example' | 'animal' | 'shared';
 export interface Result { kind: ResultKind; /** the example ids to step through (empty for an animal plan) */ list: string[]; i: number }
 let cur: Result | null = null;
 const subs = new Set<() => void>();

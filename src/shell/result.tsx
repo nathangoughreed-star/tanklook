@@ -17,7 +17,7 @@ export function ResultCard({ store, model, result, onMine, onAnother }: { store:
       {missing.length ? <ul class="rcmiss">{missing.map(m => <li>{m.text}</li>)}</ul> : null}
       <div class="acts rcacts">
         <button type="button" class="btn primary" onClick={onMine}>Make it mine</button>
-        <button type="button" class="btn ghost" onClick={another}>{result.kind === 'example' ? 'See another' : 'Pick different animals'}</button>
+        <button type="button" class="btn ghost" onClick={another}>{result.kind === 'example' ? 'See another' : result.kind === 'animal' ? 'Pick different animals' : 'Start my own'}</button>
       </div>
     </div>
   );
