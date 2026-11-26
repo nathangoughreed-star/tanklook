@@ -454,13 +454,13 @@ function flexPatch(sh: THREE.WebGLProgramParametersWithUniforms) {
  * so both flanks curl outward; `flex` = bends on the swim clock (aFin.x > 0).
  */
 
-function finSheet(box: { u0: number; v0: number; w: number; h: number }, root: [number, number], len: number, side: number, flex: boolean, thick: number) {
+function finSheet(box: { u0: number; v0: number; w: number; h: number }, root: [number, number], len: number, side: number, flex: boolean, thick: number, cupK = 0.22) {
   const NX = 10, NY = 8, pos: number[] = [], nrm: number[] = [], uv: number[] = [], fin: number[] = [], idx: number[] = [];
   for (const layer of [1, -1]) {
     const base = pos.length / 3;
     for (let j = 0; j <= NY; j++) for (let i = 0; i <= NX; i++) {
       const s = i / NX, t = j / NY, x = box.u0 + s * box.w - root[0], y = -(box.v0 + t * box.h - root[1]), d = Math.hypot(x, y), k = Math.min(1, d / len);
-      const cup = 0.22 * d * k, half = 0.5 * thick * (1 - k) ** 1.5;
+      const cup = cupK * d * k, half = 0.5 * thick * (1 - k) ** 1.5;
       pos.push(x, y, side * (cup + layer * half)); nrm.push(0, 0, 1); uv.push(s, 1 - t); fin.push(flex ? d : 0, side);
     }
     for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) {
@@ -499,7 +499,7 @@ function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = f
       // flat (plan option, off by default): held out flat like a fish on the glass all the time (hillstream loach)
       const flat = cling || !!(f.kind === 'pelvic' ? p.pelvic?.flat : p.pec?.flat), flex = f.kind === 'pectoral' && !flat, gk = `${key}:${side}:${flex ? 1 : 0}`;
       let g = geoCache.get(gk);
-      if (!g) { g = finSheet(box, f.root, len, side, flex, len * 0.12); g.userData.keep = true; geoCache.set(gk, g); }
+      if (!g) { g = finSheet(box, f.root, len, side, flex, len * 0.12, f.kind === 'pectoral' ? 0.22 : 0); g.userData.keep = true; geoCache.set(gk, g); } // pelvics uncupped: swung out about the body axis, a cup lifts their tips into the belly (b8 report 2026-11-25)
       const mesh = new THREE.Mesh(g, mat), a = (f.spread ?? (flat ? SPLAY : SPREAD)[f.kind]) * (finRange(art) && !cling ? 0.3 + 0.7 * Math.min(1, Math.max(0, fin)) : 1); // a folded fish holds its paired fins close too
       // root slightly inside the surface so the base never shows a gap
       // fin-map fish (tailBlend, method row 61): the belly can sit above the sheet's root (the depth profile is clamped to the fin map), so the
