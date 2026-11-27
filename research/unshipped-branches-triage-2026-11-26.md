@@ -113,3 +113,4 @@ Numbering collision: branch 3's `research/requests.md` row is also numbered R150
 
 - **Bichir (2026-11-26):** id `bichir`, 445 mm (17.5 in). So the lie-flat branch's identity wins; when the data branch (`onboard-bichir-knife-shark`) is merged, its `bichirb` / 335 mm / 117.5 gal rows are renamed and resized to match, and the tank minimum is recomputed for 445 mm, not copied from either branch.
 - Still open: clown knifefish and bamboo shark live entries vs the b9 rebuild; estimated gulp rates for R145.
+- **Merged 2026-11-27 by the sweep chat** (Nathan: "Yes, merge both"): item 2 vigilant-cori (9272bc47, clean) and item 5 tl1-r134-r135 (de17c5ab; one conflict in src/demand/dealscene.ts, both lines kept). Build 2994.
