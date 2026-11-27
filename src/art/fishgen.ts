@@ -438,7 +438,9 @@ function paintMarks(c: Ctx, P: Proj, W: number, marks: Mark[] | undefined, seed:
  * station uF (front) to uR (rear), its rim reaching z from the midline at `peak` (0 front .. 1 rear of the run), rounded both ways. dy lowers it
  * (widths; the pelvics lie under the pectorals' rear), th = root angle on the section (0 top .. pi keel, default 0.72 pi: the lower flank).
  */
-export type FinPlan = { uF: number; uR: number; z: number; peak?: number; dy?: number; th?: number };
+// lead / rake (widths): the rim's front end reaches this far ahead of the root (the pectoral's leading edge sweeping forward beside the head),
+// its rear end this far behind it (the lobe pointing back); in between the shift eases, so the rays fan out from the root
+export type FinPlan = { uF: number; uR: number; z: number; peak?: number; dy?: number; th?: number; lead?: number; rake?: number };
 const mixHex = (a: string, b: string, k: number) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - k) + parseInt(b.slice(i, i + 2), 16) * k).toString(16).padStart(2, '0')).join('');
 export interface PairedFin { kind: 'pelvic' | 'pectoral'; pts: Pt[]; root: [number, number]; tint: string; a?: number; rays: number; edge?: string; spots?: string; spread?: number; sweep?: number }
 /** The paired fins (pelvic if the plan has one, then the pectoral), in card coordinates. */

@@ -240,6 +240,8 @@
    "s1": 54.3,
    "span": 26.7,
    "peak": 0.58,
+   "lead": 5.0,
+   "rake": 4.0,
    "source": "fish-disc.py: run from the side map, span from the front map (% SL)"
   }
  },
@@ -348,6 +350,8 @@
    "s1": 71.0,
    "span": 22.7,
    "peak": 0.5,
+   "lead": 1.5,
+   "rake": 6.0,
    "dy": 0.6,
    "source": "fish-disc.py: run from the side map, span from the front map (% SL)"
   }

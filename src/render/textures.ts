@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { BLEND_TILE_IDS, LECA, blendTile, drawBlendTile, drawFishCard, drawLook, drawPerson, drawSubstrate, substrateField, substrateFine, type BlendTileId, type PresetSubstrate } from '../art/placeholder';
-import { drawPairedFin, type PairedFin } from '../art/fishgen';
+import { drawPairedFin, type FinPlan, type PairedFin } from '../art/fishgen';
 import { drawScene, isPainted, scenePhoto, type BgScene } from '../art/bgscenes';
 import { drawPainted } from '../art/bgpaint';
 import { FX } from './fx';
@@ -113,7 +113,7 @@ export const pairedFinTexture = (art: string, f: PairedFin, box: { u0: number; v
  * to rear, stretched from the fin's top edge (the root, row 0) to its bottom edge (the rim, last row), so the rays and their bands fan out
  * across the disc from the root. Opaque, fading a little over the outer 15 % like a membrane edge.
  */
-export const planFinTexture = (art: string, f: PairedFin) =>
+export const planFinTexture = (art: string, f: PairedFin, q?: FinPlan, polys: PairedFin['pts'][] = [f.pts]) =>
   cached(`planfin:${art}:${f.kind}`, () => {
     const TW = 512, TH = 256, c = document.createElement('canvas'); c.width = TW; c.height = TH;
     const ph = PHOTO_FINS[art], ctx = c.getContext('2d')!;
@@ -121,10 +121,15 @@ export const planFinTexture = (art: string, f: PairedFin) =>
     const im = ph.img as HTMLCanvasElement, W = im.width, H = im.height;
     const src = im.getContext('2d')!.getImageData(0, 0, W, H).data;
     const mk = document.createElement('canvas'); mk.width = W; mk.height = H; const mx = mk.getContext('2d')!;
-    mx.fillStyle = '#fff'; mx.beginPath(); f.pts.forEach((q, i) => { const x = q[0] * W, y = q[1] * W + H / 2; i ? mx.lineTo(x, y) : mx.moveTo(x, y); }); mx.closePath(); mx.fill();
+    // the mask is every disc fin's outline together: the side map can draw a fin as a thin strip under another (hillstream pelvic: a cyan
+    // line under the yellow), and its own strip alone sampled only the pale rim (Nathan 2026-11-27, pelvic washed out)
+    mx.fillStyle = '#fff'; for (const pts of polys) { mx.beginPath(); pts.forEach((q, i) => { const x = q[0] * W, y = q[1] * W + H / 2; i ? mx.lineTo(x, y) : mx.moveTo(x, y); }); mx.closePath(); mx.fill(); }
     const m = mx.getImageData(0, 0, W, H).data, span: ([number, number] | null)[] = [];
     for (let x = 0; x < W; x++) { let a = -1, b = -1; for (let y = 0; y < H; y++) if (m[(y * W + x) * 4 + 3] > 127) { if (a < 0) a = y; b = y; } span.push(a < 0 ? null : [a, b]); }
-    const xs = span.map((s, x) => s ? x : -1).filter(x => x >= 0), x0 = Math.max(...xs), x1 = Math.min(...xs);   // front (nose side) .. rear
+    const xs = span.map((s, x) => s ? x : -1).filter(x => x >= 0), clampX = (x: number) => Math.max(Math.min(...xs), Math.min(Math.max(...xs), Math.round(x)));
+    // the fin's own run (plan uF..uR, card u = image x / W): the side map can paint both fins over one run (hillstream), and the pelvic
+    // then squeezed the pectoral's rays into its short run as straight stripes (Nathan 2026-11-27)
+    const x0 = q ? clampX(q.uF * W) : Math.max(...xs), x1 = q ? clampX(q.uR * W) : Math.min(...xs);   // front (nose side) .. rear
     const out = ctx.createImageData(TW, TH), d = out.data;
     for (let i = 0; i < TW; i++) {
       let x = Math.round(x0 - (x0 - x1) * i / (TW - 1)), k = 0; while (!span[x] && k++ < W) x += x > (x0 + x1) / 2 ? -1 : 1;

@@ -117,7 +117,7 @@ export async function loadPhotoFish(only?: ReadonlySet<string>): Promise<Set<str
       if (Math.max(...sh) > f.h) P[k] = { ...f, spineH: [Math.min(sh[0], f.h), Math.min(sh[1], f.h)] };
     }
     // a flat fin's top-view outline (spec `plan`, % SL from the snout and from the midline; scripts/fish-disc.py): hillstream loach's ventral disc
-    const finPlan = (q: { s0: number; s1: number; span: number; peak?: number; dy?: number; th?: number }) => ({ uF: U(q.s0), uR: U(q.s1), z: Wd(q.span), peak: q.peak, dy: q.dy ? Wd(q.dy) : 0, th: q.th });
+    const finPlan = (q: { s0: number; s1: number; span: number; peak?: number; dy?: number; th?: number; lead?: number; rake?: number }) => ({ uF: U(q.s0), uR: U(q.s1), z: Wd(q.span), peak: q.peak, dy: q.dy ? Wd(q.dy) : 0, th: q.th, lead: Wd(q.lead ?? 0), rake: Wd(q.rake ?? 0) });
     const { sx, sl, ax } = R, cv = (x: number, y: number): [number, number] => [1 - (sx - x) / sl * SLc, (y - ax) / sl * SLc];
     P.fins = {};
     if (R.pec) {

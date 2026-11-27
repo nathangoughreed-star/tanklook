@@ -536,9 +536,10 @@ function planFinGeometry(p: Plan, q: FinPlan, side: number, bend: number) {
       const t = i / NI, u = q.uF + (q.uR - q.uF) * t, sec = ring(u), [v, z] = ringPt(sec, th), x = u - 0.5;
       const rootY = -v, rootZ = z * 0.92, yb = -(sec.vc + sec.hv), planeY = yb + 0.3 * (rootY - yb) - (q.dy ?? 0);
       const rimZ = rootZ + Math.max(0, q.z - rootZ) * Math.sin(Math.PI * t ** ex) ** 0.45;
+      const shift = (q.lead ?? 0) * (1 - t) ** 2 - (q.rake ?? 0) * t ** 2;   // rim ahead of the root at the front, behind it at the rear: the rays fan out
       for (let j = 0; j <= NJ; j++) {
-        const k = j / NJ, half = 0.5 * thick * (1 - k) ** 1.5;
-        pos.push(x, rootY + (planeY - rootY) * smooth(0, 0.3, k) + layer * half, bendZ(bend, x) + side * (rootZ + (rimZ - rootZ) * k));
+        const k = j / NJ, half = 0.5 * thick * (1 - k) ** 1.5, xk = x + shift * k ** 1.5;
+        pos.push(xk, rootY + (planeY - rootY) * smooth(0, 0.3, k) + layer * half, bendZ(bend, xk) + side * (rootZ + (rimZ - rootZ) * k));
         uv.push(t, 1 - k); fin.push(0, side);
       }
     }
@@ -556,7 +557,7 @@ function planFinGeometry(p: Plan, q: FinPlan, side: number, bend: number) {
   return g;
 }
 function planFinMeshes(art: string, p: Plan, f: PairedFin, q: FinPlan, bend: number, edge: EdgeMode) {
-  const mat = cardMaterial(`planfin:${art}:${f.kind}`, planFinTexture(art, f), edge, THREE.DoubleSide); mat.userData.fishCard = true; mat.userData.noRing = true;
+  const mat = cardMaterial(`planfin:${art}:${f.kind}`, planFinTexture(art, f, q, pairedFins(p).filter(g => (g.kind === 'pelvic' ? p.pelvic?.plan : p.pec?.plan)).map(g => g.pts)), edge, THREE.DoubleSide); mat.userData.fishCard = true; mat.userData.noRing = true;
   if (!mat.userData.fin) { mat.userData.fin = true; mat.userData.pre = flexPatch; }
   return [1, -1].map(side => {
     const gk = `planfin:${art}:${f.kind}:${side}:${bend}`;
