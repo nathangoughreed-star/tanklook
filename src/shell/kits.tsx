@@ -70,11 +70,11 @@ function ItemCardView({ e }: { e: ItemEntry }) {
   );
 }
 
-/** One deal tab: sort chips + cards. Stateless so it renders in a test. */
+/** One deal tab: Sort by dropdown + cards. Stateless so it renders in a test. */
 export function DealTab({ model, tab, by, onSort, files }: { model: KitsModel; tab: KitTab; by: DealSort; onSort: (s: DealSort) => void; files: Files }) {
   return <>
-    <div class="dealsort" role="group" aria-label="Sort the deals">{SORTS.map(s => (
-      <button type="button" class={`chip${by === s ? ' on' : ''}`} aria-pressed={by === s} onClick={() => onSort(s)}>{SORT_LABEL[s]}</button>))}</div>
+    <label class="dealsort">Sort by <select class="select" value={by} onChange={ev => onSort((ev.currentTarget as HTMLSelectElement).value as DealSort)}>{SORTS.map(s => (
+      <option value={s} selected={by === s}>{SORT_LABEL[s]}</option>))}</select></label>
     <div class="libgrid kitgrid">{tab === 'items' ? itemsFor(model, by).map(e => <ItemCardView e={e} />) : entriesFor(model, tab, by).map(e => <DealCardView e={e} files={files} />)}</div>
     <p class="hint dealnote">{model.note}</p>
   </>;

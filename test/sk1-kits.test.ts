@@ -37,8 +37,12 @@ describe('SK3 deals model: three categories, example tanks separate', () => {
     expect(kitsModel(now, undefined, undefined, [{ id: 'x', kind: 'Light', title: 't', store: 's', usd: 1, regularUsd: 2, saveUsd: 1, off: 50, asOf: '2026-11-16', url: 'u' }], ).items.length).toBe(1);
   });
   it('sort chips are named by their key; defaults: bundles by price, sale tabs by dollars saved', () => {
-    expect(SORTS.map(s => SORT_LABEL[s])).toEqual(['$ saved, most first', '% saved, most first', 'Price, lowest first', 'Size, smallest first']);
+    expect(SORTS.map(s => SORT_LABEL[s])).toEqual(['$ saved, most first', '% saved, most first', 'Price, lowest first', 'Size, smallest first', 'Size, largest first']);
     expect(defaultSort('bundlesSale')).toBe('usd'); expect(defaultSort('items')).toBe('usd'); expect(defaultSort('bundles')).toBe('cost');
+  });
+  it('size, largest first puts the biggest tanks first (Nathan 2026-11-26)', () => {
+    const g = entriesFor(kitsModel(now), 'bundles', 'sizeDesc').map(e => e.deal.gal);
+    expect(g).toEqual([...g].sort((a, b) => b - a));
   });
   it('bundles sort by price, lowest first, by default', () => {
     const m = kitsModel(now), p = entriesFor(m, 'bundles', 'cost').map(e => e.deal.price.usd);

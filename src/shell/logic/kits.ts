@@ -16,9 +16,9 @@ export { boxList, BOX_ORDER, BOX_NEEDS } from './boxList';
 /** SK3 (Nathan 2026-11-17): three deal categories, each hidden when empty. A deal lands in exactly one. */
 export type KitTab = 'bundles' | 'bundlesSale' | 'items';
 export const KIT_TAB_LABEL: Record<KitTab, string> = { bundles: 'Bundles', bundlesSale: 'Bundles on sale', items: 'Items on sale' };
-/** Sort chips, named by what they sort on (Nathan 2026-10-19). */
-export const SORT_LABEL: Record<DealSort, string> = { usd: '$ saved, most first', pct: '% saved, most first', cost: 'Price, lowest first', size: 'Size, smallest first' };
-export const SORTS: DealSort[] = ['usd', 'pct', 'cost', 'size'];
+/** Sort options (a Sort by dropdown since 2026-11-26), named by what they sort on (Nathan 2026-10-19). */
+export const SORT_LABEL: Record<DealSort, string> = { usd: '$ saved, most first', pct: '% saved, most first', cost: 'Price, lowest first', size: 'Size, smallest first', sizeDesc: 'Size, largest first' };
+export const SORTS: DealSort[] = ['usd', 'pct', 'cost', 'size', 'sizeDesc'];
 export const defaultSort = (tab: KitTab): DealSort => tab === 'bundles' ? DEFAULT_SORT.bundles : DEFAULT_SORT.sale;
 
 /** Which category a bundle listing is in: a bundle with an active sale (the engine's onSale rule) is under Bundles on sale ONLY, every other one under Bundles. */
@@ -76,7 +76,7 @@ export function saleItems(now = Date.now(), models: TankModel[] = TANK_MODELS, g
   return out;
 }
 export function sortItems(list: ItemEntry[], by: DealSort): ItemEntry[] {
-  const key = (e: ItemEntry) => by === 'size' ? e.gal ?? 1e9 : by === 'cost' ? e.usd : by === 'usd' ? -e.saveUsd : -e.off;
+  const key = (e: ItemEntry) => by === 'size' ? e.gal ?? 1e9 : by === 'sizeDesc' ? (e.gal != null ? -e.gal : 1e9) : by === 'cost' ? e.usd : by === 'usd' ? -e.saveUsd : -e.off;
   return [...list].sort((a, b) => key(a) - key(b) || a.usd - b.usd);
 }
 export interface ItemCard { id: string; kind: string; title: string; store: string; size?: string; price: string; was: string; off: number; saved: string; checked: string; ends?: string; url: string; img?: string; still?: string }
