@@ -1,0 +1,404 @@
+{
+ "version": 9,
+ "name": "Photo: planted 60 gal tall, swords + spiderwood",
+ "units": "in",
+ "tanks": [
+  {
+   "tank": {
+    "L": 1231.9,
+    "H": 635.0,
+    "D": 323.85
+   },
+   "camera": {
+    "dist": 3000,
+    "az": 0,
+    "el": 3,
+    "zoom": 1
+   },
+   "render": {
+    "edge": "a2c",
+    "grid": false,
+    "rim": true,
+    "edges": true,
+    "beams": false,
+    "pop": 0.15,
+    "bg": "blue",
+    "glass": "auto",
+    "bgSides": [
+     "back"
+    ],
+    "bgArc": 145,
+    "glassType": "standard"
+   },
+   "light": {
+    "type": "led",
+    "count": 1,
+    "rows": 1,
+    "pattern": "grid",
+    "spacing": 0,
+    "cone": 52,
+    "bright": 1,
+    "kelvin": 6500,
+    "room": 0.1,
+    "height": 50
+   },
+   "substrate": {
+    "show": true,
+    "type": "custom",
+    "custom": {
+     "grain": "gravel",
+     "color": "#8a7650",
+     "grain2": "gravel",
+     "color2": "#3a332a",
+     "share": 40,
+     "mix": 0.5
+    },
+    "fl": 38.1,
+    "fr": 38.1,
+    "bl": 63.5,
+    "br": 63.5
+   },
+   "layout": {
+    "id": "photo-60t",
+    "seed": 2711
+   },
+   "water": {
+    "on": true,
+    "level": 1,
+    "opacity": 0,
+    "color": "#7fb8a8"
+   },
+   "terrain": {
+    "on": false,
+    "cols": 7,
+    "rows": 0,
+    "h": []
+   },
+   "lid": "hood",
+   "stand": {
+    "show": true,
+    "height": 762,
+    "finish": "oak",
+    "style": "cabinet",
+    "table": {
+     "shape": "rect",
+     "L": 1261.9,
+     "D": 353.85,
+     "x": 0,
+     "z": 0
+    }
+   },
+   "person": {
+    "show": false,
+    "height": 1750,
+    "side": "left"
+   },
+   "wall": {
+    "show": true,
+    "side": "back",
+    "color": "#d9ccb2"
+   },
+   "fish": [
+    {
+     "id": 1,
+     "species": "angel",
+     "x": 760,
+     "y": 400,
+     "depth": 160,
+     "yaw": 7,
+     "pitch": 0,
+     "roll": 0,
+     "bend": 0
+    },
+    {
+     "id": 2,
+     "species": "angel",
+     "x": 300,
+     "y": 430,
+     "depth": 200,
+     "yaw": 5,
+     "pitch": 0,
+     "roll": 0,
+     "bend": 0
+    }
+   ],
+   "items": [
+    {
+     "id": 1,
+     "kind": "wood",
+     "variant": "spider",
+     "seed": 277436716,
+     "x": 340,
+     "depth": 170,
+     "lift": 0,
+     "yaw": 20,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 520
+    },
+    {
+     "id": 2,
+     "kind": "wood",
+     "variant": "branch",
+     "seed": 957317705,
+     "x": 190,
+     "depth": 110,
+     "lift": 0,
+     "yaw": -15,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 380
+    },
+    {
+     "id": 3,
+     "kind": "stone",
+     "variant": "slate",
+     "seed": 182045813,
+     "x": 770,
+     "depth": 245,
+     "lift": 0,
+     "yaw": 18,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 260
+    },
+    {
+     "id": 4,
+     "kind": "stone",
+     "variant": "shale",
+     "seed": 285552961,
+     "x": 690,
+     "depth": 235,
+     "lift": 0,
+     "yaw": 28,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 170
+    },
+    {
+     "id": 5,
+     "kind": "stone",
+     "variant": "lace",
+     "seed": 229765798,
+     "x": 720,
+     "depth": 150,
+     "lift": 0,
+     "yaw": -19,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 170
+    },
+    {
+     "id": 6,
+     "kind": "stone",
+     "variant": "lace",
+     "seed": 650225026,
+     "x": 880,
+     "depth": 190,
+     "lift": 0,
+     "yaw": 7,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 140
+    },
+    {
+     "id": 7,
+     "kind": "stone",
+     "variant": "holey",
+     "seed": 513981180,
+     "x": 1120,
+     "depth": 80,
+     "lift": 0,
+     "yaw": 10,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 150
+    },
+    {
+     "id": 8,
+     "kind": "plant",
+     "variant": "fern",
+     "seed": 348181662,
+     "x": 170,
+     "depth": 125,
+     "lift": 80,
+     "yaw": -10,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 180
+    },
+    {
+     "id": 9,
+     "kind": "plant",
+     "variant": "fern",
+     "seed": 689048080,
+     "x": 300,
+     "depth": 160,
+     "lift": 130,
+     "yaw": -29,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 150
+    },
+    {
+     "id": 10,
+     "kind": "plant",
+     "variant": "fern",
+     "seed": 509799300,
+     "x": 430,
+     "depth": 185,
+     "lift": 70,
+     "yaw": -3,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 140
+    },
+    {
+     "id": 11,
+     "kind": "plant",
+     "variant": "sword",
+     "seed": 782867463,
+     "x": 70,
+     "depth": 230,
+     "lift": 0,
+     "yaw": -32,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 400
+    },
+    {
+     "id": 12,
+     "kind": "plant",
+     "variant": "sword",
+     "seed": 582698625,
+     "x": 360,
+     "depth": 265,
+     "lift": 0,
+     "yaw": -8,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 440
+    },
+    {
+     "id": 13,
+     "kind": "plant",
+     "variant": "sword",
+     "seed": 160883422,
+     "x": 1060,
+     "depth": 245,
+     "lift": 0,
+     "yaw": -6,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 460
+    },
+    {
+     "id": 14,
+     "kind": "plant",
+     "variant": "sword",
+     "seed": 858096884,
+     "x": 570,
+     "depth": 120,
+     "lift": 0,
+     "yaw": -30,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 270
+    },
+    {
+     "id": 15,
+     "kind": "plant",
+     "variant": "sword",
+     "seed": 436081839,
+     "x": 800,
+     "depth": 150,
+     "lift": 0,
+     "yaw": 17,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 230
+    },
+    {
+     "id": 16,
+     "kind": "plant",
+     "variant": "crypt",
+     "seed": 309799783,
+     "x": 470,
+     "depth": 90,
+     "lift": 0,
+     "yaw": -12,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 120
+    },
+    {
+     "id": 17,
+     "kind": "plant",
+     "variant": "crypt",
+     "seed": 227409953,
+     "x": 650,
+     "depth": 80,
+     "lift": 0,
+     "yaw": 27,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 95
+    },
+    {
+     "id": 18,
+     "kind": "plant",
+     "variant": "crypt",
+     "seed": 450625063,
+     "x": 880,
+     "depth": 100,
+     "lift": 0,
+     "yaw": 12,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 130
+    },
+    {
+     "id": 19,
+     "kind": "plant",
+     "variant": "crypt",
+     "seed": 995780888,
+     "x": 990,
+     "depth": 80,
+     "lift": 0,
+     "yaw": -39,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 105
+    },
+    {
+     "id": 20,
+     "kind": "plant",
+     "variant": "crypt",
+     "seed": 580676823,
+     "x": 260,
+     "depth": 70,
+     "lift": 0,
+     "yaw": 12,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 90
+    },
+    {
+     "id": 21,
+     "kind": "plant",
+     "variant": "grass",
+     "seed": 591935166,
+     "x": 35,
+     "depth": 280,
+     "lift": 0,
+     "yaw": 28,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 420
+    }
+   ]
+  }
+ ],
+ "active": 0,
+ "camLock": true
+}
