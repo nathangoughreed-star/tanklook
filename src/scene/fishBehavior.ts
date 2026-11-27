@@ -190,3 +190,35 @@ export const HABIT: Record<string, HabitSpec> = {
   electricblueacara: H('crevice', 'hoverLow', 8,   1.5, 0,    0.8, 0.4,  0.8, 1,   1,   1,   0,   [4, 25]),
   convict: H('crevice', 'hoverLow', 6,   1.5, 0,    0.8, 0.5,  1.5, 1,   1.5, 1,   0,   [4, 25]),
 };
+
+/**
+ * Air gulping (R145, 2026-11-24; sources and figures per species in research/air-gulping.md): fish that breathe air make a trip to the
+ * surface now and then, take a gulp and go back to where they were. Labyrinth fish (bettas, gouramis) breathe air all the time; corys,
+ * plecos, otos, loaches, the clown knife and the bichir are facultative air-breathers that go up more in warm or still water.
+ * perHour = trips per hour in a planted tank at about 77 °F (normal oxygen); night = rate multiplier in a dark tank (absent = 1);
+ * dart = a quick near-vertical dash up and back (default: bottom fish dart, water fish rise slowly from mid-water).
+ * Kept rare on purpose: a trip is a few seconds, so even a betta at 12 an hour spends under 2 % of its time on them.
+ * ESTIMATES: every rate below is an estimate (no published trips-per-hour figure) except the corydoras, which take the low end of FishBase's
+ * C. aeneus "1 to 45 times per hour"; each row's range and basis is in research/air-gulping.md. Nathan accepted estimates here (2026-11-27)
+ * because the rate only paces an animation: it feeds no verdict, cost or advice, and the app must never show it as a fact.
+ */
+export interface GulpSpec { perHour: number; night?: number; dart?: boolean }
+const CORY: GulpSpec = { perHour: 4, night: 1.3 };
+export const GULP: Record<string, GulpSpec> = {
+  // labyrinth fish: obligate air-breathers, a slow rise from mid-water, a gulp, a slow sink back
+  betta: { perHour: 12 }, dwarfgourami: { perHour: 10 }, honeygourami: { perHour: 10 }, sparklinggourami: { perHour: 15 }, croakinggourami: { perHour: 15 },
+  gourami: { perHour: 10 }, threespot: { perHour: 12 },
+  // corydoras: intestinal air-breathing, a dash straight up from the floor and back down
+  bronzecory: CORY, pepperedcory: CORY, pandacory: CORY, pygmycory: CORY, sterbai: CORY, saltpepper: CORY, falsejulii: CORY,
+  // armoured suckermouths: air held in the stomach / an esophageal pouch, mostly when the water is short of oxygen.
+  // NOT SEEN YET: they cling (render/cling.ts) and the herps below crawl (render/crawl.ts), so the swim sim never runs them; these rows wait for a trip there
+  pleco: { perHour: 1, night: 1.5 }, bristlenose: { perHour: 1, night: 1.5 }, oto: { perHour: 2 },
+  // others
+  kuhli: { perHour: 1.5, night: 1.5 }, clownknife: { perHour: 8, dart: false }, bichir: { perHour: 4, night: 1.5 },
+  adf: { perHour: 4 }, axolotl: { perHour: 3 }, firenewt: { perHour: 2 },
+};
+/** The GULP entry for this tank, or undefined: `dark` = no tank light (the night rate applies). */
+export const gulpFor = (id: string, bottom: boolean, dark: boolean): { perHour: number; dart: boolean } | undefined => {
+  const g = GULP[id]; if (!g || !(g.perHour > 0)) return undefined;
+  return { perHour: g.perHour * (dark ? g.night ?? 1 : 1), dart: g.dart ?? bottom };
+};

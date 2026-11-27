@@ -62,6 +62,8 @@ export interface SwimmerSpec {
   guard?: boolean;
   /** BR: a pair former (groups.ts PAIR_FORMERS) of which exactly two are in the tank: both carry the same key, share one home and stay within about 3 body lengths. */
   pair?: string;
+  /** R145: air gulping (fishBehavior.ts GULP) resolved for this tank: trips to the surface per hour, `dart` = a quick near-vertical dash up and back (a bottom fish), else a slow rise from mid-water (a labyrinth fish). */
+  gulp?: { perHour: number; dart: boolean };
   /** Same school / shoal = same key (species id + split index); undefined = loner. `tight` = a school (aligned), else a shoal (loose). */
   group?: { key: string; tight: boolean };
   /** Where it was placed: its Reset pose. yaw/pitch/roll in degrees as in the scene's Fish. */
@@ -92,6 +94,8 @@ export interface SwimSim {
   pose(id: number): SwimPose | null;
   /** Put these fish (all if omitted) back at their placed spots. */
   reset(ids?: number[]): void;
+  /** R145: send fish `id` up for a breath of air now (dev page / tests); false if it has no GULP entry or cannot go just now. */
+  gulp?(id: number): boolean;
 }
 
 export type MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, seed: number) => SwimSim;
