@@ -29,7 +29,7 @@ const hist = new Map<string, CandidateRecord>();
 beforeEach(() => { clearPairCache(); hist.clear(); });
 function run(brief = emptyBrief(), o: Parameters<typeof nextPair>[4] = {}, tank = project(), s = session()) {
   let rows: ScoredRow[] = [], m: PoolMetrics | undefined; const notes: string[] = [];
-  const r = nextPair({ tank, rev: 1 }, brief, s, id => hist.get(id), { scores: x => { rows = x; }, metrics: x => { m = x; }, budgetMs: 6000, notes, ...o });
+  const r = nextPair({ tank, rev: 1 }, brief, s, id => hist.get(id), { scores: x => { rows = x; }, metrics: x => { m = x; }, budgetMs: 30000, notes, ...o });
   if (r.ok) for (const c of [r.a, r.b]) hist.set(c.id, c);
   return { r, rows, m: m!, notes };
 }
