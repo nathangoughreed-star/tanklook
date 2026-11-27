@@ -29,6 +29,12 @@ import { WHITE_UV, cellIndex, rectUV, strapAlong, texOf } from '../art/plantTex'
 import MARIMO_TEX from '../data/plantart/marimo.json';
 /** The marimo's own texture (R182, scripts/marimo-skin.py): the skin's rect, the fringe cards', the share of a card below the ball's outline, its width / height. */
 const MARIMO = MARIMO_TEX as unknown as { skin: [number, number, number, number]; cards: [number, number, number, number][]; base: number; aspect: number };
+import JMOSS_TEX from '../data/plantart/javamoss.json';
+type Rect4 = [number, number, number, number];
+/** Java moss's own texture (R182 lane JM, scripts/javamoss-skin.py): the mat tile's rect, the edge cards' (with the share
+ *  below the cushion's outline and their width / height), the single strands' (each with its root in uv, hanging or not,
+ *  and its length as a share of the longest). */
+const JMOSS = JMOSS_TEX as unknown as { mat: Rect4; edges: Rect4[]; edgeBase: number; edgeAspect: number; strands: { rect: Rect4; root: [number, number]; hang: boolean; len: number }[] };
 
 /** Switches for review sheets: sway (off = every leaf rigid), emerse (off = no emersed
  *  twins: emerging plants lie over at the surface as in GR1), gpu (off = revealPlant on the CPU every growth step, as
@@ -831,6 +837,100 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     for (let j = 0, m = extras(n, 2 * n); j < m; j++) {
       const y = 2 * re() - 1, s = Math.sqrt(1 - y * y), a = re() * 6.28;
       card(re, Math.cos(a) * s, y, Math.sin(a) * s, fullBy(extraAt(j, n), 0.08, 1), ex);
+    }
+    extra.push(tagAll(core, small.a, small.w, B));
+  } else if (P.form === 'tangle') {
+    // java moss, alone (R182 lane JM step 3; the look: research/moss-model-proposal.md, "Java moss look, checked against
+    // photos"). Its own texture from a ChatGPT sheet (scripts/javamoss-skin.py -> public/art/plants/javamoss.webp); the
+    // marimo showed hand-made hairs read as fake. No core ball: a low slumped cushion (a height field: flat top, soft
+    // ragged rim) wearing the mat tile at its true scale (each triangle takes the copy of the tile its cell is in; the grid
+    // lines fall on the tile's edges, so no triangle straddles one), edge cards standing round the rim and over the top
+    // (the ragged outline, never smooth), and single strands poking out of the sides and lying loose on the sand.
+    // Vertex colours only shade: lit top, dark low sides; the cards darker than the mat (seen edge-on they would glow).
+    // Growth: the clump shrinks toward its middle below g0; above it the top grows shaggier.
+    const J = JMOSS, R = Wc / 2, ph = [r() * 6.28, r() * 6.28, r() * 6.28, r() * 6.28];
+    const el = 0.08 + 0.1 * r(), rim = (a: number) => R * (0.86 + el * Math.sin(2 * a + ph[0]) + 0.05 * Math.sin(3 * a + ph[1]) + 0.025 * Math.sin(5 * a + ph[2]) + 0.015 * Math.sin(11 * a + ph[3]));
+    const Ht = h * 0.62; // the cushion's body; the strands on the cards reach above it
+    const lumps = (x: number, z: number) => 0.5 + 0.5 * Math.sin(x * 7.3 / R + ph[1]) * Math.sin(z * 6.1 / R + ph[2]) * Math.sin((x + z) * 3.7 / R + ph[3]);
+    const hAt = (x: number, z: number) => { const t = Math.min(1, Math.hypot(x, z) / rim(Math.atan2(z, x))); return Ht * Math.pow(Math.max(0, 1 - t ** 2.2), 0.6) * (0.8 + 0.2 * lumps(x, z)); };
+    const shade = (y: number, x: number, z: number) => (0.5 + 0.85 * Math.min(1, y / Ht * 1.15)) * (0.88 + 0.24 * lumps(x * 1.7, z * 1.7));
+    const B = V(0, 0, 0), small: LeafTag = g0 < 0.02 ? SHOWN : { a: -0.82 * g0, w: 1.82 * g0 * 0.999 };
+    // the cushion: a grid over (x, z); corners past the rim are pulled in onto it (y a little under the sand)
+    const TS = 45, nC = Math.max(4, Math.ceil(TS / (R / 7))), cell = TS / nC, mt = J.mat; // TS: one copy of the mat tile, mm
+    const g0x = Math.floor(-R * 1.1 / cell), n1 = Math.ceil(R * 1.1 / cell) - g0x;
+    const vtx = (i: number, j: number) => {
+      let x = (g0x + i) * cell, z = (g0x + j) * cell;
+      const e = rim(Math.atan2(z, x)), d = Math.hypot(x, z);
+      if (d >= e) { x *= e / d; z *= e / d; return V(x, -h * 0.02, z); }
+      return V(x, hAt(x, z), z);
+    };
+    const cp: number[] = [], cu: number[] = [], cc: number[] = [];
+    for (let i = 0; i < n1; i++) for (let j = 0; j < n1; j++) {
+      const c4 = [[i, j], [i + 1, j], [i + 1, j + 1], [i, j + 1]];
+      if (c4.every(([a, b]) => { const x = (g0x + a) * cell, z = (g0x + b) * cell; return Math.hypot(x, z) >= rim(Math.atan2(z, x)); })) continue;
+      const ti = Math.floor((g0x + i) / nC), tj = Math.floor((g0x + j) / nC); // the tile copy this cell is in
+      const pts = c4.map(([a, b]) => vtx(a, b));
+      for (const k of [0, 2, 1, 0, 3, 2]) { // (two triangles, wound to face up)
+        const p = pts[k], [a, b] = c4[k], u = (g0x + a) / nC - ti, w = (g0x + b) / nC - tj, sh = shade(Math.max(0, p.y), p.x, p.z);
+        cp.push(p.x, p.y, p.z); cu.push(mt[0] + (mt[2] - mt[0]) * u, mt[1] + (mt[3] - mt[1]) * w); cc.push(sh, sh, sh);
+      }
+    }
+    const core = new THREE.BufferGeometry();
+    core.setAttribute('position', new THREE.Float32BufferAttribute(cp, 3));
+    core.setAttribute('uv', new THREE.Float32BufferAttribute(cu, 2));
+    core.setAttribute('color', new THREE.Float32BufferAttribute(cc, 3));
+    core.setIndex(Array.from({ length: cp.length / 3 }, (_, i) => i));
+    core.computeVertexNormals();
+    /** A card: a strip from `foot` along `up` (bending by `lean` toward its top), `wd` wide across `side`, its rect mapped
+     *  bottom to top, in `rows` steps. */
+    const strip = (into: Sheets, foot: THREE.Vector3, up: THREE.Vector3, side: THREE.Vector3, lean: THREE.Vector3, wd: number, rect: Rect4, kb: number, tag: LeafTag, flip: boolean, rows = 2) => {
+      const pts: THREE.Vector3[] = [], cols: THREE.Color[] = [], uf: number[] = [], tg: Tag[] = [];
+      for (let row = 0; row <= rows; row++) {
+        const s = row / rows, at = foot.clone().addScaledVector(up, s).addScaledVector(lean, s * s), k = kb * (0.8 + 0.25 * s);
+        for (let col = 0; col < 2; col++) {
+          pts.push(at.clone().addScaledVector(side, (col - 0.5) * wd)); cols.push(new THREE.Color(k, k, k));
+          rectUV(rect, flip ? 1 - col : col, s, uf);
+          tg.push({ a: tag.a, w: tag.w, anc: B, pc: -1, par: 0, apar: 0 });
+        }
+      }
+      into.grid(pts, cols, rows + 1, 2, cols, tg, undefined, { f: uf, b: uf });
+    };
+    /** An edge card at angle a, t of the way out to the rim: standing on the cushion, leaning outward the more the further out. */
+    const edge = (q: R, a: number, t: number, Hk: number, tag: LeafTag, into: Sheets) => {
+      const e = rim(a), x = Math.cos(a) * e * t, z = Math.sin(a) * e * t, y = t >= 1 ? 0 : hAt(x, z);
+      const Hc = Ht * Hk * (0.75 + 0.5 * q()), out = V(Math.cos(a), 0, Math.sin(a)), tilt = (0.15 + 0.75 * Math.min(1, t) ** 3) * (0.7 + 0.6 * q());
+      const upv = V(0, 1, 0).multiplyScalar(Math.cos(tilt)).addScaledVector(out, Math.sin(tilt)).multiplyScalar(Hc);
+      const yaw = t > 0.85 ? a + Math.PI / 2 + (q() - 0.5) * 0.5 : q() * 6.28, side = V(Math.cos(yaw), 0, Math.sin(yaw));
+      const foot = V(x, y, z).addScaledVector(upv, -J.edgeBase * 1.4), lean = out.clone().multiplyScalar(Hc * 0.25 * q());
+      const kb = Math.max(0.4, shade(y, x, z)) * (0.78 + 0.2 * q()); // (still under the lit mat's 1.35)
+      strip(into, foot, upv, side, lean, Hc * J.edgeAspect, J.edges[Math.floor(q() * J.edges.length)], kb, tag, q() < 0.5);
+    };
+    const UP = J.strands.filter(s => !s.hang);
+    /** A loose strand from the rim: lying on the sand (flat) or poking out of the side (rising, then sagging). */
+    const strand = (q: R, tag: LeafTag, into: Sheets) => {
+      const st = UP[Math.floor(q() * UP.length)], rc = st.rect, a = q() * 6.28, e = rim(a), lying = q() < 0.45;
+      const L = R * (0.3 + 0.45 * q()) * (0.5 + 0.5 * st.len) * 1.4, aspect = (rc[2] - rc[0]) / (rc[3] - rc[1]);
+      const out = V(Math.cos(a + (q() - 0.5) * 0.8), 0, Math.sin(a + (q() - 0.5) * 0.8));
+      const t0 = lying ? 0.8 : 0.55 + 0.35 * q(), x = Math.cos(a) * e * t0, z = Math.sin(a) * e * t0, y = lying ? h * 0.01 : hAt(x, z) * (0.3 + 0.5 * q());
+      const rise = lying ? 0.05 : 0.25 + 0.6 * q(), upv = out.clone().multiplyScalar(Math.cos(rise) * L).add(V(0, Math.sin(rise) * L, 0));
+      const lean = V(0, lying ? 0 : -L * (0.15 + 0.25 * q()), 0); // (sags at the tip)
+      const dir = upv.clone().normalize(), side = dir.clone().cross(V(0, 1, 0)).normalize();
+      side.applyAxisAngle(dir, (q() - 0.5) * (lying ? 0.4 : 1.6));
+      const ru = (st.root[0] - rc[0]) / (rc[2] - rc[0]); // the stem's place across the card
+      const W = L * aspect, foot = V(x, y, z).addScaledVector(side, (0.5 - ru) * W);
+      strip(into, foot, upv, side, lean, W, rc, 0.8 + 0.2 * q(), tag, false, 3);
+    };
+    const per = 2 * Math.PI * R * 0.85, cw = Ht * 0.9 * J.edgeAspect, area = Math.PI * R * R * 0.75;
+    const nRing = Math.round(per / (cw * 0.28)), nTop = Math.round(area / (cw * cw) * 2 * between(r, P.n) / 300), nStr = Math.round(per / (R * 0.12));
+    for (let i = 0; i < nRing; i++) edge(r, (i + r() * 0.6) / nRing * 6.2832, 0.88 + 0.14 * r(), 1.1, small, out);
+    for (let i = 0; i < nRing * 0.6; i++) edge(r, r() * 6.2832, 0.7 + 0.18 * r(), 0.85, small, out);
+    for (let i = 0; i < nRing * 0.4; i++) edge(r, r() * 6.2832, 1 + 0.06 * r(), 0.7, small, out); // (low, leaning out over the sand: no clean line at the foot)
+    for (let i = 0; i < nTop; i++) edge(r, r() * 6.2832, Math.sqrt(r()) * 0.72, 0.6, small, out);
+    for (let i = 0; i < nStr; i++) strand(r, small, out);
+    // grown on past g0: the top shaggier, more loose strands (its own stream)
+    for (let j = 0, m = extras(nTop, 2 * nTop); j < m; j++) {
+      const tg = fullBy(extraAt(j, nTop), 0.08, 1);
+      if (re() < 0.75) edge(re, re() * 6.2832, Math.sqrt(re()) * 0.85, 0.6, tg, ex); else strand(re, tg, ex);
     }
     extra.push(tagAll(core, small.a, small.w, B));
   } else if (P.form === 'moss') {

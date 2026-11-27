@@ -10,7 +10,7 @@ export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubi
 
 /** Height / width per plant type (sizes and footprints; the ratio of the old 2D cards). */
 export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1,
-  buce: 0.9, rotala: 3.6, ludwigia: 3, balansae: 3, sagittaria: 0.45, ozelot: 1.1, moss: 0.45, marimo: 0.8,
+  buce: 0.9, rotala: 3.6, ludwigia: 3, balansae: 3, sagittaria: 0.45, ozelot: 1.1, moss: 0.35, marimo: 0.8,
   redroot: 0.35, salvinia: 0.25, frogbit: 0.4, lettuce: 0.45, lotus: 0.85,
   pothos: 1.3, bromeliad: 0.6, tropfern: 1, fittonia: 0.5, sphagnum: 0.35, creeper: 1.2,
   hairgrass: 0.4, hornwort: 3, anacharis: 3.2,
@@ -92,7 +92,7 @@ export interface Plant3D {
    *  on the water over a patch, roots hanging under them; vine = long vines from a crown (lane T2), climbing up behind
    *  it or trailing along the ground, leaves (len in mm) on them; ball = a free fuzzy ball (marimo): a lumpy core under a
  *  dense coat of short hairs (n: hairs per 1000 mm² of its surface; leaf.len a fraction of its height). */
-  form: 'rosette' | 'rhizome' | 'stem' | 'carpet' | 'moss' | 'float' | 'vine' | 'ball';
+  form: 'rosette' | 'rhizome' | 'stem' | 'carpet' | 'moss' | 'float' | 'vine' | 'ball' | 'tangle';
   /** Its own texture under public/art/plants/ instead of the shared leaf atlas (R182: the marimo's skin and fringe). */
   ownTex?: string;
   /** Leaves (rosette, rhizome), stems (stem), or leaflets per 1000 mm² of patch (carpet) or of the mound's footprint
@@ -240,9 +240,11 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
     spots: { col: '#5e2a1e', n: [14, 24], r: 0.035 }, seg: [24, 7], tex: 'ozelot' },
     emersed: { k: 0.95, stiff: 210, land: 70, wid: 0.26, prof: [0.6, 0.6], pet: 0.5, twist: 0.15, fold: -0.08, wave: [0.01, 2],
       cols: [['#2e5a24', '#4a7e38'], ['#34622a', '#52863e']], under: '#4a6a3a', rib: '#88b070' } },
-  // Java moss (Taxiphyllum barbieri): a low ragged mound of tiny dark fronds over a dark core, on the ground or lifted
-  // onto wood or rock. Frond length: a fraction of the mound's height
-  moss: { grow: { speed: 'medium', overflow: 'none', len: [20, 100], more: 6 }, sway: 0.05, form: 'moss', n: [280, 340], spread: 0.95, stalk: '#16281a', leaf: {
+  // Java moss (Taxiphyllum barbieri; R182 lane JM, 2026-11-26). Look from photos (research/moss-model-proposal.md, "Java
+  // moss look, checked against photos": aquasabi.com, flowgrow.de, Wikimedia Javamoos.jpg): no core, a low slumped
+  // cushion of fine crossing strands about 3x wider than tall, dark inside, lighter strands on top, a ragged outline with
+  // strands poking out, loose strands on the sand. Form 'tangle' with its own texture (scripts/javamoss-skin.py)
+  moss: { grow: { speed: 'medium', overflow: 'none', len: [20, 100], more: 6 }, sway: 0.05, form: 'tangle', ownTex: 'javamoss.webp', n: [280, 340], spread: 0.95, stalk: '#16281a', leaf: {
     len: [0.07, 0.13], wid: 0.55, prof: [0.6, 0.5], rise: [0, 0], arch: 0.8, twist: 1.2, fold: 0.2, wave: [0, 0], pet: 0,
     cols: [['#1e3a1c', '#3a6230'], ['#24421e', '#426c36'], ['#1a341a', '#34582c'], ['#22401c', '#3e6a2e']], under: '#2a4a26', seg: [2, 3] } },
   // Marimo ball (Aegagropila linnaei, a filamentous alga; R182, Nathan 2026-11-26 "moss balls"). Refs (Wikimedia):
