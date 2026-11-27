@@ -41,6 +41,12 @@ than a minute and write down where.
   thick glass with a green edge. Weak spots: the fish models are game-like and the scale is off, and the gear is
   generic. Note: Nathan previously rejected photo-wrapped fish as too real (R144). Take the scene cues from this, not
   the fish.
+- **Aquascaper Studio (2026-11-27), https://aquascaperstudio.com/:** Nathan: "holy shit it is insane how similar
+  this is to my build. This is like a code red need for differentiation" ... "their fish models still suck though
+  whch is good because thats a strong point for us". This is the closest competitor so far. One developer, free 3D
+  in the browser, substrate sculpted with a brush, fish that behave by species. It has no saving, no equipment and no
+  stocking checks. Our advantages: build-B fish, real gear with prices, stocking and compatibility verdicts, and
+  marine, brackish and terrarium tanks. The look is too similar and needs differentiating (R167).
 
 ## Notes per product
 
