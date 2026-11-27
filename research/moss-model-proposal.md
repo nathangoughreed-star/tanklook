@@ -100,6 +100,9 @@ was lime and smooth (a green pea), then darker olive colours, stronger and finer
 Pass 2 (Nathan 2026-11-26, "needs more depth and texture"): tufts. Two octaves of value noise raise the surface into
 clumps (7 % of the radius) with creases between them; creases much darker, crests lighter; hairs longer and lighter on
 crests, short and dark in creases; core 72x48. Before/after beside the photos: `research/moss-refs/marimo-pass2-before-after.jpg`.
+Pass 3 (Nathan 2026-11-26, "Needs more", "fuzzy"): deeper tufts (10 % of the radius), a fine filament grain in the
+colour, a longer thinner coat (up to 6,000 hairs on a big ball), and one hair in ~8 a loose stray filament 2.5-4.5x
+as long: the scraggly halo of the photos. Shown in an orbit viewer artifact (https://claude.ai/artifact/Vpd2QqRdpgq8RPGhB8S5bq).
 Not done: groups of 3-5 as one item, rolling off rocks onto the substrate (today it can be raised onto hardscape
 like any plant).
 
