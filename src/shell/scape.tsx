@@ -7,7 +7,7 @@ import type { Viewer } from '../render/viewer';
 import { supportLift } from '../interact/pointer';
 import {
   terrainView, placedView, pieceView, brushView, groupBarView, scapeSec, type ScapeSec, type LibraryView, type PlacedView,
-  setBlendGrain, setBlendColor, setBlendShare, setBlendMix, addBlendGrain, removeBlendGrain, setTerrainOn, setTerrainCols, flattenTerrain,
+  setBlendGrain, setBlendColor, setBlendShare, setBlendMix, addBlendGrain, removeBlendGrain, shuffleBlend, setTerrainOn, setTerrainCols, flattenTerrain,
   removePool, setPoolField, removePiece, duplicatePiece, clearPieces, toggleKeep, reshapePiece, dropPiece, nudgePiece, setField,
   brushOn, pickBrush, groupTurn, groupSizeBy, groupDelete, groupDuplicate, GRAINS, KEEP_PROPS,
 } from './logic/scape';
@@ -172,23 +172,44 @@ export function BrushBlock({ store }: { store: Store }) {
   );
 }
 
+/** Custom blend (GB1): a bar of the mix in its colours, one compact line per grain (colour dot, kind, share, remove), how mixed, and Shuffle. */
 export function Blend({ store }: { store: Store }) {
-  const c = store.tank.substrate.custom, n = c.grains.length;
+  const c = store.tank.substrate.custom, n = c.grains.length, mix = Math.round(c.mix * 100);
+  const seal = () => sealer.store?.seal();
   return (
-    <div class="blend">
-      {c.grains.map((g, i) => (
-        <div class="blendgrain" key={i}>
-          <div class="row"><span class="lbl">{n === 1 ? 'Grain' : `Grain ${i + 1}`}</span>
+    <div class="blend2">
+      <div class="bhead">
+        <b>Your blend</b>
+        <button type="button" class="btn sm" title="Lay the same blend out afresh: same grains, colours, shares and mix" onClick={() => shuffleBlend(store)}><Icon name="shuffle" />Shuffle</button>
+      </div>
+      <div class="bbar" aria-hidden="true">{c.grains.map(g => <span style={{ flexGrow: Math.max(g.share, 0.001), background: g.color }} />)}</div>
+      <div class="bgrains">
+        {c.grains.map((g, i) => (
+          <div class="bgrain" key={i}>
+            <input type="color" class="bswatch" value={g.color} aria-label={`Grain ${i + 1} colour`} title="Colour" onInput={e => setBlendColor(store, i, val(e))} onChange={seal} />
             <Select label={`Grain ${i + 1}`} value={g.grain} onChange={v => setBlendGrain(store, i, v)}>{GRAINS.map(o => <option value={o.id}>{o.label}</option>)}</Select>
-            <input type="color" class="colorbox" value={g.color} aria-label={`Grain ${i + 1} colour`} onInput={e => setBlendColor(store, i, val(e))} /></div>
-          {n > 1 ? <>
-            <SliderRow label="Share" title={`Grain ${i + 1}: the others adjust to fill 100 %`} min={0} max={100} value={g.share} text={`${g.share}%`} onInput={v => setBlendShare(store, i, v)} />
-            <button type="button" class="btn sm" aria-label={`Remove grain ${i + 1}`} title="Remove this grain" onClick={() => removeBlendGrain(store, i)}>Remove</button>
-          </> : null}
+            {n > 1
+              ? <input class="slider" type="range" min={0} max={100} value={g.share} aria-label={`Grain ${i + 1} share`} title="Its share: the others adjust to fill 100 %" onInput={e => setBlendShare(store, i, +val(e))} onChange={seal} />
+              : <span class="hint">The whole floor</span>}
+            <span class="bpct">{g.share}%</span>
+            {n > 1
+              ? <button type="button" class="btn icon sm ghost" aria-label={`Remove grain ${i + 1}`} title="Remove this grain" onClick={() => removeBlendGrain(store, i)}><Icon name="x" /></button>
+              : <span />}
+          </div>
+        ))}
+      </div>
+      {n < MAX_GRAINS
+        ? <button type="button" class="badd" onClick={() => addBlendGrain(store)}><Icon name="plus" />Add grain</button>
+        : <div class="hint">Five grains is the most.</div>}
+      {n > 1 ? (
+        <div class="bmix">
+          <span class="lbl">Mixed</span>
+          <span class="bend">Patches</span>
+          <input class="slider" type="range" min={0} max={100} value={mix} aria-label="Mixed" title="Low: the grains lie in drifts and patches. High: evenly stirred together" onInput={e => setBlendMix(store, +val(e))} onChange={seal} />
+          <span class="bend">Even</span>
+          <span class="bpct">{mix}%</span>
         </div>
-      ))}
-      {n < MAX_GRAINS ? <button type="button" class="btn sm" onClick={() => addBlendGrain(store)}>Add grain</button> : <div class="hint">Five grains is the most.</div>}
-      {n > 1 ? <SliderRow label="Mixed" min={0} max={100} value={Math.round(c.mix * 100)} text={`${Math.round(c.mix * 100)}%`} onInput={v => setBlendMix(store, v)} /> : null}
+      ) : null}
     </div>
   );
 }

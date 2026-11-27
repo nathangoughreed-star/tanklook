@@ -43,6 +43,8 @@ export function grainLooks(sub: TankSetup['substrate']): GrainLook[] {
 const COVER_K = 1.6;
 const cover = (r: number) => Math.min(1, -Math.log(1 - Math.min(r, 0.999)) / COVER_K);
 /** GB2: how mixed a multi-grain blend is, 0-1 (0 for anything else): the size sorting and knots of the ground effects fade out with it. */
+/** Shuffle: a blend's seed moves its stones' random draws too (0 = the original draws). */
+const blendSeed = (S: TankSetup) => (S.substrate.type === 'custom' ? (S.substrate.custom.seed ?? 0) * 101 : 0);
 export const blendMixed = (S: TankSetup) => (S.substrate.type === 'custom' && S.substrate.custom.grains.length > 1 ? S.substrate.custom.mix : 0);
 /** The ground's coarsest 3D grain, or null for a ground drawn as a surface only. */
 export function grainLook(sub: TankSetup['substrate']): GrainLook | null {
@@ -152,7 +154,7 @@ function topGrains(S: TankSetup, T: Tank, ground: GroundAt, g: GrainLook, layer:
     // to the same number in every 4-point cell of the floor (no big clumps or gaps, no lattice or rows: Nathan 11-18 found
     // the even grid uncanny), each kept by the grain's share at random
     const loose = 1 - blendMixed(S), cl = FX.ground && loose > 0.01 ? clumpField(S, ground) : null, K = cl ? 1 + 0.7 * loose : 1;
-    const r = rng(23 + layer), n = Math.round(count * 1.15 * K * T.L * T.D / area), per = 4, cs = Math.sqrt(per * T.L * T.D / Math.max(1, n)), nx = Math.max(1, Math.ceil(T.L / cs)), nz = Math.max(1, Math.ceil(T.D / cs));
+    const r = rng(23 + layer + blendSeed(S)), n = Math.round(count * 1.15 * K * T.L * T.D / area), per = 4, cs = Math.sqrt(per * T.L * T.D / Math.max(1, n)), nx = Math.max(1, Math.ceil(T.L / cs)), nz = Math.max(1, Math.ceil(T.D / cs));
     at = [];
     for (let j = 0; j < nz && at.length < count * 1.2; j++) for (let i = 0; i < nx && at.length < count * 1.2; i++) for (let q = 0; q < per; q++) {
       const x = (i + r()) * T.L / nx, d = (j + r()) * T.D / nz, f = cl ? 1 + loose * (cl(x, d) - 1) : 1;
@@ -160,7 +162,7 @@ function topGrains(S: TankSetup, T: Tank, ground: GroundAt, g: GrainLook, layer:
     }
   }
   const out = scatter(T, ground, {
-    seed: 11 + layer, count, at, kinds: grainKinds(g), lift: [0, 0], pile: 0, tilt: chip ? 0.35 : 0.5,
+    seed: 11 + layer + blendSeed(S), count, at, kinds: grainKinds(g), lift: [0, 0], pile: 0, tilt: chip ? 0.35 : 0.5,
     slope: 0.35, clump: 0, liftK: chip ? [-0.05, 0.05] : [-0.18, 0], pileK: chip ? 0.12 : 0.18, cell: Math.max(1, mean / 3),
     // stones a shade under their tile colours: lit from above, their tops came out near white
     palette: g.colors.map(c => new THREE.Color(c).multiplyScalar(chip ? 1 : 0.8)), shade: y => (y < wy ? 0.55 : 1),
@@ -174,7 +176,7 @@ function topGrains(S: TankSetup, T: Tank, ground: GroundAt, g: GrainLook, layer:
  *  the glass (stones long side along it, chips on edge at a slant). Not in a bowl (its glass curves away from the floor). */
 export const glassGrains = (S: TankSetup, T: Tank, groundY: (x: number, d: number) => number) => cachedGrains('glass', S, T, () => grainLooks(S.substrate).flatMap((g, i) => paneGrains(S, T, groundY, g, i)));
 function paneGrains(S: TankSetup, T: Tank, groundY: (x: number, d: number) => number, g: GrainLook, layer: number): THREE.InstancedMesh[] {
-  const kinds = grainKinds(g), r = rng(17 + layer), mean = (g.size[0] + g.size[1]) / 2, chip = g.shape === 'chip';
+  const kinds = grainKinds(g), r = rng(17 + layer + blendSeed(S)), mean = (g.size[0] + g.size[1]) / 2, chip = g.shape === 'chip';
   const per: THREE.Matrix4[][] = kinds.map(() => []), tint: THREE.Color[][] = kinds.map(() => []);
   const pal = g.colors.map(c => new THREE.Color(c)), wy = g.wet && S.water.on ? waterY(T, S.water.level) : -Infinity;
   const q = new THREE.Quaternion(), qa = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), ax = new THREE.Vector3();

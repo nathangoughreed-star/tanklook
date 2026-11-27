@@ -589,7 +589,7 @@ export function blendZone(b: SubstrateBlend) {
   if (ord.length > 2) { const bn = biasesN(ord.map(g => g.share), amp); bn.forEach((v, k) => { biases[k] = v; }); } // GB3
   const bias = ord.length > 1 ? biases[1] : -14;
   const cell = Math.max(0.5, Math.max(...b.grains.map(g => GRAIN_LOOK[g.grain].size[0] + GRAIN_LOOK[g.grain].size[1])) * 0.9); // mm: mean diameter ~ r0 + r1
-  let h = 2166136261; for (const c of `${b.grains.map(g => g.color).join('')}${b.grains.slice(1).map(g => g.share).join('')}${b.mix}`) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+  let h = 2166136261; for (const c of `${b.grains.map(g => g.color).join('')}${b.grains.slice(1).map(g => g.share).join('')}${b.mix}${b.seed ? `#${b.seed}` : ''}`) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
   const t = blendTile(b), off = [((h >>> 0) % 1000) / 1000, ((h >>> 10) % 1000) / 1000, ((h >>> 5) % 1000) / 1000, ((h >>> 15) % 1000) / 1000];
   return { bias, biases, amp, scale: t / 1000, fine: t / (64 * cell), off };
 }
