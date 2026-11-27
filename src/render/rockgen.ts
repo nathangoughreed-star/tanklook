@@ -36,12 +36,18 @@ const fbm = (n: N3, x: number, y: number, z: number, oct = 4) => { let a = 0, w 
 const ridged = (n: N3, x: number, y: number, z: number, oct = 3) => { let a = 0, w = 0.5, s = 0; for (let k = 0; k < oct; k++) { a += w * (1 - Math.abs(n(x, y, z) * 2 - 1)) ** 2; s += w; x = x * 2.1 + 5.3; y = y * 2.1 + 1.1; z = z * 2.1 + 7.9; w *= 0.5; } return a / s; };
 /** Cell noise: distances to the nearest and second nearest jittered point [F1, F2] (cell size 1). */
 export function worley(seed: number) {
-  const n = noise3(seed * 3 + 1), m = noise3(seed * 5 + 2), o = noise3(seed * 11 + 3);
+  // each cell's point from an integer hash (cheap: this runs 27 times per vertex)
+  const s0 = (seed * 2654435761) | 0;
+  const hash = (X: number, Y: number, Z: number, k: number) => {
+    let h = Math.imul(X, 374761393) ^ Math.imul(Y, 668265263) ^ Math.imul(Z, 1274126177) ^ Math.imul(s0 + k, 2246822519);
+    h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+  };
   return (x: number, y: number, z: number): [number, number] => {
     const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z); let d1 = 9, d2 = 9;
     for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) {
-      const X = xi + a, Y = yi + b, Z = zi + c, px = X + n(X + 0.5, Y + 0.5, Z + 0.5), py = Y + m(X + 0.5, Y + 0.5, Z + 0.5), pz = Z + o(X + 0.5, Y + 0.5, Z + 0.5);
-      const d = Math.hypot(px - x, py - y, pz - z);
+      const X = xi + a, Y = yi + b, Z = zi + c, dx = X + hash(X, Y, Z, 1) - x, dy = Y + hash(X, Y, Z, 2) - y, dz = Z + hash(X, Y, Z, 3) - z;
+      const d = Math.sqrt(dx * dx + dy * dy + dz * dz);
       if (d < d1) { d2 = d1; d1 = d; } else if (d < d2) d2 = d;
     }
     return [d1, d2];
@@ -61,7 +67,21 @@ const GEN = new Set(['river', 'seiryu', 'dragon', 'holey', 'lace', 'lava', 'shal
 export const isGenRock = (v: string) => GEN.has(v);
 
 /** A generated rock: base on y = 0, [length, height, width] = stoneDims, unlit 'color' per vertex. */
+const UNIT = 200, unitCache = new Map<string, THREE.BufferGeometry>();
+/** Every rock's form and colour scale with its size, so each look is built once at UNIT mm and scaled (the scene and the
+ *  search ask for the same piece at many sizes). */
 export function genRock(variant: string, seed: number, size: number, hs?: HardStyle): THREE.BufferGeometry {
+  const k = `${variant}|${seed}|${hs ? JSON.stringify(hs) : ''}`;
+  let u = unitCache.get(k);
+  if (!u) {
+    u = buildRock(variant, seed, UNIT, hs);
+    if (unitCache.size > 120) unitCache.delete(unitCache.keys().next().value!);
+    unitCache.set(k, u);
+  }
+  const g = u.clone(); g.scale(size / UNIT, size / UNIT, size / UNIT);
+  return g;
+}
+function buildRock(variant: string, seed: number, size: number, hs?: HardStyle): THREE.BufferGeometry {
   const [l, h, w] = stoneDims(variant, seed, size, hs), base = stoneBase(variant, seed, hs);
   if (variant === 'slate') return slatePlates(seed, l, h, w, base, hs);
   const r = rng(seed * 101 + 7), tex = hsv(hs, 'tex'), holes = hsv(hs, 'holes'), layers = hsv(hs, 'layers');
