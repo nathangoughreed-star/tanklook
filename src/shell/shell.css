@@ -799,6 +799,9 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .kitgrid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
 .dealcard { display: grid; gap: 4px; align-content: start; }
 .dealcard .dealpic { aspect-ratio: 16 / 10; border-radius: var(--r-ctl); background: var(--bg-sunken); display: grid; place-items: center; overflow: hidden; padding: var(--s2); box-sizing: border-box; }
+.dealcard .dealpic { position: relative; }
+/* the photo is pinned inside the padded box: a % height in the auto grid row never resolved, so tall product shots drew at full width and lost their bottom (Nathan 2026-11-26) */
+.dealcard .dealpic img.dealphoto { position: absolute; inset: var(--s2); width: calc(100% - 2 * var(--s2)); height: calc(100% - 2 * var(--s2)); object-fit: contain; object-position: center; margin: 0; border-radius: 0; aspect-ratio: auto; }
 .dealcard .dealpic img { width: 100%; height: 100%; object-fit: contain; }
 .dealcard .dealpic > span { display: block; width: 62%; } .dealcard .dealpic svg { display: block; width: 100%; height: auto; }
 .dealcard .m { display: block; -webkit-line-clamp: unset; }
