@@ -16,6 +16,10 @@ export default defineConfig(({ mode }) => {
     base: './',
     plugins: [shots(), modelVersions()],
     define: { __BUILD__: JSON.stringify(BUILD) },
+    // Dev server: scan only the two pages for dependencies and watch only this checkout. Left to its default, Vite walks every
+    // .html under the root, including the hundreds of .claude/worktrees/* checkouts, and hung in "scanning dependencies" (2026-11-26).
+    optimizeDeps: { entries: ['index.html', 'review.html'] },
+    server: { watch: { ignored: ['**/.claude/**', '**/aquascape/**', '**/handoff/**', '**/dist*/**'] } },
     build: {
       target: 'es2022', chunkSizeWarningLimit: single ? 3000 : 900,
       ...(single ? { outDir: 'dist-single/.build', emptyOutDir: true, modulePreload: false, assetsInlineLimit: 1e8 } : {}),

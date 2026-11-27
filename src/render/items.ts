@@ -708,6 +708,8 @@ const LEAF_GLOW = 0.5, LEAF_SHEEN = 0.35;
  *  substrate is LOW x as bright as one at the water line (the crown sits in the shade of its own leaves; smooth over the lower 70 % of the water). */
 /** (`on` 0 = the block left out. The default is strip D (Nathan 2026-11-26, shown the six strips: "this one looks the best"): the original colours, only darker near the substrate (`low` 0.6). Strip B (`exposure 0.8, ks 0.9, rs 0.5`) is the in-between colour variant. `ks` / `rs`: a soft knee on saturation, above `ks` only `rs` of the excess stays; `kl` / `rl` the same on brightness: the milder variant that tames only the most saturated, brightest pixels.) */
 export const PLANT_TONE = { on: 1, exposure: 1, sat: 1, low: 0.6, ks: 9, rs: 1, kl: 9, rl: 1 };
+/** Leaf outline feathering (see plantMaterial's `post`): the alpha-to-coverage ramp's width in pixels, centred on the cut-off. */
+export const PLANT_EDGE = { on: 1, px: 1.6 };
 if (import.meta.env?.DEV) (globalThis as { __plantTone?: typeof PLANT_TONE }).__plantTone = PLANT_TONE; // (the shot scripts try other values: set, then `needsUpdate` on the plant materials)
 /** Relief from the painted texture's luminance (plantMaterial's `post`): the bump height in mm per unit luminance, and how strongly the lamps' facing change shows. */
 const LEAF_RELIEF = 6.0, LEAF_RELIEF_K = 1.8;
@@ -717,7 +719,7 @@ if (import.meta.env?.DEV) (globalThis as { __plantFx?: typeof plantFx }).__plant
 // dev pages only: `?plant=sat:0.9;glow:1` sets the plant tone constants and the glow switch at load (the shot scripts use it: a switch the app reads at load is the one that can be shown to work)
 if (import.meta.env?.DEV && typeof location !== 'undefined') for (const kv of (new URLSearchParams(location.search).get('plant') ?? '').split(';').filter(Boolean)) {
   const [k, x] = kv.split(':');
-  if (k === 'glow') plantFx.glow = x === '1'; else if (k in PLANT_TONE) (PLANT_TONE as Record<string, number>)[k] = +x;
+  if (k === 'glow') plantFx.glow = x === '1'; else if (k === 'edge') PLANT_EDGE.on = +x; else if (k === 'edgepx') PLANT_EDGE.px = +x; else if (k in PLANT_TONE) (PLANT_TONE as Record<string, number>)[k] = +x;
 }
 const plantMats = new Map<string, THREE.MeshBasicMaterial>();
 function plantMaterial(T: Tank, free = false) {
@@ -729,10 +731,17 @@ function plantMaterial(T: Tank, free = false) {
   // (lane PT: the shared leaf atlas as `map`: a leaf's alpha is its outline; everything else samples a white texel)
   m = new THREE.MeshBasicMaterial({ vertexColors: true, map: plantAtlas(), alphaTest: 0.5, alphaToCoverage: true, clippingPlanes: free ? planes.slice(0, 1) : planes });
   m.onBeforeCompile = sh => { patch(sh); growShader(sh); };
-  m.customProgramCacheKey = () => (free ? 'plant-rim' : 'plant-clip') + (plantFx.glow ? '-glow' : '') + `-t${PLANT_TONE.on},${PLANT_TONE.exposure},${PLANT_TONE.sat},${PLANT_TONE.low},${PLANT_TONE.ks},${PLANT_TONE.rs},${PLANT_TONE.kl},${PLANT_TONE.rl}`;
+  m.customProgramCacheKey = () => (free ? 'plant-rim' : 'plant-clip') + (plantFx.glow ? '-glow' : '') + `-t${PLANT_TONE.on},${PLANT_TONE.exposure},${PLANT_TONE.sat},${PLANT_TONE.low},${PLANT_TONE.ks},${PLANT_TONE.rs},${PLANT_TONE.kl},${PLANT_TONE.rl}-e${PLANT_EDGE.on},${PLANT_EDGE.px}`;
   // above the water (an emersed stem or sword leaf, lane GR2) there is no water haze: it fades out over the first few
   // mm, so leaves lying at the surface keep theirs
   const post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
+    // leaf outline (Nathan 2026-11-26, "why are the edges jagged?"): three's alpha-to-coverage ramp runs from the cut-off
+    // up over ONE pixel's alpha change and only inward, so a blade's edge got about one in-between pixel and thin vallisneria
+    // read as a staircase. Centred on the cut-off and EDGE_PX pixels wide instead: the 4x multisample coverage then
+    // feathers the outline the way it does a mesh edge.
+    if (PLANT_EDGE.on) sh.fragmentShader = sh.fragmentShader.replace('#include <alphatest_fragment>', `{ float peW = max(fwidth(diffuseColor.a), 1e-4);
+    diffuseColor.a = clamp((diffuseColor.a - alphaTest) / (${PLANT_EDGE.px.toFixed(2)} * peW) + 0.5, 0.0, 1.0);
+    if (diffuseColor.a <= 0.0) discard; }`);
     if (plantFx.glow) sh.fragmentShader = sh.fragmentShader.replace('float aqF = smoothstep(0.0, 0.5, aqWP) * aqPk', '$& * (1.0 - smoothstep(uWater.y + 6.0, uWater.y + 14.0, vAqP.y))');
     // plant tone (lane ART1): last, after the light is shared out (lighting.ts's `outgoingLight /= aqM` rescales a brightly lit leaf back to
     // full strength, so an earlier exposure is undone) and after the water filter: exposure, a pull toward the leaf's own grey, darker low down.
