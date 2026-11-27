@@ -97,6 +97,9 @@ Built as plant `marimo` (form 'ball', `src/render/plant3d.ts`): a 48x32 lumpy co
 ~1,500-3,000 short hairs along its normal (the coat thickens a little with growth). Side-by-side:
 `research/moss-refs/marimo-side-by-side.jpg` (render alone: `marimo-r182-render.png`). Tuning in this pass: first render
 was lime and smooth (a green pea), then darker olive colours, stronger and finer mottling, longer denser hairs.
+Pass 2 (Nathan 2026-11-26, "needs more depth and texture"): tufts. Two octaves of value noise raise the surface into
+clumps (7 % of the radius) with creases between them; creases much darker, crests lighter; hairs longer and lighter on
+crests, short and dark in creases; core 72x48. Before/after beside the photos: `research/moss-refs/marimo-pass2-before-after.jpg`.
 Not done: groups of 3-5 as one item, rolling off rocks onto the substrate (today it can be raised onto hardscape
 like any plant).
 
