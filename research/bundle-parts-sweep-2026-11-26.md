@@ -78,7 +78,7 @@ The terrarium parts (domes, bulbs, UVB, gauges) are priced by the dry-gear rows,
 | Unchanged | | Modern 60 $103, Cube 10 $122, Bubble Wall 20 -$13, Black Glass 10 $61, Fluval Plant 9 -$54, Aqua Culture 5 $36, Vibrant Life 10 $81 / 20 $13, Aqueon 20H $15, Chewy Tetra 10 $15 / 29 -$13 / Decor 20 $17, Amazon Tetra 20 -$40 |
 
 ## Found, not fixed (follow-ups)
-- **Six aquarium bundles are never offered.** `dealsFor` allows a measured tank only 7 % over its rated gallons. The bow 36 measures 40.4 to 41.1 gal; the Imagitarium 29 / 40 / 55 measure 31.6 / 43.4 / 61. So those deals (Top Fin 36 ensemble, Bow Front 36, Imagitarium 29 / 40 / 55) never reach a matching build.
+- **Fixed (same day):** six aquarium bundles were never offered, because `dealsFor` allowed a measured tank only 7 % over its rated gallons (the bow 36 measures 40.4 to 41.1 gal; the Imagitarium 29 / 40 / 55 measure 31.6 / 43.4 / 61). `dealsFor` now also offers a bundle whose own tank size (`dims`) matches the build's tank within 1.5 in each way.
 - The Captivate hex 20 and all terrarium kits have no deal scene (no catalogue tank), so they have no saving line.
 - The Tetra LED hood 24x12 ($89.99) needs its photo look and a baked gear tile before it can go in hoods.json. The pm1 and eq2 tests require both.
 - The kit stands of the HD 45 and HD 75 have estimated trim sizes (base, top, frame); the HD 45 base reads lighter than the real black plinth.

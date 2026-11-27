@@ -12,7 +12,7 @@ export function dealOffers(S: TankSetup, P: UserProfile, opts: DemandOpts = {}, 
   // an undecided stand is not in the tank's price, but a bundle with a stand is weighed against buying a stand too
   const ask = standAsked(S.stand), T = ask ? { ...S, stand: { ...S.stand, show: true } } : S;
   const gal = volume(S.tank).gallons, base = demandOf(T, P, { ...opts, kit: undefined }).totals.setupUsd;
-  return dealsFor(gal, S.stand.show || ask, opts.now, undefined, deals).map((deal) => {
+  return dealsFor(gal, S.stand.show || ask, opts.now, undefined, deals, S.tank).map((deal) => {
     const withDealUsd = demandOf(T, P, { ...opts, kit: dealAsKit(deal) }).totals.setupUsd;
     return { deal, withDealUsd, partsUsd: base, savingUsd: base - withDealUsd, saleOffUsd: deal.price.regularUsd ? deal.price.regularUsd - deal.price.usd : undefined };
   }).sort((a, b) => b.savingUsd - a.savingUsd);

@@ -64,11 +64,14 @@ export const NOT_SPONSORED = 'We are not sponsored by any retailer or brand, and
 const day = (d: string) => Date.parse(d + 'T23:59:59');
 
 /** Deals worth showing for a tank of `gal` rated gallons (within `tol` gallons), cheapest first; expired sales are dropped.
- *  `stand` = the user's build shows a stand: a deal that includes one only helps then. */
-export function dealsFor(gal: number, stand: boolean, now = Date.now(), tol = 2.5, list: Deal[] = DEALS): Deal[] {
+ *  `stand` = the user's build shows a stand: a deal that includes one only helps then.
+ *  `tank` (mm): a deal whose own tank size (`dims`) matches the build's within an inch and a half each way is offered whatever its gallons: some tanks
+ *  measure far over their label (a bow front 36 holds about 41 gal, an Imagitarium 55 about 61), past the gallon slack (parts sweep 2026-11-26). */
+export function dealsFor(gal: number, stand: boolean, now = Date.now(), tol = 2.5, list: Deal[] = DEALS, tank?: { L: number; D: number; H: number }): Deal[] {
+  const sameSize = (d: Deal) => !!tank && !!d.dims && Math.abs(tank.L / 25.4 - d.dims.L_in) <= 1.5 && Math.abs(tank.D / 25.4 - d.dims.D_in) <= 1.5 && Math.abs(tank.H / 25.4 - d.dims.H_in) <= 1.5;
   return list
     // rated vs measured: a tank measures a little over its label (a 75 is about 79 gal inside), so the slack is one-sided
-    .filter((d) => !d.terrarium && d.gal - gal <= tol && gal - d.gal <= Math.max(tol, gal * 0.07) &&
+    .filter((d) => !d.terrarium && ((d.gal - gal <= tol && gal - d.gal <= Math.max(tol, gal * 0.07)) || sameSize(d)) &&
  (stand || !d.includes.includes('stand')) && (!d.saleEnds || day(d.saleEnds) >= now))
     .sort((a, b) => a.price.usd - b.price.usd);
 }

@@ -88,3 +88,14 @@ describe('a bundle-only stand', () => {
     for (const blk of raw.split(/\n  \{/).slice(1)) { const keys = [...blk.matchAll(/^   "(\w+)":/gm)].map(m => m[1]); expect(keys.length, blk.slice(0, 60)).toBe(new Set(keys).size); }
   });
 });
+
+// Parts sweep 2026-11-26: a tank that measures far over its label (bow front 36 about 41 gal, Imagitarium 55 about 61) is still offered its own bundle.
+describe('every bundle is offered for its own tank', () => {
+  it('each aquarium bundle with a scene shows up in dealOffers for that scene', () => {
+    const now = Date.parse('2026-11-26T12:00:00');
+    for (const d of DEALS.filter(x => !x.terrarium && (!x.saleEnds || Date.parse(x.saleEnds) >= now))) {
+      const sc = sceneFromDeal(d); if (!sc) continue;
+      expect(dealOffers(sc.tanks[0], defaultProfile(), { now }, [d]).length, d.id).toBe(1);
+    }
+  });
+});
