@@ -4,7 +4,7 @@
 // ONLY through P3's scene/itemEdit.ts and the existing scene modules; the substrate / terrain edits are the old panel's, moved here
 // unchanged in behaviour (ui/panels.ts "Substrate" and "Custom terrain" blocks).
 import { GRAIN_LOOK, SUBSTRATES } from '../../art/placeholder';
-import { addGrain, removeGrain, setShare } from '../../scene/blend';
+import { addGrain, nextBlendSeed, removeGrain, setShare } from '../../scene/blend';
 import { isClump, isFloat, isPatch, growthOf, type PlantType } from '../../art/plants';
 import { clumpAuto } from '../../render/plant3d';
 import { itemLights } from '../../scene/lightcheck';
@@ -95,6 +95,8 @@ export function setBlendShare(store: Store, i: number, v: number): void {
   store.edit(s => { const c = s.substrate.custom; c.grains = setShare(c.grains, i, v); }, { coalesce: 'blendShare' + i });
 }
 export const setBlendMix = (store: Store, v: number) => store.edit(s => { s.substrate.custom.mix = v / 100; }, { coalesce: 'blendMix' });
+/** Shuffle: the same grains, colours, shares and mix laid out afresh. */
+export const shuffleBlend = (store: Store) => store.edit(s => { const c = s.substrate.custom; c.seed = nextBlendSeed(c); });
 export const addBlendGrain = (store: Store) => store.edit(s => { const c = s.substrate.custom; c.grains = addGrain(c.grains); });
 export const removeBlendGrain = (store: Store, i: number) => store.edit(s => { const c = s.substrate.custom; c.grains = removeGrain(c.grains, i); });
 const litterOf = (s: TankSetup) => (s.substrate.litter ??= { leaf: 'mixed', density: 0, seed: 1 });

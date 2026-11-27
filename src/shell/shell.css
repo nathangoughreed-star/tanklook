@@ -894,3 +894,28 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .zones span:nth-child(2) { text-align: right; white-space: nowrap; }
 .aqrow a { color: var(--accent, #7aa7ff) }
 .paper .pp-notchosen { margin: 0 0 12px; padding: 6px 10px; border: 1px solid #c98a1a; background: #fff6e3; color: #6b4300; font-size: 13px; }
+/* custom substrate blend (Nathan 2026-11-26: the old rows were ugly; Shuffle lays the same blend out afresh) */
+.blend2 { display: grid; gap: var(--s3); }
+.blend2 .bhead { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); }
+.blend2 .bhead .btn { display: inline-flex; align-items: center; gap: var(--s1); }
+.blend2 .bhead .btn .i { width: 15px; height: 15px; }
+.blend2 .bbar { display: flex; height: 10px; border-radius: 999px; overflow: hidden; gap: 2px; background: var(--bg-sunken); }
+.blend2 .bbar span { flex-basis: 0; min-width: 3px; transition: flex-grow .12s; }
+.blend2 .bgrains { display: grid; gap: var(--s1); }
+.blend2 .bgrain { display: grid; grid-template-columns: 30px minmax(110px, 180px) minmax(0, 1fr) 44px 30px; align-items: center; gap: var(--s2);
+  padding: 6px var(--s2); border-radius: var(--r-ctl); background: var(--bg-raised); border: 1px solid var(--line); }
+.blend2 .bgrain .slider { width: 100%; }
+.blend2 .bpct { text-align: right; font-variant-numeric: tabular-nums; color: var(--text-2); font-size: var(--fs-sm); }
+.blend2 .bswatch { -webkit-appearance: none; appearance: none; width: 26px; height: 26px; padding: 0; border: 2px solid var(--line); border-radius: 50%; background: none; cursor: pointer; }
+.blend2 .bswatch:hover { border-color: var(--text-3); }
+.blend2 .bswatch::-webkit-color-swatch-wrapper { padding: 0; }
+.blend2 .bswatch::-webkit-color-swatch { border: 0; border-radius: 50%; }
+.blend2 .bswatch::-moz-color-swatch { border: 0; border-radius: 50%; }
+.blend2 .badd { display: inline-flex; align-items: center; justify-content: center; gap: var(--s1); width: 100%; padding: 6px; border: 1px dashed var(--line); border-radius: var(--r-ctl);
+  background: transparent; color: var(--text-2); font: inherit; font-size: var(--fs-sm); cursor: pointer; }
+.blend2 .badd:hover { color: var(--text); border-color: var(--text-3); background: var(--bg-hover); }
+.blend2 .badd .i { width: 14px; height: 14px; }
+.blend2 .bmix { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto 44px; align-items: center; gap: var(--s2); padding-top: var(--s2); border-top: 1px solid var(--line); }
+.blend2 .bmix .lbl { color: var(--text-2); }
+.blend2 .bmix .bend { color: var(--text-3); font-size: var(--fs-sm); }
+.blend2 .bmix .slider { width: 100%; }

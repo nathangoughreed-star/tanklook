@@ -45,7 +45,7 @@ export type Grain = 'mud' | 'sand' | 'gravel' | 'pebble';
  * fields { grain, color, grain2, color2, share, mix }; scene/validate.ts reads them into this list.
  */
 export interface BlendGrain { grain: Grain; color: string; share: number }
-export interface SubstrateBlend { grains: BlendGrain[]; mix: number }
+export interface SubstrateBlend { grains: BlendGrain[]; mix: number; /** Shuffle: picks a different layout of the same blend (absent = the original one) */ seed?: number }
 
 /** Tank floor outline (scene v8). L x D is always the bounding box; see scene/shape.ts. */
 export type TankShape = 'rect' | 'bow' | 'round' | 'poly' | 'bowl' | 'pie' | 'arch';
@@ -151,6 +151,8 @@ export interface RenderSettings {
 }
 
 export interface LightSettings {
+  /** A bundle's own light (its watts when the bundle put it on): while the watts are unchanged and it has no listed price, the budget prices it as a basic LED bar (demand/engine.ts BASIC_LED_USD_PER_IN), Nathan 2026-11-26 */
+  bundled?: number;
   type: LightType;
   count: number;
   /** Spot lights only (grid / tri): rows front to back, so the bulbs form a count × rows grid (added 2026-10-08; older files: 1). */

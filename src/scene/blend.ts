@@ -38,7 +38,7 @@ export function migrateBlend(raw: unknown, fallback: SubstrateBlend): SubstrateB
       const o = (e && typeof e === 'object' ? e : {}) as Record<string, unknown>, f = fallback.grains[Math.min(i, fallback.grains.length - 1)];
       return { grain: pickG(o.grain, f.grain), color: hex(o.color, f.color), share: typeof o.share === 'number' ? o.share : 0 };
     });
-    return { grains: normalizeShares(gs), mix };
+    return { grains: normalizeShares(gs), mix, ...seedOf(c.seed) };
   }
   // the old fields: absent ones read as the fallback's; the old range of `share` was 5-95
   const f0 = fallback.grains[0], f1 = fallback.grains[1];
@@ -46,9 +46,13 @@ export function migrateBlend(raw: unknown, fallback: SubstrateBlend): SubstrateB
   const g2 = c.grain2 === 'none' ? 'none' : BLEND_GRAIN_IDS.includes(c.grain2 as Grain) ? c.grain2 as Grain : f1 ? f1.grain : 'none';
   const share = typeof c.share === 'number' && Number.isFinite(c.share) ? Math.round(Math.min(95, Math.max(5, c.share))) : f1 ? f1.share : 30;
   const b = blendFrom(grain, color, g2, hex(c.color2, f1?.color ?? DEFAULT_COLOR2), share, mix);
-  return b;
+  return { ...b, ...seedOf(c.seed) };
 }
 
+/** A stored shuffle seed (whole number 1 to 1e6), or nothing. */
+const seedOf = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) && v >= 1 ? { seed: Math.min(1e6, Math.round(v)) } : {});
+/** Shuffle: the next seed, a different layout of the same grains, colours, shares and mix. */
+export const nextBlendSeed = (b: SubstrateBlend) => ((b.seed ?? 0) * 7919 + 104729) % 999983 + 1;
 /** Set one grain's share (0-100); the others are scaled to fill what is left (an even split if they were all 0). */
 export function setShare(gs: BlendGrain[], i: number, v: number): BlendGrain[] {
   if (gs.length === 1) return [{ ...gs[0], share: 100 }];
