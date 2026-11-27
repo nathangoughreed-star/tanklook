@@ -307,8 +307,12 @@ let next = 0;
 function step() {
   const t0 = performance.now();
   while (next < LOOKS.length && performance.now() - t0 < 30) {
-    const sp = LOOKS[next++], { hash, out } = renderLook(sp);
-    hashes.set(sp.look, hash); outs.set(sp.look, out); fill(sp, out);
+    const sp = LOOKS[next++];
+    // a look that fails to build (2026-11-23: the ?photoart clownknife and bambooshark have no body plan outside that flag) is logged and
+    // skipped with an empty hash, so it never counts as changed and the other looks can still be recorded
+    let r: ReturnType<typeof renderLook>;
+    try { r = renderLook(sp); } catch (e) { console.error('review: cannot render ' + sp.look, e); hashes.set(sp.look, ''); continue; }
+    hashes.set(sp.look, r.hash); outs.set(sp.look, r.out); fill(sp, r.out);
   }
   summary();
   if (next < LOOKS.length) setTimeout(step, 0);

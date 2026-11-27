@@ -1464,7 +1464,7 @@ Branch pb3-plumbing-detail off origin/main. (1) Sponge filter drawn as it works:
 - Editor (shell/scape.tsx `PieceEditor`, logic/scape.ts `pieceView().gen`): Type (switch within stones or within woods), Shuffle (new seed; colour and settings stay), seed shown, colour swatches + Auto, the type's sliders, Reset look. The Reshape button is hidden for generated pieces.
 - Looks and photo URLs: `research/hardscape/refs.md` (photos themselves in a lane scratchpad, not the repo). Test tanks: `research/screens/HG1/make-scenes.py` -> scenes/<type>.json; `montage.py` stacks the front shots; `scripts/hg1-shots.mjs` = the editor at 1280 / 390.
 
-## R194 big-fish data (lane R194, 2026-11-27, branch r194-big-fish-data, not pushed)
+## R195 big-fish data (lane R195, 2026-11-27, branch r194-big-fish-data, not pushed)
 - Bichir (445 mm), clown knifefish, bamboo shark species data merged with main; fishLive keeps main's b9 looks for knife and shark, adds bichir -> bichirb.
 - **APPROVED (Nathan 2026-11-27, "Approve 1.5x"); still "our judgment", no source:** pool-depth rule for the stock generator (`POOL_BODY_HEIGHTS` = 1.5 in src/scene/tankfit.ts, "our judgment"): a fully aquatic fish goes into a paludarium pool only if the pool is >= 1.5 x its body height (tl x aspect) deep. Replaces the old `depth < tl` test that kept fish out of shallow pools; the tank minimum keeps `depth <= 0` (no height rule from length). The factor is a one-line change if he revisits it.
 - Tests: test/poolDepth.test.ts (3 example tanks + cypress-swamp roster), test/bigFishVerdict.test.ts (bamboo shark verdict), scene.test.ts LARGE_KNOWN list, reasonable.test.ts and invariants.test.ts (260 / 78) re-pinned, ruleStatus.json + calibtablesv4 regenerated.

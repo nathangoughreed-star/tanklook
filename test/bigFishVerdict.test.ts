@@ -1,4 +1,4 @@
-// R194: what a user sees when a bamboo shark is added to a stock tank: the verdict says plainly that no stock tank fits, with the size in gallons and inches.
+// R195: what a user sees when a bamboo shark is added to a stock tank: the verdict says plainly that no stock tank fits, with the size in gallons and inches.
 import { describe, expect, it } from 'vitest';
 import { catalogueSizes } from '../src/scene/tankfit';
 import { speciesLive } from '../src/ui/discovery/animalsLive';

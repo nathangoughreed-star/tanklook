@@ -119,7 +119,7 @@ export function setPool(S: TankSetup, animals: AnimalCount[]): void {
   S.water.level = poolShare(S.tank, animals) * POOL_DEPTH;
   S.layout.id = 'paludarium'; S.lid = 'mesh';
 }
-/** R194, APPROVED (Nathan 2026-11-27, "Approve 1.5x"); "our judgment", no source: the water a fully aquatic fish needs in a paludarium pool, as a multiple of its body
+/** R195, APPROVED (Nathan 2026-11-27, "Approve 1.5x"); "our judgment", no source: the water a fully aquatic fish needs in a paludarium pool, as a multiple of its body
  *  height (its card height, which includes fins): enough to turn upright and swim without grounding. One constant, so his answer is a one-line change.
  *  Replaces the old `depth < body length` test, which kept shallow pools free of fish; the tank minimum itself has no height rule from length (R150). */
 export const POOL_BODY_HEIGHTS = 1.5;

@@ -28,7 +28,13 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
   const sRate = F(), sTau = F(), sTurn = F(), pulseT = F(), pulseP = F(), burstLeft = F(), jitA = F(), pv0 = F(); // burst-and-coast
   const subMode = new Uint8Array(n), subT = F(), mx0 = F(), mx1 = F(), mx2 = F(); // FB2: 0 pulse-glide, 1 slow cruise, 2 hover
   const effS = F(), fv: V3 = [0, 0, 0], flow = field.flow?.bind(field); // the current (scene/flow.ts): how hard each fish works against it (smoothed, 0 = still water)
-  const restS = F(), breathS = F(); // FB2: a bottom dweller's share of time resting (0 = the old mix) and its breathing amount
+  const restS = F(), breathS = F(), restP = F(); // restP: resting pitch (deg) of a bottom dweller, REST_PITCH (default -20); // FB2: a bottom dweller's share of time resting (0 = the old mix) and its breathing amount
+  // R145: air gulping. aSt: 0 none, 1 rise, 2 at the surface, 3 back down. A trip is a set path (no steering) up a column checked clear when it starts,
+  // and back to the spot it left; the shoal does not follow it (a member on a trip is left out of the group's centre and heading).
+  const RA = rng(seed ^ 0x2545f491); // its own stream: air trips do not move the other fish's randomness
+  const aRate = F(), aDart = new Uint8Array(n), aSt = new Uint8Array(n), aT = F(), aDur = F(), aRise = F(), aCd = F();
+  const aox = F(), aoy = F(), aoz = F(), acx = F(), acz = F(), asy = F();
+  let qx = 0, qy = 0, qz = 0; // scratch: a point on the trip's path
   // FB3: habit (home spot, leash, posture, small actions). hS: 0 free, 1 dart to home, 2 hold in it, 3 peek out, 4 go to peck, 5 pecking, 6 patrol, 7 flick, 8 hop, 9 still after a hop
   const isItem = makeIsItem(field);
   const RH = rng(seed ^ 0x3c6ef372); // its own stream: a tank with habit fish does not move the others' randomness
@@ -144,13 +150,15 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
     if (!bottom[i]) modeT[i] = 5 + R() * 30; // loners hover later, not at once
     hS[i] = 0; hT[i] = 0; flickS[i] = 0; if (hb[i]) hCd[i] = 2 + RH() * 15;
     stT[i] = 0; chT[i] = 0; chTg[i] = -1; chGuard[i] = 0; chCd[i] = hasFoe[i] ? 6 + RE() * 55 : 1e9; gdCd[i] = 3 + RE() * 12;
+    aSt[i] = 0; if (aRate[i] > 0) aCd[i] = (0.2 + RA()) * 3600 / aRate[i]; // the first trip is not at once
   }
 
   for (let i = 0; i < n; i++) {
     const s = fish[i];
     idIndex.set(s.id, i);
     poses.push({ x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0, fan: 0, calm: 1, dig: 0 });
-    len[i] = s.len; rad[i] = s.len * 0.12; rv[i] = Math.max(rad[i], s.tall ?? 0); bottom[i] = s.zone === 'bottom' ? 1 : 0; tight[i] = s.group?.tight ? 1 : 0;
+    len[i] = s.len; rad[i] = s.rad ?? s.len * 0.12; rv[i] = Math.max(rad[i], s.tall ?? 0); bottom[i] = s.zone === 'bottom' ? 1 : 0; tight[i] = s.group?.tight ? 1 : 0;
+    restP[i] = s.restPitch ?? -20;
     const bl = 1.2 * Math.pow(40 / Math.max(10, s.len), 0.25); // body lengths per second, cruising
     pace[i] = s.pace ?? 1;
     cruise[i] = s.len * bl * (0.85 + R() * 0.3) * pace[i];
@@ -163,6 +171,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
     if (s.hover && s.hover.w > 0) { hov[i] = Math.min(1, s.hover.w); hovPec[i] = s.hover.pec; hovCau[i] = s.hover.caudal; }
     if (s.rest && bottom[i]) restS[i] = clamp(s.rest, 0.05, 0.97);
     if (s.style && !bottom[i]) { const m = s.style.mix ?? [1, 0, 0], tot = m[0] + m[1] + m[2] || 1; mx0[i] = m[0] / tot; mx1[i] = m[1] / tot; mx2[i] = m[2] / tot; if (!s.hover) { hovPec[i] = 0.6; hovCau[i] = 0.3; } sRate[i] = s.style.rate; sTau[i] = s.style.tau; sTurn[i] = s.style.turn; pulseT[i] = R() / s.style.rate; }
+    if (s.gulp && s.gulp.perHour > 0) { aRate[i] = s.gulp.perHour; aDart[i] = s.gulp.dart ? 1 : 0; }
     if (s.dig && bottom[i]) {
       const d = s.dig; hasDig[i] = 1; dRate[i] = d.rate; dDepth[i] = d.depth; dPitch[i] = d.pitch; dH0[i] = d.hold[0]; dH1[i] = d.hold[1]; dHide[i] = d.hide; dHT0[i] = d.hideT[0]; dHT1[i] = d.hideT[1]; dK[i] = clamp(d.k, 0, 1); dDark[i] = clamp(d.dark, 0, 1); dRest[i] = d.rest;
     }
@@ -401,19 +410,75 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       ovOn = 1; ovx = (px[i] + px[j]) / 2; ovy = (py[i] + py[j]) / 2; ovz = (pz[i] + pz[j]) / 2; ovSpd = slow(i, cruise[i] * 1.5 + L * 0.4, ovx, ovy, ovz);
     }
   }
+  // ---- R145: air gulping
+  const smooth = (u: number) => u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u);
+  /** The trip's path at u (0..1) of the rise (up = true: from the spot it left, over and up the column) or of the way back (the mirror: down, then over). */
+  function gulpAt(i: number, up: boolean, u: number) {
+    if (up) { const kh = smooth(u * 1.6), ky = smooth(u); qx = aox[i] + (acx[i] - aox[i]) * kh; qz = aoz[i] + (acz[i] - aoz[i]) * kh; qy = aoy[i] + (asy[i] - aoy[i]) * ky; }
+    else { const kh = smooth((u - 0.375) / 0.625), ky = smooth(u); qx = acx[i] + (aox[i] - acx[i]) * kh; qz = acz[i] + (aoz[i] - acz[i]) * kh; qy = asy[i] + (aoy[i] - asy[i]) * ky; }
+  }
+  function startGulp(i: number): boolean {
+    const L = len[i], r = rad[i], dart = aDart[i] === 1;
+    const ys = field.waterTop - 0.5 * L * Math.sin((dart ? 70 : 45) * D2R) + L * 0.06; // the body centre that puts the snout just through the surface
+    aox[i] = px[i]; aoy[i] = py[i]; aoz[i] = pz[i]; asy[i] = ys;
+    for (let t = 0; t < 7; t++) { // straight up from here first, else a column a body length or three away
+      let x = px[i], z = pz[i];
+      if (t > 0) { const a = RA() * 6.283, d = L * (0.8 + RA() * 2.2); x = clamp(px[i] + Math.cos(a) * d, field.min[0] + r * 2, field.max[0] - r * 2); z = clamp(pz[i] + Math.sin(a) * d, field.min[2] + r * 2, field.max[2] - r * 2); }
+      acx[i] = x; acz[i] = z;
+      const H = Math.hypot(asy[i] - aoy[i], x - aox[i], z - aoz[i]), N = Math.min(16, 3 + Math.ceil(H / (L * 0.5)));
+      let ok = true;
+      for (let k = 1; k <= N && ok; k++) { // both legs (up, and the way back) must keep the body clear of rock, wood, plants and floating cover
+        const u = k / N;
+        gulpAt(i, true, u); if (field.clearance(qx, qy, qz, undefined, r * 2) < r * 1.15) ok = false;
+        if (ok && t > 0) { gulpAt(i, false, u); if (field.clearance(qx, qy, qz, undefined, r * 2) < r * 1.15) ok = false; }
+      }
+      if (!ok) continue;
+      aSt[i] = 1; aT[i] = 0; aRise[i] = Math.max(dart ? 0.45 : 1.5, H / (dart ? L * 5 : L * 0.8)); aDur[i] = aRise[i]; // a cory dashes up in about a second; a gourami takes its time
+      return true;
+    }
+    return false;
+  }
+  function gulpStep(i: number, dt: number) {
+    const dart = aDart[i] === 1;
+    aT[i] += dt;
+    if (aT[i] >= aDur[i]) {
+      if (aSt[i] === 1) { aSt[i] = 2; aT[i] = 0; aDur[i] = dart ? 0.25 + RA() * 0.25 : 0.5 + RA() * 0.6; }
+      else if (aSt[i] === 2) { aSt[i] = 3; aT[i] = 0; aDur[i] = aRise[i] * (dart ? 1.5 : 1.15); }
+      else { // back where it was: hand it back to the sim
+        aSt[i] = 0; aCd[i] = 3600 / aRate[i] * (0.4 + RA() * 1.2);
+        px[i] = aox[i]; py[i] = aoy[i]; pz[i] = aoz[i]; hy[i] = 0;
+        { const hm = Math.sqrt(hx[i] * hx[i] + hz[i] * hz[i]); if (hm > 1e-6) { hx[i] /= hm; hz[i] /= hm; } else { hx[i] = 1; hz[i] = 0; } }
+        spd[i] = 0; vyB[i] = 0; dsx[i] = 0; dsy[i] = 0; dsz[i] = 0; avK[i] = 0; c0[i] = 1e9; restFlag[i] = 0;
+        return;
+      }
+    }
+    const u = Math.min(1, aT[i] / aDur[i]), st = aSt[i], ox = px[i], oy = py[i], oz = pz[i];
+    if (st === 2) { qx = acx[i]; qz = acz[i]; qy = asy[i] + len[i] * 0.02 * Math.sin(u * Math.PI); } else gulpAt(i, st === 1, u);
+    px[i] = qx; py[i] = qy; pz[i] = qz;
+    spd[i] = Math.hypot(qx - ox, qy - oy, qz - oz) / dt;
+    const pt = st === 1 ? (dart ? 70 : 40) * smooth(u * 3) : st === 2 ? (dart ? 72 : 45) : (dart ? -50 : -22) * (1 - smooth((u - 0.7) / 0.3)); // nose up, at the surface, nose down, level again at the end
+    pitchS[i] += (pt - pitchS[i]) * Math.min(1, dt * (dart ? 12 : 4));
+    rollS[i] += (0 - rollS[i]) * Math.min(1, dt * 4); yawRate[i] = 0;
+    const calmT = st === 1 ? (dart ? 1.6 : 0.8) : st === 2 ? 0.5 : (dart ? 0.5 : 0.4);
+    calmS[i] += (calmT - calmS[i]) * Math.min(1, dt * 6); fanS[i] += (0 - fanS[i]) * Math.min(1, dt * 3); breathS[i] = 0;
+    const P = poses[i];
+    P.x = px[i]; P.y = py[i]; P.z = pz[i]; P.yaw = Math.atan2(-hz[i], hx[i]) * R2D; P.pitch = pitchS[i]; P.roll = rollS[i];
+    P.fan = fanS[i]; P.calm = calmS[i]; P.dig = 0; if (restS[i] > 0) P.breath = 0; if (sRate[i] > 0) P.sub = 0;
+  }
 
   function inner(dt: number, T: number, tick: number) {
     // ---- group statistics, goals, modes
     for (let g = 0; g < G; g++) {
-      let sx = 0, sy = 0, sz = 0, ax = 0, ay = 0, az = 0;
-      const a = gStart[g], b = gStart[g + 1], cnt = b - a;
-      for (let m = a; m < b; m++) { const i = gMem[m]; sx += px[i]; sy += py[i]; sz += pz[i]; ax += hx[i]; ay += hy[i]; az += hz[i]; }
+      let sx = 0, sy = 0, sz = 0, ax = 0, ay = 0, az = 0, cnt = 0;
+      const a = gStart[g], b = gStart[g + 1];
+      for (let m = a; m < b; m++) { const i = gMem[m]; if (aSt[i]) continue; cnt++; sx += px[i]; sy += py[i]; sz += pz[i]; ax += hx[i]; ay += hy[i]; az += hz[i]; } // R145: a member up for air is left out
+      if (!cnt) continue;
       gcx[g] = sx / cnt; gcy[g] = sy / cnt; gcz[g] = sz / cnt;
       const am = Math.sqrt(ax * ax + ay * ay + az * az);
       gpol[g] = am / cnt;
       if (am > 1e-6) { ghx[g] = ax / am; ghy[g] = ay / am; ghz[g] = az / am; }
       let sp2 = 0;
-      for (let m = a; m < b; m++) { const i = gMem[m]; sp2 += (px[i] - gcx[g]) ** 2 + (py[i] - gcy[g]) ** 2 + (pz[i] - gcz[g]) ** 2; }
+      for (let m = a; m < b; m++) { const i = gMem[m]; if (aSt[i]) continue; sp2 += (px[i] - gcx[g]) ** 2 + (py[i] - gcy[g]) ** 2 + (pz[i] - gcz[g]) ** 2; }
       gspread[g] = Math.sqrt(sp2 / cnt);
       ggT[g] += dt;
       const f = gFirst[g], dd = Math.sqrt((ggx[g] - gcx[g]) ** 2 + (ggz[g] - gcz[g]) ** 2);
@@ -428,6 +493,11 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
     for (let i = 0; i < n; i++) {
       const L = len[i], r = rad[i], m = marg[i], g = gi[i], isB = bottom[i] === 1;
       goalT[i] += dt;
+      if (aRate[i] > 0) { // R145: a trip up for air takes the fish over until it is back
+        if (aSt[i]) { gulpStep(i, dt); continue; }
+        aCd[i] -= dt;
+        if (aCd[i] <= 0 && digSt[i] === 0 && hS[i] === 0 && mode[i] !== HOP) { if (startGulp(i)) { gulpStep(i, dt); continue; } aCd[i] = 15 + RA() * 30; } // no clear way up here: try again soon
+      }
       // ---- mode (swim / rest) timers
       if (g < 0 || !isB) {
         modeT[i] -= dt;
@@ -738,7 +808,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
         if (sunk + head > bed) { const f = bed > 0 ? bed / (sunk + head) : 0; k *= f; sunk *= f; }
         sinkS[i] = k; pt = -dPitch[i] * k;
       } else { sinkS[i] = 0; pt = 0; }
-      if (digK[i] <= 0.001) pt = isB ? (mode[i] === REST ? -20 : clamp(Math.atan2(vyB[i], Math.max(spd[i], 1)) * R2D * 0.5, -15, 15) - 5) : clamp(Math.asin(clamp(hy[i], -1, 1)) * R2D, -28, 28);
+      if (digK[i] <= 0.001) pt = isB ? (mode[i] === REST ? restP[i] : clamp(Math.atan2(vyB[i], Math.max(spd[i], 1)) * R2D * 0.5, -15, 15) + restP[i] / 4) : clamp(Math.asin(clamp(hy[i], -1, 1)) * R2D, -28, 28);
       P.x = px[i]; P.y = py[i] - sunk; P.z = pz[i];
       P.yaw = Math.atan2(-hz[i], hx[i]) * R2D + (wig[i] > 0 ? wig[i] * 11 * Math.sin(T * 9 + ph2[i]) * (dst === 2 ? 1 : 0.6) : 0);
       // pectoral fanning and tail beat: a hovering fish fans while it is slow, and its tail follows its speed; a digger wriggles in and out and lies still in between
@@ -793,6 +863,12 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       const list = ids ? ids.map(id => idIndex.get(id)).filter((k): k is number => k !== undefined) : fish.map((_, i) => i);
       for (const i of list) { initFish(i); fishGoal(i); }
       const seen = new Set<number>(); for (const i of list) { const g = gi[i]; if (g >= 0 && !seen.has(g)) { seen.add(g); groupGoal(g); } }
+    },
+    gulp(id: number) { // R145: dev page / tests: send this fish up for air now
+      const k = idIndex.get(id); if (k === undefined || !(aRate[k] > 0) || aSt[k]) return false;
+      if (digSt[k]) endDig(k);
+      hS[k] = 0; if (mode[k] === HOP) mode[k] = REST;
+      return startGulp(k);
     },
   };
 };

@@ -1,4 +1,4 @@
-// R194 (PROPOSED, awaiting Nathan): a fully aquatic fish is stocked in a paludarium pool only if the pool is >= POOL_BODY_HEIGHTS x its body height deep.
+// R195 (PROPOSED, awaiting Nathan): a fully aquatic fish is stocked in a paludarium pool only if the pool is >= POOL_BODY_HEIGHTS x its body height deep.
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES } from '../src/scene/archetypes';
 import { getTankModel } from '../src/data/tanks';
@@ -10,7 +10,7 @@ const land = [{ species: 'dartfrog', n: 2 }, { species: 'firenewt', n: 2 }];
 const tooShallow = (tank: string, id: string) => poolTooShallowIn(getTankModel(tank)!, land, { species: id, n: 1 });
 const poolOf = (tank: string) => poolDepthMm(catalogueSizes(false).find(c => c.m.id === tank)!.T, land);
 
-describe('pool depth for fully aquatic fish (R194, proposed)', () => {
+describe('pool depth for fully aquatic fish (R195, proposed)', () => {
   it('the need is 1.5 x body height (tl x aspect); land and semi-aquatic animals have none', () => {
     expect(POOL_BODY_HEIGHTS).toBe(1.5);
     expect(minPoolDepthMm(getSpecies('neon')!)).toBeCloseTo(1.5 * 38 * 0.407, 1);
