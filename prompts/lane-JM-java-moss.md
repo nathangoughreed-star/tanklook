@@ -66,7 +66,7 @@ Commit with `scripts/ship.sh` as you go (CLAUDE.md). End replies with "Build N".
   several directions or the host mesh's own triangles within reach, and lay the shells along the normal), thicker
   older growth (B1/B4). Renders: `scripts/jm-render.js` `tank()` (a tiny tank, one piece, moss tied on via `perch`).
   The dev server page reloads whenever another chat edits a file: retry a render in a quiet moment.
-- Step 4 pass 2 (2026-11-26, second JM chat), shipped, gate waiting on Nathan: `mossHost` now hands over the host's own
+- Step 4 pass 2 (2026-11-26, second JM chat), shipped; gate PASSED (Nathan OK, 2026-11-27): `mossHost` now hands over the host's own
   triangles within reach (a face counts by its nearest point), with outward normals and height over the ground;
   'tangle' + host splits them to the tile's cell size, measures distance from the tie-on spot along the surface
   (Dijkstra; down a steep side costs half, so it creeps down faces and round under limbs like ivy), lifts each shell
