@@ -8,7 +8,7 @@ import { setStandProduct } from '../src/scene/placement';
 import { parseScene } from '../src/scene/validate';
 import type { TankSetup } from '../src/scene/types';
 
-const NOW = Date.parse('2026-11-16');
+const NOW = Date.parse('2026-11-23'); // price sweep 2026-11-23: sales re-checked that day are live from it
 const setup = (id: string, style: 'cabinet' | 'frame' = 'cabinet') => { const S = bareSetup(); S.tank = tankFromModel(getTankModel(id)!); S.water.on = true; S.stand = { ...S.stand, show: true, style, need: 'added' }; return S; };
 const custom = () => { const S = setup('g20l'); S.tank = { ...S.tank, L: 37 * 25.4, D: 15 * 25.4 }; return S; };
 const D = (S: TankSetup) => demandOf(S, defaultProfile(), { now: NOW });

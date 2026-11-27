@@ -148,7 +148,7 @@ describe('tech menu model (lane TM step 1)', () => {
 });
 
 describe('demand rows from the tech (lane TM step 3)', () => {
-  const NOW = Date.parse('2026-11-16');
+  const NOW = Date.parse('2026-11-23');
   const D = (S: TankSetup) => demandOf(S, defaultProfile(), { now: NOW });
   it('a file without tech keeps its demand numbers (locked 2026-10-19; minutes and upkeep re-blessed 2026-10-21, lane MW: water change from the nitrogen budget, feeding, glass, plant bunches; lane CB: combined sources moved adult sizes and minimums)', () => {
     // reef re-blessed 2026-10-22 (lane SN: turbo snail mass from Turbo cornutus, upkeep +$2 a year, minutes +0.8); reef and paludarium risk re-blessed 2026-10-22 (temp-tiers: a shared temperature range of 2 °C or less is a narrow margin, not a compatibility flag)
@@ -157,7 +157,8 @@ describe('demand rows from the tech (lane TM step 3)', () => {
     // Paludarium, terrarium, rainforest and arid re-blessed 2026-10-26 (starter tanks pass their animal checks: one gecko each, three toads with white clouds, a 30 in corner tank for three tree frogs)
     // Stands + PL2 2026-11-16 (C26, clock 2026-11-16): planted +$29.73 and blackwater +$29.72 from SP1 (the real $180 Seapora Roman stand replaces the gallon rule), clownnano +$34.7 from PL1 round 2 (Seapora Empress 24 x 12 stand, TPP $129.99); iwagumi -0.04, betta +0.07, paludarium -0.43 from PL2 refitting the generic gear price curves. Upkeep, minutes and risk unchanged.
 
-    const LOCK: Record<string, number[]> = { planted: [1294.35,52.461,55.66,8.045], iwagumi: [1385.582,35.877,53.943,6.068], betta: [179.592,9.337,33.949,4.984], paludarium: [1215.843,41.353,55.999,5.614], terrarium: [1894.65,35.083,17.43,3.077], reef: [3586.756,178.631,89.573,6.451], rainforest: [1092.599,26.089,30.904,1.73], arid: [1195.52,24.757,13.569,2.842], python: [1465.166,25.461,21.769,1.813], blackwater: [1237.038,49.02,44.674,5.226], clownnano: [1667.173,96.645,74.453,6.326] };
+    // Price sweep 2026-11-23 (merged 2026-11-26, cac03ff0): clock moved to 2026-11-23, because the sweep re-checked the Petco sales that day and at the old clock the planted 45 gal tank's $75 sale read as not yet live (+$66.14). At the new clock every move is price-age widening: setup -$0.20 (iwagumi) to +$1.82 (reef+tech), upkeep within $0.05/mo; minutes and risk unchanged.
+    const LOCK: Record<string, number[]> = { planted: [1294.716,52.465,55.66,8.045], iwagumi: [1385.382,35.872,53.943,6.068], betta: [179.681,9.338,33.949,4.984], paludarium: [1216.1,41.352,55.999,5.614], terrarium: [1895.176,35.085,17.43,3.077], reef: [3588.341,178.672,89.573,6.451], rainforest: [1092.852,26.089,30.904,1.73], arid: [1195.872,24.758,13.569,2.842], python: [1465.626,25.464,21.769,1.813], blackwater: [1237.2,49.018,44.674,5.226], clownnano: [1668.144,96.668,74.453,6.326] };
     for (const [id, want] of Object.entries(LOCK)) {
       const t = D(tankOf(id)).totals;
       expect([t.setupUsd, t.upkeepUsdMo, t.minPerWeek, t.risk].map(v => Math.round(v * 1000) / 1000), id).toEqual(want);
