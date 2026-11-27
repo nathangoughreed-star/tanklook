@@ -12,7 +12,7 @@ import { pickLightProduct } from '../src/scene/techEdit';
 const stocked = (ids: string[]) => {
   const st = new Store();
   st.edit(s => { s.water.on = true; delete s.water.salt; });
-  const L = st.tank.tank.L, prod = LIGHT_PRODUCTS.filter(p => p.water !== 'salt' && L >= p.fitMinMm && L <= p.fitMaxMm && p.mount !== 'hanging').sort((a, b) => a.watts - b.watts);
+  const L = st.tank.tank.L, prod = LIGHT_PRODUCTS.filter(p => p.water !== 'salt' && L >= p.fitMinMm && L <= p.fitMaxMm && p.mount !== 'hanging' && p.watts >= 6).sort((a, b) => a.watts - b.watts);   // >= 6 W: a 3 W accent strip (Marineland Hidden LED, a55fd8da, 2026-11-26) is dimmer than any plant fit, so it would leave no look-alike
   st.edit(s => { pickLightProduct(s, prod[0].id); });
   for (const id of ids) addPiece(st, id);
   return st;
