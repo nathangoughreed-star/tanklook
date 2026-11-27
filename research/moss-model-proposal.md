@@ -1,0 +1,97 @@
+# Moss rework: research and modeling proposal (R182, 2026-11-26)
+
+Nathan 2026-11-26, on a screenshot of the java moss mounds on a rock stack: "i want moss balls as a plant, but honestly
+this looks nothing like java moss lol ... Preferably it would look one way if alone and another way if it was attached
+to an object and growing on it where it spreads more like ivy rather than a ball".
+
+## Why today's moss looks wrong
+
+`moss` in `src/art/plants.ts` (form 'moss', built in `src/render/plant3d.ts` at `P.form === 'moss'`) is a solid dark
+sphere with ~300 flat leaf cards stuck on it pointing outward. Real java moss has no core and no dome: it is a
+tangle of thin irregular strands. The cards read as ivy leaves, the core reads as a green rock. It has no painted
+leaf sheet (`tex`), so the 11-26 colour ('lum') and edge-feathering changes never reached it.
+
+## What the real plants look like (research, not yet checked against photos)
+
+Source: a research pass over retailer and reference pages (URLs below). The pass could read text only, so
+**no photo has been looked at yet**. Per `research/species-art-method.md` the looks below stay unreviewed until
+photos are put beside a render.
+
+| Plant | Alone | Attached to wood / rock | Strand | Colour (estimates) |
+|---|---|---|---|---|
+| Java moss (Taxiphyllum barbieri) | shaggy, slumped tangle 2-4 in thick, strands every way, sheds wisps | fuzzy layer 0.5-1.5 in thick creeping sideways over the surface; trails off edges in strands 2-6 in | irregular random branching, 1-2 mm leaves, no fronds | core #2F5A1E, mid #5E8F2E, tips #8FBF45 |
+| Christmas moss (Vesicularia montagnei) | fluffy, fronds jumbled | 0.5-1 in layer of fir-tree fronds overlapping like shingles, little trailing | triangular fronds, regular side branches | #2E5E1F / #4F8A2B / #7DB542 |
+| Flame moss | upright twisting tuft | creeping mat with wavy upright shoots 1-3 in tall, no trailing | upright spiral shoots, sparse branches | #3F7A28-#5A9B30, tips #78B83F |
+| Weeping moss (Vesicularia ferriei) | mound of hanging shoots | curtains hanging off edges 2-6 in | Christmas-like fronds that droop | #5FA032-#78B03E, tips #9ACD4A |
+| Marimo ball (Aegagropila linnaei; an alga) | velvety fuzzy ball 1-2 in (up to 5 in), flattened / lumpy underside if never turned, paler or brown underneath | **never attaches**: a free ball, alone or in groups on the substrate | dense filaments radiating from the centre | #2F6B2A-#3F7F2F, brighter on the lit side |
+
+Attachment (java-moss family): rhizoids grip rough wood and rock. New moss is tied on with thread or glued and
+covers the thread in 3-6 weeks. A moss wall or carpet is the same plant pressed flat and trimmed to 0.5-1 in.
+
+Note: in the hobby "moss ball" means marimo. Nathan's "one way alone, another attached, spreading like ivy" fits
+java moss (and Christmas / flame / weeping), not marimo. So this proposal makes them two plants.
+
+URLs (pages with whole-clump and close-up photos; open and check before drawing):
+- Java moss: https://aquasabi.com/Taxiphyllum-barbieri-Java-moss ; https://terrariumtribe.com/?p=3493 (driftwood close-up) ; https://buceplant.com/a/amp-1/products/java-moss-on-driftwood ; https://www.flowgrow.de/db/aquaticplants/taxiphyllum-barbieri ; https://en.wikipedia.org/wiki/Taxiphyllum_barbieri
+- Christmas moss: https://www.nparks.gov.sg/florafaunaweb/flora/5/8/5829 ; https://tropica.com/en/plants/plantdetails/4397/4397 ; https://buceplant.com/a/amp-1/products/christmas-moss
+- Flame moss: https://www.amazonasmagazine.com/2020/07/24/plant-spotlight-taxiphyllum-sp-flame/ ; https://aquasabi.com/Taxiphyllum-sp-Flame-Moss ; https://buceplant.com/blogs/news/plant-profile-flame-moss
+- Weeping moss: https://aquasabi.com/Vesicularia-ferriei-Weeping-Moss ; https://tropica.com/en/plants/plantdetails/4398/4398
+- Marimo: https://en.wikipedia.org/wiki/Marimo ; https://aquasabi.com/Aegagropila-linnaei-S-2-4-cm-3x ; https://www.cantonaquatics.com/products/marimo-moss-ball-aegagropila-linnaei
+
+## Proposal
+
+### 1. Marimo ball: a new plant (small, self-contained)
+- New species `marimo`, form 'ball': a sphere 1-2 in across (size range up to 5 in), the bottom ~15 % flattened
+  where it rests, slightly lumpy (low-frequency noise on the radius).
+- The fuzz: 3-4 concentric alpha shells ("fur shells") with a filament-noise texture, each a little larger and
+  sparser, so the outline reads soft at 1-2 ft. Cheap (a few hundred triangles per ball). No leaf cards.
+- Colour: deep green, lighter on top, a touch browner on the resting side.
+- Placement: substrate only; it may sit in a group (a clump of 3-5 balls of mixed size). It is never attached;
+  dropped on a rock it rolls to the ground (or rests in a hollow).
+- Growth: ~0.2 in per year, so it barely grows on the timeline.
+
+### 2. Java moss: strands, and two growth modes
+**Strands instead of cards.** Each strand is a thin curved ribbon (a crossed pair of narrow quads along a
+polyline) with 2-4 irregular side branches, carrying a painted "moss strand" alpha texture (tiny overlapping
+leaves along the edge, from a ChatGPT sheet like the R151 leaf sheets). A clump is a few hundred strands. No core
+ball: where the strands are dense the inside is dark by ambient occlusion (vertex colour by depth into the clump).
+
+**Alone (on the substrate):** a slumped tangle, wider than tall (about 3:1), strands lying every way, a few loose
+wisps standing out from the edge and lying on the sand around it.
+
+**Attached (dropped on a rock or wood):** the moss becomes a skin on that object.
+- At placement, sample the host's surface around the drop point (points + normals from its mesh triangles within a
+  radius, measured along the surface so it does not jump gaps).
+- Strands lie along the surface (tangent to it, pressed in 0.5-1.5 in thick), oriented with a slight up-and-outward
+  bias like the photos.
+- Where the surface turns down past an edge (normal pointing down or sideways at a lip), strands hang free as
+  trailing wisps 2-6 in long: the "ivy" look.
+- Growth spreads the covered area outward from the anchor along the surface over the timeline (the radius grows),
+  so a fresh tie-on is a small patch and an old one blankets the stone and drips off its edges.
+- The moss moves and is deleted with its host (stored on the item as `on: <host item id>` plus the anchor point in
+  the host's frame).
+
+**Later variants on the same strand system** (parameters only, no new code): Christmas moss (flat triangular
+fronds, shingled), flame moss (upright twisting shoots), weeping moss (fronds that droop, long curtains).
+
+### 3. The java moss brush
+`javamoss` in `src/render/brushmesh.ts` paints lumpy domes over the ground. Give it the same strands in the
+"alone" look once step 2 exists, so painted moss and the placed plant match.
+
+## Engineering notes and risks
+- Today plants and brushes only know the ground height (`GroundAt(x, d)` in `src/render/scatter.ts`); plants on
+  rocks only "hug" the stone by sinking the core ball. Surface sampling of a hardscape mesh is new. It must be
+  deterministic from the item seed and the host's transform, and redone when the host moves.
+- Check whether plant geometry is built in the worker (`plant3d.gpu`, worker build): if so, the host's surface
+  samples must be passed to the worker, not its mesh.
+- Strand count per clump capped like `MAX_LEAFLETS` so a moss-covered scape does not blow the frame budget.
+- Picking and the selection box should select the moss, not the rock under it.
+
+## Steps (each with its gate)
+1. Photos: open the URLs above (or harvest with Claude in Chrome), pick 2+ per look (alone, attached, close-up),
+   save to `research/moss-refs/`, record URLs. Gate: Nathan agrees they show the look.
+2. Marimo: build, render beside its photos. Gate: Nathan approves the side-by-side.
+3. Strand sheet: ChatGPT moss-strand sheet (prompt beside `research/plant-sheets/prompts/leaf-sheet.md`).
+4. Java moss "alone" with strands, beside its photos. Gate: Nathan.
+5. Attached mode: host surface sampling, skin + trailing, growth spread. Gate: Nathan, on a rock and on driftwood.
+6. Variants (Christmas, flame, weeping) and the brush.
