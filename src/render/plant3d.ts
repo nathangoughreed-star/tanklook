@@ -37,6 +37,9 @@ import { WHITE_UV, cellIndex, rectUV, strapAlong, texOf } from '../art/plantTex'
 export const plant3d = { sway: true, emerse: true, gpu: true, variety: FX.variety, tex: 'lum' as 'paint' | 'lum' | 'off' };
 /** 'lum' mode: no channel of the texture's mean counts as darker than this share of its luminance (see the leaf colours). */
 const LUM_FLOOR = 0.6;
+/** Leaf sheets that keep their own painted colour under 'lum' (Nathan 2026-11-26, picked from strips: the crypts' painted
+ *  reds and browns, the approved species greens for the rest). */
+const PAINT_OWN = new Set(['crypt']);
 onFx(fx => { plant3d.variety = fx.variety; });
 
 // Variety (lane VF-B, plan VF stage VF2, 2026-11-11): with the `variety` switch on, each plant and leaf differs a little
@@ -188,7 +191,7 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
   const hx = Math.cos(yaw), hz = Math.sin(yaw), ph = r() * 6.28;
   // a painted leaf texture (lane PT): the leaf's cell (no random draw: the look index of its colour pair, else a hash of
   // where it sits in the buffer) or, for a strap, the atlas column for its length
-  const tx = f.tex && plant3d.tex !== 'off' ? texOf(f.tex) : undefined, lum = plant3d.tex === 'lum';
+  const tx = f.tex && plant3d.tex !== 'off' ? texOf(f.tex) : undefined, lum = plant3d.tex === 'lum' && !PAINT_OWN.has(f.tex!);
   const cell = tx?.kind === 'leaf' ? tx.cells[cellIndex(f.cols.indexOf(cols), out.pos.length / 3, tx.cells.length)] : undefined, strap = tx?.kind === 'strap' ? strapAlong(tx, L) : undefined;
   const v0 = tx?.kind === 'leaf' ? tx.v0 : 0, mu = cell?.mu ?? (tx?.kind === 'strap' ? tx.mean : [1, 1, 1]), mn = cell?.mn ?? mu, uvF: number[] = [], uvB: number[] = [];
   // leaf character (painted types only, no random draw: hashes of the leaf's place in the buffer): its own droop, and an age (older = a little yellower and darker)
