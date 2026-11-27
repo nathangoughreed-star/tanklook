@@ -46,8 +46,8 @@ The dottyback proxy's specimens are not orchid-sized, so its mass check is a san
 ## State table (fill in as each lands)
 | id | sheet | built | verdict | sha | live |
 |---|---|---|---|---|---|
-| flameangel | yes (15:16, title match, visual_check done) | yes, gate pass (sat 1.3; depth 55.1 % SL vs 54.9) | sent to Nathan 2026-11-27, waiting | see git log | no |
-| orchiddottyback | yes (15:18, title match, visual_check done) | yes, gate pass (mass 0.96-1.48x proxy; proxy depth unchecked) | sent to Nathan 2026-11-27, waiting | see git log | no |
+| flameangel | yes (15:16, title match, visual_check done) | yes, gate pass (sat 1.3; depth 55.1 % SL vs 54.9) | approved 2026-11-27 (Nathan: "Approve both") | see git log | yes (on deploy) |
+| orchiddottyback | yes (15:18, title match, visual_check done) | yes, gate pass (mass 0.96-1.48x proxy; proxy depth unchecked) | approved 2026-11-27 (Nathan: "Approve both") | see git log | yes (on deploy) |
 
 ## Build notes (2026-11-27)
 - **flameangelb's first build failed at the headless shots** (`profile` of an undefined plan: the photo loader had not registered the look). A rerun of
