@@ -2188,6 +2188,27 @@
    "hi": 150,
    "unit": "each; LiveAquaria $92.99, That Pet Place $149.99 (out of stock); a $600 premium listing ignored (RX2 search 2026-11-19)",
    "url": "https://liveaquaria.com/product/345/?pcatid=345"
+  },
+  "animal:bichir": {
+   "lo": 13,
+   "mode": 15,
+   "hi": 25,
+   "unit": "each, 2-5 in juvenile; That Pet Place small $14.99 (store only), Imperial Tropicals $12.99, LiveAquaria 3-5 in $24.99 (R150 search 2026-11-25; stock varies)",
+   "url": "https://www.thatpetplace.com/Polypterus-senegalus-senegal-bichir-213446"
+  },
+  "animal:clownknife": {
+   "lo": 18,
+   "mode": 20,
+   "hi": 30,
+   "unit": "each, 3-4 in juvenile; aquariumfish.com $19.99 (sold out), Monster Aquarium 4 in $18, AZ Gardens 3-4 in from $29 (R150 search 2026-11-25)",
+   "url": "https://aquariumfish.com/products/clown-knifefish"
+  },
+  "animal:bambooshark": {
+   "lo": 250,
+   "mode": 400,
+   "hi": 530,
+   "unit": "each, 8-18 in juvenile; Pete's Aquariums 8-18 in $249.99-$529.99, SaltwaterFish 10-12 in $496.99 (R150 search 2026-11-25)",
+   "url": "https://www.saltwaterfish.com/product-brown-banded-bamboo-shark"
   }
  }
 }
