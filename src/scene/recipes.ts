@@ -85,7 +85,7 @@ const TWEAKS: Record<string, Tweak> = {
   'castle-coloured-gravel': { seed: 1, ground: { type: 'clown' }, tint: true, air: true, fakes: { open: 4, balanced: 9, full: 16 }, dens: t([-1, 0.15], [-1, 0.6], [-1, 1.2]), rocks: { open: [], balanced: [], full: [] }, wood: { open: 0, balanced: 0, full: 0 },
     ornaments: { open: ['castle'], balanced: ['castle'], full: ['castle', 'treasurechest'] } },
   // Overflowing Garden: a calm hardscape-forward nature aquascape under an open top; the plant stop sets only how many rim planters and houseplants grow above it (lane OG2)
-  'overgrown-garden': { openTop: true, seed: 1, dens: t([1.6, 0.4], [2, 0.9], [2.2, 1.4]) },
+  'overgrown-garden': { openTop: true, seed: 8, dens: t([1.6, 0.4], [2, 0.9], [2.2, 1.4]) },
   // reef siblings (one 'reef' look): the shape of the rock is the archetype
   'reef-arches': { comp: 'v' }, 'reef-islands': { comp: 'u' },   'mixed-reef': { comp: 'scattered', seed: 2 }, 'blue-glow-reef': { comp: 'mound', seed: 3 },
   // driftwood siblings
