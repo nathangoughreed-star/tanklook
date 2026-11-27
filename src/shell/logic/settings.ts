@@ -7,7 +7,7 @@ import { FX_KEYS, FX_LABELS, TONE_NAMES, causticStatus, fxLabel, levelReason } f
 import { FX_DEFAULT, type Fx, type FxKey } from '../../render/fx';
 
 export const UNIT_OPTS: [Scene['units'], string][] = [['in', 'US'], ['cm', 'Metric']];
-export const UNIT_NOTE: Record<Scene['units'], string> = { in: 'Inches, gallons, °F and pounds everywhere.', cm: 'Centimetres, litres, °C and kilograms everywhere.' };
+export const UNIT_NOTE: Record<Scene['units'], string> = { in: 'Inches, gallons, °F and pounds everywhere.', cm: 'Centimeters, liters, °C and kilograms everywhere.' };
 export const setUnits = (store: Store, u: Scene['units']) => { if (store.scene.units !== u) store.update(s => { s.units = u; }); };
 
 export const RULE_OPTS: [Rules, string][] = [['guided', 'Guided'], ['sandbox', 'Sandbox']];
@@ -50,7 +50,7 @@ export function graphicsModel(perf: PerfLike, levelNames: string[], fx: Fx, lock
 
 // ---------- Help (the old "How to use", shortened: the gestures) ----------
 export const HELP: { title: string; lines: string[] }[] = [
-  { title: 'Looking around', lines: ['Drag in the tank to orbit; the wheel or a pinch zooms; a right or middle drag pans.', 'Double-click or Home re-centres the view. View > Straight on puts it back square.'] },
+  { title: 'Looking around', lines: ['Drag in the tank to orbit; the wheel or a pinch zooms; a right or middle drag pans.', 'Double-click or Home re-centers the view. View > Straight on puts it back square.'] },
   { title: 'Changing the design', lines: ['Pick things in the sections on the left; the checks along the bottom update as you go.', 'Ctrl+Z undoes, Ctrl+Y redoes, Ctrl+S saves in this browser.'] },
   { title: 'Checks', lines: ['Habitat, Cost, Water and Notes open on the right. They judge the design; they never change it.'] },
 ];

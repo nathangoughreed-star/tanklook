@@ -8,7 +8,10 @@ import type { Scene } from '../scene/types';
 import { listLib } from '../scene/library';
 import { readShare, shareUrl } from '../scene/share';
 import { parseScene } from '../scene/validate';
-import { EXAMPLES, exampleScenes } from '../examples';
+import { EXAMPLES, examplesInScope, exampleScenes } from '../examples';
+import { setResult } from './logic/result';
+import { freshScene } from '../scene/freshScene';
+import { landing } from './logic/start';
 import { restoreChecklist } from './logic/checklist';
 import { setProjectAsker, confirmStart, startProject } from '../ui/projectStart';
 import * as P7 from '../ui/logic/files';
@@ -28,7 +31,7 @@ export interface Files {
   say(text: string, bad?: boolean): void; close(): void; dismissToast(): void;
   run(a: FileAction): void; save(): void;
   /** SS1: the Start sheet, its Blank door (a new empty tank of that water) and its Open doors (the Open window at a tab) */
-  openStart(): void; openKits(back?: 'start' | 'close'): void; openExamples(): void; startDeal(deal: Deal, scene: Scene): Promise<void>; newTank(kind: SetupKind): void; openAt(tab: 'saved' | 'examples' | 'file'): void;
+  openStart(): void; openKits(back?: 'start' | 'close'): void; openExamples(): void; startDeal(deal: Deal, scene: Scene): Promise<void>; newTank(kind: SetupKind): void; /** the landing's example, still untouched, gives way to an empty tank (no question asked) */ freshIfLanding(): void; /** open example i of the in-scope list full-width with the result card */ peekExample(i: number): Promise<void>; openAt(tab: 'saved' | 'examples' | 'file'): void;
   rename(v: string): void;
   openSaved(id: string): Promise<void>; deleteSaved(id: string): void; openExample(id: string): Promise<void>;
   openFile(file: File): Promise<void>; openShared(hash: string): Promise<void>;
@@ -96,8 +99,16 @@ export function createFiles(store: Store, thumb: () => string, afterReplace: () 
       pinDeal(deal);
       if (!await startProject(store, scene, P7.savedText())) return;
       store.update(s => { const t = s.tanks[s.active]; if (t) lockKitParts(t, deal.includes); }, { history: false });   // R125: what the bundle includes is held until the user unlocks it
-      P7.setLibId(null); say(`Opened the deal "${scene.name}". Customise it; Cost and time prices the bundle. Undo brings the previous tank back.`); replaced(); openSection('tank');
+      P7.setLibId(null); say(`Opened the deal "${scene.name}". Customize it; Cost and time prices the bundle. Undo brings the previous tank back.`); replaced(); openSection('tank');
     },
+    async peekExample(i0) {
+      const list = examplesInScope().map(x => x.id), n = list.length; if (!n) return;
+      const i = ((i0 % n) + n) % n, id = list[i];
+      let text: string; try { text = (await exampleScenes())[id]; } catch { say('Could not load the examples (no connection?). Try again in a moment.', true); return; }
+      if (!landing.untouched && !await confirmStart(store.scene, P7.savedText())) return;
+      try { const { scene } = parseScene(text); store.replace(scene); P7.setLibId(null); landing.untouched = true; set({ dlg: null }); afterReplace(); setResult({ kind: 'example', list, i }); } catch { say('Could not open that example.', true); }
+    },
+    freshIfLanding() { if (!landing.untouched) return; landing.untouched = false; store.replace(freshScene()); P7.setLibId(null); afterReplace(); },
     newTank(kind) {
       set({ dlg: null });
       void (async () => { if (await startProject(store, newProject(store.scene.units, kind, store.tank.camera), P7.savedText())) { P7.setLibId(null); say('New project. Undo brings the previous one back.'); afterReplace(); openSection('tank'); } })();
@@ -132,7 +143,7 @@ export function createFiles(store: Store, thumb: () => string, afterReplace: () 
       let parsed: Awaited<ReturnType<typeof readShare>>; try { parsed = await readShare(hash); } catch (e) { say(P7.shareFailMessage(e), true); return; }
       if (!await confirmStart(store.scene, P7.savedText())) return;
       try { store.replace(parsed.scene); } catch { say('Could not open that share link.', true); return; }
-      P7.setLibId(null); say(P7.sharedMessage(parsed.scene.name, parsed.warnings), parsed.warnings.length > 0); replaced();
+      P7.setLibId(null); say(P7.sharedMessage(parsed.scene.name, parsed.warnings), parsed.warnings.length > 0); replaced(); landing.untouched = true; setResult({ kind: 'shared', list: [], i: 0 });   // FD: a share link lands full-width with the result card
     },
     async saveAs(typed, how) {
       const v = saveAsView(typed, store.scene);
@@ -182,15 +193,16 @@ export function FileMenu({ files }: { files: Files }) {
       <button type="button" class="btn icon ghost" title="New, Open, Save as, Share link, Download" aria-label="File menu" aria-expanded={menu} onClick={() => setMenu(!menu)}><Icon name="more" /></button>
       {menu ? <div class="pop menu" role="menu" onClick={() => setMenu(false)}>
         {FILE_MENU.map(m => <button type="button" class="btn ghost" role="menuitem" title={m.hint} onClick={() => files.run(m.id)}>{m.label}</button>)}
-        <button type="button" class="btn ghost" role="menuitem" title="Show the Get started checklist on this tank" onClick={restoreChecklist}>Get started checklist</button>
+        <button type="button" class="btn ghost" role="menuitem" title="Show the setup steps on this tank" onClick={restoreChecklist}>Setup steps</button>
       </div> : null}
     </span>
   );
 }
 
-function Dialog({ title, onClose, children, wide, full }: { title: string; onClose: () => void; children: preact.ComponentChildren; wide?: boolean; full?: boolean }) {
+function Dialog({ title, onClose, children, wide, full, top, dock }: { title: string; onClose: () => void; children: preact.ComponentChildren; wide?: boolean; full?: boolean; /** the landing sheet: not modal, docked beside the lit tank (a bottom sheet on a phone) */ dock?: boolean; /** a question that must show above any other dialog (the animal door's own window) */ top?: boolean }) {
+  useEffect(() => { if (!dock) return; document.body.classList.add('landdock'); return () => document.body.classList.remove('landdock'); }, [dock]);
   return (
-    <div class="scrim" onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}>
+    <div class={`scrim${top ? ' top' : ''}${dock ? ' dock' : ''}`} onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div class={`dlg${wide ? ' wide' : ''}${full ? ' full' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
         <div class="sec-head"><h2>{title}</h2><button type="button" class="btn icon ghost" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
         <div class="dlgbody">{children}</div>
@@ -266,7 +278,7 @@ export function FileLayer({ store, files }: { store: Store; files: Files }) {
       {s.dlg === 'examples' ? <ExamplesScreen files={files} Dialog={Dialog} /> : null}
       {s.dlg === 'start' ? <StartSheet files={files} Dialog={Dialog} /> : null}
       {s.dlg === 'saveas' ? <SaveAsDialog store={store} files={files} /> : null}
-      {s.ask ? <Dialog title={s.ask.title} onClose={() => s.ask!.resolve(s.ask!.actions[0].value)}>
+      {s.ask ? <Dialog top title={s.ask.title} onClose={() => s.ask!.resolve(s.ask!.actions[0].value)}>
         <p class="dlgtext">{s.ask.text}</p>
         <div class="acts end">{s.ask.actions.map(a => <button type="button" class={`btn${a.primary ? ' primary' : ''}${a.danger ? ' danger' : ''}`} onClick={() => s.ask!.resolve(a.value)}>{a.label}</button>)}</div>
       </Dialog> : null}

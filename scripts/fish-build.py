@@ -175,6 +175,7 @@ er = sum([['--erase', ','.join(map(str, e))] for e in spec.get('erase', [])], []
 common = ['--aspect', asp, '--clip-head', spec.get('clip_head', 25), '--alo', alo, '--aw', aw, '--sat', sat]
 if spec.get('sat_lin'): common += ['--sat-lin', 1]   # sat applied in linear light: keeps the hue (cutout-card desat_lin); opt-in, b6 2026-11-24
 if spec.get('solid', 5): common += ['--solid', spec.get('solid', 5)]   # opaque inside the fish silhouette (method row 45); 'solid': 0 = brightness alpha only
+if spec.get('solid', 5) and spec.get('solid_near'): common += ['--solid-near', spec['solid_near']]   # a black gap enclosed by fins deeper than 15 px from the background (goldfish: anal fin on the lower tail lobe, 18.4 px; method row 72) is background, not a dark mark
 side_card = os.path.join(work, 'side_full.png')
 if spec.get('root_band', 1):   # pale band at the body / tail-fin join (scripts/fishroot.py, method row 63)
     import fishroot; print('root band: %d px darkened in side_full.png' % fishroot.smooth_root(side_card, LM['ped']))

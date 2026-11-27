@@ -369,13 +369,21 @@
       "look": "bichirb",
       "approved": "2026-11-25"
     },
+    "labeo": {
+      "look": "labeob",
+      "approved": "2026-11-27"
+    },
     "clownknife": {
-      "look": "clownknife",
-      "approved": "2026-11-25"
+      "look": "clownknifeb",
+      "approved": "2026-11-27"
     },
     "bambooshark": {
-      "look": "bambooshark",
-      "approved": "2026-11-25"
+      "look": "bamboosharkb",
+      "approved": "2026-11-27"
+    },
+    "kuhli": {
+      "look": "kuhlib",
+      "approved": "2026-11-27"
     }
   }
 }

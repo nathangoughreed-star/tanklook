@@ -1,0 +1,10 @@
+{
+  "_about": "R165 (FD unit 2): one short line shown under the Building the tank bar when a wait runs past 3 seconds. Tips about this tool only, each with where its claim is true in the app; no animal facts and no care advice. Add a line only with its source.",
+  "tips": [
+    { "text": "Drag in the tank to turn it. The wheel or a pinch zooms, and a right or middle drag pans.", "source": "the Looking around text in src/shell/logic/settings.ts" },
+    { "text": "Double-click or press Home to put the view back in the middle.", "source": "the Looking around text in src/shell/logic/settings.ts" },
+    { "text": "Each check in the top bar opens the reasons behind it: Habitat, Cost, Water and Notes.", "source": "src/shell/drawers.tsx" },
+    { "text": "Save keeps the tank in this browser. A share link carries the whole tank in its address.", "source": "src/scene/share.ts, files menu" },
+    { "text": "Undo brings the previous project back after a New or an Open.", "source": "the confirmation text in src/shell/files.tsx" }
+  ]
+}

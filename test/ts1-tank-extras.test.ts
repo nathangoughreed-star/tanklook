@@ -85,7 +85,7 @@ describe('TS1 table position and stand finish', () => {
   });
   it('wiring: Centre / Back / Front', () => {
     const st = furn(); st.edit(s => setTableX(s, 80));
-    st.edit(s => placeTank(s, 'centre')); expect(st.tank.stand.table).toMatchObject({ x: 0, z: 0 }); expect(tablePos(st.tank, fmt).xText).toBe('Centred');
+    st.edit(s => placeTank(s, 'centre')); expect(st.tank.stand.table).toMatchObject({ x: 0, z: 0 }); expect(tablePos(st.tank, fmt).xText).toBe('Centered');
     st.edit(s => placeTank(s, 'back')); expect(st.tank.stand.table.x).toBe(0); expect(st.tank.stand.table.z).toBeGreaterThan(0); expect(st.tank.stand.table.z).toBeLessThanOrEqual(TABLE_MAX);
     st.edit(s => placeTank(s, 'front')); expect(st.tank.stand.table.z).toBeLessThan(0);
   });

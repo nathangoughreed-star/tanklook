@@ -1,0 +1,68 @@
+{
+ "at": "2026-11-26T22:53:33.666Z",
+ "net": "lte",
+ "cpu": 4,
+ "view": "planted",
+ "runs": [
+  {
+   "round": 0,
+   "build": "after",
+   "shellMs": 2402,
+   "partMs": 12763,
+   "partName": "tank part 0",
+   "kbBeforeShell": {
+    "jscss": 1220,
+    "fish": 0,
+    "all": 1246
+   },
+   "kbBeforePart": {
+    "jscss": 1220,
+    "fish": 0,
+    "all": 1246
+   },
+   "fishFiles": 30,
+   "fishDoneMs": 2565,
+   "fishKB": 0
+  },
+  {
+   "round": 1,
+   "build": "after",
+   "shellMs": 2302,
+   "partMs": 12503,
+   "partName": "tank part 0",
+   "kbBeforeShell": {
+    "jscss": 1220,
+    "fish": 0,
+    "all": 1246
+   },
+   "kbBeforePart": {
+    "jscss": 1220,
+    "fish": 0,
+    "all": 1246
+   },
+   "fishFiles": 30,
+   "fishDoneMs": 2351,
+   "fishKB": 0
+  },
+  {
+   "round": 2,
+   "build": "after",
+   "shellMs": 2301,
+   "partMs": 13056,
+   "partName": "tank part 0",
+   "kbBeforeShell": {
+    "jscss": 1220,
+    "fish": 0,
+    "all": 1246
+   },
+   "kbBeforePart": {
+    "jscss": 1220,
+    "fish": 0,
+    "all": 1246
+   },
+   "fishFiles": 30,
+   "fishDoneMs": 2386,
+   "fishKB": 0
+  }
+ ]
+}

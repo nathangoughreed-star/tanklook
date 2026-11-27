@@ -1,6 +1,7 @@
 // UI2 shell step 8 (lane S8, 2026-11-13): the viewer cluster's View popover and Another moment (screen map §2a). Draws logic/view.ts; the viewer
 // itself is the unchanged render/viewer.ts. Compare comes in step 9 (its button is left out).
 import type { ComponentChildren } from 'preact';
+import { SITE_URL } from './productName';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { Store } from '../scene/store';
 import { SWIM_EVENT, type Viewer } from '../render/viewer';
@@ -65,7 +66,7 @@ function RoomGroup({ store }: { store: Store }) {
         {S.wall.show ? <>
           <Seg label="Wall" value={S.wall.side} opts={[['back', 'Behind'], ['left', 'Peninsula (left end)'], ['right', 'Peninsula (right end)'], ['corner', 'Corner']]} onPick={wallSide} />
           <LenRow label="Ceiling" mm={ceilingH(S.wall)} min={CEILING_MIN} max={CEILING_MAX} u={u} step={1} onMm={(mm, done) => store.edit(s => { s.wall.height = mm; }, done ? {} : { coalesce: 'ceilH' })} />
-          <div class="row"><span class="lbl">Wall colour</span><input type="color" aria-label="Wall colour" value={S.wall.color} onInput={e => store.edit(s => { s.wall.color = (e.target as HTMLInputElement).value; }, { coalesce: 'wallColor' })} /><span /></div>
+          <div class="row"><span class="lbl">Wall color</span><input type="color" aria-label="Wall color" value={S.wall.color} onInput={e => store.edit(s => { s.wall.color = (e.target as HTMLInputElement).value; }, { coalesce: 'wallColor' })} /><span /></div>
         </> : null}
         <Toggle on={S.person.show} label={<>You, for scale <span class="hint">{heightText(S.person.height, u)}</span></>} onFlip={on => store.edit(s => { s.person.show = on; })} />
         {S.person.show ? <>
@@ -113,7 +114,7 @@ export function ViewCluster({ store, getViewer, phone, compare }: { store: Store
   const setMap = (on: boolean) => { const cb = document.getElementById('mapOn') as HTMLInputElement | null; if (cb) cb.checked = on; saveMap(on); v?.invalidate(); bump(n => n + 1); };
   const sheetOf = (k: keyof typeof cam, val: number) => store.cam(c => { (c as unknown as Record<string, number>)[k] = val; });
   const on = presetNow(cam), room = roomRead(store);
-  const png = async (m: number) => { try { download(await v!.exportPNG(m), pngName(store.scene.name, m)); } catch (e) { setNote((e as Error).message); } };
+  const png = async (m: number) => { try { download(await v!.exportPNG(m, SITE_URL), pngName(store.scene.name, m)); } catch (e) { setNote((e as Error).message); } };
   const moment = () => { if (anotherMoment(store)) setNote('Another moment in the tank. Ctrl+Z brings the last one back.'); };
   const px = (m: number) => { const h = v?.host; return h ? pngTitle(h.clientWidth, h.clientHeight, devicePixelRatio || 1, m) : ''; };
 
@@ -131,7 +132,7 @@ export function ViewCluster({ store, getViewer, phone, compare }: { store: Store
         {swimming ? null : <button type="button" class="btn sm chip" disabled={!store.tank.fish.length} title={store.tank.fish.length ? 'Every animal in a new spot, as if the tank were photographed a little later. Plants and scape stay.' : 'Add an animal first'} onClick={moment}><Icon name="shuffle" /><span class="lb"> {phone ? 'Moment' : 'Another moment'}</span></button>}</div></div> : null}
           <div class="vsec"><h3>Camera</h3>
             <div class="chips">{CAM_PRESETS.map(p => <button type="button" class={`btn sm chip${on === p.id ? ' on' : ''}`} aria-pressed={on === p.id} onClick={() => store.cam(c => Object.assign(c, presetOf(p.id)!.cam))}>{p.label}</button>)}
-              <button type="button" class="btn sm chip" title="Re-centre the panned view (Home)" onClick={() => v?.resetPan()}>⌖ Re-centre</button></div>
+              <button type="button" class="btn sm chip" title="Re-center the panned view (Home)" onClick={() => v?.resetPan()}>⌖ Re-center</button></div>
             {CAM_SLIDERS.map(s => (
               <div class="row"><span class="lbl">{s.label}</span>
                 <input class="slider" type="range" min={s.min} max={s.max} step={s.step} value={cam[s.key]} aria-label={s.label} onInput={e => sheetOf(s.key, +(e.target as HTMLInputElement).value)} onChange={() => store.seal()} />

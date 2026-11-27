@@ -177,8 +177,8 @@ export interface Grow {
 
 export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   fern: { grow: { speed: 'slow', overflow: 'none', len: [60, 300], more: 4 }, sway: 0.3, form: 'rhizome', n: [13, 18], spread: 0.6, stalk: '#5a4a32', leaf: {
-    len: [0.7, 1], wid: 0.1, prof: [0.8, 0.8], rise: [0.08, 0.6], arch: 0.4, twist: 0.5, fold: -0.25, wave: [0.1, 4], pet: 0.06,
-    cols: [['#244a22', '#3e7038'], ['#2a5226', '#4a7e40']], under: '#355a30', rib: '#7aa060', tip: ['#3c7034', 0.3], seg: [14, 5], tex: 'fern' } },
+    len: [0.45, 1], wid: 0.3, prof: [0.85, 0.35], rise: [0.15, 0.85], arch: 0.55, twist: 0.4, fold: -0.15, wave: [0.05, 3], pet: 0.1,
+    cols: [['#2c5824', '#4c863c'], ['#36662a', '#5a9646'], ['#447a32', '#6aa850']], under: '#456e38', rib: '#8ab06c', tip: ['#5c9a44', 0.25], seg: [14, 5], tex: 'fern' } },
   // (lane SW 2026-11-27, from E. grisebachii 'Bleherae' photos + Nathan's 60 gal tall: broad lanceolate blades ~3.5:1 on pale
   // petioles ~30 % of the leaf, inner leaves upright, outer ones arching out and over, blades held face-on, not edge-on. The
   // painted cell already cuts the leaf outline (alpha), so the sheet is kept full-width (prof) instead of tapering it twice)

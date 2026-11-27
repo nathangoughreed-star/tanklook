@@ -29,8 +29,12 @@ import { PlantsSection } from './plants';
 import { Icon, Pill } from './ui';
 import { ProjectName, FileMenu, FileLayer, type Files } from './files';
 import { DiscoverSection, IdeasButton, AnimalDoor } from './discover';
-import { GetStarted } from './checklist';
-import { ANIMAL_DOOR_EVENT } from './start';
+import { ChecklistDock } from './checklist';
+import { ANIMAL_DOOR_EVENT, PICKER_EVENT } from './start';
+import { landing } from './logic/start';
+import { getResult, setResult, subscribeResult } from './logic/result';
+import { ResultCard } from './result';
+import { BuildingBar } from './loading';
 import { resetChecklist } from './logic/checklist';
 import { ConstraintsSection } from './constraints';
 import { PreferencesSection } from './prefs';
@@ -211,7 +215,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const slow = useStore(store);
   const phone = usePhone();
   const fs = useFs();
-  const [section, setSection] = useState<SectionId | null>(phone ? null : 'tank');
+  const [section, setSection] = useState<SectionId | null>(phone || landing.untouched ? null : 'tank');
   const [more, setMore] = useState(false);
   const [drawer, setDrawer] = useState<CheckId | 'selection' | null>(null);
   const [saved, setSaved] = useState(true);
@@ -221,8 +225,13 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const [scope, setScope] = useState<Tab[] | undefined>(undefined);   // S10: "Ideas for Plants" scopes Discover
   const [plumb, setPlumb0] = useState(() => { try { return localStorage.getItem('tanklook.plumbView') === 'on'; } catch { return false; } });   // PB1: the Plumbing view over the viewer; PB3: remembered per browser, one state for the viewer switch and the Equipment workspace's toggle
   const setPlumb = (v: boolean) => { setPlumb0(v); try { localStorage.setItem('tanklook.plumbView', v ? 'on' : 'off'); } catch { /* not remembered */ } };
+  const [, bumpResult] = useState(0);
+  useEffect(() => subscribeResult(() => bumpResult(n => n + 1)), []);
+  const result = landing.untouched ? getResult() : null;   // FD: the result card shows until the first edit
+  useEffect(() => { if (result) { setSection(null); setPicker(false); setMore(false); setDrawer(null); } }, [result]);   // full-width: no panel open behind it
   const [door, setDoor] = useState(false);   // S10: the start door "From an animal I want"
   useEffect(() => { const f = () => setDoor(true); addEventListener(ANIMAL_DOOR_EVENT, f); return () => removeEventListener(ANIMAL_DOOR_EVENT, f); }, []);   // SS1: the Start sheet's animal door
+  useEffect(() => { const f = () => { setMore(false); setSection('tank'); setPicker(true); if (phone) setDrawer(null); }; addEventListener(PICKER_EVENT, f); return () => removeEventListener(PICKER_EVENT, f); }, [phone]);   // FD: the landing's Build my own and I already have a tank doors open the tank picker
   const openMaker = (h: MakerHow) => {
     const lib = loadLibrary();
     if (h.how === 'lib') { const e = lib.find(x => x.id === h.id); if (e) setMaker({ spec: specOfEntry(e), libId: e.id }); }
@@ -289,7 +298,9 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
         {split ? <CompareLayer store={store} models={models} drawer={cmpDrawer} onPick={check} phone={phone} say={files.say} /> : null}
         {plumb && inEquipment ? <PlumbingView store={store} phone={phone} /> : null}
         {split || !inEquipment ? null : <PlumbSwitch on={plumb} onChange={setPlumb} />}
-        <GetStarted tank={store.tank} open={section} onOpen={pick} onAnimal={() => setDoor(true)} phone={phone} />
+        <BuildingBar />
+        {result ? <ResultCard store={store} model={model} result={result} onMine={() => { landing.untouched = false; setResult(null); pick('tank'); }} onAnother={r => r.kind === 'example' ? void files.peekExample(r.i) : r.kind === 'animal' ? setDoor(true) : files.openStart()} /> : null}
+        <ChecklistDock tank={store.tank} open={section} onOpen={pick} onAnimal={() => setDoor(true)} phone={phone} on={!result && !!section && !more} />
         <ScapeBars store={store} getViewer={viewer} />
       </main>
       {phone && !ws ? <div class="checkstrip">{split ? <CompareStrip store={store} models={models} side={cmpSide} setSide={setCmpSide} drawer={cmpDrawer} onPick={check} /> : <CheckBar m={model} on={drawer === 'selection' ? null : drawer} onPick={check} />}</div> : null}
