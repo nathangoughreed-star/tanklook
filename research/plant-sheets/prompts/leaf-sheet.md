@@ -118,3 +118,28 @@ LEFT HALF: a seamless, tileable square texture of the marimo's surface, seen str
 RIGHT HALF: on a pure white (#FFFFFF) background, the upper edge of the same ball seen from the side at a large scale: the velvet surface fills the bottom 60% of the square with a gently curved top outline, and above that outline the loose filaments stick out into the white, short and dense near the surface, a few longer stray wisps reaching further, all of them fine and clearly separated against the white.
 Colour: a deep natural olive to moss green, with a few slightly yellower tips and darker olive in the creases; not lime, not neon, not blue-green. Flat, even, diffuse light: no cast shadows, no specular glare, no rim light, no glow, no water droplets, no bubbles. Photorealistic and faithful to a healthy aquarium marimo, not stylized, not a cartoon, no outlines. No text, labels, rulers or props.
 ```
+
+## Java moss sheet (R182 lane JM step 2, 2026-11-26)
+
+The look it serves: `research/moss-model-proposal.md`, "Java moss look, checked against photos". Lesson from the marimo:
+hand-made hairs read as fake, and only a ChatGPT texture read as moss. So every visible part of the moss (the mat
+surface, the ragged edge and the loose strands) comes from this sheet. One prompt on its own (no shared block). Save as
+`C:\Users\nreed\fish-sheets\plants\javamoss-d1.png`.
+
+What the bake script will cut from each panel:
+- **Top left, mat tile:** a seamless top-down tile of the dense tangle, dark inside with lighter strands on top. It is
+  the skin of the "alone" cushion and of the coat over wood or rock. Its light/dark also sets how thick the coat looks.
+- **Top right, clump edge on white:** the side of a cushion with strands sticking out into the white. It is cut into
+  alpha cards standing round the outline, so the silhouette is ragged and never smooth (the main thing today's model
+  gets wrong).
+- **Bottom, single strands on white:** separate branching strands, short to long, some drooping. They become alpha
+  cards for the loose wisps on the sand (alone) and for the streamers trailing off edges (attached, the ivy spread).
+  The white background gives a clean alpha.
+
+```
+Create a texture reference sheet of java moss (Taxiphyllum barbieri), the aquarium moss, for texturing a 3D model. Square canvas, divided into three panels: the top half is split into two square panels side by side, and the bottom half is one wide panel. Leave a thin white gap between panels.
+TOP LEFT: a seamless, tileable square texture of a dense mat of java moss seen straight down from above. A thick, random tangle of very fine, thin, irregularly branching moss strands crossing each other in every direction, with no common direction and no pattern. The deep inside of the mat is very dark green, almost black-green, showing through gaps between the strands; the strands on top are lighter green, and the freshest tips are pale lime green. No individual leaves visible at this scale, just fine fuzzy threads. It must tile perfectly: the left edge continues into the right edge and the top into the bottom with no visible seam, and no clump repeats in a noticeable pattern. Fill the whole square edge to edge, no border, no vignette.
+TOP RIGHT: on a pure white (#FFFFFF) background, a low cushion of the same java moss seen from the side, close up: the dense dark moss fills the bottom 55% of the square with a soft, slightly uneven flat top, and from its top and sides many thin strands stick out into the white, curving, branching, ends paler, some short and many reaching about a fifth of the square above the cushion. Every strand sharp and clearly separated against the white.
+BOTTOM: on a pure white (#FFFFFF) background, eight separate single java moss strands laid out side by side, upright, not touching each other, each with plenty of white space around it: from short (one third of the panel height) to long (the full panel height). Each strand is a very thin stem with tiny pointed overlapping leaves along both sides, like a very small feather, and two to five irregular side branches at about 30 to 45 degrees. The two longest strands droop and curve to one side like a trailing streamer. Fine and crisp, every strand clearly separated against the white.
+Colour: natural healthy aquarium java moss: medium moss green (about #3F7015), shadows deep black-green (about #12290A), fresh tips pale lime (about #8DC33E). Not neon, not blue-green, not olive-brown. Flat, even, diffuse light: no cast shadows, no specular glare, no rim light, no glow, no water droplets, no bubbles. Photorealistic and faithful to the real plant, not stylized, not a cartoon, no outlines. No text, labels, rulers or props.
+```
