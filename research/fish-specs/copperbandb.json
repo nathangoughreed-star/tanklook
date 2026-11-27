@@ -1,0 +1,314 @@
+{
+ "id": "copperbandb",
+ "sheet": "C:/Users/nreed/fish-sheets/copperband-b11-gen-s1.068/sheet3.png",
+ "species": {
+  "name": "Copperband butterflyfish",
+  "sci": "Chelmon rostratus",
+  "tl": 200
+ },
+ "measured_width": true,
+ "plan": "oscar",
+ "landmarks": {
+  "ped": [
+   298,
+   201
+  ],
+  "dorsalBase": [
+   [
+    313,
+    122
+   ],
+   [
+    348,
+    67
+   ],
+   [
+    378,
+    47
+   ],
+   [
+    409,
+    34
+   ],
+   [
+    438,
+    28
+   ],
+   [
+    468,
+    25
+   ]
+  ],
+  "analBase": [
+   [
+    320,
+    272
+   ],
+   [
+    354,
+    313
+   ],
+   [
+    383,
+    326
+   ],
+   [
+    413,
+    335
+   ],
+   [
+    433,
+    337
+   ]
+  ]
+ },
+ "eye": [
+  640,
+  200,
+  14
+ ],
+ "pectoral": {
+  "root": [
+   570,
+   221
+  ],
+  "poly": [
+   [
+    570,
+    221
+   ],
+   [
+    570,
+    231
+   ],
+   [
+    569,
+    239
+   ],
+   [
+    560,
+    244
+   ],
+   [
+    551,
+    246
+   ],
+   [
+    542,
+    246
+   ],
+   [
+    535,
+    244
+   ],
+   [
+    528,
+    242
+   ],
+   [
+    524,
+    239
+   ],
+   [
+    518,
+    233
+   ],
+   [
+    516,
+    231
+   ],
+   [
+    511,
+    224
+   ],
+   [
+    508,
+    218
+   ],
+   [
+    504,
+    210
+   ],
+   [
+    497,
+    195
+   ],
+   [
+    496,
+    192
+   ],
+   [
+    510,
+    192
+   ],
+   [
+    523,
+    198
+   ],
+   [
+    530,
+    202
+   ],
+   [
+    535,
+    205
+   ],
+   [
+    538,
+    207
+   ],
+   [
+    544,
+    211
+   ],
+   [
+    548,
+    214
+   ],
+   [
+    553,
+    218
+   ]
+  ],
+  "spread": 0.2
+ },
+ "pelvic": {
+  "root": [
+   548,
+   321
+  ],
+  "len": 83,
+  "poly": [
+   [
+    548,
+    321
+   ],
+   [
+    536,
+    335
+   ],
+   [
+    529,
+    343
+   ],
+   [
+    524,
+    347
+   ],
+   [
+    521,
+    349
+   ],
+   [
+    519,
+    351
+   ],
+   [
+    516,
+    354
+   ],
+   [
+    514,
+    355
+   ],
+   [
+    510,
+    357
+   ],
+   [
+    504,
+    362
+   ],
+   [
+    494,
+    367
+   ],
+   [
+    481,
+    370
+   ],
+   [
+    487,
+    363
+   ],
+   [
+    492,
+    352
+   ],
+   [
+    493,
+    347
+   ],
+   [
+    495,
+    339
+   ],
+   [
+    495,
+    338
+   ],
+   [
+    499,
+    334
+   ],
+   [
+    503,
+    333
+   ],
+   [
+    507,
+    332
+   ],
+   [
+    512,
+    331
+   ],
+   [
+    517,
+    330
+   ],
+   [
+    523,
+    329
+   ],
+   [
+    538,
+    324
+   ]
+  ]
+ },
+ "card_sheet": "C:/Users/nreed/fish-sheets/copperband-b11-gen-s1.068/sheet3card.png",
+ "dense": true,
+ "eye_iris": [
+  "#a19692",
+  "#803e09"
+ ],
+ "eye_pupil": "#030303",
+ "eye_full": 19,
+ "eye_pupil_frac": 0.635,
+ "width_pct_sl": 12.1,
+ "fishshapes": {
+  "n": 3,
+  "depth": 62.1,
+  "width": 12.1,
+  "specimens": [
+   [
+    107.51,
+    41.3
+   ],
+   [
+    108.8,
+    35.2
+   ],
+   [
+    122.3,
+    53.6
+   ]
+  ]
+ },
+ "fin_opacity": {
+  "preset": "solid"
+ },
+ "outline": "--level --thr 8 --open 9 --face 26 --face-open 1",
+ "outline_note": "Tube snout (Nathan 2026-11-27: \"a better way to model that long nose\"): the --open 9 disc erased the 3-6 % SL deep snout, so the solid ran the face depth (13.7 % SL) out to the tip as a flat slab under the card. --face 26 --face-open 1 keeps the tube edges in the front 26 % SL."
+}
