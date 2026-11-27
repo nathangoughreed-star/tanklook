@@ -13,6 +13,9 @@ Every chat commits its own finished work itself, right away. You don't need a co
 
 A Stop hook (`scripts/commit_check.py`) checks for files you edited that are still uncommitted, and stops you once to commit them.
 
+## Push freeze (Nathan, 2026-11-27)
+When `C:/Users/nreed/.claude/glassbox-push-freeze.json` exists, main is frozen: `scripts/git_guard.py` refuses `git push` and `scripts/ship.sh` for every chat except the folders the file lists (the lane fixing main). Commit your work on your branch (in the shared folder: `git add <your files>`, `git commit`), say it is committed and not pushed, and push when the file is gone. Don't look for another way to push. Why: with main red, every push cancels the deploy run before it, so nothing can go green (no deploy succeeded for 16 hours on 2026-11-27).
+
 ## Fish art starts from reference photos (Nathan, 2026-11-18)
 Every new species and every look change is drawn from real photos (two or more per look, one per sex), not from memory. Write the look down, render it beside the photo, record the photo URLs. Full method: `research/species-art-method.md`. A look with no reference noted is unreviewed.
 
