@@ -50,3 +50,12 @@ TL = typical adult total length in the aquarium. Photos = Wikimedia Commons cate
 - **Pointed snouts are real** for copperband, naso, Picasso and powder blue: judge them against the photos, not against the b6 blunt-snout rule.
 - **Sizes:** naso, lionfish, frontosa and moray are big-tank fish; `tl` in species.json should be the aquarium-typical value with FishBase max in `note`.
 - Optional extras proposed, not approved: elephantnose, lined seahorse, yellow boxfish, Valentini puffer, maroon clownfish.
+
+## Review log
+| fish | built | verdict (Nathan) | note |
+|---|---|---|---|
+| congotetra | c9e6fc2c | approved 2026-11-27 ("congo tetra looks good") | go-live waits for the catalogue entry (proposed session "b11 catalogue entries") |
+| bumblebeegoby | c9e6fc2c | broad head kept 2026-11-27 ("Keep it") | top view follows the sheet's broad goby head (R194 lane: not the width cap) |
+| copperband | c9e6fc2c, snout aaae5e4a | snout rebuilt as a tube (method row 75), awaiting his look | |
+| blackghost | failed | - | step pending: fish-spec-from-fins has no no-dorsal path |
+| denison | c9e6fc2c | not shown yet | no visual_check yet |
