@@ -88,7 +88,7 @@ export function castShadows(r: THREE.WebGLRenderer, slot: number, sc: THREE.Scen
     if (!cc) { off(); return; }
     if (!p || p.rt.width !== res) {
       p?.rt.dispose();
-      const dt = new THREE.DepthTexture(res, res); dt.compareFunction = THREE.LessEqualCompare; dt.minFilter = dt.magFilter = THREE.LinearFilter;
+      const dt = new THREE.DepthTexture(res, res); dt.minFilter = dt.magFilter = THREE.NearestFilter;
       const rt = new THREE.WebGLRenderTarget(res, res, { depthTexture: dt, depthBuffer: true, type: THREE.UnsignedByteType });
       p = { rt, key: '', cam: cc.cam, soft: cc.soft }; passes.set(slot, p);
     }
