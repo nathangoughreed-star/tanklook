@@ -22,7 +22,11 @@ def species():
 
 def build(d, base, batch):
     sp = species().get(base)
-    if not sp: return {'ok': False, 'why': f'{base} not in species.json'}
+    fj = os.path.join(d, 'form.json')
+    if not sp and os.path.exists(fj):   # R147 colour form (f1): <folder>/form.json names the parent species; the model is <form id>b, the parent's sci and TL
+        fm = json.load(open(fj, encoding='utf8')); par = species().get(fm.get('species'))
+        if par: sp = {**par, 'name': f"{par['name']} ({fm.get('name', fm.get('form'))})"}
+    if not sp: return {'ok': False, 'why': f'{base} not in species.json (and no form.json naming a parent)'}
     ID = base + 'b'; t = time.time()
     r = subprocess.run([sys.executable, '-I', os.path.join(HERE, 'fish-new.py'), d, ID, sp['name'], sp['sci'], str(sp['tl'])] + (['--no-autosat'] if os.environ.get('FISH_BATCH_NO_AUTOSAT') else []),
                        cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace')
