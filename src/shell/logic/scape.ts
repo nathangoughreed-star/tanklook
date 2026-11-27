@@ -10,6 +10,7 @@ import { clumpAuto } from '../../render/plant3d';
 import { itemLights } from '../../scene/lightcheck';
 import { KINDS, LIBRARY, LIFT_SINK, clampItem, hasSpread, itemDims, spreadMax, variantInScope } from '../../scene/items';
 import * as IE from '../../scene/itemEdit';
+import { HS_LABEL, ROCK_GEN, WOOD_GEN, colours, hsFields, hsv, seedName } from '../../scene/hardgen';
 import { type ScapeSec, scapeSec } from '../../scene/itemEdit';
 import { isLocked, lockObject, unlockObject } from '../../scene/locks';
 import { IN, fmtLen } from '../../scene/physics';
@@ -217,6 +218,9 @@ export function toggleKeep(store: Store, id: number): boolean {
   return on;
 }
 export const reshapePiece = (store: Store, id: number) => { const seed = seedNow(); store.edit(s => IE.editItem(s, id, it => IE.reshape(it, seed))); };
+export const colourPiece = (store: Store, id: number, col: number | null) => store.edit(s => IE.editItem(s, id, it => IE.setColour(it, col)));
+export const typePiece = (store: Store, id: number, variant: string) => store.edit(s => IE.editItem(s, id, (it, t) => IE.setType(it, variant, t)));
+export const resetLookPiece = (store: Store, id: number) => store.edit(s => IE.editItem(s, id, it => IE.resetLook(it)));
 export const dropPiece = (store: Store, id: number) => store.edit(s => IE.editItem(s, id, it => IE.dropToGround(it)));
 export const nudgePiece = (store: Store, id: number, axis: 'x' | 'y' | 'd', dir: number, step: number) =>
   store.edit(s => IE.editItem(s, id, (it, t) => IE.nudge(it, t, axis, dir, step)), { coalesce: 'nudge' });
@@ -226,6 +230,8 @@ export interface Field { id: string; label: string; title: string; min: number; 
 export interface PieceView {
   id: number; name: string; dims: string; kind: ItemKind; plant: boolean; kept: boolean; light: string;
   fields: Field[]; nudge: boolean;
+  /** HG1: a generated stone or wood: its seed, the types it can switch to, its colour swatches, its look sliders */
+  gen: null | { variant: string; seed: string; types: { id: string; label: string }[]; swatches: { i: number; label: string; hex: string; on: boolean }[]; look: Field[]; changed: boolean };
 }
 /** The sliders one piece shows (the old item box, by kind): size or growth, clump spread / stems, floater spread / density, yaw, pitch, roll, raise, and left-right / front-back for decor. */
 export function pieceView(s: TankSetup, it: Item, units: Units): PieceView {
@@ -251,9 +257,15 @@ export function pieceView(s: TankSetup, it: Item, units: Units): PieceView {
   fields.push(f('iLift', 'Raise', 'Raise it above the ground (0 = sitting on it)', -Math.round(A.H * LIFT_SINK), Math.round(A.H), Math.round(it.lift),
     Math.abs(it.lift) < 1 ? 'On the ground' : it.lift < 0 ? fmt(-it.lift) + ' in' : fmt(it.lift)));
   if (it.kind === 'ornament') fields.push(f('iX', 'Left / right', 'Slide it left or right in the tank', 0, Math.round(A.L), Math.round(it.x), fmt(it.x)), f('iDepth', 'Front / back', 'Slide it toward the front glass or the back wall', 0, Math.round(A.D), Math.round(it.depth), fmt(it.depth)));
+  const fam = it.kind === 'wood' ? WOOD_GEN : it.kind === 'stone' ? ROCK_GEN : null, gen = fam?.has(it.variant) ? {
+    variant: it.variant, seed: seedName(it.seed), changed: !!it.hs,
+    types: [...fam].filter(variantInScope).map(id => ({ id, label: LIBRARY[id].label })),
+    swatches: colours(it.variant).map((c, i) => ({ i, label: c.label, hex: c.hex, on: it.hs?.col === i })),
+    look: hsFields(it.variant).map(k => { const v = Math.round(hsv(it.hs, k) * 100); return f(`h_${k}`, HS_LABEL[k][0], HS_LABEL[k][1], 0, 100, v, it.hs?.[k] == null ? 'its own' : v === 50 ? 'its own' : `${v > 50 ? '+' : ''}${v - 50}`); }),
+  } : null;
   const lt = plant || it.kind === 'coral' ? itemLights(s)?.get(it.id) : undefined;
   return { id: it.id, name: v?.label ?? it.variant, dims: `${fmt(l)} × ${fmt(h)} high × ${fmt(w)}`, kind: it.kind, plant, kept: isKept(s, it), nudge: !plant,
-    light: lt ? `Light here: ${Math.round(lt.par)} PAR${lt.outcome.state === 'thrive' ? ', fine' : `. ${lt.outcome.text}`}` : '', fields };
+    light: lt ? `Light here: ${Math.round(lt.par)} PAR${lt.outcome.state === 'thrive' ? ', fine' : `. ${lt.outcome.text}`}` : '', fields, gen };
 }
 /** One slider's edit (value as the control reads it), through P3's ITEM_FIELDS. */
 export function setField(store: Store, id: number, field: string, v: number): void {

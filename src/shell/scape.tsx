@@ -8,7 +8,7 @@ import { supportLift } from '../interact/pointer';
 import {
   terrainView, placedView, pieceView, brushView, groupBarView, scapeSec, type ScapeSec, type LibraryView, type PlacedView,
   setBlendGrain, setBlendColor, setBlendShare, setBlendMix, addBlendGrain, removeBlendGrain, shuffleBlend, setTerrainOn, setTerrainCols, flattenTerrain,
-  removePool, setPoolField, removePiece, duplicatePiece, clearPieces, toggleKeep, reshapePiece, dropPiece, nudgePiece, setField,
+  removePool, setPoolField, removePiece, duplicatePiece, clearPieces, toggleKeep, reshapePiece, dropPiece, nudgePiece, setField, colourPiece, typePiece, resetLookPiece,
   brushOn, pickBrush, groupTurn, groupSizeBy, groupDelete, groupDuplicate, GRAINS, KEEP_PROPS,
 } from './logic/scape';
 import { Icon } from './ui';
@@ -99,6 +99,22 @@ export function PieceEditor({ store, sec }: { store: Store; sec: ScapeSec }) {
     <div class="card pieced" aria-label="Selected piece">
       <div class="t">{v.name} <span class="m">{v.dims}</span></div>
       {v.light ? <div class={`hint${/fine/.test(v.light) ? '' : ' warnline'}`}>{v.light}</div> : null}
+      {v.gen ? (
+        <div class="genlook" aria-label="Generated look">
+          <div class="row"><span class="lbl">Type</span>
+            <Select value={v.gen.variant} label="Type" onChange={t => typePiece(store, id, t)}>{v.gen.types.map(t => <option value={t.id}>{t.label}</option>)}</Select></div>
+          <div class="row shuf"><button type="button" class="btn sm primary" title="Generate a new piece of this type (a new random seed). Colour and the settings below stay." onClick={() => reshapePiece(store, id)}>Shuffle</button>
+            <span class="m" title="This piece's seed: the same seed and settings always draw the same piece">seed {v.gen.seed}</span></div>
+          {v.gen.swatches.length ? (
+            <div class="row"><span class="lbl">Colour</span><div class="cols">
+              <button type="button" class={`colsw auto${v.gen.swatches.some(c => c.on) ? '' : ' on'}`} title="Its own colour, picked by the seed" aria-pressed={!v.gen.swatches.some(c => c.on)} onClick={() => colourPiece(store, id, null)}>Auto</button>
+              {v.gen.swatches.map(c => <button type="button" class={`colsw${c.on ? ' on' : ''}`} title={c.label} aria-label={c.label} aria-pressed={c.on} style={{ background: c.hex }} onClick={() => colourPiece(store, id, c.i)} />)}
+            </div></div>
+          ) : null}
+          {v.gen.look.map(f => <SliderRow label={f.label} title={f.title} min={f.min} max={f.max} step={f.step} value={f.value} text={f.text} onInput={n => setField(store, id, f.id, n)} />)}
+          {v.gen.changed ? <button type="button" class="btn sm ghost" title="Back to this type's own look for the seed (colour and settings)" onClick={() => resetLookPiece(store, id)}>Reset look</button> : null}
+        </div>
+      ) : null}
       {v.fields.map(f => <SliderRow label={f.label} title={f.title} min={f.min} max={f.max} step={f.step} value={f.value} text={f.text} onInput={n => setField(store, id, f.id, n)} />)}
       {v.nudge ? (
         <div class="nudge" title="Free placement: step the piece (hold Shift for 1 in steps)">
@@ -110,7 +126,7 @@ export function PieceEditor({ store, sec }: { store: Store; sec: ScapeSec }) {
       <div class="btns">
         <button type="button" class={`btn sm${v.kept ? ' on' : ''}`} aria-pressed={v.kept} title={v.kept ? 'Kept: Discover will not change it. Press to release.' : `Keep this: Discover will not change what it is (${KEEP_PROPS.join(', ')}); it may still move.`}
           onClick={() => toggleKeep(store, id)}><Icon name="lock" /> {v.kept ? 'Kept' : 'Keep'}</button>
-        <button type="button" class="btn sm" title="A new random look" onClick={() => reshapePiece(store, id)}>Reshape</button>
+        {v.gen ? null : <button type="button" class="btn sm" title="A new random look" onClick={() => reshapePiece(store, id)}>Reshape</button>}
         <button type="button" class="btn sm" title="Set it down on the ground" onClick={() => dropPiece(store, id)}>Drop</button>
         <button type="button" class="btn sm" title="A copy beside it, turned" onClick={() => duplicatePiece(store, id)}>Duplicate</button>
         <button type="button" class="btn sm danger" onClick={() => removePiece(store, id)}>Delete</button>

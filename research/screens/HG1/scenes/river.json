@@ -1,0 +1,150 @@
+{
+ "version": 9,
+ "name": "HG1 river",
+ "units": "in",
+ "tanks": [
+  {
+   "tank": {
+    "L": 1219.2,
+    "H": 533.4,
+    "D": 330.2
+   },
+   "camera": {
+    "dist": 3000,
+    "az": 0,
+    "el": 3,
+    "zoom": 1
+   },
+   "render": {
+    "edge": "a2c",
+    "grid": false,
+    "rim": true,
+    "edges": true,
+    "beams": false,
+    "pop": 0.15,
+    "bg": "blue",
+    "glass": "auto",
+    "bgSides": [
+     "back"
+    ],
+    "bgArc": 145,
+    "glassType": "standard"
+   },
+   "light": {
+    "type": "led",
+    "count": 1,
+    "rows": 1,
+    "pattern": "grid",
+    "spacing": 0,
+    "cone": 52,
+    "bright": 1,
+    "kelvin": 6500,
+    "room": 0.1,
+    "height": 50
+   },
+   "substrate": {
+    "show": true,
+    "type": "custom",
+    "custom": {
+     "grain": "gravel",
+     "color": "#8a7650",
+     "grain2": "gravel",
+     "color2": "#3a332a",
+     "share": 40,
+     "mix": 0.5
+    },
+    "fl": 38.1,
+    "fr": 38.1,
+    "bl": 63.5,
+    "br": 63.5
+   },
+   "layout": {
+    "id": "photo-55g",
+    "seed": 2711
+   },
+   "water": {
+    "on": true,
+    "level": 1,
+    "opacity": 0,
+    "color": "#7fb8a8"
+   },
+   "terrain": {
+    "on": false,
+    "cols": 7,
+    "rows": 0,
+    "h": []
+   },
+   "lid": "hood",
+   "stand": {
+    "show": true,
+    "height": 762,
+    "finish": "oak",
+    "style": "cabinet",
+    "table": {
+     "shape": "rect",
+     "L": 1249.2,
+     "D": 360.2,
+     "x": 0,
+     "z": 0
+    }
+   },
+   "person": {
+    "show": false,
+    "height": 1750,
+    "side": "left"
+   },
+   "wall": {
+    "show": true,
+    "side": "back",
+    "color": "#d9ccb2"
+   },
+   "fish": [],
+   "items": [
+    {
+     "id": 1,
+     "kind": "stone",
+     "variant": "river",
+     "seed": 1103,
+     "x": 243.84000000000003,
+     "depth": 160,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 170
+    },
+    {
+     "id": 2,
+     "kind": "stone",
+     "variant": "river",
+     "seed": 52771,
+     "x": 609.6,
+     "depth": 160,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 170
+    },
+    {
+     "id": 3,
+     "kind": "stone",
+     "variant": "river",
+     "seed": 900913,
+     "x": 975.3600000000001,
+     "depth": 160,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 170,
+     "hs": {
+      "col": 1
+     }
+    }
+   ]
+  }
+ ],
+ "active": 0,
+ "camLock": true
+}

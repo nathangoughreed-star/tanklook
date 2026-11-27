@@ -23,6 +23,9 @@ import { reefShape } from './coral3d';
 import { ornamentShape } from './ornament3d';
 import { CELL_N, NOISE_N, gritUniforms } from './gritTex';
 import { stoneCap } from './stonecap';
+import { genRock, isGenRock, shadeK } from './rockgen';
+import { WOOD_COLS, hsKey, hsv } from '../scene/hardgen';
+import type { HardStyle } from '../scene/types';
 
 type R = () => number;
 const LIGHT = new THREE.Vector3(-0.35, 1, 0.55).normalize();
@@ -85,7 +88,8 @@ const STONE: Record<string, string[]> = {
   shale: ['#34383f', '#3c3c45', '#30343b'], // dark blue-grey; the iron stain is painted over it
   ledge: ['#7e7262', '#8a7d6a', '#736a5e'], // weathered sandstone
 };
-function stoneShape(variant: string, seed: number, size: number) {
+function stoneShape(variant: string, seed: number, size: number, hs?: HardStyle) {
+  if (isGenRock(variant)) return genRock(variant, seed, size, hs); // HG1: render/rockgen.ts
   const r = rng(seed), [l, h, w] = stoneDims(variant, seed, size), base = C(STONE[variant][Math.floor(r() * STONE[variant].length)]);
   if (variant === 'slate' || variant === 'ledge') return slab(r, l, h, w, base, variant === 'ledge');
   const angular = variant !== 'river', crag = variant === 'seiryu';
@@ -162,19 +166,27 @@ function slab(r: R, l: number, h: number, w: number, base: THREE.Color, level = 
 }
 
 // ---------- Wood ----------
-const WOOD: Record<string, [string, string]> = { climb: ['#8d8170', '#7a6e60'], branch: ['#6b4a2e', '#5e4128'], spider: ['#a3845e', '#8e7050'], manzanita: ['#74392a', '#8b4a36'], mopani: ['#3e2a1c', '#a3855c'] };
+/** A wood's two colours (main, light) from its swatch (scene/hardgen.ts WOOD_COLS; the first when unset) and shade. */
+function woodCols(variant: string, hs?: HardStyle): [string, string] {
+  const opts = WOOD_COLS[variant] ?? WOOD_COLS.branch, c = opts[hs?.col != null && hs.col < opts.length ? hs.col : 0].c, k = shadeK(hs);
+  return k === 1 ? c : [C(c[0]).multiplyScalar(k).getStyle(), C(c[1]).multiplyScalar(k).getStyle()] as [string, string];
+}
 /** Limb radius at t: linear taper, a flared root on thick limbs, and the last 14% rounding off into a worn tip (no flat cut). */
 function tipRad(L: Limb, t: number) {
-  const flare = L.r0 > 6 ? 1 + 0.3 * Math.pow(1 - t, 4) : 1, e = Math.max(0, (t - 0.86) / 0.14);
+  const flare = L.r0 > 6 ? 1 + 0.3 * Math.pow(1 - t, 4) : 1, e = L.blunt || L.lattice ? 0 : Math.max(0, (t - 0.86) / 0.14);
   return (L.r0 + (L.r1 - L.r0) * t) * flare * (1 - 0.3 * e * e);
 }
 function limbGeo(r: R, rs: R, L: Limb, cols: [string, string], variant: string, s0: number) {
   const curve = new THREE.CatmullRomCurve3(L.pts.map(p => V(...p))), len = curve.getLength(), TS = Math.max(8, Math.min(48, Math.round(len / Math.max(4, L.r0)))), RS = L.r0 > 6 ? 10 : 7;
+  if (L.lattice) return latticeGeo(r, L, cols, s0, curve, len);
   const g = new THREE.TubeGeometry(curve, TS, 1, RS, false), p = g.attributes.position, v = new THREE.Vector3(), c = new THREE.Vector3(), knot = r() * 10;
+  // knobbly wood (HG1): the radius swells and pinches along the limb, and the section goes oval, by the limb's knob
+  const kb = L.knob ?? 0, ph = [r() * 6.28, r() * 6.28, r() * 6.28], fq = [0.9 + r() * 0.6, 2.1 + r(), 0.35 + r() * 0.3];
   for (let i = 0; i <= TS; i++) {
     const t = i / TS; curve.getPointAt(t, c);
-    const rad = tipRad(L, t) * (1 + 0.1 * Math.sin(t * 19 + knot));
-    for (let j = 0; j <= RS; j++) { const k = i * (RS + 1) + j; v.fromBufferAttribute(p, k).sub(c).multiplyScalar(rad * (1 + 0.07 * Math.sin(j * 2.3 + i * 0.7))).add(c); p.setXYZ(k, v.x, v.y, v.z); }
+    const u = t * len / Math.max(2, L.r0 * 2.2), lump = kb ? 1 + kb * (0.55 * Math.sin(u * fq[0] + ph[0]) + 0.3 * Math.sin(u * fq[1] + ph[1]) + 0.25 * Math.max(0, Math.sin(u * fq[2] + ph[2])) ** 4) : 1;
+    const rad = tipRad(L, t) * (1 + 0.1 * Math.sin(t * 19 + knot)) * lump;
+    for (let j = 0; j <= RS; j++) { const k = i * (RS + 1) + j, a = j / RS * 6.283; v.fromBufferAttribute(p, k).sub(c).multiplyScalar(rad * (1 + 0.07 * Math.sin(j * 2.3 + i * 0.7) + 0.3 * kb * Math.sin(2 * a + ph[2] + u * 0.2))).add(c); p.setXYZ(k, v.x, v.y, v.z); }
   }
   g.computeVertexNormals();
   const ga = new Float32Array(p.count * 4);
@@ -183,7 +195,7 @@ function limbGeo(r: R, rs: R, L: Limb, cols: [string, string], variant: string, 
   const base = C(cols[L.tone]), light = C(cols[1]), patch = waves(r, 4);
   paint(g, (q, i) => {
     const j = i % (RS + 1), grain = 1 + 0.16 * Math.sin(j * 2.9 + knot) + 0.06 * Math.sin(i * 0.37);
-    if (variant === 'mopani') return base.clone().lerp(light, Math.min(1, Math.max(0, patch(q.clone().multiplyScalar(0.025)) * 2.2 + 0.35))).multiplyScalar(grain); // two-tone
+    if (variant === 'mopani' || variant === 'malaysian') return base.clone().lerp(light, Math.min(1, Math.max(0, patch(q.clone().multiplyScalar(0.025)) * 2.6 + (variant === 'malaysian' ? -0.5 : 0.1)))).multiplyScalar(grain); // two-tone
     return shade(base, grain);
   });
   const parts = [clean(g, true)];
@@ -226,10 +238,49 @@ function limbGeo(r: R, rs: R, L: Limb, cols: [string, string], variant: string, 
   }
   return mergeGeometries(parts)!;
 }
-function woodShape(variant: string, seed: number, size: number) {
+function woodShape(variant: string, seed: number, size: number, hs?: HardStyle) {
   if (variant in SHELLS) return shellShape(variant, seed, size);
-  const r = rng(seed * 13 + 5), rs = rng(seed * 29 + 1), o = gritOffset(seed)[0];
-  return mergeGeometries(woodLimbs(variant, seed, size).map((L, i) => limbGeo(r, rs, L, WOOD[variant] ?? WOOD.branch, variant, o + i * 977)))!;
+  const r = rng(seed * 13 + 5), rs = rng(seed * 29 + 1), o = gritOffset(seed)[0], cols = woodCols(variant, hs);
+  return mergeGeometries(woodLimbs(variant, seed, size, hs).map((L, i) => limbGeo(r, rs, L, cols, variant, o + i * 977)))!;
+}
+/** Cholla (HG1): a hollow tube, outer and inner wall, cut through by a staggered lattice of oval holes (the limb's knob
+ *  carries the Holes setting), its ends open. */
+function latticeGeo(r: R, L: Limb, cols: [string, string], s0: number, curve: THREE.CatmullRomCurve3, len: number) {
+  const RS = 36, R0 = L.r0, TS = Math.max(24, Math.min(220, Math.round(len / (R0 * 0.12)))), nh = 6 + Math.floor(r() * 2), sp = 2 * Math.PI * R0 / nh * 1.15;
+  const hole = 0.22 + 0.2 * (L.knob ?? 0.5), ph = r();
+  const walls: THREE.BufferGeometry[] = [];
+  for (const inner of [false, true]) {
+    const g = new THREE.TubeGeometry(curve, TS, 1, RS, false), p = g.attributes.position, v = new THREE.Vector3(), c = new THREE.Vector3();
+    for (let i = 0; i <= TS; i++) {
+      const t = i / TS; curve.getPointAt(t, c);
+      const rad = (R0 + (L.r1 - R0) * t) * (inner ? 0.8 : 1) * (1 + 0.04 * Math.sin(t * 23 + ph * 6));
+      for (let j = 0; j <= RS; j++) { const k = i * (RS + 1) + j; v.fromBufferAttribute(p, k).sub(c).multiplyScalar(rad).add(c); p.setXYZ(k, v.x, v.y, v.z); }
+    }
+    // keep the quads off the holes: cells on a staggered grid (along x around), an oval hole in each
+    const idx = g.index!, keep: number[] = [];
+    for (let q = 0; q < TS * RS; q++) {
+      const j = Math.floor(q / RS), i = q % RS, s = (j + 0.5) / TS * len / sp + ph, a = (i + 0.5) / RS * nh;
+      const row = Math.floor(s), b = a + (row % 2 ? 0.5 : 0), ds = s - row - 0.5, db = b - Math.floor(b) - 0.5;
+      if (Math.hypot(ds * 1.0, db * 1.25) < hole && j > 0 && j < TS - 1) continue;
+      for (let k = 0; k < 6; k++) keep.push(idx.getX(q * 6 + k));
+    }
+    if (inner) for (let k = 0; k < keep.length; k += 3) { const a = keep[k + 1]; keep[k + 1] = keep[k + 2]; keep[k + 2] = a; }
+    g.setIndex(keep); g.deleteAttribute('uv'); g.computeVertexNormals();
+    const ga = new Float32Array(p.count * 4);
+    for (let i = 0; i <= TS; i++) for (let j = 0; j <= RS; j++) ga.set([s0 + i / TS * len, j / RS * Math.PI * 2, R0, 10], (i * (RS + 1) + j) * 4);
+    g.setAttribute('aGrit', new THREE.BufferAttribute(ga, 4));
+    const base = C(cols[0]), light = C(cols[1]);
+    paint(g, (q, i) => inner ? shade(base, 0.55) : base.clone().lerp(light, 0.5 + 0.5 * Math.sin(i * 0.37 + q.x * 0.05)));
+    walls.push(clean(g, true));
+  }
+  return mergeGeometries(walls)!;
+}
+/** The Texture setting rides on the grit kind's fraction (kind +- 0.4; the shader rounds the kind and reads the rest). */
+function gritTexture(g: THREE.BufferGeometry, hs?: HardStyle) {
+  const tx = (hsv(hs, 'tex') - 0.5) * 0.8, a = g.attributes.aGrit;
+  if (!tx || !a) return g;
+  for (let i = 0; i < a.count; i++) a.setW(i, Math.round(a.getW(i)) + tx);
+  return g;
 }
 
 // ---------- Bark shells: cork flat, cork tube, half-log hide ----------
@@ -485,17 +536,24 @@ float gWood(vec3 g) {
 }
 float gritK() {
   int t = int(vGrit.w + 0.5); vec3 p = vGrit.xyz; float px = length(fwidth(p)), k = 1.0; vec3 q = gR * p;
+  float tx = vGrit.w - float(t);  // the piece's Texture setting (HG1): -0.4 smooth .. 0 its own .. 0.4 rough
   // stones 1-5 share ONE gStone call (roughness and cracks picked first): the D3D compiler inlines each call site, and
   // five copies of its crack search made this program take 10-22 s to link on a first visit (lane E1 / EF1)
   if ((t >= 1 && t <= 5) || t == 13 || t == 14) {
     float rough = t == 1 ? 0.25 : t == 2 ? 0.6 : t == 3 ? 1.1 : t == 4 ? 1.4 : t == 13 ? 1.3 : t == 14 ? 1.6 : 0.4, cracks = t == 1 ? 0.3 : t == 2 ? 1.0 : t == 3 ? 0.6 : t == 4 ? 0.35 : t == 13 ? 0.15 : t == 14 ? 0.2 : 0.5;
-    k = gStone(q, px, rough, cracks);
+    k = gStone(q, px, rough * (1.0 + 2.2 * tx), cracks * (1.0 + 1.5 * tx));
     if (t == 5) {  // slate: fissures along the layers over the fine grain
       float e = abs(gN(vec3(p.x * 0.02, p.y * 0.35, p.z * 0.02)) * 2.0 - 1.0), m = smoothstep(0.4, 0.6, gN(p * 0.03 + 4.0));
       k *= 1.0 - 0.55 * gLine(e, 0.05) * m;
     }
   }
-  else if (t == 6) k = gWood(p);
+  else if (t == 6) {
+    k = 1.0 + (gWood(p) - 1.0) * (1.0 + 1.6 * tx);
+    if (tx > 0.0) {  // bark: furrows along the grain, deeper the rougher
+      float s = p.x, th = p.y, rr = max(p.z, 0.5), e = abs(gN(vec3(s * 0.025, rr * cos(th) * 0.5, rr * sin(th) * 0.5) + 31.0) * 2.0 - 1.0);
+      k *= 1.0 - 1.6 * tx * gLine(e, 0.16) * gFade(0.5, px);
+    }
+  }
   else if (t == 7) k = (1.0 + (gF(q * 0.4) - 0.5) * 0.34 * gFade(0.4, px) + (gF(q * 0.05) - 0.5) * 0.3   // clay grain and firing blotches
                    + 0.18 * smoothstep(0.74, 0.84, gN(q * 0.5 + 9.0)) * gFade(0.5, px))                    // pale grit
                    * (1.0 - 0.4 * smoothstep(0.7, 0.8, gN(q * 0.45 + 2.0)) * gFade(0.45, px));             // pinholes
@@ -829,8 +887,8 @@ function remember<T>(m: Map<string, T>, k: string, v: T, max: number, drop?: (v:
 const dispose = (g: THREE.BufferGeometry) => g.dispose();
 
 function solidShape(it: Item) {
-  const k = `${it.variant}|${it.seed}|${it.size}`;
-  const make = () => noAlgae(it, grit(it.kind === 'coral' || it.variant === 'liverock' ? reefShape(it.variant, it.seed, it.size) : it.kind === 'stone' ? stoneShape(it.variant, it.seed, it.size) : it.kind === 'wood' ? woodShape(it.variant, it.seed, it.size) : it.kind === 'ornament' ? ornamentShape(it.variant, it.seed, it.size) : caveShape(it.variant, it.seed, it.size), GRIT_KIND[it.variant] ?? 2, it.seed));
+  const k = `${it.variant}|${it.seed}|${it.size}${it.hs ? '|' + hsKey(it.hs) : ''}`;
+  const make = () => noAlgae(it, gritTexture(grit(it.kind === 'coral' || it.variant === 'liverock' ? reefShape(it.variant, it.seed, it.size) : it.kind === 'stone' ? stoneShape(it.variant, it.seed, it.size, it.hs) : it.kind === 'wood' ? woodShape(it.variant, it.seed, it.size, it.hs) : it.kind === 'ornament' ? ornamentShape(it.variant, it.seed, it.size) : caveShape(it.variant, it.seed, it.size), GRIT_KIND[it.variant] ?? 2, it.seed), it.hs));
   return shapes.get(k) ?? remember(shapes, k, make(), 150, dispose);
 }
 /** Corals stay clean in the condition view (lane AL, render/algae.ts): aNoAlg = 1 (absent = 0, algae allowed). */
@@ -847,7 +905,7 @@ const itemEuler = (it: Item) => new THREE.Euler(it.pitch * D2R, it.yaw * D2R, it
  * piece tipped on its side or rolled over rests on the ground instead of sinking into it).
  */
 function bakedShape(it: Item) {
-  const k = `${it.variant}|${it.seed}|${it.size}|${it.yaw}|${it.pitch}|${it.tilt}|${FX.contact}`;
+  const k = `${it.variant}|${it.seed}|${it.size}|${it.yaw}|${it.pitch}|${it.tilt}|${FX.contact}${it.hs ? '|' + hsKey(it.hs) : ''}`;
   let g = baked.get(k);
   if (g) return g;
   const src = solidShape(it), q = new THREE.Quaternion().setFromEuler(itemEuler(it)).invert();
@@ -871,7 +929,7 @@ function bakedShape(it: Item) {
 /** bakedShape's rise for `it`'s own turn (kept apart: a piece settled on a slope is turned further but not raised). */
 const rises = new Map<string, number>();
 function riseOf(it: Item) {
-  const k = `${it.variant}|${it.seed}|${it.size}|${it.yaw}|${it.pitch}|${it.tilt}`, had = rises.get(k);
+  const k = `${it.variant}|${it.seed}|${it.size}|${it.yaw}|${it.pitch}|${it.tilt}${it.hs ? '|' + hsKey(it.hs) : ''}`, had = rises.get(k);
   if (had != null) return had;
   const pos = solidShape(it).attributes.position, qt = new THREE.Quaternion().setFromEuler(itemEuler(it)), pv = new THREE.Vector3();
   let low0 = Infinity, low = Infinity;
@@ -921,7 +979,7 @@ function vineLimbs(S: TankSetup, T: Tank, it: Item, y: number, c: number, s: num
   const out: number[] = [];
   for (const w of S.items) {
     if (w.kind !== 'wood' && !(w.variant in SHELLS)) continue;
-    const ls = woodLimbs(w.variant, w.seed, w.size);
+    const ls = woodLimbs(w.variant, w.seed, w.size, w.hs);
     if (!ls.length) continue;
     const st = settleOn(S, T, w), wy = groundHeight(S, T, w.x, w.depth) + w.lift - itemSink(w) + st.dy + riseOf(w), turn = { yaw: w.yaw, pitch: st.pitch, tilt: st.tilt };
     const tank = ls.map(l => l.pts.map(p => { const t = turnOut(turn, p); return [w.x + t[0], wy + t[1], w.depth + t[2]] as const; }));

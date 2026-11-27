@@ -1030,6 +1030,27 @@
    "unit": "one medium branch; Bio Dude $29.95; hi judgement",
    "url": "https://thebiodude.com/collections/aquaria-woods-and-accents/manzanita"
   },
+  "hard:malaysian": {
+   "lo": 13,
+   "mode": 18,
+   "hi": 30,
+   "unit": "one medium piece (7-15 in); Josh's Frogs $13.49, AquaCave $16.99, Aquarocks $29.99",
+   "url": "https://aquacave.com/malaysian-driftwood-medium-11-15.html"
+  },
+  "hard:cholla": {
+   "lo": 4,
+   "mode": 5,
+   "hi": 10,
+   "unit": "one 6 in piece; Dubia Roaches $4, Chewy 2-pack $6.99, Petco $9.99",
+   "url": "https://www.chewy.com/substratesource-cholla-wood-aquarium/dp/153031"
+  },
+  "hard:redmoor": {
+   "lo": 12,
+   "mode": 20,
+   "hi": 40,
+   "unit": "one medium piece (12-16 in); judged from EU listings (mini EUR 10-15), no clear US medium price",
+   "url": "https://aquasabi.com/Red-Moor-Wood"
+  },
   "hard:mopani": {
    "lo": 14,
    "mode": 18,

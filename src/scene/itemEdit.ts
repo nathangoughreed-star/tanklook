@@ -4,6 +4,7 @@ import { rng } from '../art/paint';
 import { isFloat, isPatch } from '../art/plants';
 import { EPIPHYTES, LIBRARY, clampItem, itemDims, makeItem, perch } from './items';
 import { setPlantGrowth } from './growtime';
+import { HS_KEYS, cleanHs } from './hardgen';
 import { groundHeight } from './terrain';
 import type { Item, ItemKind, TankSetup } from './types';
 import type { PlaceAt } from '../interact/pointer';
@@ -60,7 +61,19 @@ export const ITEM_FIELDS: Record<string, (it: Item, v: number, s: TankSetup) => 
   iX: (it, v) => { it.x = v; },
   iDepth: (it, v) => { it.depth = v; },
   iLift: (it, v) => { it.lift = v; },
+  // HG1: a generated stone or wood's look settings, 0..100 on the slider
+  ...Object.fromEntries(HS_KEYS.map(k => [`h_${k}`, (it: Item, v: number) => { it.hs = cleanHs({ ...it.hs, [k]: v / 100 }); }])),
 };
+/** HG1: a colour swatch (null = back to the seed's own), the type (another stone for a stone, another wood for a wood;
+ *  the seed and settings stay, the size is kept in the new type's range), and back to the type's own look. */
+export const setColour = (it: Item, col: number | null) => { const h = { ...it.hs }; if (col == null) delete h.col; else h.col = col; it.hs = cleanHs(h); if (!it.hs) delete it.hs; };
+export function setType(it: Item, variant: string, s: TankSetup) {
+  const v = LIBRARY[variant]; if (!v || v.kind !== it.kind) return;
+  it.variant = variant; it.size = Math.min(v.max, Math.max(v.min, it.size));
+  if (it.hs?.col != null) setColour(it, null); // swatches differ per type
+  clampItem(it, s.tank, s);
+}
+export const resetLook = (it: Item) => { delete it.hs; };
 /** Reshape (a new random look) and drop to the ground. */
 export const reshape = (it: Item, seed: number) => { it.seed = seed; };
 export const dropToGround = (it: Item) => { it.lift = 0; };
@@ -77,7 +90,7 @@ export const removeItem = (s: TankSetup, id: number) => { s.items = s.items.filt
 /** A copy beside the original, turned 25 degrees, under the fresh id. Returns it (null when the source is gone). */
 export function duplicateItem(s: TankSetup, src: number, id: number): Item | null {
   const it = s.items.find(q => q.id === src); if (!it) return null;
-  const n: Item = { ...it, id, x: it.x + Math.max(20, itemDims(it)[0] * 0.8), yaw: it.yaw + 25 };
+  const n: Item = { ...it, ...(it.hs ? { hs: { ...it.hs } } : {}), id, x: it.x + Math.max(20, itemDims(it)[0] * 0.8), yaw: it.yaw + 25 };
   clampItem(n, s.tank, s); s.items.push(n);
   return n;
 }

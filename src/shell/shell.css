@@ -339,6 +339,13 @@ a.btn { text-decoration: none; }
 .pieced .btns, .growask .btns { display: flex; gap: var(--s2); flex-wrap: wrap; }
 .pieced .nudge { display: flex; gap: var(--s1); flex-wrap: wrap; }
 .pieced .m { font-weight: 400; color: var(--text-2); font-size: var(--fs-sm); }
+/* HG1: a generated stone or wood's look (type, Shuffle, colour swatches, its sliders) */
+.pieced .genlook { display: flex; flex-direction: column; gap: var(--s1); padding: var(--s2); border: 1px solid var(--border, rgba(127,127,127,.35)); border-radius: 8px; }
+.pieced .genlook .shuf { display: flex; align-items: center; gap: var(--s2); }
+.pieced .genlook .cols { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; min-width: 0; }
+.pieced .colsw { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border, rgba(127,127,127,.5)); padding: 0; cursor: pointer; }
+.pieced .colsw.auto { width: auto; border-radius: 13px; padding: 0 8px; background: transparent; color: var(--text); font: inherit; font-size: var(--fs-sm); }
+.pieced .colsw.on { border-color: var(--accent, #4aa3ff); box-shadow: 0 0 0 2px var(--accent, #4aa3ff); }
 .hint.warnline { color: var(--warn); }
 .growask { background: var(--accent-weak); }
 .scapebars { top: 64px; left: 50%; transform: translateX(-50%); display: grid; gap: var(--s2); justify-items: center; max-width: calc(100% - 24px); }

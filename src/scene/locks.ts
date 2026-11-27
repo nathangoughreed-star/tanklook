@@ -12,7 +12,7 @@ export const ITEM_PROPS: Record<string, readonly string[]> = {
   position: ['x', 'depth', 'lift'],
   size: ['size', 'spread', 'stems', 'dens', 'growth'],
   pose: ['yaw', 'pitch', 'tilt'],
-  look: ['kind', 'variant', 'seed'],
+  look: ['kind', 'variant', 'seed', 'hs'],
   other: ['planted', 'parent'],
 };
 export const FISH_PROPS: Record<string, readonly string[]> = {

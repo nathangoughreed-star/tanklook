@@ -1,4 +1,5 @@
 // Load-time validation and migration. Untrusted JSON in, a complete valid Scene out (plus warnings), or an error.
+import { cleanHs } from './hardgen';
 import { fishTL, getSpecies, hasForm, hasSpecies } from '../data/species';
 import { defaultSetup } from './defaults';
 import { migrateBlend } from './blend';
@@ -436,6 +437,7 @@ function parseItems(raw: unknown[], T: Tank, warn: (m: string) => void, g: Groun
       ...(typeof o.stems === 'number' && Number.isFinite(o.stems) ? { stems: o.stems } : {}),
       ...(typeof o.dens === 'number' && Number.isFinite(o.dens) ? { dens: o.dens } : {}),
       ...(typeof o.growth === 'number' && Number.isFinite(o.growth) ? { growth: o.growth } : {}),
+      ...((v.kind === 'stone' || v.kind === 'wood') && cleanHs(o.hs) ? { hs: cleanHs(o.hs) } : {}),
       ...(v.kind === 'plant' && typeof o.parent === 'number' && Number.isInteger(o.parent) && o.parent > 0 && o.parent !== id ? { parent: o.parent } : {}),
       ...(v.kind === 'plant' && typeof o.planted === 'number' && Number.isFinite(o.planted) ? { planted: Math.round(clamp(o.planted, -GROW_RATE_MAX, 1) * 1000) / 1000 } : {}),
     };

@@ -340,7 +340,12 @@ export interface Item {
   /** A daughter shown in a Time preview (scene/propagate.ts): who and which (`<root id>/<n>/...`). Never saved: keeping
    *  the preview drops it and the daughter stays as a plant. */
   brood?: string;
+  /** Stone and wood (lane HG1, R187): the generated look's own settings after the seed (texture, colour, shade, branches /
+   *  spread / gnarl, layers / holes / height; scene/hardgen.ts). Absent = the type's own look from the seed alone. */
+  hs?: HardStyle;
 }
+/** A generated stone or wood's look settings, each 0..1 (0.5 = the type's own); col = a colour swatch index. */
+export interface HardStyle { tex?: number; tone?: number; branch?: number; spread?: number; gnarl?: number; layers?: number; holes?: number; tall?: number; col?: number }
 
 /**
  * Water: level as a fraction of a full tank (1 = full, i.e. WATERLINE_GAP below the interior top), so a resized tank

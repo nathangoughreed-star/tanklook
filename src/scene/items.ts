@@ -9,7 +9,8 @@ import { fitItems } from './plantfit';
 import { backdropDepth, clamp, clearOfWall, D2R } from './physics';
 import { bowlDims, bowlRadius, clampIn, footprint, shapeOf } from './shape';
 import { clampGround, groundHeight, radialTerrain, type Ground } from './terrain';
-import type { CompId, Item, ItemKind, LayerDens, LayoutId, Tank, TankSetup } from './types';
+import type { CompId, HardStyle, Item, ItemKind, LayerDens, LayoutId, Tank, TankSetup } from './types';
+import { genWood, isGenWood, tallK, type Limb } from './hardgen';
 
 /** `salt`: offered in a saltwater tank only (live rock, corals). */
 export interface Variant { kind: ItemKind; label: string; hint: string; size: number; min: number; max: number; salt?: true; fake?: Fake;
@@ -37,6 +38,9 @@ export const LIBRARY: Record<string, Variant> = {
   spider: { kind: 'wood', label: 'Spider wood', hint: 'Thin pale roots spreading from a knot.', size: 320, min: 80, max: 1200 },
   manzanita: { kind: 'wood', label: 'Manzanita', hint: 'A red-brown tree that forks into fine twigs. Size = height.', size: 300, min: 80, max: 1200 },
   mopani: { kind: 'wood', label: 'Mopani', hint: 'A chunky two-tone piece, dark and honey.', size: 200, min: 60, max: 800 },
+  malaysian: { kind: 'wood', label: 'Malaysian driftwood', hint: 'Dense, dark and heavy: a gnarled body with stubby, broken-off limbs. Sinks at once; tints the water a little.', size: 300, min: 80, max: 1000 },
+  redmoor: { kind: 'wood', label: 'Redmoor root', hint: 'A red-brown root with many fine, twisting roots reaching out and up.', size: 400, min: 100, max: 1200 },
+  cholla: { kind: 'wood', label: 'Cholla wood', hint: 'The hollow skeleton of a cholla cactus: a tube cut through with a lattice of holes (shrimp love it). Size = length.', size: 180, min: 60, max: 450 },
   climb: { kind: 'wood', label: 'Climbing branch', hint: 'A thin, dry, pale branch, leaning or upright, for frogs and lizards to perch on. Size = length.', size: 400, min: 100, max: 1200 },
   corkflat: { kind: 'wood', label: 'Cork bark flat', hint: 'A curved slab of cork bark: lay it over as a shelter, or stand it up as a panel to climb. Size = length.', size: 300, min: 80, max: 900 },
   corktube: { kind: 'wood', label: 'Cork tube', hint: 'A hollow cork round: lay it down as a hide, or stand it up as a climbing volume. Size = length.', size: 250, min: 60, max: 800 },
@@ -204,14 +208,13 @@ export const COMPS: Record<CompId, { label: string; hint: string }> = {
 };
 
 type V3 = [number, number, number];
-/** One wood limb: a smooth tube through `pts` (local mm, base on y = 0), radius r0 -> r1; tone 1 = a darker piece. */
-export interface Limb { pts: V3[]; r0: number; r1: number; tone: number }
+export type { Limb };
 
 /** Stone length, height and width (mm) for its variant and seed. */
-export function stoneDims(variant: string, seed: number, size: number): V3 {
+export function stoneDims(variant: string, seed: number, size: number, hs?: HardStyle): V3 {
   const r = rng(seed * 31 + 7);
   const [h0, h1, w0, w1] = ({ river: [0.45, 0.65, 0.7, 0.85], seiryu: [0.9, 1.4, 0.55, 0.75], dragon: [0.55, 0.9, 0.6, 0.8], holey: [0.55, 0.95, 0.6, 0.85], lace: [0.5, 0.85, 0.55, 0.8], lava: [0.5, 0.8, 0.65, 0.85], shale: [0.4, 0.8, 0.5, 0.8], slate: [0.12, 0.24, 0.5, 0.8], ledge: [0.12, 0.5, 0.55, 0.72], liverock: [0.5, 0.75, 0.6, 0.85] } as Record<string, number[]>)[variant] ?? [0.6, 0.6, 0.7, 0.7];
-  return [size, size * (h0 + r() * (h1 - h0)), size * (w0 + r() * (w1 - w0))];
+  return [size, size * (h0 + r() * (h1 - h0)) * tallK(hs), size * (w0 + r() * (w1 - w0))];
 }
 
 const add3 = (a: V3, b: V3, k = 1): V3 => [a[0] + b[0] * k, a[1] + b[1] * k, a[2] + b[2] * k];
@@ -243,43 +246,20 @@ function shellDims(variant: string, s: number): V3 {
 }
 
 /** The limbs of a piece of wood, in its own frame: length along x, centred, base on y = 0. */
-export function woodLimbs(variant: string, seed: number, size: number): Limb[] {
+const limbMemo = new Map<string, Limb[]>();
+export function woodLimbs(variant: string, seed: number, size: number, hs?: HardStyle): Limb[] {
+  if (isGenWood(variant)) { // HG1: the generated types (scene/hardgen.ts), memoised: the scene asks for them on every drag step
+    const k = `${variant}|${seed}|${size}|${hs ? JSON.stringify(hs) : ''}`, had = limbMemo.get(k);
+    if (had) return had;
+    const ls = genWood(variant, seed, size, hs);
+    if (limbMemo.size > 300) limbMemo.delete(limbMemo.keys().next().value!);
+    limbMemo.set(k, ls);
+    return ls;
+  }
   const r = rng(seed * 17 + 3), s = size, j = (k: number) => (r() - 0.5) * k * s;
   if (variant in SHELLS) { // a bark shell: its ridge, for anything that looks for a limb to sit on or tie to
     const [l, h] = shellDims(variant, s);
     return [{ pts: [[-0.42 * l, h, 0], [0, h, 0], [0.42 * l, h, 0]], r0: 0.02 * s, r1: 0.02 * s, tone: 0 }];
-  }
-  if (variant === 'spider') {
-    const rad = 0.03 * s, c: V3 = [0, 0.05 * s, 0], out: Limb[] = [{ pts: [[-0.03 * s, 0.02 * s, 0], c, [0.04 * s, 0.09 * s, 0.01 * s]], r0: rad * 3, r1: rad * 2, tone: 0 }];
-    const n = 7 + Math.floor(r() * 4);
-    for (let i = 0; i < n; i++) {
-      const a = (i / n) * Math.PI * 2 + r() * 0.6, d: V3 = [Math.cos(a), 0, Math.sin(a) * 0.75], len = (0.36 + r() * 0.16) * s;
-      const droop = r() < 0.35, rise = droop ? 0 : (0.25 + r() * 0.75) * len;
-      const p1 = add3(add3(c, d, len * 0.3), [j(0.06), rise * 0.35 + (droop ? 0.02 * s : 0), j(0.06)]);
-      const p2 = add3(add3(c, d, len * 0.65), [j(0.08), droop ? 0.03 * s : rise * 0.7, j(0.08)]);
-      const p3 = add3(add3(c, d, len), [j(0.06), droop ? 0.01 * s : rise, j(0.06)]);
-      out.push({ pts: [c, p1, p2, p3], r0: rad * (1.0 + r() * 0.5), r1: rad * 0.22, tone: 0 });
-    }
-    return out;
-  }
-  if (variant === 'manzanita') {
-    const out: Limb[] = [];
-    const grow = (p: V3, d: V3, len: number, rad: number, depth: number) => {
-      const end = add3(p, d, len), m1 = add3(along([p, end], 0.35), [j(0.03), 0, j(0.03)]), m2 = add3(along([p, end], 0.7), [j(0.03), 0, j(0.03)]);
-      out.push({ pts: [p, m1, m2, end], r0: rad, r1: rad * 0.62, tone: 0 });
-      if (depth <= 0) return;
-      const kids = depth > 1 && r() < 0.3 ? 3 : 2;
-      for (let k = 0; k < kids; k++) {
-        // turn away from the parent by 25-45° about a random sideways axis, with a slight pull upward
-        const ang = (25 + r() * 20) * D2R, side = norm3([r() - 0.5, (r() - 0.5) * 0.2, r() - 0.5]);
-        const perp = norm3(add3(side, d, -(side[0] * d[0] + side[1] * d[1] + side[2] * d[2])));
-        const nd = norm3(add3(add3([d[0] * Math.cos(ang), d[1] * Math.cos(ang), d[2] * Math.cos(ang)], perp, Math.sin(ang) * (k % 2 ? -1 : 1)), [0, 0.15, 0]));
-        grow(end, nd, len * (0.62 + r() * 0.12), rad * 0.66, depth - 1);
-      }
-    };
-    grow([0, 0, 0], norm3([(r() - 0.5) * 0.3, 1, (r() - 0.5) * 0.3]), 0.36 * s, 0.062 * s, 3);
-    for (let k = 0; k < 3; k++) { const a = r() * Math.PI * 2, l = (0.12 + r() * 0.1) * s; out.push({ pts: [[0, 0.03 * s, 0], [Math.cos(a) * l * 0.5, 0.02 * s, Math.sin(a) * l * 0.5], [Math.cos(a) * l, 0.008 * s, Math.sin(a) * l]], r0: 0.042 * s, r1: 0.012 * s, tone: 0 }); }
-    return out;
   }
   if (variant === 'climb') {
     // a thin, dry branch leaning up from its foot (40-70° off the floor), gently bowed, one or two forks near the top half
@@ -297,24 +277,8 @@ export function woodLimbs(variant: string, seed: number, size: number): Limb[] {
     }
     return out;
   }
-  if (variant === 'mopani') {
-    const rad = 0.125 * s, main: V3[] = [[-0.42 * s, 0.09 * s, j(0.08)], [-0.18 * s, 0.26 * s + j(0.06), j(0.1)], [0.12 * s, 0.28 * s + j(0.06), j(0.1)], [0.4 * s, 0.08 * s, j(0.08)]];
-    const p = along(main, 0.45 + r() * 0.15);
-    return [
-      { pts: main, r0: rad, r1: rad * 0.75, tone: 0 },
-      { pts: [p, add3(p, [0.05 * s + j(0.08), 0.15 * s, 0.04 * s]), add3(p, [0.08 * s + j(0.1), 0.3 * s, 0.06 * s + j(0.06)])], r0: rad * 0.6, r1: rad * 0.28, tone: 0 },
-    ];
-  }
-  // 'branch': a trunk rising from one end, three side branches and a lower limb (the old driftwood layout, as a piece)
-  const rad = 0.085 * s;
-  const trunk: V3[] = [[-0.42 * s, 0.3 * rad, 0.14 * s], [-0.16 * s, 0.2 * s + j(0.04), 0.05 * s + j(0.04)], [0.12 * s, 0.4 * s + j(0.05), -0.02 * s], [0.34 * s, 0.6 * s + j(0.05), -0.05 * s + j(0.05)]];
-  const out: Limb[] = [{ pts: trunk, r0: rad, r1: rad * 0.35, tone: 0 }];
-  for (const [t, dir, len] of [[0.45, -1, 0.3], [0.62, 1, 0.24], [0.3, 1, 0.2]] as const) {
-    const p0 = along(trunk, t), dx = dir * len * s;
-    out.push({ pts: [p0, add3(p0, [dx * 0.5, 0.11 * s, 0.05 * s]), add3(p0, [dx, 0.2 * s, j(0.14)])], r0: rad * 0.55, r1: rad * 0.16, tone: 0 });
-  }
-  out.push({ pts: [[0.5 * s, 0.25 * rad, 0.2 * s], [0.3 * s, 0.07 * s, 0.1 * s], [0.08 * s, 0.06 * s, -0.08 * s]], r0: rad * 0.75, r1: rad * 0.3, tone: 1 });
-  return out;
+  // 'climb' is the only hand-drawn limb wood left; the rest are generated (scene/hardgen.ts). An unknown one: a plain stick
+  return [{ pts: [[-0.5 * s, 0.02 * s, 0], [0, 0.05 * s, 0], [0.5 * s, 0.02 * s, 0]], r0: 0.03 * s, r1: 0.02 * s, tone: 0 }];
 }
 
 /** The extent of a set of limbs: [length (x), height (y), width (z)], mm. */
@@ -343,9 +307,9 @@ export function spreadMax(T: Tank, x?: number, depth?: number) {
 
 /** Bounding box of each ornament per unit size (x length, y height, z depth), measured from the built shape (test/ds2-ornament.test.ts keeps it honest). */
 export const ORNAMENT_ASPECT: Record<string, [number, number, number]> = { shipwreck: [1.11, 0.745, 0.4], treasurechest: [1.02, 0.9, 1], castle: [1.05, 1.073, 0.715] };
-export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | 'spread' | 'growth'>): V3 {
+export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | 'spread' | 'growth' | 'hs'>): V3 {
   const s = it.kind === 'plant' ? grownSize(it.variant as PlantType, it.size, it.growth) : it.size; // a plant at its growth
-  if (it.kind === 'stone') return stoneDims(it.variant, it.seed, s);
+  if (it.kind === 'stone') return stoneDims(it.variant, it.seed, s, it.hs);
   // an upright plant grown past its saved size gets longer much faster than its footprint widens (long leaves and stems
   // lie over at the surface), so its width follows its length only up to 1.4x the saved size
   const sw = Math.min(s, it.size * 1.4);
@@ -358,8 +322,8 @@ export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | '
   if (it.kind === 'cave' && it.variant === 'planter') return [s, 0.4 * s, 0.45 * s];
   if (it.kind === 'cave') return it.variant === 'arch' ? [s, 0.5 * s, 0.45 * s] : it.variant === 'tube' ? [s, 0.42 * s, 0.42 * s] : [s, 0.5 * s, s];
   if (it.variant in SHELLS) return shellDims(it.variant, s);
-  if (it.variant === 'climb') { const b = limbBox(woodLimbs(it.variant, it.seed, s)); return [b[0], b[1], b[2]]; }
-  return it.variant === 'manzanita' ? [0.7 * s, s, 0.7 * s] : it.variant === 'spider' ? [s, 0.5 * s, 0.8 * s] : it.variant === 'mopani' ? [s, 0.45 * s, 0.3 * s] : [s, 0.65 * s, 0.45 * s];
+  if (it.variant === 'climb' || isGenWood(it.variant)) { const b = limbBox(woodLimbs(it.variant, it.seed, s, it.hs)); return [b[0], b[1], b[2]]; }
+  return [s, 0.65 * s, 0.45 * s];
 }
 
 /** The radius of an upright plant's base, mm: the circle its crowns or stems start in (a clump's own spread, else the

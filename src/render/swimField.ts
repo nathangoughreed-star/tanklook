@@ -90,7 +90,7 @@ export function swimPrims(S: TankSetup, T: Tank): Prim[] {
     if (it.kind === 'wood' && isLimbWood(it.variant)) {
       const c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R);
       const tf = (q: V3) => ({ x: it.x + q[0] * c + q[2] * s, d: it.depth - (-q[0] * s + q[2] * c), y: base + q[1] });
-      for (const lb of woodLimbs(it.variant, it.seed, it.size)) {
+      for (const lb of woodLimbs(it.variant, it.seed, it.size, it.hs)) {
         for (let i = 0; i + 1 < lb.pts.length; i++) {
           const a = tf(lb.pts[i]), b = tf(lb.pts[i + 1]), n = lb.pts.length - 1, ta = i / n, tb = (i + 1) / n;
           out.push({ t: 'cap', ax: a.x, ay: a.y, ad: a.d, bx: b.x, by: b.y, bd: b.d, r0: lb.r0 + (lb.r1 - lb.r0) * ta, r1: lb.r0 + (lb.r1 - lb.r0) * tb });

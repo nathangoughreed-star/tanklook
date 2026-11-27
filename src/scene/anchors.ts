@@ -78,7 +78,7 @@ export function turnOut(it: Pick<Item, 'yaw' | 'pitch' | 'tilt'>, v: V3): V3 {
  *  radius (local's distance from the axis) and the axis point, still in the piece's frame (`cl`). */
 export function limbAt(it: Item, local: V3): { cl: V3; along: V3; r: number } | null {
   let best: { cl: V3; along: V3; r: number } | null = null, bd = Infinity;
-  for (const l of woodLimbs(it.variant, it.seed, it.size)) for (let i = 0; i + 1 < l.pts.length; i++) {
+  for (const l of woodLimbs(it.variant, it.seed, it.size, it.hs)) for (let i = 0; i + 1 < l.pts.length; i++) {
     const a = l.pts[i], b = l.pts[i + 1], ab: V3 = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], L2 = dot(ab, ab) || 1;
     const t = Math.max(0, Math.min(1, dot([local[0] - a[0], local[1] - a[1], local[2] - a[2]], ab) / L2)), c = add(a, ab, t);
     const d = Math.hypot(local[0] - c[0], local[1] - c[1], local[2] - c[2]);
@@ -94,7 +94,7 @@ export function limbAt(it: Item, local: V3): { cl: V3; along: V3; r: number } | 
  * their ridge line along the top.
  */
 export function limbPaths(it: Item, toTank: (v: V3) => V3): { pts: V3[]; r0: number; r1: number }[] {
-  return woodLimbs(it.variant, it.seed, it.size).map(l => ({ pts: l.pts.map(p => toTank(p)), r0: l.r0, r1: l.r1 }));
+  return woodLimbs(it.variant, it.seed, it.size, it.hs).map(l => ({ pts: l.pts.map(p => toTank(p)), r0: l.r0, r1: l.r1 }));
 }
 
 /**
