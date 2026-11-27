@@ -675,8 +675,8 @@
      ]
     },
     "eyeIris": [
-     "#de6705",
-     "#aa5e17"
+     "#cd7148",
+     "#9e633e"
     ],
     "eyePupil": "#0a0703",
     "eyeFull": 15,
@@ -745,7 +745,7 @@
       219.0
      ]
     ],
-    "ver": "e756c305"
+    "ver": "dfcdd40d"
    },
    "fit": "{'thick': 1.09, 'pedT': 0.213, 'rmsPctSL': 2.85, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }

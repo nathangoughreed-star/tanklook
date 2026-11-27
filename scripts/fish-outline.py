@@ -283,7 +283,7 @@ def main():
         d = (tb - tf) if sign < 0 else (bf - bb)
         return np.where(np.nan_to_num(d) >= 3)[0], d
 
-    def run(idx, x_lo, x_hi, gap=6):
+    def run(idx, x_lo, x_hi, gap=6, near=None):
         idx = idx[(idx >= x_lo) & (idx <= x_hi)]
         if not len(idx):
             return None
@@ -294,12 +294,16 @@ def main():
                 runs.append((s0, p)); s0 = i
             p = i
         runs.append((s0, p))
+        if near is not None:   # the run holding the anal fin's front end from the fin map (b9 bamboo shark, hillstream: the longest run below the belly was the pelvic / flat pectoral, the real anal floated)
+            hit = [r for r in runs if r[0] - gap <= near <= r[1] + gap]
+            if hit: return max(hit, key=lambda r: r[1] - r[0])
         return max(runs, key=lambda r: r[1] - r[0])
 
     di, dd = sticks(-1)
     ai, ad = sticks(+1)
     dr = run(di, pedx - 10, sx, int(opts.get('--fin-gap', 6)))
-    ar = run(ai, pedx - 10, sx)
+    ab_ = LMK.get('analBase') or []
+    ar = run(ai, pedx - 10, sx, near=max(p_[0] for p_ in ab_) if ab_ else None)
 
     def u_of(x):  # % SL from the snout
         return round(float((sx - x) / SL * 100), 2)
