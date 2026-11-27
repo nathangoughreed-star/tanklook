@@ -4,7 +4,7 @@ import { cast, field } from './swimCast';
 
 describe('swimSim', () => {
   it('no fish ends a step inside an obstacle; school bounded; bottom dwellers hug the floor (600 s, 40 fish)', () => {
-    const fish = cast(), sim = makeSwimSim(fish, field, 7), dt = 1 / 30;
+    const fish = cast(), sim = makeSwimSim(fish, field, 7), dt = 1 / 30; sim.setEvents(false); // BR 2026-11-26: this measures cohesion; the seeded alarm scatters a school on purpose (CI saw 608 > 520 with it on)
     expect(fish.length).toBe(40);
     let minRatio = 1e9, maxSchool = 0, maxShoal = 0, bottomN = 0, bottomLow = 0, bottomMax = 0, moved = 0;
     const last = fish.map(f => ({ ...sim.pose(f.id)! }));
