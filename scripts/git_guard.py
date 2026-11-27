@@ -60,15 +60,53 @@ def segments(cwd, cmd):
         yield (c.group(1) if c else here), seg
 
 
+FREEZE = r"C:\Users\nreed\.claude\glassbox-push-freeze.json"
+"""Push freeze (Nathan 2026-11-27, "pause pushes from the other chats until main is green"): while this file exists,
+every chat in every worktree is refused `git push` and scripts/ship.sh, except from a folder listed in its "allow".
+The file lives outside the repo so switching the freeze on or off needs no commit:
+  {"reason": "...", "since": "...", "allow": ["C:/Users/nreed/Glass-Box-gm"]}
+Commit as usual on your branch (or `git commit` your named files in the shared folder); push when the file is gone."""
+
+
+def norm(p):
+    p = re.sub(r"^/([a-zA-Z])/", r"\1:/", (p or "").strip().strip("\"'"))
+    return os.path.normcase(os.path.normpath(p)) if p else ""
+
+
+def frozen(cwd, cmd):
+    """The freeze's reason when this command would push from a folder that is not exempt, else None."""
+    try:
+        with open(FREEZE, encoding="utf-8-sig") as f:
+            fz = json.load(f)
+    except Exception:
+        return None
+    allow = [norm(a) for a in fz.get("allow") or []]
+    for where, seg in segments(cwd, cmd):
+        if not (re.search(GIT + r"push\b", seg) or re.search(r"\bship\.sh\b", seg)):
+            continue
+        w = norm(where)
+        if not any(w == a or w.startswith(a + os.sep) for a in allow):
+            return fz.get("reason") or "main is frozen"
+    return None
+
+
 def main():
     try:
         data = json.loads(sys.stdin.buffer.read().decode("utf-8-sig"))   # a PowerShell pipe adds a BOM
     except Exception:
         sys.exit(0)
     cmd = (data.get("tool_input") or {}).get("command") or ""
-    if "git" not in cmd:
+    if "git" not in cmd and "ship.sh" not in cmd:
         sys.exit(0)
     cmd = re.sub(r"""\s-m\s+("(?:[^"\\]|\\.)*"|'[^']*')""", " -m MSG", cmd)   # commit messages may say anything
+    why = frozen(data.get("cwd") or "", cmd)
+    if why:
+        print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny",
+              "permissionDecisionReason": f"Push freeze: {why} Do not push or run ship.sh until the freeze is lifted. "
+              "Commit your work on your branch now (in the shared folder: git add <your files>, git commit), say in "
+              "your reply that it is committed but not pushed, and push once the coordinator says main is green. "
+              "Do not look for another way to push."}}))
+        sys.exit(0)
     for where, seg in segments(data.get("cwd") or "", cmd):
         if not shared(where):
             continue
