@@ -364,6 +364,22 @@
     "hillstream": {
       "look": "hillstreamb",
       "approved": "2026-11-27"
+    },
+    "labeo": {
+      "look": "labeob",
+      "approved": "2026-11-27"
+    },
+    "clownknife": {
+      "look": "clownknifeb",
+      "approved": "2026-11-27"
+    },
+    "bambooshark": {
+      "look": "bamboosharkb",
+      "approved": "2026-11-27"
+    },
+    "kuhli": {
+      "look": "kuhlib",
+      "approved": "2026-11-27"
     }
   }
 }

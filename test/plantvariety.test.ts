@@ -31,9 +31,9 @@ const CASES: [PlantType, number, number, { spread?: number; stems?: number }?][]
 // (VF2 item 2, 2026-11-12) changed the colours of grass, sword, stem and carpet and nothing else. All re-pinned 2026-11-25 on
 // 55ccf7c0: lane PT reshaped the crypt (21f2268d, 0918c3c4) and R151 plants 1-5 densified every painted type and tinted leaf bases. Sword re-pinned 2026-11-27 (lane SW): broad arching leaves
 // (wid, prof, rise, arch, twist, fold, len), same vertex and triangle counts.
-const SHAPES: Record<string, string> = {"0:grass":"16482/64176/-627965485","1:grass":"9714/37584/864266430","2:sword":"33660/172224/-1535069929","3:crypt":"27522/146760/702547838","4:fern":"8035/39408/2090217359","5:stem":"81039/313488/373360432","6:carpet":"164448/555012/862487683","7:anubias":"5635/28368/-28590337"};
+const SHAPES: Record<string, string> = {"0:grass":"16482/64176/-627965485","1:grass":"9714/37584/864266430","2:sword":"33660/172224/-1535069929","3:crypt":"27522/146760/702547838","4:fern":"8035/39408/1068704764","5:stem":"81039/313488/373360432","6:carpet":"164448/555012/862487683","7:anubias":"5635/28368/-28590337"};
 // Colours: pinned after the greens retune; re-pinned 2026-11-25 after R151 (darker bases, per-leaf age tint)
-const COLOURS: Record<string, number> = {"0:grass":563187723,"1:grass":784117909,"2:sword":1654318772,"3:crypt":958423397,"4:fern":747615033,"5:stem":161534891,"6:carpet":750655348,"7:anubias":487250616};
+const COLOURS: Record<string, number> = {"0:grass":563187723,"1:grass":784117909,"2:sword":1654318772,"3:crypt":958423397,"4:fern":598473458,"5:stem":161534891,"6:carpet":750655348,"7:anubias":487250616};
 
 afterEach(() => { plant3d.variety = false; });
 
