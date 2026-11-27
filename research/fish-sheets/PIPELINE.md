@@ -19,6 +19,7 @@ One runbook, start to finish. Entry point for every fish chat. Written 2026-11-2
 - Every number in chat in US units where it is a user-facing size.
 
 ## 1. Pick the species
+- **No colour forms / variants now (Nathan 2026-11-27, said before and repeated in caps).** They come AFTER every base model is in (approved), and they will use an entirely different reference sheet, not this 5-row one. Never queue or build the `*-f1-gen` folders (old-format prompts; some already hold sheets and 11-25 builds); `fish-batch.py` has no colour-form path on purpose. A 2026-11-27 chat read the b9 handoff's "until every species has its main body" as met once b9 built, queued the f1 sheets and taught fish-batch to build forms: reverted.
 - Nathan approves the list (b7: "Approve all 20", 2026-11-25). Popular roster fish with no sheet, prompt or `fishLive.json` entry.
 - Check: id exists in `src/data/species.json`; not already in `src/data/fishLive.json`, `research/fish-sheets/prompts/`, `research/fish-specs/`.
 - Gate: id, TL (mm), whether FishShapes has the species ("own") or a proxy relative.
