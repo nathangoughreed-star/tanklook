@@ -14,8 +14,9 @@ import type { CandidateRecord, DiscoverySession } from '../src/scene/discoveryTy
 import type { Fish, TankSetup } from '../src/scene/types';
 
 const GOLDEN: Record<string, string[]> = {
-  a: ['1nlg5uck3k0h', '1r2e2ze1tota', '1nlg5uck3k0h|1b5izw11tl1g'],
-  b: ['16t0nd81bhn3', '1r2e2ze1tota', '16t0nd81bhn3|1b5izw11tl1g'],
+  // HG1 (2026-11-27): a and b re-captured: the generated wood skeletons (scene/hardgen.ts) put the limbs plants are tied onto elsewhere, so the drawn designs differ
+  a: ['19hla0x4qt3e', '1e2hk811j7q4', '19hla0x4qt3e|1b5izw11tl1g'],
+  b: ['1e2hk811j7q4', '1ypy6wh1jppt', '1e2hk811j7q4|1cz32b33d6so'],
   c: ['0w51b2l11bw0', '1cz32b33d6so', '0w51b2l11bw0|1b5izw11tl1g'],
 };
 

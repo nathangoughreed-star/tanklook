@@ -18,7 +18,8 @@ afterEach(() => setFx({ embed: FX_DEFAULT.embed }));
 function fishY(embed: boolean, offsets: number[]) {
   setFx({ embed, contact: true, ground: true });
   const S = structuredClone(parseScene(structuredClone(planted4) as never).scene.tanks[0]) as TankSetup;
-  const rock = S.items.find(i => i.kind === 'wood' || i.kind === 'stone')!, cory = S.fish.find(f => f.species === 'bronzecory')!;
+  // HG1 (2026-11-27): a lying log, not the first wood: generated spider wood stands on a small knot, so its berm no longer reaches the fish
+  const rock = S.items.find(i => i.variant === 'mopani')!, cory = S.fish.find(f => f.species === 'bronzecory')!;
   S.items = [{ ...structuredClone(rock), id: 900, x: S.tank.L / 2, depth: S.tank.D / 2, lift: 0, size: 220, yaw: 0 }];
   S.fish = offsets.map((o, i) => ({ ...structuredClone(cory), id: 800 + i, x: S.tank.L / 2 + o, depth: S.tank.D / 2, y: 0, yaw: 90, pitch: 0, roll: 0 }));
   const b = buildTank({ ...S, units: 'in' } as TankSetup & { units: 'in' }, S.tank, null), ys: number[] = [];

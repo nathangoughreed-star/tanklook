@@ -427,7 +427,7 @@ export function hardscape(S: TankSetup, pieces = S.items, perchK = 1, leaves = f
     if (leaves && it.kind === 'plant' && it.variant in LEAFY) { parts.push(leafPart(S, it)); continue; }
     if (it.kind === 'plant' || it.kind === 'coral' || it.kind === 'artificial' || it.variant === 'planter') continue; // no grazing on live coral (Nathan 2026-10-14); a rim planter is up on the glass
     if (it.kind === 'wood' && isLimbWood(it.variant)) {
-      for (const l of woodLimbs(it.variant, it.seed, it.size)) {
+      for (const l of woodLimbs(it.variant, it.seed, it.size, it.hs)) {
         const len = l.pts.slice(1).reduce((a, p, i) => a + Math.hypot(p[0] - l.pts[i][0], p[1] - l.pts[i][1], p[2] - l.pts[i][2]), 0);
         // a perch counts by its length and a frog's width (on a thin limb its own area would be next to nothing)
         parts.push({ area: it.variant === 'climb' ? len * Math.max(l.r0 + l.r1, 40) * perchK : len * (l.r0 + l.r1), spot: r => { const t = 0.1 + r() * 0.8, p = itemToTank(S, it, along(l.pts, t)); return { ...p, y: p.y + l.r0 + (l.r1 - l.r0) * t }; } });
@@ -476,7 +476,7 @@ export function underside(S: TankSetup, pieces = S.items) {
     if (OVERHANGS.has(it.variant)) parts.push({ area: l * w * 0.5, spot: r => itemToTank(S, it, [(r() - 0.5) * l * 0.5, it.variant === 'ledge' || it.variant === 'corkflat' ? 0 : h * 0.4, (r() - 0.5) * w * 0.5]) });
     // the sides: a point just outside the piece at about its half height (the renderer looks sideways from there for the face)
     if (it.kind === 'wood' && isLimbWood(it.variant)) {
-      for (const lb of woodLimbs(it.variant, it.seed, it.size)) {
+      for (const lb of woodLimbs(it.variant, it.seed, it.size, it.hs)) {
         const len = lb.pts.slice(1).reduce((a, p, i) => a + Math.hypot(p[0] - lb.pts[i][0], p[1] - lb.pts[i][1], p[2] - lb.pts[i][2]), 0);
         parts.push({ area: len * (lb.r0 + lb.r1) * 2 * SIDE_SHARE, spot: r => { const t = 0.1 + r() * 0.8, p = itemToTank(S, it, along(lb.pts, t)), a = r() * 2 * Math.PI, o = 1.5 * (lb.r0 + (lb.r1 - lb.r0) * t) + 10; return { x: p.x + Math.cos(a) * o, depth: p.depth + Math.sin(a) * o, y: p.y }; } });
       }
