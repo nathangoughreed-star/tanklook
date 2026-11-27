@@ -380,6 +380,14 @@
     "kuhli": {
       "look": "kuhlib",
       "approved": "2026-11-27"
+    },
+    "flameangel": {
+      "look": "flameangelb",
+      "approved": "2026-11-27"
+    },
+    "orchiddottyback": {
+      "look": "orchiddottybackb",
+      "approved": "2026-11-27"
     }
   }
 }
