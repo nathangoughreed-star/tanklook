@@ -68,6 +68,7 @@ export const NEEDS: Record<string, PlantNeed | CoralNeed | LandNeed> = {
   fern: P('low', 'none', 'none'),
   buce: P('low', 'none', 'recommended'),
   moss: P('low', 'none', 'none'),
+  marimo: P('low', 'none', 'none'), // low light, cool water; bright light browns it
   crypt: P('low', 'none', 'recommended'),
   balansae: P('low', 'none', 'recommended'),
   // medium: swords, grasses, easy stems; CO2 helps but is not required
@@ -123,7 +124,7 @@ export const NEEDS: Record<string, PlantNeed | CoralNeed | LandNeed> = {
  *  grows slower and plainer, so the advice is a recommendation; below it the plant struggles and is warned about (lane OC,
  *  2026-10-16). Absent = 85 % of the range's low end. Hardy species only; the ones marked `check` are for Nathan to review. */
 const MIN_PAR: Record<string, number> = {
-  buce: 5, moss: 5, crypt: 5, balansae: 8, anubias: 0, fern: 0,
+  buce: 5, moss: 5, marimo: 5, crypt: 5, balansae: 8, anubias: 0, fern: 0,
   sword: 8, ozelot: 10, grass: 10, sagittaria: 10, lotus: 12, hornwort: 0, anacharis: 0,
   ludwigia: 25, hairgrass: 20, // check: hairgrass lives at 20 but will not spread into a lawn
   redroot: 0, salvinia: 0, frogbit: 0, lettuce: 0, sansevieria: 0, haworthia: 10,

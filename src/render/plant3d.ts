@@ -763,6 +763,55 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       const way = LB.length && re() < (Vn.follow ?? 0.6) ? route(re, b, L1) : null;
       vine(re, X, ex, exTubes, b, L1, s => a0 + Math.max(0, Math.log(Math.max(1e-3, s / L0)) / lk), climbs && !way, way ? { route: way } : {});
     }
+  } else if (P.form === 'ball') {
+    // marimo (R182): a lumpy ball a little wider than tall (radius R across, c up), flattened where it rests, under a
+    // dense coat of very short hairs along its normal: the core carries the colour, the hairs only soften its outline
+    // (the velvet of the photos). Mottled in soft patches, yellower on top, dark olive underneath. Growth: the whole
+    // ball shrinks toward its resting point below g0 (anchored at the bottom centre).
+    const R = Wc / 2, c = h / 2, ph = [r() * 6.28, r() * 6.28, r() * 6.28, r() * 6.28, r() * 6.28, r() * 6.28];
+    /** The radius multiplier in direction (x, y, z) (unit): a few broad lumps. */
+    const lumpK = (x: number, y: number, z: number) => 1 + 0.05 * Math.sin(2.1 * x + 1.3 * y + ph[0]) * Math.sin(1.7 * z - 0.9 * y + ph[1]) + 0.03 * Math.sin(3.3 * x - 2.7 * z + ph[2]);
+    /** Soft colour patches, -1 .. 1. */
+    const mott = (x: number, y: number, z: number) => 0.6 * Math.sin(4.1 * x + 2.2 * z + ph[3]) * Math.sin(3.6 * y - 2.9 * x + ph[4]) + 0.4 * Math.sin(7.3 * z + 5.1 * y + ph[5]);
+    const cy = c * 0.94; // its centre: the bottom ~6 % of the ball pressed flat where it rests
+    /** A point on the ball in unit direction (x, y, z), and its outward normal (approximate: the ellipsoid's). */
+    const at = (x: number, y: number, z: number) => { const k = lumpK(x, y, z); return V(x * R * k, Math.max(0, cy + y * c * k), z * R * k); };
+    const nrmAt = (x: number, y: number, z: number) => (cy + y * c * lumpK(x, y, z) <= 0.5 ? V(0, -1, 0) : V(x / R, y / c, z / R).normalize());
+    const B = V(0, 0, 0), small: LeafTag = g0 < 0.02 ? SHOWN : { a: -0.82 * g0, w: 1.82 * g0 * 0.999 }, oTag = { ...small, on: { pc: -1, par: 0 } };
+    const core = new THREE.SphereGeometry(1, 48, 32), cp = core.attributes.position, ca = new Float32Array(cp.count * 3);
+    const lo = new THREE.Color(f.under), hi = new THREE.Color(f.cols[1][1]), kc = new THREE.Color();
+    for (let i = 0; i < cp.count; i++) {
+      const x = cp.getX(i), y = cp.getY(i), z = cp.getZ(i), p = at(x, y, z), fine = Math.sin(23 * x + 17 * z + ph[0]) * Math.sin(19 * y - 21 * x + ph[2]);
+      cp.setXYZ(i, p.x, p.y, p.z);
+      // lit from above: yellower toward the top, dark underneath; the patches either way
+      const up = 0.5 + 0.5 * y, m = mott(x, y, z);
+      kc.copy(lo).lerp(hi, Math.min(1, Math.max(0, 0.2 + 0.5 * up + 0.35 * m))).multiplyScalar((0.45 + 0.55 * Math.min(1, up * 1.4)) * (1 + 0.14 * m + 0.08 * fine));
+      ca[i * 3] = kc.r; ca[i * 3 + 1] = kc.g; ca[i * 3 + 2] = kc.b;
+    }
+    whiteUV(core); core.computeVertexNormals();
+    core.setAttribute('color', new THREE.BufferAttribute(ca, 3));
+    // the hairs: evenly over the ball (a Fibonacci sphere, jittered), not on the flat it rests on
+    const area = 4 * Math.PI * ((R * R * 2 + c * c) / 3), n = Math.round(Math.min(MAX_LEAFLETS, area / 1000 * between(r, P.n)));
+    /** One hair at unit direction (x, y, z) (q's draws; D its twist and brightness). */
+    const hair = (q: R, D: ReturnType<typeof draws>, x: number, y: number, z: number, a: number, tag: LeafTag, into: Sheets) => {
+      const base = at(x, y, z);
+      if (base.y < c * 0.04) return;
+      const nr = nrmAt(x, y, z), tilt = Math.acos(Math.min(1, Math.max(-1, nr.y))) + (q() - 0.5) * 0.7;
+      // a hair's colour from the patch it stands in (so the coat and the core agree), darker low down
+      const m = mott(x, y, z), cols = f.cols[Math.min(f.cols.length - 1, Math.max(0, Math.floor((0.5 + 0.5 * m) * f.cols.length + (q() - 0.5))))];
+      leaf(into, f, P.stalk, base, a + (q() - 0.5) * 1.2, h * between(q, f.len), Math.max(0, tilt), D.twist(), cols, D.bright() * (0.6 + 0.4 * (0.5 + 0.5 * y)), q, STIFF, tag);
+    };
+    for (let i = 0; i < n; i++) {
+      const y = 1 - 2 * (i + 0.5) / n + (r() - 0.5) * 0.6 / n, s = Math.sqrt(Math.max(0, 1 - y * y)), a = i * 2.39996 + (r() - 0.5) * 0.5;
+      hair(r, { pick, twist, bright }, Math.cos(a) * s, y, Math.sin(a) * s, a, oTag, out);
+    }
+    for (let v = 0; v < out.anc.length; v += 3) out.anc[v] = out.anc[v + 1] = out.anc[v + 2] = 0;
+    // grown on past g0: the coat thickens (its own stream)
+    for (let j = 0, m = extras(n, 2 * n); j < m; j++) {
+      const y = 2 * re() - 1, s = Math.sqrt(1 - y * y), a = re() * 6.28;
+      hair(re, X, Math.cos(a) * s, y, Math.sin(a) * s, a, { ...fullBy(extraAt(j, n), 0.08, 1), on: { pc: -1, par: 0 } }, ex);
+    }
+    extra.push(tagAll(core, small.a, small.w, B));
   } else if (P.form === 'moss') {
     // a ragged dome (radius = half the card width, height h) over a dark core; fronds all over it, pointing outward
     // along the dome's normal plus a scatter, the ones round the rim drooping over the edge. Growth: the clump is smaller

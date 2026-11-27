@@ -9,6 +9,7 @@ export const PLANT_CARE: Record<string, PlantCare> = {
   sword: { level: 1, conf: 'high', n: 3, why: "All three say easy; the only demand is root feeding (tabs) and room to grow." },
   rotala: { level: 1, conf: 'medium', n: 2, why: "Plain R. rotundifolia is easy; deep red or H'ra forms are level 2 (high light + CO2). Only two pages opened (Petco 403)." },
   carpet: { level: 3, conf: 'medium', n: 3, why: "Labels split 3/2/2 but all reasons need strong light + CO2 + rich substrate for HC; Monte Carlo is easier (closer to 2). Flip Aquatics 429, Petco/2Hr Aquarist 4" },
+  marimo: { level: 1, conf: 'medium', n: 2, why: "Estimate (Wikipedia, Petco care sheet): very slow, low light, roll it now and then; browns in strong light or warm water." },
   moss: { level: 1, conf: 'high', n: 3, why: "Three sources agree; main chore is trimming and keeping debris/algae off." },
   hairgrass: { level: 2, conf: 'high', n: 2, why: "Two sources agree and none disagree: carpets reliably only with strong light, CO2 and rich substrate; slow without." },
   frogbit: { level: 1, conf: 'medium', n: 2, why: "Easy to grow; the real work is calm surface, thinning and keeping leaves dry; Guidarium hedges toward middle." },

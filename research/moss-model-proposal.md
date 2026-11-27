@@ -87,6 +87,19 @@ fronds, shingled), flame moss (upright twisting shoots), weeping moss (fronds th
 - Strand count per clump capped like `MAX_LEAFLETS` so a moss-covered scape does not blow the frame budget.
 - Picking and the selection box should select the moss, not the rock under it.
 
+## Marimo: built 2026-11-26 (step 2), waiting on Nathan's look
+Nathan picked "Marimo first". Reference photos (Wikimedia Commons, looked at): an aquarium ball on gravel
+https://commons.wikimedia.org/wiki/File:Ga%C5%82%C4%99zatka_kulista_(Cladophora_aegagropila).jpg and three balls in a
+flask https://commons.wikimedia.org/wiki/File:Aegagropila_conical_flask.jpg. Written look: a lumpy ball a little wider
+than tall, flat where it rests; a dense short velvet (outline soft, no leaf shapes); olive to moss green in soft
+mottled patches, yellower where lit, dark olive underneath.
+Built as plant `marimo` (form 'ball', `src/render/plant3d.ts`): a 48x32 lumpy core with mottled vertex colours, and
+~1,500-3,000 short hairs along its normal (the coat thickens a little with growth). Side-by-side:
+`research/moss-refs/marimo-side-by-side.jpg` (render alone: `marimo-r182-render.png`). Tuning in this pass: first render
+was lime and smooth (a green pea), then darker olive colours, stronger and finer mottling, longer denser hairs.
+Not done: groups of 3-5 as one item, rolling off rocks onto the substrate (today it can be raised onto hardscape
+like any plant).
+
 ## Steps (each with its gate)
 1. Photos: open the URLs above (or harvest with Claude in Chrome), pick 2+ per look (alone, attached, close-up),
    save to `research/moss-refs/`, record URLs. Gate: Nathan agrees they show the look.

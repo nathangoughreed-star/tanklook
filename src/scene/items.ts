@@ -64,6 +64,7 @@ export const LIBRARY: Record<string, Variant> = {
   ozelot: { kind: 'plant', label: "Echinodorus 'Ozelot'", hint: 'A mid-sized sword with maroon-spotted leaves.', size: 200, min: 50, max: 500 },
   sagittaria: { kind: 'plant', label: 'Dwarf sagittaria', hint: 'A low run of grassy tufts that spreads into a lawn.', size: 70, min: 30, max: 150 },
   moss: { kind: 'plant', label: 'Java moss', hint: 'A low mound of moss: on the ground, or raise it onto wood or rock.', size: 45, min: 15, max: 150 },
+  marimo: { kind: 'plant', label: 'Marimo moss ball', hint: 'A soft green ball of algae (Aegagropila): sits loose on the substrate, alone or a few together. Size = height.', size: 40, min: 15, max: 120 },
   redroot: { kind: 'plant', label: 'Red root floaters', hint: 'Small round leaves floating at the water line, red roots hanging below.', size: 200, min: 60, max: 600 },
   salvinia: { kind: 'plant', label: 'Salvinia', hint: 'Floating chains of cupped oval leaves at the water line.', size: 200, min: 60, max: 600 },
   frogbit: { kind: 'plant', label: 'Amazon frogbit', hint: 'Round glossy leaves floating at the water line, long fine roots hanging below.', size: 200, min: 70, max: 700 },

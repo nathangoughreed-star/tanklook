@@ -1,6 +1,6 @@
 // Plant types, their sizing rules and the 3D plant table (render/plant3d.ts builds the meshes).
 export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubias' | 'carpet' | 'crypt'
-  | 'buce' | 'rotala' | 'ludwigia' | 'balansae' | 'sagittaria' | 'ozelot' | 'moss'
+  | 'buce' | 'rotala' | 'ludwigia' | 'balansae' | 'sagittaria' | 'ozelot' | 'moss' | 'marimo'
   | 'redroot' | 'salvinia' | 'frogbit' | 'lettuce' | 'lotus'
   | 'pothos' | 'bromeliad' | 'tropfern' | 'fittonia' | 'sphagnum' | 'creeper'
   | 'hairgrass' | 'hornwort' | 'anacharis'
@@ -10,7 +10,7 @@ export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubi
 
 /** Height / width per plant type (sizes and footprints; the ratio of the old 2D cards). */
 export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1,
-  buce: 0.9, rotala: 3.6, ludwigia: 3, balansae: 3, sagittaria: 0.45, ozelot: 1.1, moss: 0.45,
+  buce: 0.9, rotala: 3.6, ludwigia: 3, balansae: 3, sagittaria: 0.45, ozelot: 1.1, moss: 0.45, marimo: 0.8,
   redroot: 0.35, salvinia: 0.25, frogbit: 0.4, lettuce: 0.45, lotus: 0.85,
   pothos: 1.3, bromeliad: 0.6, tropfern: 1, fittonia: 0.5, sphagnum: 0.35, creeper: 1.2,
   hairgrass: 0.4, hornwort: 3, anacharis: 3.2,
@@ -90,8 +90,9 @@ export interface Plant3D {
   /** rosette = leaves from one crown; rhizome = leaves along a creeping root; stem = upright stems with paired leaves;
    *  carpet = tiny leaflets over a patch; moss = tiny fronds all over a low ragged mound; float = small rosettes lying
    *  on the water over a patch, roots hanging under them; vine = long vines from a crown (lane T2), climbing up behind
-   *  it or trailing along the ground, leaves (len in mm) on them. */
-  form: 'rosette' | 'rhizome' | 'stem' | 'carpet' | 'moss' | 'float' | 'vine';
+   *  it or trailing along the ground, leaves (len in mm) on them; ball = a free fuzzy ball (marimo): a lumpy core under a
+ *  dense coat of short hairs (n: hairs per 1000 mm² of its surface; leaf.len a fraction of its height). */
+  form: 'rosette' | 'rhizome' | 'stem' | 'carpet' | 'moss' | 'float' | 'vine' | 'ball';
   /** Leaves (rosette, rhizome), stems (stem), or leaflets per 1000 mm² of patch (carpet) or of the mound's footprint
    *  (moss): min, max. */
   n: [number, number];
@@ -242,6 +243,14 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   moss: { grow: { speed: 'medium', overflow: 'none', len: [20, 100], more: 6 }, sway: 0.05, form: 'moss', n: [280, 340], spread: 0.95, stalk: '#16281a', leaf: {
     len: [0.07, 0.13], wid: 0.55, prof: [0.6, 0.5], rise: [0, 0], arch: 0.8, twist: 1.2, fold: 0.2, wave: [0, 0], pet: 0,
     cols: [['#1e3a1c', '#3a6230'], ['#24421e', '#426c36'], ['#1a341a', '#34582c'], ['#22401c', '#3e6a2e']], under: '#2a4a26', seg: [2, 3] } },
+  // Marimo ball (Aegagropila linnaei, a filamentous alga; R182, Nathan 2026-11-26 "moss balls"). Refs (Wikimedia):
+  // an aquarium ball on gravel (Gałęzatka kulista (Cladophora aegagropila).jpg) and balls in a flask
+  // (Aegagropila_conical_flask.jpg). Look: a lumpy ball a little wider than tall, flattened where it rests; a dense
+  // velvet of very short filaments (the outline soft, no leaf shapes); olive to moss green, mottled in soft patches,
+  // yellower where lit, dark olive underneath. Never attaches: a free ball on the substrate. Grows ~0.2 in a year.
+  marimo: { grow: { speed: 'slow', overflow: 'none', len: [20, 60], more: 1.2 }, sway: 0, form: 'ball', n: [280, 320], spread: 1, stalk: '#3a5a1c', leaf: {
+    len: [0.05, 0.09], wid: 0.16, prof: [0.5, 0.5], rise: [0, 0], arch: 0.2, twist: 1.5, fold: 0, wave: [0, 0], pet: 0,
+    cols: [['#36481a', '#56682a'], ['#3e521e', '#62742e'], ['#2e3e16', '#4a5c22'], ['#465a20', '#707e34']], under: '#222e10', seg: [1, 2] } },
   // Red root floaters (Phyllanthus fluitans): small rosettes of round, cupped leaves, green to bronze-red, red roots.
   // Leaf length in mm (like the carpet)
   redroot: { grow: { speed: 'fast', overflow: 'spread', len: [60, 600], more: 1 }, sway: 0, form: 'float', n: [0, 0], spread: 1, stalk: '#7a3e34', float: { per: [2.5, 3.2], leaves: [5, 7], roots: [1, 3], rootLen: [12, 45] }, leaf: {
