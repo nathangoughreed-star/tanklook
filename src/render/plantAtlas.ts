@@ -35,3 +35,23 @@ export function atlasPixels() {
   const x = c.getContext('2d', { willReadFrequently: true })!; x.drawImage(img, 0, 0);
   return (pix = x.getImageData(0, 0, c.width, c.height));
 }
+
+/** A plant type's own texture (R182: the marimo's skin and fringe, public/art/plants/<file>, from scripts/marimo-skin.py),
+ *  loaded like the atlas: a white pixel until the image arrives. */
+const own = new Map<string, THREE.Texture>();
+export function ownAtlas(file: string) {
+  let t = own.get(file);
+  if (t) return t;
+  if (typeof document === 'undefined' || typeof Image === 'undefined') { t = new THREE.DataTexture(Uint8Array.of(255, 255, 255, 255), 1, 1); t.needsUpdate = true; own.set(file, t); return t; }
+  const c = document.createElement('canvas'); c.width = c.height = 1;
+  const x = c.getContext('2d')!; x.fillStyle = '#fff'; x.fillRect(0, 0, 1, 1);
+  const tt = new THREE.CanvasTexture(c);
+  tt.colorSpace = THREE.SRGBColorSpace; tt.anisotropy = 4; tt.generateMipmaps = true; tt.minFilter = THREE.LinearMipmapLinearFilter; tt.magFilter = THREE.LinearFilter;
+  tt.wrapS = tt.wrapT = THREE.ClampToEdgeWrapping;
+  const im = new Image();
+  im.onload = () => { tt.image = im; tt.dispose(); tt.needsUpdate = true; atlasLoaded.on?.(); };
+  im.src = `${import.meta.env.BASE_URL}art/plants/${file}`;
+  tt.userData.keep = true;
+  own.set(file, tt);
+  return tt;
+}
