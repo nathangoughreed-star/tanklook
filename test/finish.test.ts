@@ -8,6 +8,7 @@ import { buildsFor, distinctBuilds, meetsNeeds } from '../src/scene/builds';
 import { finishTiers } from '../src/scene/finish';
 import { itemLights } from '../src/scene/lightcheck';
 import { tankOptions } from '../src/scene/tankfit';
+import { standOf } from '../src/data/stands';
 import { summaryOf } from '../src/ui/stockSummary';
 
 const P = defaultProfile(), NOW = Date.parse('2026-10-27');
@@ -114,7 +115,8 @@ describe('finished builds', () => {
       expect(p.costLines.reduce((t, l) => t + l.usd, 0)).toBe(Math.round(p.totals.startupUsd));
       for (const label of ['Animals', 'Substrate, hardscape and plants']) expect(p.costLines.some(l => l.label === label && l.usd > 0)).toBe(true);
       expect(p.costLines.some(l => (l.label === 'Tank' || l.label.startsWith('Starter kit')) && l.usd > 0)).toBe(true); // lane U5: a kit's one price is its own line
-      expect(p.costLines.some(l => /^Stand/.test(l.label) && l.usd > 0)).toBe(true);
+      // 75f00852 (bundle parts sweep, 2026-11-26): a kit whose bundle ships its own stand (Marineland HD 75) has no separate Stand line; the stand is inside the kit's price
+      expect(p.costLines.some(l => /^Stand/.test(l.label) && l.usd > 0) || (!!standOf(p.scene as any) && p.costLines.some(l => l.label.startsWith('Starter kit') && l.usd > 0))).toBe(true);
     }
     for (const p of run({ owned: { filter: 'care' }, needStand: false })) {
       expect(p.costLines.reduce((t, l) => t + l.usd, 0)).toBe(Math.round(p.totals.startupUsd));
