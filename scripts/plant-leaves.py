@@ -40,7 +40,7 @@ TYPES = {
     'ludwigia': dict(kind='leaf', cols=4, rows=2, upper=[0, 1, 2, 3], under=[4, 5, 6, 7], cell=(104, 168), v0=0.06),
     'balansae': dict(kind='leaf', cols=3, rows=2, upper=[0, 1, 2], under=[3, 4, 5], cell=(40, 448), v0=0.07),
     'buce': dict(kind='leaf', cols=3, rows=2, upper=[0, 1, 2], under=[3, 4, 5], cell=(88, 288), v0=0.15),
-    'fern': dict(kind='leaf', cols=3, rows=2, upper=[0, 1, 2], under=[3, 4, 5], cell=(40, 448), v0=0.07),
+    'fern': dict(kind='leaf', cols=3, rows=2, upper=[0, 1, 2], under=[3, 4, 5], cell=(152, 448), v0=0.04),  # broad common form (sheet d2, 2026-11-27; the narrow 10:1 sheet is fern-d1-narrow.png)
     'ozelot': dict(kind='leaf', cols=3, rows=2, upper=[0, 1, 2], under=[3, 4, 5], cell=(88, 352), v0=0.22),
     'grass': dict(kind='strap', strips=4, order=dict(base=0, mid=1, tip=2, mid2=3), width=40, base=(40, 64), tip=(40, 64), mid=(100, 160), tiles=4),
 }
