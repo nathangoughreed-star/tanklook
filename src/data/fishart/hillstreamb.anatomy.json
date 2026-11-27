@@ -603,7 +603,14 @@
        240
       ]
      ],
-     "spread": 0.28
+     "spread": 0.28,
+     "plan": {
+      "s0": 11.2,
+      "s1": 54.3,
+      "span": 26.7,
+      "peak": 0.58,
+      "source": "fish-disc.py: run from the side map, span from the front map (% SL)"
+     }
     },
     "pelvic": {
      "root": [
@@ -704,7 +711,15 @@
        489,
        275
       ]
-     ]
+     ],
+     "plan": {
+      "s0": 48.3,
+      "s1": 71.0,
+      "span": 22.7,
+      "peak": 0.5,
+      "dy": 0.6,
+      "source": "fish-disc.py: run from the side map, span from the front map (% SL)"
+     }
     },
     "eyeIris": [
      "#776c59",

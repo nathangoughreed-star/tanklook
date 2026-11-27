@@ -121,6 +121,8 @@ def build_once(W, ID, NAME, SCI, TL, fsh, flags, S):
     if os.path.exists(dst):
         old = json.load(open(dst)); kept = {kk: old[kk] for kk in KEEP if kk in old}
         if old.get('pectoral', {}).get('spread') is not None and 'pectoral' in spec: kept_sp = old['pectoral']['spread']; spec['pectoral']['spread'] = kept_sp; kept['pectoral.spread'] = kept_sp
+        for fk in ('pectoral', 'pelvic'):   # a flat disc fin's top-view numbers (scripts/fish-disc.py, method row 69)
+            if old.get(fk, {}).get('plan') and fk in spec: spec[fk]['plan'] = old[fk]['plan']; kept[fk + '.plan'] = old[fk]['plan']
         for kk, v in kept.items():
             if '.' not in kk: spec[kk] = v
         if kept: print('kept from the existing spec:', kept)

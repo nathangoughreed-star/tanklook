@@ -116,16 +116,18 @@ export async function loadPhotoFish(only?: ReadonlySet<string>): Promise<Set<str
       const sh = (Array.isArray(f.spineH) ? f.spineH : [f.spineH, f.spineH]) as [number, number];
       if (Math.max(...sh) > f.h) P[k] = { ...f, spineH: [Math.min(sh[0], f.h), Math.min(sh[1], f.h)] };
     }
+    // a flat fin's top-view outline (spec `plan`, % SL from the snout and from the midline; scripts/fish-disc.py): hillstream loach's ventral disc
+    const finPlan = (q: { s0: number; s1: number; span: number; peak?: number; dy?: number; th?: number }) => ({ uF: U(q.s0), uR: U(q.s1), z: Wd(q.span), peak: q.peak, dy: q.dy ? Wd(q.dy) : 0, th: q.th });
     const { sx, sl, ax } = R, cv = (x: number, y: number): [number, number] => [1 - (sx - x) / sl * SLc, (y - ax) / sl * SLc];
     P.fins = {};
     if (R.pec) {
       const pu = cv(R.pec.root[0], R.pec.root[1])[0], [pt, pb] = profile(P)(pu), poly = R.pec.poly.map(([x, y]: number[]) => cv(x, y));
-      P.pectoral = true; P.pec = { u: pu, v: ((R.pec.root[1] - ax) / sl * SLc - pt) / (pb - pt), s: R.pec.s ?? 1, tint: R.pec.tint ?? '#6b6354', spread: R.pec.spread, flat: R.pec.flat, sweep: R.pec.sweep };
+      P.pectoral = true; P.pec = { u: pu, v: ((R.pec.root[1] - ax) / sl * SLc - pt) / (pb - pt), s: R.pec.s ?? 1, tint: R.pec.tint ?? '#6b6354', spread: R.pec.spread, flat: R.pec.flat, sweep: R.pec.sweep, ...(R.pec.plan ? { plan: finPlan(R.pec.plan) } : {}) };
       P.fins.pectoral = poly; P.fins.pectoralRoot = poly[0];
     }
     if (R.pelvic) {
       const poly = R.pelvic.poly?.map(([x, y]: number[]) => cv(x, y));
-      P.pelvic = { u: cv(R.pelvic.root[0], R.pelvic.root[1])[0], len: (R.pelvic.len ?? 120) / sl * SLc, tint: R.pelvic.tint ?? '#6b6354' };
+      P.pelvic = { u: cv(R.pelvic.root[0], R.pelvic.root[1])[0], len: (R.pelvic.len ?? 120) / sl * SLc, tint: R.pelvic.tint ?? '#6b6354', ...(R.pelvic.plan ? { plan: finPlan(R.pelvic.plan) } : {}) };
       if (poly) { P.fins.pelvic = poly; P.fins.pelvicRoot = poly[0]; }
     } else delete P.pelvic;
     delete P.gape; delete P.gapeDrop; P.gillLine = 0;

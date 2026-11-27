@@ -91,8 +91,9 @@ export interface Plan {
   analSplit?: number;
   // ext: the leading ray runs on past the membrane by this much (widths); w: membrane width x the default
   // flat (3D, pelvic and pec, off by default): the fins held out flat to the sides all the time, as on the glass (hillstream loach)
-  pelvic?: { u: number; len: number; tint?: string; thread?: boolean; angle?: number; ext?: number; w?: number; flat?: boolean; spread?: number; edge?: string; spots?: string }; // angle: degrees below horizontal (thread)
-  pec?: { s?: number; v?: number; u?: number; flat?: boolean; w?: number; tint?: string; spread?: number; sweep?: number; edge?: string; spots?: string }; // pectoral: size x the default, root height (0 top .. 1 belly, default 0.62), root u (default behind the gill), w: fan width x the default, tint: own colour (default: fin mixed with the flank)
+  // plan (3D, off by default): a paired fin held flat as part of a ventral disc (hillstream loach), drawn from its top-view outline (FinPlan, fish3d planFin)
+  pelvic?: { u: number; len: number; tint?: string; thread?: boolean; angle?: number; ext?: number; w?: number; flat?: boolean; spread?: number; edge?: string; spots?: string; plan?: FinPlan }; // angle: degrees below horizontal (thread)
+  pec?: { s?: number; v?: number; u?: number; flat?: boolean; w?: number; tint?: string; spread?: number; sweep?: number; edge?: string; spots?: string; plan?: FinPlan }; // pectoral: size x the default, root height (0 top .. 1 belly, default 0.62), root u (default behind the gill), w: fan width x the default, tint: own colour (default: fin mixed with the flank)
   fin: string;        // default membrane tint
   ray?: string;
   marks?: Mark[];     // painted inside the body
@@ -432,6 +433,12 @@ function paintMarks(c: Ctx, P: Proj, W: number, marks: Mark[] | undefined, seed:
   }
 }
 
+/**
+ * A flat paired fin's top-view outline (widths; photo fish set it from the spec's `plan`, scripts/fish-disc.py): it runs along the body from
+ * station uF (front) to uR (rear), its rim reaching z from the midline at `peak` (0 front .. 1 rear of the run), rounded both ways. dy lowers it
+ * (widths; the pelvics lie under the pectorals' rear), th = root angle on the section (0 top .. pi keel, default 0.72 pi: the lower flank).
+ */
+export type FinPlan = { uF: number; uR: number; z: number; peak?: number; dy?: number; th?: number };
 const mixHex = (a: string, b: string, k: number) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - k) + parseInt(b.slice(i, i + 2), 16) * k).toString(16).padStart(2, '0')).join('');
 export interface PairedFin { kind: 'pelvic' | 'pectoral'; pts: Pt[]; root: [number, number]; tint: string; a?: number; rays: number; edge?: string; spots?: string; spread?: number; sweep?: number }
 /** The paired fins (pelvic if the plan has one, then the pectoral), in card coordinates. */

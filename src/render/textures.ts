@@ -107,6 +107,36 @@ export const pairedFinTexture = (art: string, f: PairedFin, box: { u0: number; v
     style.finA = FIN_A;
     return finish(c);
   });
+/**
+ * A flat (planform) paired fin's paint (fish3d planFin; hillstream loach's ventral disc): the sheet's side view sees the fin edge-on-ish,
+ * its rays running from the root along the body to the rim below. Each column of the texture is one column of the fin card's fin, front
+ * to rear, stretched from the fin's top edge (the root, row 0) to its bottom edge (the rim, last row), so the rays and their bands fan out
+ * across the disc from the root. Opaque, fading a little over the outer 15 % like a membrane edge.
+ */
+export const planFinTexture = (art: string, f: PairedFin) =>
+  cached(`planfin:${art}:${f.kind}`, () => {
+    const TW = 512, TH = 256, c = document.createElement('canvas'); c.width = TW; c.height = TH;
+    const ph = PHOTO_FINS[art], ctx = c.getContext('2d')!;
+    if (!ph) { ctx.fillStyle = f.tint; ctx.fillRect(0, 0, TW, TH); return finish(c); }
+    const im = ph.img as HTMLCanvasElement, W = im.width, H = im.height;
+    const src = im.getContext('2d')!.getImageData(0, 0, W, H).data;
+    const mk = document.createElement('canvas'); mk.width = W; mk.height = H; const mx = mk.getContext('2d')!;
+    mx.fillStyle = '#fff'; mx.beginPath(); f.pts.forEach((q, i) => { const x = q[0] * W, y = q[1] * W + H / 2; i ? mx.lineTo(x, y) : mx.moveTo(x, y); }); mx.closePath(); mx.fill();
+    const m = mx.getImageData(0, 0, W, H).data, span: ([number, number] | null)[] = [];
+    for (let x = 0; x < W; x++) { let a = -1, b = -1; for (let y = 0; y < H; y++) if (m[(y * W + x) * 4 + 3] > 127) { if (a < 0) a = y; b = y; } span.push(a < 0 ? null : [a, b]); }
+    const xs = span.map((s, x) => s ? x : -1).filter(x => x >= 0), x0 = Math.max(...xs), x1 = Math.min(...xs);   // front (nose side) .. rear
+    const out = ctx.createImageData(TW, TH), d = out.data;
+    for (let i = 0; i < TW; i++) {
+      let x = Math.round(x0 - (x0 - x1) * i / (TW - 1)), k = 0; while (!span[x] && k++ < W) x += x > (x0 + x1) / 2 ? -1 : 1;
+      const [a, b] = span[x] ?? [0, 0];
+      for (let j = 0; j < TH; j++) {
+        const t = j / (TH - 1), y = Math.min(H - 1, Math.round(a + (b - a) * (0.04 + 0.92 * t))), o = (y * W + x) * 4, p = (j * TW + i) * 4;   // 4 % in from each edge: the cut's rim is antialiased
+        d[p] = src[o]; d[p + 1] = src[o + 1]; d[p + 2] = src[o + 2]; d[p + 3] = Math.round(255 * (1 - 0.25 * Math.max(0, (t - 0.85) / 0.15)));
+      }
+    }
+    ctx.putImageData(out, 0, 0);
+    return finish(c);
+  });
 export const substrateTexture = (type: PresetSubstrate) => cached('sub:' + type + (FX.sand && SUBSTRATES[type].kind === 'sand' ? ':d' : ''), () => {
   const c = document.createElement('canvas'); c.width = c.height = 512;
   drawSubstrate(c.getContext('2d')!, 512, type);

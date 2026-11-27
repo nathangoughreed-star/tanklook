@@ -142,6 +142,7 @@ Motion is renderer-wide (`FLEX_VERT`, `SWIM_VERT` in fish3d.ts / swim.ts). Per f
 - Caudal beats while swimming; dorsal/anal ripple only when hovering; pectorals tuck when swimming, flare and scull when hovering.
 - Check: a swim GIF per fish (swimming and hovering). A fin that looks stiff despite a right spread/profile is a renderer question: send the GIF to the
   fin chat, don't patch `photofish.ts` per fish. Nathan's tuning "beat too much and too quickly" is already applied (about 1.2 Hz, 0.20 rad).
+- **Flat ventral disc** (hillstream loach; later flat loaches, plecos if their fins lie flat): after the spec exists, `python -I scripts/fish-disc.py <work>/sheet.webp research/fish-specs/<id>.json`, then `fish-build.py`. Writes `pectoral.plan` / `pelvic.plan`, drawn as flat fins under the body (method row 69).
 - Gate: pec spread within 0.2-0.35 unless the fish rests on its fins; profile hugging the body; no ripple on the back.
 
 ## 12. Review pictures for Nathan (one message, grouped)

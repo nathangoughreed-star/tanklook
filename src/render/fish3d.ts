@@ -4,10 +4,10 @@
 // card stays as the fins (thin membranes); its painted body sits inside the solid. Nose and tail tips are unchanged,
 // so nose-to-tail stays adult TL.
 import * as THREE from 'three';
-import { analBox, bodyPlan, clarityCanvas, finRange, seeThrough, drawAnal, drawTail, eyeSpot, pairedFins, profile, tailBox, type Plan } from '../art/fishgen';
+import { analBox, bodyPlan, clarityCanvas, finRange, seeThrough, drawAnal, drawTail, eyeSpot, pairedFins, profile, tailBox, type FinPlan, type PairedFin, type Plan } from '../art/fishgen';
 import { FIN_A, FIN_A2C, rng, style } from '../art/paint';
 import type { EdgeMode } from '../scene/types';
-import { cardMaterial, pairedFinOpacity, pairedFinTexture } from './textures';
+import { cardMaterial, pairedFinOpacity, pairedFinTexture, planFinTexture } from './textures';
 import { PROJ_ART, type ProjLayer } from '../art/projart';
 import { isShrimp3D, shrimpBody } from './shrimp3d';
 
@@ -488,6 +488,8 @@ const SPLAY = { pelvic: 1.4, pectoral: 1.3 };
 function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = false, fin = 1) {
   const out: THREE.Mesh[] = [];
   for (const f of pairedFins(p)) {
+    const plan = f.kind === 'pelvic' ? p.pelvic?.plan : p.pec?.plan;
+    if (plan) { out.push(...planFinMeshes(art, p, f, plan, bend, edge)); continue; } // a flat disc fin (hillstream loach): its own mesh, never swung or beaten
     const us = f.pts.map(q => q[0]), vs = f.pts.map(q => q[1]), m = 0.01;
     const box = { u0: Math.min(...us) - m, v0: Math.min(...vs) - m, w: Math.max(...us) - Math.min(...us) + 2 * m, h: Math.max(...vs) - Math.min(...vs) + 2 * m };
     const key = `fin:${art}:${f.kind}`;
@@ -516,6 +518,52 @@ function finMeshes(art: string, p: Plan, bend: number, edge: EdgeMode, cling = f
     }
   }
   return out;
+}
+
+/**
+ * A paired fin held flat as part of a ventral sucker disc (Plan pec/pelvic `plan`, FinPlan; hillstream loach, method row 69): the sheet's side
+ * view sees such a fin edge-on, so swinging its side outline out (finSheet + flat) left slivers and spikes. Instead the fin is lofted in the
+ * body frame from its top-view outline: rooted along the lower flank (section angle th) from uF to uR, dropping over its first 30 % to a
+ * plane just above the keel, out to a rim that reaches z from the midline at `peak` and rounds off to the root at both ends. Two layers
+ * that part at the root and meet at the rim; painted with planFinTexture (the sheet's own fin, fanned out from the root). No beat.
+ */
+function planFinGeometry(p: Plan, q: FinPlan, side: number, bend: number) {
+  const ring = sections(p), NI = 28, NJ = 12, th = q.th ?? 0.72 * Math.PI, ex = Math.log(0.5) / Math.log(Math.min(0.9, Math.max(0.1, q.peak ?? 0.5)));
+  const pos: number[] = [], uv: number[] = [], fin: number[] = [], idx: number[] = [], thick = 0.005;
+  for (const layer of [1, -1]) {
+    const base = pos.length / 3;
+    for (let i = 0; i <= NI; i++) {
+      const t = i / NI, u = q.uF + (q.uR - q.uF) * t, sec = ring(u), [v, z] = ringPt(sec, th), x = u - 0.5;
+      const rootY = -v, rootZ = z * 0.92, yb = -(sec.vc + sec.hv), planeY = yb + 0.3 * (rootY - yb) - (q.dy ?? 0);
+      const rimZ = rootZ + Math.max(0, q.z - rootZ) * Math.sin(Math.PI * t ** ex) ** 0.45;
+      for (let j = 0; j <= NJ; j++) {
+        const k = j / NJ, half = 0.5 * thick * (1 - k) ** 1.5;
+        pos.push(x, rootY + (planeY - rootY) * smooth(0, 0.3, k) + layer * half, bendZ(bend, x) + side * (rootZ + (rimZ - rootZ) * k));
+        uv.push(t, 1 - k); fin.push(0, side);
+      }
+    }
+    for (let i = 0; i < NI; i++) for (let j = 0; j < NJ; j++) {
+      const a = base + i * (NJ + 1) + j, b = a + NJ + 1, c = a + 1, e = b + 1;
+      const tri = [a, b, c, b, e, c];   // +y facing on the + flank (x falls with i, z grows with j)
+      if (layer * side > 0) idx.push(...tri); else idx.push(...tri.reverse());
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  g.setAttribute('aFin', new THREE.Float32BufferAttribute(fin, 2));
+  g.setIndex(idx); g.computeVertexNormals(); g.computeBoundingSphere(); g.computeBoundingBox();
+  return g;
+}
+function planFinMeshes(art: string, p: Plan, f: PairedFin, q: FinPlan, bend: number, edge: EdgeMode) {
+  const mat = cardMaterial(`planfin:${art}:${f.kind}`, planFinTexture(art, f), edge, THREE.DoubleSide); mat.userData.fishCard = true; mat.userData.noRing = true;
+  if (!mat.userData.fin) { mat.userData.fin = true; mat.userData.pre = flexPatch; }
+  return [1, -1].map(side => {
+    const gk = `planfin:${art}:${f.kind}:${side}:${bend}`;
+    let g = geoCache.get(gk);
+    if (!g) { g = planFinGeometry(p, q, side, bend); g.userData.keep = true; geoCache.set(gk, g); }
+    return new THREE.Mesh(g, mat);
+  });
 }
 
 /**
