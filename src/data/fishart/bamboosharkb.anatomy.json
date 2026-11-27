@@ -654,7 +654,7 @@
     "aspect": 0.184,
     "finImg": true,
     "opacity": true,
-    "ver": "d57bd806"
+    "ver": "d6570198"
    },
    "fit": "{'thick': 1.58, 'pedT': 0.03, 'rmsPctSL': 0.62, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }

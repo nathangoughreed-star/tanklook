@@ -318,6 +318,7 @@
   19,
   30
  ],
+ "sat": 0.75,
  "fin_opacity": {
   "preset": "solid"
  }
