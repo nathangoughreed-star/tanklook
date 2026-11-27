@@ -29,18 +29,21 @@ R190), and **HG1** (procedural rock and driftwood, running now). It does not dup
   built-in shadows will not appear on them. Receiving shadows has to be one shadow-map lookup added to `aqPatch`,
   switched by a uniform, never a #define. The hardscape and gear don't move, so the depth pass re-renders only when
   the scene changes (and when the light preset changes). Fish and swaying plants cast no shadows at first.
-- **Haze is a reversal:** Nathan rejected "fog inside the tank" in round 1 (VF6: "no haze, no brightness loss"). Behind
-  Glass's light falling off with depth is exactly that. Put it to him as a side-by-side for Show view only. Don't
-  build it until he says yes.
+- **Haze is allowed if it's done right (Nathan 2026-11-27):** "im not attached to that rule as long as we can do the haze
+  right." This lifts round 1's VF6 "no haze" rule. Done right means the front of the tank keeps its full brightness
+  and color; only distance fades it toward the water hue; nothing looks milky or grey; and a side-by-side against
+  the Behind Glass shots gets his yes.
 - **Fish stay ours:** photo-like fish were rejected (R144). Take scene cues from Behind Glass, never its fish.
 - **Browser, not desktop GPU:** each effect gets a quality tier. Phones get shadows, crevice shading and depth tint.
   The mirrored water surface and the Show view are Full quality only. Measure with alternating A/B frames (memory
   perf-ab-alternate-frames), including the cold shader link on Windows (EF1).
 
 ## Stages
-**S0 Bar shots (Nathan, about 30 minutes, needed before anything else).** In each program, build roughly a 40 gallon
-breeder with stone, wood and plants. Take 3 or 4 shots from fixed views: front, three-quarter, a close-up of the
-hardscape, and Behind Glass's low front view (the surface mirror). Save them to `research/visual/vf2/bar/`.
+**S0 Bar shots (agent, no purchase).** Nathan won't buy Behind Glass (2026-11-27). Its bar is his two screenshots
+(`research/competitors/dogfood/behind-glass/`) plus frames from its public Steam store screenshots and trailer.
+Aquascaper Studio is free in the browser: the agent builds roughly a 40 gallon breeder there with stone, wood and
+plants, and shoots it from fixed views (front, three-quarter, a close-up of the hardscape) in the built-in browser.
+Save everything to `research/visual/vf2/bar/`, with each source URL noted.
 
 **S1 Match and rank (agent, a day).** Extend `vf-shots.mjs` with the same views. Build the matching TankLook scene,
 make a triptych per view (Behind Glass / Aquascaper Studio / TankLook), and write a ranked gap list
@@ -60,8 +63,8 @@ render the tank flipped at waterY into a half-resolution target and sample it on
 cutoff and ripple distortion. Re-render only while the camera moves or the scene changes. Round 1's VF6 water line
 band remains the cheap tier.
 
-**S5 Glass and light.** Thick glass edge with a green tint, a brighter top light, and stronger caustics (VF5) under
-spots. If Nathan approves, a Show-only depth falloff.
+**S5 Glass, light and depth.** Thick glass edge with a green tint, a brighter top light, stronger caustics (VF5) under
+spots, and the depth falloff (haze done right, see Constraints).
 
 **S6 Show view.** One switch: camera to the front at eye level, UI hidden, Full effects, depth falloff if approved,
 fish schooling at the back. This is the screenshot people share.
@@ -86,6 +89,6 @@ effect has its own fx toggle and tier. Saved tanks keep their layout; no scene v
 - DF1 (scoping differentiation, R189) stays separate: it is about product and voice, not rendering.
 
 ## Decisions for Nathan
-1. Buy Behind Glass ($14.99) and take the S0 shots? Without them, S1 compares against two marketing screenshots.
-2. Depth falloff in the Show view only, despite the round-1 "no haze" rule?
-3. Is the Edit + Show split the right way to beat both, rather than one look in the middle?
+1. ~~Buy Behind Glass?~~ No (2026-11-27). S0 uses public shots, and the agent shoots Aquascaper Studio.
+2. ~~Haze?~~ Yes, if it's done right (2026-11-27). Where it applies (Show only, or Edit too) follows the S1 comparisons.
+3. Is the Edit + Show split the right way to beat both, rather than one look in the middle? (open)
