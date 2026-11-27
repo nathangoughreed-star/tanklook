@@ -80,5 +80,5 @@ The terrarium parts (domes, bulbs, UVB, gauges) are priced by the dry-gear rows,
 ## Found, not fixed (follow-ups)
 - **Fixed (same day):** six aquarium bundles were never offered, because `dealsFor` allowed a measured tank only 7 % over its rated gallons (the bow 36 measures 40.4 to 41.1 gal; the Imagitarium 29 / 40 / 55 measure 31.6 / 43.4 / 61). `dealsFor` now also offers a bundle whose own tank size (`dims`) matches the build's tank within 1.5 in each way.
 - The Captivate hex 20 and all terrarium kits have no deal scene (no catalogue tank), so they have no saving line.
-- The Tetra LED hood 24x12 ($89.99) needs its photo look and a baked gear tile before it can go in hoods.json. The pm1 and eq2 tests require both.
+- **Done (same day):** Tetra LED hood 24x12 ($89.99) added to hoods.json with the Tetra line look and a baked tile (public/gallery/gear/tetra-led-hood-24.webp).
 - The kit stands of the HD 45 and HD 75 have estimated trim sizes (base, top, frame); the HD 45 base reads lighter than the real black plinth.
