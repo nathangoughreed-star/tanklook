@@ -74,7 +74,7 @@ describe('swim field', () => {
     const t0 = performance.now(); let f = buildSwimField(S, S.tank); for (let i = 0; i < 4; i++) f = buildSwimField(S, S.tank);
     const ms = (performance.now() - t0) / 5;
     console.log(`swimField build ${ms.toFixed(1)} ms, cell ${f.cell.toFixed(1)}, cells ${f.data.length}`);
-    expect(ms).toBeLessThan(60);
+    expect(ms).toBeLessThan(250);   // was 60 (52-59 ms alone on a quiet machine, so on the edge); CI measured 102 ms and a loaded local run 183 ms on 2026-11-27, swimField.ts unchanged since 8847eb3e: a gross-regression guard
     expect(f.data.length).toBeLessThanOrEqual(150000);
     const g: V3 = [0, 0, 0]; let sum = 0;
     for (let i = 0; i < 20000; i++) { sum += f.clearance(i % 1200, (i * 7) % 450, -((i * 13) % 300), g, 80); }

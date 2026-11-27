@@ -45,7 +45,7 @@ describe('first pair: complete, validated, comparable, and fast', () => {
     const t0 = performance.now(), r = pair(project(), session()), ms = performance.now() - t0;
     console.log(`AB1 first pair: ${Math.round(ms)} ms`);
     expect(r.ok).toBe(true); if (!r.ok) return;
-    expect(ms).toBeLessThan(3500);
+    expect(ms).toBeLessThan(10000);   // was 3500 (about 3 s alone, local); the shared CI runner measured 5013 ms on 2026-11-27 and a loaded 2-worker run 10 s with no source change: a gross-regression guard, not a benchmark
     expect(r.a.key).not.toBe(r.b.key); expect(r.a.id).not.toBe(r.b.id);
     for (const c of [r.a, r.b]) {
       expect(c.verdict.feasible).toBe(true);
