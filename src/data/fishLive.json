@@ -388,6 +388,10 @@
     "orchiddottyback": {
       "look": "orchiddottybackb",
       "approved": "2026-11-27"
+    },
+    "goldfish": {
+      "look": "goldfishb",
+      "approved": "2026-11-27"
     }
   }
 }
