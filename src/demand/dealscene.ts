@@ -38,6 +38,7 @@ export function sceneFromDeal(d: Deal): Scene | undefined {
     const lp = lightProduct(d.look?.light?.product);
     if (lp) { const l = { ...S.light }; applyLightProduct(l, S.tank, lp); S.light = l; }
   }
+  if (S.light.watts && (k || d.includes.includes('light'))) S.light = { ...S.light, bundled: S.light.watts }; // a kit's light is priced as a basic LED, not a planted one
   { // lane TG: the bundle's own filter and heater (drawn, and its gear rows); one it does not ship starts as 'none' for the user to add
     const t = kitTech(S, dealAsKit(d)) ?? (S.water.on ? { rows: { ...inferTech(S).rows } } : undefined);
     if (t) {

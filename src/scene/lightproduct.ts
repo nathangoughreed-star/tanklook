@@ -26,7 +26,7 @@ export const hangingUnits = (T: Pick<Tank, 'L'>, p: Pick<LightProduct, 'coverage
 /** Put `p` on the light (undefined: back to the generic fixture, everything else kept). */
 export function applyLightProduct(l: LightSettings, T: Tank, p: LightProduct | undefined) {
   if (!p) { delete l.product; return; }
-  l.product = p.id; l.tech = p.tech; l.count = 1; l.rows = 1; l.mount = 'legs';
+  l.product = p.id; l.tech = p.tech; l.count = 1; l.rows = 1; l.mount = 'legs'; delete l.bundled;
   delete l.par; delete l.bulbW; delete l.pos; delete l.hoodLed;
   const spot = p.mount === 'gooseneck' || p.mount === 'hanging';
   if (spot) { l.type = 'spot'; l.pattern = 'grid'; l.spacing = 0; } else l.type = 'led';
