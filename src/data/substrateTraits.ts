@@ -46,6 +46,8 @@ export const DWELLER: Record<string, DwellerRule> = {
   pepperedcory: { prefers: 'sand', sharp: true, why: 'sifts the bottom with its barbels, which sharp or coarse gravel can wear down and infect' },
   yoyoloach: { prefers: 'sand', sharp: true, why: 'a barbelled loach that sifts the bottom for food; sharp or coarse gravel can wear the barbels and belly (hobby practice, as for the other loaches here; no page opened)' },
   pleco: { why: 'rasps algae and wood from hard surfaces and sits on the floor; no special grain need, but the waste of an adult fouls a shallow bed fast' },
+  rainbowshark: { why: 'a floor-dwelling grazer that holds a cave or log as territory; no special grain need (Seriously Fish gives none); keep the bed clear of sharp edges around its cover' },
+  redtailshark: { why: 'a floor-dwelling grazer that holds a cave or log as territory; no special grain need (Seriously Fish gives none)' },
   clownpleco: { why: 'grazes driftwood and hard surfaces; no special grain need' },
   saltpepper: { prefers: 'sand', sharp: true, why: 'sifts the bottom with its barbels, which sharp or coarse gravel can wear down and infect' },
   falsejulii: { prefers: 'sand', sharp: true, why: 'sifts the bottom with its barbels, which sharp or coarse gravel can wear down and infect' },
