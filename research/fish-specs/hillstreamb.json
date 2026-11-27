@@ -361,11 +361,11 @@
  "eye_pupil": "#110f0b",
  "eye_full": 15,
  "eye_pupil_frac": 0.539,
- "width_pct_sl": 22.0,
+ "width_pct_sl": 30.0,
  "fishshapes": {
   "n": 3,
   "depth": 17.0,
-  "width": 22.0,
+  "width": 30.0,
   "specimens": [
    [
     40,
@@ -385,5 +385,6 @@
  "sat_auto": true,
  "fin_opacity": {
   "preset": "solid"
- }
+ },
+ "width_source": "Nathan 2026-11-27: the flatter body (30 % SL, as the sheet draws it, 29.1) over the 22 % estimate"
 }
