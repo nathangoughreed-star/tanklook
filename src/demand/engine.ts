@@ -23,6 +23,7 @@ import { minFit } from '../scene/tankMin';
 import { tankSaleFor } from '../data/tanks';
 import { groundVolume, pieceKg } from '../scene/setupsheet';
 import type { TankSetup } from '../scene/types';
+import { brandUsdPerL } from '../data/substrateBrands';
 import { add3, mean3, r3, scale3, widen3 } from './range';
 import { interp, price as rowPrice, priceRow, tankRowPrice } from './prices';
 import { filterModelPrice } from './pricecurves';
@@ -144,7 +145,8 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
   else if (lidRow) add('lid', noHood ? 'Lid (glass: no hood sold for this size)' : `Lid (${S.lid})`, 'gear', { setup: price(scale3(lidRow, lidK)) });
   else if (lid && r3(lid)!.mode > 0) add('lid', `Lid (${lidKind})`, 'gear', { setup: price(r3(lid)!) });
   const gv = S.substrate.show ? groundVolume(S, 24).litres : 0;
-  if (gv > 0) add('substrate', 'Substrate', 'gear', { setup: price(scale3(pick(G.substrateUsdPerL), gv * 1.1)) });
+  const bp = S.substrate.show ? brandUsdPerL(S.substrate.type, S.substrate.priceLb) : null; // SB1: a chosen product is priced from its own page (or the user's price), not the generic range
+  if (gv > 0) add('substrate', bp ? `Substrate: ${bp.name}` : 'Substrate', 'gear', { setup: price(scale3(bp ? { lo: bp.usd * (bp.own ? 1 : 0.85), mode: bp.usd, hi: bp.usd * (bp.own ? 1 : 1.2) } : pick(G.substrateUsdPerL), gv * 1.1)) });
   const watts = wattsOf(S);
   if (watts > 0 && !(hood && hoodsLight)) {
     const inch = S.tank.L / 25.4, rowL = salt ? rowPrice('gear:led-reef-24') && scale3(rowPrice('gear:led-reef-24')!, Math.max(0.6, inch / 24)) : interp('gear:led-planted-', [24, 48], inch);

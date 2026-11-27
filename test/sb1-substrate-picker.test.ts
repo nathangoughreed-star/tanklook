@@ -1,7 +1,7 @@
 // SB1 (2026-11-26, R185 / R186): the substrate picker is type first, then colours and real products; old files keep loading.
 import { describe, expect, it } from 'vitest';
 import { SUBSTRATES } from '../src/art/placeholder';
-import { BRANDS, brandOf } from '../src/data/substrateBrands';
+import { BRANDS, brandOf, brandUsdPerL } from '../src/data/substrateBrands';
 import { BLEND_PRESETS, migrateBlend } from '../src/scene/blend';
 import { defaultScene } from '../src/scene/defaults';
 import { bedOf } from '../src/scene/substrateCheck';
@@ -52,5 +52,12 @@ describe('saved files', () => {
     S.substrate.show = true; S.substrate.type = sand.id; expect(bedOf(S)!.grain).toBe('sand');
     S.substrate.type = gravel.id; expect(bedOf(S)!.grain).toBe('gravel');
     expect(brandOf(gravel.id)).toBeTruthy();
+  });
+  it('the cost per litre comes from the product page, or from the user own price', () => {
+    const lb = BRANDS.find(b => b.per === 'lb')!, l = BRANDS.find(b => b.per === 'L')!;
+    expect(brandUsdPerL(lb.id)!.usd).toBeCloseTo(lb.price * 3.527, 2);
+    expect(brandUsdPerL(lb.id, 2)).toMatchObject({ own: true, usd: expect.closeTo(7.05, 1) });
+    expect(brandUsdPerL(l.id)!.usd).toBe(l.price);
+    expect(brandUsdPerL('gravel')).toBeNull();
   });
 });

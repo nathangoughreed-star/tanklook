@@ -26,3 +26,11 @@ export const brandOf = (id: string): BrandProduct | undefined => byId.get(id);
 export const brandPrice = (id: string): number | null => byId.get(id)?.price ?? null;
 export const NUTRIENT_TEXT: Record<BrandProduct['nutrient'], string> = { inert: 'Inert (adds nothing to the water)', active: 'Active (feeds plant roots, holds nutrients)', fertilized: 'Pre-fertilized' };
 export const PH_TEXT: Record<BrandProduct['ph'], string> = { none: 'No effect on pH', lowers: 'Lowers pH and softens water', raises: 'Raises pH and hardness', buffers: 'Buffers pH' };
+/** Loose substrate weighs about 1.6 kg a litre (the set-up sheet's figure), so a $/lb price is x3.53 per litre. */
+const LB_PER_L = 1.6 * 2.2046;
+/** USD per litre of bed for a chosen product, with the user's own price (in the product's unit) over the sourced guess; null for a generic substrate. */
+export function brandUsdPerL(type: string, own?: number): { usd: number; name: string; own: boolean } | null {
+  const b = byId.get(type); if (!b) return null;
+  const p = own ?? b.price;
+  return { usd: b.per === 'lb' ? p * LB_PER_L : p, name: `${b.brand} ${b.name}`, own: own != null };
+}
