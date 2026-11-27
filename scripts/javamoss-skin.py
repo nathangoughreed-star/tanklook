@@ -5,7 +5,10 @@
 The sheet (prompt: research/plant-sheets/prompts/leaf-sheet.md, "Java moss sheet") is square: top left a seamless mat
 tile, top right a cushion's edge on white with strands sticking out, bottom eight single strands on white. Writes
 public/art/plants/javamoss.webp (1024 x 1024, alpha) and src/data/plantart/javamoss.json (rects in uv, v up):
-  - mat: the tile (made seamless), 512 x 512, top left. The skin of the cushion and of the coat over wood or rock.
+  - mats: the tile (made seamless) at four densities, 256 x 256 each, 2 x 2 in the top left 512 x 512: level 0 opaque
+    (the core), levels 1-3 keep only the brightest strands (coverage MAT_COVER): alpha from the tile's own light and dark.
+    The clump stacks them in shells, densest inside, so its density falls off evenly toward the tips (Nathan 2026-11-26:
+    'linearly increasing density, no step'). `mat` = level 0 (as before).
   - edges: 8 cards from the cushion's edge, 128 x 256, top right (two rows of 4). The outline is straightened to a fixed
     row; `edgeBase` = the share of the card's height below it (solid moss). They stand round the outline so it is ragged.
   - strands: the 8 single strands, cut by connected parts on white, packed along the bottom half at ONE scale (their
@@ -21,6 +24,8 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AW = 1024
 MAT = 512
+LV = 256
+MAT_COVER = [1.0, 0.7, 0.45, 0.25]  # share of the tile kept at each level
 EDGE_W, EDGE_H, N_EDGE = 128, 256, 8
 EDGE_SRC_W, ABOVE, BELOW = 150, 240, 60  # source px: card width, reach above the outline, depth below it
 STRIP_Y, STRIP_H = 512, 512               # the strands' strip in the atlas
@@ -171,12 +176,18 @@ def main():
     y0, y1, x0, x1 = bbox(tl.min(2) < WHITE)
     n = min(y1 - y0, x1 - x0) - 16  # 8 px in: the panel's anti-aliased border is light (shows as a cross once rolled)
     tile = seamless(tl[y0 + 8:y0 + 8 + n, x0 + 8:x0 + 8 + n])  # (the sheet's tile is not seamless: seam diff = random columns)
-    mat = np.asarray(Image.fromarray(np.clip(tile, 0, 255).astype(np.uint8)).resize((MAT, MAT), Image.LANCZOS))
+    mat = np.asarray(Image.fromarray(np.clip(tile, 0, 255).astype(np.uint8)).resize((LV, LV), Image.LANCZOS))
     edges, edge_base, edge_aspect = cut_edges(im[:gy, gx2:])
     strip, strands = cut_strands(im[gy2:])
     atlas = np.zeros((AW, AW, 4), np.uint8)
-    atlas[:MAT, :MAT, :3] = mat
-    atlas[:MAT, :MAT, 3] = 255
+    lum = mat.astype(float) @ np.array([0.3, 0.59, 0.11])
+    fill = (mat.reshape(-1, 3).mean(0) * 0.6).astype(np.uint8)
+    for k, cov in enumerate(MAT_COVER):
+        r, q = divmod(k, 2)
+        t = np.percentile(lum, 100 * (1 - cov)) if cov < 1 else -1
+        a = np.clip((lum - t) / 6, 0, 1) if cov < 1 else np.ones_like(lum)  # (a short ramp: crisp under alphaTest 0.5)
+        blk = np.where(a[..., None] > 0.02, mat, fill)
+        atlas[r * LV:(r + 1) * LV, q * LV:(q + 1) * LV] = np.dstack([blk, a * 255]).astype(np.uint8)
     for i, c in enumerate(edges):
         r, q = divmod(i, 4)
         atlas[r * EDGE_H:(r + 1) * EDGE_H, MAT + q * EDGE_W:MAT + (q + 1) * EDGE_W] = c
@@ -189,7 +200,9 @@ def main():
     hp = 0.5 / AW
     man = {
         'file': 'javamoss.webp',
-        'mat': [hp, 0.5 + hp, 0.5 - hp, 1 - hp],
+        'mat': [hp, 0.75 + hp, 0.25 - hp, 1 - hp],
+        'mats': [[q * 0.25 + hp, 1 - (r + 1) * 0.25 + hp, (q + 1) * 0.25 - hp, 1 - r * 0.25 - hp] for r, q in (divmod(k, 2) for k in range(len(MAT_COVER)))],
+        'matCover': MAT_COVER,
         'edges': [[(MAT + q * EDGE_W + 1) / AW, 1 - ((r + 1) * EDGE_H - 1) / AW, (MAT + (q + 1) * EDGE_W - 1) / AW, 1 - (r * EDGE_H + 1) / AW]
                   for r, q in (divmod(i, 4) for i in range(N_EDGE))],
         'edgeBase': round(edge_base, 4),
