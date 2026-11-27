@@ -47,6 +47,18 @@ than a minute and write down where.
   in the browser, substrate sculpted with a brush, fish that behave by species. It has no saving, no equipment and no
   stocking checks. Our advantages: build-B fish, real gear with prices, stocking and compatibility verdicts, and
   marine, brackish and terrarium tanks. The look is too similar and needs differentiating (R167).
+  Follow-up, same day (screenshot `dogfood/aquascaper-studio/hardscape-editor.webp`): Nathan: "aquascaper studio has
+  some really good hardscape models though also their lighting looks tight (in a good way). crisp" ... "I am not
+  comfortable with the only moat being good fish models and behavior and features if their graphics look this
+  good". Why it looks crisp:
+  (1) Real hard-edged cast shadows from one key light; every twig shadows the floor. TankLook has no shadow maps at
+  all (no castShadow anywhere in src/).
+  (2) Dark pockets darken the rock's colour texture where crevices are, so the stone reads deep even though it has
+  few polygons.
+  (3) Spider wood with many thin tips: the outline carries the realism.
+  (4) A neutral grey room, no haze in edit mode.
+  Their weak spots: the rock texture is blotchy and smeared; the gizmo is three.js's stock TransformControls arrows
+  (a tell); the moss ball is a plain blob.
 
 ## Notes per product
 
