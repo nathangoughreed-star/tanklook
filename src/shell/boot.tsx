@@ -5,7 +5,6 @@ import { render } from 'preact';
 import tokens from './tokens.css?inline';
 import layout from './shell.css?inline';
 import { Store } from '../scene/store';
-import type { Scene } from '../scene/types';
 import { freshScene } from '../scene/freshScene';
 import { Viewer } from '../render/viewer';
 import { applySavedFx } from '../render/fxPrefs';
@@ -23,9 +22,7 @@ import { pickable } from './animals';
 import { pickItems } from './scape';
 import { scapeSec } from './logic/scape';
 import { openClicked } from './clickOpen';
-import { shouldWelcome, landing, LANDING_EXAMPLE } from './logic/start';
-import { exampleScenes } from '../examples';
-import { parseScene } from '../scene/validate';
+import { shouldWelcome, landing } from './logic/start';
 import { watchLiveArt } from '../art/liveFish';
 
 export async function bootShell() {
@@ -40,13 +37,7 @@ export async function bootShell() {
   const { scene: restored, error: saveError } = Store.loadLocalChecked(); // a return visit resumes the autosave; a first visit opens an empty tank (shell step 2)
   const start = startMode(restored, saveError);
   applySavedFx();
-  // R162: a first visit sees a stocked, priced, checked example behind the sheet (no panel open), not an empty tank. A slow connection falls back to the empty tank after 1.5 s.
-  let first: Scene | null = null;
-  if (!restored && !start.message && !isShareHash(location.hash) && shouldWelcome(restored, saveError)) {
-    try { const sc = await Promise.race([exampleScenes(), new Promise<null>(r => setTimeout(() => r(null), 1500))]); if (sc?.[LANDING_EXAMPLE]) first = parseScene(sc[LANDING_EXAMPLE]).scene; } catch { /* the empty tank */ }
-  }
-  const store = new Store(restored ?? first ?? freshScene());
-  if (first) landing.untouched = true;
+  const store = new Store(restored ?? freshScene());   // a first visit opens an empty tank behind the Start sheet (FD's example-behind-the-sheet reverted, Nathan 2026-11-27)
   store.subscribe(kind => { if (kind === 'scene') landing.untouched = false; });   // the first edit makes the tank the visitor's: no result card, no silent swap
 
   // the existing viewer, unchanged: a host with its canvas, moved into the view area by App
