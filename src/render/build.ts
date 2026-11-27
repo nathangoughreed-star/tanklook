@@ -1,7 +1,7 @@
 // Builds a three.js scene for one tank from scene data. Rebuilt on every content change (cheap at this scale);
 // textures and card materials are cached across rebuilds.
 import { swimPace } from '../scene/swimPace';
-import { BENTHIC, DIG, HABIT, HOVER, STYLE, digGrainK } from '../scene/fishBehavior';
+import { BENTHIC, DIG, HABIT, HOVER, REST_PITCH, STYLE, digGrainK } from '../scene/fishBehavior';
 import { bedOf } from '../scene/substrateCheck';
 import { hasTankLight } from '../scene/roomlight';
 import { hookCalm } from './swim';
@@ -1854,7 +1854,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     } else if (rests) restOn(p, m, w, sp.rest * w - (isArachnid(sp.art) ? 0 : 1));
     if (swim) { // free roam (render/roam.ts): the sim moves this mesh from the spot it was placed at, which is its Reset pose
       const e = new THREE.Euler().setFromQuaternion(m.quaternion, 'YXZ'), R2D = 180 / Math.PI;
-      m.userData.roam = { spec: { id: f.id, len: w, zone: sp.zone === 'bottom' ? 'bottom' : 'water', pace: swimPace(sp.id), hover: HOVER[sp.id], habit: HABIT[sp.id], rest: sp.zone === 'bottom' ? BENTHIC[sp.id] : undefined, style: STYLE[sp.id], dig: sp.zone === 'bottom' && DIG[sp.id] ? { ...DIG[sp.id], k: digGrainK(DIG[sp.id], bedOf(S)?.grain), dark: hasTankLight(S.light) ? 0 : 1, rest: sp.rest * w } : undefined, band: [...BANDS[sp.level ?? 'mid']] as [number, number], tall: h / 2, kind: sp.id, foes: behave.foes.get(sp.id), guard: (CARE[sp.id]?.temper ?? 0) >= 1 || !!CARE[sp.id]?.guard || undefined, pair: pairRule(sp.id) && behave.n.get(sp.id) === 2 ? sp.id : undefined, group: sp.group ? { key: sp.id, tight: sp.group === 'school' } : undefined,
+      m.userData.roam = { spec: { id: f.id, len: w, zone: sp.zone === 'bottom' ? 'bottom' : 'water', pace: swimPace(sp.id), hover: HOVER[sp.id], habit: HABIT[sp.id], rest: sp.zone === 'bottom' ? BENTHIC[sp.id] : undefined, restPitch: sp.zone === 'bottom' ? REST_PITCH[sp.id] : undefined, rad: sp.zone === 'bottom' && REST_PITCH[sp.id] !== undefined ? sp.rest * w / 1.3 : undefined, style: STYLE[sp.id], dig: sp.zone === 'bottom' && DIG[sp.id] ? { ...DIG[sp.id], k: digGrainK(DIG[sp.id], bedOf(S)?.grain), dark: hasTankLight(S.light) ? 0 : 1, rest: sp.rest * w } : undefined, band: [...BANDS[sp.level ?? 'mid']] as [number, number], tall: h / 2, kind: sp.id, foes: behave.foes.get(sp.id), guard: (CARE[sp.id]?.temper ?? 0) >= 1 || !!CARE[sp.id]?.guard || undefined, pair: pairRule(sp.id) && behave.n.get(sp.id) === 2 ? sp.id : undefined, group: sp.group ? { key: sp.id, tight: sp.group === 'school' } : undefined,
         home: { x: m.position.x, y: m.position.y, z: m.position.z, yaw: e.y * R2D, pitch: e.z * R2D, roll: e.x * R2D } }, world: { S, T, rise } };
       hookCalm(m); // the tail beat is set per fish while it hovers or digs (render/swim.ts)
     }

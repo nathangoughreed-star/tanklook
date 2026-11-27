@@ -1015,6 +1015,17 @@ export const PLANS: Record<string, Plan> = {
     dorsal: { u0: 0.22, u1: 0.28, h: 0.025, shape: 'round' }, anal: { u0: 0.12, u1: 0.18, h: 0.02, shape: 'round' },
     marks: [{ k: 'bars', us: [0.93, 0.85, 0.77, 0.69, 0.61, 0.53, 0.45, 0.37, 0.29, 0.21, 0.13, 0.07], w: 0.035, c: '#2a2018', a: 0.85 }], barbels: 0.016,
     eye: { r: 0.008, iris: ['#6a5040', '#1a1008'] }, rim: 0.012 },
+  // RX-BICHIR (2026-11-23) Senegal bichir, drawn from reference photos (research/screens/RX-BICHIR/README.md: Seriously Fish adult and juvenile, Wikimedia
+  // Commons "Senegal bichir.jpg"): a long body, round in section, its depth about a ninth of the length (FishBase: 7.1-10.6 times in body length); a flat,
+  // broad head about a sixth of the length with small golden-brown eyes set high; plain grey to grey-olive back, the diagonal rows of diamond scales showing
+  // as a fine darker net, a paler cream-grey belly; a row of 9 separate dorsal finlets (FishBase 8-11), each a spine with a small flag, along the rear two
+  // thirds of the back; a small rounded anal fin just in front of the rounded tail; big pale pectorals on fleshy lobes. Sexes alike (the male's anal fin is
+  // thicker and broader, not visible at tank scale), so one look.
+  bichir: { thick: 0.95, pedT: 0.7, depth: 0.105, pedU: 0.09, ped: 0.035, peak: 0.6, back: 0.5, snout: 0.85, noseCap: 0.03, mouth: 0.01, gape: 0.05, gapeDrop: 0.004, scale: 0.03,
+    shade: ['#565846', '#7c7d68', '#cfcab0'], tail: { type: 'round', h: 0.07, tint: '#55554a', a: 0.95 }, fin: '#55554a',
+    dorsal: { at: 0.66, len: 0.56, h: 0.05, spines: 1, nSp: 9, spineH: [0.05, 0.055], notch: 0.95, tint: '#4c4c42', a: 0.95 },
+    anal: { u0: 0.09, u1: 0.16, h: 0.04, shape: 'round', tint: '#55554a', a: 0.95 }, pelvic: { u: 0.36, len: 0.04, tint: '#6a6a5a' }, pec: { s: 1.5, v: 0.62, tint: '#b4b098' },
+    eye: { r: 0.012, iris: ['#b08a40', '#1a1408'], u: 0.94, dv: -0.03, up: 0.5 } },
   clownloach: { pec: { s: 1.6, v: 0.75 }, gape: 0.025, thick: 0.6, belly: 0.4, depth: 0.29, pedU: 0.18, ped: 0.045, peak: 0.52, back: 0.62, snout: 0.38, mouth: 0.05, shade: ['#c8742a', '#e8a040', '#f0c070'], tail: { type: 'fork', h: 0.15, tint: '#c8443a' }, fin: '#c8443a',
     dorsal: { at: 0.64, len: 0.16, h: 0.13, rake: 0.25, drop: 0.55 }, anal: { at: 0.4, len: 0.1, h: 0.085, rake: 0.4, drop: 0.6 }, pelvic: { u: 0.56, len: 0.1, w: 1.3 },
     marks: [{ k: 'bars', us: [0.86, 0.6, 0.3], w: 0.08, c: '#1c1a18', a: 0.92 }], finMarks: [{ k: 'bars', us: [0.57], w: 0.04, c: '#1c1a18', a: 0.9 }], barbels: 0.02,

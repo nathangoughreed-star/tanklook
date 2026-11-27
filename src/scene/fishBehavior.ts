@@ -110,6 +110,15 @@ export const BENTHIC: Record<string, number> = {
 };
 
 /**
+ * Resting angle on the bottom (2026-11-24, Nathan: "it should lay flat against the bottom"): degrees, negative = nose down; a quarter of it is
+ * kept while it moves along the floor. A bottom dweller not listed rests at -20 (a cory propped on its pectorals, head down). A listed fish also takes
+ * its body radius from its drawing (render/build.ts), so a slim body rests on the bed instead of 0.12 body lengths up (the bichir floated 1.6 in).
+ */
+export const REST_PITCH: Record<string, number> = {
+  kuhli: 0, // eel-shaped: lies along the bed or half buried in it (DIG), never propped on its fins; floated about 0.5 in up and tilted before (2026-11-24)
+  bichir: 0, // lies flat on the floor, body resting on the substrate (Seriously Fish, FishBase: "lies quiet or glides about with snake-like movements")
+};
+/**
  * Home, range, posture and small repeated actions (FB3, R118, 2026-11-18; design in research/design/fish-habits.md). Fish listed here are
  * tied to a place: the sim picks a home spot in the tank (a rock face, a cave mouth, a bolt-hole, a burrow mouth, a host, a patch) and keeps the
  * fish within `leash` body lengths of it, doing the listed actions at the listed rates. A species not listed swims as before. Judgement from
