@@ -132,7 +132,7 @@ export function genRock(variant: string, seed: number, size: number, hs?: HardSt
   for (let i = 0; i < cnt; i++) p.setXYZ(i, (p.getX(i) - cx) * kx, (Math.max(p.getY(i), cut) - cut) * ky, (p.getZ(i) - cz) * kz);
   const facets = variant === 'shale' || variant === 'seiryu';
   g.computeVertexNormals();
-  const hollow = cavity(g, Math.max(l, w) / 40);
+  const hollow = cavity(g, Math.max(l, w) / 90);
   // unlit colours
   const col = new Float32Array(cnt * 3), q = new THREE.Color(), nm = g.attributes.normal;
   const rust = new THREE.Color('#7e6636'), rust2 = new THREE.Color('#664630'), vein = new THREE.Color('#d9dcd8'), crust = new THREE.Color('#7a6248'), dark = new THREE.Color('#141110');
@@ -161,7 +161,7 @@ export function genRock(variant: string, seed: number, size: number, hs?: HardSt
 }
 
 /** How dark the deepest hollows get (R191). */
-const CAV_DARK = 0.62;
+const CAV_DARK = 0.72;
 /**
  * Concavity per vertex of an indexed mesh, about -1 (a crest) .. 1 (a hollow): how far the average of its neighbours,
  * spread over a few rings, sits out along its normal, in units of `scale` mm. Baked into the colour so a rock's form
