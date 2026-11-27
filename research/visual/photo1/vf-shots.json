@@ -1,0 +1,22 @@
+{
+ "commit": "73ed6ce8",
+ "build": 2918,
+ "dirty": true,
+ "when": "2026-11-27T13:45:30.880Z",
+ "size": [
+  1050,
+  850
+ ],
+ "fx": [
+  "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "photo-55g": {
+   "shots": [
+    "photo-55g-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed.png"
+   ],
+   "ab": {}
+  }
+ }
+}
