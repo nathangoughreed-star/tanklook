@@ -20,8 +20,8 @@
 export type FxKey = 'caustics' | 'depth' | 'contact' | 'ground' | 'tonemap' | 'variety' | 'waterline' | 'embed' | 'mix' | 'sand' | 'shadows' | 'hue';
 export interface Fx { caustics: boolean; depth: boolean; contact: boolean; ground: boolean; tonemap: 0 | 1 | 2; variety: boolean; waterline: boolean; embed: boolean; mix: boolean; sand: boolean; shadows: boolean; hue: boolean }
 
-/** What ships (each switches on once Nathan has seen it and said yes; variety on: Nathan 2026-11-11, lane VF-B; tonemap ACES and caustics (animated), depth and waterline: Nathan 2026-11-12, lane VF-A; contact and ground: Nathan 2026-11-12, lane VF-C; embed: Nathan 2026-11-12 blind test, lane VF-C2). */
-export const FX_DEFAULT: Readonly<Fx> = { caustics: true, depth: true, contact: true, ground: true, tonemap: 2, variety: true, waterline: true, embed: true, mix: false, sand: false, shadows: true, hue: false };
+/** What ships (each switches on once Nathan has seen it and said yes; hue: Nathan 2026-11-27, lane VF2-A; variety on: Nathan 2026-11-11, lane VF-B; tonemap ACES and caustics (animated), depth and waterline: Nathan 2026-11-12, lane VF-A; contact and ground: Nathan 2026-11-12, lane VF-C; embed: Nathan 2026-11-12 blind test, lane VF-C2). */
+export const FX_DEFAULT: Readonly<Fx> = { caustics: true, depth: true, contact: true, ground: true, tonemap: 2, variety: true, waterline: true, embed: true, mix: false, sand: false, shadows: true, hue: true };
 
 const TONE: Record<string, 0 | 1 | 2> = { none: 0, off: 0, agx: 1, aces: 2 };
 
