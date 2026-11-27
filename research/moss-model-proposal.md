@@ -38,6 +38,43 @@ URLs (pages with whole-clump and close-up photos; open and check before drawing)
 - Weeping moss: https://aquasabi.com/Vesicularia-ferriei-Weeping-Moss ; https://tropica.com/en/plants/plantdetails/4398/4398
 - Marimo: https://en.wikipedia.org/wiki/Marimo ; https://aquasabi.com/Aegagropila-linnaei-S-2-4-cm-3x ; https://www.cantonaquatics.com/products/marimo-moss-ball-aegagropila-linnaei
 
+## Java moss look, checked against photos (lane JM step 1, 2026-11-26)
+
+Photos looked at (downloaded to scratchpad only, not committed): aquasabi.com product 4202 images 1-3
+(https://aquasabi.com/Taxiphyllum-barbieri-Java-moss), flowgrow.de detail images 4f7a0136d4ab4, 51da5db681b34,
+52361a5f8ba78, 53c587287e3c8 (https://www.flowgrow.de/db/aquaticplants/taxiphyllum-barbieri), Wikimedia Commons
+File:Javamoos.jpg and File:Sphaerichthys_vaillanti_above_Java_moss.jpg. Sheet labels A1-C2 below match the sheet shown
+to Nathan (A1 = Sphaerichthys photo, A2 = flowgrow 4f7a0136, A3 = aquasabi 1, B1 = aquasabi 2, B2 = flowgrow 51da5db6,
+B3 = aquasabi 3, B4 = flowgrow 52361a5f, C1 = Javamoos.jpg, C2 = flowgrow 53c58728).
+
+**What it is at tank distance:** fine, shaggy green fuzz with a ragged outline. No leaf shapes are visible at all
+(a leaf is 1-2 mm). What reads is (1) a dark, nearly black-green inside seen through gaps, (2) many thin lighter
+strands on top and at the edge, crossing every way, and (3) an outline that is never smooth: strands poke out of it
+everywhere. Today's model fails on all three: a smooth round core, and cards that read as leaves.
+
+**Alone (A1-A3):** no ball and no core. A low, slumped cushion or tangle, flat-topped, about 3x wider than tall
+(a 3 in clump is about 1 in high). The top is a dense mat of crossing strands; the sides break up into loose strands
+sticking out 0.5-1.5 in, curving, ends paler. A few loose strands lie flat on the sand around it (A1). A2 shows an old
+mound: still flat-topped and soft-edged, fuzz all over, darker low down.
+
+**Attached (B1-B4):** the moss takes the host's shape: the wood or rock silhouette inflated by a shaggy coat
+0.5-1.5 in thick (B1, B2). Thicker and brighter on top and on the lit side, thin and dark underneath. Uneven: it
+clumps along a branch with gaps where bark shows (B2). Off edges and from the underside, strands trail outward and
+somewhat down as wispy streamers 1-4 in long (B3), which is the "ivy" spread Nathan described. Old growth (B4)
+becomes a deep tangle of long, crossing, lighter strands over a dark base, no surface showing.
+
+**Close-up (C1, C2):** each strand is under 1 mm wide, with tiny pointed overlapping leaves along both sides like a
+very small feather (C2, translucent, pale lime). Strands branch irregularly every 1/8-3/8 in at about 30-45 deg and
+run in no common direction (C1). Fresh tips are the palest.
+
+**Colour (sampled from B1, A2, B2, A3, C1, green pixels only):** shadow/inside #12290A, mid #3F7015 (range
+#2F6215-#5A8621), lit tips #8DC33E (fresh up to #BBE276). The light-to-dark contrast is strong and is what gives the
+depth; the earlier estimates (#2F5A1E / #5E8F2E / #8FBF45) were too gray in the shadow.
+
+**What a render must get right (the check for steps 3-4):** ragged outline with strands sticking out; dark inside,
+lighter strands on top; no visible leaf shapes or round core; flat cushion alone, host-shaped coat with trailing wisps
+when attached.
+
 ## Proposal
 
 ### 1. Marimo ball: a new plant (small, self-contained)
