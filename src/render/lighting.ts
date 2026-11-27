@@ -102,12 +102,14 @@ export const LU = {
   // caustics (plan VF5, render/caustics.ts): strength and mip blur by fixture type (setLightUniforms), water on (setWaterUniforms), the pattern's mean
   uCausK: { value: new THREE.Vector4(0, 0, 0, 0.2) }, uCausOff: { value: 0 },
   // key modelling (R193): direction weight 0..1, fade per mm under the water, the fade's mean-keeping gain (setLightUniforms)
-  uKeyDir: { value: 1 }, uKeyAtt: { value: 0 }, uKeyComp: { value: 1 }, uKeyK: { value: new THREE.Vector4() },
+  uKeyDir: { value: 1 }, uKeyAtt: { value: 0 }, uKeyComp: { value: 1 }, uKeyK: { value: new THREE.Vector4() }, uKeySat: { value: 0 },
 };
 /** R193 key-light switches (dev: window.__key to try values; setLightUniforms applies them). att = fade per mm of water depth. */
 export const KEY_SET = { dir: 1, att: 0.0035,
+  /** plant leaves' extra saturation under the key light (Nathan 2026-11-27: "boost saturation back up, the plants look duller") */
+  sat: 0.15,
   /** facing = a + b x facing term: leaves (a, b on |n.l|), solids (rock, wood, sand: a + b max(n.l, 0) + a max(-n.l, 0)) */
-  leaf: [0.2, 1.15], solid: [0.08, 1.3] };
+  leaf: [0.3, 1.4], solid: [0.08, 1.3] };
 if (import.meta.env?.DEV && typeof window !== 'undefined') (window as unknown as { __key: unknown }).__key = KEY_SET;
 /**
  * Caustics per fixture type (plan VF5): a spot is a near point source, so the focused net is sharp and strong; an LED bar
@@ -284,7 +286,7 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   LU.uNorm.value = gain * k / Math.max(avg, 1e-6); LU.uBeamM.value = m;
   // depth fade (R193): exp(-att d) under the water, scaled so its mean over the water column is 1
   const wd = S?.water.on ? waterY(T, S.water.level) : 0, a = KEY_SET.att;
-  LU.uKeyDir.value = KEY_SET.dir; LU.uKeyK.value.set(KEY_SET.leaf[0], KEY_SET.leaf[1], KEY_SET.solid[0], KEY_SET.solid[1]); LU.uKeyAtt.value = wd > 0 ? a : 0; LU.uKeyComp.value = wd > 0 && a > 0 ? a * wd / (1 - Math.exp(-a * wd)) : 1;
+  LU.uKeyDir.value = KEY_SET.dir; LU.uKeySat.value = KEY_SET.sat * KEY_SET.dir; LU.uKeyK.value.set(KEY_SET.leaf[0], KEY_SET.leaf[1], KEY_SET.solid[0], KEY_SET.solid[1]); LU.uKeyAtt.value = wd > 0 ? a : 0; LU.uKeyComp.value = wd > 0 && a > 0 ? a * wd / (1 - Math.exp(-a * wd)) : 1;
   LU.uAmb.value = l.room; LU.uBright.value = bright; LU.uLCol.value.setRGB(...lightRGB(l.kelvin, !!S?.water.salt));
   const env = lo ? lightEnvCached({ ...S!, tank: T }) : null;
   LU.uLoOn.value = env ? 1 : 0; LU.uMapDiv.value = env ? MAP_DIV[l.mapUnit ?? 'par'] : MAP_DIV.rel;
@@ -307,7 +309,7 @@ const AQ_FRAG = `
 uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uBeamM, uRef, uCard, uSub, uFish, uPane; uniform vec3 uLCol;
 float aqSpec = 0.0;
 uniform float uFxTone, uFxCaus, uFxTime, uFxDepth, uFxLine; uniform sampler2D uCausTex; uniform vec4 uCausK; uniform float uCausOff;
-uniform float uKeyDir, uKeyAtt, uKeyComp; uniform vec4 uKeyK;
+uniform float uKeyDir, uKeyAtt, uKeyComp, uKeySat; uniform vec4 uKeyK;
 uniform float uFishCap; uniform float uRoomMat, uRoomK, uSpillR, uTankRound, uAlgH; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater, uWTint; uniform vec3 uWCol; uniform float uPop, uFishCard, uFishRing;
 varying vec3 vAqP; varying vec3 vAqN;
 ${CAST_GLSL}
@@ -577,7 +579,7 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       // fish only (lane FA2): the light may dim a fish but never lift it past its painted colour (a gain above 1 plus the low shoulder flattened pale flanks toward white)
       'if (max(uFish, uFishCard) > 0.5 && uFishCap > 0.5) aqLt /= max(dot(aqLt, vec3(0.2126, 0.7152, 0.0722)), 1.0);\n' +
       '  outgoingLight *= aqLt;\n' + ALGAE_STEP +
-      'if (uCard > 0.5) { float aqL = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqL), outgoingLight, 1.35 + 0.35 * uPop * uFishCard), 0.0) * (1.0 + 0.2 * uPop * uFishCard); }\n' +
+      'if (uCard > 0.5) { float aqL = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqL), outgoingLight, 1.35 * (1.0 + uKeySat * (1.0 - uFishCard)) + 0.35 * uPop * uFishCard), 0.0) * (1.0 + 0.2 * uPop * uFishCard); }\n' +
       'float aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b);\n' +
       // 3D fish body: the card's saturation, then a shoulder instead of the hard clamp (which flattens the form shading
       // wherever the light is strong): values up to 0.6 are untouched, so the body matches its card, and only
