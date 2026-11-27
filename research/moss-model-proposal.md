@@ -103,6 +103,15 @@ crests, short and dark in creases; core 72x48. Before/after beside the photos: `
 Pass 3 (Nathan 2026-11-26, "Needs more", "fuzzy"): deeper tufts (10 % of the radius), a fine filament grain in the
 colour, a longer thinner coat (up to 6,000 hairs on a big ball), and one hair in ~8 a loose stray filament 2.5-4.5x
 as long: the scraggly halo of the photos. Shown in an orbit viewer artifact (https://claude.ai/artifact/Vpd2QqRdpgq8RPGhB8S5bq).
+Pass 4 (Nathan 2026-11-26: "lol still quite bad ... maybe the chatgpt sheet for a skin on a lumpy ball model with you
+adding fuzz"): the hairs are gone. ChatGPT sheet `C:\Users\nreed\fish-sheets\plants\marimo-d1.webp` (prompt in
+research/plant-sheets/prompts/leaf-sheet.md); `scripts/marimo-skin.py` bakes `public/art/plants/marimo.webp` (the velvet
+tile made seamless and projected triplanar into the sphere's uv: no seam, no pole pinch; four fringe cards cut along the
+sheet's outline, alpha from its white) and `src/data/plantart/marimo.json`. The marimo has its own texture
+(`PLANT3D.marimo.ownTex`, `ownAtlas` in render/plantAtlas.ts, a material keyed by it in render/items.ts). Ball: lumpy
+core wearing the skin, vertex colours shade only; ~22-28 fringe cards per 1000 mm2 stand along the normal, foot sunk in
+the skin, darker than the skin. Side-by-side: `research/moss-refs/marimo-pass4-side-by-side.jpg`. Known gap: the
+USDZ (iPhone AR) export bakes colours from the shared leaf atlas, so the marimo's texture is not in it yet.
 Not done: groups of 3-5 as one item, rolling off rocks onto the substrate (today it can be raised onto hardscape
 like any plant).
 
