@@ -103,16 +103,16 @@ export function PieceEditor({ store, sec }: { store: Store; sec: ScapeSec }) {
         <div class="genlook" aria-label="Generated look">
           <div class="row"><span class="lbl">Type</span>
             <Select value={v.gen.variant} label="Type" onChange={t => typePiece(store, id, t)}>{v.gen.types.map(t => <option value={t.id}>{t.label}</option>)}</Select></div>
-          <div class="row shuf"><button type="button" class="btn sm primary" title="Generate a new piece of this type (a new random seed). Colour and the settings below stay." onClick={() => reshapePiece(store, id)}>Shuffle</button>
+          <div class="row shuf"><button type="button" class="btn sm primary" title="Generate a new piece of this type (a new random seed). Color and the settings below stay." onClick={() => reshapePiece(store, id)}>Shuffle</button>
             <span class="m" title="This piece's seed: the same seed and settings always draw the same piece">seed {v.gen.seed}</span></div>
           {v.gen.swatches.length ? (
-            <div class="row"><span class="lbl">Colour</span><div class="cols">
-              <button type="button" class={`colsw auto${v.gen.swatches.some(c => c.on) ? '' : ' on'}`} title="Its own colour, picked by the seed" aria-pressed={!v.gen.swatches.some(c => c.on)} onClick={() => colourPiece(store, id, null)}>Auto</button>
+            <div class="row"><span class="lbl">Color</span><div class="cols">
+              <button type="button" class={`colsw auto${v.gen.swatches.some(c => c.on) ? '' : ' on'}`} title="Its own color, picked by the seed" aria-pressed={!v.gen.swatches.some(c => c.on)} onClick={() => colourPiece(store, id, null)}>Auto</button>
               {v.gen.swatches.map(c => <button type="button" class={`colsw${c.on ? ' on' : ''}`} title={c.label} aria-label={c.label} aria-pressed={c.on} style={{ background: c.hex }} onClick={() => colourPiece(store, id, c.i)} />)}
             </div></div>
           ) : null}
           {v.gen.look.map(f => <SliderRow label={f.label} title={f.title} min={f.min} max={f.max} step={f.step} value={f.value} text={f.text} onInput={n => setField(store, id, f.id, n)} />)}
-          {v.gen.changed ? <button type="button" class="btn sm ghost" title="Back to this type's own look for the seed (colour and settings)" onClick={() => resetLookPiece(store, id)}>Reset look</button> : null}
+          {v.gen.changed ? <button type="button" class="btn sm ghost" title="Back to this type's own look for the seed (color and settings)" onClick={() => resetLookPiece(store, id)}>Reset look</button> : null}
         </div>
       ) : null}
       {v.fields.map(f => <SliderRow label={f.label} title={f.title} min={f.min} max={f.max} step={f.step} value={f.value} text={f.text} onInput={n => setField(store, id, f.id, n)} />)}
@@ -196,13 +196,13 @@ export function Blend({ store }: { store: Store }) {
     <div class="blend2">
       <div class="bhead">
         <b>Your blend</b>
-        <button type="button" class="btn sm" title="Lay the same blend out afresh: same grains, colours, shares and mix" onClick={() => shuffleBlend(store)}><Icon name="shuffle" />Shuffle</button>
+        <button type="button" class="btn sm" title="Lay the same blend out afresh: same grains, colors, shares and mix" onClick={() => shuffleBlend(store)}><Icon name="shuffle" />Shuffle</button>
       </div>
       <div class="bbar" aria-hidden="true">{c.grains.map(g => <span style={{ flexGrow: Math.max(g.share, 0.001), background: g.color }} />)}</div>
       <div class="bgrains">
         {c.grains.map((g, i) => (
           <div class="bgrain" key={i}>
-            <input type="color" class="bswatch" value={g.color} aria-label={`Grain ${i + 1} colour`} title="Colour" onInput={e => setBlendColor(store, i, val(e))} onChange={seal} />
+            <input type="color" class="bswatch" value={g.color} aria-label={`Grain ${i + 1} color`} title="Color" onInput={e => setBlendColor(store, i, val(e))} onChange={seal} />
             <Select label={`Grain ${i + 1}`} value={g.grain} onChange={v => setBlendGrain(store, i, v)}>{GRAINS.map(o => <option value={o.id}>{o.label}</option>)}</Select>
             {n > 1
               ? <input class="slider" type="range" min={0} max={100} value={g.share} aria-label={`Grain ${i + 1} share`} title="Its share: the others adjust to fill 100 %" onInput={e => setBlendShare(store, i, +val(e))} onChange={seal} />
