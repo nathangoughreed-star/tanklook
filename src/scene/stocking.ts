@@ -53,7 +53,7 @@ const MET_BY_ID: Record<string, MetClass> = {
   yellowtang: 'active', bluetang: 'active', chromis: 'active', sae: 'active', swordtail: 'active',
   cpo: 'sedentary', cajundwarf: 'sedentary', rswcrayfish: 'active', redclaw: 'active', thaicrab: 'sedentary', asellus: 'sedentary',
   bronzecory: 'sedentary', sterbai: 'sedentary', pandacory: 'sedentary', pepperedcory: 'sedentary', yoyoloach: 'active', clownpleco: 'grazer', saltpepper: 'sedentary', falsejulii: 'sedentary', pleco: 'messy', pygmycory: 'sedentary', betta: 'sedentary', bristlenose: 'grazer', oto: 'grazer', hillstream: 'grazer', mandarin: 'sedentary', banggai: 'sedentary', royalgramma: 'sedentary', koletang: 'active', foxface: 'active', pajamacardinal: 'sedentary', tailspotblenny: 'sedentary',
-  watchman: 'sedentary', discus: 'sedentary', gbr: 'sedentary', angel: 'sedentary', kuhli: 'sedentary', peapuffer: 'sedentary', firefish: 'sedentary',
+  bichir: 'sedentary', watchman: 'sedentary', discus: 'sedentary', gbr: 'sedentary', angel: 'sedentary', kuhli: 'sedentary', peapuffer: 'sedentary', firefish: 'sedentary',
   axolotl: 'herp', firenewt: 'herp', adf: 'herp', firetoad: 'herp',
   hermit: 'shell',
   // lane SN (2026-10-22): apple snails eat and foul like small fish ("waste equivalent to several small fish", furrycritter; "excrete a lot of

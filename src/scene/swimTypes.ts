@@ -42,6 +42,12 @@ export interface SwimmerSpec {
   style?: { rate: number; tau: number; turn: number; /** FB2: share of time in [pulse-glide, slow steady cruise, hover with fin sculling]; the fish (a school together) switches between them every 5-15 s. Absent = all pulse-glide. */ mix?: [number, number, number] };
   /** FB2: share of its time a bottom dweller sits still (resting, breathing) between short foraging trips, 0..1; absent = the old mix (about 70 %). Bottom dwellers only. */
   rest?: number;
+  /** Resting pitch of a bottom dweller, degrees (negative = nose down); a quarter of it is kept while it moves along the floor. Absent = -20 (a cory propped
+   *  on its fins). 0 = lies flat (bichir, 2026-11-24: a long fish at -20 lifts its tail inches off the floor). Bottom dwellers only (fishBehavior.ts REST_PITCH). */
+  restPitch?: number;
+  /** Body radius, mm (clearance from the floor, glass and decor; a bottom dweller rests at 1.3 x it above the floor). Absent = 0.12 x len, a typical
+   *  fish. Given for the fish that lie flat (REST_PITCH) from the drawing's lowest point, so a slim body rests on the bed instead of above it. */
+  rad?: number;
   /** FB1: digging / hiding habit (fishBehavior.ts DIG) already resolved for this tank: `k` = how well the bed suits it (0 = no dig, hides still), `dark` 0..1 = the tank is dark (more digging), `rest` = height of the body centre above the ground when it lies (mm). Bottom dwellers only. */
   dig?: { rate: number; depth: number; pitch: number; hold: [number, number]; hide: number; hideT: [number, number]; k: number; dark: number; rest: number };
   /** FB3 (R118): home, range, posture and small actions (fishBehavior.ts HABIT). The sim picks a home spot in the tank (the species' rock, cave, bolt-hole, burrow, host or a patch; see swimHome.ts) and keeps the fish within `leash` body lengths of it. Absent = roams as before. */

@@ -28,7 +28,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
   const sRate = F(), sTau = F(), sTurn = F(), pulseT = F(), pulseP = F(), burstLeft = F(), jitA = F(), pv0 = F(); // burst-and-coast
   const subMode = new Uint8Array(n), subT = F(), mx0 = F(), mx1 = F(), mx2 = F(); // FB2: 0 pulse-glide, 1 slow cruise, 2 hover
   const effS = F(), fv: V3 = [0, 0, 0], flow = field.flow?.bind(field); // the current (scene/flow.ts): how hard each fish works against it (smoothed, 0 = still water)
-  const restS = F(), breathS = F(); // FB2: a bottom dweller's share of time resting (0 = the old mix) and its breathing amount
+  const restS = F(), breathS = F(), restP = F(); // restP: resting pitch (deg) of a bottom dweller, REST_PITCH (default -20); // FB2: a bottom dweller's share of time resting (0 = the old mix) and its breathing amount
   // FB3: habit (home spot, leash, posture, small actions). hS: 0 free, 1 dart to home, 2 hold in it, 3 peek out, 4 go to peck, 5 pecking, 6 patrol, 7 flick, 8 hop, 9 still after a hop
   const isItem = makeIsItem(field);
   const RH = rng(seed ^ 0x3c6ef372); // its own stream: a tank with habit fish does not move the others' randomness
@@ -150,7 +150,8 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
     const s = fish[i];
     idIndex.set(s.id, i);
     poses.push({ x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0, fan: 0, calm: 1, dig: 0 });
-    len[i] = s.len; rad[i] = s.len * 0.12; rv[i] = Math.max(rad[i], s.tall ?? 0); bottom[i] = s.zone === 'bottom' ? 1 : 0; tight[i] = s.group?.tight ? 1 : 0;
+    len[i] = s.len; rad[i] = s.rad ?? s.len * 0.12; rv[i] = Math.max(rad[i], s.tall ?? 0); bottom[i] = s.zone === 'bottom' ? 1 : 0; tight[i] = s.group?.tight ? 1 : 0;
+    restP[i] = s.restPitch ?? -20;
     const bl = 1.2 * Math.pow(40 / Math.max(10, s.len), 0.25); // body lengths per second, cruising
     pace[i] = s.pace ?? 1;
     cruise[i] = s.len * bl * (0.85 + R() * 0.3) * pace[i];
@@ -738,7 +739,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
         if (sunk + head > bed) { const f = bed > 0 ? bed / (sunk + head) : 0; k *= f; sunk *= f; }
         sinkS[i] = k; pt = -dPitch[i] * k;
       } else { sinkS[i] = 0; pt = 0; }
-      if (digK[i] <= 0.001) pt = isB ? (mode[i] === REST ? -20 : clamp(Math.atan2(vyB[i], Math.max(spd[i], 1)) * R2D * 0.5, -15, 15) - 5) : clamp(Math.asin(clamp(hy[i], -1, 1)) * R2D, -28, 28);
+      if (digK[i] <= 0.001) pt = isB ? (mode[i] === REST ? restP[i] : clamp(Math.atan2(vyB[i], Math.max(spd[i], 1)) * R2D * 0.5, -15, 15) + restP[i] / 4) : clamp(Math.asin(clamp(hy[i], -1, 1)) * R2D, -28, 28);
       P.x = px[i]; P.y = py[i] - sunk; P.z = pz[i];
       P.yaw = Math.atan2(-hz[i], hx[i]) * R2D + (wig[i] > 0 ? wig[i] * 11 * Math.sin(T * 9 + ph2[i]) * (dst === 2 ? 1 : 0.6) : 0);
       // pectoral fanning and tail beat: a hovering fish fans while it is slow, and its tail follows its speed; a digger wriggles in and out and lies still in between
