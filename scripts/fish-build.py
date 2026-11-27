@@ -204,13 +204,21 @@ if spec.get('card_sheet'):   # the body card from a sheet whose panel 1 has the 
     sqc = Image.new('RGB', (N, N)); sqc.paste(cs_.crop((0, 0, cs_.width, sy1 + 8)), (0, 0))
     side_card = os.path.join(work, 'side_full_card.png'); sqc.save(side_card)
     if spec.get('root_band', 1): import fishroot; print('root band: %d px darkened in side_full_card.png' % fishroot.smooth_root(side_card, LM['ped']))
+if spec.get('body_recolour'):   # body-only recolour (harlequin too orange, Nathan 2026-11-27; scripts/fishrecolour.py, method row 74): fins and the fin card keep the sheet's colour
+    import fishrecolour; print('body recolour: %d px in %s' % (fishrecolour.recolour_side(side_card, A, spec['body_recolour'], spec.get('eye')), os.path.basename(side_card)))
 FO = spec.get('fin_opacity')   # per-fin opacity profiles (method row 61): the card keeps coverage only, scripts/fish-fin-opacity.py writes the maps below
 mem = ['--membrane', ','.join(map(str, spec['membrane']))] if spec.get('membrane') and FO is None else []   # see-through median fins (method row 61): body card only, the fin card feeds the paired fins, which get their own membrane in textures.ts
 run(S('fish-cutout-card.py'), side_card, anat, card, *common, *er, *mem)
 fincard = os.path.join(shots, ID + '-fincard.png')
 fincommon = [v for i, v in enumerate(common) if not (v == '--clip-head' or (i and common[i - 1] == '--clip-head'))]   # the fin card is read only inside the fin polygons: no head clip, which cut the tailspot blenny's throat pelvics (method row 47)
-run(S('fish-cutout-card.py'), os.path.join(work, 'side_full.png'), anat, fincard, *fincommon)
-run(S('fish-projcards.py'), os.path.join(work, 'sheet.png'), os.path.join(work, 'sheet.png'), at, os.path.join(shots, ID + '-proj'),
+fin_src = os.path.join(work, 'side_full.png')
+if (spec.get('body_recolour') or {}).get('pectoral') is not None and (spec.get('pectoral') or {}).get('poly'):   # clear pectorals the sheet painted coloured (harlequin)
+    import fishrecolour; fishrecolour.recolour_poly(fin_src, os.path.join(work, 'side_full_fin.png'), spec['pectoral']['poly'], spec['body_recolour']['pectoral'], spec['body_recolour']); fin_src = os.path.join(work, 'side_full_fin.png')
+run(S('fish-cutout-card.py'), fin_src, anat, fincard, *fincommon)
+proj_src = os.path.join(work, 'sheet.png')
+if spec.get('body_recolour'):   # the top and front panels show no fins: the whole fish there gets the body colour
+    import fishrecolour; fishrecolour.recolour_panels(proj_src, os.path.join(work, 'sheet_rc.png'), [(ty0 - 6, ty1 + 6), (fy0_ - 4, fy1_ + 4)], spec['body_recolour'], BAND_THR); proj_src = os.path.join(work, 'sheet_rc.png')
+run(S('fish-projcards.py'), proj_src, proj_src, at, os.path.join(shots, ID + '-proj'),
     '--top', '%d,%d' % (ty0 - 6, ty1 + 6), '--front', '%d,%d,%d,%d' % (fx0, fy0_ - 4, fx1, fy1_ + 4), '--sat', sat, *(['--mask-thr', BAND_THR] if BAND_THR < 40 else []))
 out = os.path.join(ROOT, 'public', 'art', 'fish')
 os.makedirs(out, exist_ok=True)
