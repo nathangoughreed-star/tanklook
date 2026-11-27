@@ -1,4 +1,4 @@
-# Plan VF2: reach the graphics bar (draft, 2026-11-27)
+# Plan VF2: reach the graphics bar (approved by Nathan, 2026-11-27)
 
 R192. Nathan: "I think these are the two programs we need to look at and try to figure out how to get to their level
 on graphics. I am pretty confident we can do better than them in other ways but none of that matters if they have a
@@ -91,4 +91,4 @@ effect has its own fx toggle and tier. Saved tanks keep their layout; no scene v
 ## Decisions for Nathan
 1. ~~Buy Behind Glass?~~ No (2026-11-27). S0 uses public shots, and the agent shoots Aquascaper Studio.
 2. ~~Haze?~~ Yes, if it's done right (2026-11-27). Where it applies (Show only, or Edit too) follows the S1 comparisons.
-3. Is the Edit + Show split the right way to beat both, rather than one look in the middle? (open)
+3. ~~Edit + Show split?~~ Yes, two looks (2026-11-27). The plan is approved; lanes VF2-A and VF2-B can start.
