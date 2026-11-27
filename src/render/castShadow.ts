@@ -22,6 +22,8 @@ export const CAST = {
   // penumbra in shadow-map texels along x, along z (a tube or an LED bar is a line along x: softer that way)
   uCastSoft: { value: new THREE.Vector2(1, 1) },
   uCastK: { value: CAST_DEPTH },
+  /** Share of the shadow a plant leaf receives (Nathan 2026-11-26: plants keep their vivid colour). */
+  uCastLeaf: { value: 0.5 },
 };
 
 /**
@@ -31,7 +33,7 @@ export const CAST = {
  * by a small bias in mm.
  */
 export const CAST_GLSL = `
-uniform float uCastOn, uCastK; uniform sampler2D uCastMap; uniform mat4 uCastMat; uniform vec3 uCastNF; uniform vec2 uCastSoft;
+uniform float uCastOn, uCastK; uniform sampler2D uCastMap; uniform mat4 uCastMat; uniform vec3 uCastNF; uniform vec2 uCastSoft; uniform float uCastLeaf;
 float aqCastK = 1.0;
 float aqCast(vec3 n) {
   if (uCastOn < 0.5 || uPane > 0.5) return 1.0;
@@ -50,6 +52,8 @@ float aqCast(vec3 n) {
     float d = texture2D(uCastMap, (b + vec2(float(i) - 0.5, float(j) - 0.5)) * st).r;
     lit += wx[i] * wy[j] * step(ref, d);
   }
-  return 1.0 - uCastK * (1.0 - lit / 9.0);
+  // a leaf lets light through and the water scatters it among the leaves: half the shadow on plants (full on rock, wood, sand, gear, fish)
+  float k = uCard > 0.5 && uFish < 0.5 && uFishCard < 0.5 ? uCastLeaf * uCastK : uCastK;
+  return 1.0 - k * (1.0 - lit / 9.0);
 }
 `;
