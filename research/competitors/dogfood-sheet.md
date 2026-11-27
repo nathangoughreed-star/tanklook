@@ -28,6 +28,8 @@ than a minute and write down where.
 - **TankMates (2026-11-27):** Not a serious competitor. Nathan's words: "an AI-slop low effort money grab. The only
   thing valuable we can gleem from this site is what not to do. Unless I am just really dumb and cant operate the UI."
   Use it as a list of what not to do (feeds R167). If he couldn't work the UI, that counts against TankMates, not him.
+- **App-aquatic planner (2026-11-27):** Nathan's words: "also is an AI-generated semi-slop. We are just simply better
+  than it in every immediately measurable way." No features to copy; add its tells to the R167 checklist.
 
 ## Notes per product
 
