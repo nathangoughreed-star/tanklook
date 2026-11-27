@@ -26,6 +26,9 @@ import { leafAlgaeShader } from './algae';
 import { JET_REACH, JET_SPREAD, MAX_JETS, strongest, type FlowJet } from '../scene/flow';
 import { FX, onFx } from './fx';
 import { WHITE_UV, cellIndex, rectUV, strapAlong, texOf } from '../art/plantTex';
+import MARIMO_TEX from '../data/plantart/marimo.json';
+/** The marimo's own texture (R182, scripts/marimo-skin.py): the skin's rect, the fringe cards', the share of a card below the ball's outline, its width / height. */
+const MARIMO = MARIMO_TEX as unknown as { skin: [number, number, number, number]; cards: [number, number, number, number][]; base: number; aspect: number };
 
 /** Switches for review sheets: sway (off = every leaf rigid), emerse (off = no emersed
  *  twins: emerging plants lie over at the surface as in GR1), gpu (off = revealPlant on the CPU every growth step, as
@@ -764,68 +767,70 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       vine(re, X, ex, exTubes, b, L1, s => a0 + Math.max(0, Math.log(Math.max(1e-3, s / L0)) / lk), climbs && !way, way ? { route: way } : {});
     }
   } else if (P.form === 'ball') {
-    // marimo (R182): a lumpy ball a little wider than tall (radius R across, c up), flattened where it rests, under a
-    // dense coat of very short hairs along its normal: the core carries the colour, the hairs only soften its outline
-    // (the velvet of the photos). Mottled in soft patches, yellower on top, dark olive underneath. Growth: the whole
-    // ball shrinks toward its resting point below g0 (anchored at the bottom centre).
-    const R = Wc / 2, c = h / 2, ph = [r() * 6.28, r() * 6.28, r() * 6.28, r() * 6.28, r() * 6.28, r() * 6.28];
-    /** The radius multiplier in direction (x, y, z) (unit): a few broad lumps. */
-    // tufts (Nathan 2026-11-26, "needs more depth and texture"): the photos' surface is clumps of filaments with dark
-    // creases between them. Two octaves of value noise over the ball, -1 .. 1: the crests stand out, the creases sink and darken
+    // marimo (R182). Pass 4 (Nathan 2026-11-26, after three procedural coats: "lol still quite bad ... maybe the chatgpt
+    // sheet for a skin on a lumpy ball model with you adding fuzz"): its own texture from a ChatGPT sheet
+    // (scripts/marimo-skin.py -> public/art/plants/marimo.webp). The core is a lumpy ball wearing the velvet tile, baked to
+    // the sphere's uv by triplanar projection (no seam, no pinch at the poles); the fuzz is fringe cards cut from the
+    // sheet's loose filaments, standing all over the ball along its normal, their solid velvet foot sunk into the skin.
+    // Vertex colours only shade (light from above, dark creases and underside). Growth: the ball shrinks toward where it rests.
+    const R = Wc / 2, c = h / 2, ph = [r() * 6.28, r() * 6.28, r() * 6.28];
     const ns = Math.floor(r() * 1e6), hsh = (i: number, j: number, k: number) => { let t = (i * 374761393 + j * 668265263 + k * 2147483647 + ns * 974634) | 0; t = Math.imul(t ^ (t >>> 13), 1274126177); return ((t ^ (t >>> 16)) >>> 0) / 4294967295 * 2 - 1; };
     const vnoise = (x: number, y: number, z: number) => {
       const i = Math.floor(x), j = Math.floor(y), k = Math.floor(z), u = x - i, v = y - j, w = z - k, sm = (t: number) => t * t * (3 - 2 * t), a = sm(u), b = sm(v), e = sm(w);
       const l = (p: number, q: number, t: number) => p + (q - p) * t;
       return l(l(l(hsh(i, j, k), hsh(i + 1, j, k), a), l(hsh(i, j + 1, k), hsh(i + 1, j + 1, k), a), b), l(l(hsh(i, j, k + 1), hsh(i + 1, j, k + 1), a), l(hsh(i, j + 1, k + 1), hsh(i + 1, j + 1, k + 1), a), b), e);
     };
-    const tuft = (x: number, y: number, z: number) => 0.6 * vnoise(x * 5, y * 5, z * 5) + 0.4 * vnoise(x * 12 + 7, y * 12, z * 12);
-    /** Fine grain of the filaments, -1 .. 1 (colour only: finer than the core's mesh could carry as relief). */
-    const grain = (x: number, y: number, z: number) => vnoise(x * 22 + 31, y * 22, z * 22 - 5);
-    const lumpK = (x: number, y: number, z: number) => 1 + 0.05 * Math.sin(2.1 * x + 1.3 * y + ph[0]) * Math.sin(1.7 * z - 0.9 * y + ph[1]) + 0.03 * Math.sin(3.3 * x - 2.7 * z + ph[2]) + 0.1 * tuft(x, y, z);
-    /** Soft colour patches, -1 .. 1. */
-    const mott = (x: number, y: number, z: number) => 0.6 * Math.sin(4.1 * x + 2.2 * z + ph[3]) * Math.sin(3.6 * y - 2.9 * x + ph[4]) + 0.4 * Math.sin(7.3 * z + 5.1 * y + ph[5]);
+    /** Broad tufts, -1 .. 1 (the relief; the texture carries the fine detail). */
+    const tuft = (x: number, y: number, z: number) => 0.65 * vnoise(x * 4, y * 4, z * 4) + 0.35 * vnoise(x * 9 + 7, y * 9, z * 9);
+    const lumpK = (x: number, y: number, z: number) => 1 + 0.05 * Math.sin(2.1 * x + 1.3 * y + ph[0]) * Math.sin(1.7 * z - 0.9 * y + ph[1]) + 0.03 * Math.sin(3.3 * x - 2.7 * z + ph[2]) + 0.06 * tuft(x, y, z);
     const cy = c * 0.94; // its centre: the bottom ~6 % of the ball pressed flat where it rests
-    /** A point on the ball in unit direction (x, y, z), and its outward normal (approximate: the ellipsoid's). */
     const at = (x: number, y: number, z: number) => { const k = lumpK(x, y, z); return V(x * R * k, Math.max(0, cy + y * c * k), z * R * k); };
-    const nrmAt = (x: number, y: number, z: number) => (cy + y * c * lumpK(x, y, z) <= 0.5 ? V(0, -1, 0) : V(x / R, y / c, z / R).normalize());
-    const B = V(0, 0, 0), small: LeafTag = g0 < 0.02 ? SHOWN : { a: -0.82 * g0, w: 1.82 * g0 * 0.999 }, oTag = { ...small, on: { pc: -1, par: 0 } };
-    const core = new THREE.SphereGeometry(1, 96, 64), cp = core.attributes.position, ca = new Float32Array(cp.count * 3);
-    const lo = new THREE.Color(f.under), hi = new THREE.Color(f.cols[1][1]), kc = new THREE.Color();
+    const nrmAt = (x: number, y: number, z: number) => V(x / R, y / c, z / R).normalize();
+    /** Shade at a point: lit from above, dark underneath, the creases between tufts darker. */
+    const shadeAt = (y: number, tf: number) => (0.5 + 0.72 * Math.min(1, (0.5 + 0.5 * y) * 1.35)) * (tf < 0 ? 1 + 0.75 * tf : 1 + 0.15 * tf);
+    const B = V(0, 0, 0), small: LeafTag = g0 < 0.02 ? SHOWN : { a: -0.82 * g0, w: 1.82 * g0 * 0.999 };
+    const T = MARIMO, sk = T.skin;
+    const core = new THREE.SphereGeometry(1, 72, 48), cp = core.attributes.position, cu = core.attributes.uv, ca = new Float32Array(cp.count * 3);
     for (let i = 0; i < cp.count; i++) {
-      const x = cp.getX(i), y = cp.getY(i), z = cp.getZ(i), p = at(x, y, z), fine = Math.sin(23 * x + 17 * z + ph[0]) * Math.sin(19 * y - 21 * x + ph[2]);
+      const x = cp.getX(i), y = cp.getY(i), z = cp.getZ(i), p = at(x, y, z), k = Math.max(0.2, shadeAt(y, tuft(x, y, z)));
       cp.setXYZ(i, p.x, p.y, p.z);
-      // lit from above: yellower toward the top, dark underneath; the patches either way
-      // (the creases between tufts much darker, the crests lighter: the depth)
-      const up = 0.5 + 0.5 * y, m = mott(x, y, z), tf = tuft(x, y, z), crease = tf < 0 ? 1 + 1.1 * tf : 1 + 0.35 * tf;
-      kc.copy(lo).lerp(hi, Math.min(1, Math.max(0, 0.2 + 0.5 * up + 0.3 * m + 0.35 * tf))).multiplyScalar((0.45 + 0.55 * Math.min(1, up * 1.4)) * (1 + 0.12 * m + 0.08 * fine + 0.16 * grain(x, y, z)) * Math.max(0.25, crease));
-      ca[i * 3] = kc.r; ca[i * 3 + 1] = kc.g; ca[i * 3 + 2] = kc.b;
+      cu.setXY(i, sk[0] + (sk[2] - sk[0]) * cu.getX(i), sk[1] + (sk[3] - sk[1]) * cu.getY(i));
+      ca[i * 3] = k; ca[i * 3 + 1] = k; ca[i * 3 + 2] = k;
     }
-    whiteUV(core); core.computeVertexNormals();
+    core.computeVertexNormals();
     core.setAttribute('color', new THREE.BufferAttribute(ca, 3));
-    // the hairs: evenly over the ball (a Fibonacci sphere, jittered), not on the flat it rests on
-    const area = 4 * Math.PI * ((R * R * 2 + c * c) / 3), n = Math.round(Math.min(2 * MAX_LEAFLETS, area / 1000 * between(r, P.n))); // (a ball's coat may be denser than a moss mound)
-    /** One hair at unit direction (x, y, z) (q's draws; D its twist and brightness). */
-    const hair = (q: R, D: ReturnType<typeof draws>, x: number, y: number, z: number, a: number, tag: LeafTag, into: Sheets) => {
+    // the fringe cards: a quad 2 wide x 3 high, double-sided, leaning a little and curving over toward one side
+    const card = (q: R, x: number, y: number, z: number, tag: LeafTag, into: Sheets) => {
       const base = at(x, y, z);
-      if (base.y < c * 0.04) return;
-      const nr = nrmAt(x, y, z), tilt = Math.acos(Math.min(1, Math.max(-1, nr.y))) + (q() - 0.5) * 0.7;
-      // a hair's colour from the patch it stands in (so the coat and the core agree), darker low down
-      // on a tuft's crest longer and lighter, in a crease short and dark (they fill the crease, not bridge it)
-      const m = mott(x, y, z), tf = tuft(x, y, z), cols = f.cols[Math.min(f.cols.length - 1, Math.max(0, Math.floor((0.5 + 0.5 * (0.6 * m + 0.6 * tf)) * f.cols.length + (q() - 0.5))))];
-      // strays (pass 3, "needs more"): one hair in ~12 is a loose filament 2.5-4.5x as long, thinner, wandering off the
-      // normal and lighter: the scraggly halo round the photos' outline
-      const stray = q() < 0.12, fs = stray ? { ...f, wid: f.wid * 0.45, arch: 0.6 } : f;
-      leaf(into, fs, P.stalk, base, a + (q() - 0.5) * (stray ? 2.4 : 1.2), h * between(q, f.len) * (stray ? 2.5 + 2 * q() : Math.max(0.35, 1 + 0.9 * tf)), Math.max(0, tilt + (stray ? (q() - 0.5) * 0.9 : 0)), D.twist(), cols, D.bright() * (0.6 + 0.4 * (0.5 + 0.5 * y)) * (stray ? 1.15 : Math.max(0.45, 1 + 0.7 * tf)), q, STIFF, tag);
+      if (base.y < c * 0.05) return;
+      const nr = nrmAt(x, y, z), tf = tuft(x, y, z);
+      const Hc = R * (0.13 + 0.1 * q()) * (1 + 0.25 * tf), Wd = Hc * T.aspect, yaw = q() * 6.28;
+      // a tangent frame: side across the card, lean = the way its top curves
+      const t0 = Math.abs(nr.y) < 0.9 ? V(0, 1, 0).cross(nr).normalize() : V(1, 0, 0).cross(nr).normalize(), t1 = nr.clone().cross(t0);
+      const side = t0.clone().multiplyScalar(Math.cos(yaw)).addScaledVector(t1, Math.sin(yaw)), lean = nr.clone().cross(side).multiplyScalar((q() - 0.5) * 0.5);
+      const foot = base.clone().addScaledVector(nr, -Hc * T.base * 1.15), rect = T.cards[Math.floor(q() * T.cards.length)], flip = q() < 0.5;
+      const pts: THREE.Vector3[] = [], cols: THREE.Color[] = [], uf: number[] = [], tg: Tag[] = [];
+      const kb = Math.max(0.25, shadeAt(y, tf)) * (0.62 + 0.16 * q()); // (darker than the skin: the filaments' sheet colour is the lit tips)
+      for (let row = 0; row < 3; row++) {
+        const s = row / 2, up = nr.clone().multiplyScalar(Hc * s).addScaledVector(lean, Hc * s * s);
+        for (let col = 0; col < 2; col++) {
+          pts.push(foot.clone().add(up).addScaledVector(side, (col - 0.5) * Wd));
+          cols.push(new THREE.Color(kb, kb, kb));
+          rectUV(rect, flip ? 1 - col : col, s, uf);
+          tg.push({ a: tag.a, w: tag.w, anc: B, pc: -1, par: 0, apar: 0 });
+        }
+      }
+      into.grid(pts, cols, 3, 2, cols, tg, undefined, { f: uf, b: uf });
     };
+    const area = 4 * Math.PI * ((R * R * 2 + c * c) / 3), n = Math.round(Math.min(MAX_LEAFLETS, area / 1000 * between(r, P.n)));
     for (let i = 0; i < n; i++) {
       const y = 1 - 2 * (i + 0.5) / n + (r() - 0.5) * 0.6 / n, s = Math.sqrt(Math.max(0, 1 - y * y)), a = i * 2.39996 + (r() - 0.5) * 0.5;
-      hair(r, { pick, twist, bright }, Math.cos(a) * s, y, Math.sin(a) * s, a, oTag, out);
+      card(r, Math.cos(a) * s, y, Math.sin(a) * s, small, out);
     }
-    for (let v = 0; v < out.anc.length; v += 3) out.anc[v] = out.anc[v + 1] = out.anc[v + 2] = 0;
-    // grown on past g0: the coat thickens (its own stream)
+    // grown on past g0: the fuzz thickens (its own stream)
     for (let j = 0, m = extras(n, 2 * n); j < m; j++) {
       const y = 2 * re() - 1, s = Math.sqrt(1 - y * y), a = re() * 6.28;
-      hair(re, X, Math.cos(a) * s, y, Math.sin(a) * s, a, { ...fullBy(extraAt(j, n), 0.08, 1), on: { pc: -1, par: 0 } }, ex);
+      card(re, Math.cos(a) * s, y, Math.sin(a) * s, fullBy(extraAt(j, n), 0.08, 1), ex);
     }
     extra.push(tagAll(core, small.a, small.w, B));
   } else if (P.form === 'moss') {

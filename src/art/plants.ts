@@ -93,6 +93,8 @@ export interface Plant3D {
    *  it or trailing along the ground, leaves (len in mm) on them; ball = a free fuzzy ball (marimo): a lumpy core under a
  *  dense coat of short hairs (n: hairs per 1000 mm² of its surface; leaf.len a fraction of its height). */
   form: 'rosette' | 'rhizome' | 'stem' | 'carpet' | 'moss' | 'float' | 'vine' | 'ball';
+  /** Its own texture under public/art/plants/ instead of the shared leaf atlas (R182: the marimo's skin and fringe). */
+  ownTex?: string;
   /** Leaves (rosette, rhizome), stems (stem), or leaflets per 1000 mm² of patch (carpet) or of the mound's footprint
    *  (moss): min, max. */
   n: [number, number];
@@ -248,7 +250,7 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   // (Aegagropila_conical_flask.jpg). Look: a lumpy ball a little wider than tall, flattened where it rests; a dense
   // velvet of very short filaments (the outline soft, no leaf shapes); olive to moss green, mottled in soft patches,
   // yellower where lit, dark olive underneath. Never attaches: a free ball on the substrate. Grows ~0.2 in a year.
-  marimo: { grow: { speed: 'slow', overflow: 'none', len: [20, 60], more: 1.2 }, sway: 0, form: 'ball', n: [380, 420], spread: 1, stalk: '#3a5a1c', leaf: {
+  marimo: { grow: { speed: 'slow', overflow: 'none', len: [20, 60], more: 1.2 }, sway: 0, form: 'ball', ownTex: 'marimo.webp', n: [22, 28], spread: 1, stalk: '#3a5a1c', leaf: {
     len: [0.06, 0.11], wid: 0.13, prof: [0.5, 0.5], rise: [0, 0], arch: 0.2, twist: 1.5, fold: 0, wave: [0, 0], pet: 0,
     cols: [['#36481a', '#56682a'], ['#3e521e', '#62742e'], ['#2e3e16', '#4a5c22'], ['#465a20', '#707e34']], under: '#222e10', seg: [1, 2] } },
   // Red root floaters (Phyllanthus fluitans): small rosettes of round, cupped leaves, green to bronze-red, red roots.

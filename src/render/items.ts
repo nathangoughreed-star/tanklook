@@ -16,7 +16,7 @@ import { D2R, clamp, waterY } from '../scene/physics';
 import { bowlDims, footprint, shapeOf } from '../scene/shape';
 import { clampGround, groundHeight, groundInsideBy } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
-import { plantAtlas } from './plantAtlas';
+import { ownAtlas, plantAtlas } from './plantAtlas';
 import { AQ_MAX } from '../scene/lightout';
 import { artificialGeometry, bendPlant, carpetOnGround, clumpOnGround, dropPlant, growShader, grownView, plant3d, plantGeometry, plantRaycast, revealPlant, unpackGeometry, uploadPlant, type JobOut, type PlantJob } from './plant3d';
 import { reefShape } from './coral3d';
@@ -722,14 +722,15 @@ if (import.meta.env?.DEV && typeof location !== 'undefined') for (const kv of (n
   if (k === 'glow') plantFx.glow = x === '1'; else if (k === 'edge') PLANT_EDGE.on = +x; else if (k === 'edgepx') PLANT_EDGE.px = +x; else if (k in PLANT_TONE) (PLANT_TONE as Record<string, number>)[k] = +x;
 }
 const plantMats = new Map<string, THREE.MeshBasicMaterial>();
-function plantMaterial(T: Tank, free = false) {
-  const k = glassKey(T) + (free ? '|rim' : '');
+function plantMaterial(T: Tank, free = false, ownTex?: string) {
+  const k = glassKey(T) + (free ? '|rim' : '') + (ownTex ? '|' + ownTex : '');
   let m = plantMats.get(k);
   if (m) return m;
   const { planes, patch } = glassClip(T);
   // above the rim (lane OG2) only the floor plane stays: leaves and vines spill past the glass and hang down its outside
   // (lane PT: the shared leaf atlas as `map`: a leaf's alpha is its outline; everything else samples a white texel)
-  m = new THREE.MeshBasicMaterial({ vertexColors: true, map: plantAtlas(), alphaTest: 0.5, alphaToCoverage: true, clippingPlanes: free ? planes.slice(0, 1) : planes });
+  m = new THREE.MeshBasicMaterial({ vertexColors: true, map: ownTex ? ownAtlas(ownTex) : plantAtlas(), // (R182: a type with its own texture, the marimo)
+    alphaTest: 0.5, alphaToCoverage: true, clippingPlanes: free ? planes.slice(0, 1) : planes });
   m.onBeforeCompile = sh => { patch(sh); growShader(sh); };
   m.customProgramCacheKey = () => (free ? 'plant-rim' : 'plant-clip') + (plantFx.glow ? '-glow' : '') + `-t${PLANT_TONE.on},${PLANT_TONE.exposure},${PLANT_TONE.sat},${PLANT_TONE.low},${PLANT_TONE.ks},${PLANT_TONE.rs},${PLANT_TONE.kl},${PLANT_TONE.rl}-e${PLANT_EDGE.on},${PLANT_EDGE.px}`;
   // above the water (an emersed stem or sword leaf, lane GR2) there is no water haze: it fades out over the first few
@@ -1204,7 +1205,7 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
     // expected outcome (lane OC): a plant that will struggle here looks it: paler, and stems leggy and thin, the rest smaller
     const st = S.light.outcomes ? struggleBucket(S, it) / 5 : 0;
     if (st > 0 && g.attributes.color) g = withColors(g, strugglingColors(g.attributes.color, st, REDS.has(it.variant)));
-    m = new THREE.Mesh(g, plantMaterial(T, P.free));
+    m = new THREE.Mesh(g, plantMaterial(T, P.free, PLANT3D[P.type]?.ownTex));
     if (g.userData.growth != null) { // a GPU view (one per mesh): how it sways (plant3d SWAY_VERT)
       const flex = P.wet > 0 ? PLANT3D[P.type]?.sway ?? 0 : 0;
       g.setAttribute('aSway', new THREE.InstancedBufferAttribute(Float32Array.of(flex, P.wet, P.h), 3));
