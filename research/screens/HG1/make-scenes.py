@@ -2,7 +2,7 @@
 # `node scripts/vf-shots.mjs --scenes research/screens/HG1/scenes/<type>.json --views front`.
 import json, copy, os
 here = os.path.dirname(os.path.abspath(__file__))
-base = json.load(open(os.path.join(here, '../../visual/vf0/scenes/photo-55g.json')))
+base = json.load(open(os.path.join(here, '../../visual/vf0/scenes/photo-60t.json')))
 T = base['tanks'][0]
 TYPES = {  # kind, size (mm), extra settings for the third piece
   'spider': ('wood', 420, {'branch': 0.8, 'spread': 0.7}), 'redmoor': ('wood', 420, {'gnarl': 0.8}), 'manzanita': ('wood', 380, {'branch': 0.8}),

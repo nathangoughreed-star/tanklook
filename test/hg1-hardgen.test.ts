@@ -6,7 +6,7 @@ import { genRock } from '../src/render/rockgen';
 import { itemDims, woodLimbs, LIBRARY } from '../src/scene/items';
 import { parseScene } from '../src/scene/validate';
 import { ITEM_FIELDS, setColour, setType } from '../src/scene/itemEdit';
-import photo from '../research/visual/vf0/scenes/photo-55g.json';
+import photo from '../research/visual/vf0/scenes/photo-60t.json';
 import type { Item, TankSetup } from '../src/scene/types';
 
 const box = (ls: ReturnType<typeof genWood>) => {

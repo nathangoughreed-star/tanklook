@@ -1,13 +1,13 @@
 {
  "version": 9,
- "name": "Photo: planted 55 gal (HG1 tuned)",
+ "name": "Photo: planted 60 gal tall, swords + spiderwood (HG1 tuned)",
  "units": "in",
  "tanks": [
   {
    "tank": {
-    "L": 1219.2,
-    "H": 533.4,
-    "D": 330.2
+    "L": 1231.9,
+    "H": 635.0,
+    "D": 323.85
    },
    "camera": {
     "dist": 3000,
@@ -59,7 +59,7 @@
     "br": 63.5
    },
    "layout": {
-    "id": "photo-55g",
+    "id": "photo-60t",
     "seed": 2711
    },
    "water": {
@@ -82,8 +82,8 @@
     "style": "cabinet",
     "table": {
      "shape": "rect",
-     "L": 1249.2,
-     "D": 360.2,
+     "L": 1261.9,
+     "D": 353.85,
      "x": 0,
      "z": 0
     }

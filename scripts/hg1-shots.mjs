@@ -17,7 +17,7 @@ const shot = async (name, wait = 2500) => { await sleep(wait); const r = await s
 const click = (css, text = '') => ev(`(() => { const e = [...document.querySelectorAll(${JSON.stringify(css)})].find(b => b.textContent.trim().includes(${JSON.stringify(text)})); if (!e) throw new Error('no ' + ${JSON.stringify(css + ' ' + text)}); e.click(); return true })()`);
 const slider = (label, v) => ev(`(() => { const e = [...document.querySelectorAll('.genlook input[aria-label=${JSON.stringify(label)}]')][0]; if (!e) throw new Error('no slider ${label}'); e.value = ${JSON.stringify(String(v))}; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); return true })()`);
 const scrollTo = css => ev(`(() => { const e = document.querySelector(${JSON.stringify(css)}); e?.scrollIntoView({ block: 'center' }); return !!e })()`);
-const scene = readFileSync('research/visual/vf0/scenes/photo-55g.json', 'utf8');
+const scene = readFileSync('research/visual/vf0/scenes/photo-60t.json', 'utf8');
 const errors = [];
 await send('Runtime.enable'); ws.addEventListener('message', m => { const d = JSON.parse(m.data); if (d.method === 'Runtime.exceptionThrown') errors.push((d.params.exceptionDetails.exception?.description ?? d.params.exceptionDetails.text).slice(0, 300)); });
 const open = async () => {
