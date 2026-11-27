@@ -693,7 +693,7 @@
      "fk": 516.0,
      "y0": -0.0396
     },
-    "thickx": 0.464,
+    "thickx": 0.75,
     "noTail": false,
     "measuredWidth": true,
     "aspect": 0.706,
@@ -753,6 +753,7 @@
       218.0
      ]
     ],
+    "widthFit": "uniform",
     "ver": "20a88e09"
    },
    "fit": "{'thick': 1.14, 'pedT': 0.243, 'rmsPctSL': 3.42, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"

@@ -286,7 +286,7 @@
  "eye_pupil": "#0a0703",
  "eye_full": 15,
  "eye_pupil_frac": 0.471,
- "width_pct_sl": 24.0,
+ "width_pct_sl": 48.5,
  "fishshapes": {
   "n": 3,
   "depth": 50.0,
@@ -306,14 +306,12 @@
    ]
   ]
  },
- "width_range": [
-  19,
-  30
- ],
  "sat": 0.75,
  "fin_opacity": {
   "preset": "solid"
  },
  "sat_lin": 1,
- "solid_near": 20
+ "solid_near": 20,
+ "width_fit": "uniform",
+ "width_note": "R194 (Nathan 2026-11-27): a fancy goldfish is allowed to bloat. Keep the sheet's egg-shaped top view (width_fit uniform, no head cap) at 48.5 % SL wide (0.75 x the drawn 64.6), picked from 30 / 39 / 49 renders; was 24 borrowed from wild C. carassius, clamped to 30."
 }

@@ -109,6 +109,7 @@ Read the side/3-4/front/top renders beside the sheet. Fix through the spec, then
 
 ## 8. Mass and proportion check
 - `fish-new` prints model g vs every FishBase/specimen value; `scripts/fish-mass.py <anatomy.json> <tl_mm> <a> <b>` recomputes. thickx is set so the mass matches.
+- **Top-view shape (R194, method row 73):** by default `photofish.ts` caps the head width so it reaches nearly full width by about 15 % SL (right for slim fish). A round or bloated body plan (fancy goldfish; check others against their top-view photo) gets spec `width_fit: "uniform"` plus its own `width_pct_sl` (no proxy `width_range`). Gate: straight-down render beside the sheet's top panel, head widening into the belly, not a box.
 - Proxy fish: compare built depth with a real photo (fish-new stretches the drawn depth to the median; a shallow proxy gives a thin fish).
 - Colour: autosat fixes saturation, not hue. If the render's hue is off (platy red vs sheet orange), set `sat` by hand (drop `sat_auto`) and rebuild (row 54, 58).
 - Gate: ratio about 1.0; depth within the real photo's range.
