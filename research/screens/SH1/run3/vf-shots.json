@@ -1,0 +1,116 @@
+{
+ "commit": "a9b9efa2",
+ "build": 2944,
+ "dirty": true,
+ "when": "2026-11-27T14:53:09.155Z",
+ "size": [
+  1280,
+  800
+ ],
+ "fx": [
+  "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed",
+  "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed,shadows"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "iwagumi": {
+   "shots": [
+    "iwagumi-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed.png",
+    "iwagumi-rock-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed.png",
+    "iwagumi-at-300-60-180-1.5--25-28-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed.png",
+    "iwagumi-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png",
+    "iwagumi-rock-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png",
+    "iwagumi-at-300-60-180-1.5--25-28-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png"
+   ],
+   "ab": {
+    "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed,shadows": {
+     "A": {
+      "gpuMs": 13.88,
+      "gpuP95": 22.34,
+      "cpuMs": 8.3,
+      "cpuP95": 13.9,
+      "calls": 783,
+      "triangles": 1586856
+     },
+     "B": {
+      "gpuMs": 15.46,
+      "gpuP95": 25.87,
+      "cpuMs": 8.7,
+      "cpuP95": 12.9,
+      "calls": 783,
+      "triangles": 1586856
+     },
+     "gpuDelta": 1.68,
+     "gpuDeltaP95": 8.78,
+     "timer": true
+    }
+   }
+  },
+  "photo-60t": {
+   "shots": [
+    "photo-60t-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed.png",
+    "photo-60t-rock-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed.png",
+    "photo-60t-at-300-60-180-1.5--25-28-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed.png",
+    "photo-60t-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png",
+    "photo-60t-rock-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png",
+    "photo-60t-at-300-60-180-1.5--25-28-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png"
+   ],
+   "ab": {
+    "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed,shadows": {
+     "A": {
+      "gpuMs": 5.54,
+      "gpuP95": 5.91,
+      "cpuMs": 1.5,
+      "cpuP95": 1.9,
+      "calls": 229,
+      "triangles": 1021455
+     },
+     "B": {
+      "gpuMs": 6.01,
+      "gpuP95": 6.45,
+      "cpuMs": 1.4,
+      "cpuP95": 1.9,
+      "calls": 229,
+      "triangles": 1021455
+     },
+     "gpuDelta": 0.48,
+     "gpuDeltaP95": 0.75,
+     "timer": true
+    }
+   }
+  },
+  "planted4": {
+   "shots": [
+    "planted4-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed.png",
+    "planted4-rock-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed.png",
+    "planted4-at-300-60-180-1.5--25-28-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed.png",
+    "planted4-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png",
+    "planted4-rock-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png",
+    "planted4-at-300-60-180-1.5--25-28-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png"
+   ],
+   "ab": {
+    "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed,shadows": {
+     "A": {
+      "gpuMs": 6.09,
+      "gpuP95": 11.17,
+      "cpuMs": 4.1,
+      "cpuP95": 4.8,
+      "calls": 568,
+      "triangles": 1087960
+     },
+     "B": {
+      "gpuMs": 6.94,
+      "gpuP95": 14.68,
+      "cpuMs": 4,
+      "cpuP95": 4.8,
+      "calls": 568,
+      "triangles": 1087960
+     },
+     "gpuDelta": 0.48,
+     "gpuDeltaP95": 6.5,
+     "timer": true
+    }
+   }
+  }
+ }
+}
