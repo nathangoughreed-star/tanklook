@@ -113,7 +113,7 @@ export function sponge(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
     // the acrylic tube reads silvery in the water, so it is drawn more solid than other clear parts
     kit.rod(tubeC.bk, f.P(u, y, b), f.P(u, y + sP.tubeMm, b), sP.tubeDiaMm / 2, tubeC.c, { seg: 14, base: Math.max(tubeC.base, 0.75) });
     const top = f.P(u, Math.min(y + sP.tubeMm, f.wy - 2), b);
-    bubbles(f, top, f.wy, 6, 2.2);
+    bubbles(f, top, f.wy, 6, 2.2, 8);
     airPump(f, u, top, b);
     return;
   }
@@ -128,7 +128,7 @@ export function sponge(f: Frame, m: FilterModel, sp: Spot, pr?: FilterProduct) {
   const tt = Math.max(g + 22 + h + 30, f.wy - 25);
   kit.rod(tubeC.bk, f.P(u, g + 22 + h, b), f.P(u, tt, b), 9 * Math.sqrt(s), tubeC.c, { seg: 14, base: tubeC.base });
   kit.rod('wet', f.P(u, tt, b), f.P(u, tt + 6, b), 11 * Math.sqrt(s), hexOr(L?.outlet?.hex, C.charcoal), { seg: 14 });
-  bubbles(f, f.P(u, tt + 4, b), f.wy, 6, 2.2);
+  bubbles(f, f.P(u, tt + 4, b), f.wy, 6, 2.2, 8);
   airPump(f, u, f.P(u, tt + 6, b), b);
 }
 

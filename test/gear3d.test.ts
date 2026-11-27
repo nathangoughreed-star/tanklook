@@ -22,11 +22,11 @@ describe('gear3d', () => {
     expect(gearPicks({ ...S, water: { ...S.water, on: false } })).toEqual([{ id: 'gauge', row: 'gauge' }]); // a dry tank's planted fish want no heat: only the gauge (S240)
   });
 
-  it('merges a whole set into at most four meshes, inside the room and above the floor', () => {
+  it('merges a whole set into at most four meshes (plus one animated bubble mesh), inside the room and above the floor', () => {
     const S = ex('planted'), T = S.tank;
     for (const p of ['midplanted', 'hightech', 'lowtech']) {
       const ms = buildGear({ ...S, tech: applyPreset(S, p) }, T, []);
-      expect(ms.length).toBeGreaterThan(0); expect(ms.length).toBeLessThanOrEqual(4);
+      expect(ms.length).toBeGreaterThan(0); expect(ms.filter(m => !m.userData.bubbles).length).toBeLessThanOrEqual(4); expect(ms.filter(m => m.userData.bubbles).length).toBeLessThanOrEqual(1);
       const b = box(ms); expect(b.min.x).toBeGreaterThan(-400); expect(b.max.x).toBeLessThan(T.L + 400); expect(b.max.y).toBeLessThan(T.H + 400);
     }
   });

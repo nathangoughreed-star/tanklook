@@ -5,7 +5,7 @@
 // What is drawn: the tank's `tech` through lane TM's techParts (scene/tech.ts); a file without it, the inferred gear.
 import * as THREE from 'three';
 import { FILTER_MODELS, HEATER_MODELS } from '../demand/gear';
-import { filterState, heatLoss, techOf, techParts, type GearPlace } from '../scene/tech';
+import { airValveOf, filterState, heatLoss, techOf, techParts, type GearPlace } from '../scene/tech';
 import { filterProduct, genericHeaterW, pumpProduct } from '../data/gearCatalog';
 import { backdropDepth, clamp } from '../scene/physics';
 import type { Tank, TankSetup } from '../scene/types';
@@ -15,6 +15,7 @@ import { heater } from './gear/heater';
 import { hob, sponge, internal, canister } from './gear/filter';
 import { sump, skimmerHob, uv, ato, surfaceSkim, chillerFan } from './gear/reef';
 import { airstone, powerhead } from './gear/pump';
+import { bubbleMesh } from './gear/bubbles';
 import { co2 } from './gear/co2';
 import { clearOnTop, TOP, BESIDE } from './gear/dry';
 export { heaterLength } from './gear/heater';
@@ -206,6 +207,7 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
   }
   for (const p of picks) BESIDE[p.id]?.(S, T, kit);
   const out = kit.meshes();
+  const bm = bubbleMesh(kit.streams, airValveOf(techOf(S))); if (bm) out.push(bm); // the bubble columns, animated (gear/bubbles.ts)
   for (const m of out) m.visible = shown;
   if (out[0]) { out[0].userData.gearPieces = pieces; out[0].userData.cups = kit.cups; out[0].userData.heaterAxes = kit.heaterAxes; out[0].userData.jets = kit.jets; } // jets: the outlets' current (scene/flow.ts)
   live = live.filter(o => o.parent).concat(out);
@@ -216,7 +218,7 @@ export function buildGear(S: TankSetup, T: Tank, solids: THREE.Box3[], picks = g
 export const solidBoxes = (meshes: THREE.Mesh[]) => meshes.filter(m => !m.userData.plant).map(m => new THREE.Box3().setFromObject(m));
 
 /** The part key: what the gear's look depends on beyond the scene's envKey (the hardscape it keeps clear of, the plants' feed). */
-export const gearKey = (S: TankSetup, hard: string[]) => 'gear' + JSON.stringify(gearPicks(S)) + hard.join('') + (gearPicks(S).length ? techOf(S).returnOutlet ?? '' : '');
+export const gearKey = (S: TankSetup, hard: string[]) => 'gear' + JSON.stringify(gearPicks(S)) + hard.join('') + (gearPicks(S).length ? (techOf(S).returnOutlet ?? '') + `|air${airValveOf(techOf(S))}|${techOf(S).pumps?.airpump ?? ''}` : ''); // the air valve and pump set the bubbles
 
 /** The review sheet's gear models (review.html): id, label, the picks that show it (with what it hangs on) and the tank. */
 export const GEAR_LOOKS: { id: string; label: string; picks: GearPick[]; salt?: boolean }[] = [

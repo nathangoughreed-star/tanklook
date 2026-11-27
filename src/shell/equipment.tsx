@@ -7,11 +7,12 @@ import type { ComponentChildren } from 'preact';
 import type { Store } from '../scene/store';
 import { GENERIC } from '../scene/gearOwn';
 import {
-  categoryGroups, groupOfKind, buyTree, returnView, addInline, removeInline, setOutlet, categoryView, presetLadder, applyPresetEdit, useItem, setOwned, setLock, ownSum, addOwnAny, specOf, isCat, type CatId, type GearRow,
+  categoryGroups, groupOfKind, buyTree, returnView, addInline, removeInline, setOutlet, airView, setValve, categoryView, presetLadder, applyPresetEdit, useItem, setOwned, setLock, ownSum, addOwnAny, specOf, isCat, type CatId, type GearRow,
 } from './logic/equipment';
 import { LightingGroup, LightLayoutGroup } from './lighting';
 import { artOf } from './logic/gearArt';
 import { gearSel, onGearSel } from '../render/gearSel';
+import { setLiveValve } from '../render/gear/bubbles';
 import { orientOf, withOrient, hangOn, type Orient } from '../interact/gearDrag';
 import { gearSales, useGearSale, DEAL_NOTE, type GearSale } from './logic/deals';
 import { Group, Icon, Pill } from './ui';
@@ -195,6 +196,26 @@ function ReturnGroup({ store }: { store: Store }) {
   );
 }
 
+/** How the valve reads at a setting (0..1). */
+const valveWord = (v: number) => v <= 0 ? 'Shut' : v < 0.2 ? 'A trickle' : v < 0.45 ? 'Gentle' : v < 0.75 ? 'Steady' : v < 0.95 ? 'Vigorous' : 'Wide open';
+
+/** The air pump's control valve (Nathan 2026-11-27): how hard the airstone and sponge filters bubble. The bubbles follow the thumb
+ *  live (render/gear/bubbles.ts setLiveValve); the setting is saved when it is let go. */
+function AirValveGroup({ store, cat }: { store: Store; cat: CatId }) {
+  const [open, setOpen] = useState(true), v = airView(store.tank), [drag, setDrag] = useState<number | null>(null);
+  useEffect(() => () => setLiveValve(null), []);
+  if (!v || (cat === 'filter' && !v.sponges)) return null; // under Filter only for a sponge filter
+  const cur = drag ?? v.valve;
+  return (
+    <Group title="Air valve" sum={valveWord(cur)} open={open} onToggle={() => setOpen(!open)}>
+      <div class="row"><span class="lbl">Air</span><span class="val"><input type="range" min={0} max={100} step={1} value={Math.round(cur * 100)} aria-label="Air valve, shut to wide open" data-airvalve
+        onInput={e => { const x = +(e.target as HTMLInputElement).value / 100; setDrag(x); setLiveValve(x); }}
+        onChange={e => { const x = +(e.target as HTMLInputElement).value / 100; store.edit(s => setValve(s, x)); setDrag(null); setLiveValve(null); }} /></span><span class="unit">{valveWord(cur)}</span></div>
+      <div class="hint">The valve on the air line to {v.columns}. More air makes more and bigger bubbles, a wider column and a rougher surface; it doesn't make them rise faster (bubbles rise about 9 in/s). They move while "Plants sway" is on in Settings.</div>
+    </Group>
+  );
+}
+
 function KindBody({ store, units, cat }: { store: Store; units: 'in' | 'cm'; cat: CatId }) {
   const [own, setOwn] = useState(true), [bands, setBands] = useState<Record<string, boolean>>({});
   const S = store.tank, v = categoryView(S, cat, units, { showAll: true }), tree = buyTree(S, cat, units), multiType = tree.length > 1;
@@ -209,6 +230,7 @@ function KindBody({ store, units, cat }: { store: Store; units: 'in' | 'cm'; cat
       </Group>
       <Sales store={store} cat={cat} />
       {cat === 'filter' ? <ReturnGroup store={store} /> : null}
+      {cat === 'air' || cat === 'filter' ? <AirValveGroup store={store} cat={cat} /> : null}
       <div class="buyhead"><span>Buy</span><span class="sum">{v.buyTotal} · fits this tank, price</span></div>
       {tree.map(t => (
         <div class="type" data-type={t.label}>

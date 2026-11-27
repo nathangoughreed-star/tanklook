@@ -4,6 +4,7 @@ import { outletJets, type FlowJet, type OutletKind } from '../../scene/flow';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { type FilterModel } from '../../demand/gear';
 import { type PartColour } from '../../data/gearCatalog';
+import type { BubbleStream } from './bubbles';
 import { backdropDepth, glassThickness, tankUnderside, floorY, waterY, clamp } from '../../scene/physics';
 import { chord, footprint, shapeOf } from '../../scene/shape';
 import { groundHeight } from '../../scene/terrain';
@@ -71,6 +72,8 @@ export class Kit {
   backdropNotches: { x0: number; x1: number; yMin: number }[] = [];
   /** Where water leaves each outlet into the tank (scene/flow.ts, Nathan 2026-11-26): plants and fish react to the current. */
   jets: FlowJet[] = [];
+  /** Air bubble columns (airstone, sponge lift tubes): drawn by one animated mesh (gear/bubbles.ts), not merged into a bucket. */
+  streams: BubbleStream[] = [];
   /** Parts that are only a line (a tube, a thin rod): left out of a piece's selection box (lane GD1: the box holds the body, not the whole hose). */
   lines = new WeakSet<THREE.BufferGeometry>();
   /** Add `geo` (consumed) in colour `color` (clear parts: `base` = face-on opacity), moved by `m`. */

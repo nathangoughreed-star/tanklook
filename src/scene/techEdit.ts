@@ -7,7 +7,7 @@ import { FILTER_PRODUCTS, HEATER_PRODUCTS, SUMP_PRODUCTS, genericHeaterW, inline
 import { fromUnits } from '../units';
 import { applyLightProduct } from './lightproduct';
 import {
-  applyPreset, canisterOf, feedFor, filterUnits, heatLoss, keepSet, optionDef, ownKeep, setFeed, sumpDefault, sumpFromModel, sumpOf, techOf, withChoice, withUnits, withoutUnit,
+  AIR_VALVE_DEFAULT, applyPreset, canisterOf, feedFor, filterUnits, heatLoss, keepSet, optionDef, ownKeep, setFeed, sumpDefault, sumpFromModel, sumpOf, techOf, withChoice, withUnits, withoutUnit,
   type FilterUnit, type HeaterUnit, type TechSetup,
 } from './tech';
 import type { TankSetup } from './types';
@@ -114,6 +114,12 @@ export const addReturnInline = (S: TankSetup, id: string): TechSetup => {
 export const setReturnOutlet = (S: TankSetup, kind: 'lily' | 'spraybar' | 'nozzle'): TechSetup => {
   const t = techOf(S), next: TechSetup = { ...t };
   if (kind === 'lily') delete next.returnOutlet; else next.returnOutlet = kind;
+  return next;
+};
+/** The air pump's valve, 0 shut .. 1 open (render/gear/bubbles.ts); the default clears the field. */
+export const setAirValve = (S: TankSetup, v: number): TechSetup => {
+  const t = techOf(S), next: TechSetup = { ...t }, k = Math.round(Math.min(1, Math.max(0, v)) * 100) / 100;
+  if (k === AIR_VALVE_DEFAULT) delete next.airValve; else next.airValve = k;
   return next;
 };
 /** Take an in-line product off the return. */
