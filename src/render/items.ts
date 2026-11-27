@@ -177,7 +177,7 @@ function tipRad(L: Limb, t: number) {
   return (L.r0 + (L.r1 - L.r0) * t) * flare * (1 - 0.3 * e * e);
 }
 function limbGeo(r: R, rs: R, L: Limb, cols: [string, string], variant: string, s0: number) {
-  const curve = new THREE.CatmullRomCurve3(L.pts.map(p => V(...p))), len = curve.getLength(), TS = Math.max(8, Math.min(48, Math.round(len / Math.max(4, L.r0)))), RS = L.r0 > 6 ? 10 : 7;
+  const curve = new THREE.CatmullRomCurve3(L.pts.map(p => V(...p))), len = curve.getLength(), TS = Math.max(L.r0 < 2 ? 4 : 8, Math.min(L.r0 < 2 ? 12 : 48, Math.round(len / Math.max(4, L.r0)))), RS = L.r0 > 6 ? 10 : L.r0 < 1.5 ? 5 : 7; // fine twigs (HG1): few segments
   if (L.lattice) return latticeGeo(r, L, cols, s0, curve, len);
   const g = new THREE.TubeGeometry(curve, TS, 1, RS, false), p = g.attributes.position, v = new THREE.Vector3(), c = new THREE.Vector3(), knot = r() * 10;
   // knobbly wood (HG1): the radius swells and pinches along the limb, and the section goes oval, by the limb's knob

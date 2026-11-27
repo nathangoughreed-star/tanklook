@@ -1,0 +1,141 @@
+{
+ "version": 9,
+ "name": "HG1 vs Aquascaper Studio angle",
+ "units": "in",
+ "tanks": [
+  {
+   "tank": {
+    "L": 609.6,
+    "H": 406.4,
+    "D": 457.2
+   },
+   "camera": {
+    "dist": 1500,
+    "az": -12,
+    "el": 24,
+    "zoom": 1.15
+   },
+   "render": {
+    "edge": "a2c",
+    "grid": false,
+    "rim": true,
+    "edges": true,
+    "beams": false,
+    "pop": 0.15,
+    "bg": "blue",
+    "glass": "auto",
+    "bgSides": [
+     "back"
+    ],
+    "bgArc": 145,
+    "glassType": "standard"
+   },
+   "light": {
+    "type": "led",
+    "count": 1,
+    "rows": 1,
+    "pattern": "grid",
+    "spacing": 0,
+    "cone": 52,
+    "bright": 1,
+    "kelvin": 6500,
+    "room": 0.1,
+    "height": 50
+   },
+   "substrate": {
+    "show": true,
+    "type": "custom",
+    "custom": {
+     "grain": "gravel",
+     "color": "#8a7650",
+     "grain2": "gravel",
+     "color2": "#3a332a",
+     "share": 40,
+     "mix": 0.5
+    },
+    "fl": 38.1,
+    "fr": 38.1,
+    "bl": 63.5,
+    "br": 63.5
+   },
+   "layout": {
+    "id": "photo-55g",
+    "seed": 2711
+   },
+   "water": {
+    "on": true,
+    "level": 1,
+    "opacity": 0,
+    "color": "#7fb8a8"
+   },
+   "terrain": {
+    "on": false,
+    "cols": 7,
+    "rows": 0,
+    "h": []
+   },
+   "lid": "hood",
+   "stand": {
+    "show": true,
+    "height": 762,
+    "finish": "oak",
+    "style": "cabinet",
+    "table": {
+     "shape": "rect",
+     "L": 1249.2,
+     "D": 360.2,
+     "x": 0,
+     "z": 0
+    }
+   },
+   "person": {
+    "show": false,
+    "height": 1750,
+    "side": "left"
+   },
+   "wall": {
+    "show": true,
+    "side": "back",
+    "color": "#d9ccb2"
+   },
+   "fish": [],
+   "items": [
+    {
+     "id": 1,
+     "kind": "stone",
+     "variant": "dragon",
+     "seed": 52771,
+     "x": 200,
+     "depth": 240,
+     "lift": 0,
+     "yaw": 10,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 230,
+     "hs": {
+      "tall": 1,
+      "holes": 0.7
+     }
+    },
+    {
+     "id": 2,
+     "kind": "wood",
+     "variant": "spider",
+     "seed": 1103,
+     "x": 420,
+     "depth": 220,
+     "lift": 0,
+     "yaw": 0,
+     "pitch": 0,
+     "tilt": 0,
+     "size": 300,
+     "hs": {
+      "branch": 0.85
+     }
+    }
+   ]
+  }
+ ],
+ "active": 0,
+ "camLock": true
+}

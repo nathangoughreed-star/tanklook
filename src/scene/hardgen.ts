@@ -103,14 +103,16 @@ interface Plan {
    *  long limb, the rest forking off it), a log (one thick lying limb with stubby limbs) */ base: 'knot' | 'stump' | 'trunk' | 'log';
   len: [number, number]; rad: number; taper: number;
   /** elevation of the main limbs [min, max] at spread 0.5 (spread 1 flattens them, 0 stands them up) */ el: [number, number];
-  /** forks: chance per limb, how deep, angle, where along the parent, how long (of the parent), always two (a Y) */ fork: number; depth: number; fAng: [number, number]; kidT: [number, number]; kidLen: [number, number]; two?: boolean;
+  /** forks: chance per limb, how deep, angle, where along the parent, how long (of the parent), always two (a Y) */ fork: number; depth: number; fAng: [number, number]; kidT: [number, number]; kidLen: [number, number]; two?: boolean; /** most forks off one limb (2) */ kids?: number;
   /** wander per segment at gnarl 0.5 */ wander: number; knob: number; broken: number;
   /** pull per segment: + up (manzanita reaching up), - down (roots sagging) */ lift: number;
   /** size = height (manzanita) instead of length */ tall?: boolean;
 }
 const PLANS: Record<string, Plan> = {
   // a thick short knotted stub with a few long thin limbs rising out of it, forking, some tips snapped (refs: open, airy)
-  spider: { n: [4, 7], base: 'knot', len: [0.5, 0.85], rad: 0.017, taper: 0.15, el: [0.45, 1.25], fork: 0.85, depth: 2, fAng: [0.3, 0.7], kidT: [0.3, 0.8], kidLen: [0.35, 0.65], wander: 0.26, knob: 0.08, broken: 0.3, lift: 0.05 },
+  // a thick short knotted stub, limbs rising out of it that fork again and again into many fine twigs tapering to nearly
+  // nothing (refs: open, airy; R191: "many thin, fine tips ... not a few thick sticks")
+  spider: { n: [5, 8], base: 'knot', len: [0.5, 0.85], rad: 0.016, taper: 0.05, el: [0.45, 1.25], fork: 0.95, depth: 3, fAng: [0.3, 0.65], kidT: [0.25, 0.85], kidLen: [0.3, 0.6], kids: 3, wander: 0.22, knob: 0.08, broken: 0.25, lift: 0.05 },
   // a knotty base with very many wiry, curling rootlets reaching out and up
   redmoor: { n: [10, 16], base: 'stump', len: [0.32, 0.55], rad: 0.011, taper: 0.15, el: [0.2, 1.25], fork: 0.8, depth: 3, fAng: [0.3, 0.75], kidT: [0.3, 0.85], kidLen: [0.35, 0.65], wander: 0.5, knob: 0.06, broken: 0.2, lift: 0.03 },
   // a tree: one trunk rising and splitting in Y forks into ever finer limbs, smooth, sinuous
@@ -146,10 +148,10 @@ export function genWood(variant: string, seed: number, size: number, hs?: HardSt
       if (q[1] < r0 * 0.6) { q = [q[0], r0 * 0.6, q[2]]; dir = nrm([dir[0], Math.abs(dir[1]) * 0.3, dir[2]]); } // lies on the ground, does not dig in
       pts.push(q);
     }
-    const r1 = Math.max(r0 * P.taper, 0.002), blunt = r() < P.broken;
+    const r1 = Math.max(r0 * P.taper, 0.0007), blunt = r() < P.broken;
     out.push({ pts, r0, r1, tone, knob, blunt, ...(variant === 'cholla' ? { lattice: true } : {}) });
     if (depth <= 0) return;
-    const kids = P.two ? (r() < 0.25 * nk ? 3 : 2) : r() < P.fork * Math.min(1.6, nk) ? (r() < 0.35 * nk ? 2 : 1) : 0;
+    const most = P.kids ?? 2, kids = P.two ? (r() < 0.25 * nk ? 3 : 2) : r() < P.fork * Math.min(1.6, nk) ? Math.min(most, 1 + Math.floor(r() * most * Math.min(1.5, nk))) : 0;
     const t0 = P.kidT[0] + r() * (P.kidT[1] - P.kidT[0]);
     for (let k = 0; k < kids; k++) {
       const t = P.two ? t0 : P.kidT[0] + r() * (P.kidT[1] - P.kidT[0]), at = pts[Math.round(t * SEG)], rr = (r0 + (r1 - r0) * t) * (P.two ? 0.78 : 0.6 + r() * 0.2);

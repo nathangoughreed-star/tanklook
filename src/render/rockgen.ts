@@ -132,6 +132,7 @@ export function genRock(variant: string, seed: number, size: number, hs?: HardSt
   for (let i = 0; i < cnt; i++) p.setXYZ(i, (p.getX(i) - cx) * kx, (Math.max(p.getY(i), cut) - cut) * ky, (p.getZ(i) - cz) * kz);
   const facets = variant === 'shale' || variant === 'seiryu';
   g.computeVertexNormals();
+  const hollow = cavity(g, Math.max(l, w) / 40);
   // unlit colours
   const col = new Float32Array(cnt * 3), q = new THREE.Color(), nm = g.attributes.normal;
   const rust = new THREE.Color('#7e6636'), rust2 = new THREE.Color('#664630'), vein = new THREE.Color('#d9dcd8'), crust = new THREE.Color('#7a6248'), dark = new THREE.Color('#141110');
@@ -150,11 +151,44 @@ export function genRock(variant: string, seed: number, size: number, hs?: HardSt
     } else if (variant === 'lava') q.lerp(dark, 0.6 * c);
     else if (variant === 'river') q.multiplyScalar(1 + 0.06 * fbm(N, X * 0.08, Y * 0.08, Z * 0.08, 2));
     else q.multiplyScalar(1 - (variant === 'holey' ? 0.55 : 0.5) * c);
+    // R191: the form reads without the light: hollows and crevices darken, worn crests and edges lighten a little
+    const hv = hollow[i]; q.multiplyScalar(hv > 0 ? 1 - CAV_DARK * smooth(0, 1, hv) : 1 + 0.14 * smooth(0, 1, -hv));
     col[i * 3] = q.r; col[i * 3 + 1] = q.g; col[i * 3 + 2] = q.b;
   }
   g.setAttribute('color', new THREE.BufferAttribute(col, 3));
   if (facets) { g = g.toNonIndexed(); g.computeVertexNormals(); }
   return g;
+}
+
+/** How dark the deepest hollows get (R191). */
+const CAV_DARK = 0.62;
+/**
+ * Concavity per vertex of an indexed mesh, about -1 (a crest) .. 1 (a hollow): how far the average of its neighbours,
+ * spread over a few rings, sits out along its normal, in units of `scale` mm. Baked into the colour so a rock's form
+ * shows under flat light too (R191, after Aquascaper Studio's cavity-darkened stones).
+ */
+export function cavity(g: THREE.BufferGeometry, scale: number): Float32Array {
+  const p = g.attributes.position, n = g.attributes.normal, cnt = p.count, idx = g.index!;
+  const nb: number[][] = Array.from({ length: cnt }, () => []);
+  for (let k = 0; k < idx.count; k += 3) { const a = idx.getX(k), b = idx.getX(k + 1), c = idx.getX(k + 2); nb[a].push(b, c); nb[b].push(a, c); nb[c].push(a, b); }
+  // the neighbourhood's centre, widened by a few smoothing passes (so a pit reads as one dark patch, not speckle)
+  let cx = new Float32Array(cnt * 3);
+  for (let i = 0; i < cnt; i++) { cx[i * 3] = p.getX(i); cx[i * 3 + 1] = p.getY(i); cx[i * 3 + 2] = p.getZ(i); }
+  for (let pass = 0; pass < 4; pass++) {
+    const nx = new Float32Array(cnt * 3);
+    for (let i = 0; i < cnt; i++) {
+      const L = nb[i]; let x = 0, y = 0, z = 0;
+      for (const j of L) { x += cx[j * 3]; y += cx[j * 3 + 1]; z += cx[j * 3 + 2]; }
+      const k = L.length || 1; nx[i * 3] = x / k; nx[i * 3 + 1] = y / k; nx[i * 3 + 2] = z / k;
+    }
+    cx = nx;
+  }
+  const out = new Float32Array(cnt);
+  for (let i = 0; i < cnt; i++) {
+    const d = (cx[i * 3] - p.getX(i)) * n.getX(i) + (cx[i * 3 + 1] - p.getY(i)) * n.getY(i) + (cx[i * 3 + 2] - p.getZ(i)) * n.getZ(i);
+    out[i] = Math.max(-1, Math.min(1, d / scale));
+  }
+  return out;
 }
 
 /** Slate: flat plates stacked, each a fractured polygon (straight broken edges, chipped), smaller and shifted going up,
