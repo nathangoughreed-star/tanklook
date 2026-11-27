@@ -91,6 +91,10 @@ function fold(items: Contribution[]): Contribution[] {
 /** Expected electricity rate, USD per kWh: the user's own, else the US mean. */
 export const kwhRate = (P: Pick<UserProfile, 'kwhUsd'>) => P.kwhUsd ?? mean3(FACTORS.kwhUsd);
 
+/** A basic LED bar, $ per inch of tank length (ESTIMATE, Nathan 2026-11-26 "probably like $30" for a 48 in kit light): the cheapest
+ *  catalogued bars, AQUANEAT 12 in $7.99 and 18-24 in $14.88 (Amazon, 2026-10-20), are about $0.65-0.83 an inch; the range runs to
+ *  $1.00 an inch for a store brand (Top Fin LED strip 48 in, $89.99 list at PetSmart 2026-11-26, is the high outlier, not used). */
+export const BASIC_LED_USD_PER_IN = { lo: 0.5, mode: 0.7, hi: 1.0 };
 export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): Demand {
   const hood = S.lid === 'hood' ? hoodOf(S) : undefined, hoodsLight = !!hood && !S.light.product;
   if (hood) S = withHoodLight(S); // HD1: a hood brings its own light (type and watts) into the light model
@@ -146,8 +150,10 @@ export function demandOf(S: TankSetup, P: UserProfile, opts: DemandOpts = {}): D
     const inch = S.tank.L / 25.4, rowL = salt ? rowPrice('gear:led-reef-24') && scale3(rowPrice('gear:led-reef-24')!, Math.max(0.6, inch / 24)) : interp('gear:led-planted-', [24, 48], inch);
     // a catalogued product (Tech > Lighting) costs its own listed price (one retailer, one day: +-10 %), as heaters and filters do
     const lprod = lightProduct(S.light.product), listed = listedPrice(lprod);
-    const lp = listed ? { lo: listed * 0.9, mode: listed, hi: listed * 1.1 } : rowL ? scale3(rowL, !salt && inch > 48 ? inch / 48 : !salt && inch < 24 ? Math.max(0.3, inch / 24) : 1) : scale3(pick(G.lightUsdPerW), watts * sMul.setup);
-    add('light', listed && lprod ? `Light: ${lprod.brand} ${lprod.model}` : `Light (${Math.round(watts)} W)`, 'gear', { ...(S.light.owned ? {} : { setup: price(lp) }), kwhMo: watts * G.lightHoursPerDay * 30 / 1000 }); // an owned light (lane GM6; $0 only when capable, see capableCredit above) costs no set-up: its line reads $0 "you have" (costlines.ts)
+    // a bundle's own light with no price of its own (sold only in the kit): a basic LED bar's price for this length, not a planted light's
+    const basic = !listed && S.light.bundled != null && S.light.watts === S.light.bundled;
+    const lp = listed ? { lo: listed * 0.9, mode: listed, hi: listed * 1.1 } : basic ? scale3(BASIC_LED_USD_PER_IN, inch) : rowL ? scale3(rowL, !salt && inch > 48 ? inch / 48 : !salt && inch < 24 ? Math.max(0.3, inch / 24) : 1) : scale3(pick(G.lightUsdPerW), watts * sMul.setup);
+    add('light', listed && lprod ? `Light: ${lprod.brand} ${lprod.model}` : basic ? `Light (${Math.round(watts)} W, priced as a basic LED bar)` : `Light (${Math.round(watts)} W)`, 'gear', { ...(S.light.owned ? {} : { setup: price(lp) }), kwhMo: watts * G.lightHoursPerDay * 30 / 1000 }); // an owned light (lane GM6; $0 only when capable, see capableCredit above) costs no set-up: its line reads $0 "you have" (costlines.ts)
   }
   // a tank started from its animals (path 1) has no filter or heater until the owner adds one (Nathan 2026-10-26: not in the price either)
   const bare = !!S.stockFirst && !opts.kit;

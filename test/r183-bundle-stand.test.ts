@@ -39,3 +39,28 @@ describe('a bundle turned salt (R184)', () => {
     }
   });
 });
+
+// Nathan 2026-11-26: a bundle's own light (no price of its own) is compared with a basic LED bar, not a planted light.
+import { demandOf, defaultProfile } from '../src/demand';
+import { BASIC_LED_USD_PER_IN } from '../src/demand/engine';
+import { dealOffers } from '../src/demand/deals';
+describe('a bundle light is priced as a basic LED', () => {
+  const lightOf = (S: Parameters<typeof demandOf>[0]) => demandOf(S, defaultProfile()).items.find(i => i.key === 'light')!;
+  it('the Marineland 60 kit light is about $0.70 an inch, about $34', () => {
+    const S = sceneFromDeal(deal('petsmart-marineland-modern-60'))!.tanks[0];
+    const l = lightOf(S);
+    expect(l.setup!.mode).toBeCloseTo(BASIC_LED_USD_PER_IN.mode * S.tank.L / 25.4, 0);
+    expect(l.setup!.mode).toBeLessThan(40);
+    expect(l.label).toContain('basic LED');
+  });
+  it('more watts than the bundle light: back to the usual light estimate', () => {
+    const S = sceneFromDeal(deal('petsmart-marineland-modern-60'))!.tanks[0];
+    S.light = { ...S.light, watts: (S.light.watts ?? 0) + 20 };
+    expect(lightOf(S).label).not.toContain('basic LED');
+  });
+  it('the saving vs the parts', () => {
+    const d = deal('petsmart-marineland-modern-60'), S = sceneFromDeal(d)!.tanks[0];
+    const o = dealOffers(S, defaultProfile(), {}, [d])[0];
+    expect(o.savingUsd).toBeGreaterThan(0);
+  });
+});
