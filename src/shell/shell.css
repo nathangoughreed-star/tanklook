@@ -963,3 +963,6 @@ body.landdock .ui2app .viewer { margin-left: 400px; }
 
 .startdoors .doorpic { aspect-ratio: 16 / 7; } .dlg .dlgbody { scrollbar-color: var(--line) transparent; }
 @media (max-width: 640px) { .startdoors .doorpic { aspect-ratio: 5 / 3; } }
+/* Commercial tanks: Common tanks / All tanks tiers (Nathan 2026-11-27) */
+.seg.tiers { display: flex; width: 100%; margin-bottom: 2px; } .seg.tiers button { flex: 1; } .seg.tiers .n { color: var(--text-3); font-weight: 400; margin-left: 4px; }
+.tierhint { margin: 0 0 var(--s1); }

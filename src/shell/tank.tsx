@@ -388,7 +388,12 @@ export function TankPicker({ store, preview, onClose, onChosen, onMaker, libN }:
   const [sel, setSel] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const searching = !!q.trim();
-  const custom = customRows(S, lib, u, q), comm = useMemo(() => commercialRows(S, u, { q, chips, fits, sale, f: tf, popular: !allSizes && !q.trim() }), [S, u, q, chips, fits, sale, tf, allSizes]);
+  const custom = customRows(S, lib, u, q);
+  // Two tiers, Common tanks then All tanks (Nathan 2026-11-27); a search always reaches every tank. Both counts follow the filters.
+  const tierAll = allSizes || !!q.trim();
+  const commAll = useMemo(() => commercialRows(S, u, { q, chips, fits, sale, f: tf }), [S, u, q, chips, fits, sale, tf]);
+  const commCommon = useMemo(() => commercialRows(S, u, { q, chips, fits, sale, f: tf, popular: true }), [S, u, q, chips, fits, sale, tf]);
+  const comm = tierAll ? commAll : commCommon;
   const showCustom = g.custom || searching, showComm = g.commercial || searching;
   const visible: PickRow[] = [...(showCustom ? custom : []), ...(showComm ? comm.rows : [])];
   const cur = visible.find(r => r.key === sel) ?? [...custom, ...comm.rows].find(r => r.key === sel);
@@ -443,16 +448,20 @@ export function TankPicker({ store, preview, onClose, onChosen, onMaker, libN }:
         <div class={`group${showComm ? ' open' : ''}`}>
           <button type="button" class="gh" aria-expanded={showComm} onClick={() => flip('commercial')}>Commercial tanks <span class="n">{comm.total}</span><span class="sum">{showComm ? 'fixed size and build' : commercialLine(S, comm.total).replace(/^\d+ · /, '')}</span></button>
           {showComm ? <div class="gb">
+            <div class="seg full tiers" role="group" aria-label="Which tanks to list">
+              <button type="button" class={!tierAll ? 'on' : ''} aria-pressed={!tierAll} data-testid="tier-common" disabled={searching} title={searching ? 'A search looks through every tank' : 'The classic standard sizes, any maker'} onClick={() => setAllSizes(false)}>Common tanks <span class="n">{commCommon.rows.length}</span></button>
+              <button type="button" class={tierAll ? 'on' : ''} aria-pressed={tierAll} data-testid="all-sizes" title="Every size, maker and kit in the catalog" onClick={() => setAllSizes(true)}>All tanks <span class="n">{commAll.rows.length}</span></button>
+            </div>
+            <div class="hint tierhint">{tierAll ? (searching ? 'Searching every size, maker and kit.' : 'Every size, maker and kit in the catalog.') : 'The classic standard sizes, any maker. Switch to All tanks for every product.'}</div>
             <div class="chips">
               {SIZE_CHIPS.map(([c, t]) => <button type="button" class={`chip${chips.has(c) ? ' on' : ''}`} aria-pressed={chips.has(c)} onClick={() => { const n = new Set(chips); if (n.has(c)) n.delete(c); else n.add(c); setChips(n); }}>{t}</button>)}
               <button type="button" class={`chip${fits ? ' on' : ''}`} aria-pressed={fits} disabled={comm.noSpace} title={comm.noSpace ? 'Set your space in Constraints first (comes in shell step 5)' : 'Only tanks that fit the space you set'} onClick={() => setFits(!fits)}>Fits my space</button>
-              <button type="button" class={`chip${allSizes ? ' on' : ''}`} aria-pressed={allSizes} data-testid="all-sizes" title="Popular sizes only, or every size and product in the catalog" onClick={() => setAllSizes(!allSizes)}>All sizes</button>
               <button type="button" class={`chip${sale ? ' on' : ''}`} aria-pressed={sale} title="Only tanks with a sale price on record; each row says when it was last checked" onClick={() => setSale(!sale)}>On sale</button>
             </div>
             <TankFilters f={tf} set={setFilter} shown={comm.rows.length} total={comm.total} brands={comm.brands} u={u} extra={chips.size + (fits ? 1 : 0) + (sale ? 1 : 0)} onClear={clearAll} />
-            <div class="hint" data-testid="tank-count">{comm.rows.length} of {comm.total} shown</div>
+            <div class="hint" data-testid="tank-count">{comm.rows.length} {tierAll ? "" : "common "}tank{comm.rows.length === 1 ? "" : "s"} shown</div>
             {comm.rows.map(row)}
-            {!allSizes && !searching ? <button type="button" class="btn sm" data-testid="show-all-sizes" onClick={() => setAllSizes(true)}>Show all sizes and products</button> : null}
+            {!tierAll ? <button type="button" class="btn sm" data-testid="show-all-sizes" onClick={() => setAllSizes(true)}>See all {commAll.rows.length} tanks</button> : null}
             {!comm.rows.length ? <div class="hint">{sale ? 'No tank sale is on record.' : 'No commercial tank matches.'}</div> : null}
           </div> : null}
         </div>
