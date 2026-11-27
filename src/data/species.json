@@ -163,7 +163,7 @@
   {"id": "bamboosharkb", "name": "Brownbanded bamboo shark", "sci": "Chiloscyllium punctatum", "tl": 900, "art": "bamboosharkb", "aspect": 0.184},
   {"id": "goldfishb", "name": "Fancy goldfish", "sci": "Carassius auratus", "tl": 203, "art": "goldfishb", "aspect": 0.708},
   {"id": "kuhlib", "name": "Kuhli loach", "sci": "Pangio kuhlii", "tl": 100, "art": "kuhlib", "aspect": 0.205},
-  {"id": "hillstreamb", "name": "Reticulated hillstream loach", "sci": "Sewellia lineolata", "tl": 60, "art": "hillstreamb", "aspect": 0.365},
+  {"id": "hillstreamb", "name": "Reticulated hillstream loach", "sci": "Sewellia lineolata", "tl": 60, "art": "hillstreamb", "aspect": 0.329},
   {"id": "oscar", "albino": "https://link.springer.com/article/10.1007/s10750-022-04921-w", "name": "Oscar", "sci": "Astronotus ocellatus", "tl": 300, "art": "oscar"},
   {"id": "goldfish", "name": "Fancy goldfish", "sci": "Carassius auratus", "tl": 203, "group": "shoal", "art": "goldfish"},
   {"id": "comet", "name": "Comet goldfish", "sci": "Carassius auratus", "tl": 250, "group": "shoal", "art": "comet", "note": "Single-tailed goldfish; grows to 30 cm, best in a pond or a very large tank."},

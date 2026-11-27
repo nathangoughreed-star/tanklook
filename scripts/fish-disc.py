@@ -17,6 +17,7 @@ ap.add_argument('sheet'); ap.add_argument('spec')
 ap.add_argument('--peak-pec', type=float, default=0.58); ap.add_argument('--peak-pel', type=float, default=0.5)
 ap.add_argument('--lead-pec', type=float, default=5.0); ap.add_argument('--rake-pec', type=float, default=4.0)
 ap.add_argument('--lead-pel', type=float, default=1.5); ap.add_argument('--rake-pel', type=float, default=6.0)
+ap.add_argument('--th', type=float, default=None, help='root angle on the section, x pi (0 top .. 1 keel; renderer default 0.72): lower for a boxy flat belly (hillstream 0.85)')
 ap.add_argument('--dy-pel', type=float, default=0.6, help='%% SL the pelvic plane lies below the pectoral (it tucks under its rear)')
 ap.add_argument('--dry', action='store_true')
 o = ap.parse_args()
@@ -40,7 +41,7 @@ for k, m in COL.items():
     span = (fx.max() - fx.min() + 1) / 2 / SL * 100
     out[k] = {'s0': round(s0, 1), 's1': round(s1, 1), 'span': round(span, 1), 'peak': o.peak_pec if k == 'pectoral' else o.peak_pel,
               'lead': o.lead_pec if k == 'pectoral' else o.lead_pel, 'rake': o.rake_pec if k == 'pectoral' else o.rake_pel,
-              **({'dy': o.dy_pel} if k == 'pelvic' else {}), 'source': 'fish-disc.py: run from the side map, span from the front map (% SL)'}
+              **({'dy': o.dy_pel} if k == 'pelvic' else {}), **({'th': round(o.th * 3.14159265, 3)} if o.th else {}), 'source': 'fish-disc.py: run from the side map, span from the front map (% SL)'}
     print('%s: %.1f-%.1f %% SL along the body, half-span %.1f %% SL' % (k, s0, s1, span))
 # the side map often paints the pelvic over the pectoral's rear run (hillstream: one yellow piece 11-73 % SL, cyan under all of it);
 # a pelvic starting at the pectoral's front is that, so it starts where the pectoral's widest part is behind it (photo: the lobes meet)
