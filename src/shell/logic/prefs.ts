@@ -19,7 +19,7 @@ export interface StyleCard { key: string; label: string; blurb: string; state: A
 
 /** The decorative looks (DS1 plan P3): not in QUICK_ARCHETYPES, so held beside it. `told` = the aspect keys a card writes (+1 Interested, -1 Avoid). */
 export const EXTRA_CARDS: readonly { key: string; habitat: 'freshwater'; label: string; blurb: string; told: readonly string[] }[] = [
-  { key: 'freshwater-decorative', habitat: 'freshwater', label: 'Colorful decorative', blurb: 'A classic castle on bright gravel with silk and plastic plants in pink, red and blue.', told: ['layout:castle-colored-gravel'] },
+  { key: 'freshwater-decorative', habitat: 'freshwater', label: 'Colorful decorative', blurb: 'A classic castle on bright gravel with silk and plastic plants in pink, red and blue.', told: ['layout:castle-coloured-gravel'] },
   { key: 'freshwater-themed', habitat: 'freshwater', label: 'Themed centrepiece', blurb: 'A story in the tank: a sunken pirate ship and a treasure chest, framed by live plants.', told: ['layout:themed-scene'] },
 ];
 const extraOf = (key: string) => EXTRA_CARDS.find(c => c.key === key);
