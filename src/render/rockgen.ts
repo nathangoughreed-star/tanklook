@@ -144,7 +144,7 @@ export function genRock(variant: string, seed: number, size: number, hs?: HardSt
       q.lerp(rust.clone().lerp(rust2, smooth(-0.3, 0.3, mot)), 0.55 * st).multiplyScalar(1 - 0.45 * c);
     } else if (variant === 'seiryu') {
       q.multiplyScalar(0.7 + 0.3 * aux[i]);
-      if (Math.abs(Math.sin(Y * 0.05 + X * 0.012 + 6 * fbm(N, X * 0.008, Y * 0.008, Z * 0.008, 2))) < 0.025 + 0.02 * tex) q.lerp(vein, 0.5); // calcite veins
+      if (Math.abs(Math.sin(Y * 0.05 + X * 0.012 + 6 * fbm(N, X * 0.008, Y * 0.008, Z * 0.008, 2))) < 0.025 + 0.02 * tex) q.lerp(vein, 0.35); // calcite veins
     } else if (variant === 'lace') { // grey crests, rust-brown crust down in the holes
       q.lerp(crust, 0.5 * c * (0.5 + 0.5 * aux[i])).multiplyScalar(1 - 0.55 * c);
     } else if (variant === 'lava') q.lerp(dark, 0.6 * c);

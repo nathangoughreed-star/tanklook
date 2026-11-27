@@ -33,8 +33,8 @@ export function cleanHs(o: unknown): HardStyle | undefined {
  *  in research/hardscape/refs.md. */
 export const STONE_COLS: Record<string, { label: string; hex: string }[]> = {
   river: [{ label: 'Brown-grey', hex: '#8a8378' }, { label: 'Sand', hex: '#a89f90' }, { label: 'Slate grey', hex: '#6e6a64' }, { label: 'Tan', hex: '#9a8a70' }, { label: 'Charcoal', hex: '#55524e' }],
-  seiryu: [{ label: 'Blue-grey', hex: '#555b63' }, { label: 'Light grey', hex: '#767a80' }, { label: 'Charcoal', hex: '#3d4148' }],
-  dragon: [{ label: 'Clay brown', hex: '#735a40' }, { label: 'Ochre', hex: '#8a6a40' }, { label: 'Earth', hex: '#5e4a38' }, { label: 'Olive grey', hex: '#77735f' }],
+  seiryu: [{ label: 'Blue-grey', hex: '#444a52' }, { label: 'Light grey', hex: '#62676e' }, { label: 'Charcoal', hex: '#33373d' }],
+  dragon: [{ label: 'Clay brown', hex: '#5e4a38' }, { label: 'Ochre', hex: '#6e5636' }, { label: 'Earth', hex: '#4c3e32' }, { label: 'Olive grey', hex: '#63604f' }],
   holey: [{ label: 'Cream', hex: '#d3cab4' }, { label: 'Bone', hex: '#e0d8c4' }, { label: 'Buff', hex: '#c2b496' }],
   lace: [{ label: 'Grey-brown', hex: '#5e5a54' }, { label: 'Charcoal', hex: '#45423e' }, { label: 'Rust grey', hex: '#6a5a4a' }, { label: 'Pale grey', hex: '#a8a49a' }],
   lava: [{ label: 'Red-brown', hex: '#5a2f28' }, { label: 'Black', hex: '#2e2a28' }, { label: 'Rust red', hex: '#7a3a2a' }],

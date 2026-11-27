@@ -3,9 +3,9 @@
 //   URL=http://localhost:5287/ node scripts/hg1-shots.mjs      -> research/screens/HG1/ui-*.jpg + ui-facts.json
 import { spawn } from 'node:child_process';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe', BASE = process.env.URL ?? 'http://localhost:5287/', PORT = 9481, OUT = 'research/screens/HG1';
+const CHROME = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', BASE = process.env.URL ?? 'http://localhost:5287/', PORT = 9481, OUT = 'research/screens/HG1';
 mkdirSync(OUT, { recursive: true });
-const ch = spawn(CHROME, ['--headless=new', `--remote-debugging-port=${PORT}`, '--window-size=1400,900', '--user-data-dir=' + (process.env.TEMP + '/hg1-chrome-' + Date.now()), '--no-first-run', '--enable-unsafe-swiftshader', '--use-angle=swiftshader'], { stdio: 'ignore' });
+const ch = spawn(CHROME, ['--headless=new', `--remote-debugging-port=${PORT}`, '--window-size=1400,900', '--user-data-dir=' + (process.env.TEMP + '/hg1-chrome-' + Date.now()), '--no-first-run', '--use-angle=d3d11', '--ignore-gpu-blocklist', '--disable-background-timer-throttling', '--disable-renderer-backgrounding'], { stdio: 'ignore' });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let tabs; for (let i = 0; i < 40; i++) { try { tabs = await (await fetch(`http://127.0.0.1:${PORT}/json`)).json(); if (tabs.length) break; } catch {} await sleep(500); }
 const ws = new WebSocket(tabs.find(t => t.type === 'page').webSocketDebuggerUrl); await new Promise(r => ws.onopen = r);
@@ -26,10 +26,11 @@ const open = async () => {
   await send('Page.navigate', { url: BASE });
   for (let i = 0; i < 120; i++) { if (await ev(`[...document.querySelectorAll('button')].some(b => b.textContent.trim() === 'Hardscape')`).catch(() => false)) break; await sleep(1000); }
   await sleep(6000);
+  if (!(await ev(`[...document.querySelectorAll('button')].some(b => b.textContent.trim() === 'Hardscape')`))) { await shot('ui-debug-not-loaded', 0); throw new Error('page did not load'); }
 };
 const toPiece = async name => {
   await click('button', 'Hardscape'); await sleep(2500);
-  await click('button', 'placed'); await sleep(1500);
+  if (!(await ev(`!!document.querySelector('.pr .pn')`))) { await click('button', 'placed'); await sleep(1500); }
   await click('.pr .pn', name); await sleep(2000);
   await scrollTo('.genlook');
 };
