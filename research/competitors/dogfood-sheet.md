@@ -23,6 +23,12 @@ Plan a 40 gallon breeder for a beginner with $400: pick the tank, add 10 cardina
 add plants and a filter, get a verdict and a price, then try to share or save it. Stop when you get stuck for more
 than a minute and write down where.
 
+## Verdicts so far
+
+- **TankMates (2026-11-27):** Not a serious competitor. Nathan's words: "an AI-slop low effort money grab. The only
+  thing valuable we can gleem from this site is what not to do. Unless I am just really dumb and cant operate the UI."
+  Use it as a list of what not to do (feeds R167). If he couldn't work the UI, that counts against TankMates, not him.
+
 ## Notes per product
 
 | Question | Notes |
