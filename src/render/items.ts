@@ -947,7 +947,7 @@ function vineDeps(S: TankSetup, it: Item) {
 /** Java moss on stone or wood (R182 lane JM step 4): the plant types that drape over what they sit on. */
 const DRAPES = new Set(['moss']);
 /** How far round its own footprint (R = half its width) a draping plant samples what is under it: its spread when fully grown. */
-const HOST_REACH = 2.3, HOST_N = 33;
+const HOST_REACH = 2.3;
 /** The stone and wood a draping plant may lie on, with where each sits (as vineLimbs places wood). */
 function hostPieces(S: TankSetup, T: Tank, it: Item, reach: number) {
   const out: { w: Item; wy: number; at: Item }[] = [];
@@ -960,30 +960,60 @@ function hostPieces(S: TankSetup, T: Tank, it: Item, reach: number) {
   }
   return out;
 }
-const HOST_RAY = new THREE.Raycaster(), HOST_MAT = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+const HOST_MAT = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
 /**
- * What a draping plant (java moss) lies on, in its own frame: [n, cell, n x n heights over its base, to the mm; NaN =
- * only the ground there], the grid centred on it, x along its own x, z along its own z. Empty when it is not lifted
- * onto a piece (nothing solid right under it). Looked down onto the stone and wood meshes from above the tank.
+ * What a draping plant (java moss) lies on, in its own frame (R182 lane JM step 4 pass 2): the stone and wood surface
+ * within its reach, as the pieces' own triangles, so it can coat a steep side, not only a top. [nv, nt, then per vertex
+ * x, y, z (over its base, mm to 0.1), nx, ny, nz (outward, to 0.01), height over the ground (mm), then per triangle i, j,
+ * k]; x along its own x, z along its own z. Empty when it is not lifted onto a piece (nothing solid near its base).
  */
 export function mossHost(S: TankSetup, T: Tank, it: Item, y: number, c: number, s: number, h: number): number[] {
   if (!DRAPES.has(it.variant) || it.lift <= 2 || it.pitch || it.tilt) return [];
   const R = h / PLANT_ASPECT[it.variant as PlantType] / 2, ext = R * HOST_REACH, pieces = hostPieces(S, T, it, ext);
   if (!pieces.length) return [];
-  const meshes = pieces.map(({ w, wy, at }) => { const m = new THREE.Mesh(solidShape(w), HOST_MAT); m.position.set(w.x, wy, -w.depth); m.rotation.copy(itemEuler(at)); m.updateMatrixWorld(true); return m; });
-  const n = HOST_N, cell = (2 * ext) / (n - 1), out: number[] = [n, Math.round(cell * 100) / 100], top = T.H + 400, down = new THREE.Vector3(0, -1, 0), o = new THREE.Vector3();
-  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
-    const lx = -ext + i * cell, lz = -ext + j * cell, x = it.x + lx * c + lz * s, d = it.depth + lx * s - lz * c;
-    HOST_RAY.set(o.set(x, top, -d), down);
-    // the highest surface not far over its base (a limb crossing over it is not what it lies on)
-    const hit = HOST_RAY.intersectObjects(meshes, false).find(q => q.point.y - y < Math.max(30, h));
-    out.push(hit ? Math.round(hit.point.y - y) : NaN);
+  const vs: number[] = [], ts: number[] = [], weld = new Map<string, number>(), p = new THREE.Vector3(), nv = new THREE.Vector3(), tri = new THREE.Triangle(), cl = new THREE.Vector3(), O = new THREE.Vector3();
+  let near = Infinity;
+  for (const { w, wy, at } of pieces) {
+    const m = new THREE.Mesh(solidShape(w), HOST_MAT); m.position.set(w.x, wy, -w.depth); m.rotation.copy(itemEuler(at)); m.updateMatrixWorld(true);
+    const g = m.geometry, P = g.attributes.position, N = g.attributes.normal, nm = new THREE.Matrix3().getNormalMatrix(m.matrixWorld);
+    // each vertex in its own frame (a vertex shared by several faces once: welded at 0.5 mm)
+    const loc: THREE.Vector3[] = [], nrm: THREE.Vector3[] = [];
+    for (let i = 0; i < P.count; i++) {
+      p.fromBufferAttribute(P, i).applyMatrix4(m.matrixWorld);
+      const dx = p.x - it.x, dd = -p.z - it.depth;
+      loc.push(new THREE.Vector3(dx * c + dd * s, p.y - y, dx * s - dd * c));
+      nv.fromBufferAttribute(N, i).applyMatrix3(nm); const nx = nv.x * c - nv.z * s, nz = nv.x * s + nv.z * c; // (world z is -depth)
+      nrm.push(new THREE.Vector3(nx, nv.y, nz).normalize());
+    }
+    const idx = g.index ? (g.index.array as ArrayLike<number>) : Array.from({ length: P.count }, (_, i) => i);
+    const id = (i: number) => {
+      const q = loc[i], k = `${Math.round(q.x * 2)},${Math.round(q.y * 2)},${Math.round(q.z * 2)}`;
+      let j = weld.get(k);
+      if (j == null) {
+        j = vs.length / 7; weld.set(k, j);
+        const wx = it.x + q.x * c + q.z * s, wd = it.depth + q.x * s - q.z * c;
+        vs.push(q.x, q.y, q.z, nrm[i].x, nrm[i].y, nrm[i].z, q.y + y - groundHeight(S, T, wx, wd));
+      } else { const o = j * 7; vs[o + 3] += nrm[i].x; vs[o + 4] += nrm[i].y; vs[o + 5] += nrm[i].z; } // (normals of a welded vertex averaged)
+      return j;
+    };
+    for (let f = 0; f + 2 < idx.length; f += 3) {
+      const a = loc[idx[f]], b = loc[idx[f + 1]], d = loc[idx[f + 2]];
+      tri.set(a, b, d); const dn = tri.closestPointToPoint(O, cl).length();
+      if (dn > ext) continue; // (out of its reach; a big face counts by its nearest point, not its corners)
+      near = Math.min(near, dn);
+      const i0 = id(idx[f]), i1 = id(idx[f + 1]), i2 = id(idx[f + 2]);
+      if (i0 !== i1 && i1 !== i2 && i0 !== i2) ts.push(i0, i1, i2);
+    }
   }
-  // on a piece: something solid near its base close to its middle (tied on the side of a limb, straight under its
-  // middle may be air)
-  const m0 = (n - 1) / 2, near = Math.max(1, Math.round(R * 0.35 / cell));
-  for (let dj = -near; dj <= near; dj++) for (let di = -near; di <= near; di++) { const v = out[2 + (m0 + dj) * n + m0 + di]; if (Number.isFinite(v) && Math.abs(v) < R * 0.5) return out; }
-  return []; // (nothing solid near its middle: it is not on a piece)
+  // on a piece: something solid near its base (tied on the side of a limb, straight under its middle may be air)
+  if (!ts.length || near > R * 0.5) return [];
+  const out: number[] = [vs.length / 7, ts.length / 3];
+  for (let o = 0; o < vs.length; o += 7) {
+    const l = Math.hypot(vs[o + 3], vs[o + 4], vs[o + 5]) || 1;
+    out.push(Math.round(vs[o] * 10) / 10, Math.round(vs[o + 1] * 10) / 10, Math.round(vs[o + 2] * 10) / 10, Math.round(vs[o + 3] / l * 100) / 100, Math.round(vs[o + 4] / l * 100) / 100, Math.round(vs[o + 5] / l * 100) / 100, Math.round(vs[o + 6]));
+  }
+  for (const t of ts) out.push(t);
+  return out;
 }
 /** What a draping plant's mesh depends on besides its own data: the pieces near it (their place, turn and size). */
 function mossDeps(S: TankSetup, it: Item) {
