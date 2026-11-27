@@ -13,6 +13,7 @@ import type { CameraSettings, Fish, Tank, TankSetup } from '../scene/types';
 import { HOOD_H, PART, buildTank, disposeScene, envKey, lookKey, patchLook, patchTank, personSpot, type BuiltTank, type PoolGrab, type TerrainEdit } from './build';
 import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, pairCentre, pairEnvelope, placeCamera, windowCentre } from './camera';
+import { castShadows, off as castOff } from './castPass';
 import { glowColor, placeSlice, roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
 import { FROST } from './build';
 import { autoStep, levelOf, onPerf, perf, setFps, AUTO_QUALITY } from './perf';
@@ -212,6 +213,8 @@ export class Viewer {
   readonly vps: Viewport[];
   private dirty = true;
   private needsBuild = true;
+  /** Bumped by every build or patch: the cast-shadow maps redraw when it changes (castPass.ts, lane SH1). */
+  private castRev = 0;
   /**
    * Motion-time resolution (lane P1, Nathan 2026-10-19): while the camera moves and frames run over `govBudget` ms, the pixel
    * ratio steps down (never below half); `govScale` is what the machine needed and is kept, so the next orbit starts there.
@@ -791,7 +794,7 @@ export class Viewer {
     }
     this.syncGearSel();
     this.setFrostPlain(levelOf().frostPlain); // a rebuilt film takes the level's look before its programs are linked
-    this.needsBuild = false;
+    this.needsBuild = false; this.castRev++;
   }
 
   /** Lay out viewports, frame cameras, render. Synchronous, so readouts are never a frame behind. */
@@ -917,6 +920,7 @@ export class Viewer {
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
       r.setClearColor(new THREE.Color(0xd9dde2).multiplyScalar(0.06 + 0.94 * roomLevel(roomOf(S.light)))); r.clear(); // the space beyond the room dims with the room light
       setLightUniforms(vp.T, S.light, S.lid, S.render.beams, S); setWaterUniforms(vp.T, S.water, S.render.pop, S.condition);
+      castShadows(r, vp.i, vp.scene!, vp.T, this.castRev, o => this.isHidden(o), [...this.hidden].join());
       placeSlice(vp.scene!, vp.T, { ...S, tank: vp.T }, wattsOf({ ...S, tank: vp.T }) > 0); placeShells(vp.scene!, vp.T, S); OUTLINE.uPop.value = S.render.pop; OUTLINE.uVpH.value = vp.h; // placeSlice: the Light map layer at a set height
       // keep the cleared alpha (1): alpha-to-coverage fins would otherwise leave a translucent canvas, through which
       // the page shows on screen and a viewer's background (often white) in an exported PNG
@@ -945,7 +949,7 @@ export class Viewer {
       for (const o of culled) { o.onBeforeRender = THREE.Object3D.prototype.onBeforeRender; o.onAfterRender = THREE.Object3D.prototype.onAfterRender; }
       cb.setLocked(false); cb.setMask(true); gl.colorMask(true, true, true, true);
     }
-    r.setScissorTest(false);
+    r.setScissorTest(false); castOff();
     if (this.reveal) this.keepFrame();
     if (this.swayFrame) return; // only the plants moved: the maps and the panels that follow each frame stay as they are
     // one viewpoint map per view, at its bottom-left corner, drawn from that view's own camera, tank and person

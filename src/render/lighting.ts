@@ -20,6 +20,7 @@ import { SHADE_MAX, shadesOf, type Shade } from '../scene/shade';
 import { FX } from './fx';
 import { lightProduct } from '../data/gearCatalog';
 import { addProductLight } from './light3d';
+import { CAST, CAST_GLSL } from './castShadow';
 import { roomOf } from '../scene/roomlight';
 import { AQ_MAX, LAMP_Y, LUXW, barZ, beamExp, emitters, ledBarDepth, lampHeight, mountOf, lightEnvCached, lightOutCached, renderBright, fixtureOf, techOf, tubeLayout, tubeOf, type Emitter, type LightEnv, type LightScene } from '../scene/lightout';
 // the fixture geometry lives with the light-output model now (lane K); re-exported so importers stay as they were
@@ -298,6 +299,7 @@ float aqSpec = 0.0;
 uniform float uFxTone, uFxCaus, uFxTime, uFxDepth, uFxLine; uniform sampler2D uCausTex; uniform vec4 uCausK; uniform float uCausOff;
 uniform float uFishCap; uniform float uRoomMat, uRoomK, uSpillR, uTankRound, uAlgH; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater, uWTint; uniform vec3 uWCol; uniform float uPop, uFishCard, uFishRing;
 varying vec3 vAqP; varying vec3 vAqN;
+${CAST_GLSL}
 ${BOW_GLSL}
 ${WATER_FILTER_GLSL}
 float aqHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -345,6 +347,7 @@ vec3 aqLight() {
     aqSpec = 0.6 * k * pow(max(dot(n, hv), 0.0), 40.0);
     return vec3(k * aqFishFacing(n, ld));
   }
+  float aqSp0 = aqSpec;
   for (int i = 0; i < ${AQ_MAX}; i++) {
     if (i >= uEmN) break;
     vec4 e = uEm[i];
@@ -361,6 +364,8 @@ vec3 aqLight() {
     }
     sum += cone * fall * facing;
   }
+  // cast shadows (lane SH1, castShadow.ts): the fixture's share, its highlight on a fish too
+  aqCastK = aqCast(n); sum *= aqCastK; aqSpec = aqSp0 + (aqSpec - aqSp0) * aqCastK;
   // the grains seen through the glass sit inside the pile, shadowed by the gravel above: a tenth of the fixture, the rest ambient
   return vec3(uAmb) + uLCol * (uBright * uNorm * sum * (uPane > 0.5 ? 0.1 : 1.0));
 }
@@ -540,7 +545,7 @@ export const FISH_CAP = { value: 1 };
 if (import.meta.env?.DEV && typeof window !== 'undefined') (window as unknown as { __fishCap: unknown }).__fishCap = FISH_CAP;
 function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithUniforms) {
   this.userData.pre?.(shader); // the material's own patch (hardscape: glass clip and grit) still applies under the lighting
-  Object.assign(shader.uniforms, LU, AU, FXU, CAUS(), { uAlgH: { value: this.userData.solid ? 1 : 0 }, uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uPane: { value: this.userData.pane ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uFishCard: { value: this.userData.fishCard ? 1 : 0 }, uFishRing: { value: this.userData.noRing ? 0 : 1 }, uFishCap: FISH_CAP });
+  Object.assign(shader.uniforms, LU, CAST, AU, FXU, CAUS(), { uAlgH: { value: this.userData.solid ? 1 : 0 }, uCard: { value: this.userData.card ? 1 : 0 }, uSub: { value: this.userData.sub ? 1 : 0 }, uFish: { value: this.userData.fish ? 1 : 0 }, uPane: { value: this.userData.pane ? 1 : 0 }, uRoomMat: { value: this.userData.room ? 1 : 0 }, uFishCard: { value: this.userData.fishCard ? 1 : 0 }, uFishRing: { value: this.userData.noRing ? 0 : 1 }, uFishCap: FISH_CAP });
   shader.vertexShader = shader.vertexShader.replace('#include <common>', '#include <common>\n' + AQ_VERT)
     // an instanced mesh (leaf litter, render/scatter.ts) places each copy by its instance matrix too
     .replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef USE_INSTANCING\nvAqP = (modelMatrix * instanceMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * mat3(instanceMatrix) * normal);\n#else\nvAqP = (modelMatrix * vec4(transformed, 1.0)).xyz; vAqN = normalize(mat3(modelMatrix) * normal);\n#endif');

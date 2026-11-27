@@ -17,6 +17,7 @@ export const FX_LABELS: Record<string, { label: string; help: string }> = {
   waterline: { label: 'Water-surface band', help: 'The bright band and curved edge at the water surface, and the front pane\'s reflection.' },
   embed: { label: 'Rocks and wood sunk into the substrate', help: 'Hardscape sits down in the bed with a small berm and spilled grains round its base, instead of resting on top.' },
   mix: { label: 'Mixed grain sizes', help: 'Coarse and fine grains sort into the hollows and by the feet of rocks, each grain a slightly different colour.' },
+  shadows: { label: 'Cast shadows', help: 'Rock, wood, plants and gear throw shadows from the light onto the sand and each other, as a real light does.' },
   sand: { label: 'Sand detail texture', help: 'A fine speckled layer on painted sand, so it reads as sand up close.' },
 };
 export const TONE_NAMES = ['None', 'AgX', 'ACES'];

@@ -772,7 +772,7 @@ function plantMaterial(T: Tank, free = false, ownTex?: string) {
     // wet sheen: dark leaves are the glossy ones (anubias, buce, fern, crypt), pale ones stay matte; the highlight follows the relief normal
     float ptG = smoothstep(0.4, 0.06, ptH);
     if (uMode > 0.5 && uMode < 1.5) {
-      ptL = uLCol * (uBright * uNorm);
+      ptL = uLCol * (uBright * uNorm * aqCastK); // in a cast shadow the leaf's glow and sheen go too (lane SH1)
       for (int i = 0; i < ${AQ_MAX}; i++) {
         if (i >= uEmN) break;
         vec4 e = uEm[i]; vec3 q = e.w > 0.0 ? vec3(clamp(vAqP.x, e.x - e.w, e.x + e.w), e.y, e.z) : e.xyz;
