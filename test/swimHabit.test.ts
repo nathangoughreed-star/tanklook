@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { rng } from '../src/art/paint';
 import { HABIT } from '../src/scene/fishBehavior';
-import { makeSwimSim } from '../src/scene/swimSim';
+import { makeSwimSim } from './quietSim';
 import { pickHomes } from '../src/scene/swimHome';
 import type { SwimmerSpec } from '../src/scene/swimTypes';
 import { boxTank, type Obs } from './swimFieldDouble';
@@ -40,7 +40,7 @@ describe('swimHabit', () => {
   });
 
   it('keeps each fish near its home, still where it should be, and turns the gramma belly to the rock (600 s)', () => {
-    const sim = makeSwimSim(fish, field, seed), dt = 1 / 30; sim.setEvents(false); // BR 2026-11-26: this measures home-keeping; the seeded alarm pulls a fish off its post on purpose (CI saw a ledge share of 0.010 < 0.02 with it on)
+    const sim = makeSwimSim(fish, field, seed), dt = 1 / 30;
     const mr = fish.map(() => 1e9), far = fish.map(() => 0), over = fish.map(() => 0), atHome = fish.map(() => 0), homeRoll = fish.map(() => 0), still = fish.map(() => 0), turned = fish.map(() => 0); let steps = 0, minRatio = 1e9;
     for (let s = 0; s < 600 / dt; s++) {
       sim.step(dt);

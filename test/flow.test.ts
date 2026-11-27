@@ -1,7 +1,7 @@
 // The outlets' current (scene/flow.ts) and how the roaming fish answer it (swimSim: drift, effort, facing into it).
 import { describe, expect, it } from 'vitest';
 import { flowAt, outletJets, strongest } from '../src/scene/flow';
-import { makeSwimSim } from '../src/scene/swimSim';
+import { makeSwimSim } from './quietSim';
 import { cast, field } from './swimCast';
 
 describe('flow', () => {

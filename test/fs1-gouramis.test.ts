@@ -7,7 +7,7 @@ import { tankMinimum } from '../src/scene/tankMin';
 import { whysAnimal } from '../src/scene/animalfit';
 import { PLANS, finRange } from '../src/art/fishgen';
 import { SWIM_PACE } from '../src/scene/swimPace';
-import { makeSwimSim } from '../src/scene/swimSim';
+import { makeSwimSim } from './quietSim';
 import { lidNeedOf } from '../src/data/lidNeed';
 import { comboTank } from './aqcompare.test';
 import { field } from './swimCast';

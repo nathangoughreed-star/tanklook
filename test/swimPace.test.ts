@@ -1,7 +1,7 @@
 // @ts-nocheck (writes the before/after numbers to research/screens/R88; the tsconfig has no node types)
 import { writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { makeSwimSim } from '../src/scene/swimSim';
+import { makeSwimSim } from './quietSim';
 import { swimPace } from '../src/scene/swimPace';
 import { boxTank } from './swimFieldDouble';
 

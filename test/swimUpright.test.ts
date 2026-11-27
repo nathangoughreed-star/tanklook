@@ -2,7 +2,7 @@
 // bare 24 x 12 x 12 in tank fall back to a glass home; they rolled up to 45 deg onto their sides there, and in open water too (a capped clearance read). They must stay near upright (turn bank only).
 import { describe, expect, it } from 'vitest';
 import { HABIT } from '../src/scene/fishBehavior';
-import { makeSwimSim } from '../src/scene/swimSim';
+import { makeSwimSim } from './quietSim';
 import type { SwimmerSpec } from '../src/scene/swimTypes';
 import { boxTank } from './swimFieldDouble';
 

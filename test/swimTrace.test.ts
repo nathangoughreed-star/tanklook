@@ -3,7 +3,7 @@
 import { it } from 'vitest';
 import { deflateSync } from 'node:zlib';
 import { writeFileSync } from 'node:fs';
-import { makeSwimSim } from '../src/scene/swimSim';
+import { makeSwimSim } from './quietSim';
 import { cast, field, OBS, D, TOP, GROUND } from './swimCast';
 
 

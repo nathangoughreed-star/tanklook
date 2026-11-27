@@ -1,6 +1,6 @@
 // FB1 (R105): kuhli digging / hiding and hovering with fanned pectorals, in the swim sim (scene/swimSim.ts) and the data tables (scene/fishBehavior.ts).
 import { describe, expect, it } from 'vitest';
-import { makeSwimSim } from '../src/scene/swimSim';
+import { makeSwimSim } from './quietSim';
 import type { SwimPose, SwimmerSpec } from '../src/scene/swimTypes';
 import { BENTHIC, DIG, HOVER, STYLE, digGrainK } from '../src/scene/fishBehavior';
 import { makeCrawlSim, type CrawlSpec } from '../src/scene/crawlSim';
@@ -14,7 +14,7 @@ const kuhliSpec = (k: number, dark: number, id: number, len = 100): SwimmerSpec 
 const bed = (ground: number) => boxTank(900, 450, 450, ground, OBS);
 /** Run `secs` of sim; `visit` sees every fish's pose each step. */
 function run(specs: SwimmerSpec[], ground: number, secs: number, seed: number, visit: (p: SwimPose, s: SwimmerSpec, t: number) => void) {
-  const sim = makeSwimSim(specs, bed(ground), seed), dt = 1 / 30; sim.setEvents(false); // BR: these runs measure digging and hovering, not the seeded alarm or rushes (which are tested in swimRelations)
+  const sim = makeSwimSim(specs, bed(ground), seed), dt = 1 / 30;
   for (let s = 0; s < secs / dt; s++) { sim.step(dt); for (const sp of specs) visit(sim.pose(sp.id)!, sp, s * dt); }
 }
 const finite = (p: object) => Object.values(p).every(v => Number.isFinite(v));
