@@ -64,3 +64,16 @@ describe('a bundle light is priced as a basic LED', () => {
     expect(o.savingUsd).toBeGreaterThan(0);
   });
 });
+
+// Bundle parts sweep (2026-11-26): a bundle-only stand is drawn as itself but priced as the cheapest real stand sold alone for its footprint.
+import { standsFor } from '../src/data/stands';
+describe('a bundle-only stand', () => {
+  it('the Marineland HD 45 gets its own stand, priced as the Aqueon 36 x 12 ($269.99), never offered in the picker', () => {
+    const d = deal('petsmart-marineland-hd-45'), S = sceneFromDeal(d)!.tanks[0];
+    expect(standOf(S)?.id).toBe('marineland-hd-45-stand');
+    const row = demandOf(S, defaultProfile()).items.find(i => i.key === 'stand')!;
+    expect(row.setup!.mode).toBeCloseTo(269.99, 0);
+    expect(row.label).toContain('bundle only; priced as Aqueon');
+    expect(standsFor(S.tank).map(p => p.id)).not.toContain('marineland-hd-45-stand');
+  });
+});

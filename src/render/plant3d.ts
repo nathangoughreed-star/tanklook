@@ -34,7 +34,7 @@ type Rect4 = [number, number, number, number];
 /** Java moss's own texture (R182 lane JM, scripts/javamoss-skin.py): the mat tile's rect, the edge cards' (with the share
  *  below the cushion's outline and their width / height), the single strands' (each with its root in uv, hanging or not,
  *  and its length as a share of the longest). */
-const JMOSS = JMOSS_TEX as unknown as { mat: Rect4; edges: Rect4[]; edgeBase: number; edgeAspect: number; strands: { rect: Rect4; root: [number, number]; hang: boolean; len: number }[] };
+const JMOSS = JMOSS_TEX as unknown as { mat: Rect4; mats: Rect4[]; matCover: number[]; edges: Rect4[]; edgeBase: number; edgeAspect: number; strands: { rect: Rect4; root: [number, number]; hang: boolean; len: number }[] };
 
 /** Switches for review sheets: sway (off = every leaf rigid), emerse (off = no emersed
  *  twins: emerging plants lie over at the surface as in GR1), gpu (off = revealPlant on the CPU every growth step, as
@@ -855,24 +855,35 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
     const hAt = (x: number, z: number) => { const t = Math.min(1, Math.hypot(x, z) / rim(Math.atan2(z, x))); return Ht * Math.pow(Math.max(0, 1 - t ** 2.2), 0.6) * (0.8 + 0.2 * lumps(x, z)); };
     const shade = (y: number, x: number, z: number) => (0.5 + 0.85 * Math.min(1, y / Ht * 1.15)) * (0.88 + 0.24 * lumps(x * 1.7, z * 1.7));
     const B = V(0, 0, 0), small: LeafTag = g0 < 0.02 ? SHOWN : { a: -0.82 * g0, w: 1.82 * g0 * 0.999 };
-    // the cushion: a grid over (x, z); corners past the rim are pulled in onto it (y a little under the sand)
-    const TS = 45, nC = Math.max(4, Math.ceil(TS / (R / 7))), cell = TS / nC, mt = J.mat; // TS: one copy of the mat tile, mm
-    const g0x = Math.floor(-R * 1.1 / cell), n1 = Math.ceil(R * 1.1 / cell) - g0x;
-    const vtx = (i: number, j: number) => {
-      let x = (g0x + i) * cell, z = (g0x + j) * cell;
-      const e = rim(Math.atan2(z, x)), d = Math.hypot(x, z);
-      if (d >= e) { x *= e / d; z *= e / d; return V(x, -h * 0.02, z); }
-      return V(x, hAt(x, z), z);
-    };
+    // the cushion: a solid core and shells over it, each a little bigger and sparser than the one inside (Nathan
+    // 2026-11-26, on the first build: "looks like a rock covered in java moss ... should be a linearly increasing
+    // density, no step"). Shell s (0 = core, 1 = the outer surface) is the cushion's height field shrunk toward the
+    // middle, wearing the mat level whose coverage is nearest 1 - s (J.mats: opaque, then fewer and fewer strands), its
+    // tile copies shifted by whole cells so no two shells' strands line up. Each is a grid over (x, z); corners past its
+    // rim are pulled in onto it (y a little under the sand).
+    const TS = 45, nC = Math.max(4, Math.ceil(TS / (R / 7))), cell = TS / nC; // TS: one copy of the mat tile, mm
+    const g0x = Math.floor(-R * 1.1 / cell), n1 = Math.ceil(R * 1.1 / cell) - g0x, NS = 9;
     const cp: number[] = [], cu: number[] = [], cc: number[] = [];
-    for (let i = 0; i < n1; i++) for (let j = 0; j < n1; j++) {
-      const c4 = [[i, j], [i + 1, j], [i + 1, j + 1], [i, j + 1]];
-      if (c4.every(([a, b]) => { const x = (g0x + a) * cell, z = (g0x + b) * cell; return Math.hypot(x, z) >= rim(Math.atan2(z, x)); })) continue;
-      const ti = Math.floor((g0x + i) / nC), tj = Math.floor((g0x + j) / nC); // the tile copy this cell is in
-      const pts = c4.map(([a, b]) => vtx(a, b));
-      for (const k of [0, 2, 1, 0, 3, 2]) { // (two triangles, wound to face up)
-        const p = pts[k], [a, b] = c4[k], u = (g0x + a) / nC - ti, w = (g0x + b) / nC - tj, sh = shade(Math.max(0, p.y), p.x, p.z);
-        cp.push(p.x, p.y, p.z); cu.push(mt[0] + (mt[2] - mt[0]) * u, mt[1] + (mt[3] - mt[1]) * w); cc.push(sh, sh, sh);
+    for (let li = 0; li <= NS; li++) {
+      const sv = li / NS, fr = 0.55 + 0.45 * sv, fh = 0.35 + 0.65 * sv, d = 1 - (li - 0.5) / NS;
+      const lv = li === 0 ? 0 : J.matCover.reduce((m, c, k) => (k && Math.abs(c - d) < Math.abs(J.matCover[m] - d) ? k : m), 1), mt = J.mats[lv];
+      const oi = li ? Math.floor(r() * nC) : 0, oj = li ? Math.floor(r() * nC) : 0, kL = 0.7 + 0.35 * sv;
+      const wp = [r() * 6.28, r() * 6.28], rimL = (x: number, z: number) => { const a = Math.atan2(z, x); return rim(a) * fr * (li ? 1 + 0.05 * Math.sin(4 * a + wp[0]) + 0.03 * Math.sin(7 * a + wp[1]) : 1); }; // (each shell's own wobble: no contour lines)
+      const vtx = (i: number, j: number) => {
+        let x = (g0x + i) * cell, z = (g0x + j) * cell;
+        const e = rimL(x, z), dd = Math.hypot(x, z);
+        if (dd >= e) { x *= e / dd; z *= e / dd; return V(x, -h * 0.02, z); }
+        return V(x, hAt(x / fr, z / fr) * fh, z);
+      };
+      for (let i = 0; i < n1; i++) for (let j = 0; j < n1; j++) {
+        const c4 = [[i, j], [i + 1, j], [i + 1, j + 1], [i, j + 1]];
+        if (c4.every(([a, b]) => { const x = (g0x + a) * cell, z = (g0x + b) * cell; return Math.hypot(x, z) >= rimL(x, z); })) continue;
+        const ti = Math.floor((g0x + i + oi) / nC), tj = Math.floor((g0x + j + oj) / nC); // the tile copy this cell is in
+        const pts = c4.map(([a, b]) => vtx(a, b));
+        for (const k of [0, 2, 1, 0, 3, 2]) { // (two triangles, wound to face up)
+          const p = pts[k], [a, b] = c4[k], u = (g0x + a + oi) / nC - ti, w = (g0x + b + oj) / nC - tj, sh = shade(Math.max(0, p.y), p.x, p.z) * kL;
+          cp.push(p.x, p.y, p.z); cu.push(mt[0] + (mt[2] - mt[0]) * u, mt[1] + (mt[3] - mt[1]) * w); cc.push(sh, sh, sh);
+        }
       }
     }
     const core = new THREE.BufferGeometry();

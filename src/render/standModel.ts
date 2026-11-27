@@ -86,10 +86,12 @@ function cabinet(g: THREE.Group, look: StandLook, sp: StandSpace, mk: Mk) {
     }
   } else {
     put(g, mk(W - 2 * inset, bodyH, D - 2 * inset, bodyC, grain && { ...grain, seed: 4 }), 0, bodyY0 + bodyH / 2, cz);
-    const n = Math.max(1, look.doors ?? 2), gap = 4, dw = look.doorW && n === 1 ? (W - 2 * inset) * look.doorW : (W - 2 * inset - gap * (n + 1)) / n;
+    // frameMm: the carcass shows as a frame round the doors and between them (Marineland HD 45 ensemble stand, bundle parts sweep 2026-11-26)
+    const fr = look.frameMm ?? 0, gap = fr ? Math.max(4, fr * 0.6) : 4, fw = W - 2 * inset - 2 * fr;
+    const n = Math.max(1, look.doors ?? 2), dw = look.doorW && n === 1 ? fw * look.doorW : (fw - gap * (n + 1)) / n;
     for (let i = 0; i < n; i++) {
-      const x = look.doorW && n === 1 ? (look.doorX ?? 0) * W : -(W - 2 * inset) / 2 + gap + dw / 2 + i * (dw + gap);
-      doorPanel(g, look, mk, front, grain, dw, bodyH - 2 * gap, x, bodyY0 + bodyH / 2, front_z, n === 1 ? 0 : i < n / 2 ? -1 : 1, i);
+      const x = look.doorW && n === 1 ? (look.doorX ?? 0) * W : -fw / 2 + gap + dw / 2 + i * (dw + gap);
+      doorPanel(g, look, mk, front, grain, dw, bodyH - 2 * gap - 2 * fr, x, bodyY0 + bodyH / 2, front_z, n === 1 ? 0 : i < n / 2 ? -1 : 1, i);
     }
     sheenPlane(g, look, W - 2 * inset, bodyH, 0, bodyY0 + bodyH / 2, front_z + 8.5);
   }
