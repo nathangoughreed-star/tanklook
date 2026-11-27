@@ -66,7 +66,7 @@ export function genRock(variant: string, seed: number, size: number, hs?: HardSt
   if (variant === 'slate') return slatePlates(seed, l, h, w, base, hs);
   const r = rng(seed * 101 + 7), tex = hsv(hs, 'tex'), holes = hsv(hs, 'holes'), layers = hsv(hs, 'layers');
   const N = noise3(seed), N2 = noise3(seed + 999), W = worley(seed), W2 = worley(seed + 77);
-  const det = ({ river: 12, seiryu: 16, dragon: 22, lava: 24, lace: 26, holey: 22, shale: 14 } as Record<string, number>)[variant] ?? 16;
+  const det = ({ river: 12, seiryu: 16, dragon: 30, lava: 24, lace: 26, holey: 22, shale: 14 } as Record<string, number>)[variant] ?? 16;
   let g: THREE.BufferGeometry = new THREE.IcosahedronGeometry(1, det);
   g.deleteAttribute('normal'); g.deleteAttribute('uv'); g = mergeVertices(g);
   const p = g.attributes.position, cnt = p.count, cav = new Float32Array(cnt), aux = new Float32Array(cnt);
@@ -89,7 +89,7 @@ export function genRock(variant: string, seed: number, size: number, hs?: HardSt
         c = Math.max(0, 0.5 - gr) * 1.4; a = gr; break;
       }
       case 'dragon': { // craggy: stacked scaly ridges (squashed vertically), pitted, with a jagged top
-        const wr = ridged(N2, x * 2.2, y * 7, z * 2.2), [f1] = W(x * (3 + 3 * holes), y * (5 + 4 * holes), z * (3 + 3 * holes)), pit = smooth(0.38, 0.06, f1);
+        const wr = ridged(N2, x * 2.2, y * 7, z * 2.2), [f1] = W(x * (2.2 + 2.5 * holes), y * (3.5 + 3 * holes), z * (2.2 + 2.5 * holes)), pit = smooth(0.42, 0.08, f1);
         rho = 1 + 1.1 * bulk + 0.18 * Math.max(0, fbm(N2, x * 2.5, y * 1.2, z * 2.5, 2)) * Math.max(0, v.y + 0.3) + (0.05 + 0.08 * tex) * wr - pit * (0.04 + 0.16 * holes);
         c = Math.min(1, pit * 1.2 + (1 - wr) * 0.35); break;
       }
@@ -132,10 +132,11 @@ export function genRock(variant: string, seed: number, size: number, hs?: HardSt
   for (let i = 0; i < cnt; i++) p.setXYZ(i, (p.getX(i) - cx) * kx, (Math.max(p.getY(i), cut) - cut) * ky, (p.getZ(i) - cz) * kz);
   const facets = variant === 'shale' || variant === 'seiryu';
   g.computeVertexNormals();
-  const hollow = cavity(g, Math.max(l, w) / 90);
+  // two scales: fine crevices and pits, and the broad hollows between bulges (so the form shows from across the room)
+  const fine = cavity(g, Math.max(l, w) / 90), broad = cavity(g, Math.max(l, w) / 30, 16), hollow = fine.map((f, i) => Math.max(-1, Math.min(1, f + broad[i])));
   // unlit colours
   const col = new Float32Array(cnt * 3), q = new THREE.Color(), nm = g.attributes.normal;
-  const rust = new THREE.Color('#7e6636'), rust2 = new THREE.Color('#664630'), vein = new THREE.Color('#d9dcd8'), crust = new THREE.Color('#7a6248'), dark = new THREE.Color('#141110');
+  const pit = new THREE.Color('#2a1d12'), rust = new THREE.Color('#7e6636'), rust2 = new THREE.Color('#664630'), vein = new THREE.Color('#d9dcd8'), crust = new THREE.Color('#7a6248'), dark = new THREE.Color('#141110');
   for (let i = 0; i < cnt; i++) {
     const X = p.getX(i), Y = p.getY(i), Z = p.getZ(i), mot = fbm(N2, X * 0.02 + 3, Y * 0.02, Z * 0.02, 3);
     q.copy(base).multiplyScalar(1 + 0.18 * mot);
@@ -150,6 +151,7 @@ export function genRock(variant: string, seed: number, size: number, hs?: HardSt
       q.lerp(crust, 0.5 * c * (0.5 + 0.5 * aux[i])).multiplyScalar(1 - 0.55 * c);
     } else if (variant === 'lava') q.lerp(dark, 0.6 * c);
     else if (variant === 'river') q.multiplyScalar(1 + 0.06 * fbm(N, X * 0.08, Y * 0.08, Z * 0.08, 2));
+    else if (variant === 'dragon') q.lerp(pit, 0.75 * c).multiplyScalar(1 + 0.25 * smooth(0, 0.6, -hollow[i])); // two-tone: pale weathered crests, dark brown pits
     else q.multiplyScalar(1 - (variant === 'holey' ? 0.55 : 0.5) * c);
     // R191: the form reads without the light: hollows and crevices darken, worn crests and edges lighten a little
     const hv = hollow[i]; q.multiplyScalar(hv > 0 ? 1 - CAV_DARK * smooth(0, 1, hv) : 1 + 0.14 * smooth(0, 1, -hv));
@@ -167,14 +169,14 @@ const CAV_DARK = 0.72;
  * spread over a few rings, sits out along its normal, in units of `scale` mm. Baked into the colour so a rock's form
  * shows under flat light too (R191, after Aquascaper Studio's cavity-darkened stones).
  */
-export function cavity(g: THREE.BufferGeometry, scale: number): Float32Array {
+export function cavity(g: THREE.BufferGeometry, scale: number, passes = 4): Float32Array {
   const p = g.attributes.position, n = g.attributes.normal, cnt = p.count, idx = g.index!;
   const nb: number[][] = Array.from({ length: cnt }, () => []);
   for (let k = 0; k < idx.count; k += 3) { const a = idx.getX(k), b = idx.getX(k + 1), c = idx.getX(k + 2); nb[a].push(b, c); nb[b].push(a, c); nb[c].push(a, b); }
   // the neighbourhood's centre, widened by a few smoothing passes (so a pit reads as one dark patch, not speckle)
   let cx = new Float32Array(cnt * 3);
   for (let i = 0; i < cnt; i++) { cx[i * 3] = p.getX(i); cx[i * 3 + 1] = p.getY(i); cx[i * 3 + 2] = p.getZ(i); }
-  for (let pass = 0; pass < 4; pass++) {
+  for (let pass = 0; pass < passes; pass++) {
     const nx = new Float32Array(cnt * 3);
     for (let i = 0; i < cnt; i++) {
       const L = nb[i]; let x = 0, y = 0, z = 0;
