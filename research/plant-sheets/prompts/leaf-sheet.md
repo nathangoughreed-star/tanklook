@@ -96,8 +96,9 @@ Species: Bucephalandra 'Kedagang', submersed. Canvas 3:2 landscape, a grid of 3 
 
 ### fern: Microsorum pteropus, Java fern (plant type `fern`)
 ```
-Species: Microsorum pteropus (Java fern), submersed. Canvas 3:2 landscape, a grid of 3 columns x 2 rows. Top row: three leaves seen from their upper side, narrow lance-shaped, about ten times as long as wide, a dark glossy olive-green, the surface slightly ribbed, with a clear paler midrib and a short stalk (about a sixth of the length), a smooth to slightly wavy margin, tapering to a pointed tip. Bottom row: the undersides of the same three leaves in the same order, the outline mirrored left-right, paler green with a raised midrib (no spore dots). Each leaf fills its cell from bottom to top.
+Species: Microsorum pteropus (common Java fern, the broad-leaf wild form, not 'Windelov' or 'Narrow'), submersed. Canvas 3:2 landscape, a grid of 3 columns x 2 rows. Top row: three leaves seen from their upper side, broadly lance-shaped, about four times as long as wide (widest a little below the middle, tapering evenly to a long pointed tip and more quickly to a wedge-shaped base), on a short stalk about a tenth of the leaf length. Leathery and slightly glossy, with a strong raised paler midrib and fine netted side veins running out toward the edge at an angle. A smooth margin with a few gentle, shallow waves (not toothed, not crinkled). Colours differ from leaf to leaf: one fresh mid green (a young leaf), one deeper green, one dark olive-green with a few small brown spots near the tip (an old leaf). Bottom row: the undersides of the same three leaves in the same order, the outline mirrored left-right, paler and duller green with the midrib standing out (no spore dots). Each leaf fills its cell from bottom to top.
 ```
+(2026-11-27, lane plants-2: the first sheet asked for "about ten times as long as wide" and drew the narrow 'Windelov' look; Nathan's tank and the common form are about 4:1. Cut it with a wider cell: `plant-leaves.py` `fern` cell (40, 448) -> about (112, 448).)
 
 ### ozelot: Echinodorus 'Ozelot', spotted sword (plant type `ozelot`)
 ```
