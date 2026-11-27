@@ -1474,5 +1474,53 @@
     "halfW"
    ]
   }
+ },
+ {
+  "id": "marineland-hd-45-stand",
+  "brand": "Marineland",
+  "line": "High Definition LED 45 gal ensemble stand",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black cabinet, light grey wood-look doors",
+  "fits": [
+   [
+    36.25,
+    12.6
+   ]
+  ],
+  "heightIn": 29.25,
+  "priceUsd": 269.99,
+  "seller": "Blue Fish Aquarium",
+  "url": "https://bluefishaquarium.com/products/aqueon-30-38-45-gallon-aquarium-black-cabinet-stand-36-x-12-in",
+  "asOf": "2026-11-26",
+  "kitOnly": true,
+  "equiv": "Aqueon 30/38/45 gal black cabinet stand 36 x 12 in, $269.99",
+  "est": [
+   "priceUsd"
+  ],
+  "note": "The stand in PetSmart's Marineland High Definition LED 45 gal ensemble (item 5370777, maker no. NV-52026-02): 37.75 x 14.125 x 29.25 in (PetSmart dimension graphic), black body, two light grey wood-look doors with no visible handles, recessed black plinth, open back. Not sold alone (searched 2026-11-26: Marineland, PetSmart, Chewy, Petco, Amazon), so it is priced as the cheapest real 36 x 12 cabinet sold alone: Aqueon 30/38/45 gal black cabinet stand (38.1 x 14.1 x 30.5 in), Blue Fish Aquarium $269.99 (price from the coordinator chat's read; the page returned HTTP 429 to the sweep). Look read off PetSmart photos 5370777 and _alt1 to _alt7 (front, door open, dimension graphic, room shot).",
+  "look": {
+   "front": "#a8a19b",
+   "bodyHex": "#1d1d1d",
+   "top": "#1d1d1f",
+   "sheen": "matte",
+   "grain": "oak",
+   "doors": 2,
+   "doorStyle": "flat",
+   "handle": "none",
+   "base": "recessed",
+   "baseMm": 55,
+   "topMm": 22,
+   "overhangMm": 6,
+   "est": [
+    "top",
+    "baseMm",
+    "topMm",
+    "overhangMm",
+    "frameMm"
+   ],
+   "frameMm": 18,
+   "baseHex": "#1d1d1d"
+  }
  }
 ]

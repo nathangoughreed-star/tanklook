@@ -61,14 +61,16 @@
     "usd": 549.99
    },
    "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-aquarium-and-stand-ensemble---45-gallon-led-fish-tank-kit-94286.html",
-   "asOf": "2026-11-18",
-   "note": "Extra-tall tank, glass canopy, LED, black stand. Page read 2026-11-16: $549.99, no sale (was $349.99 on 2026-10-19). Catalog tank n_g45_tall is this tank.",
+   "asOf": "2026-11-26",
+   "note": "Extra-tall tank, glass canopy, LED, black stand. Page read 2026-11-16: $549.99, no sale (was $349.99 on 2026-10-19). Catalog tank n_g45_tall is this tank. Parts sweep 2026-11-26: tank, stand, canopy and light are not sold alone; the stand is priced as an Aqueon 36 x 12 cabinet ($269.99), the light as a basic LED bar; a Marineland Perfecto 36 x 13 canopy is $51.99 alone.",
    "look": {
     "style": "cabinet",
     "finish": "black",
     "lid": "glass",
     "guessed": [],
+    "stand": "marineland-hd-45-stand",
     "light": {
+     "product": "marineland-hd-45-kit-led",
      "says": "hidden LED, natural daylight and moonlight effects (no watts, Kelvin or PAR published)"
     }
    },
@@ -174,12 +176,13 @@
     "_nameSrc": "PetSmart kit contents graphic (item 9), seen by Nathan 2026-10-20"
    },
    "price": {
-    "usd": 108,
+    "usd": 74.99,
     "regularUsd": 149.99
    },
    "url": "https://www.petsmart.com/fish/starter-kits/top-fin-essentials-aquarium-starter-kit-5262265.html",
-   "asOf": "2026-11-18",
-   "note": "Item 5262265, page read live. Tank 24x12.7x16 in; hood with feeding door, white LED, power filter, heater, thermometer, net. Page says 20% off 20+ gal Essentials kits, thru 11/19 (page read 2026-11-16). Re-read 2026-11-18: now $108.00 (was $149.99), same 20% off 20+ gal Essentials kits thru 11/19.",
+   "asOf": "2026-11-26",
+   "saleEnds": "2026-11-29",
+   "note": "Item 5262265, page read live. Tank 24x12.7x16 in; hood with feeding door, white LED, power filter, heater, thermometer, net. Page says 20% off 20+ gal Essentials kits, thru 11/19 (page read 2026-11-16). Re-read 2026-11-18: now $108.00 (was $149.99), same 20% off 20+ gal Essentials kits thru 11/19. Re-read 2026-11-26: $74.99 (was $149.99), 50% off thru 11/29.",
    "look": {
     "lid": "hood",
     "light": {

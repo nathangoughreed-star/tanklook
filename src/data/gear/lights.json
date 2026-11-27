@@ -3305,5 +3305,53 @@
    "leds"
   ],
   "note": "Only sold in the 60 gal Modern LED ensemble (PetSmart item 5248474, read 2026-11-26: 'hidden LED light featuring natural daylight and moonlight effects'; no watts, LED count, length or Kelvin). Not offered in the light picker. Drawn as a simple low-profile black LED bar lying on the glass canopy (Nathan 2026-11-26); watts = the budget-kit default 0.4 W/gal x 60 gal (estimate)."
+ },
+ {
+  "id": "marineland-hd-45-kit-led",
+  "brand": "Marineland",
+  "model": "High Definition LED Ensemble 45 gal kit light (hidden LED)",
+  "kitOnly": true,
+  "mount": "lid",
+  "fitMinMm": 915,
+  "fitMaxMm": 925,
+  "lengthMm": 860,
+  "widthMm": 40,
+  "heightMm": 10,
+  "watts": 18,
+  "tech": "led-white",
+  "spectrum": "white daylight + blue moonlight",
+  "controller": "kit switch",
+  "water": "fresh",
+  "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-aquarium-and-stand-ensemble---45-gallon-led-fish-tank-kit-94286.html",
+  "asOf": "2026-11-26",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "watts"
+  ],
+  "colors": {
+   "body": "#141416",
+   "endcaps": "#141416",
+   "legs": "#141416",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#2f6bff"
+    ],
+    "every": 5
+   },
+   "ledLook": "2 rows white with blue moonlight dots"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs",
+   "leds"
+  ],
+  "note": "Only sold in the 45 gal High Definition LED ensemble (PetSmart item 5370777, read 2026-11-26: 'Hidden LED Lighting with Natural Daylight & Moonlight Effects'; no watts, LED count or length). Not sold alone; the nearest sold-alone part, a Marineland Advanced LED strip 36 in (ML90618), has no current US retailer price found, so it is priced as a basic LED bar like the Modern 60's. Not offered in the light picker. Drawn as a low black LED bar on the glass canopy; watts = the budget-kit default 0.4 W/gal x 45 gal (estimate)."
  }
 ]
