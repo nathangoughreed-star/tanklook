@@ -9,7 +9,7 @@ describe('gear catalogue split per type', () => {
   it('keeps the old key order and counts', () => {
     expect(Object.keys(gearCatalog)).toEqual(['asOf', 'note', 'skimmers', 'uv', 'co2', 'ato', 'chillers', 'heaters', 'filters', 'lights', 'pumps', 'inline', 'overflows', 'sumps']);
     expect([gearCatalog.skimmers, gearCatalog.uv, gearCatalog.co2, gearCatalog.ato, gearCatalog.chillers, gearCatalog.heaters, gearCatalog.filters, gearCatalog.lights, gearCatalog.pumps].map(a => a.length))
-      .toEqual([12, 13, 10, 6, 8, 55, 98, 58, 46]);
+      .toEqual([12, 13, 10, 6, 8, 55, 98, 60, 46]); // lights 58 -> 60: two kit-only bundle lights (the HD 45 and HD 75 ensembles' hidden LEDs, 934669fb and 75f00852, 2026-11-26)
   });
   it('the wrappers expose the same arrays', () => {
     expect(HEATER_PRODUCTS).toBe(gearCatalog.heaters);
