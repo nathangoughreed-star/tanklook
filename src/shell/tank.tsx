@@ -25,7 +25,7 @@ import { soleProduct } from '../data/tanks';
 import {
   modelCard, sitsOnSummary, lidSummary, bgSummary, bdShown, bdDepthShown, BD_KINDS, BD_TITLE, BD_DEPTH_MM, len, LIDS, lidHeld, customRows, customLine, commercialRows, commercialLine,
   previewRow, chooseCommercial, chooseCustom, saleOf, filledLb, SIZE_CHIPS, loadGroups, saveGroups, GROUP_DEFAULT, type PickRow, type SizeChip, type TankGroup, type Units, kindView, setKind,
-  conditionWord, CONDITION_STOPS, setCondition, bgArcShown, arcText, setBgArc, PIC_SIDES, PIC_FITS, PIC_MAX, addPicture, removePicture, togglePicSide, setPicFit, setPicScale,
+  bgArcShown, arcText, setBgArc, PIC_SIDES, PIC_FITS, PIC_MAX, addPicture, removePicture, togglePicSide, setPicFit, setPicScale,
   hoodView, chooseHood, lidProductView, chooseLidProduct, tablePos, setTableX, setTableZ, placeTank, setStandFinish, finishCss, tableOn,
 } from './logic/tank';
 import { getImage, putImage, readPicture } from '../scene/images';
@@ -143,13 +143,8 @@ function WaterLook({ store, open, onToggle }: { store: Store; open: boolean; onT
         <span class="val">{wl.tintText}</span></div>
       <div class="row"><span class="lbl">Colour</span>
         <input type="color" class="colorbox" value={wl.color} disabled={!wl.on} aria-label="Water colour" onInput={e => setColor(store, (e.target as HTMLInputElement).value)} /><span /></div>
-      <div class="row"><span class="lbl" title="How long since the tank was cleaned: algae on the glass, rocks, wood and substrate. Only changes the look.">Condition</span>
-        <input class="slider" type="range" min={0} max={100} step={1} value={Math.round(store.tank.condition.level * 100)} aria-label="Condition: how long since the tank was cleaned" onInput={e => store.edit(s => setCondition(s, +(e.target as HTMLInputElement).value / 100), { coalesce: 'cond' })} />
-        <span class="val" data-testid="cond-word">{conditionWord(store.tank.condition.level)}</span></div>
-      <div class="condstops" role="group" aria-label="Condition presets">{CONDITION_STOPS.map(([l, w]) => <button type="button" class={`condstop${conditionWord(store.tank.condition.level) === w ? ' on' : ''}`} aria-pressed={conditionWord(store.tank.condition.level) === w} title={`${w}: algae on the glass and rock`}
-        onClick={() => store.edit(s => setCondition(s, l))}><span class="condpic" style={{ '--algae': l } as never} /><small>{w}</small></button>)}</div>
       <div class="chips">{wl.presets.map(p => <button type="button" class={`chip${wl.current === p.id ? ' on' : ''}`} disabled={!wl.on} onClick={() => applyPreset(store, p)}>{p.label}</button>)}</div>
-      <div class="hint">Condition shows the tank weeks after a clean, or neglected: algae on the glass, then on the lit tops of rock and wood; it only changes the look. Tint is how much of the colour shows through 12 in of water, so a deeper tank looks more tinted. The water numbers (temperature) are in the Water check.</div>
+      <div class="hint">Tint is how much of the colour shows through 12 in of water, so a deeper tank looks more tinted. The water numbers (temperature) are in the Water check.</div>
     </Group>
   );
 }

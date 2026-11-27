@@ -10,7 +10,7 @@ import { Toggle, LenRow, Seg } from './tank';
 import type { TankSetup } from '../scene/types';
 import { LIMITS } from '../scene/validate';
 import { CEILING_MAX, CEILING_MIN, ceilingH } from '../scene/physics';
-import { roomSummary, heightText, type Units } from './logic/tank';
+import { roomSummary, heightText, conditionWord, CONDITION_STOPS, setCondition, type Units } from './logic/tank';
 import { chooseFs, useFsItems } from './fullscreen';
 import {
   CAM_PRESETS, CAM_SLIDERS, SHOWS, PNG_SIZES, camReadout, roomRead, roomByHand, roomAuto, ROOM_MAX, ROOM_HINT, presetNow, presetOf, loadHidden, saveHidden, loadMap, saveMap, pngName, pngTitle, anotherMoment, KEYS,
@@ -142,6 +142,14 @@ export function ViewCluster({ store, getViewer, phone, compare }: { store: Store
               <input class="slider" type="range" min={0} max={ROOM_MAX} step={0.01} value={room.value} aria-label="Room light" onInput={e => roomByHand(store, +(e.target as HTMLInputElement).value)} onChange={() => store.seal()} />
               <span class="val">{room.word}</span></div>
             <div class="hint">{room.auto ? ROOM_HINT : <><button type="button" class="btn sm chip" title="Let the room light follow the tank again (bright with no light, dim with one)" onClick={() => roomAuto(store)}>Auto</button> · {ROOM_HINT}</>}</div>
+          </div>
+          <div class="vsec"><h3>Condition</h3>
+            <div class="row"><span class="lbl" title="How long since the tank was cleaned: algae on the glass, rocks, wood and substrate. Only changes the look.">Condition</span>
+              <input class="slider" type="range" min={0} max={100} step={1} value={Math.round(store.tank.condition.level * 100)} aria-label="Condition: how long since the tank was cleaned" onInput={e => store.edit(s => setCondition(s, +(e.target as HTMLInputElement).value / 100), { coalesce: 'cond' })} />
+              <span class="val" data-testid="cond-word">{conditionWord(store.tank.condition.level)}</span></div>
+            <div class="condstops" role="group" aria-label="Condition presets">{CONDITION_STOPS.map(([l, w]) => <button type="button" class={`condstop${conditionWord(store.tank.condition.level) === w ? ' on' : ''}`} aria-pressed={conditionWord(store.tank.condition.level) === w} title={`${w}: algae on the glass and rock`}
+              onClick={() => store.edit(s => setCondition(s, l))}><span class="condpic" style={{ '--algae': l } as never} /><small>{w}</small></button>)}</div>
+            <div class="hint">The tank weeks after a clean, or neglected: algae on the glass, then on the lit tops of rock and wood. It only changes the look.</div>
           </div>
           <div class="vsec"><h3>Show</h3>
             {SHOWS.map(s => <span title={s.title}><Toggle on={shown(s.id)} label={s.label} onFlip={on2 => setShow(s.id, on2)} /></span>)}
