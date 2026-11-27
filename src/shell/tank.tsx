@@ -290,7 +290,7 @@ function LidTop({ store, S, open, onToggle }: { store: Store; S: TankSetup; open
   return (
     <Group id="lid" title="Lid and top" sum={lidSummary(S)} open={open} onToggle={onToggle}>
       <Seg label="Lid" value={S.lid} opts={LIDS} disabled={lidWhy} onPick={l => store.edit(s => { setLid(s, l); setNoLid(s, l === 'open'); })} />
-      {held.lid ? <div class="hint">{lockNote(S, 'lid')}</div> : null}
+      {held.lid ? <div class="hint">{lockNote(S, 'lid')}</div> : S.bundleLid && S.lid !== 'open' ? <div class="hint" data-testid="bundle-lid">{lockNote(S, 'lid')}{S.lid === 'hood' && !S.hoodProduct ? ' Pick a hood below to swap it for a catalogue one.' : ''}</div> : null}
       {S.lid === 'open' && !held.lid ? <OpenTop store={store} S={S} /> : null}
       {S.lid === 'hood' && !held.lid ? <HoodPicker store={store} S={S} /> : null}
       {(S.lid === 'glass' || S.lid === 'mesh') && !held.lid ? <LidProductPicker store={store} S={S} /> : null}

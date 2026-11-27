@@ -26,7 +26,7 @@ export interface Locks { light: boolean; lid: boolean; filter: boolean; heater: 
   /** a ready-made tank is sold without front doors, so they are held off (Nathan 2026-10-27: an Imagitarium's doors are greyed out) */ doors: boolean }
 /** What a change can break: something locked, or the size and shape the product is sold at. */
 export type Held = keyof Locks | 'size';
-type Gated = Pick<TankSetup, 'integrated' | 'product' | 'doors'>;
+type Gated = Pick<TankSetup, 'integrated' | 'product' | 'doors'> & { bundleLid?: string; lid?: TankSetup['lid'] };
 
 /** The library pick the tank is: its size and, for a maker's product, the variant (none for a catalogue size). */
 export function productOf(S: Pick<TankSetup, 'product'>): { m: TankModel; v?: TankVariant } | undefined {
@@ -45,7 +45,7 @@ export function includesOf(S: Gated): Includes | undefined {
   return pv?.v?.includes ?? (k ? kitIncludes(k) : undefined);
 }
 /** The lid a ready-made tank without a kit ships with, which it then keeps (a kit holds its own through `integrated`). */
-const shippedLid = (S: Gated) => { const l = !S.integrated && productOf(S) ? includesOf(S)?.lid : undefined; return l && l !== 'none' ? l : undefined; };
+const shippedLid = (S: Gated) => { const l = !S.integrated && !S.bundleLid && productOf(S) ? includesOf(S)?.lid : undefined; return l && l !== 'none' ? l : undefined; };
 
 export function locksOf(S: Gated): Locks | undefined {
   const k = S.integrated && kitById(S.integrated.kit), pv = productOf(S);
@@ -153,6 +153,7 @@ const LIDS: Record<string, string> = { glass: 'a glass top', hood: 'a hood', mes
 export function lockNote(S: Gated, what: keyof Locks): string {
   if (what === 'rim') return locksOf(S)?.rim ? `The ${productName(S)} is ${soldRimless(S) ? 'only sold rimless' : 'sold with its rim'}.` : '';
   if (what === 'doors') return locksOf(S)?.doors ? `The ${productName(S)} is sold without front doors.` : '';
+  if (what === 'lid' && S.bundleLid && S.lid && S.lid !== 'open') return `This bundle comes with ${LIDS[S.lid]} (${S.bundleLid}).`;
   if (what === 'lid' && shippedLid(S)) return `The ${productName(S)} comes with ${LIDS[shippedLid(S)!]}.`;
   return integratedKit(S) ? `The ${productName(S)} comes with its own ${GEAR[what]}. Changing it makes this a custom tank.` : '';
 }
@@ -160,7 +161,7 @@ export function lockNote(S: Gated, what: keyof Locks): string {
 /** What the ready-made tank comes with, shown under its label: included, sold without, and not recorded yet (free, flagged). */
 export function includesNote(S: Gated): string {
   if (!productOf(S) && !S.integrated) return '';
-  const inc = includesOf(S);
+  const inc0 = includesOf(S), inc = inc0 && S.bundleLid && S.lid ? { ...inc0, lid: S.lid === 'open' ? 'none' : S.lid } as typeof inc0 : inc0; // R134: a bundle's own lid, not the bare tank's
   if (!inc) return "What this tank comes with isn't recorded yet: lid, light, filter and heater are free to set.";
   const k = integratedKit(S), names = { lid: 'lid', light: 'light', filter: 'filter', heater: 'heater', stand: 'stand' } as const;
   const yes: string[] = [], no: string[] = [], unknown: string[] = [], loose: string[] = [];

@@ -24,8 +24,9 @@ export function lidFits(p: LidProduct, T: Tank): boolean {
 /** Every lid product of this kind sold for the tank, cheapest first. */
 export const lidsFor = (T: Tank, kind: 'glass' | 'mesh'): LidProduct[] => LID_PRODUCTS.filter(p => p.kind === kind && lidFits(p, T)).sort((a, b) => a.priceUsd - b.priceUsd);
 /** The lid product this setup has: its picked one while it still fits the tank and the lid kind, else the cheapest that fits; undefined = none sold for the size. */
-export function lidOf(S: Pick<TankSetup, 'tank' | 'lid'> & { lidProduct?: string }): LidProduct | undefined {
+export function lidOf(S: Pick<TankSetup, 'tank' | 'lid'> & { lidProduct?: string; bundleLid?: string }): LidProduct | undefined {
   if (S.lid !== 'glass' && S.lid !== 'mesh') return undefined;
+  if (S.bundleLid && !S.lidProduct) return undefined; // R135: the bundle's own lid is not a catalogue product
   const p = lidProduct(S.lidProduct);
   return p && p.kind === S.lid && lidFits(p, S.tank) ? p : lidsFor(S.tank, S.lid)[0];
 }
