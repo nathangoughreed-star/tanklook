@@ -32,6 +32,8 @@ than a minute and write down where.
   than it in every immediately measurable way." No features to copy; add its tells to the R167 checklist.
 - **Scape It (2026-11-27):** Must sign in to use it, the view is only 2D, and there are no fish. Nathan: "that doesnt seem like a
   serious competitor." He stopped at the sign-in wall. Lesson: let people in without an account.
+- **AqAdvisor (2026-11-27):** Skipped. Nathan has used it for almost 20 years: "Nothing but respect for them but I know
+  exactly what they are and arent." No dogfood needed.
 
 ## Notes per product
 
