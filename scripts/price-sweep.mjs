@@ -1,8 +1,10 @@
 // Price sweep (lane S232, 2026-10-26): re-reads every tank-library variant's retailer page, records the price, the list price when
 // it is on sale, and dead links, and writes the changes to src/data/tanks.json as ONE commit for Nathan's yes (nothing pushes).
 // Fields are the existing ones: price_usd / regular_usd / sale_ends / checked (the 30-day saleLive rule in src/data/tanks.ts stays).
+// Bundles (Nathan 2026-11-26): every src/data/deals.json row is swept too, keyed `deal|<id>`; its price.usd / price.regularUsd /
+// saleEnds / asOf are updated by the same rules (the Bundles cards drop a row 30 days after its asOf, so the weekly sweep keeps them).
 //
-//   node scripts/price-sweep.mjs fetch  [--limit N] [--host h] [--out dir]   plain-fetch every variant that has a url (no model tokens);
+//   node scripts/price-sweep.mjs fetch  [--limit N] [--host h] [--deals-only] [--out dir]   plain-fetch every variant that has a url (no model tokens);
 //                                                                            writes <out>/results.json and <out>/browser-queue.json
 //   node scripts/price-sweep.mjs apply  <out> [--commit]                     merge results.json + browser-results.json into tanks.json,
 //                                                                            write <out>/report.md; --commit makes the single commit
@@ -18,6 +20,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const FILE = join(ROOT, 'src/data/tanks.json');
+const DEALS_FILE = join(ROOT, 'src/data/deals.json');
 const today = () => new Date().toISOString().slice(0, 10);
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
 
@@ -30,6 +33,8 @@ const SKIP_PATH = /\/(c|category|collections|collection)\/[^/]*$|\/aquariums\/?$
 const arg = (n) => { const i = process.argv.indexOf(n); return i < 0 ? undefined : process.argv[i + 1]; };
 const loadLib = () => JSON.parse(readFileSync(FILE, 'utf8'));
 const saveLib = (d) => writeFileSync(FILE, JSON.stringify(d, null, 1).replace(/\n/g, '\r\n') + '\r\n');
+const loadDeals = () => JSON.parse(readFileSync(DEALS_FILE, 'utf8'));
+const saveDeals = (d) => writeFileSync(DEALS_FILE, JSON.stringify(d, null, 1).replace(/\n/g, '\r\n')); // deals.json has no final newline
 const money = (x) => { const n = Number(String(x).replace(/[^0-9.]/g, '')); return Number.isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : undefined; };
 
 /** Every sweepable variant: { key, model, idx, host, url, stored }. */
@@ -41,6 +46,18 @@ export function sweepList(lib) {
     if (SKIP_HOSTS.test(u.host) || SKIP_PATH.test(u.pathname)) return;
     out.push({ key: `${m.id}|${idx}`, model: m.id, idx, host: u.host, url: v.url, stored: { price: v.price_usd ?? null, regular: v.regular_usd ?? null, kind: v.price_kind ?? null, name: `${v.brand}${v.line ? ' ' + v.line : ''}` } });
   });
+  return out;
+}
+
+/** Every bundle row with a url: { key: 'deal|<id>', id, host, url, stored } (the same shape as a tank variant's). */
+export function dealSweepList(deals) {
+  const out = [];
+  for (const d of deals.deals ?? []) {
+    if (!d.url) continue;
+    let u; try { u = new URL(d.url); } catch { continue; }
+    if (SKIP_HOSTS.test(u.host) || SKIP_PATH.test(u.pathname)) continue;
+    out.push({ key: `deal|${d.id}`, id: d.id, host: u.host, url: d.url, stored: { price: d.price?.usd ?? null, regular: d.price?.regularUsd ?? null, name: d.name } });
+  }
   return out;
 }
 
@@ -101,7 +118,8 @@ async function readPage(item) {
 async function cmdFetch() {
   const out = resolve(arg('--out') ?? join(ROOT, 'research/price-sweep', today()));
   mkdirSync(out, { recursive: true });
-  let list = sweepList(loadLib());
+  let list = [...sweepList(loadLib()), ...dealSweepList(loadDeals())];
+  if (process.argv.includes('--deals-only')) list = list.filter(i => i.key.startsWith('deal|'));
   if (arg('--host')) list = list.filter(i => i.host.includes(arg('--host')));
   if (arg('--limit')) list = list.slice(0, +arg('--limit'));
   const byHost = new Map();
@@ -131,10 +149,12 @@ function cmdApply() {
   const browser = new Map(read('browser-results.json').map(r => [r.key, r]));
   // a browser reading replaces a plain-fetch 'browser' placeholder
   const all = read('results.json').map(r => (r.status === 'browser' && browser.has(r.key) ? { ...r, ...browser.get(r.key) } : r));
-  const lib = loadLib(), day = today();
+  const lib = loadLib(), deals = loadDeals(), day = today();
   const rep = { changed: [], sales: [], saleEnded: [], filled: [], dead: [], held: [], unreadable: [], same: 0, soldOut: [], includesDiff: [] };
   const money2 = (n) => `$${n.toFixed(2)}`;
+  const dealRep = { changed: [], sales: [], saleEnded: [], dead: [], held: [], unreadable: [], same: 0, soldOut: [] };
   for (const r of all) {
+    if (r.key.startsWith('deal|')) { applyDeal(deals, r, day, dealRep); continue; }
     const [id, idxS] = r.key.split('|'), m = lib.tanks.find(t => t.id === id);
     let v = m?.variants?.[+idxS];
     if (!v || v.url !== r.url) v = m?.variants?.find(x => x.url === r.url); // the list moved since the fetch
@@ -168,18 +188,51 @@ function cmdApply() {
   const sec = (t, a) => { if (a.length) lines.push(`## ${t} (${a.length})`, ...a.map(x => '- ' + x), ''); };
   sec('Sales seen', rep.sales); sec('Price changes', rep.changed); sec('Sales ended', rep.saleEnded); sec('Unpriced entries that now show a price (NOT applied)', rep.filled);
   sec('Dead links', rep.dead); sec('Held for review (price far from the stored one; NOT applied)', rep.held); sec('Listed unavailable', rep.soldOut); sec('Includes disagree with the catalogue (report only, nothing changed)', rep.includesDiff); sec('Unreadable (left as they were)', rep.unreadable);
+  const nDeals = all.filter(r => r.key.startsWith('deal|')).length;
+  if (nDeals) {
+    lines.push('# Bundles (src/data/deals.json)', '', `${nDeals} bundles read: ${dealRep.same} unchanged, ${dealRep.changed.length} price changes, ${dealRep.sales.length} sales seen, ${dealRep.saleEnded.length} sales ended, ${dealRep.dead.length} dead links, ${dealRep.held.length} held for review, ${dealRep.unreadable.length} unreadable.`, '');
+    sec('Bundle sales seen', dealRep.sales); sec('Bundle price changes', dealRep.changed); sec('Bundle sales ended', dealRep.saleEnded); sec('Bundle dead links', dealRep.dead);
+    sec('Bundles held for review (price far from the stored one; NOT applied)', dealRep.held); sec('Bundles listed unavailable', dealRep.soldOut); sec('Bundles unreadable (left as they were)', dealRep.unreadable);
+  }
   writeFileSync(join(dir, 'report.md'), lines.join('\n'));
-  saveLib(lib);
+  saveLib(lib); saveDeals(deals);
   console.log(lines.slice(0, 3).join('\n'));
-  return { lines, rep, day, dir };
+  return { lines, rep, dealRep, day, dir };
+}
+
+/** One bundle reading into deals.json, by the tank rules: a far move is held, a sale needs a struck-through list price. */
+export function applyDeal(deals, r, day, rep) {
+  const id = r.key.slice(5), d = (deals.deals ?? []).find(x => x.id === id);
+  if (!d || d.url !== r.url) return;
+  const name = `${d.retailer} ${d.name}`, money2 = (n) => `$${n.toFixed(2)}`;
+  if (r.status === 'dead') { rep.dead.push(`${name} - ${r.note} - ${r.url}`); return; }
+  if (r.status !== 'ok' || !r.price) { rep.unreadable.push(`${name} - ${r.note ?? r.status}`); return; }
+  const old = d.price?.usd ?? null, oldReg = d.price?.regularUsd ?? null, p = r.price;
+  if (old && (p / old > 1.6 || p / old < 0.55)) { rep.held.push(`${name}: stored ${money2(old)}, page ${money2(p)} (x${(p / old).toFixed(2)}) - ${r.url}`); return; }
+  if (r.available === false) rep.soldOut.push(`${name} - page lists it unavailable - ${r.url}`);
+  const onSale = r.regular && r.regular > p;
+  if (old != null && Math.abs(old - p) >= 0.005) rep.changed.push(`${name}: ${money2(old)} -> ${money2(p)}${onSale ? ' (on sale)' : ''}${r.note ? ' [' + r.note + ']' : ''}`);
+  else rep.same++;
+  const price = { ...d.price, usd: p };
+  if (onSale) {
+    price.regularUsd = r.regular;
+    if (r.sale_ends) d.saleEnds = r.sale_ends; else delete d.saleEnds; // a stale end date would hide a live sale
+    rep.sales.push(`${name}: ${money2(p)}, list ${money2(r.regular)} (${Math.round((1 - p / r.regular) * 100)} % off)${r.sale_ends ? ', ends ' + r.sale_ends : ''}`);
+  } else if (oldReg != null && r.regular == null && p < oldReg * 0.98) {
+    // the reader saw no struck-through list price but the price is still under the stored list: the sale stands
+  } else {
+    if (oldReg != null) rep.saleEnded.push(`${name}: sale gone, now ${money2(p)} (was ${money2(old)} off ${money2(oldReg)})`);
+    delete price.regularUsd; delete d.saleEnds;
+  }
+  d.price = price; d.asOf = day;
 }
 
 function cmdCommit() {
-  const { lines, rep, day, dir } = cmdApply();
+  const { lines, rep, dealRep, day, dir } = cmdApply();
   const rel = (p) => p.replace(/\\/g, '/');
   const report = join(dir, 'report.md');
-  execFileSync('git', ['add', FILE, report], { cwd: ROOT });
-  const body = [`Price sweep ${day}: ${rep.changed.length} price changes, ${rep.sales.length} sales, ${rep.saleEnded.length} sales ended, ${rep.dead.length} dead links`, '', ...lines.slice(2)].join('\n');
+  execFileSync('git', ['add', FILE, DEALS_FILE, report], { cwd: ROOT });
+  const body = [`Price sweep ${day}: ${rep.changed.length} price changes, ${rep.sales.length} sales, ${rep.saleEnded.length} sales ended, ${rep.dead.length} dead links; bundles: ${dealRep.changed.length} price changes, ${dealRep.sales.length} sales, ${dealRep.saleEnded.length} ended`, '', ...lines.slice(2)].join('\n');
   // -F, not -m: the whole report as one argument overflows the Windows command line (spawnSync ENAMETOOLONG, 2026-11-16)
   const msg = join(tmpdir(), `price-sweep-${day}-msg.txt`);
   writeFileSync(msg, body + '\n\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n');

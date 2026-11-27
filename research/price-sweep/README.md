@@ -1,6 +1,8 @@
 # Price sweep (lane S232)
 
 Re-reads every library variant's retailer page, records price / list price (sale) / dead links, ONE commit for Nathan's yes. Nothing pushes.
+
+**Bundles too (Nathan 2026-11-26):** every `src/data/deals.json` row with a url is swept in the same run, keyed `deal|<id>` in results.json, browser-queue.json and browser-results.json; apply updates its `price.usd` / `price.regularUsd` / `saleEnds` / `asOf` by the same rules and adds a Bundles section to report.md. Bundle pages on Walmart, Amazon, Target, Tractor Supply and Josh's Frogs have no price in their source, so they join the browser queue with Petco and Chewy. `fetch --deals-only` sweeps just the bundles.
 Fields stay price_usd / regular_usd / sale_ends / checked (the 30-day `saleLive` rule in src/data/tanks.ts is why a sweep must run at least every ~3 weeks).
 
 ## One sweep

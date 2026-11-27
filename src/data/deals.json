@@ -92,11 +92,12 @@
     "light"
    ],
    "price": {
-    "usd": 399.99,
+    "usd": 349.99,
     "regularUsd": 649.99
    },
    "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-modern-led-aquarium-and-stand-ensemble---60-gallon-led-fish-tank-kit-34998.html",
-   "asOf": "2026-11-18",
+   "asOf": "2026-11-26",
+   "saleEnds": "2026-11-29",
    "note": "Glass canopy, hidden LED, modern stand; no sale end date shown. Tank 48.5x12.75x25 in (maker spec): a tall 60, not a breeder.",
    "look": {
     "style": "cabinet",
