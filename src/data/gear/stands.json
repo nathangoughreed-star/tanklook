@@ -1427,5 +1427,52 @@
   },
   "ratedGal": 29,
   "ratingNote": "Rating: Walmart \"For up to 29 Gallon Tanks\" (no load figure)."
+ },
+ {
+  "id": "marineland-modern-48x13",
+  "brand": "Marineland",
+  "line": "Modern aquarium stand 48 x 13",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "black (Pets Warehouse's title says Grey; its description and photo show black)",
+  "fits": [
+   [
+    48,
+    13
+   ]
+  ],
+  "heightIn": 28,
+  "priceUsd": 263.99,
+  "seller": "Pets Warehouse",
+  "url": "https://petswarehouse.com/products/marineland-modern-aquarium-stand-grey-48in-x-13-in",
+  "asOf": "2026-11-26",
+  "est": [],
+  "note": "The stand in PetSmart's Marineland Modern LED 60 gal ensemble (item 5248474: 'modern-style stand', 50 x 14.25 x 28 in); the same cabinet sold alone as SD-3, UPC 047497520239. One hinged door on the left, open shelves on the right, back openings for a sump. R183, Nathan 2026-11-26.",
+  "look": {
+   "front": "#1b1b1d",
+   "top": "#1d1d1f",
+   "sheen": "satin",
+   "grain": "none",
+   "open": "half",
+   "halfClosed": "left",
+   "halfW": 0.47,
+   "halfDoor": true,
+   "openShelf": 0.5,
+   "doors": 1,
+   "handle": "bar",
+   "handleHex": "#b8bcc2",
+   "base": "recessed",
+   "baseMm": 45,
+   "topMm": 22,
+   "overhangMm": 22,
+   "est": [
+    "front",
+    "top",
+    "baseMm",
+    "topMm",
+    "overhangMm",
+    "halfW"
+   ]
+  }
  }
 ]

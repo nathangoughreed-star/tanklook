@@ -63,14 +63,15 @@ function cabinet(g: THREE.Group, look: StandLook, sp: StandSpace, mk: Mk) {
   put(g, mk(W, topT, D, topC, grain && look.grain !== 'laminate' ? { ...grain, seed: 9 } : undefined), 0, y1 - topT / 2, cz);
   // carcass: side and back panels so an open centre shows depth
   const inset = 6;
-  if (look.open === 'half') { // Seapora Roman: the left half open (back panel, chrome pole), the right half a solid panel
-    const sw = W * 0.4;
-    put(g, mk(sw, bodyH, D - 2 * inset, bodyC), W / 2 - sw / 2 - inset, bodyY0 + bodyH / 2, cz);
-    if (look.insetHex) put(g, mk(sw * 0.7, bodyH * 0.8, 8, hex(look.insetHex)), W / 2 - sw / 2 - inset, bodyY0 + bodyH / 2, D / 2 - inset + 1); // a cane / rattan door panel
-    put(g, mk(W - sw - 2 * inset, 14, D - 2 * inset, bodyC), -sw / 2, bodyY0 + bodyH * 0.5, cz); // the middle shelf of the open half
-    put(g, mk(W - sw - 2 * inset, bodyH, 8, dark), -sw / 2, bodyY0 + bodyH / 2, -(D / 2 - inset - 4));
-    put(g, mk(W - sw - 2 * inset, 18, D - 2 * inset, front), -sw / 2, bodyY0 + 16, cz);
-    put(g, mk(18, bodyH, D - 2 * inset, bodyC), -(W / 2 - inset - 9), bodyY0 + bodyH / 2, cz); // the open half's left side panel (Vibrant Life 29 had none: the cabinet showed through its left end)
+  if (look.open === 'half') { // Seapora Roman: the left half open (back panel, chrome pole), the right half a solid panel; Marineland Modern (R183): mirrored, a door on the closed half
+    const sw = W * (look.halfW ?? 0.4), m = look.halfClosed === 'left' ? -1 : 1, cx = m * (W / 2 - sw / 2 - inset), ox = -m * sw / 2;
+    put(g, mk(sw, bodyH, D - 2 * inset, bodyC), cx, bodyY0 + bodyH / 2, cz);
+    if (look.insetHex) put(g, mk(sw * 0.7, bodyH * 0.8, 8, hex(look.insetHex)), cx, bodyY0 + bodyH / 2, D / 2 - inset + 1); // a cane / rattan door panel
+    if (look.halfDoor) doorPanel(g, look, mk, front, grain, sw - 8, bodyH - 8, cx, bodyY0 + bodyH / 2, front_z, m < 0 ? 0 : 1); // the handle on the edge by the open half
+    put(g, mk(W - sw - 2 * inset, 14, D - 2 * inset, bodyC), ox, bodyY0 + bodyH * (look.openShelf ?? 0.5), cz); // the middle shelf of the open half
+    put(g, mk(W - sw - 2 * inset, bodyH, 8, dark), ox, bodyY0 + bodyH / 2, -(D / 2 - inset - 4));
+    put(g, mk(W - sw - 2 * inset, 18, D - 2 * inset, front), ox, bodyY0 + 16, cz);
+    put(g, mk(18, bodyH, D - 2 * inset, bodyC), -m * (W / 2 - inset - 9), bodyY0 + bodyH / 2, cz); // the open half's outer side panel (Vibrant Life 29 had none: the cabinet showed through its left end)
   } else if (look.open === 'arch' || look.open === 'center') {
     const sideW = look.open === 'arch' ? Math.max(45, W * 0.1) : Math.max(60, W * 0.36);
     const sides: [number, number][] = [[-(W / 2 - sideW / 2 - inset), sideW], [W / 2 - sideW / 2 - inset, sideW]];

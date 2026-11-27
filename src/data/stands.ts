@@ -16,6 +16,8 @@ export interface StandLook {
   planks?: number; bodyHex?: string; doorW?: number; doorX?: number; noBack?: boolean; insetHex?: string; openShelf?: number; topPlate?: string; doors?: number; doorStyle?: 'flat' | 'louver' | 'plank' | 'raised' | 'bead';
   /** 'center' = two end doors with an open middle shelf; 'arch' = open front between two side panels */
   open?: 'none' | 'center' | 'arch' | 'half';
+  /** open 'half': which half is closed (default 'right', the Seapora Roman), its share of the width (default 0.4), and a door on it (R183, Marineland Modern) */
+  halfClosed?: 'left' | 'right'; halfW?: number; halfDoor?: boolean;
   handle?: 'none' | 'bar' | 'knob'; handleHex?: string;
   base?: 'plinth' | 'recessed' | 'feet' | 'tapered' | 'poles' | 'block'; baseHex?: string;
   /** top slab thickness, base height, a thin base plate (mm, and how far it overhangs), plinth overhang, screw caps on a recessed plinth */
@@ -62,6 +64,7 @@ export function standOf(S: Pick<TankSetup, 'tank' | 'stand'>): StandProduct | un
   const st = S.stand; if (!st.show || st.style === 'table' || st.style === 'custom') return undefined;
   const p = standProduct(st.product);
   if (p && standFits(p, S.tank)) return p;
+  if (st.generic) return undefined; // R183: a bundle's stand we have no model for stays generic, never another product
   const same = standsFor(S.tank).filter(x => x.kind === (st.style === 'frame' ? 'frame' : 'cabinet'));
   return same.find(x => x.finish === st.finish) ?? same[0]; // the cheapest in the finish the scene shows, else the cheapest
 }

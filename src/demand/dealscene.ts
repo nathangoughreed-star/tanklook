@@ -25,6 +25,9 @@ export function sceneFromDeal(d: Deal): Scene | undefined {
   // a bundle without a stand does not get one added: the user adds one or says they don't need one (the budget counts one meanwhile)
   const hasStand = d.includes.includes('stand');
   S.stand = { ...S.stand, show: hasStand, need: hasStand ? undefined : 'ask', style: d.look?.style ?? 'cabinet', finish: d.look?.finish ?? 'black' };
+  // R183 (Nathan 2026-11-26): the bundle's own stand when we have it; otherwise the generic, never another real product standing in for it
+  delete S.stand.product; delete S.stand.generic;
+  if (hasStand) { if (d.look?.stand) S.stand.product = d.look.stand; else S.stand.generic = true; }
   S.lid = d.includes.includes('lid') ? d.look?.lid ?? (hoodExists(S.tank) ? 'hood' : 'glass') : 'open';
   const k = d.kit ? kitById(d.kit) : undefined;
   if (k) { S = applyKitLight(S, k as never); S.lid = k.lid; }
@@ -40,6 +43,8 @@ export function sceneFromDeal(d: Deal): Scene | undefined {
     if (t) {
       if (!d.includes.includes('filter')) { t.rows.filter = 'none'; delete t.filterProduct; delete t.filterModel; delete t.filters; }
       if (!d.includes.includes('heater')) { t.rows.heater = 'none'; delete t.heaterProduct; delete t.heaterW; delete t.heaters; }
+      // R184 (Nathan 2026-11-26): turning a bundle to salt adds no gear by itself: the salt rows the bundle does not ship start as 'none' for the user to add
+      for (const r of ['skimmer', 'flow', 'dosing', 'salinity', 'saltmix']) if (!t.rows[r]) t.rows[r] = 'none';
       S.tech = t;
     }
   }

@@ -366,7 +366,8 @@ export interface TableSettings { shape: 'rect' | 'round'; L: number; D: number; 
 /** need (Nathan 2026-10-19; absent = the old behaviour, `show` alone): after a tank or bundle that comes without a stand is
  *  chosen the stand is not added for the user. 'ask' = undecided (none drawn, the budget still counts a typical stand),
  *  'none' = "I don't need a stand" (nothing counted), 'added' = the user added one. */
-export interface StandSettings { /** SP1: the stand product picked (data/gear/stands.json id); absent = the cheapest fitting one of the drawn style, else the generic estimate */ product?: string; show: boolean; height: number; finish: StandFinish; style: StandStyle; table: TableSettings; need?: 'ask' | 'none' | 'added' }
+export interface StandSettings { /** SP1: the stand product picked (data/gear/stands.json id); absent = the cheapest fitting one of the drawn style, else the generic estimate */ product?: string;
+  /** R183: a bundle's own stand we have no product for: drawn and priced as the generic, never swapped for another real product (Nathan 2026-11-26) */ generic?: boolean; show: boolean; height: number; finish: StandFinish; style: StandStyle; table: TableSettings; need?: 'ask' | 'none' | 'added' }
 /** Undecided: no stand on the tank yet, but one is still expected in the budget. */
 export const standAsked = (st: StandSettings) => !st.show && st.need === 'ask';
 

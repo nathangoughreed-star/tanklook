@@ -103,9 +103,8 @@
     "style": "cabinet",
     "finish": "black",
     "lid": "glass",
-    "guessed": [
-     "stand style and colour: black cabinet assumed"
-    ],
+    "guessed": [],
+    "stand": "marineland-modern-48x13",
     "light": {
      "product": "marineland-modern-60-kit-led",
      "says": "hidden LED, natural daylight and moonlight effects (no watts, Kelvin or PAR published)"
