@@ -58,3 +58,28 @@ export async function glb(name, o = {}) {
   await post(name, new Blob([buf]));
   return { bytes: buf.byteLength };
 }
+
+const wait = ms => new Promise(r => setTimeout(r, ms));
+/** A small tank with one stone or wood piece and java moss tied onto it (step 4), as the app draws it:
+ *  await J.tank('jm-rock', { host: ['seiryu', 5, 160], moss: [[3, 40, 0, 0]], cam: { az: 20, el: 25, zoom: 1.6 } })
+ *  host = [variant, seed, size]; moss = [[seed, size, dx, dd], ...] (dx/dd: where on the piece, from its middle). */
+export async function tank(name, { L = 400, H = 260, D = 260, host, moss, cam = { az: 15, el: 22, zoom: 1.5 }, growth } = {}) {
+  const Sc = await import('/src/scene/defaults.ts'), It = await import('/src/scene/items.ts'), { store, viewer } = window.__gb;
+  viewer.sway = false;
+  const S = Sc.bareSetup();
+  S.tank = { L, H, D };
+  S.render.bg = 'blue'; S.render.grid = false; S.render.rim = false; S.substrate.show = true; S.water.level = 1; S.equipment = [];
+  const h0 = It.makeItem(S.tank, host[0], 1, host[1], L / 2, D / 2, { size: host[2], yaw: host[3] ?? 0 });
+  S.items = [h0];
+  let seedR = 7; const rnd = () => ((seedR = (seedR * 16807) % 2147483647) / 2147483647);
+  moss.forEach(([seed, size, dx, dd], i) => {
+    const p = It.perch(S, h0.x + dx, h0.depth + dd, rnd) ?? { x: h0.x + dx, depth: h0.depth + dd, lift: 0 };
+    S.items.push(It.makeItem(S.tank, 'moss', i + 2, seed, p.x, p.depth, { size, lift: p.lift, ...(growth != null ? { growth } : {}) }));
+  });
+  store.edit(t => { for (const k of Object.keys(t)) delete t[k]; Object.assign(t, structuredClone(S)); });
+  store.cam(c => { c.az = cam.az; c.el = cam.el; c.zoom = cam.zoom; });
+  store.select(null);
+  await wait(1500); viewer.rebuild?.(); await wait(2500); await viewer.buildNow?.(); await wait(2000);
+  await post(name, await viewer.exportPNG(1));
+  return S.items.slice(1).map(it => ({ x: Math.round(it.x), d: Math.round(it.depth), lift: it.lift }));
+}

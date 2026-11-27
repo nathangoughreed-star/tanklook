@@ -50,3 +50,20 @@ HTML page with three@0.149.0 (jsdelivr) OrbitControls + GLTFLoader. Tank renders
 (the camera aims at the tank centre: use a tiny tank, e.g. 200 x 120 x 140 mm, to frame small plants).
 
 Commit with `scripts/ship.sh` as you go (CLAUDE.md). End replies with "Build N".
+
+## Status (2026-11-26, end of the first JM chat)
+- Step 1 (look from photos): done, `research/moss-model-proposal.md` "Java moss look, checked against photos". Approved.
+- Step 2 (sheet + bake): done. Sheet `C:\Users\nreed\fish-sheets\plants\javamoss-d1.webp`; `scripts/javamoss-skin.py` ->
+  `public/art/plants/javamoss.webp` + `src/data/plantart/javamoss.json` (mat at 4 densities, 8 edge cards, 8 strands).
+- Step 3 (alone): done and approved after pass 2. `plant3d.ts` form 'tangle': a dark core inside 9 shells of the mat,
+  each sparser (Nathan: "linearly increasing density, no step"), edge cards, loose strands. Viewer:
+  https://claude.ai/artifact/Pyiqr713egmwWeJqmwXT4m (rebuild with `scripts/jm-render.js` `glb()`).
+- Step 4 (attached), first pass shipped, gate NOT passed yet: `render/items.ts` `mossHost` rays down onto the stone /
+  wood meshes into a height grid in the moss's own frame (`clump.host`); `plant3d.ts` 'tangle' + host drapes the
+  same shells over it, spreads with growth by distance, stops where the piece falls away and hangs strands there.
+  Reads well along branches; on a rock it is a patch on top with strands down the sides: a top-down height field
+  cannot coat steep sides. Next: coat the sides too (sample the host surface with normals, e.g. rays inward from
+  several directions or the host mesh's own triangles within reach, and lay the shells along the normal), thicker
+  older growth (B1/B4). Renders: `scripts/jm-render.js` `tank()` (a tiny tank, one piece, moss tied on via `perch`).
+  The dev server page reloads whenever another chat edits a file: retry a render in a quiet moment.
+- Step 5 (the `javamoss` brush): not started.

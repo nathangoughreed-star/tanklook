@@ -7,7 +7,7 @@ import { FX } from './fx';
 import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
-import { BREED, PLANT3D, growthOf, isCarpet, isFloat, isVine, type PlantType } from '../art/plants';
+import { BREED, PLANT3D, PLANT_ASPECT, growthOf, isCarpet, isFloat, isVine, type PlantType } from '../art/plants';
 import { CARPET_W, LIBRARY, SHELLS, itemDims, itemSink, seatHook, stoneDims, woodLimbs, type Fake, type Limb } from '../scene/items';
 import { turnOut, type AnchorProbe, type V3 } from '../scene/anchors';
 import { lampHeight } from '../scene/lightout';
@@ -937,12 +937,59 @@ function vineLimbs(S: TankSetup, T: Tank, it: Item, y: number, c: number, s: num
  *  along (lane T2); '' for everything else. */
 export function itemDeps(S: TankSetup, it: Item) {
   const st = S.light.outcomes && it.kind === 'plant' ? struggleBucket(S, it) : 0; // (a struggling plant is drawn pale and stretched: lane OC)
-  return (st ? `|S${st}` : '') + vineDeps(S, it);
+  return (st ? `|S${st}` : '') + vineDeps(S, it) + mossDeps(S, it);
 }
 function vineDeps(S: TankSetup, it: Item) {
   if (it.kind !== 'plant' || !isVine(it.variant) || it.pitch || it.tilt) return '';
   const y = groundHeight(S, S.tank, it.x, it.depth) + it.lift - itemSink(it), c = Math.cos(it.yaw * D2R), s = Math.sin(it.yaw * D2R), l = vineLimbs(S, S.tank, it, y, c, s);
   return l.length ? `|L${hashNums(l)}` : '';
+}
+/** Java moss on stone or wood (R182 lane JM step 4): the plant types that drape over what they sit on. */
+const DRAPES = new Set(['moss']);
+/** How far round its own footprint (R = half its width) a draping plant samples what is under it: its spread when fully grown. */
+const HOST_REACH = 2.3, HOST_N = 33;
+/** The stone and wood a draping plant may lie on, with where each sits (as vineLimbs places wood). */
+function hostPieces(S: TankSetup, T: Tank, it: Item, reach: number) {
+  const out: { w: Item; wy: number; at: Item }[] = [];
+  for (const w of S.items) {
+    if (w.kind !== 'stone' && w.kind !== 'wood') continue;
+    const [dl, dw] = itemDims(w);
+    if (Math.hypot(w.x - it.x, w.depth - it.depth) > reach + Math.max(dl, dw, w.size)) continue;
+    const st = settleOn(S, T, w);
+    out.push({ w, wy: groundHeight(S, T, w.x, w.depth) + w.lift - itemSink(w) + st.dy + riseOf(w), at: { ...w, pitch: st.pitch, tilt: st.tilt } });
+  }
+  return out;
+}
+const HOST_RAY = new THREE.Raycaster(), HOST_MAT = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+/**
+ * What a draping plant (java moss) lies on, in its own frame: [n, cell, n x n heights over its base, to the mm; NaN =
+ * only the ground there], the grid centred on it, x along its own x, z along its own z. Empty when it is not lifted
+ * onto a piece (nothing solid right under it). Looked down onto the stone and wood meshes from above the tank.
+ */
+export function mossHost(S: TankSetup, T: Tank, it: Item, y: number, c: number, s: number, h: number): number[] {
+  if (!DRAPES.has(it.variant) || it.lift <= 2 || it.pitch || it.tilt) return [];
+  const R = h / PLANT_ASPECT[it.variant as PlantType] / 2, ext = R * HOST_REACH, pieces = hostPieces(S, T, it, ext);
+  if (!pieces.length) return [];
+  const meshes = pieces.map(({ w, wy, at }) => { const m = new THREE.Mesh(solidShape(w), HOST_MAT); m.position.set(w.x, wy, -w.depth); m.rotation.copy(itemEuler(at)); m.updateMatrixWorld(true); return m; });
+  const n = HOST_N, cell = (2 * ext) / (n - 1), out: number[] = [n, Math.round(cell * 100) / 100], top = T.H + 400, down = new THREE.Vector3(0, -1, 0), o = new THREE.Vector3();
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+    const lx = -ext + i * cell, lz = -ext + j * cell, x = it.x + lx * c + lz * s, d = it.depth + lx * s - lz * c;
+    HOST_RAY.set(o.set(x, top, -d), down);
+    // the highest surface not far over its base (a limb crossing over it is not what it lies on)
+    const hit = HOST_RAY.intersectObjects(meshes, false).find(q => q.point.y - y < Math.max(30, h));
+    out.push(hit ? Math.round(hit.point.y - y) : NaN);
+  }
+  // on a piece: something solid near its base close to its middle (tied on the side of a limb, straight under its
+  // middle may be air)
+  const m0 = (n - 1) / 2, near = Math.max(1, Math.round(R * 0.35 / cell));
+  for (let dj = -near; dj <= near; dj++) for (let di = -near; di <= near; di++) { const v = out[2 + (m0 + dj) * n + m0 + di]; if (Number.isFinite(v) && Math.abs(v) < R * 0.5) return out; }
+  return []; // (nothing solid near its middle: it is not on a piece)
+}
+/** What a draping plant's mesh depends on besides its own data: the pieces near it (their place, turn and size). */
+function mossDeps(S: TankSetup, it: Item) {
+  if (it.kind !== 'plant' || !DRAPES.has(it.variant) || it.lift <= 2 || it.pitch || it.tilt) return '';
+  const R = it.size / PLANT_ASPECT[it.variant as PlantType] / 2, ps = hostPieces(S, S.tank, it, R * HOST_REACH);
+  return ps.length ? `|H${hashNums(ps.flatMap(({ w, wy, at }) => [w.id, w.seed, w.size, w.x, w.depth, wy, w.yaw, at.pitch, at.tilt]))}` : '';
 }
 /** A short hash of a number list (cache keys). */
 const hashNums = (a: number[]) => { let h = 0; for (const v of a) h = (Math.imul(h, 31) + Math.round(v * 10)) | 0; return `${a.length}:${h}`; };
@@ -971,6 +1018,8 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   const drop = vine ? Math.max(0, Math.round(it.lift / 5) * 5) : 0;
   // the wood near it, in its own frame: its vines run along the limbs and across to the next (lane T2; not tipped)
   const limbs = vine && !it.pitch && !it.tilt ? vineLimbs(S, T, it, y, c, s) : [];
+  // java moss lifted onto stone or wood: the surface it drapes over, in its own frame (R182 lane JM step 4)
+  const host = !carpet && !float && !vine ? mossHost(S, T, it, y, c, s, h) : [];
   // a plant whose own spread reaches the glass: the panes it reaches, in its own frame (plantGeometry sets its stems,
   // crowns or rosettes down inside them), to 4 mm and 3 decimals so a drag reuses a build until it moves that far. Not
   // in a bowl (its spread is kept inside) nor tipped
@@ -982,7 +1031,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   // a carpet hugs the ground under each leaflet: its key carries the spot (rebuilt only while it moves); the rest key on
   // the exact height they are built with (a rounded one let two near-equal plants share the first one's mesh)
   // (a carpet's ground: everything groundHeight reads, lane E2 #2: a terrain or substrate edit left it on the old ground)
-  const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.sideLens}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${groundKey(S)}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}|${it.dens ?? ''}|${clip.join(',')}${vine ? `|d${drop}|L${limbs.length ? hashNums(limbs) : ''}` : ''}`;
+  const k = carpet ? `${type}|${it.seed}|${it.size}|${h}|${it.x}|${it.depth}|${it.yaw}|${it.lift}|${T.shape}|${T.L}|${T.D}|${T.H}|${T.sides}|${T.sideLens}|${T.bowMin}|${T.bowlFloor}|${T.bowlTop}|${groundKey(S)}` : `${type}|${it.seed}|${it.size}|${h}|${it.spread ?? ''}|${it.stems ?? ''}|${it.dens ?? ''}|${clip.join(',')}${vine ? `|d${drop}|L${limbs.length ? hashNums(limbs) : ''}` : ''}${host.length ? `|H${hashNums(host.map(v => (Number.isFinite(v) ? v : -9999)))}` : ''}`;
   // near the glass a leaflet is cut down to the width it has room for, so the carpet runs right up to the glass without
   // poking through; a leaflet past the edge line is mirrored back in by as much (keeping the edge thick), and one more
   // than half a leaflet past it is left out
@@ -997,7 +1046,7 @@ function plantPlan(S: TankSetup, T: Tank, it: Item, more = it.growth != null) {
   };
   // (what grows past g0 is only built once the plant has a growth of its own: a starter set costs what it did)
   const sw = `3d${plant3d.sway ? 's' : ''}${more ? '+' : ''}${plant3d.emerse ? '' : 'n'}${plant3d.variety ? 'v' : ''}${plant3d.tex === 'paint' ? '' : plant3d.tex}|`, kf = sw + (carpet ? `${type}|${it.seed}|${it.size}` : k);
-  const args = [type, it.seed, h, { spread: it.spread, stems: it.stems, dens: it.dens, clip: clip.length ? clip : undefined, drop: drop || undefined, limbs: limbs.length ? limbs : undefined }, g0, more, it.size] as const;
+  const args = [type, it.seed, h, { spread: it.spread, stems: it.stems, dens: it.dens, clip: clip.length ? clip : undefined, drop: drop || undefined, limbs: limbs.length ? limbs : undefined, host: host.length ? host : undefined }, g0, more, it.size] as const;
   let bend: { F: number; C?: number; water: boolean; walls: number[]; ks: string } | undefined;
   const aboveWater = S.water.on && y >= waterY(T, S.water.level) - 2 && PLANT3D[type]?.land; // (a land plant standing above the water, on a rock or wood: nothing to lie over at, lane OG3)
   if (!carpet && !float && !free && !aboveWater) {
@@ -1214,10 +1263,11 @@ export function itemMesh(S: TankSetup, T: Tank, it: Item): THREE.Mesh | null {
     if (st > 0 && !isFloat(it.variant)) { const leggy = LEGGY.has(it.variant); m.scale.set(1 - (leggy ? 0.15 : 0.1) * st, 1 + (leggy ? 0.2 : -0.2) * st, 1 - (leggy ? 0.15 : 0.1) * st); }
     if (g.userData.cpu) m.raycast = plantRaycast;
     m.userData.plant = true;
-    // a mat (moss) spreads with Time: its patch widens past the size it was planted at, no new plants (lane PR)
+    // a mat (moss) spreads with Time: its patch widens past the size it was planted at, no new plants (lane PR); moss
+    // draped on a piece spreads over it in its own build instead (R182 lane JM)
     const mat = BREED[it.variant as PlantType];
     const g0 = growthOf(it.variant as PlantType, it.size);
-    if (mat?.mode === 'mat' && it.growth != null && gr > g0) { const k = 1 + (mat.rate - 1) * (gr - g0) / (1 - g0 || 1); m.scale.set(k * m.scale.x, m.scale.y, k * m.scale.z); }
+    if (mat?.mode === 'mat' && it.growth != null && gr > g0 && !(P.args[3] as { host?: number[] }).host) { const k = 1 + (mat.rate - 1) * (gr - g0) / (1 - g0 || 1); m.scale.set(k * m.scale.x, m.scale.y, k * m.scale.z); }
   } else if (it.kind === 'artificial') { // lane P4: a fixed look (no growth, no bending at the surface, no algae)
     const f: Fake = LIBRARY[it.variant]?.fake ?? { mat: 'silk', form: 'stem' }, k = `${it.variant}|${it.seed}|${Math.round(it.size)}`;
     m = new THREE.Mesh(fakes.get(k) ?? remember(fakes, k, keepGeo(artificialGeometry(f.mat, f.form, it.seed, it.size, f.tint)), 300, dispose), fakeMaterial(T, f.mat));

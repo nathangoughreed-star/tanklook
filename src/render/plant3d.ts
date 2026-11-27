@@ -345,6 +345,9 @@ export interface Clump {
   /** Vines (lane T2): the limbs of the wood near it, in its own frame: per limb [n, r0, r1, x, y, z x n] (its vines run
    *  along them; render/items.ts vineLimbs). */
   limbs?: number[];
+  /** Draping plants (java moss on stone or wood, R182 lane JM): what is under it, in its own frame: [n, cell mm, n x n
+   *  heights over its base (NaN = only the ground)], the grid centred on it (render/items.ts mossHost). */
+  host?: number[];
   /** The glass within its own spread, in its own frame: [nx, nz, e] per pane, a point (x, z) is inside by
    *  e - (x nx + z nz) mm. Stems, crowns and rosettes are only set down inside (a spread may reach past the glass). */
   clip?: number[];
@@ -839,6 +842,123 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
       card(re, Math.cos(a) * s, y, Math.sin(a) * s, fullBy(extraAt(j, n), 0.08, 1), ex);
     }
     extra.push(tagAll(core, small.a, small.w, B));
+  } else if (P.form === 'tangle' && clump.host) {
+    // java moss tied onto stone or wood (R182 lane JM step 4; Nathan: "another way if it was attached to an object and
+    // growing on it where it spreads more like ivy rather than a ball"; the look: research/moss-model-proposal.md,
+    // "Java moss look, checked against photos", B1-B4). A coat over the piece instead of a cushion: clump.host is the
+    // height of what is under it on a grid in its own frame (render/items.ts mossHost). The same core + sparser shells
+    // as the cushion (density falls off evenly toward the tips), each lying on the surface; where the piece falls away
+    // further than the coat follows it down a side, the coat stops and long strands hang off that edge. Edge cards round
+    // its rim and over its top keep the outline ragged. Growth: it spreads out over the piece from where it was tied
+    // on (each part shows by its distance from there, growing up out of the surface); grown on past g0 it reaches
+    // further (to K times its own patch). Built in mm, not scaled to h.
+    const J = JMOSS, HG = clump.host, hn = HG[0], hc = HG[1], hx = ((hn - 1) / 2) * hc;
+    /** The piece's surface under (x, z): bilinear on the grid; NaN past it or where a corner is only the ground. */
+    const surf = (x: number, z: number) => {
+      const fx = (x + hx) / hc, fz = (z + hx) / hc, i = Math.floor(fx), j = Math.floor(fz);
+      if (i < 0 || j < 0 || i >= hn - 1 || j >= hn - 1) return NaN;
+      const u = fx - i, v = fz - j, o = 2 + j * hn + i;
+      return (HG[o] * (1 - u) + HG[o + 1] * u) * (1 - v) + (HG[o + hn] * (1 - u) + HG[o + hn + 1] * u) * v;
+    };
+    const R0 = Wc / 2, K = more ? 1 + 1.2 * (1 - g0) : 1, RF = R0 * K, ph = [r() * 6.28, r() * 6.28, r() * 6.28, r() * 6.28];
+    const rimK = (a: number) => 0.86 + 0.07 * Math.sin(2 * a + ph[0]) + 0.05 * Math.sin(3 * a + ph[1]) + 0.03 * Math.sin(7 * a + ph[2]);
+    const Ht = Math.min(32, Math.max(10, h * 0.4)), D = Math.max(Ht * 1.5, R0 * 0.45); // coat thickness; how far down a side it follows
+    const ok = (x: number, z: number) => { const y = surf(x, z); return Number.isFinite(y) && y > -D; };
+    const lumps = (x: number, z: number) => 0.5 + 0.5 * Math.sin(x * 7.3 / R0 + ph[1]) * Math.sin(z * 6.1 / R0 + ph[2]) * Math.sin((x + z) * 3.7 / R0 + ph[3]);
+    const thick = (x: number, z: number) => { const t = Math.min(1, Math.hypot(x, z) / (rimK(Math.atan2(z, x)) * RF)), fall = Math.min(1, Math.max(0, (surf(x, z) + D) / (D * 0.7))); return Ht * Math.pow(Math.max(0, 1 - t * t), 0.5) * Math.pow(fall || 0, 0.7) * (0.75 + 0.25 * lumps(x, z)); }; // (thinning to nothing at its rim and where it lets go of a side: no cliff)
+    const nrm = (x: number, z: number) => { const e = hc * 0.5, dx = surf(x + e, z) - surf(x - e, z), dz = surf(x, z + e) - surf(x, z - e); return Number.isFinite(dx + dz) ? V(-dx / (2 * e), 1, -dz / (2 * e)).normalize() : V(0, 1, 0); };
+    const shade = (k: number, x: number, z: number, n: THREE.Vector3) => (0.5 + 0.85 * k) * (0.88 + 0.24 * lumps(x * 1.7, z * 1.7)) * (0.75 + 0.25 * Math.max(0, n.y));
+    // growth: each part shows by its distance from the tie-on spot (own patch by g0, the rest by growth 1), out of the surface
+    const wG = Math.max(0.06, 0.15 * g0);
+    const tagAt = (d: number, anc: THREE.Vector3): LeafTag => ({ anc, w: wG, a: d <= R0 ? -0.5 * wG + (d / R0) * (g0 - wG) : g0 + Math.min(1, (d - R0) / Math.max(1, RF - R0)) * (0.97 - g0) - 0.5 * wG });
+    // the coat: a grid over (x, z), a core and shells, each corner on the surface plus its share of the coat's thickness
+    const TS = 45, nC = Math.max(4, Math.ceil(TS / (R0 / 7))), cell = TS / nC, NS = 6;
+    const g0x = Math.floor(-RF * 1.1 / cell), n1 = Math.ceil(RF * 1.1 / cell) - g0x;
+    const cp: number[] = [], cu: number[] = [], cc: number[] = [], ctag: LeafTag[] = [];
+    for (let li = 0; li <= NS; li++) {
+      const sv = li / NS, fh = 0.25 + 0.75 * sv, d = 1 - (li - 0.5) / NS;
+      const lv = li === 0 ? 0 : J.matCover.reduce((m, c, k) => (k && Math.abs(c - d) < Math.abs(J.matCover[m] - d) ? k : m), 1), mt = J.mats[lv];
+      const oi = li ? Math.floor(r() * nC) : 0, oj = li ? Math.floor(r() * nC) : 0, kL = 0.7 + 0.35 * sv, wp = [r() * 6.28, r() * 6.28];
+      const rimL = (x: number, z: number) => { const a = Math.atan2(z, x); return rimK(a) * RF * (li ? 1 + 0.05 * Math.sin(4 * a + wp[0]) + 0.03 * Math.sin(7 * a + wp[1]) : 1); };
+      const vtx = (i: number, j: number) => {
+        let x = (g0x + i) * cell, z = (g0x + j) * cell;
+        const e = rimL(x, z), dd = Math.hypot(x, z);
+        if (dd >= e) { x *= e / dd; z *= e / dd; return V(x, surf(x, z) + 0.6, z); }
+        return V(x, surf(x, z) + thick(x, z) * fh, z);
+      };
+      for (let i = 0; i < n1; i++) for (let j = 0; j < n1; j++) {
+        const c4 = [[i, j], [i + 1, j], [i + 1, j + 1], [i, j + 1]], xz = c4.map(([a, b]) => [(g0x + a) * cell, (g0x + b) * cell]);
+        if (xz.every(([x, z]) => Math.hypot(x, z) >= rimL(x, z))) continue;
+        const pts = c4.map(([a, b]) => vtx(a, b));
+        if (!pts.every(p => ok(p.x, p.z))) continue; // (past where the piece falls away: the coat stops)
+        { const ys = pts.map(p => p.y); if (Math.max(...ys) - Math.min(...ys) > cell * 1.7) continue; } // (too steep for a grid cell: it would smear the texture into a dark streak; the strands hang there instead)
+        if (li < 2 && !xz.every(([x, z]) => thick(x, z) > Ht * 0.35)) continue; // (the solid core and the densest shell stay inside: only see-through shells reach the coat's edge)
+        const ti = Math.floor((g0x + i + oi) / nC), tj = Math.floor((g0x + j + oj) / nC);
+        for (const k of [0, 2, 1, 0, 3, 2]) {
+          const p = pts[k], [a, b] = c4[k], u = (g0x + a + oi) / nC - ti, w = (g0x + b + oj) / nC - tj, sh = shade(Math.min(1, thick(p.x, p.z) * fh / Ht * 1.15), p.x, p.z, nrm(p.x, p.z)) * kL;
+          cp.push(p.x, p.y, p.z); cu.push(mt[0] + (mt[2] - mt[0]) * u, mt[1] + (mt[3] - mt[1]) * w); cc.push(sh, sh, sh);
+          ctag.push(tagAt(Math.hypot(p.x, p.z), V(p.x, surf(p.x, p.z), p.z)));
+        }
+      }
+    }
+    const core = new THREE.BufferGeometry();
+    core.setAttribute('position', new THREE.Float32BufferAttribute(cp, 3));
+    core.setAttribute('uv', new THREE.Float32BufferAttribute(cu, 2));
+    core.setAttribute('color', new THREE.Float32BufferAttribute(cc, 3));
+    core.setIndex(Array.from({ length: cp.length / 3 }, (_, i) => i));
+    core.computeVertexNormals();
+    /** A card strip from `foot` along `up` (bending by `lean`), `wd` wide across `side`, rect bottom to top (or top to
+     *  bottom: `down`, a hanging strand rooted at its rect's top). */
+    const strip = (into: Sheets, foot: THREE.Vector3, up: THREE.Vector3, side: THREE.Vector3, lean: THREE.Vector3, wd: number, rc: Rect4, kb: number, tag: LeafTag, flip: boolean, rows = 2, down = false) => {
+      const pts: THREE.Vector3[] = [], cols: THREE.Color[] = [], uf: number[] = [], tg: Tag[] = [], rect: Rect4 = down ? [rc[0], rc[3], rc[2], rc[1]] : rc;
+      for (let row = 0; row <= rows; row++) {
+        const s = row / rows, at = foot.clone().addScaledVector(up, s).addScaledVector(lean, s * s), k = kb * (0.8 + 0.25 * s);
+        for (let col = 0; col < 2; col++) {
+          pts.push(at.clone().addScaledVector(side, (col - 0.5) * wd)); cols.push(new THREE.Color(k, k, k));
+          rectUV(rect, flip ? 1 - col : col, s, uf);
+          tg.push({ a: tag.a, w: tag.w, anc: tag.anc ?? foot, pc: -1, par: 0, apar: 0 });
+        }
+      }
+      into.grid(pts, cols, rows + 1, 2, cols, tg, undefined, { f: uf, b: uf });
+    };
+    /** An edge card standing on the coat at (x, z), along the surface's normal, tipped outward by `tilt`. */
+    const edge = (q: R, x: number, z: number, Hk: number, tilt: number, into: Sheets) => {
+      if (!ok(x, z)) return;
+      const n = nrm(x, z);
+      if (n.y < 0.55) return; // (on a steep side a card would stand out sideways)
+      const a = Math.atan2(z, x), out = V(Math.cos(a), 0, Math.sin(a)), y = surf(x, z) + thick(x, z) * 0.9;
+      const Hc = Ht * Hk * (0.75 + 0.5 * q()), t = tilt * (0.7 + 0.6 * q());
+      const upv = n.clone().multiplyScalar(Math.cos(t)).addScaledVector(out, Math.sin(t)).normalize().multiplyScalar(Hc);
+      const yaw = q() * 6.28, side = V(Math.cos(yaw), 0, Math.sin(yaw)).projectOnPlane(upv.clone().normalize()).normalize();
+      const foot = V(x, y, z).addScaledVector(upv, -J.edgeBase * 1.4), kb = shade(0.8, x, z, n) * (0.78 + 0.2 * q());
+      strip(into, foot, upv, side, out.clone().multiplyScalar(Hc * 0.25 * q()), Hc * J.edgeAspect, J.edges[Math.floor(q() * J.edges.length)], kb, tagAt(Math.hypot(x, z), V(x, surf(x, z), z)), q() < 0.5);
+    };
+    const HANG = J.strands.filter(s => s.hang).length ? J.strands.filter(s => s.hang) : J.strands;
+    /** A strand hanging off an edge of the piece at (x, z): out a little, then down (the trailing streamers, B3). */
+    const hang = (q: R, x: number, z: number, into: Sheets) => {
+      const st = HANG[Math.floor(q() * HANG.length)], rc = st.rect, a = Math.atan2(z, x) + (q() - 0.5) * 0.7, out = V(Math.cos(a), 0, Math.sin(a));
+      const L = R0 * (0.4 + 0.6 * q()) * (0.7 + 0.3 * K) * (0.6 + 0.4 * st.len), aspect = (rc[2] - rc[0]) / (rc[3] - rc[1]);
+      const upv = out.clone().multiplyScalar(0.35).add(V(0, -1, 0)).normalize().multiplyScalar(L), lean = out.clone().multiplyScalar(-L * 0.15 * q());
+      const side = out.clone().cross(V(0, 1, 0)).normalize().applyAxisAngle(V(0, -1, 0), (q() - 0.5) * 1.2);
+      const ru = (st.root[0] - rc[0]) / (rc[2] - rc[0]), W = L * aspect, root = V(x, surf(x, z) + thick(x, z) * 0.4, z);
+      strip(into, root.clone().addScaledVector(side, (0.5 - ru) * W), upv, side, lean, W, rc, 0.75 + 0.2 * q(), tagAt(Math.hypot(x, z), root), false, 4, true);
+    };
+    // round the rim: march out along each heading to the coat's edge; on the piece's top that is the rim (an edge card),
+    // where the piece falls away first it is the last spot the coat holds (an edge card, and strands hanging off it)
+    const cw = Ht * 0.9 * J.edgeAspect, M = Math.round(2 * Math.PI * RF * 0.85 / (cw * 0.3));
+    for (let i = 0; i < M; i++) {
+      const a = (i + r() * 0.6) / M * 6.2832, e = rimK(a) * RF, ca = Math.cos(a), sa = Math.sin(a);
+      let last = -1;
+      for (let d = 0; d <= e; d += hc * 0.4) { if (!ok(ca * d, sa * d)) break; last = d; }
+      if (last < 0) continue;
+      const x = ca * last * 0.97, z = sa * last * 0.97;
+      if (last >= e * 0.97) edge(r, x, z, 1.1, 0.5, out); // (its rim on the piece's top: a ragged edge)
+      else { hang(r, x, z, out); if (r() < 0.5) hang(r, x, z, out); } // (where the piece falls away: strands hanging off, no card: its solid foot would stick out of the side)
+    }
+    // over the top: shorter cards, standing up out of the coat
+    const nTop = Math.round(Math.PI * RF * RF * 0.6 / (cw * cw) * 2 * between(r, P.n) / 300);
+    for (let i = 0; i < nTop; i++) { const a = r() * 6.2832, d = Math.sqrt(r()) * RF * 0.8; edge(r, Math.cos(a) * d, Math.sin(a) * d, 0.6, 0.2, out); }
+    extra.push(tagEach(core, i => { const t = ctag[i]; return { a: t.a, w: t.w, anc: t.anc!, pc: -1, par: 0, apar: 0 }; }));
   } else if (P.form === 'tangle') {
     // java moss, alone (R182 lane JM step 3; the look: research/moss-model-proposal.md, "Java moss look, checked against
     // photos"). Its own texture from a ChatGPT sheet (scripts/javamoss-skin.py -> public/art/plants/javamoss.webp); the
@@ -1092,7 +1212,7 @@ export function plantGeometry(type: PlantType, seed: number, h: number, clump: C
   // scale to the height asked for (the leaves' arch makes their reach less than their length), shade the leaves while
   // they are still one smooth sheet each, then merge with the stalks. Only the plant's own part sets the scale.
   const leaves = out.geometry(), parts = [leaves, ...extra];
-  const vn = P.form === 'vine', top = Math.max(...parts.map(g => { g.computeBoundingBox(); return g.boundingBox!.max.y; })), k = vn ? 1 : h / Math.max(1, top); // (vines: built in mm)
+  const vn = P.form === 'vine' || (P.form === 'tangle' && !!clump.host), top = Math.max(...parts.map(g => { g.computeBoundingBox(); return g.boundingBox!.max.y; })), k = vn ? 1 : h / Math.max(1, top); // (vines: built in mm)
   // a plant whose leaves reach out wider than its card is drawn narrower (at most by a quarter), so it fits where the card did
   const reach = Math.max(...parts.map(g => Math.max(-g.boundingBox!.min.x, g.boundingBox!.max.x, -g.boundingBox!.min.z, g.boundingBox!.max.z))) * k;
   const kx = clump.spread || vn ? 1 : Math.max(0.75, Math.min(1, Wc * 0.6 / Math.max(1, reach))); // a clump's own spread is kept
