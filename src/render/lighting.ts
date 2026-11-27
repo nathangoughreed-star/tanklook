@@ -101,7 +101,14 @@ export const LU = {
   uMapDiv: { value: 1 / 16 }, uMapStep: { value: 0 }, uLoM: { value: 1 }, uLoInd: { value: new THREE.Vector3() },
   // caustics (plan VF5, render/caustics.ts): strength and mip blur by fixture type (setLightUniforms), water on (setWaterUniforms), the pattern's mean
   uCausK: { value: new THREE.Vector4(0, 0, 0, 0.2) }, uCausOff: { value: 0 },
+  // key modelling (R193): direction weight 0..1, fade per mm under the water, the fade's mean-keeping gain (setLightUniforms)
+  uKeyDir: { value: 1 }, uKeyAtt: { value: 0 }, uKeyComp: { value: 1 }, uKeyK: { value: new THREE.Vector4() },
 };
+/** R193 key-light switches (dev: window.__key to try values; setLightUniforms applies them). att = fade per mm of water depth. */
+export const KEY_SET = { dir: 1, att: 0.0035,
+  /** facing = a + b x facing term: leaves (a, b on |n.l|), solids (rock, wood, sand: a + b max(n.l, 0) + a max(-n.l, 0)) */
+  leaf: [0.2, 1.15], solid: [0.08, 1.3] };
+if (import.meta.env?.DEV && typeof window !== 'undefined') (window as unknown as { __key: unknown }).__key = KEY_SET;
 /**
  * Caustics per fixture type (plan VF5): a spot is a near point source, so the focused net is sharp and strong; an LED bar
  * is a row of points, the nets overlap and smear; a tube is a line, which smears it most. [strength, mip bias]
@@ -275,6 +282,9 @@ export function setLightUniforms(T: Tank, l: LightSettings, lid = 'open', beams 
   const R = emitters(T, ref, LAMP_Y), rm = beamExp(ref); let avg = 0, k = 0;
   for (let i = 1; i <= 5; i++) for (let j = 1; j <= 5; j++) { avg += lightSum(R, [T.L * i / 6, T.H * 0.5, -T.D * j / 6], rm); k++; }
   LU.uNorm.value = gain * k / Math.max(avg, 1e-6); LU.uBeamM.value = m;
+  // depth fade (R193): exp(-att d) under the water, scaled so its mean over the water column is 1
+  const wd = S?.water.on ? waterY(T, S.water.level) : 0, a = KEY_SET.att;
+  LU.uKeyDir.value = KEY_SET.dir; LU.uKeyK.value.set(KEY_SET.leaf[0], KEY_SET.leaf[1], KEY_SET.solid[0], KEY_SET.solid[1]); LU.uKeyAtt.value = wd > 0 ? a : 0; LU.uKeyComp.value = wd > 0 && a > 0 ? a * wd / (1 - Math.exp(-a * wd)) : 1;
   LU.uAmb.value = l.room; LU.uBright.value = bright; LU.uLCol.value.setRGB(...lightRGB(l.kelvin, !!S?.water.salt));
   const env = lo ? lightEnvCached({ ...S!, tank: T }) : null;
   LU.uLoOn.value = env ? 1 : 0; LU.uMapDiv.value = env ? MAP_DIV[l.mapUnit ?? 'par'] : MAP_DIV.rel;
@@ -297,6 +307,7 @@ const AQ_FRAG = `
 uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uBeamM, uRef, uCard, uSub, uFish, uPane; uniform vec3 uLCol;
 float aqSpec = 0.0;
 uniform float uFxTone, uFxCaus, uFxTime, uFxDepth, uFxLine; uniform sampler2D uCausTex; uniform vec4 uCausK; uniform float uCausOff;
+uniform float uKeyDir, uKeyAtt, uKeyComp; uniform vec4 uKeyK;
 uniform float uFishCap; uniform float uRoomMat, uRoomK, uSpillR, uTankRound, uAlgH; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater, uWTint; uniform vec3 uWCol; uniform float uPop, uFishCard, uFishRing;
 varying vec3 vAqP; varying vec3 vAqN;
 ${CAST_GLSL}
@@ -355,7 +366,11 @@ vec3 aqLight() {
     vec3 tl = q - vAqP; float d = length(tl); vec3 ld = tl / max(d, 1.0);
     float cone = pow(max(ld.y, 0.0), uBeamM), r = d / uRef;
     float fall = e.w > 0.0 ? 1.0 / (1.0 + r) : 1.0 / (1.0 + r * r);
-    float facing = uCard > 0.5 ? 1.0 : 0.3 + 0.9 * abs(dot(n, ld));
+    // key modelling (R193, lane SH1): uKeyDir 0 = the old even light; 1 = surfaces facing the lamp lit, the ones turned
+    // away dim (solids), and a leaf lit by how squarely it faces the lamp (two-sided, so abs), edge-on leaves darker
+    float ndl = dot(n, ld);
+    float facing = uCard > 0.5 ? mix(1.0, uKeyK.x + uKeyK.y * abs(ndl), uKeyDir * (1.0 - uFishCard))
+                               : mix(0.3 + 0.9 * abs(ndl), uKeyK.z + uKeyK.w * max(ndl, 0.0) + uKeyK.z * max(-ndl, 0.0), uKeyDir);
     // 3D fish body: lit from the light's side (flank toward the viewer = 1, back brighter, belly darker), plus a soft highlight
     if (uFish > 0.5) {
       facing = aqFishFacing(n, ld);
@@ -365,7 +380,9 @@ vec3 aqLight() {
     sum += cone * fall * facing;
   }
   // cast shadows (lane SH1, castShadow.ts): the fixture's share, its highlight on a fish too
-  aqCastK = aqCast(n); sum *= aqCastK; aqSpec = aqSp0 + (aqSpec - aqSp0) * aqCastK;
+  aqCastK = aqCast(n); sum *= aqCastK;
+  // the key fades with depth under the water (R193): brighter tops, darker bottom; uKeyComp keeps the tank's mean
+  sum *= uKeyComp * exp(-uKeyAtt * max(uWater.y - vAqP.y, 0.0)); aqSpec = aqSp0 + (aqSpec - aqSp0) * aqCastK;
   // the grains seen through the glass sit inside the pile, shadowed by the gravel above: a tenth of the fixture, the rest ambient
   return vec3(uAmb) + uLCol * (uBright * uNorm * sum * (uPane > 0.5 ? 0.1 : 1.0));
 }

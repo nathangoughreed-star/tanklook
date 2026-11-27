@@ -1,0 +1,34 @@
+{
+ "commit": "7d5b8760",
+ "build": 2954,
+ "dirty": true,
+ "when": "2026-11-27T16:01:15.854Z",
+ "size": [
+  2200,
+  1300
+ ],
+ "fx": [
+  "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed,shadows"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "photo-60t": {
+   "shots": [
+    "photo-60t-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png"
+   ],
+   "ab": {}
+  },
+  "planted4": {
+   "shots": [
+    "planted4-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png"
+   ],
+   "ab": {}
+  },
+  "iwagumi": {
+   "shots": [
+    "iwagumi-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png"
+   ],
+   "ab": {}
+  }
+ }
+}
