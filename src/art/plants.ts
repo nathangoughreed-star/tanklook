@@ -9,7 +9,7 @@ export type PlantType = 'stem' | 'stemred' | 'grass' | 'sword' | 'fern' | 'anubi
   | 'peacelily' | 'anthurium' | 'calathea' | 'catpalm' | 'philodendron' | 'monstera' | 'begonia';
 
 /** Height / width per plant type (sizes and footprints; the ratio of the old 2D cards). */
-export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 1.1, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1,
+export const PLANT_ASPECT: Record<PlantType, number> = { stem: 3.2, stemred: 3.2, grass: 3.6, sword: 0.95, fern: 1.3, anubias: 0.8, carpet: 0.32, crypt: 1,
   buce: 0.9, rotala: 3.6, ludwigia: 3, balansae: 3, sagittaria: 0.45, ozelot: 1.1, moss: 0.35, marimo: 0.8,
   redroot: 0.35, salvinia: 0.25, frogbit: 0.4, lettuce: 0.45, lotus: 0.85,
   pothos: 1.3, bromeliad: 0.6, tropfern: 1, fittonia: 0.5, sphagnum: 0.35, creeper: 1.2,
@@ -179,8 +179,11 @@ export const PLANT3D: Partial<Record<PlantType, Plant3D>> = {
   fern: { grow: { speed: 'slow', overflow: 'none', len: [60, 300], more: 4 }, sway: 0.3, form: 'rhizome', n: [13, 18], spread: 0.6, stalk: '#5a4a32', leaf: {
     len: [0.7, 1], wid: 0.1, prof: [0.8, 0.8], rise: [0.08, 0.6], arch: 0.4, twist: 0.5, fold: -0.25, wave: [0.1, 4], pet: 0.06,
     cols: [['#244a22', '#3e7038'], ['#2a5226', '#4a7e40']], under: '#355a30', rib: '#7aa060', tip: ['#3c7034', 0.3], seg: [14, 5], tex: 'fern' } },
+  // (lane SW 2026-11-27, from E. grisebachii 'Bleherae' photos + Nathan's 60 gal tall: broad lanceolate blades ~3.5:1 on pale
+  // petioles ~30 % of the leaf, inner leaves upright, outer ones arching out and over, blades held face-on, not edge-on. The
+  // painted cell already cuts the leaf outline (alpha), so the sheet is kept full-width (prof) instead of tapering it twice)
   sword: { grow: { speed: 'medium', overflow: 'emerge', len: [90, 600], more: 4 }, sway: 0.3, form: 'rosette', n: [16, 24], spread: 0.05, stalk: '#3a6a2c', leaf: {
-    len: [0.75, 1], wid: 0.15, prof: [0.75, 0.8], rise: [0.05, 0.75], arch: 0.4, twist: 0.5, fold: -0.15, wave: [0.03, 3], pet: 0.3,
+    len: [0.85, 1], wid: 0.25, prof: [0.85, 0.3], rise: [0.1, 0.75], arch: 0.85, twist: 0.3, fold: -0.08, wave: [0.03, 3], pet: 0.3,
     cols: [['#2e5c26', '#5a8c44'], ['#346428', '#62944a'], ['#2a5424', '#52843e']], under: '#527a42', rib: '#a0bc88', seg: [14, 7], tex: 'sword' },
     // emersed: broad oval blades held up on long stiff stalks, a deeper green
     emersed: { k: 0.95, stiff: 230, land: 70, wid: 0.22, prof: [0.6, 0.6], pet: 0.55, twist: 0.15, fold: -0.08, wave: [0.01, 2],

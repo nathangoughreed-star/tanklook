@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { defaultScene, defaultSetup } from '../src/scene/defaults';
-import { LIBRARY, clampItem, itemDims, makeItem, starterItems, woodLimbs } from '../src/scene/items';
+import { LIBRARY, PLANT_OVERHANG, clampItem, itemDims, makeItem, starterItems, woodLimbs } from '../src/scene/items';
 import { IN, rescaleTank } from '../src/scene/physics';
 import { bowlDims, bowlRadius, normTank } from '../src/scene/shape';
 import { Store } from '../src/scene/store';
@@ -64,9 +64,9 @@ describe('aquascape items (scene v9)', () => {
     expect(it.x).toBe(0); expect(it.depth).toBe(scene.tanks[0].tank.D); expect(it.tilt).toBe(99); expect(it.pitch).toBe(0);
     expect(it.size).toBeLessThanOrEqual(LIBRARY.river.max);
   });
-  it('a plant is never wider than the tank; sizes stay in the variant range', () => {
+  it('a plant reaches at most PLANT_OVERHANG times the tank depth (its leaves curve along the glass); sizes stay in the variant range', () => {
     const T = { L: 200, H: 300, D: 100 }, it = makeItem(T, 'sword', 1, 1, 100, 50, { size: 600 });
-    expect(itemDims(it)[0]).toBeLessThanOrEqual(T.D);
+    expect(itemDims(it)[0]).toBeLessThanOrEqual(T.D * PLANT_OVERHANG); // (lane SW 2026-11-27: was T.D, an 18 in sword in a 12.75 in deep tank loaded at 13.7 in)
     const s = makeItem(T, 'slate', 2, 1, 100, 50, { size: 1 }); expect(s.size).toBe(LIBRARY.slate.min);
   });
   it('resizing the tank keeps pieces at the same relative spot and their real size', () => {
