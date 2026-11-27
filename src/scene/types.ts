@@ -27,7 +27,11 @@ export type BgFit = 'fill' | 'fit' | 'stretch' | 'tile';
 export interface BgImage { img: string; fit: BgFit; sides: BgSide[]; scale: number }
 export type GlassType = 'standard' | 'lowiron';
 export type LightType = 'flat' | 'spot' | 'tube' | 'led';
+/** SB1 (2026-11-26): a real product (data/substrateBrands.json), id 'sb-<product>' */
+export type BrandSub = `sb-${string}`;
 export type SubstrateType = 'gravel' | 'pea' | 'clown' | 'blue' | 'onyx' | 'black' | 'white' | 'aragonite' | 'coral'
+  // SB1: more aquarium-gravel colours (red, pink, green, white gravel) and the brand products
+  | 'red' | 'pink' | 'green' | 'wgrav' | BrandSub
   // terrestrial ground (lane T1, 2026-10-16; no version bump): soil / coco fibre, terrarium sand, clay, orchid bark, and
   // 'layered' = a clay-ball drainage layer under soil, its cross-section showing through the glass
   | 'soil' | 'tsand' | 'clay' | 'bark' | 'layered' | 'custom';
@@ -45,7 +49,7 @@ export type Grain = 'mud' | 'sand' | 'gravel' | 'pebble';
  * fields { grain, color, grain2, color2, share, mix }; scene/validate.ts reads them into this list.
  */
 export interface BlendGrain { grain: Grain; color: string; share: number }
-export interface SubstrateBlend { grains: BlendGrain[]; mix: number; /** Shuffle: picks a different layout of the same blend (absent = the original one) */ seed?: number }
+export interface SubstrateBlend { grains: BlendGrain[]; mix: number; /** SB1: a named preset this blend came from ('clownpuke'); cleared by any edit */ preset?: string; /** Shuffle: picks a different layout of the same blend (absent = the original one) */ seed?: number }
 
 /** Tank floor outline (scene v8). L x D is always the bounding box; see scene/shape.ts. */
 export type TankShape = 'rect' | 'bow' | 'round' | 'poly' | 'bowl' | 'pie' | 'arch';
@@ -228,6 +232,8 @@ export interface SubstrateSettings {
   /** Surface roughness 0-100 % (2026-11-03, no version bump): lumps and ripples drawn on the ground's skin only, a few mm, heaped up to ~15 mm in places. It
    *  never touches the terrain or the corner depths (pieces still stand on the smooth ground). Absent = ROUGH_DEFAULT (50); 0 = smooth. */
   rough?: number;
+  /** SB1 (2026-11-26, no version bump): the user's own price per lb (USD), overriding the sourced guess for the chosen product. Absent = the guess. */
+  priceLb?: number;
   fl: number; fr: number; bl: number; br: number; // depth at each corner, mm
 }
 

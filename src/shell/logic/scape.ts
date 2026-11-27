@@ -4,7 +4,7 @@
 // ONLY through P3's scene/itemEdit.ts and the existing scene modules; the substrate / terrain edits are the old panel's, moved here
 // unchanged in behaviour (ui/panels.ts "Substrate" and "Custom terrain" blocks).
 import { GRAIN_LOOK, SUBSTRATES } from '../../art/placeholder';
-import { addGrain, nextBlendSeed, removeGrain, setShare } from '../../scene/blend';
+import { BLEND_PRESETS, addGrain, nextBlendSeed, removeGrain, setShare } from '../../scene/blend';
 import { isClump, isFloat, isPatch, growthOf, type PlantType } from '../../art/plants';
 import { clumpAuto } from '../../render/plant3d';
 import { itemLights } from '../../scene/lightcheck';
@@ -85,20 +85,27 @@ export function slopePreset(store: Store, id: string): void {
 }
 /** Custom blend (GB1): an ordered list of 1-5 grains, each with a colour and a share (summing to 100), and how mixed they are. */
 export function setBlendGrain(store: Store, i: number, v: string): void {
-  store.edit(s => { const g = s.substrate.custom.grains[i]; if (g) g.grain = v as typeof g.grain; }, { coalesce: 'blendGrain' + i });
+  store.edit(s => { const g = s.substrate.custom.grains[i]; if (g) { g.grain = v as typeof g.grain; delete s.substrate.custom.preset; } }, { coalesce: 'blendGrain' + i });
 }
 export function setBlendColor(store: Store, i: number, v: string): void {
-  store.edit(s => { const g = s.substrate.custom.grains[i]; if (g) g.color = v; }, { coalesce: 'blendColor' + i });
+  store.edit(s => { const g = s.substrate.custom.grains[i]; if (g) { g.color = v; delete s.substrate.custom.preset; } }, { coalesce: 'blendColor' + i });
 }
 /** One grain's share; the others are scaled to fill the rest. */
 export function setBlendShare(store: Store, i: number, v: number): void {
-  store.edit(s => { const c = s.substrate.custom; c.grains = setShare(c.grains, i, v); }, { coalesce: 'blendShare' + i });
+  store.edit(s => { const c = s.substrate.custom; c.grains = setShare(c.grains, i, v); delete c.preset; }, { coalesce: 'blendShare' + i });
 }
-export const setBlendMix = (store: Store, v: number) => store.edit(s => { s.substrate.custom.mix = v / 100; }, { coalesce: 'blendMix' });
+export const setBlendMix = (store: Store, v: number) => store.edit(s => { s.substrate.custom.mix = v / 100; delete s.substrate.custom.preset; }, { coalesce: 'blendMix' });
+/** SB1: pick a blend preset (clown puke...): the substrate becomes the custom blend with these grains. */
+export function setBlendPreset(store: Store, name: string): void {
+  const b = BLEND_PRESETS[name]; if (!b) return;
+  store.edit(s => { s.substrate.show = true; s.substrate.type = 'custom'; s.substrate.custom = JSON.parse(JSON.stringify(b)); });
+}
+/** SB1: the user's own price per lb for the chosen product (null clears it back to the sourced guess). */
+export const setPriceLb = (store: Store, v: number | null) => store.edit(s => { if (v == null || !Number.isFinite(v) || v < 0) delete s.substrate.priceLb; else s.substrate.priceLb = Math.round(Math.min(500, v) * 100) / 100; }, { coalesce: 'subPriceLb' });
 /** Shuffle: the same grains, colours, shares and mix laid out afresh. */
 export const shuffleBlend = (store: Store) => store.edit(s => { const c = s.substrate.custom; c.seed = nextBlendSeed(c); });
-export const addBlendGrain = (store: Store) => store.edit(s => { const c = s.substrate.custom; c.grains = addGrain(c.grains); });
-export const removeBlendGrain = (store: Store, i: number) => store.edit(s => { const c = s.substrate.custom; c.grains = removeGrain(c.grains, i); });
+export const addBlendGrain = (store: Store) => store.edit(s => { const c = s.substrate.custom; c.grains = addGrain(c.grains); delete c.preset; });
+export const removeBlendGrain = (store: Store, i: number) => store.edit(s => { const c = s.substrate.custom; c.grains = removeGrain(c.grains, i); delete c.preset; });
 const litterOf = (s: TankSetup) => (s.substrate.litter ??= { leaf: 'mixed', density: 0, seed: 1 });
 export const setLitterLeaf = (store: Store, leaf: string) => store.edit(s => { const l = litterOf(s); l.leaf = leaf as typeof l.leaf; if (!l.density) l.density = 40; });
 export const setLitterDensity = (store: Store, v: number) => store.edit(s => { litterOf(s).density = v; }, { coalesce: 'litDens' });

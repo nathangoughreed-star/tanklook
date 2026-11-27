@@ -1,0 +1,971 @@
+{
+ "asOf": "2026-11-26",
+ "products": [
+  {
+   "id": "sb-topfin-rainbow",
+   "brand": "Top Fin",
+   "name": "Premium Gravel",
+   "type": "gravel",
+   "colour": "Rainbow Mix",
+   "kind": "pebble",
+   "base": "#f43563",
+   "shades": [
+    "#f43563",
+    "#f78927",
+    "#edd242",
+    "#31bc52",
+    "#2f5fc0"
+   ],
+   "mm": [
+    4,
+    9
+   ],
+   "gloss": 0.6,
+   "round": 0.4,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 1.04,
+   "per": "lb",
+   "bag": 5,
+   "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/gravel-sand-and-stones/top-fin-premium-aquarium-gravel---rainbow---fish-tank-substrate---5-lb-66315.html",
+   "date": "2026-11-26",
+   "retailer": "PetSmart",
+   "note": "Dyed, coated gravel; rinse before use. The maker states no grain size or pH effect, so the 4-9 mm size is read from the bag photos beside a dime.",
+   "photos": [
+    "research/substrates/photos/topfin-rainbow-5322608_alt1.jpg",
+    "research/substrates/photos/topfin-mardigras-2.jpg",
+    "research/substrates/photos/topfin-classicbeach-2.jpg"
+   ]
+  },
+  {
+   "id": "sb-topfin-raspberry",
+   "brand": "Top Fin",
+   "name": "Premium Gravel",
+   "type": "gravel",
+   "colour": "Raspberry Red",
+   "kind": "pebble",
+   "base": "#fb1a28",
+   "shades": [
+    "#fb1a28",
+    "#820b0d",
+    "#df1a22",
+    "#f42737",
+    "#f94f5b",
+    "#ef1522"
+   ],
+   "mm": [
+    4,
+    9
+   ],
+   "gloss": 0.6,
+   "round": 0.4,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 1.04,
+   "per": "lb",
+   "bag": 5,
+   "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/gravel-sand-and-stones/top-fin-premium-aquarium-gravel---rainbow---fish-tank-substrate---5-lb-66315.html",
+   "date": "2026-11-26",
+   "retailer": "PetSmart",
+   "note": "Dyed, coated gravel; rinse before use. The maker states no grain size or pH effect, so the 4-9 mm size is read from the bag photos beside a dime.",
+   "photos": [
+    "research/substrates/photos/topfin-rainbow-5322608_alt1.jpg",
+    "research/substrates/photos/topfin-mardigras-2.jpg",
+    "research/substrates/photos/topfin-classicbeach-2.jpg"
+   ]
+  },
+  {
+   "id": "sb-topfin-pink",
+   "brand": "Top Fin",
+   "name": "Premium Gravel",
+   "type": "gravel",
+   "colour": "Bright Pink",
+   "kind": "pebble",
+   "base": "#fe0b6f",
+   "shades": [
+    "#fe0b6f",
+    "#fc115f",
+    "#950928",
+    "#e41549",
+    "#d11140",
+    "#e8235b"
+   ],
+   "mm": [
+    4,
+    9
+   ],
+   "gloss": 0.6,
+   "round": 0.4,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 1.04,
+   "per": "lb",
+   "bag": 5,
+   "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/gravel-sand-and-stones/top-fin-premium-aquarium-gravel---rainbow---fish-tank-substrate---5-lb-66315.html",
+   "date": "2026-11-26",
+   "retailer": "PetSmart",
+   "note": "Dyed, coated gravel; rinse before use. The maker states no grain size or pH effect, so the 4-9 mm size is read from the bag photos beside a dime.",
+   "photos": [
+    "research/substrates/photos/topfin-rainbow-5322608_alt1.jpg",
+    "research/substrates/photos/topfin-mardigras-2.jpg",
+    "research/substrates/photos/topfin-classicbeach-2.jpg"
+   ]
+  },
+  {
+   "id": "sb-topfin-green",
+   "brand": "Top Fin",
+   "name": "Premium Gravel",
+   "type": "gravel",
+   "colour": "Green Mix",
+   "kind": "pebble",
+   "base": "#0a8775",
+   "shades": [
+    "#032421",
+    "#0a8775",
+    "#044a43",
+    "#0bbb99",
+    "#066058",
+    "#61d2be"
+   ],
+   "mm": [
+    4,
+    9
+   ],
+   "gloss": 0.6,
+   "round": 0.4,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 1.04,
+   "per": "lb",
+   "bag": 5,
+   "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/gravel-sand-and-stones/top-fin-premium-aquarium-gravel---rainbow---fish-tank-substrate---5-lb-66315.html",
+   "date": "2026-11-26",
+   "retailer": "PetSmart",
+   "note": "Dyed, coated gravel; rinse before use. The maker states no grain size or pH effect, so the 4-9 mm size is read from the bag photos beside a dime.",
+   "photos": [
+    "research/substrates/photos/topfin-rainbow-5322608_alt1.jpg",
+    "research/substrates/photos/topfin-mardigras-2.jpg",
+    "research/substrates/photos/topfin-classicbeach-2.jpg"
+   ]
+  },
+  {
+   "id": "sb-topfin-bgp",
+   "brand": "Top Fin",
+   "name": "Premium Gravel",
+   "type": "gravel",
+   "colour": "Blue/Green/Purple",
+   "kind": "pebble",
+   "base": "#ae3f9a",
+   "shades": [
+    "#01b74a",
+    "#08868f",
+    "#0e3553",
+    "#ae3f9a",
+    "#83237d",
+    "#23c064"
+   ],
+   "mm": [
+    4,
+    9
+   ],
+   "gloss": 0.6,
+   "round": 0.4,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 1.04,
+   "per": "lb",
+   "bag": 5,
+   "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/gravel-sand-and-stones/top-fin-premium-aquarium-gravel---rainbow---fish-tank-substrate---5-lb-66315.html",
+   "date": "2026-11-26",
+   "retailer": "PetSmart",
+   "note": "Dyed, coated gravel; rinse before use. The maker states no grain size or pH effect, so the 4-9 mm size is read from the bag photos beside a dime.",
+   "photos": [
+    "research/substrates/photos/topfin-rainbow-5322608_alt1.jpg",
+    "research/substrates/photos/topfin-mardigras-2.jpg",
+    "research/substrates/photos/topfin-classicbeach-2.jpg"
+   ]
+  },
+  {
+   "id": "sb-topfin-mardigras",
+   "brand": "Top Fin",
+   "name": "Premium Gravel",
+   "type": "gravel",
+   "colour": "Mardi Gras",
+   "kind": "pebble",
+   "base": "#a1438c",
+   "shades": [
+    "#e01778",
+    "#491541",
+    "#02a74d",
+    "#a1438c",
+    "#075c72",
+    "#1aa077"
+   ],
+   "mm": [
+    4,
+    9
+   ],
+   "gloss": 0.6,
+   "round": 0.4,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 1.04,
+   "per": "lb",
+   "bag": 5,
+   "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/gravel-sand-and-stones/top-fin-premium-aquarium-gravel---rainbow---fish-tank-substrate---5-lb-66315.html",
+   "date": "2026-11-26",
+   "retailer": "PetSmart",
+   "note": "Dyed, coated gravel; rinse before use. The maker states no grain size or pH effect, so the 4-9 mm size is read from the bag photos beside a dime.",
+   "photos": [
+    "research/substrates/photos/topfin-rainbow-5322608_alt1.jpg",
+    "research/substrates/photos/topfin-mardigras-2.jpg",
+    "research/substrates/photos/topfin-classicbeach-2.jpg"
+   ]
+  },
+  {
+   "id": "sb-glofish-pgb",
+   "brand": "GloFish",
+   "name": "Gravel",
+   "type": "gravel",
+   "colour": "Pink/Green/Blue",
+   "kind": "pebble",
+   "base": "#5db0ae",
+   "shades": [
+    "#81b9ac",
+    "#5db0ae",
+    "#47788b",
+    "#da8da2",
+    "#d36e90"
+   ],
+   "mm": [
+    4,
+    9
+   ],
+   "gloss": 0.5,
+   "round": 0.4,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 1.8,
+   "per": "lb",
+   "bag": 5,
+   "url": "https://www.petsmart.com/5175199.html",
+   "date": "2026-11-26",
+   "retailer": "PetSmart",
+   "note": "Dyed gravel meant to make fluorescent fish and decor stand out under blue light; rinse first. Size read from photos.",
+   "photos": [
+    "research/substrates/photos/glofish-5175199.jpg",
+    "research/substrates/photos/glofish-5175199_alt1.jpg"
+   ]
+  },
+  {
+   "id": "sb-imagitarium-darkblue",
+   "brand": "Imagitarium",
+   "name": "Gravel",
+   "type": "gravel",
+   "colour": "Dark Blue",
+   "kind": "pebble",
+   "base": "#1f3f9c",
+   "shades": [
+    "#1f3f9c",
+    "#19327d",
+    "#576fb5",
+    "#142965",
+    "#8495c9"
+   ],
+   "mm": [
+    4,
+    9
+   ],
+   "gloss": 0.6,
+   "round": 0.4,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 1.4,
+   "per": "lb",
+   "bag": 5,
+   "url": "https://int2-sp-lb.petco.com/shop/en/petcostore/product/imagitarium-orange-aquarium-gravel",
+   "date": "2026-11-26",
+   "retailer": "Petco",
+   "note": "Colour estimated from its name (Petco blocked automated reads); grain size is the usual coated-gravel range.",
+   "photos": []
+  },
+  {
+   "id": "sb-imagitarium-black",
+   "brand": "Imagitarium",
+   "name": "Gravel",
+   "type": "gravel",
+   "colour": "Black Lagoon",
+   "kind": "pebble",
+   "base": "#1e1e22",
+   "shades": [
+    "#1e1e22",
+    "#18181b",
+    "#565659",
+    "#141416",
+    "#838385"
+   ],
+   "mm": [
+    4,
+    9
+   ],
+   "gloss": 0.6,
+   "round": 0.4,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 1.4,
+   "per": "lb",
+   "bag": 5,
+   "url": "https://int2-sp-lb.petco.com/shop/en/petcostore/product/imagitarium-orange-aquarium-gravel",
+   "date": "2026-11-26",
+   "retailer": "Petco",
+   "note": "Colour estimated from its name (Petco blocked automated reads); grain size is the usual coated-gravel range.",
+   "photos": []
+  },
+  {
+   "id": "sb-topfin-beach",
+   "brand": "Top Fin",
+   "name": "Premium Gravel",
+   "type": "natural",
+   "colour": "Classic Beach",
+   "kind": "pebble",
+   "base": "#c68833",
+   "shades": [
+    "#c68833",
+    "#714014",
+    "#ebbb6c",
+    "#eaab47",
+    "#f3d195",
+    "#d7a655"
+   ],
+   "mm": [
+    4,
+    9
+   ],
+   "gloss": 0.6,
+   "round": 0.4,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 1.04,
+   "per": "lb",
+   "bag": 5,
+   "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/gravel-sand-and-stones/top-fin-premium-aquarium-gravel---rainbow---fish-tank-substrate---5-lb-66315.html",
+   "date": "2026-11-26",
+   "retailer": "PetSmart",
+   "note": "Natural-looking coated gravel in tan and brown tones; rinse before use. Grain size read from the bag photos.",
+   "photos": [
+    "research/substrates/photos/topfin-rainbow-5322608_alt1.jpg",
+    "research/substrates/photos/topfin-mardigras-2.jpg",
+    "research/substrates/photos/topfin-classicbeach-2.jpg"
+   ]
+  },
+  {
+   "id": "sb-topfin-river",
+   "brand": "Top Fin",
+   "name": "Premium Gravel",
+   "type": "natural",
+   "colour": "River Rock",
+   "kind": "pebble",
+   "base": "#f2b05f",
+   "shades": [
+    "#f2b05f",
+    "#874516",
+    "#cc8732",
+    "#fbca87",
+    "#f08e3d",
+    "#fde2a9"
+   ],
+   "mm": [
+    4,
+    9
+   ],
+   "gloss": 0.6,
+   "round": 0.4,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 1.04,
+   "per": "lb",
+   "bag": 5,
+   "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/gravel-sand-and-stones/top-fin-premium-aquarium-gravel---rainbow---fish-tank-substrate---5-lb-66315.html",
+   "date": "2026-11-26",
+   "retailer": "PetSmart",
+   "note": "Natural-looking coated gravel in tan and brown tones; rinse before use. Grain size read from the bag photos.",
+   "photos": [
+    "research/substrates/photos/topfin-rainbow-5322608_alt1.jpg",
+    "research/substrates/photos/topfin-mardigras-2.jpg",
+    "research/substrates/photos/topfin-classicbeach-2.jpg"
+   ]
+  },
+  {
+   "id": "sb-pea-bagged",
+   "brand": "Generic",
+   "name": "Bagged pea gravel",
+   "type": "pea",
+   "kind": "pebble",
+   "base": "#a79880",
+   "shades": [
+    "#a79880",
+    "#867a66",
+    "#bdb2a0",
+    "#6d6353",
+    "#cfc6b9"
+   ],
+   "mm": [
+    6,
+    13
+   ],
+   "gloss": 0.35,
+   "round": 0.9,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 0.13,
+   "per": "lb",
+   "bag": 50,
+   "url": "https://www.acehardware.com/p/7100399?x429=true",
+   "date": "2026-11-26",
+   "retailer": "Ace Hardware",
+   "note": "Hardware-store pea gravel; no page could be opened (bot checks), so price and size are snippets and the usual 6-13 mm definition.",
+   "photos": []
+  },
+  {
+   "id": "sb-caribsea-peace-river",
+   "brand": "CaribSea",
+   "name": "Super Naturals",
+   "type": "sand",
+   "colour": "Peace River",
+   "kind": "sand",
+   "base": "#a88b6a",
+   "shades": [
+    "#543722",
+    "#ac9272",
+    "#c4b192",
+    "#77614a",
+    "#957151",
+    "#ddd2bb"
+   ],
+   "mm": [
+    1,
+    2
+   ],
+   "gloss": 0.3,
+   "round": 0.6,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 0.89,
+   "per": "lb",
+   "bag": 20,
+   "url": "https://www.bulkreefsupply.com/super-naturals-substrate-peace-river-caribsea.html",
+   "date": "2026-11-26",
+   "retailer": "Bulk Reef Supply",
+   "note": "All-natural river gravel, no dyes or paints; the maker says it will not raise hardness (pH neutral).",
+   "photos": [
+    "research/substrates/photos/bulkreef-peace-1.jpg",
+    "research/substrates/photos/petsmart-5151962.jpg"
+   ]
+  },
+  {
+   "id": "sb-flourite-black-sand",
+   "brand": "Seachem",
+   "name": "Flourite Black Sand",
+   "type": "sand",
+   "kind": "sand",
+   "base": "#25242a",
+   "shades": [
+    "#25242a",
+    "#1e1d22",
+    "#5c5b5f",
+    "#18171b",
+    "#87878a"
+   ],
+   "mm": [
+    0.5,
+    2
+   ],
+   "gloss": 0.1,
+   "round": 0.3,
+   "nutrient": "active",
+   "ph": "none",
+   "marine": false,
+   "price": 1.69,
+   "per": "lb",
+   "bag": 15.4,
+   "url": "https://www.thatpetplace.com/flourite-black-sand-15lb",
+   "date": "2026-11-26",
+   "retailer": "That Pet Place",
+   "note": "Porous fired clay with its nutrients built in, so no supplement is needed; rinse until the water runs clear.",
+   "photos": [
+    "research/substrates/photos/flourite-black-sand-1.png"
+   ]
+  },
+  {
+   "id": "sb-quikrete-play-sand",
+   "brand": "Quikrete",
+   "name": "Play sand",
+   "type": "sand",
+   "kind": "sand",
+   "base": "#c9b48c",
+   "shades": [
+    "#c9b48c",
+    "#a19070",
+    "#d6c7a9",
+    "#83755b",
+    "#e1d6c0"
+   ],
+   "mm": [
+    0.1,
+    1.0
+   ],
+   "gloss": 0.05,
+   "round": 0.4,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 0.12,
+   "per": "lb",
+   "bag": 50,
+   "url": "https://www.lowes.com/pd/QUIKRETE-0-5-cu-ft-50-lb-Play-Sand/3006085",
+   "date": "2026-11-26",
+   "retailer": "Lowe's",
+   "note": "Not sold for aquariums, but widely used. Price is a store snippet (the page refused automated reads) and the grain size an estimate. Rinse very well.",
+   "photos": []
+  },
+  {
+   "id": "sb-black-diamond",
+   "brand": "Black Diamond",
+   "name": "Blasting grit",
+   "type": "sand",
+   "kind": "sand",
+   "base": "#2b2a2c",
+   "shades": [
+    "#2b2a2c",
+    "#222223",
+    "#605f61",
+    "#1c1b1d",
+    "#8a8a8b"
+   ],
+   "mm": [
+    0.4,
+    1.4
+   ],
+   "gloss": 0.3,
+   "round": 0.15,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 0.28,
+   "per": "lb",
+   "bag": 50,
+   "url": "https://www.tractorsupply.com/tsc/product/black-diamond-medium-blasting-abrasives-3905403",
+   "date": "2026-11-26",
+   "retailer": "Tractor Supply",
+   "note": "Tractor Supply Black Diamond is coal slag, an industrial abrasive not sold for aquariums; hobbyists use it as black sand (rinse very well). Price and size from store snippets.",
+   "photos": []
+  },
+  {
+   "id": "sb-fluval-stratum",
+   "brand": "Fluval",
+   "name": "Plant & Shrimp Stratum",
+   "type": "soil",
+   "kind": "pebble",
+   "base": "#3c301f",
+   "shades": [
+    "#100b04",
+    "#473825",
+    "#645038",
+    "#302313",
+    "#1e190f",
+    "#7d674c"
+   ],
+   "mm": [
+    3,
+    5
+   ],
+   "gloss": 0.15,
+   "round": 0.75,
+   "nutrient": "active",
+   "ph": "lowers",
+   "marine": false,
+   "price": 2.71,
+   "per": "lb",
+   "bag": 4.4,
+   "url": "https://bulkreefsupply.com/stratum-plant-shrimp-substrate-fluval.html",
+   "date": "2026-11-26",
+   "retailer": "Bulk Reef Supply",
+   "note": "Volcanic soil granules from Japan; the maker says they soften water and lower carbonate hardness without staining.",
+   "photos": [
+    "research/substrates/photos/fluval-stratum-1.jpg",
+    "research/substrates/photos/fluval-stratum-2.jpg",
+    "research/substrates/photos/fluval-stratum-3.jpg"
+   ]
+  },
+  {
+   "id": "sb-ecocomplete-black",
+   "brand": "CaribSea",
+   "name": "Eco-Complete Black",
+   "type": "soil",
+   "kind": "pebble",
+   "base": "#544f53",
+   "shades": [
+    "#261e24",
+    "#5d585b",
+    "#787578",
+    "#3b3539",
+    "#494245",
+    "#a2a0a3"
+   ],
+   "mm": [
+    1,
+    5
+   ],
+   "gloss": 0.2,
+   "round": 0.3,
+   "nutrient": "active",
+   "ph": "none",
+   "marine": false,
+   "price": 1.25,
+   "per": "lb",
+   "bag": 20,
+   "url": "https://www.bulkreefsupply.com/eco-planted-aquarium-substrate-black-20lbs-caribsea.html",
+   "date": "2026-11-26",
+   "retailer": "Bulk Reef Supply",
+   "note": "Basaltic volcanic gravel with iron and other minerals, packed wet with live bacteria; the maker says it will not raise pH or hardness. Sizes run from fine to chunky.",
+   "photos": [
+    "research/substrates/photos/eco-complete-black-1.jpg"
+   ]
+  },
+  {
+   "id": "sb-ecocomplete-red",
+   "brand": "CaribSea",
+   "name": "Eco-Complete Red",
+   "type": "soil",
+   "kind": "pebble",
+   "base": "#846158",
+   "shades": [
+    "#3a2627",
+    "#946c60",
+    "#734e45",
+    "#bc9383",
+    "#64362c",
+    "#e0bfad"
+   ],
+   "mm": [
+    3,
+    6
+   ],
+   "gloss": 0.2,
+   "round": 0.3,
+   "nutrient": "active",
+   "ph": "none",
+   "marine": false,
+   "price": 1.25,
+   "per": "lb",
+   "bag": 20,
+   "url": "https://www.bulkreefsupply.com/eco-planted-aquarium-substrate-red-20lbs-caribsea.html",
+   "date": "2026-11-26",
+   "retailer": "Bulk Reef Supply",
+   "note": "Shale with no dyes or coatings. The pile mixes rust red, brown and near-black chips, so the bed reads dark brick red.",
+   "photos": [
+    "research/substrates/photos/eco-complete-red-1.jpg"
+   ]
+  },
+  {
+   "id": "sb-flourite-red",
+   "brand": "Seachem",
+   "name": "Flourite Red",
+   "type": "soil",
+   "kind": "pebble",
+   "base": "#7e4c3f",
+   "shades": [
+    "#250f0b",
+    "#734034",
+    "#8c5749",
+    "#b5735f",
+    "#a36050",
+    "#d9957d"
+   ],
+   "mm": [
+    3,
+    6
+   ],
+   "gloss": 0.2,
+   "round": 0.25,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 1.49,
+   "per": "lb",
+   "bag": 15.4,
+   "url": "https://www.thatpetplace.com/flourite-red-15lb",
+   "date": "2026-11-26",
+   "retailer": "That Pet Place",
+   "note": "Seachem does not state a grain size; 3-6 mm is read off the photo.",
+   "photos": [
+    "research/substrates/photos/flourite-red-2.jpg",
+    "research/substrates/photos/flourite-red-1.jpg"
+   ]
+  },
+  {
+   "id": "sb-flourite-dark",
+   "brand": "Seachem",
+   "name": "Flourite Dark",
+   "type": "soil",
+   "kind": "pebble",
+   "base": "#372b27",
+   "shades": [
+    "#140c09",
+    "#423531",
+    "#51433e",
+    "#251c19",
+    "#322622",
+    "#64544e"
+   ],
+   "mm": [
+    3,
+    6
+   ],
+   "gloss": 0.2,
+   "round": 0.25,
+   "nutrient": "inert",
+   "ph": "none",
+   "marine": false,
+   "price": 1.41,
+   "per": "lb",
+   "bag": 15.4,
+   "url": "https://www.thatpetplace.com/flourite-dark-15lb",
+   "date": "2026-11-26",
+   "retailer": "That Pet Place",
+   "note": "Seachem does not state a grain size; 3-6 mm is read off the photo.",
+   "photos": [
+    "research/substrates/photos/flourite-dark-2.jpg",
+    "research/substrates/photos/flourite-dark-1.jpg"
+   ]
+  },
+  {
+   "id": "sb-ada-amazonia",
+   "brand": "ADA",
+   "name": "Aqua Soil Amazonia",
+   "type": "soil",
+   "kind": "pebble",
+   "base": "#3a2924",
+   "shades": [
+    "#3a2925",
+    "#44302a",
+    "#3d2d28",
+    "#422e28",
+    "#231919",
+    "#4a352c"
+   ],
+   "mm": [
+    2,
+    5
+   ],
+   "gloss": 0.1,
+   "round": 0.65,
+   "nutrient": "fertilized",
+   "ph": "lowers",
+   "marine": false,
+   "price": 6.0,
+   "per": "L",
+   "bag": 27,
+   "url": "https://aquaforestaquarium.com/products/ada-aqua-soil-amazonia-powder-9l-3-bags-10-off-161-97-30-shipping",
+   "date": "2026-11-26",
+   "retailer": "Aqua Forest Aquarium, Amazonia POWDER 9L x3 pack, 10% off",
+   "note": "Japanese soil with a nutrient supplement; makers and retailers say it lowers hardness and brings pH to about 5.5-6.5. Sold by the litre.",
+   "photos": [
+    "research/substrates/photos/amazonia-1.jpg",
+    "research/substrates/photos/amazonia-2.jpg",
+    "research/substrates/photos/amazonia-3.jpg"
+   ]
+  },
+  {
+   "id": "sb-uns-controsoil",
+   "brand": "UNS",
+   "name": "Controsoil",
+   "type": "soil",
+   "colour": "Black",
+   "kind": "pebble",
+   "base": "#424242",
+   "shades": [
+    "#3a3a3a",
+    "#171717",
+    "#5a5a5a",
+    "#4a4a4a",
+    "#515151",
+    "#767676"
+   ],
+   "mm": [
+    3,
+    5
+   ],
+   "gloss": 0.1,
+   "round": 0.9,
+   "nutrient": "active",
+   "ph": "lowers",
+   "marine": false,
+   "price": 6.58,
+   "per": "L",
+   "bag": 10,
+   "url": "https://fresh.bulkreefsupply.com/fine-controsoil-substrate-black-ultum-nature-systems.html",
+   "date": "2026-11-26",
+   "retailer": "Bulk Reef Supply, Fine Black",
+   "note": "Retailer says it holds pH near 6.8 and lowers hardness. Sold by the litre; Fine Black shown.",
+   "photos": [
+    "research/substrates/photos/controsoil-black-2.jpg",
+    "research/substrates/photos/controsoil-black-3.jpg",
+    "research/substrates/photos/controsoil-brown-2.jpg"
+   ]
+  },
+  {
+   "id": "sb-aragalive-special",
+   "brand": "CaribSea",
+   "name": "Arag-Alive Special Grade",
+   "type": "marine",
+   "kind": "sand",
+   "base": "#ece6dc",
+   "shades": [
+    "#ece6dc",
+    "#bdb8b0",
+    "#f1ece5",
+    "#99968f",
+    "#f5f1ec"
+   ],
+   "mm": [
+    1,
+    2
+   ],
+   "gloss": 0.2,
+   "round": 0.7,
+   "nutrient": "inert",
+   "ph": "buffers",
+   "marine": true,
+   "price": 1.27,
+   "per": "lb",
+   "bag": 20,
+   "url": "https://www.thatpetplace.com/arag-alive-special-grade-reef-sand-20-lb",
+   "date": "2026-11-26",
+   "retailer": "That Pet Place",
+   "note": "Live aragonite reef sand, pre-packed with bacteria; holds pH near 8.2. Do not rinse; pour in gently.",
+   "photos": [
+    "research/substrates/photos/petsmart-5269607.jpg",
+    "research/substrates/photos/arag-alive-natural-reef-1.jpg"
+   ]
+  },
+  {
+   "id": "sb-aragalive-natural",
+   "brand": "CaribSea",
+   "name": "Arag-Alive Natural Reef",
+   "type": "marine",
+   "kind": "sand",
+   "base": "#c1af91",
+   "shades": [
+    "#a49171",
+    "#c1af91",
+    "#5c4b2f",
+    "#cebea2",
+    "#daccb2"
+   ],
+   "mm": [
+    1,
+    2
+   ],
+   "gloss": 0.2,
+   "round": 0.7,
+   "nutrient": "inert",
+   "ph": "buffers",
+   "marine": true,
+   "price": 1.27,
+   "per": "lb",
+   "bag": 20,
+   "url": "https://www.thatpetplace.com/arag-alive-special-grade-reef-sand-20-lb",
+   "date": "2026-11-26",
+   "retailer": "That Pet Place",
+   "note": "Live aragonite reef sand in natural reef colours; holds pH near 8.2. Do not rinse.",
+   "photos": [
+    "research/substrates/photos/petsmart-5269607.jpg",
+    "research/substrates/photos/arag-alive-natural-reef-1.jpg"
+   ]
+  },
+  {
+   "id": "sb-aragalive-fiji",
+   "brand": "CaribSea",
+   "name": "Arag-Alive Fiji Pink",
+   "type": "marine",
+   "kind": "sand",
+   "base": "#e9d7c4",
+   "shades": [
+    "#e9d7c4",
+    "#baac9d",
+    "#eee1d3",
+    "#978c7f",
+    "#f3e9df"
+   ],
+   "mm": [
+    1,
+    2
+   ],
+   "gloss": 0.2,
+   "round": 0.7,
+   "nutrient": "inert",
+   "ph": "buffers",
+   "marine": true,
+   "price": 1.27,
+   "per": "lb",
+   "bag": 20,
+   "url": "https://www.thatpetplace.com/arag-alive-special-grade-reef-sand-20-lb",
+   "date": "2026-11-26",
+   "retailer": "That Pet Place",
+   "note": "Live aragonite reef sand, white with a pink cast; holds pH near 8.2. Do not rinse.",
+   "photos": [
+    "research/substrates/photos/petsmart-5269607.jpg",
+    "research/substrates/photos/arag-alive-natural-reef-1.jpg"
+   ]
+  },
+  {
+   "id": "sb-caribsea-coral",
+   "brand": "CaribSea",
+   "name": "Florida Crushed Coral",
+   "type": "marine",
+   "kind": "pebble",
+   "base": "#d5c3a8",
+   "shades": [
+    "#c0a287",
+    "#dac4ac",
+    "#745136",
+    "#e5d3bf",
+    "#ece0cf"
+   ],
+   "mm": [
+    2.5,
+    5.5
+   ],
+   "gloss": 0.1,
+   "round": 0.2,
+   "nutrient": "inert",
+   "ph": "raises",
+   "marine": true,
+   "price": 0.84,
+   "per": "lb",
+   "bag": 15,
+   "url": "https://www.thatpetplace.com/florida-crushed-coral-15-lb",
+   "date": "2026-11-26",
+   "retailer": "That Pet Place",
+   "note": "Coarse crushed coral that buffers pH for saltwater, reef or cichlid tanks; rinse until the water runs clear.",
+   "photos": [
+    "research/substrates/photos/crushed-coral-1.jpg",
+    "research/substrates/photos/crushed-coral-2.jpg"
+   ]
+  }
+ ]
+}

@@ -5,6 +5,7 @@
 // markings, small realistic eyes, fins as tinted membranes with fine rays. The silhouette stays crisp (cards use
 // alpha-test cutout), so every opaque or fin pixel keeps alpha >= FIN_A, above the 0.5 cutoff with a mipmap margin.
 import { blendOrder } from '../scene/blend';
+import { BRANDS, type BrandProduct } from '../data/substrateBrands';
 import type { Grain, SubstrateBlend, SubstrateType } from '../scene/types';
 
 import { FIN_A, type Ctx, type Proj, type Pt, blob, body, eye, fin, gill, rng, soft, style } from './paint';
@@ -89,8 +90,14 @@ export interface SubstrateLook {
   fibre?: string[];
 }
 export type PresetSubstrate = Exclude<SubstrateType, 'custom'>;
+/** SB1: a real product (data/substrateBrands.ts) as a look. mm across -> tile px radius: 1 px = tile / 256 mm. */
+function brandLook(b: BrandProduct): SubstrateLook {
+  const tile = b.kind === 'sand' ? 40 : 90, px = (mm: number) => Math.max(1, Math.round(mm / 2 / (tile / 256) * 10) / 10);
+  return { label: b.colour ? `${b.brand} ${b.name}, ${b.colour}` : `${b.brand} ${b.name}`, kind: b.kind, base: shade(b.base, 0.35), shades: b.shades.length ? b.shades : [b.base], size: [px(b.mm[0]), px(Math.max(b.mm[0] + 0.3, b.mm[1]))], tile, gloss: b.gloss, round: b.round, speckle: b.gloss < 0.25 && b.kind === 'pebble' };
+}
+const shade = (hex: string, k: number) => '#' + [1, 3, 5].map(i => Math.round(parseInt(hex.slice(i, i + 2), 16) * k).toString(16).padStart(2, '0')).join('');
 const SOIL = ['#3d2b1e', '#4a3424', '#22170f', '#57402c', '#33241a', '#614731'], COCO = ['#9a6638', '#7f522d', '#b07a46', '#6a4426', '#c08a55'];
-export const SUBSTRATES: Record<PresetSubstrate, SubstrateLook> = {
+export const SUBSTRATES = {
   gravel: { label: 'Natural gravel', kind: 'pebble', base: '#241e17', tile: 90, size: [5, 11], speckle: true, gloss: 0.12, round: 0.75,
     shades: ['#9c8a70', '#7a6a55', '#b5a58c', '#8d8a82', '#6b6258', '#c9bfae', '#5a4f43', '#a39383', '#857565', '#4b4640', '#b39a7a', '#d6cdbd'] },
   pea:    { label: 'Pea gravel', kind: 'pebble', base: '#2a2219', tile: 90, size: [4, 8], speckle: true, gloss: 0.15, round: 0.88,
@@ -119,7 +126,17 @@ export const SUBSTRATES: Record<PresetSubstrate, SubstrateLook> = {
   bark:   { label: 'Orchid bark', kind: 'bark', base: '#1c110b', tile: 160, size: [14, 30], terra: true,
     shades: ['#6e3a22', '#7f4629', '#5c301c', '#8e5333', '#4f2a19', '#9a6040', '#6a4030'] },
   layered: { label: 'Layered: clay balls under soil', kind: 'soil', base: '#2b1e15', tile: 60, size: [1.5, 5], terra: true, shades: SOIL, fibre: COCO },
-};
+  // SB1 (2026-11-26): more dyed aquarium-gravel colours, as blue is
+  red:    { label: 'Red gravel', kind: 'pebble', base: '#2a0b0b', tile: 90, size: [5, 9], gloss: 0.6, round: 0.85,
+    shades: ['#c42a2a', '#a81f1f', '#dc3d3d', '#8a1818', '#cf3434'] },
+  pink:   { label: 'Pink gravel', kind: 'pebble', base: '#2e1420', tile: 90, size: [5, 9], gloss: 0.6, round: 0.85,
+    shades: ['#e8709f', '#d4568a', '#f28cb3', '#c24a7c', '#ee7aa6'] },
+  green:  { label: 'Green gravel', kind: 'pebble', base: '#0c200f', tile: 90, size: [5, 9], gloss: 0.6, round: 0.85,
+    shades: ['#2ea84a', '#25903c', '#43bd5f', '#1c7a30', '#35b052'] },
+  wgrav:  { label: 'White gravel', kind: 'pebble', base: '#3a3a38', tile: 90, size: [5, 9], gloss: 0.5, round: 0.85,
+    shades: ['#f2f0ea', '#e2dfd6', '#fbfaf6', '#d3cfc4', '#ece9e0'] },
+  ...Object.fromEntries(BRANDS.map(b => [b.id, brandLook(b)])),
+} as Record<PresetSubstrate, SubstrateLook>;
 /** Expanded clay balls (LECA), the drainage layer of 'layered' ground, seen only in its cross-section at the glass. */
 export const LECA: SubstrateLook = { label: 'Clay balls', kind: 'pebble', base: '#2a160c', tile: 90, size: [14, 24], speckle: true, gloss: 0, round: 0.97,
   shades: ['#b5653a', '#a35a33', '#c4774a', '#8f4e2d', '#b86d45', '#9c5634'] };

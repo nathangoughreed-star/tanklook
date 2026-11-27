@@ -1,0 +1,288 @@
+[
+  {
+    "id": "imagitarium-gravel", "brand": "Imagitarium (Petco)", "name": "Imagitarium Aquarium Gravel (coloured + mixes)", "kind": "gravel",
+    "fresh": true, "nutrient": "inert", "phEffect": "none",
+    "colours": [
+      {"name": "Orange", "hex": "#f07a1e", "shades": [], "photo": null},
+      {"name": "Rainbow Confetti", "hex": "#e8457a", "shades": [], "photo": null},
+      {"name": "Dark Blue", "hex": "#1f3f9c", "shades": [], "photo": null},
+      {"name": "Nutmeg", "hex": "#8a5a36", "shades": [], "photo": null},
+      {"name": "Blue Jean", "hex": "#4a78b8", "shades": [], "photo": null},
+      {"name": "Black Lagoon", "hex": "#1e1e22", "shades": [], "photo": null},
+      {"name": "Aztec Bronze", "hex": "#a8763c", "shades": [], "photo": null}
+    ],
+    "grainMm": [3, 8], "gloss": 0.6, "round": 0.4,
+    "bags": [
+      {"lb": 5, "usd": 7.99, "retailer": "Petco (Orange, search-result snippet only)", "url": "https://int2-sp-lb.petco.com/shop/en/petcostore/product/imagitarium-orange-aquarium-gravel", "date": "2026-11-26"},
+      {"lb": 20, "usd": 27.99, "retailer": "Petco (Dark Blue, search-result snippet only)", "url": "https://www.petco.com/product/imagitarium-dark-blue-aquarium-gravel-20-lbs-2558260", "date": "2026-11-26"},
+      {"lb": 2, "usd": 4.99, "retailer": "Petco (Rainbow Confetti, snippet; unclear which size the price belongs to)", "url": "https://www.petco.com/product/imagitarium-gravel-5-or-20-lbs", "date": "2026-11-26"}
+    ],
+    "priceLb": 1.4, "priceLbNote": "20 lb Dark Blue $27.99 / 20 = $1.40; 5 lb $7.99 = $1.60/lb. Prices are from search snippets: petco.com returns HTTP 403 to automated fetch, so no Petco page was opened.",
+    "coverage": null,
+    "photos": [],
+    "notes": "Petco blocked every fetch (403), so colour hexes are ESTIMATED from colour names, grain size, gloss and photos are not measured (grain 3-8 mm and gloss 0.6 are assumptions for epoxy-coated gravel). Colour names from Petco URLs/snippets: Orange, Rainbow Confetti, Dark Blue, Nutmeg, Blue Jean, Black Lagoon, Aztec Bronze; sizes 1, 2, 5, 20 lb seen. Petco snippet for Mini Rainbow Confetti (1 lb, $4.99): non-toxic, fish-safe materials and colours, 2 lb gravel per gallon. Rainbow description: pinks, blues, yellows, greens. Not opened: pH claims."
+  },
+  {
+    "id": "topfin-premium-gravel", "brand": "Top Fin (PetSmart)", "name": "Top Fin Premium Aquarium Gravel (Underwater Worlds line)", "kind": "gravel",
+    "fresh": true, "nutrient": "inert", "phEffect": "none",
+    "colours": [
+      {"name": "Rainbow Mix", "hex": "#f43563", "shades": ["#f43563", "#f78927", "#edd242", "#31bc52", "#2f5fc0"], "photo": "topfin-rainbow-5322608_alt1.jpg"},
+      {"name": "Blue, Green & Purple", "hex": "#ae3f9a", "shades": ["#01b74a", "#08868f", "#0e3553", "#ae3f9a", "#83237d", "#23c064"], "photo": "topfin-bgp-2.jpg"},
+      {"name": "Pink & Purple", "hex": "#fa0a78", "shades": ["#c1278c", "#7b0e3f", "#fa0a78", "#ce399a", "#f01473", "#e052a3"], "photo": "topfin-pinkpurple-2.jpg"},
+      {"name": "Green Mix", "hex": "#0a8775", "shades": ["#032421", "#0a8775", "#044a43", "#0bbb99", "#066058", "#61d2be"], "photo": "topfin-greenmix-2.jpg"},
+      {"name": "Raspberry Red", "hex": "#fb1a28", "shades": ["#fb1a28", "#820b0d", "#df1a22", "#f42737", "#f94f5b", "#ef1522"], "photo": "topfin-raspberry-2.jpg"},
+      {"name": "Bright Pink", "hex": "#fe0b6f", "shades": ["#fe0b6f", "#fc115f", "#950928", "#e41549", "#d11140", "#e8235b"], "photo": "topfin-brightpink-2.jpg"},
+      {"name": "Mardi Gras Mix", "hex": "#a1438c", "shades": ["#e01778", "#491541", "#02a74d", "#a1438c", "#075c72", "#1aa077"], "photo": "topfin-mardigras-2.jpg"},
+      {"name": "Classic Beach", "hex": "#c68833", "shades": ["#c68833", "#714014", "#ebbb6c", "#eaab47", "#f3d195", "#d7a655"], "photo": "topfin-classicbeach-2.jpg"},
+      {"name": "River Rock", "hex": "#f2b05f", "shades": ["#f2b05f", "#874516", "#cc8732", "#fbca87", "#f08e3d", "#fde2a9"], "photo": "topfin-riverrock-2.jpg"},
+      {"name": "Caribbean Sea Mix", "hex": "#139bbc", "shades": [], "photo": "topfin-caribbean-1.jpg"},
+      {"name": "Lavender", "hex": "#9b6fc4", "shades": [], "photo": null},
+      {"name": "Midnight Black", "hex": "#1c1c20", "shades": [], "photo": null},
+      {"name": "Black & Neon", "hex": "#1c1c20", "shades": [], "photo": null}
+    ],
+    "grainMm": [3, 8], "gloss": 0.6, "round": 0.4,
+    "bags": [
+      {"lb": 5, "usd": 7.99, "retailer": "PetSmart", "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/gravel-sand-and-stones/top-fin-premium-aquarium-gravel---rainbow---fish-tank-substrate---5-lb-66315.html", "date": "2026-11-26"},
+      {"lb": 25, "usd": 25.99, "retailer": "PetSmart (Midnight Black / River Rock 5-25 lb range top end)", "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/gravel-sand-and-stones/top-fin-premium-aquarium-gravel---rainbow-5322608.html", "date": "2026-11-26"}
+    ],
+    "priceLb": 1.04, "priceLbNote": "25 lb at $25.99 = $1.04/lb (PetSmart price range text '5-25 lb, $7.99-$25.99' for Black/River Rock/Black & Neon; Black & Neon is $4.99 for 2 lb). Coloured 5 lb bags $7.99 = $1.60/lb. Mid sizes unseen.",
+    "coverage": null,
+    "photos": [
+      {"url": "https://s7d2.scene7.com/is/image/PetSmart/5322608_alt1", "file": "topfin-rainbow-5322608_alt1.jpg", "what": "Rainbow Mix grains close up (neon pink/orange/yellow/green/blue, painted matte-satin look)"},
+      {"url": "https://s7d2.scene7.com/is/image/PetSmart/5322585_alt1", "file": "topfin-mardigras-2.jpg", "what": "Mardi Gras Mix close up"},
+      {"url": "https://s7d2.scene7.com/is/image/PetSmart/5322586_alt1", "file": "topfin-classicbeach-2.jpg", "what": "Classic Beach natural pebble close up"},
+      {"url": "https://s7d2.scene7.com/is/image/PetSmart/5322615_alt1", "file": "topfin-greenmix-2.jpg", "what": "Green Mix close up"},
+      {"url": "https://s7d2.scene7.com/is/image/PetSmart/5322583_alt1", "file": "topfin-raspberry-2.jpg", "what": "Raspberry Red close up"}
+    ],
+    "notes": "PetSmart page (opened): 'Gravel may contain minerals that affect the water pH; monitor pH' (generic wording, not a measured claim); coating, grain size and non-toxic status NOT stated on page. Grain 3-8 mm is my estimate from the photos (angular chips and a few rounded pebbles). Classic Beach and River Rock are natural uncoated pebbles (gloss lower, ~0.3, rounder ~0.7); the dyed colours look painted/epoxy. Shades sampled from alt1 close-ups (python PIL median-cut); Caribbean Sea Mix hex sampled from the bag front only; Lavender, Midnight Black and Black & Neon are listed on PetSmart's variant list but hex is estimated. Only 5 lb bags priced at $7.99 for colours."
+  },
+  {
+    "id": "glofish-gravel", "brand": "GloFish (Spectrum Brands)", "name": "GloFish Aquarium Gravel", "kind": "gravel",
+    "fresh": true, "nutrient": "inert", "phEffect": "none",
+    "colours": [
+      {"name": "Pink/Green/Blue (multi-colour)", "hex": "#5db0ae", "shades": ["#81b9ac", "#5db0ae", "#47788b", "#da8da2", "#d36e90"], "photo": "glofish-5175199.jpg"},
+      {"name": "Black with fluorescent accents", "hex": "#25252b", "shades": [], "photo": null},
+      {"name": "Pink & Teal", "hex": "#e06a9a", "shades": [], "photo": null},
+      {"name": "Black & White", "hex": "#8a8a90", "shades": [], "photo": null},
+      {"name": "Pearl / white pearlescent", "hex": "#e8e6e0", "shades": [], "photo": null}
+    ],
+    "grainMm": [3, 7], "gloss": 0.5, "round": 0.4,
+    "bags": [
+      {"lb": 5, "usd": 8.99, "retailer": "PetSmart (multi-colour)", "url": "https://www.petsmart.com/5175199.html", "date": "2026-11-26"},
+      {"lb": 5, "usd": 5.49, "retailer": "Target (pink/green/blue, search snippet; was $7.29)", "url": "https://www.target.com/p/glofish-pink-green-and-blue-mix-gravel-for-aquarium-tanks-5lbs/-/A-93037159", "date": "2026-11-26"},
+      {"lb": 5, "usd": 8.97, "retailer": "Chewy (pink/green/blue, search snippet)", "url": "https://www.chewy.com/glofish-fluorescent-aquarium-gravel/dp/125643", "date": "2026-11-26"}
+    ],
+    "priceLb": 1.8, "priceLbNote": "PetSmart opened page $8.99/5 lb = $1.80/lb; Target snippet $5.49 would be $1.10/lb but was not opened. Only 5 lb bags seen.",
+    "coverage": "Bag label (photo): 'Use 1 lb of gravel per gallon of water'. A listing says a 5 lb bag fits a 5 gal tank.",
+    "photos": [
+      {"url": "https://www.petsmart.com/5175199.html", "file": "glofish-5175199.jpg", "what": "5 lb bag front, pink/green/blue visible through film"},
+      {"url": "https://www.petsmart.com/5175199.html", "file": "glofish-5175199_alt1.jpg", "what": "5 lb bag back: instructions (rinse, 1 lb/gal), made in USA, Spectrum Brands Pet LLC"}
+    ],
+    "notes": "PetSmart (opened): meant to make fluorescent fish and decor stand out under blue LED; rinse before use. Bag back (photo): made in USA with some imported parts, Spectrum Brands Pet LLC; 'rinse gravel before using (do not use soap or detergents)'. Neon coated gravel, grain 3-7 mm is my estimate from the photo (small angular chips). Colours listed on PetSmart: Multi-color, Black, Pink & Teal, White & Black; Walmart/Chewy snippets add Black with fluorescent plastic accents and Pearlescent white; hex for non-multi colours ESTIMATED. No pH claim found."
+  },
+  {
+    "id": "estes-spectrastone-natural", "brand": "Estes (Spectrastone / Special / Shallow Creek)", "name": "Estes Spectrastone aquarium gravel (current US line: Special coloured, Shallow Creek natural pebbles, Permaglo neon)", "kind": "gravel",
+    "fresh": true, "nutrient": "inert", "phEffect": "none",
+    "colours": [
+      {"name": "Special Black", "hex": "#26262a", "shades": [], "photo": null},
+      {"name": "Special Blue / Blue Jean", "hex": "#2e5fb0", "shades": [], "photo": null},
+      {"name": "Special Light Blue", "hex": "#6fb1e0", "shades": [], "photo": null},
+      {"name": "Special Turquoise", "hex": "#2fb5b0", "shades": [], "photo": null},
+      {"name": "Special Red", "hex": "#c8262c", "shades": [], "photo": null},
+      {"name": "Special Green", "hex": "#3aa655", "shades": [], "photo": null},
+      {"name": "White", "hex": "#e9e6df", "shades": [], "photo": null},
+      {"name": "Natural Walnut", "hex": "#8a6b4a", "shades": [], "photo": null},
+      {"name": "Ocean Beach Pebble (beige)", "hex": "#c9b393", "shades": [], "photo": null},
+      {"name": "Shallow Creek Natural", "hex": "#b09a78", "shades": [], "photo": null},
+      {"name": "Permaglo Rainbow / Pink / Green / Lavender / Black Lagoon / Princess", "hex": "#e8457a", "shades": [], "photo": null}
+    ],
+    "grainMm": [3, 8], "gloss": 0.5, "round": 0.4,
+    "bags": [
+      {"lb": 5, "usd": 5.99, "retailer": "That Pet Place (Estes Special Black)", "url": "https://www.thatpetplace.com/estes-special-gravel-black-5-lb", "date": "2026-11-26"},
+      {"lb": 5, "usd": 6.99, "retailer": "That Pet Place (Shallow Creek Pebbles / Regular, made by Estes)", "url": "https://www.thatpetplace.com/shallow-creek-pebbles-5-lb", "date": "2026-11-26"},
+      {"lb": 5, "usd": 5.99, "retailer": "That Pet Place (Special Spectrastone Blue)", "url": "https://www.thatpetplace.com/estes-special-gravel-black-5-lb", "date": "2026-11-26"},
+      {"lb": 5, "usd": 6.49, "retailer": "range 6.49-7.95 across retailers (search snippet, not opened)", "url": "https://www.entirelypets.com/estes-spectrastone-red-gravel-5lb.html", "date": "2026-11-26"}
+    ],
+    "priceLb": 1.2, "priceLbNote": "Special 5 lb $5.99 / 5 = $1.20/lb (That Pet Place, opened). 25 lb bags exist (snippets) but no price seen.",
+    "coverage": null,
+    "photos": [],
+    "notes": "I could not find any 'Spectrum Brands Estes Gravel' line: Estes (Clifford W. Estes Co.) sells Spectrastone, and Spectrum Brands owns GloFish/Tetra/Marineland, not Spectrastone, so the brief's name is a mix-up; Spectrastone is the current Estes line (Special = dyed tropical colours, Permaglo = neon, plus natural Shallow Creek / Ocean Beach / Walnut / White). That Pet Place (opened): Special Black is natural stone that 'won't affect water quality or pH', non-toxic; Shallow Creek 'will not affect aquarium pH', smaller pebbles. Grain size is not stated on any page I could open (3-8 mm is an estimate). Colour list is from retailer titles (eBay/Petlife/Walmart/Zamzows snippets), no official Estes chart found. Zamzows and Entirelypets pages returned 429/404 so no photos were saved; hex values are ESTIMATED from names."
+  },
+  {
+    "id": "seachem-flourite-black-sand", "brand": "Seachem", "name": "Flourite Black Sand (also sold: Flourite, Flourite Black, Flourite Dark, Flourite Red)", "kind": "sand",
+    "fresh": true, "nutrient": "active", "phEffect": "none",
+    "colours": [
+      {"name": "Black Sand", "hex": "#25242a", "shades": [], "photo": "flourite-black-sand-1.png"},
+      {"name": "Black (gravel)", "hex": "#2a2826", "shades": [], "photo": null},
+      {"name": "Dark", "hex": "#3a2f2c", "shades": [], "photo": null},
+      {"name": "Red", "hex": "#8a4a36", "shades": [], "photo": null},
+      {"name": "Flourite (original brown/red-brown)", "hex": "#7a4b3a", "shades": [], "photo": null}
+    ],
+    "grainMm": null, "gloss": 0.1, "round": 0.3,
+    "bags": [
+      {"lb": 15.4, "usd": 26.02, "retailer": "That Pet Place", "url": "https://www.thatpetplace.com/flourite-black-sand-15lb", "date": "2026-11-26"},
+      {"lb": 15.4, "usd": 30.75, "retailer": "Pet Life (sale price, search snippet)", "url": "https://shop.petlife.com/collections/seachem/products/seachem-flourite-black-7-kg", "date": "2026-11-26"},
+      {"lb": 15.4, "usd": 28.59, "retailer": "MorphMarket shop (sale, snippet)", "url": "https://shop.morphmarket.com/products/seachem-laboratories-flourite-planted-aquarium-gravel-15-4-lb-black", "date": "2026-11-26"}
+    ],
+    "priceLb": 1.69, "priceLbNote": "$26.02 / 15.4 lb = $1.69/lb (That Pet Place, opened). Other 15.4 lb listings $28.59-$30.99.",
+    "coverage": null,
+    "photos": [
+      {"url": "http://tropicaltreasureswyo.com/cdn/shop/files/SC35250-2T.png", "file": "flourite-black-sand-1.png", "what": "Bag only (3.5 kg/15.4 lb style); no grain close-up found"}
+    ],
+    "notes": "That Pet Place (opened): porous fired clay gravel/sand for planted tanks, nutrients already in it so no supplement needed, can be used alone or mixed with other gravel (at least half Flourite recommended), freshwater only, pre-washed but may be rinsed to remove dust (cloudiness clears in 2-12 h); mineral analysis lists calcium 20950, iron 4338, sodium 5484 mg/kg; NO pH claim on the page. Grain size not stated by any page I opened; a retailer snippet calls Black Sand 'fine grain'. Dust is the common complaint. Only the Black Sand photo (bag) was usable; for Flourite Dark/Red, photos already exist in this folder from another lane (flourite-dark-*, flourite-red-*). Black / Dark / Red hex are ESTIMATED."
+  },
+  {
+    "id": "caribsea-super-naturals", "brand": "CaribSea", "name": "Super Naturals aquarium substrate (Peace River, Sunset Gold, Moonlight, Jelly Beans, Zen Garden...)", "kind": "gravel",
+    "fresh": true, "nutrient": "inert", "phEffect": "none",
+    "colours": [
+      {"name": "Peace River", "hex": "#a88b6a", "shades": ["#543722", "#ac9272", "#c4b192", "#77614a", "#957151", "#ddd2bb"], "photo": "bulkreef-peace-1.jpg"},
+      {"name": "Sunset Gold", "hex": "#d09a58", "shades": [], "photo": "petsmart-5151962.jpg"},
+      {"name": "Moonlight White (sand)", "hex": "#e8e4da", "shades": [], "photo": null},
+      {"name": "Jelly Beans", "hex": "#b05f4a", "shades": [], "photo": null},
+      {"name": "Zen Garden", "hex": "#8a8478", "shades": [], "photo": null}
+    ],
+    "grainMm": [1, 2], "gloss": 0.3, "round": 0.6,
+    "bags": [
+      {"lb": 20, "usd": 19.82, "retailer": "Bulk Reef Supply (Peace River)", "url": "https://www.bulkreefsupply.com/super-naturals-substrate-peace-river-caribsea.html", "date": "2026-11-26"},
+      {"lb": 40, "usd": 35.5, "retailer": "Bulk Reef Supply (Peace River)", "url": "https://www.bulkreefsupply.com/super-naturals-substrate-peace-river-caribsea.html", "date": "2026-11-26"},
+      {"lb": 20, "usd": 23.79, "retailer": "PetSmart (Sunset Gold; was $29.99)", "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/gravel-sand-and-stones/caribsea-super-naturals-premium-aquarium-substrate-fish-tank-substrate-16748.html", "date": "2026-11-26"},
+      {"lb": 20, "usd": 44.99, "retailer": "PetSmart (Jelly Beans and Zen Garden, 'also like' price)", "url": "https://www.petsmart.com/5269607.html", "date": "2026-11-26"}
+    ],
+    "priceLb": 0.89, "priceLbNote": "Peace River 40 lb $35.50 / 40 = $0.89/lb; 20 lb $19.82 = $0.99/lb (BRS shows a struck-through $26.42/$47.33). PetSmart Sunset Gold $1.19/lb.",
+    "coverage": null,
+    "photos": [
+      {"url": "https://www.bulkreefsupply.com/super-naturals-substrate-peace-river-caribsea.html", "file": "bulkreef-peace-1.jpg", "what": "Peace River grains in a heap, tan/brown/black/red pebbles"},
+      {"url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/gravel-sand-and-stones/caribsea-super-naturals-premium-aquarium-substrate-fish-tank-substrate-16748.html", "file": "petsmart-5151962.jpg", "what": "Sunset Gold 20 lb bag"}
+    ],
+    "notes": "BRS (opened): Peace River typical grain 1.0-2.0 mm, ~93 lb/cu ft, colours brown, tan, black, red; all-natural, no dyes or paints, 'pH neutral - will not increase hardness' (maker claim), small smooth grains bottom-feeder friendly, live bacteria packet included. Eco-Complete (CaribSea) is covered below. Sunset Gold, Moonlight White, Jelly Beans, Zen Garden hex ESTIMATED; PetSmart page gave no grain/pH/dye data. Super Naturals Peace River is a general freshwater/natural-look substrate, not plant-nutrient."
+  },
+  {
+    "id": "caribsea-eco-complete", "brand": "CaribSea", "name": "Eco-Complete Planted Aquarium Substrate (now sold as Eco-Planted)", "kind": "soil",
+    "fresh": true, "nutrient": "fertilized", "phEffect": "none",
+    "colours": [
+      {"name": "Black", "hex": "#2a2623", "shades": [], "photo": "eco-complete-black-1.jpg"},
+      {"name": "Red", "hex": "#7a3f30", "shades": [], "photo": null}
+    ],
+    "grainMm": [0.25, 7], "gloss": 0.1, "round": 0.4,
+    "bags": [
+      {"lb": 20, "usd": 33.99, "retailer": "That Pet Place", "url": "https://www.thatpetplace.com/eco-complete-planted-aquarium-substrate-20lb", "date": "2026-11-26"},
+      {"lb": 20, "usd": 35.99, "retailer": "Chewy (search snippet; $1.80/lb)", "url": "https://www.chewy.com/caribsea-eco-complete-planted/dp/168343", "date": "2026-11-26"},
+      {"lb": 20, "usd": 29.99, "retailer": "That Pet Place per search snippet (page opened shows 33.99)", "url": "https://www.thatpetplace.com/eco-complete-planted-aquarium-substrate-20lb", "date": "2026-11-26"}
+    ],
+    "priceLb": 1.7, "priceLbNote": "$33.99 / 20 lb = $1.70/lb (That Pet Place, opened).",
+    "coverage": null,
+    "photos": [],
+    "notes": "That Pet Place (opened): basaltic volcanic substrate, iron, calcium, magnesium, potassium, sulfur plus 25+ elements; packed in buffered live 'Black Water' with bacteria; nitrate- and carbonate-free, will not raise pH or carbonate hardness; makes laterite unnecessary. Grain 0.25-7 mm (spherical, separates into fine bottom/coarse top). Rinse not stated. Photo: this folder already has eco-complete-black-1.jpg from another lane. Also sold: Eco-Complete African Cichlid (white sand) - not researched. Marked 'fertilized' because it is mineral-rich; the sources do not call it fertilizer-added."
+  },
+  {
+    "id": "quikrete-play-sand", "brand": "Quikrete", "name": "Quikrete Premium Play Sand 50 lb (also All-Purpose Sand 50 lb)", "kind": "sand",
+    "fresh": true, "nutrient": "inert", "phEffect": "none",
+    "colours": [
+      {"name": "Natural tan", "hex": "#c9b48c", "shades": [], "photo": null}
+    ],
+    "grainMm": [0.1, 1.0], "gloss": 0.05, "round": 0.4,
+    "bags": [
+      {"lb": 50, "usd": 5.98, "retailer": "Lowe's (search snippet; page returned 403, price shown $4.38-$7.58 across store snippets)", "url": "https://www.lowes.com/pd/QUIKRETE-0-5-cu-ft-50-lb-Play-Sand/3006085", "date": "2026-11-26"},
+      {"lb": 50, "usd": 8.99, "retailer": "Ace Hardware (snippet; unconfirmed it is the same product)", "url": "https://www.acehardware.com/departments/building-supplies/concrete-cement-and-masonry/sand-and-gravel/58173", "date": "2026-11-26"}
+    ],
+    "priceLb": 0.12, "priceLbNote": "$5.98 / 50 lb = $0.12/lb (Lowe's snippet only, not opened). Home Depot snippets showed $28.23 / $29.89 which look like multi-bag or pallet prices and are NOT used; Home Depot returns 403.",
+    "coverage": null,
+    "photos": [],
+    "notes": "Home Depot, Lowe's, Ace and Walmart all refused automated fetch (403 / bot check), so nothing was opened and no photo was saved. Grain 0.1-1.0 mm is my typical-play-sand ESTIMATE, not from a page. Quikrete lists Play Sand (0.5 cu ft, 50 lb) and All-Purpose Sand (ASTM C 33, model 115251). Pool filter sand: no Quikrete pool-sand product found; pool filter sand is a separate graded product. Needs very heavy rinsing; plain silica sand is inert (hobby knowledge, not from a page)."
+  },
+  {
+    "id": "black-diamond-blasting-abrasive", "brand": "Black Diamond", "name": "Black Diamond blasting abrasive 50 lb (Fine / Medium) - coal slag, not natural sand", "kind": "sand",
+    "fresh": true, "nutrient": "inert", "phEffect": "none",
+    "colours": [
+      {"name": "Black / dark grey", "hex": "#2b2a2c", "shades": [], "photo": null}
+    ],
+    "grainMm": null, "gloss": 0.3, "round": 0.15,
+    "bags": [
+      {"lb": 50, "usd": 13.99, "retailer": "Tractor Supply (Medium, search snippet; $13.99-$15.99 by store)", "url": "https://www.tractorsupply.com/tsc/product/black-diamond-medium-blasting-abrasives-3905403", "date": "2026-11-26"},
+      {"lb": 50, "usd": 15.99, "retailer": "Tractor Supply (Fine, search snippet; $13.99-$15.99 by store)", "url": "https://www.tractorsupply.com/tsc/product/black-diamond-fine-blasting-abrasives-3907798", "date": "2026-11-26"}
+    ],
+    "priceLb": 0.28, "priceLbNote": "$13.99 / 50 lb = $0.28/lb (lowest snippet; $0.32/lb at $15.99). Not opened: Tractor Supply fetches timed out / returned a stub.",
+    "coverage": null,
+    "photos": [],
+    "notes": "Search results show the Tractor Supply product is Black Diamond COAL SLAG abrasive (fine listing says grit 60), not silica sand. It is an industrial blasting medium, not sold or tested for aquariums; hobbyists use it as cheap black sand but I found no maker claim of aquarium safety, so treat as unverified. Angular, glassy, sharp grains. No Home Depot page loaded (403). No photo. Grain size not stated (fine ~ 0.2-0.6 mm in hobby lore, not sourced)."
+  },
+  {
+    "id": "generic-pea-gravel", "brand": "Generic (Vigoro / Pavestone / All American / Gardenscape)", "name": "Bagged pea gravel / river pebbles, 0.5 cu ft bag", "kind": "natural",
+    "fresh": true, "nutrient": "inert", "phEffect": "none",
+    "colours": [
+      {"name": "Mixed tan / brown / grey", "hex": "#a79880", "shades": [], "photo": null}
+    ],
+    "grainMm": [6, 13], "gloss": 0.35, "round": 0.9,
+    "bags": [
+      {"lb": 50, "usd": 6.59, "retailer": "Ace Hardware (All American brown pea gravel 0.5 cu ft, 50 lb; search snippet)", "url": "https://www.acehardware.com/p/7100399?x429=true", "date": "2026-11-26"},
+      {"lb": 50, "usd": 18.0, "retailer": "Home Depot Vigoro 0.5 cu ft (derived: pallet 32 bags $575.95 per snippet / 32; bag weight assumed ~50 lb, not confirmed)", "url": "https://www.homedepot.com/p/Vigoro-0-5-cu-ft-Bagged-Pea-Gravel-Pebble-Landscape-Rock-54255/202523000", "date": "2026-11-26"}
+    ],
+    "priceLb": 0.13, "priceLbNote": "$6.59 / 50 lb = $0.13/lb (Ace, snippet). Home Depot is higher and unconfirmed ($18/bag derived = ~$0.36/lb). Per-ton conversion not needed: bags are priced per 0.5 cu ft; at ~100 lb/cu ft that is ~50 lb per bag.",
+    "coverage": null,
+    "photos": [],
+    "notes": "No page opened: Home Depot, Ace and True Value pages either 403'd or returned no price. Stone size 6-13 mm is the usual 'pea gravel' definition (my ESTIMATE, not from a page). Pea gravel/river rock can be limestone or granite depending on source: test with vinegar before use (hobby advice, not from a page); wash heavily. Top Fin River Rock and Classic Beach at PetSmart are the aquarium-labelled equivalents (see topfin-premium-gravel)."
+  },
+  {
+    "id": "caribsea-arag-alive", "brand": "CaribSea", "name": "Arag-Alive live aragonite reef sand (Special Grade, Natural Reef, Fiji Pink, Hawaiian Black, Bahama Oolite)", "kind": "marine",
+    "fresh": false, "nutrient": "inert", "phEffect": "buffers",
+    "colours": [
+      {"name": "Fiji Pink (Special Grade)", "hex": "#e9d7c4", "shades": [], "photo": "petsmart-5269607.jpg"},
+      {"name": "Special Grade (white)", "hex": "#ece6dc", "shades": [], "photo": null},
+      {"name": "Natural Reef", "hex": "#c1af91", "shades": ["#a49171", "#c1af91", "#5c4b2f", "#cebea2", "#daccb2"], "photo": "arag-alive-natural-reef-1.jpg"},
+      {"name": "Hawaiian Black", "hex": "#2c2a2a", "shades": [], "photo": null},
+      {"name": "Bahamas Oolite", "hex": "#efe9e0", "shades": [], "photo": null}
+    ],
+    "grainMm": [1, 2], "gloss": 0.2, "round": 0.7,
+    "bags": [
+      {"lb": 20, "usd": 33.99, "retailer": "That Pet Place (Special Grade)", "url": "https://www.thatpetplace.com/arag-alive-special-grade-reef-sand-20-lb", "date": "2026-11-26"},
+      {"lb": 20, "usd": 29.99, "retailer": "PetSmart (Fiji Pink)", "url": "https://www.petsmart.com/5269607.html", "date": "2026-11-26"},
+      {"lb": 20, "usd": 25.76, "retailer": "Chewy (Special Grade, search snippet)", "url": "https://www.chewy.com/caribsea-arag-alive-special-grade/dp/322413", "date": "2026-11-26"},
+      {"lb": 20, "usd": 25.49, "retailer": "Petco (Special Grade, search snippet)", "url": "https://www.petco.com/product/caribsea-arag-alive-special-grade-sand-20-lbs-3027321", "date": "2026-11-26"}
+    ],
+    "priceLb": 1.27, "priceLbNote": "Petco snippet $25.49 / 20 = $1.27/lb; opened pages $1.50 (PetSmart) and $1.70 (That Pet Place). Natural Reef 16 lb: BRS page showed no price.",
+    "coverage": "BRS suggests about 1 lb of sand per 2 gallons (tank-guidance chart: 20 gal at 2 in needs ~28 lb).",
+    "photos": [
+      {"url": "https://www.petsmart.com/5269607.html", "file": "petsmart-5269607.jpg", "what": "Fiji Pink 20 lb bag, pale sand with pink flecks"},
+      {"url": "https://www.bulkreefsupply.com/16-lb-natural-reef-arag-alive-live-reef-sand-caribsea.html", "file": "arag-alive-natural-reef-1.jpg", "what": "Natural Reef 16 lb bag with grain circle inset (cream/grey/brown mix)"}
+    ],
+    "notes": "That Pet Place (opened): Special Grade ~1-2 mm, buffers/holds pH ~8.2, pre-packaged with live bacteria, DO NOT rinse (pour in gently, use a plate to diffuse). PetSmart (opened): Fiji Pink is 'white with pinkish flecks', aragonite sand, pre-washed, packed in seawater with a clarifier packet, never place new substrate over old. BRS (opened): Natural Reef 3.0-5.0 mm (chart says 3.0-5.5), live bacteria, large particle variety. Hawaiian Black ($32.99 PetSmart) and Bahamas Oolite exist; their hex is ESTIMATED. marine:true (fresh:false). Raises/buffers pH and hardness, not for freshwater."
+  },
+  {
+    "id": "caribsea-florida-crushed-coral", "brand": "CaribSea", "name": "Florida Crushed Coral (dry; also Arag-Alive live FL Crushed Coral)", "kind": "marine",
+    "fresh": false, "nutrient": "inert", "phEffect": "raises",
+    "colours": [
+      {"name": "Natural white / tan", "hex": "#d5c3a8", "shades": ["#c0a287", "#dac4ac", "#745136", "#e5d3bf", "#ece0cf"], "photo": "crushed-coral-1.jpg"}
+    ],
+    "grainMm": [2.5, 5.5], "gloss": 0.1, "round": 0.2,
+    "bags": [
+      {"lb": 15, "usd": 20.99, "retailer": "That Pet Place", "url": "https://www.thatpetplace.com/florida-crushed-coral-15-lb", "date": "2026-11-26"},
+      {"lb": 10, "usd": 9.31, "retailer": "Bulk Reef Supply", "url": "https://www.bulkreefsupply.com/florida-crushed-coral-dry-sand-caribsea.html", "date": "2026-11-26"},
+      {"lb": 40, "usd": 33.7, "retailer": "Bulk Reef Supply", "url": "https://www.bulkreefsupply.com/florida-crushed-coral-dry-sand-caribsea.html", "date": "2026-11-26"},
+      {"lb": 40, "usd": 29.83, "retailer": "Petco (search snippet)", "url": "https://int2-sp-lb.petco.com/shop/en/petcostore/product/caribsea-florida-crushed-coral-substrate", "date": "2026-11-26"},
+      {"lb": 15, "usd": 14.28, "retailer": "Chewy (search snippet)", "url": "https://www.chewy.com/caribsea-coraline-florida-crushed/dp/174132", "date": "2026-11-26"}
+    ],
+    "priceLb": 0.84, "priceLbNote": "BRS 40 lb $33.70 / 40 = $0.84/lb (opened); Petco snippet 40 lb $0.75/lb. 10 lb $0.93/lb.",
+    "coverage": null,
+    "photos": [
+      {"url": "https://www.bulkreefsupply.com/florida-crushed-coral-dry-sand-caribsea.html", "file": "crushed-coral-1.jpg", "what": "Bag with grain close-up circle (angular cream/tan coral chips)"},
+      {"url": "https://www.bulkreefsupply.com/fl-crushed-coral-arag-alive-live-reef-sand.html", "file": "crushed-coral-2.jpg", "what": "Live FL crushed coral bag with grain circle"}
+    ],
+    "notes": "That Pet Place (opened): 2.5-5.5 mm, free of impurities, buffers pH for saltwater, reef or cichlid tanks, rinse until water runs clear. BRS (opened): 3.0-5.5 mm, 72 lb/cu ft, not recommended with sand-sifting animals, staff Q&A: 'Crushed coral can raise the pH'. Also used in African cichlid (hard, high pH) freshwater tanks. 'Plain aragonite' CaribSea Aragonite Florida Aquarium Crushed Coral is the same family. CaribSea Special Grade Reef Sand = the Arag-Alive Special Grade row above. marine:true (fresh:false)."
+  },
+  {
+    "id": "_clown-puke-mixes", "brand": "multiple", "name": "Widely sold multicolour 'clown puke' mixes (note, not a product)", "kind": "gravel",
+    "fresh": true, "nutrient": "inert", "phEffect": "none",
+    "colours": [
+      {"name": "Top Fin Rainbow Mix (PetSmart, $7.99/5 lb)", "hex": "#f43563", "shades": ["#f43563", "#f78927", "#edd242", "#31bc52", "#2f5fc0"], "photo": "topfin-rainbow-5322608_alt1.jpg"},
+      {"name": "Top Fin Mardi Gras Mix (pink, purple, green, blue, teal)", "hex": "#a1438c", "shades": ["#e01778", "#491541", "#02a74d", "#a1438c", "#075c72", "#1aa077"], "photo": "topfin-mardigras-2.jpg"},
+      {"name": "Top Fin Blue, Green & Purple", "hex": "#ae3f9a", "shades": ["#01b74a", "#08868f", "#0e3553", "#ae3f9a", "#83237d", "#23c064"], "photo": "topfin-bgp-2.jpg"},
+      {"name": "GloFish Pink/Green/Blue mix", "hex": "#5db0ae", "shades": ["#da8da2", "#d36e90", "#5db0ae", "#47788b"], "photo": "glofish-5175199.jpg"},
+      {"name": "Imagitarium Rainbow Confetti (Petco; pinks, blues, yellows, greens per snippet)", "hex": "#e8457a", "shades": [], "photo": null},
+      {"name": "Estes Spectrastone Permaglo Rainbow", "hex": "#e8457a", "shades": [], "photo": null}
+    ],
+    "grainMm": [3, 8], "gloss": 0.6, "round": 0.4,
+    "bags": [], "priceLb": null, "priceLbNote": "Prices are on the individual product rows above.",
+    "coverage": null, "photos": [],
+    "notes": "Answer: yes, every big chain sells one. Top Fin 'Rainbow Mix' (item 5322608; PetSmart page gives colour only as 'Rainbow Mix', Canada listing says 'Pink, Orange, Green & Blue Mix'): measured from photo = hot pink, orange, lemon yellow, green, royal blue (the neon clown-puke look). Petco Imagitarium 'Rainbow Confetti' is pinks, blues, yellows, greens (snippet). Spectrum/GloFish does NOT make a 5-colour rainbow: its multi is pink/green/blue only. Estes sells Permaglo Rainbow. A 'spectrum rainbow' product was not found."
+  }
+]

@@ -29,7 +29,7 @@ const ACCENT_PLANTS = new Set(['stemred', 'rotala', 'ludwigia', 'ozelot', 'lotus
 /** Corals that are not a bright colour accent: algae and the leather's brown. */
 const DULL_CORALS = new Set(['macroalgae', 'leather']);
 /** Ground that is not a natural colour. */
-const BOLD_GROUND = new Set(['clown', 'blue', 'onyx']);
+const BOLD_GROUND = new Set(['clown', 'blue', 'onyx', 'red', 'pink', 'green']);
 const clamp = (x: number, lo = -1, hi = 1) => Math.max(lo, Math.min(hi, x));
 const plantWeight = (i: Item): number => i.kind === 'coral' ? 2 : isCarpet(i.variant) ? 3 : isFloat(i.variant) ? 1.5 : isClump(i.variant) ? 2 : 1;
 
@@ -45,7 +45,7 @@ export function designAxes(S: TankSetup): DesignAxes {
   // (lane DS3: a dyed artificial plant is a colour accent, and an ornament is a bold coloured piece of the scene)
   const orn = hardIt.filter(i => i.kind === 'ornament').length;
   const accent = plantIt.filter(i => i.kind === 'coral' ? !DULL_CORALS.has(i.variant) : i.kind === 'artificial' ? !!LIBRARY[i.variant]?.fake?.tint : i.kind === 'plant' && ACCENT_PLANTS.has(i.variant)).length + orn;
-  const accentShare = plantIt.length ? Math.min(1, accent / (plantIt.length + orn)) : 0, boldGround = S.substrate.show && BOLD_GROUND.has(S.substrate.type) ? 0.3 : 0;
+  const accentShare = plantIt.length ? Math.min(1, accent / (plantIt.length + orn)) : 0, boldGround = S.substrate.show && (BOLD_GROUND.has(S.substrate.type) || (S.substrate.type === 'custom' && S.substrate.custom.preset === 'clownpuke')) ? 0.3 : 0;
   const colourful = clamp((accentShare + boldGround - 0.3) / 0.4);
   // natural: artificial share of the planting plus unnatural ground
   const artificialShare = plantIt.length ? art / plantIt.length : 0, natural = clamp(1 - 2 * Math.min(1, artificialShare * 0.85 + boldGround * 0.5 + Math.min(0.25, 0.12 * orn)));

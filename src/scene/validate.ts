@@ -15,7 +15,8 @@ import { TABLE_MAX, fitTable } from './table';
 import { GROW_RATE_MAX } from './growtime';
 import { keepInWater } from './water';
 import { pieSize, radialSize, sameGrid, sampleTerrain, swampTerrain, type Ground } from './terrain';
-import { SCENE_VERSION, type BgImage, type BgSide, type Fish, type Item, type LightTech, type Scene, type Tank, type CustomTankRef, type TankSetup } from './types';
+import { isBrandId } from '../data/substrateBrands';
+import { SCENE_VERSION, type BrandSub, type BgImage, type BgSide, type Fish, type Item, type LightTech, type Scene, type Tank, type CustomTankRef, type TankSetup } from './types';
 import { adoptImages, sidesTouch } from './images';
 import { ownParse, parseTech } from './tech';
 import { pairRule } from '../data/groups';
@@ -309,7 +310,8 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       ...(l.mapStepLux != null ? { mapStepLux: Math.round(num(l.mapStepLux, 500, 250, 5000) / 250) * 250 } : {}),
     },
     substrate: {
-      show: bool(s.show, d.substrate.show), type: pick(s.type, ['gravel', 'pea', 'clown', 'blue', 'onyx', 'black', 'white', 'aragonite', 'coral', 'soil', 'tsand', 'clay', 'bark', 'layered', 'custom'] as const, 'gravel'),
+      show: bool(s.show, d.substrate.show), type: typeof s.type === 'string' && isBrandId(s.type) ? s.type as BrandSub : pick(s.type, ['gravel', 'pea', 'clown', 'blue', 'onyx', 'black', 'white', 'red', 'pink', 'green', 'wgrav', 'aragonite', 'coral', 'soil', 'tsand', 'clay', 'bark', 'layered', 'custom'] as const, 'gravel'),
+      ...(typeof s.priceLb === 'number' && Number.isFinite(s.priceLb) && s.priceLb >= 0 ? { priceLb: Math.round(Math.min(500, s.priceLb) * 100) / 100 } : {}), // SB1: the user's own $/lb, absent stays absent
       // leaf litter (lane T1, 2026-10-16, no version bump): absent stays absent
       ...(s.litter && typeof s.litter === 'object' ? { litter: (() => { const l = s.litter as Record<string, unknown>; return {
         leaf: pick(l.leaf, ['mixed', 'oak', 'magnolia', 'catappa'] as const, 'mixed'), density: Math.round(num(l.density, 50, 0, 100)), seed: Math.round(num(l.seed, 1, 1, 1e6)) }; })() } : {}),

@@ -10,6 +10,7 @@ import { isSalt } from '../../scene/stockEdit';
 import { getSpecies } from '../../data/species';
 import { scapeSec } from '../../scene/itemEdit';
 import { SUBSTRATES } from '../../art/placeholder';
+import { BRANDS, NUTRIENT_TEXT, PH_TEXT, brandOf } from '../../data/substrateBrands';
 import { aquariumOnly } from '../../scope';
 import { volume } from '../../scene/physics';
 import { categories, inUseItem, itemName } from './equipment';
@@ -143,7 +144,45 @@ export function scapeFacts(S: TankSetup): ScapeFacts {
 
 // ---------------------------------------------------------------------------------------------------------------- substrate section
 export interface SubSwatch { id: string; label: string }
-/** The swatches of the substrate section: bare bottom, the presets of this scope, then a custom blend. */
+/** One pickable look inside a type: a generic substrate id, a brand product id, or a blend preset ('clownpuke'). */
+export interface SubOpt { id: string; label: string; preset?: string; brand?: boolean }
+export interface SubTypeView { id: string; label: string; options: SubOpt[] }
+const GENERIC: Record<string, SubOpt[]> = {
+  gravel: [{ id: 'blue', label: 'Blue' }, { id: 'red', label: 'Red' }, { id: 'onyx', label: 'Black' }, { id: 'wgrav', label: 'White' }, { id: 'pink', label: 'Pink' }, { id: 'green', label: 'Green' }, { id: 'custom', label: 'Clown puke', preset: 'clownpuke' }],
+  natural: [{ id: 'gravel', label: 'Natural gravel' }],
+  pea: [{ id: 'pea', label: 'Pea gravel' }],
+  sand: [{ id: 'white', label: 'White sand' }, { id: 'black', label: 'Black sand' }],
+  soil: [],
+  marine: [{ id: 'aragonite', label: 'Aragonite sand' }, { id: 'coral', label: 'Crushed coral' }],
+};
+const TYPE_LABEL: Record<string, string> = { gravel: 'Aquarium gravel', natural: 'Natural gravel', pea: 'Pea gravel', sand: 'Sand', soil: 'Aqua soil', marine: 'Marine' };
+/** R185: the substrate picker, type first (bare, aquarium gravel, natural, pea, sand, aqua soil, marine, custom blend, terrarium), then each type's colours and real products. */
+export function substrateTypes(): SubTypeView[] {
+  const out: SubTypeView[] = [{ id: 'bare', label: 'Bare bottom', options: [] }];
+  for (const id of Object.keys(TYPE_LABEL)) {
+    out.push({ id, label: TYPE_LABEL[id], options: [...GENERIC[id], ...BRANDS.filter(b => b.type === id).map(b => ({ id: b.id as string, label: b.colour ? `${b.brand} ${b.colour}` : `${b.brand} ${b.name}`, brand: true }))] });
+  }
+  out.push({ id: 'custom', label: 'Custom blend', options: [{ id: 'custom', label: 'Custom blend' }] });
+  if (!aquariumOnly()) out.push({ id: 'terra', label: 'Terrarium', options: Object.entries(SUBSTRATES).filter(([, t]) => t.terra).map(([id, t]) => ({ id, label: t.label })) });
+  return out;
+}
+/** Which type the current substrate belongs to. */
+export function subTypeOf(sub: { show: boolean; type: string; custom: { preset?: string } }): string {
+  if (!sub.show) return 'bare';
+  if (sub.type === 'custom') return sub.custom.preset ? 'gravel' : 'custom';
+  const b = brandOf(sub.type); if (b) return b.type;
+  if (SUBSTRATES[sub.type as keyof typeof SUBSTRATES]?.terra) return 'terra';
+  for (const id of Object.keys(GENERIC)) if (GENERIC[id].some(o => o.id === sub.type)) return id;
+  return sub.type === 'clown' ? 'gravel' : 'natural';
+}
+/** Is this option the current one? */
+export const subOptOn = (sub: { show: boolean; type: string; custom: { preset?: string } }, o: SubOpt) => sub.show && sub.type === o.id && (!o.preset || sub.custom.preset === o.preset) && !(o.id === 'custom' && !o.preset && sub.custom.preset);
+/** What the chosen product is, for the facts card (null for a generic one). */
+export function subFacts(sub: { show: boolean; type: string }) {
+  const b = sub.show ? brandOf(sub.type) : undefined; if (!b) return null;
+  return { b, nutrient: NUTRIENT_TEXT[b.nutrient], ph: PH_TEXT[b.ph], size: `${+(b.mm[0] / 25.4).toFixed(2)} to ${+(b.mm[1] / 25.4).toFixed(2)} in (${b.mm[0]} to ${b.mm[1]} mm)` };
+}
+/** The legacy flat list (kept for the old panels' callers). */
 export function substrateSwatches(): { id: string; label: string; terra: boolean }[] {
   return Object.entries(SUBSTRATES).filter(([, t]) => !aquariumOnly() || !t.terra).map(([id, t]) => ({ id, label: t.label, terra: !!t.terra }));
 }

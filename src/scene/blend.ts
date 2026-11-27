@@ -11,6 +11,11 @@ const DEFAULT_COLOR2 = '#6f6556';
 /** Colours offered to a grain added to the mix, in turn. */
 const ADD_COLORS = ['#6f6556', '#a89678', '#3f3a34', '#c9b9a0'];
 
+/** SB1: named blends. 'clownpuke' = the popular multicolour aquarium gravel (mixed bright dyed gravel, every colour about equally common), evenly mixed. */
+export const BLEND_PRESETS: Record<string, SubstrateBlend> = {
+  clownpuke: { grains: [['#d42a2a', 20], ['#1f5fd1', 20], ['#f2c81f', 20], ['#2ea84a', 20], ['#f06aa8', 20]].map(([color, share]) => ({ grain: 'gravel' as Grain, color: color as string, share: share as number })), mix: 1, preset: 'clownpuke' },
+};
+
 /** The six-field constructor the presets and recipes were written in: `grain2` 'none' = one grain; `share` = the second grain's %. */
 export function blendFrom(grain: Grain, color: string, grain2: Grain | 'none' = 'none', color2 = DEFAULT_COLOR2, share = 30, mix = 0.5): SubstrateBlend {
   if (grain2 === 'none') return { grains: [{ grain, color, share: 100 }], mix };
@@ -38,7 +43,7 @@ export function migrateBlend(raw: unknown, fallback: SubstrateBlend): SubstrateB
       const o = (e && typeof e === 'object' ? e : {}) as Record<string, unknown>, f = fallback.grains[Math.min(i, fallback.grains.length - 1)];
       return { grain: pickG(o.grain, f.grain), color: hex(o.color, f.color), share: typeof o.share === 'number' ? o.share : 0 };
     });
-    return { grains: normalizeShares(gs), mix, ...seedOf(c.seed) };
+    return { grains: normalizeShares(gs), mix, ...seedOf(c.seed), ...presetOf(c.preset) };
   }
   // the old fields: absent ones read as the fallback's; the old range of `share` was 5-95
   const f0 = fallback.grains[0], f1 = fallback.grains[1];
@@ -49,6 +54,8 @@ export function migrateBlend(raw: unknown, fallback: SubstrateBlend): SubstrateB
   return { ...b, ...seedOf(c.seed) };
 }
 
+/** A stored preset name (letters only), or nothing. */
+const presetOf = (v: unknown) => (typeof v === 'string' && /^[a-z]{1,24}$/.test(v) ? { preset: v } : {});
 /** A stored shuffle seed (whole number 1 to 1e6), or nothing. */
 const seedOf = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) && v >= 1 ? { seed: Math.min(1e6, Math.round(v)) } : {});
 /** Shuffle: the next seed, a different layout of the same grains, colours, shares and mix. */
