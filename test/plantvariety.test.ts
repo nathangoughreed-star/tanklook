@@ -39,7 +39,9 @@ afterEach(() => { plant3d.variety = false; });
 describe('plant variety (lane VF-B)', () => {
   it('switch off: every plant exactly as before', () => {
     plant3d.variety = false;
+    const tex = plant3d.tex; plant3d.tex = 'paint'; // (the colours were recorded in the painted-texture mode; the default is 'lum' since 2026-11-26)
     const gs = CASES.map(([t, s, h, c], i) => [`${i}:${t}`, plantGeometry(t, s, h, c)] as const);
+    plant3d.tex = tex;
     expect(Object.fromEntries(gs.map(([k, g]) => [k, `${g.attributes.position.count}/${g.index?.count ?? 0}/${hash(g, 'position')}`]))).toEqual(SHAPES);
     expect(Object.fromEntries(gs.map(([k, g]) => [k, hash(g, 'color')]))).toEqual(COLOURS);
   });

@@ -23,6 +23,7 @@ import { PLANT_ASPECT, PLANT3D, growthLen, growthOf, type Leaf3D, type PlantType
 import { CARPET_H, MAX_STEMS } from '../scene/items';
 import { taperTube } from './fish3d';
 import { leafAlgaeShader } from './algae';
+import { JET_REACH, JET_SPREAD, MAX_JETS, strongest, type FlowJet } from '../scene/flow';
 import { FX, onFx } from './fx';
 import { WHITE_UV, cellIndex, rectUV, strapAlong, texOf } from '../art/plantTex';
 
@@ -31,8 +32,11 @@ import { WHITE_UV, cellIndex, rectUV, strapAlong, texOf } from '../art/plantTex'
  *  before lane GR4: the A/B timings), variety (lane VF-B: the `variety` fx switch, render/fx.ts; kept here so the
  *  worker gets it with the other switches). `tex` (lane PT): the painted leaf textures: 'paint' = the texture's own colour (the
  *  vertex colour is white, carrying only the form shading, tint and jitter), 'lum' = the texture's light and dark over
- *  the species' own vertex colours, 'off' = vertex colours alone, as before the textures. */
-export const plant3d = { sway: true, emerse: true, gpu: true, variety: FX.variety, tex: 'paint' as 'paint' | 'lum' | 'off' };
+ *  the species' own vertex colours (the default since 2026-11-26: Nathan, 'too pale': the sheets' own greens are pale lime;
+ *  lum keeps the approved species palette and the painted detail), 'off' = vertex colours alone, as before the textures. */
+export const plant3d = { sway: true, emerse: true, gpu: true, variety: FX.variety, tex: 'lum' as 'paint' | 'lum' | 'off' };
+/** 'lum' mode: no channel of the texture's mean counts as darker than this share of its luminance (see the leaf colours). */
+const LUM_FLOOR = 0.6;
 onFx(fx => { plant3d.variety = fx.variety; });
 
 // Variety (lane VF-B, plan VF stage VF2, 2026-11-11): with the `variety` switch on, each plant and leaf differs a little
@@ -251,12 +255,14 @@ function leaf(out: Sheets, f: Leaf3D, stalkCol: string, base: THREE.Vector3, yaw
         // the texture carries the colour: white (only the brightness draw), or the species' colour over the texture's own mean.
         // (Sheets.grid's first side has its front face turned DOWN, so from above it is the second side that shows: the upper
         // texture goes on that one and the underside's on the first. Plants without a texture are left as they always were.)
-        const ku = cs.pop()!.clone(), kb = bs.pop()!.clone(), cap = (x: number, m: number) => Math.min(4, x / m);
+        // (lum: divided by the texture's mean per channel, each floored at LUM_FLOOR of the mean's luminance: a leaf's blue
+        // mean is tiny, and dividing by it lifted every pale texel to bright blue glints; Nathan 2026-11-26)
+        const ku = cs.pop()!.clone(), kb = bs.pop()!.clone(), cap = (x: number, m: number, M: number[]) => Math.min(4, x / Math.max(m, LUM_FLOOR * (0.2126 * M[0] + 0.7152 * M[1] + 0.0722 * M[2])));
         // ambient occlusion by hand: a leaf is darker where it springs from the crown (the other leaves shade it), full by ~45 % of the blade
         const ao = blade ? 0.6 + 0.4 * Math.min(1, s / 0.45) ** 0.8 : 0.55;
         ku.multiplyScalar(ao); kb.multiplyScalar(ao);
         const ag = new THREE.Color(1 - 0.16 * age, 1 - 0.1 * age, 1 - 0.3 * age); ku.multiply(ag); kb.multiply(ag);
-        if (lum) { cs.push(kb.setRGB(cap(kb.r, mn[0]), cap(kb.g, mn[1]), cap(kb.b, mn[2]))); bs.push(ku.setRGB(cap(ku.r, mu[0]), cap(ku.g, mu[1]), cap(ku.b, mu[2]))); } else { cs.push(new THREE.Color(bright * ao, bright * ao, bright * ao).multiply(ag)); bs.push(new THREE.Color(bright * ao, bright * ao, bright * ao).multiply(ag)); }
+        if (lum) { cs.push(kb.setRGB(cap(kb.r, mn[0], mn), cap(kb.g, mn[1], mn), cap(kb.b, mn[2], mn))); bs.push(ku.setRGB(cap(ku.r, mu[0], mu), cap(ku.g, mu[1], mu), cap(ku.b, mu[2], mu))); } else { cs.push(new THREE.Color(bright * ao, bright * ao, bright * ao).multiply(ag)); bs.push(new THREE.Color(bright * ao, bright * ao, bright * ao).multiply(ag)); }
       }
     }
     if (blade && f.pinnae) rowsAt.push({ c: c.clone(), d, side: side.clone(), up: up.clone(), s, i });
@@ -1068,23 +1074,57 @@ export function revealPlant(src: THREE.BufferGeometry, g: number) {
 // which is what picking, the selection box and exports see). The motion averages to zero about the still pose. Vertices
 // that share a place and an anchor move alike, so a hidden triangle (corners at its anchors) stays collapsed.
 /** The shared sway uniform (every plant material): x time in seconds, y strength (0 = still). The viewer sets it per frame. */
-export const SWAY = { uSway: { value: new THREE.Vector2(0, 0) } };
+export const SWAY = { uSway: { value: new THREE.Vector2(0, 0) }, uJetN: { value: 0 }, uJetP: { value: Array.from({ length: MAX_JETS }, () => new THREE.Vector4()) }, uJetD: { value: Array.from({ length: MAX_JETS }, () => new THREE.Vector4()) } };
+/** The current from the filter outlets (scene/flow.ts) for the plants of the tank drawn next: set before each viewport's render. */
+let lastJets: readonly FlowJet[] | undefined = [];
+export function setFlowJets(jets: readonly FlowJet[] | undefined) {
+  if (jets === lastJets) return; lastJets = jets;
+  const js = strongest(jets ?? []), P = SWAY.uJetP.value, D = SWAY.uJetD.value;
+  SWAY.uJetN.value = js.length;
+  js.forEach((j, i) => { P[i].set(j.x, j.y, j.z, j.r0); D[i].set(j.dx, j.dy, j.dz, j.u0); });
+}
+/** scene/flow.ts flowAt on the GPU (keep the two the same). */
+const FLOW_GLSL = `vec3 aqFlowAt(vec3 p) {
+  vec3 v = vec3(0.0);
+  for (int i = 0; i < ${MAX_JETS}; i++) {
+    if (i >= uJetN) break;
+    vec4 jp = uJetP[i], jd = uJetD[i];
+    vec3 r = p - jp.xyz; float a = dot(r, jd.xyz);
+    if (a < -2.0 * jp.w) continue;
+    float ap = max(a, 0.0), l2 = max(0.0, dot(r, r) - a * a), w = jp.w + ${JET_SPREAD.toFixed(3)} * ap;
+    float u = jd.w * min(1.0, 1.6 * jp.w / w) * exp(-l2 / (w * w)) * exp(-ap / ${JET_REACH.toFixed(1)}) * (a < 0.0 ? exp(a / jp.w) : 1.0);
+    v += u * jd.xyz;
+  }
+  return v;
+}`;
+// The current (Nathan 2026-11-26): with outlets in the tank, each leaf reads the water's velocity at its anchor. The sway runs
+// along that current (else the old fixed direction), leans downstream (the top more), and grows and quickens with its speed:
+// a plant in a filter's jet streams and flutters, one in a far corner barely stirs. No outlets: the sway as before.
 const SWAY_VERT = `if (uSway.y > 0.0 && aSway.x > 0.0 && aSway.y > 0.0) {
   float swH = max(aSway.z, 20.0), swK = min(max(transformed.y, 0.0) / swH, 1.2);
   float swA = aSway.x * uSway.y * (1.0 - smoothstep(aSway.y - 12.0, aSway.y, transformed.y));
-  float swT = uSway.x, swP = dot(modelMatrix[3].xz, vec2(0.011, 0.017));
+  vec3 swF = vec3(0.96, 0.0, 0.28), swS = vec3(-0.28, 0.0, 0.96);
+  float swV = 0.0, swM = 1.0;
+  if (uJetN > 0) {
+    vec3 swU = aqFlowAt((modelMatrix * vec4(aAnc, 1.0)).xyz);
+    swV = clamp(length(swU) / 35.0, 0.0, 1.5); // 0 still .. 1 a strong current for a leaf (35 mm/s, ~1.4 in/s)
+    vec2 swUh = swU.xz; float swUl = length(swUh);
+    if (swUl > 1.0) { swF = mix(swF, vec3(swUh.x / swUl, 0.0, swUh.y / swUl), clamp(swUl / 25.0, 0.0, 1.0)); swF = normalize(swF); swS = vec3(-swF.z, 0.0, swF.x); }
+    swM = 0.4 + 1.5 * swV;
+  }
+  float swT = uSway.x * (1.0 + 0.9 * swV), swP = dot(modelMatrix[3].xz, vec2(0.011, 0.017));
   float swL = 0.65 * sin(swT * 0.85 + swP - swK * 1.2) + 0.35 * sin(swT * 1.9 + 1.7 * swP - swK * 2.0);
   float swC = sin(swT * 1.25 + 2.3 * swP - swK);
-  vec3 swF = vec3(0.96, 0.0, 0.28), swS = vec3(-0.28, 0.0, 0.96);
-  vec3 swW = (swF * swL + swS * (0.35 * swC)) * (0.055 * swH * swK * swK);
+  vec3 swW = (swF * (swL * swM + 1.6 * swV * swV) + swS * (0.35 * swC * swM)) * (0.055 * swH * swK * swK);
   float swD = min(length(transformed - aAnc), 60.0), swQ = dot(aAnc, vec3(0.13, 0.071, 0.097));
-  swW += (swF * sin(swT * 2.7 + swQ - swD * 0.06) + vec3(0.0, 0.6, 0.0) * sin(swT * 2.1 + swQ * 1.3)) * (0.06 * swD);
+  swW += (swF * (sin(swT * 2.7 + swQ - swD * 0.06) * swM + 0.8 * swV) + vec3(0.0, 0.6, 0.0) * sin(swT * 2.1 + swQ * 1.3) * swM) * (0.06 * swD);
   vec3 swX = modelMatrix[0].xyz;
   transformed += transpose(mat3(modelMatrix)) * (swW * swA) / max(dot(swX, swX), 1e-6);
 }`;
 
 /** Vertex shader: after begin_vertex (and after the lighting's vAqP, which needs the grown position). */
-export const GROW_DECL = 'attribute vec3 aAnc; attribute vec4 aGrow; attribute float aGrowth; attribute vec3 aSway; uniform vec2 uSway;';
+export const GROW_DECL = `attribute vec3 aAnc; attribute vec4 aGrow; attribute float aGrowth; attribute vec3 aSway; uniform vec2 uSway; uniform int uJetN; uniform vec4 uJetP[${MAX_JETS}]; uniform vec4 uJetD[${MAX_JETS}];
+${FLOW_GLSL}`;
 export const GROW_VERT = `{
   float aqS = aGrow.y > 0.0 ? (aGrowth - aGrow.x) / aGrow.y : (aGrowth >= aGrow.x ? 1.0 : -1.0);
   if (aGrow.z > 0.5 && aGrow.z < 2.5 && ((aGrow.z < 1.5) == (aGrowth >= aGrow.w))) aqS = -1.0;
