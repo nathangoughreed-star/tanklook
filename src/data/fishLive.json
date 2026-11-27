@@ -360,6 +360,10 @@
     "afra": {
       "look": "afrab",
       "approved": "2026-11-26"
+    },
+    "hillstream": {
+      "look": "hillstreamb",
+      "approved": "2026-11-27"
     }
   }
 }
