@@ -67,6 +67,7 @@ describe('a bundle light is priced as a basic LED', () => {
 
 // Bundle parts sweep (2026-11-26): a bundle-only stand is drawn as itself but priced as the cheapest real stand sold alone for its footprint.
 import { standsFor } from '../src/data/stands';
+import dealsRaw from '../src/data/deals.json?raw';
 describe('a bundle-only stand', () => {
   it('the Marineland HD 45 gets its own stand, priced as the Aqueon 36 x 12 ($269.99), never offered in the picker', () => {
     const d = deal('petsmart-marineland-hd-45'), S = sceneFromDeal(d)!.tanks[0];
@@ -75,5 +76,15 @@ describe('a bundle-only stand', () => {
     expect(row.setup!.mode).toBeCloseTo(269.99, 0);
     expect(row.label).toContain('bundle only; priced as Aqueon');
     expect(standsFor(S.tank).map(p => p.id)).not.toContain('marineland-hd-45-stand');
+  });
+  it('the Marineland HD 75 gets its own barn-door stand, priced as the Top Fin Raven Oak 55-75 ($254.99)', () => {
+    const S = sceneFromDeal(deal('petsmart-marineland-hd-led-ensemble-75'))!.tanks[0];
+    expect(standOf(S)?.id).toBe('marineland-hd-75-stand');
+    expect(standProduct('marineland-hd-75-stand')!.look).toMatchObject({ open: 'center', doorStyle: 'barn' });
+    expect(demandOf(S, defaultProfile()).items.find(i => i.key === 'stand')!.setup!.mode).toBeCloseTo(254.99, 0);
+  });
+  it('no deal has a field twice (JSON keeps the last one silently)', () => {
+    const raw = dealsRaw.replace(/\r\n/g, '\n');
+    for (const blk of raw.split(/\n  \{/).slice(1)) { const keys = [...blk.matchAll(/^   "(\w+)":/gm)].map(m => m[1]); expect(keys.length, blk.slice(0, 60)).toBe(new Set(keys).size); }
   });
 });

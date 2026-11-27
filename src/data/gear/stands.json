@@ -1522,5 +1522,52 @@
    "frameMm": 18,
    "baseHex": "#1d1d1d"
   }
+ },
+ {
+  "id": "marineland-hd-75-stand",
+  "brand": "Marineland",
+  "line": "High Definition LED 75 gal ensemble stand",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "grey farmhouse cabinet, black top",
+  "fits": [
+   [
+    48.4,
+    18.4
+   ]
+  ],
+  "heightIn": 28,
+  "priceUsd": 254.99,
+  "seller": "PetSmart",
+  "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquarium-stands/top-fin-raven-oak-aquarium-stand-fish-tank-stand---55-75-gallon-5309135.html",
+  "asOf": "2026-11-26",
+  "kitOnly": true,
+  "equiv": "Top Fin Raven Oak 55-75 gal stand, $254.99 on sale (regular $299.99)",
+  "est": [],
+  "note": "The stand in PetSmart's Marineland High Definition LED 75 gal ensemble (item 5306082): 50 x 20 x 28 in, grey farmhouse cabinet, two barn doors (frame + diagonal brace, mirrored) with stainless knobs at the inner top corners, open middle with one shelf, black top, plinth, open back. Not sold alone (searched 2026-11-26), so priced as the cheapest real 48 x 18 stand sold alone: Top Fin Raven Oak 55-75 gal stand (48.2 x 18.8 x 30 in), PetSmart $254.99 on sale thru 11/29, regular $299.99 (page read 2026-11-26). Look read off PetSmart photos 5306082 and _alt1 to _alt9.",
+  "look": {
+   "front": "#817775",
+   "bodyHex": "#817775",
+   "top": "#181617",
+   "sheen": "matte",
+   "grain": "none",
+   "open": "center",
+   "openShelf": 0.5,
+   "doors": 2,
+   "doorStyle": "barn",
+   "handle": "knob",
+   "handleHex": "#b9bcc0",
+   "base": "plinth",
+   "baseHex": "#847b79",
+   "baseMm": 55,
+   "topMm": 25,
+   "overhangMm": 15,
+   "est": [
+    "baseMm",
+    "topMm",
+    "overhangMm",
+    "handleHex"
+   ]
+  }
  }
 ]

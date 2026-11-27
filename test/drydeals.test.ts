@@ -16,11 +16,11 @@ describe('terrarium kit deals', () => {
     const dry = DEALS.filter(d => d.terrarium);
     expect(dry.length).toBeGreaterThanOrEqual(5);
     for (const d of dry) { expect(d.url).toMatch(/^https:/); expect(d.asOf).toMatch(/^\d{4}-\d\d-\d\d$/); expect(d.dims).toBeDefined(); expect(d.confidence).toBeDefined(); }
-    expect(dry.filter(x => x.confidence === 'low').length).toBeGreaterThanOrEqual(3);
+    expect(dry.filter(x => x.confidence === 'low').length).toBeGreaterThanOrEqual(2); // Target Repti Zoo 40 page read 2026-11-26 (bundle parts sweep): medium now
   });
   it('offers the Thrive 40G kit for a 36 x 18 x 18 terrarium, not the low-confidence snippet rows, not another size, not once stale', () => {
     const ids = dryDealsFor(T36, NOW).map(d => d.id);
-    expect(ids).toEqual(['petsmart-thrive-desert-40']);
+    expect(ids).toEqual(['petsmart-thrive-desert-40', 'target-reptizoo-40']); // cheapest first; Target's page read 2026-11-26
     expect(dryDealsFor(getTankModel('t48x24x24')!, NOW)).toEqual([]);
     expect(dryDealsFor(T36, Date.parse('2026-12-31'))).toEqual([]);
   });

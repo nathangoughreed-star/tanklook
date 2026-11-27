@@ -3353,5 +3353,53 @@
    "leds"
   ],
   "note": "Only sold in the 45 gal High Definition LED ensemble (PetSmart item 5370777, read 2026-11-26: 'Hidden LED Lighting with Natural Daylight & Moonlight Effects'; no watts, LED count or length). Not sold alone; the nearest sold-alone part, a Marineland Advanced LED strip 36 in (ML90618), has no current US retailer price found, so it is priced as a basic LED bar like the Modern 60's. Not offered in the light picker. Drawn as a low black LED bar on the glass canopy; watts = the budget-kit default 0.4 W/gal x 45 gal (estimate)."
+ },
+ {
+  "id": "marineland-hd-75-kit-led",
+  "brand": "Marineland",
+  "model": "High Definition LED Ensemble 75 gal kit light (hidden LED)",
+  "kitOnly": true,
+  "mount": "lid",
+  "fitMinMm": 1225,
+  "fitMaxMm": 1235,
+  "lengthMm": 1170,
+  "widthMm": 40,
+  "heightMm": 10,
+  "watts": 30,
+  "tech": "led-white",
+  "spectrum": "white daylight + blue moonlight",
+  "controller": "kit switch",
+  "water": "fresh",
+  "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-high-definition-led-ensemble---75-gallon-fish-tank-kit-with-led-62017.html",
+  "asOf": "2026-11-26",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "watts"
+  ],
+  "colors": {
+   "body": "#141416",
+   "endcaps": "#141416",
+   "legs": "#141416",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#2f6bff"
+    ],
+    "every": 5
+   },
+   "ledLook": "2 rows white with blue moonlight dots"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs",
+   "leds"
+  ],
+  "note": "Only sold in the 75 gal High Definition LED ensemble (PetSmart item 5306082, read 2026-11-26: 'hidden LED, natural daylight and moonlight effects'; no watts, LED count or length). Not sold alone, so priced as a basic LED bar. Not offered in the light picker. Drawn as a low black LED bar on the glass canopy; watts = the budget-kit default 0.4 W/gal x 75 gal (estimate)."
  }
 ]

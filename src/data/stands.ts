@@ -13,7 +13,7 @@ export interface StandLook {
   sheen?: 'matte' | 'satin' | 'gloss';
   /** 'oak' = visible wood grain (any wood colour), 'laminate' = plain printed finish, 'none' = paint / powder coat */
   grain?: 'none' | 'oak' | 'laminate';
-  planks?: number; bodyHex?: string; doorW?: number; doorX?: number; noBack?: boolean; insetHex?: string; openShelf?: number; topPlate?: string; doors?: number; doorStyle?: 'flat' | 'louver' | 'plank' | 'raised' | 'bead';
+  planks?: number; bodyHex?: string; doorW?: number; doorX?: number; noBack?: boolean; insetHex?: string; openShelf?: number; topPlate?: string; doors?: number; doorStyle?: 'flat' | 'louver' | 'plank' | 'raised' | 'bead' | 'barn';
   /** 'center' = two end doors with an open middle shelf; 'arch' = open front between two side panels */
   open?: 'none' | 'center' | 'arch' | 'half';
   /** open 'half': which half is closed (default 'right', the Seapora Roman), its share of the width (default 0.4), and a door on it (R183, Marineland Modern) */

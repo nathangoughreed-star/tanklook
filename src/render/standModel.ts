@@ -124,6 +124,11 @@ function doorPanel(g: THREE.Group, look: StandLook, mk: Mk, color: number, grain
     for (let c = 0; c < cols; c++) put(g, mk(cw * 0.86, h * 0.88, 5, shade(color, 1 + (c % 2) * 0.05), grain && { ...grain, vertical: true, seed: 60 + c }), x - w * 0.45 + cw * (c + 0.5), y, zf);
   } else if (st === 'raised') { // a raised panel inside the door frame
     put(g, mk(w * 0.66, h * 0.66, 7, shade(color, 1.1), grain && { ...grain, vertical: true, seed: 80 }), x, y, zf);
+  } else if (st === 'barn') { // farmhouse barn door: a raised frame and one diagonal brace, mirrored on the right-hand door (Marineland HD 75 ensemble stand, 2026-11-26)
+    const f = Math.min(w, h) * 0.11, iw = w - 2 * f, ih = h - 2 * f, fc = shade(color, 1.06);
+    for (const [bw, bh, bx, by] of [[w, f, 0, (h - f) / 2], [w, f, 0, -(h - f) / 2], [f, ih, -(w - f) / 2, 0], [f, ih, (w - f) / 2, 0]] as const) put(g, mk(bw, bh, 6, fc), x + bx, y + by, zf);
+    const len = Math.hypot(iw, ih) - f, ang = Math.atan2(ih, iw) * (side > 0 ? 1 : -1);
+    put(g, mk(len, f * 0.8, 6, fc), x, y, zf).rotation.z = ang;
   }
   const hc = hex(look.handleHex, 0xb9bdc2), hs = look.handle ?? 'none';
   const hx = side === 0 ? x + w * 0.4 : x - side * (w / 2 - 22);
