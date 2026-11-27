@@ -44,7 +44,7 @@ export function struggleOf(S: LightScene & { grow?: { feed: GrowFeed } }, it: It
  *  Hanging and clip-on fixtures have no length to outgrow: for them the PAR at each plant / coral says whether the light carries. */
 export function lightFitNote(S: LightScene): string | null {
   const p = lightProduct(S.light.product), L = S.tank.L;
-  if (!p || (p.mount !== 'bar' && p.mount !== 'rim-legs') || (L >= p.fitMinMm && L <= p.fitMaxMm)) return null;
+  if (!p || (p.mount !== 'bar' && p.mount !== 'rim-legs' && p.mount !== 'lid') || (L >= p.fitMinMm && L <= p.fitMaxMm)) return null;
   const inch = (mm: number) => Math.round(mm / 25.4);
   return `${p.brand} ${p.model} is made for ${inch(p.fitMinMm)}-${inch(p.fitMaxMm)} in tanks: this one is ${inch(L)} in long, so the light is too ${L < p.fitMinMm ? 'long' : 'short'} for it`;
 }

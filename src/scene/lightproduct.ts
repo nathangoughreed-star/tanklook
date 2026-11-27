@@ -7,9 +7,9 @@ import { TECHS, fitFixture } from './lightout';
 import type { LightSettings, Tank } from './types';
 
 /** How high each mount holds the LEDs above the rim (mm), read off the product photos: a bracket bar sits just above the
- *  rim, the rim-leg slab on its legs about 60 mm up, the nano disc on its neck. The submersible stick hangs in the water
+ *  rim, a kit's lid bar lying on the glass canopy just above it, the rim-leg slab on its legs about 60 mm up, the nano disc on its neck. The submersible stick hangs in the water
  *  (SUB_DROP under the surface, lightout.ts lightEnv puts its emitters there), so its height is the rim's (0). ESTIMATES. */
-export const MOUNT_H: Record<LightMount, number> = { bar: 25, 'rim-legs': 60, gooseneck: 80, submersible: 0, hanging: 200 };
+export const MOUNT_H: Record<LightMount, number> = { bar: 25, 'rim-legs': 60, gooseneck: 80, submersible: 0, hanging: 200, lid: 4 };
 
 /** The model against published LED-bar readings (reference/par-calibration-data.md D3: 9 bars, 5-65 W, in air, under the bar at
  *  12-14 in, Portland Aquarium round-up, grade C): the median of model / published, as percent BELOW (white-LED / planted-RGB lamps).
@@ -50,5 +50,5 @@ export function lightProductNote(p: LightProduct): string {
   const cover = p.mount === 'hanging' ? (p.coverageMm ? ` One covers about ${Math.round(p.coverageMm / 25.4)} in of tank length.` : ` Coverage not published: about ${Math.round(DEFAULT_COVERAGE_MM / 25.4)} in per box is assumed (the published figure of the 40-165 W reef fixtures), and the light check says whether it carries the tank.`) : '';
   const par = p.par ? `PAR ${p.par} (published)` : `PAR not published: estimated from the ${p.watts} W by the light model (LED, about ±${Math.round(TECHS[p.tech].unc * 100)} %)`;
   // the one outside check there is (test/lightfollowups.test.ts): the model against published bar readings
-  return `${w}. ${par}.${cover}${p.par || (p.mount !== 'bar' && p.mount !== 'rim-legs') ? '' : ` Assumption, not a measurement: the model reads ${BAR_CHECK.lowPct === BAR_CHECK.highPct ? BAR_CHECK.lowPct : `${BAR_CHECK.lowPct}-${BAR_CHECK.highPct}`} % below ${BAR_CHECK.n} published bar readings (mid-priced brands, in air); a budget bar's driver may fall short of those.`}`;
+  return `${w}. ${par}.${cover}${p.par || (p.mount !== 'bar' && p.mount !== 'rim-legs' && p.mount !== 'lid') ? '' : ` Assumption, not a measurement: the model reads ${BAR_CHECK.lowPct === BAR_CHECK.highPct ? BAR_CHECK.lowPct : `${BAR_CHECK.lowPct}-${BAR_CHECK.highPct}`} % below ${BAR_CHECK.n} published bar readings (mid-priced brands, in air); a budget bar's driver may fall short of those.`}`;
 }

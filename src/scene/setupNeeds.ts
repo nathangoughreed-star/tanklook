@@ -185,5 +185,5 @@ export const co2Option = (S: TankSetup) => (volume(S.tank).gallons <= DIY_CO2_MA
 /** A catalogue light that no longer fits the tank's length (a tank swapped after the light was chosen). */
 function badFit(S: TankSetup): boolean {
   const p = LIGHT_PRODUCTS.find(x => x.id === S.light.product);
-  return !!p && (p.mount === 'bar' || p.mount === 'rim-legs') && (S.tank.L < p.fitMinMm || S.tank.L > p.fitMaxMm);
+  return !!p && (p.mount === 'bar' || p.mount === 'rim-legs' || p.mount === 'lid') && (S.tank.L < p.fitMinMm || S.tank.L > p.fitMaxMm);
 }

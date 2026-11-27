@@ -26,7 +26,7 @@ export interface Deal {
   filter?: FilterSpec;
   heater?: { watts: number };
   /** the stand as pictured on the listing (default black cabinet) and the lid type (default: hood when a lid is included) */
-  look?: { style?: 'cabinet' | 'frame'; finish?: 'black' | 'white' | 'oak'; lid?: 'glass' | 'hood' | 'mesh'; /** what the listing says about the light; anything absent is a guess and is shown as one */ light?: { brand?: string; model?: string; watts?: number; kelvin?: number; par?: number; /** the listing's own words */ says?: string }; /** things on this row that are guesses, in plain words (shown on the card and in the panel) */ guessed?: string[] };
+  look?: { style?: 'cabinet' | 'frame'; finish?: 'black' | 'white' | 'oak'; lid?: 'glass' | 'hood' | 'mesh'; /** what the listing says about the light; anything absent is a guess and is shown as one */ light?: { /** a catalogued light (gear/lights.json id, often kitOnly) the bundle's scene puts on */ product?: string; brand?: string; model?: string; watts?: number; kelvin?: number; par?: number; /** the listing's own words */ says?: string }; /** things on this row that are guesses, in plain words (shown on the card and in the panel) */ guessed?: string[] };
   price: { usd: number; /** list price before the sale */ regularUsd?: number };
   /** ISO date the sale ends, when the listing says */
   saleEnds?: string;

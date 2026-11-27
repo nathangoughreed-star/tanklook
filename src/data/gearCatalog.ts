@@ -174,7 +174,8 @@ export const productName = (p: { brand: string; model: string }) => (p.model.toL
 /** How it is held: 'bar' = a slim bar on extendable wire-loop brackets resting on the rim; 'rim-legs' = a flat slab raised
  *  on two clip legs; 'gooseneck' = a nano disc on a bendable neck from a screw clamp; 'submersible' = a stick on suction cups
  *  under the water. */
-export type LightMount = 'bar' | 'rim-legs' | 'gooseneck' | 'submersible' | 'hanging';
+/** 'lid': a low-profile bar lying flat on a glass canopy (a kit's own light, Nathan 2026-11-26). */
+export type LightMount = 'bar' | 'rim-legs' | 'gooseneck' | 'submersible' | 'hanging' | 'lid';
 /* 'hanging' (lane GL, 2026-10-27) = a compact reef fixture (about 10-16 in) on a rim arm or hanging kit over the water: one
  *  box per `coverageMm` of tank length (published coverage; absent = one fixture, and the light check says whether it carries). */
 /** The LEDs as seen from below: `rows` of white dots (front to back), one accent dot in `every` (0 = none; a row index in
@@ -196,9 +197,13 @@ export interface LightProduct {
   priceUsd?: number; url: string; priceUrl?: string; asOf: string;
   est?: string[]; colors: LightLook; colorsEst?: string[]; names?: string[];
   popularity?: Popularity; note?: string;
+  /** sold only inside a bundle (a kit's own light): drawn when the bundle puts it on, never offered in the pickers or price lists */
+  kitOnly?: boolean;
 }
-export const LIGHT_PRODUCTS = ((data as unknown as { lights?: LightProduct[] }).lights ?? []);
-export const lightProduct = (id?: string) => (id ? LIGHT_PRODUCTS.find(p => p.id === id) : undefined);
+export const ALL_LIGHT_PRODUCTS = ((data as unknown as { lights?: LightProduct[] }).lights ?? []);
+/** The lights a user can pick or buy (kit-only lights left out); `lightProduct` still finds every one. */
+export const LIGHT_PRODUCTS = ALL_LIGHT_PRODUCTS.filter(p => !p.kitOnly);
+export const lightProduct = (id?: string) => (id ? ALL_LIGHT_PRODUCTS.find(p => p.id === id) : undefined);
 /** The lights that fit a tank `lengthMm` long (fitMinMm..fitMaxMm), most popular (lowest Amazon rank) first. */
 export function lightsFor(lengthMm: number): LightProduct[] {
   const rank = (p: LightProduct) => Number(/#(\d+)/.exec(p.popularity?.evidence ?? '')?.[1] ?? 999);

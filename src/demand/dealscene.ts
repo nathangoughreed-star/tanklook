@@ -8,6 +8,8 @@ import { dealOffers } from './deals';
 import { defaultProfile } from './types';
 import { emptyScene } from '../scene/defaults';
 import { applyKitLight } from '../scene/kitlight';
+import { applyLightProduct } from '../scene/lightproduct';
+import { lightProduct } from '../data/gearCatalog';
 import { inferTech } from '../scene/tech';
 import type { Scene } from '../scene/types';
 
@@ -29,6 +31,9 @@ export function sceneFromDeal(d: Deal): Scene | undefined {
   else if (d.includes.includes('light')) { // a bundled LED (listings rarely give watts: the budget-tier default for this tank size stands in, flagged 'guess')
     S = applyKitLight(S, { light: { type: 'led', tech: 'led-white', count: 1, watts: d.look?.light?.watts ?? null, par: d.look?.light?.par, spec: d.look?.light?.par ? 'published' : d.look?.light?.watts ? 'listing' : 'guess' }, lid: S.lid, tier: 'budget', tankRatedGal: d.gal });
     if (d.look?.light?.kelvin) S.light = { ...S.light, kelvin: d.look.light.kelvin };
+    // the kit's own light as a catalogued product (its shape, size and colours drawn; Nathan 2026-11-26, Marineland Modern 60's hidden LED)
+    const lp = lightProduct(d.look?.light?.product);
+    if (lp) { const l = { ...S.light }; applyLightProduct(l, S.tank, lp); S.light = l; }
   }
   { // lane TG: the bundle's own filter and heater (drawn, and its gear rows); one it does not ship starts as 'none' for the user to add
     const t = kitTech(S, dealAsKit(d)) ?? (S.water.on ? { rows: { ...inferTech(S).rows } } : undefined);

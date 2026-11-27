@@ -2,19 +2,20 @@
 // statsOf(product) equals the product's own fields while statsOf(generic copy) equals it too (the design's parity rule).
 import { describe, expect, it } from 'vitest';
 import { gearCatalog } from '../src/data/gear';
-import { FILTER_PRODUCTS, HEATER_PRODUCTS, LIGHT_PRODUCTS, PUMP_PRODUCTS, SKIMMER_PRODUCTS, UV_PRODUCTS, CO2_PRODUCTS, ATO_PRODUCTS, CHILLER_PRODUCTS } from '../src/data/gearCatalog';
+import { ALL_LIGHT_PRODUCTS, FILTER_PRODUCTS, HEATER_PRODUCTS, LIGHT_PRODUCTS, PUMP_PRODUCTS, SKIMMER_PRODUCTS, UV_PRODUCTS, CO2_PRODUCTS, ATO_PRODUCTS, CHILLER_PRODUCTS } from '../src/data/gearCatalog';
 import { GEAR_CLASS, GEAR_TYPES, filterRef, heaterRef, lightRef, productStats, statsOf, type GearType } from '../src/scene/gearSpec';
 
 describe('gear catalogue split per type', () => {
   it('keeps the old key order and counts', () => {
     expect(Object.keys(gearCatalog)).toEqual(['asOf', 'note', 'skimmers', 'uv', 'co2', 'ato', 'chillers', 'heaters', 'filters', 'lights', 'pumps', 'inline', 'overflows', 'sumps']);
     expect([gearCatalog.skimmers, gearCatalog.uv, gearCatalog.co2, gearCatalog.ato, gearCatalog.chillers, gearCatalog.heaters, gearCatalog.filters, gearCatalog.lights, gearCatalog.pumps].map(a => a.length))
-      .toEqual([12, 13, 10, 6, 8, 55, 98, 55, 46]);
+      .toEqual([12, 13, 10, 6, 8, 55, 98, 58, 46]);
   });
   it('the wrappers expose the same arrays', () => {
     expect(HEATER_PRODUCTS).toBe(gearCatalog.heaters);
     expect(FILTER_PRODUCTS).toBe(gearCatalog.filters);
-    expect(LIGHT_PRODUCTS).toBe(gearCatalog.lights);
+    expect(ALL_LIGHT_PRODUCTS).toBe(gearCatalog.lights);
+    expect(LIGHT_PRODUCTS.every(p => !p.kitOnly)).toBe(true);
     expect(PUMP_PRODUCTS).toBe(gearCatalog.pumps);
     expect(SKIMMER_PRODUCTS.length + UV_PRODUCTS.length + CO2_PRODUCTS.length + ATO_PRODUCTS.length + CHILLER_PRODUCTS.length).toBe(49);
   });

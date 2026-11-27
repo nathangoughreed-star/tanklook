@@ -33,7 +33,7 @@ describe('gear catalogue', () => {
 
 describe('light catalogue', () => {
   it('every light has a size, a rating and an https source', () => {
-    expect(LIGHT_PRODUCTS.length).toBe(55);
+    expect(LIGHT_PRODUCTS.length).toBe(57); // + the Marineland Hidden LED 17 / 21 in (2026-11-26); the kit-only Modern 60 bar is left out
     for (const p of LIGHT_PRODUCTS) {
       expect(p.lengthMm, p.id).toBeGreaterThan(40); expect(p.widthMm, p.id).toBeGreaterThan(10); expect(p.heightMm, p.id).toBeGreaterThan(5);
       expect(p.watts, p.id).toBeGreaterThan(0); expect(p.url, p.id).toMatch(/^https:\/\//); expect(p.popularity?.url, p.id).toMatch(/^https:\/\//);

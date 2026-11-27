@@ -3142,5 +3142,168 @@
   },
   "colorsNote": "Pack photo only (retail box); the Fluval 4.0 bar body is assumed black like the 3.0 family (not seen unboxed).",
   "kelvin": 6500
+ },
+ {
+  "id": "marineland-hidden-led-21",
+  "brand": "Marineland",
+  "model": "Hidden LED Lighting System 21 in (blue & white)",
+  "mount": "submersible",
+  "fitMinMm": 633,
+  "fitMaxMm": 1230,
+  "lengthMm": 533,
+  "widthMm": 20,
+  "heightMm": 20,
+  "watts": 4,
+  "tech": "led-white",
+  "spectrum": "white + blue (shimmer)",
+  "controller": "none (cord)",
+  "water": "fresh",
+  "priceUsd": 49.99,
+  "url": "https://www.petsmart.com/fish/heating-and-lighting/lights/marineland-hidden-led-lighting-system-5175529.html",
+  "asOf": "2026-11-26",
+  "est": [
+   "watts",
+   "widthMm",
+   "heightMm",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#141416",
+   "endcaps": "#141416",
+   "legs": "#141416",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 1,
+    "accents": [
+     "#2f6bff"
+    ],
+    "every": 3
+   },
+   "ledLook": "1 row white with blue dots"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs",
+   "leds"
+  ],
+  "names": [
+   "hidden led lighting system 21 in",
+   "marineland hidden led"
+  ],
+  "note": "PetSmart item 5175529 read 2026-11-26: 17 or 21 in, blue and white LEDs, black plastic, fully submersible, mounts inside and under the frame or anywhere with the enclosed suction cups; sold as an accent / extra light. No watts, LED count, Kelvin or profile size published (estimated). Reviewers ran two on a 55 gal; one found one too dim on a 36 gal bowfront. Not confirmed to be the light in Marineland's ensembles (none of the pages ties them).",
+  "popularity": {
+   "evidence": "PetSmart listing (Marineland's own hidden strip; the light Nathan asked about from the Modern LED 60 gal bundle, 2026-11-26)",
+   "url": "https://www.petsmart.com/fish/heating-and-lighting/lights/marineland-hidden-led-lighting-system-5175529.html",
+   "seen": "2026-11-26"
+  }
+ },
+ {
+  "id": "marineland-hidden-led-17",
+  "brand": "Marineland",
+  "model": "Hidden LED Lighting System 17 in (blue & white)",
+  "mount": "submersible",
+  "fitMinMm": 532,
+  "fitMaxMm": 1230,
+  "lengthMm": 432,
+  "widthMm": 20,
+  "heightMm": 20,
+  "watts": 3,
+  "tech": "led-white",
+  "spectrum": "white + blue (shimmer)",
+  "controller": "none (cord)",
+  "water": "fresh",
+  "priceUsd": 49.99,
+  "url": "https://www.petsmart.com/fish/heating-and-lighting/lights/marineland-hidden-led-lighting-system-5175529.html",
+  "asOf": "2026-11-26",
+  "est": [
+   "priceUsd",
+   "watts",
+   "widthMm",
+   "heightMm",
+   "fitMinMm",
+   "fitMaxMm"
+  ],
+  "colors": {
+   "body": "#141416",
+   "endcaps": "#141416",
+   "legs": "#141416",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 1,
+    "accents": [
+     "#2f6bff"
+    ],
+    "every": 3
+   },
+   "ledLook": "1 row white with blue dots"
+  },
+  "colorsEst": [
+   "endcaps",
+   "legs",
+   "leds"
+  ],
+  "names": [
+   "hidden led lighting system 17 in",
+   "marineland hidden led"
+  ],
+  "note": "PetSmart item 5175529 read 2026-11-26: 17 or 21 in, blue and white LEDs, black plastic, fully submersible, mounts inside and under the frame or anywhere with the enclosed suction cups; sold as an accent / extra light. No watts, LED count, Kelvin or profile size published (estimated). Reviewers ran two on a 55 gal; one found one too dim on a 36 gal bowfront. Not confirmed to be the light in Marineland's ensembles (none of the pages ties them). Price: only the 21 in's $49.99 was shown; the 17 in is assumed the same (estimate).",
+  "popularity": {
+   "evidence": "PetSmart listing (Marineland's own hidden strip; the light Nathan asked about from the Modern LED 60 gal bundle, 2026-11-26)",
+   "url": "https://www.petsmart.com/fish/heating-and-lighting/lights/marineland-hidden-led-lighting-system-5175529.html",
+   "seen": "2026-11-26"
+  }
+ },
+ {
+  "id": "marineland-modern-60-kit-led",
+  "brand": "Marineland",
+  "model": "Modern LED Ensemble 60 gal kit light (hidden LED)",
+  "kitOnly": true,
+  "mount": "lid",
+  "fitMinMm": 1220,
+  "fitMaxMm": 1240,
+  "lengthMm": 1170,
+  "widthMm": 40,
+  "heightMm": 10,
+  "watts": 24,
+  "tech": "led-white",
+  "spectrum": "white daylight + blue moonlight",
+  "controller": "kit switch",
+  "water": "fresh",
+  "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquariums/marineland-modern-led-aquarium-and-stand-ensemble---60-gallon-led-fish-tank-kit-34998.html",
+  "asOf": "2026-11-26",
+  "est": [
+   "lengthMm",
+   "widthMm",
+   "heightMm",
+   "watts"
+  ],
+  "colors": {
+   "body": "#141416",
+   "endcaps": "#141416",
+   "legs": "#141416",
+   "lens": "clear",
+   "leds": {
+    "white": "#f4f7ff",
+    "kind": "dots",
+    "rows": 2,
+    "accents": [
+     "#2f6bff"
+    ],
+    "every": 5
+   },
+   "ledLook": "2 rows white with blue moonlight dots"
+  },
+  "colorsEst": [
+   "body",
+   "endcaps",
+   "legs",
+   "leds"
+  ],
+  "note": "Only sold in the 60 gal Modern LED ensemble (PetSmart item 5248474, read 2026-11-26: 'hidden LED light featuring natural daylight and moonlight effects'; no watts, LED count, length or Kelvin). Not offered in the light picker. Drawn as a simple low-profile black LED bar lying on the glass canopy (Nathan 2026-11-26); watts = the budget-kit default 0.4 W/gal x 60 gal (estimate)."
  }
 ]

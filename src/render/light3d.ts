@@ -56,7 +56,7 @@ function ledDots(sc: THREE.Scene, p: LightProduct, glow: THREE.Material, len: nu
 export function addProductLight(sc: THREE.Scene, T: Tank, l: LightSettings, p: LightProduct, y: number, add: Add, glow: THREE.Material, kit: LegKit, waterTop: number) {
   const { L, H } = T, c = p.colors, body = basic(c.body), cap = basic(c.endcaps), edge = basic(edgeOf(c.body).getHex()), board = basic(BOARD);
   const mx = new THREE.Matrix4();
-  if (p.mount === 'bar' || p.mount === 'rim-legs') {
+  if (p.mount === 'bar' || p.mount === 'rim-legs' || p.mount === 'lid') {
     const bl = p.lengthMm, bw = ledBarDepth(T, l), th = p.heightMm, zc = barZ(T, l, bw), yc = y + th / 2;
     // the body: a slab, its top edges a shade lighter, end caps (the brackets slide into them), a board under a clear lens
     add(new THREE.BoxGeometry(bl - 8, th, bw), body, L / 2, yc, zc);
@@ -69,7 +69,8 @@ export function addProductLight(sc: THREE.Scene, T: Tank, l: LightSettings, p: L
     if (p.mount === 'bar') {
       // extendable wire-loop brackets: two wires out of each end cap, out to the rim and down onto it (lighting's barLegs)
       kit.barLegs(T, { hx: bl / 2, zc }, y + th / 2, Math.min(bw * 0.55, 46), add);
-    } else rimLegs(T, { bl, bw, zc, y }, cap, edge, add);
+    } else if (p.mount === 'rim-legs') rimLegs(T, { bl, bw, zc, y }, cap, edge, add);
+    // 'lid': the bar lies flat on the glass canopy, no brackets
     return;
   }
   if (p.mount === 'hanging') {

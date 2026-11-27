@@ -124,7 +124,7 @@ const price = (p: { priceUsd?: number; est?: string[] }): Pick<Entry, 'usd' | 'e
 const kindWord: Record<string, string> = { 'hang-on': 'hang-on box', external: 'external box', hob: 'hang-on-back', canister: 'canister', internal: 'internal', sponge: 'sponge', sump: 'in-sump', surface: 'surface', fan: 'fan', compressor: 'compressor', inline: 'inline', regulator: 'regulator', cartridge: 'cartridge kit', diy: 'DIY yeast', air: 'air pump', powerhead: 'powerhead', wavemaker: 'wavemaker' };
 const kindType = (k: string) => { const w = kindWord[k] ?? k; return w.charAt(0).toUpperCase() + w.slice(1); };
 const HEAT_TYPE: Record<string, string> = { glass: 'Glass tube', shroud: 'Guarded (plastic shroud)', titanium: 'Titanium' };
-const LIGHT_TYPE: Record<string, string> = { bar: 'LED bar', 'rim-legs': 'LED bar on legs', gooseneck: 'Clamp-on', hanging: 'Hanging', submersible: 'Submersible' };
+const LIGHT_TYPE: Record<string, string> = { bar: 'LED bar', 'rim-legs': 'LED bar on legs', gooseneck: 'Clamp-on', hanging: 'Hanging', submersible: 'Submersible', lid: 'LED bar on the lid' };
 const rank = (f: Fit | null) => (f?.tone === 'ok' ? 0 : f ? 1 : 0.5);
 
 /** Every catalogue entry of a category worth offering for this tank (the "Buy" group before it is sorted). Hoods ride in Light. */
@@ -143,7 +143,7 @@ function catalogue(S: TankSetup, cat: CatId, units: Units): Entry[] {
     case 'filter':
       return FILTER_PRODUCTS.map(f => { const fit = ratedFit(gal, f.galMin, f.galMax); return { item: f.id, name: productName(f), sub: `${kindWord[f.kind]}${f.gph ? ` · ${f.gph} gph` : ''}${f.galMin !== undefined || f.galMax !== undefined ? ` · ${f.galMin ?? '?'}-${f.galMax ?? '?'} gal` : ''}`, ty: kindType(f.kind), sz: f.galMax ?? f.galMin, ...price(f), fit, rank: rank(fit) }; });
     case 'light': {
-      const lights = lightsFor(L).map((p): Entry => ({ item: p.id, name: productName(p), sub: `${p.watts} W · ${p.tech.replace('led-', 'LED ')} · ${p.mount === 'bar' ? 'bar' : p.mount === 'rim-legs' ? 'on legs' : p.mount === 'gooseneck' ? 'clamp-on' : p.mount === 'hanging' ? 'hanging' : 'submersible'}`, ...price(p), fit: { tone: 'ok', text: `fits a ${cm(L)} tank` }, rank: 0.2, ty: LIGHT_TYPE[p.mount] ?? 'Other', sz: p.lengthMm / 25.4 }));
+      const lights = lightsFor(L).map((p): Entry => ({ item: p.id, name: productName(p), sub: `${p.watts} W · ${p.tech.replace('led-', 'LED ')} · ${p.mount === 'bar' ? 'bar' : p.mount === 'rim-legs' ? 'on legs' : p.mount === 'gooseneck' ? 'clamp-on' : p.mount === 'hanging' ? 'hanging' : p.mount === 'lid' ? 'on the lid' : 'submersible'}`, ...price(p), fit: { tone: 'ok', text: `fits a ${cm(L)} tank` }, rank: 0.2, ty: LIGHT_TYPE[p.mount] ?? 'Other', sz: p.lengthMm / 25.4 }));
       const hoods = hoodsFor(S.tank).map((h): Entry => ({ item: h.id, name: productName(h), sub: `hood · ${h.light.watts} W ${h.light.type === 'led' ? 'LED' : h.light.tech} built in`, usd: h.priceUsd, est: h.est.includes('priceUsd'), fit: { tone: 'ok', text: 'light included, one price' }, rank: 0, hood: true, ty: 'Hood with light', sz: h.lengthIn }));
       return [...hoods, ...lights];
     }
