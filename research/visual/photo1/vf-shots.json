@@ -1,8 +1,8 @@
 {
- "commit": "73ed6ce8",
- "build": 2918,
+ "commit": "04145b83",
+ "build": 2920,
  "dirty": true,
- "when": "2026-11-27T13:45:30.880Z",
+ "when": "2026-11-27T13:54:33.411Z",
  "size": [
   1050,
   850
@@ -12,9 +12,9 @@
  ],
  "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
  "scenes": {
-  "photo-55g": {
+  "photo-60t": {
    "shots": [
-    "photo-55g-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed.png"
+    "photo-60t-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed.png"
    ],
    "ab": {}
   }
