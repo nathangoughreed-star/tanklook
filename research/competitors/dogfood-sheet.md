@@ -30,6 +30,8 @@ than a minute and write down where.
   Use it as a list of what not to do (feeds R167). If he couldn't work the UI, that counts against TankMates, not him.
 - **App-aquatic planner (2026-11-27):** Nathan's words: "also is an AI-generated semi-slop. We are just simply better
   than it in every immediately measurable way." No features to copy; add its tells to the R167 checklist.
+- **Scape It (2026-11-27):** Must sign in to use it, the view is only 2D, and there are no fish. Nathan: "that doesnt seem like a
+  serious competitor." He stopped at the sign-in wall. Lesson: let people in without an account.
 
 ## Notes per product
 
