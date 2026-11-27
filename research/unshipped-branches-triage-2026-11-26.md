@@ -122,3 +122,4 @@ Numbering collision: branch 3's `research/requests.md` row is also numbered R150
   5. hvNoRedAudit: ruleStatus.json out of step (141 vs 138); regenerate with GEN_RULE_STATUS=1.
   6. calibtablesv4 D13 "engine moved": regenerate with GEN_RETABLE_V4=1 only after 1 is settled.
   Needs a small lane starting from bc445eed.
+- **Merged 2026-11-27 by the sweep chat (build 3035):** item 1 R145 air gulping (4dd792c9; gulp rates labelled as estimates except the corys) and item 4 lie-flat (d2752c34; kuhli now lies flat, bichir waits for item 3; 484e19a9 holds back the bichir body volume until the species exists). Item 3 moved to lane R194 (branch r194-big-fish-data); Nathan approved its pool-depth rule (1.5x body height) on 2026-11-27.
