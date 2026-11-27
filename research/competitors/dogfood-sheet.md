@@ -34,6 +34,13 @@ than a minute and write down where.
   serious competitor." He stopped at the sign-in wall. Lesson: let people in without an account.
 - **AqAdvisor (2026-11-27):** Skipped. Nathan has used it for almost 20 years: "Nothing but respect for them but I know
   exactly what they are and arent." No dogfood needed.
+- **Behind Glass (2026-11-27):** This is the one Nathan remembered for its graphics: "these tanks are gorgeous."
+  Screenshots: `dogfood/behind-glass/`. What makes it look good: the inside of the water surface acts as a mirror
+  (the upper third of the front view reflects the scape); a bright top light that fades into blue-green haze with
+  depth; moss and epiphytes growing on rock and wood; three dense layers of planting; a school of small fish far back;
+  thick glass with a green edge. Weak spots: the fish models are game-like and the scale is off, and the gear is
+  generic. Note: Nathan previously rejected photo-wrapped fish as too real (R144). Take the scene cues from this, not
+  the fish.
 
 ## Notes per product
 
