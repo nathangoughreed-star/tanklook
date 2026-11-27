@@ -112,6 +112,9 @@ sheet's outline, alpha from its white) and `src/data/plantart/marimo.json`. The 
 core wearing the skin, vertex colours shade only; ~22-28 fringe cards per 1000 mm2 stand along the normal, foot sunk in
 the skin, darker than the skin. Side-by-side: `research/moss-refs/marimo-pass4-side-by-side.jpg`. Known gap: the
 USDZ (iPhone AR) export bakes colours from the shared leaf atlas, so the marimo's texture is not in it yet.
+**Parked 2026-11-26** (Nathan on pass 4: "honestly still looks pretty bad. lets try to work on the java moss for now").
+The marimo stays in the library as pass 4 but is not approved. Lessons for the moss work: hand-made hairs and coats read as
+a pea, a pincushion or a fuzzy toy at every density we tried; the ChatGPT texture was the first pass that read as moss at all.
 Not done: groups of 3-5 as one item, rolling off rocks onto the substrate (today it can be raised onto hardscape
 like any plant).
 

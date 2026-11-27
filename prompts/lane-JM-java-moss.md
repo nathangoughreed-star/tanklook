@@ -1,0 +1,52 @@
+# Lane JM: java moss rework (R182, 2026-11-26)
+
+Start here. Read only this file, then the sections of `research/moss-model-proposal.md` it names.
+
+## Nathan's ask
+On a screenshot of today's java moss mounds on a rock stack: "this looks nothing like java moss lol ... Preferably it
+would look one way if alone and another way if it was attached to an object and growing on it where it spreads more
+like ivy rather than a ball". After the marimo was parked: "lets try to work on the java moss for now".
+
+## What is there now
+- `moss` in `src/art/plants.ts` (form 'moss'), built in `src/render/plant3d.ts` (`P.form === 'moss'`): a solid dark ball
+  with ~300 flat leaf cards on it. Reads as ivy leaves on a green rock. No painted texture (`tex`).
+- The paint brush `javamoss` in `src/render/brushmesh.ts`: lumpy domes over the ground.
+- Plants and brushes only follow the ground height (`GroundAt(x, d)`, `src/render/scatter.ts`). A plant raised onto a
+  rock only "hugs" it by sinking its core ball. Nothing samples a hardscape surface yet.
+
+## What java moss looks like
+Table and photo URLs: `research/moss-model-proposal.md`, "What the real plants look like". Short version: no core, a
+tangle of thin irregularly branching strands (leaves 1-2 mm). Alone: a slumped shaggy tangle about 3x wider than tall
+(2-4 in thick), with loose wisps lying around it. Attached to wood or rock: a fuzzy layer 0.5-1.5 in thick creeping over
+the surface, trailing strands 2-6 in long off the edges. Colour: core #2F5A1E, mid #5E8F2E, tips #8FBF45. **Look at the
+photos yourself first** (the research pass could not see them) and write the look down, per
+`research/species-art-method.md`.
+
+## Lessons from the marimo (same chat, 4 passes, parked)
+- Hand-made hairs or coats (thin leaf cards, fur, noise relief) read as a pea, a pincushion or a fuzzy toy at every density.
+- A ChatGPT texture sheet was the first thing that read as real moss. Start from one: a prompt like the marimo's
+  (`research/plant-sheets/prompts/leaf-sheet.md`, "Marimo skin sheet"), e.g. java moss strands and a clump edge on pure
+  white, cut into alpha cards / a skin by a script like `scripts/marimo-skin.py`.
+- A plant can have its own texture: `PLANT3D.<type>.ownTex` + `ownAtlas` (render/plantAtlas.ts); no shared-atlas rebuild.
+- Cards seen edge-on show as bright dashes; keep card colours darker than the skin.
+
+## Plan (each step has a gate: Nathan sees it before the next)
+1. Photos + written look (alone, attached, close-up). Gate: Nathan agrees.
+2. ChatGPT sheet prompt -> Nathan generates -> bake script. 
+3. "Alone" clump from the sheet. Gate: side-by-side with the photos AND the 3D viewer (below).
+4. "Attached" mode: sample the host rock/wood mesh surface around the drop point, lay the moss over it, trail off edges,
+   spread with growth, move with the host. Check whether plant geometry is built in a worker (`plant3d.gpu`). Gate: on a
+   rock and on driftwood.
+5. The `javamoss` brush gets the same look.
+
+## Showing Nathan
+He asked to see models in a 3D viewer he can spin. The marimo one: https://claude.ai/artifact/Vpd2QqRdpgq8RPGhB8S5bq
+(make a new artifact for java moss the same way). Recipe: dev server (`.claude/launch.json` "dev-alt", port 5183), in the
+page import `/src/render/plant3d.ts`, `/src/art/plants.ts`, `/src/render/plantAtlas.ts`, `/node_modules/.vite/deps/three.js`
+and `/node_modules/three/examples/jsm/exporters/GLTFExporter.js`; build `revealPlant(plantGeometry(type, seed, h),
+growthOf(type, h))`, copy position/color/uv/index into a MeshStandardMaterial mesh (vertexColors, map, alphaTest 0.5,
+DoubleSide), export GLB, POST it to `/__shot?name=...` (saved as shots/<name>.png: it is the GLB). Embed as base64 in an
+HTML page with three@0.149.0 (jsdelivr) OrbitControls + GLTFLoader. Tank renders: `scripts/pt-shots.js` `load(spec)`
+(the camera aims at the tank centre: use a tiny tank, e.g. 200 x 120 x 140 mm, to frame small plants).
+
+Commit with `scripts/ship.sh` as you go (CLAUDE.md). End replies with "Build N".
