@@ -11,7 +11,7 @@ import {
   startCompare, endCompare, useSide, setEditMode, editModeOf, setLinked, linkedOf, linkWord, diffRows, diffWord, sideTab, checkDiffs, checkCompare, checkFigure, letterOf,
 } from '../src/shell/logic/compare';
 
-const base = () => { const sc = parseScene(JSON.parse(SCENES[Object.keys(SCENES).find(k => /plant/i.test(k)) ?? Object.keys(SCENES)[0]])).scene; return new Store({ ...defaultScene(), tanks: [sc.tanks[sc.active]] }); };
+const base = () => { const sc = parseScene(JSON.parse(SCENES[Object.keys(SCENES).find(k => /plant/i.test(k)) ?? Object.keys(SCENES)[0]])).scene; return new Store({ ...defaultScene(), tanks: [{ ...sc.tanks[sc.active], product: undefined }] }); };   // FD: the planted example is now a catalog tank; these rows are about a free-size tank
 const split = () => { const s = base(); startCompare(s); return s; };
 
 describe('start / end / use this one', () => {

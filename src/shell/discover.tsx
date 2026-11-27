@@ -218,13 +218,15 @@ export function IdeasButton({ section, onIdeas }: { section: SectionId | null; o
 }
 
 // ---------------------------------------------------------------------------------------------------------------- the start door "From an animal I want"
+import { landing } from './logic/start';
+import { setResult } from './logic/result';
 export function AnimalDoor({ store, onClose, say, initial }: { store: Store; onClose: () => void; say: (t: string, bad?: boolean) => void; initial?: string }) {
   const [picks, setPicks] = useState<Pk[]>(() => initial ? addPick([], initial) : []);
   const dp = useMemo(() => doorPlan(picks), [picks]);
   const animals = picks.reduce((n, p) => n + totalOf(p), 0);
   const make = async () => {
     const sc = animalScene(picks, store.scene.units, store.tank.camera); if (!sc) return;
-    if (await startProject(store, sc, P7.savedText())) { say('New tank planned around your animals. Undo brings the previous project back.'); onClose(); }
+    if (await startProject(store, sc, P7.savedText())) { say('New tank planned around your animals. Undo brings the previous project back.'); landing.untouched = true; setResult({ kind: 'animal', list: [], i: 0 }); onClose(); }
   };
   useEffect(() => { const f = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onClose(); } }; addEventListener('keydown', f, true); return () => removeEventListener('keydown', f, true); }, [onClose]);
   return (

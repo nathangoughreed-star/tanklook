@@ -1,6 +1,7 @@
 // UI2 shell step 10 (lane S10): the Get started card (screen map 1a; decision 4 replaces the Guided flow). Five ticks read from the design; each opens the real
 // section. Shown over the viewer on a new tank; the × hides it for this tank only; the ⋯ menu brings it back. A phone shows it as one line that opens.
-import { useEffect, useState } from 'preact/hooks';
+import { render } from 'preact';
+import { useEffect, useLayoutEffect, useState } from 'preact/hooks';
 import type { TankSetup } from '../scene/types';
 import { checklistOf, showChecklist, isNewTank, hideChecklist, hideState, subscribeHide } from './logic/checklist';
 import type { SectionId } from './logic/sections';
@@ -18,10 +19,10 @@ export function GetStarted({ tank, open, onOpen, onAnimal, phone: _phone }: { ta
   if (!showChecklist(tank, off, started, forced)) return null;
   const c = checklistOf(tank);
   return (
-    <div class={`ov getstarted glass${folded ? ' folded' : ''}`} role="region" aria-label="Get started">
+    <div class={`gsdock${folded ? ' folded' : ''}`} role="region" aria-label="Setup steps">
       <div class="gshead">
-        <button type="button" class="gstitle" aria-expanded={!folded} onClick={() => setFolded(!folded)}><b>Get started</b><span class="dim"> · {c.done} of {c.steps.length}</span></button>
-        <button type="button" class="btn icon ghost" title="Hide for this tank (bring it back from the ⋯ menu)" aria-label="Hide Get started" onClick={hideChecklist}><Icon name="x" /></button>
+        <button type="button" class="gstitle" aria-expanded={!folded} onClick={() => setFolded(!folded)}><b>{c.done} of {c.steps.length}</b><span class="dim"> setup steps done</span></button>
+        <button type="button" class="btn icon ghost" title="Hide for this tank (bring it back from the ⋯ menu)" aria-label="Hide setup steps" onClick={hideChecklist}><Icon name="x" /></button>
       </div>
       {folded ? null : <>
         <ol class="gslist">{c.steps.map(s => (
@@ -32,4 +33,19 @@ export function GetStarted({ tank, open, onOpen, onAnimal, phone: _phone }: { ta
       </>}
     </div>
   );
+}
+
+/** FD unit 2 (R162): the checklist docked as a line under the open panel's header (it used to float over the tank). It still reads lifeSupportOf through checklistOf (logic/checklist.ts).
+ *  Renders nothing itself: it puts a slot after `.panel .sec-head` and draws the line there (the same technique as the Ideas button). */
+export function ChecklistDock(p: { tank: TankSetup; open: SectionId | null; onOpen: (s: SectionId) => void; onAnimal: () => void; phone: boolean; on: boolean }) {
+  useLayoutEffect(() => {
+    document.querySelectorAll('.gsslot').forEach(n => { render(null, n); n.remove(); });
+    if (!p.on) return;
+    const head = document.querySelector<HTMLElement>('.panel .sec-head'), bar = head ? null : document.querySelector<HTMLElement>('.wsbar'); if (!head && !bar) return;
+    const slot = document.createElement('div'); slot.className = `gsslot${bar ? ' inbar' : ''}`;
+    if (head) head.after(slot); else bar!.insertBefore(slot, bar!.querySelector('.grow'));   // a side panel: a line under its header; a workspace: a compact line in its bar
+    render(<GetStarted tank={p.tank} open={p.open} onOpen={p.onOpen} onAnimal={p.onAnimal} phone={p.phone} />, slot);
+    return () => { render(null, slot); slot.remove(); };
+  });
+  return null;
 }

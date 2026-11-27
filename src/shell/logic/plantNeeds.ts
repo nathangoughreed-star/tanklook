@@ -104,8 +104,8 @@ export function plantRows(S: TankSetup): PlantRow[] {
   const rows: PlantRow[] = [];
   for (const [variant, items] of by) {
     const v = LIBRARY[variant], n = NEEDS[variant], base = { variant, label: v?.label ?? variant, n: items.length, img: plantImg(variant), unmetIds: [] as number[] };
-    if (v?.kind === 'artificial') { rows.push({ ...base, kind: 'artificial', light: null, co2: null, ferts: null, plain: 'Artificial: needs no light, CO2 or fertiliser', met: true, issues: [] }); continue; }
-    if (!n || isLand(n)) { rows.push({ ...base, kind: 'land', light: null, co2: null, ferts: null, plain: 'Above the water: room light, no CO2 or fertiliser', met: true, issues: [] }); continue; }
+    if (v?.kind === 'artificial') { rows.push({ ...base, kind: 'artificial', light: null, co2: null, ferts: null, plain: 'Artificial: needs no light, CO2 or fertilizer', met: true, issues: [] }); continue; }
+    if (!n || isLand(n)) { rows.push({ ...base, kind: 'land', light: null, co2: null, ferts: null, plain: 'Above the water: room light, no CO2 or fertilizer', met: true, issues: [] }); continue; }
     const coral = isCoralNeed(n), pars = items.map(it => lights?.get(it.id)?.par).filter((x): x is number => x != null);
     const issues = issuesOf(variant, pars, feed), unmet = new Set(items.filter(it => {
       const p = lights?.get(it.id)?.par; return issuesOf(variant, p == null ? [] : [p], feed).length > 0;
@@ -159,8 +159,8 @@ function careFixes(S: TankSetup, rows: PlantRow[], price?: PriceOf): PlantFix[] 
       const setup = costOf(S, copy, price, c.setup.mode + (f?.setup.mode ?? 0)), monthly = c.monthly.mode + (f?.monthly.mode ?? 0);
       const optName = (optionDef('co2', opt)?.label ?? 'CO2').replace(/ \(.*/, '');
       out.push({
-        kind: 'co2', label: `Add CO2 system${addFerts ? ' + fertiliser' : ''} (+${usd(setup)})`, setupUsd: setup, monthlyUsd: monthly,
-        describe: `Adds ${optName}${prod ? `: the cheapest we list, ${productName(prod)}, ${usd(listedPrice(prod)!)}` : ''}${addFerts ? ', and an all-in-one liquid fertiliser, because CO2 needs fertiliser to work' : ''}. About +${usd(setup)} to set up and +${usd(monthly)} a month for refills${addFerts ? ' and ferts' : ''}. `
+        kind: 'co2', label: `Add CO2 system${addFerts ? ' + fertilizer' : ''} (+${usd(setup)})`, setupUsd: setup, monthlyUsd: monthly,
+        describe: `Adds ${optName}${prod ? `: the cheapest we list, ${productName(prod)}, ${usd(listedPrice(prod)!)}` : ''}${addFerts ? ', and an all-in-one liquid fertilizer, because CO2 needs fertilizer to work' : ''}. About +${usd(setup)} to set up and +${usd(monthly)} a month for refills${addFerts ? ' and ferts' : ''}. `
           + `The tank's care becomes CO2 + ferts, so ${rows.filter(r => r.issues.includes('co2')).map(r => r.label).join(', ')} get${rows.filter(r => r.issues.includes('co2')).length === 1 ? 's' : ''} what ${rows.filter(r => r.issues.includes('co2')).length === 1 ? 'it needs' : 'they need'}. Ctrl+Z undoes it.`,
         apply,
       });
@@ -172,8 +172,8 @@ function careFixes(S: TankSetup, rows: PlantRow[], price?: PriceOf): PlantFix[] 
       const f = optionCost(S, 'ferts', 'aio'), setup = costOf(S, copy, price, f.setup.mode), monthly = f.monthly.mode;
       const who = rows.filter(r => r.issues.includes('ferts')).map(r => r.label);
       out.push({
-        kind: 'ferts', label: `Add fertiliser (+${usd(setup)}${monthly >= 0.5 ? `, +${usd(monthly)}/mo` : ''})`, setupUsd: setup, monthlyUsd: monthly,
-        describe: `Adds an all-in-one liquid fertiliser: about +${usd(setup)} to set up and +${usd(monthly)} a month. The tank's care goes from low-tech to ferts, so ${who.join(', ')} get${who.length === 1 ? 's' : ''} the nutrients ${who.length === 1 ? 'it needs' : 'they need'}. Ctrl+Z undoes it.`,
+        kind: 'ferts', label: `Add fertilizer (+${usd(setup)}${monthly >= 0.5 ? `, +${usd(monthly)}/mo` : ''})`, setupUsd: setup, monthlyUsd: monthly,
+        describe: `Adds an all-in-one liquid fertilizer: about +${usd(setup)} to set up and +${usd(monthly)} a month. The tank's care goes from low-tech to ferts, so ${who.join(', ')} get${who.length === 1 ? 's' : ''} the nutrients ${who.length === 1 ? 'it needs' : 'they need'}. Ctrl+Z undoes it.`,
         apply,
       });
     }
@@ -193,7 +193,7 @@ function lightFix(S: TankSetup, rows: PlantRow[], price?: PriceOf): PlantFix | n
   const cost = setup < 1 ? 'no extra cost' : `+${usd(setup)}`;
   return {
     kind: 'light', label: `Stronger light (${cost})`, setupUsd: setup, monthlyUsd: 0,
-    describe: `Swaps the light for the ${productName(pick.product)} (${usd(pick.priceUsd)}, the cheapest catalogue light that fits this tank and reaches what these plants want): about ${Math.round(now)} PAR to about ${Math.round(after)} PAR at the plants, ${setup < 1 ? 'for about the same price as the light you have' : `about +${usd(setup)} on the set-up cost`}. Helps ${who.join(', ')}. Ctrl+Z undoes it.`,
+    describe: `Swaps the light for the ${productName(pick.product)} (${usd(pick.priceUsd)}, the cheapest catalog light that fits this tank and reaches what these plants want): about ${Math.round(now)} PAR to about ${Math.round(after)} PAR at the plants, ${setup < 1 ? 'for about the same price as the light you have' : `about +${usd(setup)} on the set-up cost`}. Helps ${who.join(', ')}. Ctrl+Z undoes it.`,
     apply: t => { applyLightProduct(t.light, t.tank, pick.product); },
   };
 }
@@ -245,7 +245,7 @@ function replacePlan(S: TankSetup, rows: PlantRow[]): ReplacePlan | null {
   };
   return {
     label: onlyBright ? 'Replace with plants that suit' : 'Replace with easier plants', swaps,
-    describe: `${lines}. Same count and same spots; each swap looks alike (same kind of plant, close in height and leaf colour) and works with this tank's light and care as it is now. ${count ? `${count} plant${count === 1 ? '' : 's'} change. Ctrl+Z undoes it.` : 'Nothing changes.'}`,
+    describe: `${lines}. Same count and same spots; each swap looks alike (same kind of plant, close in height and leaf color) and works with this tank's light and care as it is now. ${count ? `${count} plant${count === 1 ? '' : 's'} change. Ctrl+Z undoes it.` : 'Nothing changes.'}`,
     count, apply,
   };
 }
@@ -255,7 +255,7 @@ function replacePlan(S: TankSetup, rows: PlantRow[]): ReplacePlan | null {
 export function plantNeedsView(S: TankSetup, price?: PriceOf): PlantNeedsView {
   const rows = plantRows(S), total = rows.reduce((n, r) => n + r.n, 0), bad = rows.filter(r => !r.met), has = tankHas(S);
   const names = (l: string[]) => l.length <= 3 ? l.join(', ') : `${l.slice(0, 3).join(', ')} and ${l.length - 3} more`;
-  const summary = !rows.length ? '' : !bad.length ? `${total === 1 ? 'The plant has' : `All ${total} plants have`} what ${total === 1 ? 'it needs' : 'they need'}: light, CO2 and fertiliser.`
+  const summary = !rows.length ? '' : !bad.length ? `${total === 1 ? 'The plant has' : `All ${total} plants have`} what ${total === 1 ? 'it needs' : 'they need'}: light, CO2 and fertilizer.`
     : `${bad.length} of ${rows.length} kinds ${bad.length === 1 ? 'is' : 'are'} missing something: ${names(bad.map(b => b.label))}.`;
   const fixes: PlantFix[] = [];
   const lf = lightFix(S, rows, price); if (lf) fixes.push(lf);

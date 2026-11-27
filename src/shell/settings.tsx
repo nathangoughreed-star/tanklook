@@ -47,7 +47,7 @@ function Graphics({ store, getViewer }: { store: Store; getViewer: () => Viewer 
       <div class="row"><span class="lbl">Fish edges</span>
         <select class="select" value={render.edge} aria-label="Fish edges" onChange={e => store.update(s => { for (const t of s.tanks) t.render.edge = (e.target as HTMLSelectElement).value as typeof render.edge; })}>
           <option value="a2c">Smooth, see-through fins</option><option value="cutout">Crisp, solid fins (faster)</option></select></div>
-      <div class="row"><span class="lbl" title="Lifts fish off busy backgrounds: brighter colour and a darker outline. 0 = plain lighting.">Fish stand out</span>
+      <div class="row"><span class="lbl" title="Lifts fish off busy backgrounds: brighter color and a darker outline. 0 = plain lighting.">Fish stand out</span>
         <input class="slider" type="range" min={0} max={100} step={5} value={Math.round(render.pop * 100)} aria-label="Fish stand out"
           onInput={e => store.update(s => { for (const t of s.tanks) t.render.pop = +(e.target as HTMLInputElement).value / 100; })} onChange={() => store.seal()} />
         <span class="val">{Math.round(render.pop * 100)}</span></div>

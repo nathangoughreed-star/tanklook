@@ -160,7 +160,7 @@ function catalogue(S: TankSetup, cat: CatId, units: Units): Entry[] {
         else if (cat === 'overflow') { const q = p as OverflowProduct, need = gal * RETURN_GPH_PER_GAL; fit = q.ratedGph >= need ? { tone: 'ok', text: `handles a ${Math.round(need)} gph return` } : { tone: 'warn', text: `${q.ratedGph} gph is under a ${Math.round(need)} gph return` }; facts = `${kindWord[q.kind] ?? q.kind} · ${q.ratedGph} gph rated${q.drains ? ` · ${q.drains} drain${q.drains > 1 ? 's' : ''}` : ''}`; }
         if (p.watts) facts += `${facts ? ' · ' : ''}${p.watts} W`;
         const q = p as { ratedGal?: number; suitsGal?: number; galMax?: number; galMin?: number };
-        return { item: p.id, name: productName(p), sub: facts || 'catalogue product', ty: k ? kindType(k) : 'Standard', sz: cat === 'skimmer' || cat === 'surfskim' ? skimmerSuitsGal(p as SkimmerProduct) : cat === 'overflow' ? (p as OverflowProduct).ratedGph : cat === 'sump' ? (p as SumpProduct).waterGal : q.suitsGal ?? q.ratedGal ?? q.galMax ?? q.galMin, ...price(p), fit, rank: rank(fit) };
+        return { item: p.id, name: productName(p), sub: facts || 'catalog product', ty: k ? kindType(k) : 'Standard', sz: cat === 'skimmer' || cat === 'surfskim' ? skimmerSuitsGal(p as SkimmerProduct) : cat === 'overflow' ? (p as OverflowProduct).ratedGph : cat === 'sump' ? (p as SumpProduct).waterGal : q.suitsGal ?? q.ratedGal ?? q.galMax ?? q.galMin, ...price(p), fit, rank: rank(fit) };
       });
   }
 }

@@ -615,9 +615,17 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 
 /* SS1: the Start sheet's doors */
 .startdoors { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.dlg .startdoors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .card.door { display: grid; gap: 4px; text-align: left; padding: var(--s3); min-height: 84px; cursor: pointer; align-content: start; }
 .card.door:hover, .card.door:focus-visible { border-color: var(--accent); }
 .card.door .t { font-size: 1.05em; }
+.startline { font-size: 1.25em; line-height: 1.3; font-weight: 600; margin: 0 0 var(--s2); max-width: 46em; } .startsub { margin: 0 0 var(--s3); }
+.doorpic { width: 100%; aspect-ratio: 5 / 3; object-fit: cover; border-radius: 6px; background: var(--bg-2, rgba(255,255,255,.04)); color: var(--text-3); }
+.ov.resultcard { left: 50%; transform: translateX(-50%); bottom: var(--s4, 20px); top: auto; width: min(560px, calc(100% - 2 * var(--s3))); padding: var(--s3); display: grid; gap: var(--s2); z-index: calc(var(--z-overlay) + 2); border-radius: var(--r-card, 10px); }
+.resultcard .rcname { font-size: 1.1em; } .resultcard .rccost { font-size: 1.05em; } .resultcard .dim { color: var(--text-3); } .resultcard .rcreason { color: var(--text-2); } .resultcard .rcmiss { margin: 0; padding-left: 1.1em; color: var(--text-2); font-size: var(--fs-sm); } .resultcard .rcacts { display: flex; gap: var(--s2); }
+@media (max-width: 699px) { .ov.resultcard { bottom: 64px; } }
+.startlinks { display: flex; flex-wrap: wrap; gap: var(--s3); align-items: center; margin-top: var(--s3); }
+@media (max-width: 640px) { .startline { font-size: 1.05em; } .startdoors { grid-template-columns: 1fr; } .card.door { grid-template-columns: 104px 1fr; column-gap: var(--s3); min-height: 0; } .card.door .doorpic { grid-row: 1 / span 2; align-self: center; } .card.door .t, .card.door .m { grid-column: 2; } }
 .dlgbody > .acts { margin-top: var(--s3); }
 /* GS4: where the glass fails / deflection view */
 .failview { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
@@ -926,3 +934,32 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 .blend2 .bmix .lbl { color: var(--text-2); }
 .blend2 .bmix .bend { color: var(--text-3); font-size: var(--fs-sm); }
 .blend2 .bmix .slider { width: 100%; }
+
+.gsslot { border-bottom: 1px solid var(--line); } .gsdock { padding: var(--s1) var(--s3); display: grid; gap: var(--s2); }
+.gsdock .gshead { display: flex; align-items: center; justify-content: space-between; } .gsdock .gstitle { background: none; border: 0; color: var(--text); cursor: pointer; padding: 0; font: inherit; } .gsdock .dim { color: var(--text-3); }
+.gsdock .gslist { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; } .gsdock .gslist button { display: flex; gap: var(--s2); width: 100%; text-align: left; background: none; border: 0; color: var(--text); padding: var(--s1) 0; cursor: pointer; } .gsdock .gslist .gst { display: grid; } .gsdock .tick { width: 1.2em; color: var(--ok, #3fb68b); }
+
+.gsslot.inbar { border: 0; position: relative; } .gsslot.inbar .gsdock { padding: 0; } .gsslot.inbar .gslist, .gsslot.inbar .gsanimal { position: absolute; right: 0; top: calc(100% + 6px); z-index: 5; } .gsslot.inbar .gslist { min-width: 300px; background: var(--bg-panel); border: 1px solid var(--line); border-radius: 8px; padding: var(--s2); } .gsslot.inbar .gshead { gap: var(--s2); }
+
+.scrim.top { z-index: calc(var(--z-toast) + 5); }
+
+/* FD: the phone strip fits four chips on a 390 px screen (it clipped the Notes count); a narrower one scrolls rather than cuts */
+.ui2app.phone .checkstrip .checkbar { overflow-x: auto; scrollbar-width: none; gap: 4px; padding: 6px 6px; } .ui2app.phone .checkstrip .check { padding: 0 8px; font-size: 13px; gap: 4px; white-space: nowrap; } .ui2app.phone .checkstrip .check .dim { display: none; } .ui2app.phone .checkstrip .vsep { display: none; }
+
+.ov.loadbar { left: 50%; top: var(--s3); transform: translateX(-50%); display: grid; justify-items: center; gap: 4px; padding: var(--s2) var(--s3); border-radius: var(--r-card, 10px); z-index: calc(var(--z-overlay) + 3); max-width: min(380px, calc(100% - 2 * var(--s3))); text-align: center; color: var(--text-2); font-size: var(--fs-sm); }
+.loadbar .loadwave { width: 120px; height: 14px; color: var(--accent); stroke-dasharray: 18 6; animation: loadflow 1.6s linear infinite; } .loadbar .loadtip { color: var(--text-3); }
+@keyframes loadflow { to { stroke-dashoffset: -48; } } @media (prefers-reduced-motion: reduce) { .loadbar .loadwave { animation: none; } }
+
+.ov.loadbar { top: 10px; z-index: calc(var(--z-toast) + 6); }   /* above a dialog's scrim (it sat under the sheet), in the gap over the dialog */
+/* the landing sheet (docked, Nathan 2026-11-26): not modal, no dimming; the sheet is a left column on a desktop, a bottom sheet on a phone, and the lit tank shows beside it */
+.scrim.dock { background: none; pointer-events: none; display: block; } .scrim.dock .dlg { pointer-events: auto; position: fixed; left: 64px; top: 48px; bottom: 0; width: 400px; max-width: none; max-height: none; height: auto; border-radius: 0; box-shadow: 4px 0 18px rgba(0,0,0,.35); }
+.scrim.dock .dlg .startdoors { grid-template-columns: repeat(2, minmax(0, 1fr)); } .scrim.dock .startline { font-size: 1.05em; }
+body.landdock .ui2app .viewer { margin-left: 400px; }
+@media (max-width: 699px) {
+  .scrim.dock .dlg { left: 0; right: 0; top: auto; bottom: 56px; width: auto; height: 46dvh; border-radius: 14px 14px 0 0; box-shadow: 0 -6px 20px rgba(0,0,0,.4); }
+  body.landdock .ui2app .viewer { margin-left: 0; margin-bottom: 46dvh; }
+}
+@media (max-width: 640px) { .dlg .startdoors, .scrim.dock .dlg .startdoors { grid-template-columns: 1fr; } }
+
+.startdoors .doorpic { aspect-ratio: 16 / 7; } .dlg .dlgbody { scrollbar-color: var(--line) transparent; }
+@media (max-width: 640px) { .startdoors .doorpic { aspect-ratio: 5 / 3; } }

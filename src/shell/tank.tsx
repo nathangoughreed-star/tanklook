@@ -87,7 +87,7 @@ function KindRow({ store, S }: { store: Store; S: TankSetup }) {
   const k = kindView(S), [said, setSaid] = useState('');
   if (k.opts.length < 2) return null;
   return (
-    <div class="field"><div class="cap" title="What the setup is: the Animals list and the clear-water colour follow">Type</div>
+    <div class="field"><div class="cap" title="What the setup is: the Animals list and the clear-water color follow">Type</div>
       <Seg<SetupKind> label="Kind" value={k.on} opts={k.opts.map(([id, t]) => [id, t] as [SetupKind, string])} onPick={v => setSaid(setKind(store, v))} />
       {said ? <div class="hint" role="status">{said}</div> : null}</div>
   );
@@ -141,10 +141,10 @@ function WaterLook({ store, open, onToggle }: { store: Store; open: boolean; onT
       <div class="row"><span class="lbl">Tint</span>
         <input class="slider" type="range" min={0} max={0.95} step={0.01} value={wl.opacity} disabled={!wl.on} aria-label="Water tint" onInput={e => setTint(store, +(e.target as HTMLInputElement).value)} />
         <span class="val">{wl.tintText}</span></div>
-      <div class="row"><span class="lbl">Colour</span>
-        <input type="color" class="colorbox" value={wl.color} disabled={!wl.on} aria-label="Water colour" onInput={e => setColor(store, (e.target as HTMLInputElement).value)} /><span /></div>
+      <div class="row"><span class="lbl">Color</span>
+        <input type="color" class="colorbox" value={wl.color} disabled={!wl.on} aria-label="Water color" onInput={e => setColor(store, (e.target as HTMLInputElement).value)} /><span /></div>
       <div class="chips">{wl.presets.map(p => <button type="button" class={`chip${wl.current === p.id ? ' on' : ''}`} disabled={!wl.on} onClick={() => applyPreset(store, p)}>{p.label}</button>)}</div>
-      <div class="hint">Tint is how much of the colour shows through 12 in of water, so a deeper tank looks more tinted. The water numbers (temperature) are in the Water check.</div>
+      <div class="hint">Tint is how much of the color shows through 12 in of water, so a deeper tank looks more tinted. The water numbers (temperature) are in the Water check.</div>
     </Group>
   );
 }
@@ -221,7 +221,7 @@ function TablePos({ store, S, u }: { store: Store; S: TankSetup; u: Units }) {
       {sl('Left / right', tp.x, tp.x0, tp.x1, tp.xText, setTableX, 'tableX', 'left', 'right')}
       {sl('Front / back', tp.z, tp.z0, tp.z1, tp.zText, setTableZ, 'tableZ', 'front', 'back')}
       <div class="acts-row" role="group" aria-label="Place the tank on the top">
-        {(['centre', 'back', 'front'] as const).map(w => <button type="button" class="btn sm" onClick={() => store.edit(s => placeTank(s, w))}>{w === 'centre' ? 'Centre' : w === 'back' ? 'Back' : 'Front'}</button>)}
+        {(['centre', 'back', 'front'] as const).map(w => <button type="button" class="btn sm" onClick={() => store.edit(s => placeTank(s, w))}>{w === 'centre' ? 'Center' : w === 'back' ? 'Back' : 'Front'}</button>)}
       </div>
     </div>
   );
@@ -309,12 +309,12 @@ function Background({ store, S, u, open, onToggle }: { store: Store; S: TankSetu
   return (
     <Group title="Background" sum={bgSummary(S)} open={open} onToggle={onToggle}>
       <PicTiles label="Background" tiles={BG_TILES} on={S.render.bg} onPick={v => store.edit(s => { s.render.bg = v; })} />
-      {S.render.bg === 'custom' ? <div class="row"><span class="lbl">Colour</span><input type="color" aria-label="Background colour" value={S.render.bgColor ?? '#2f4a36'} onInput={e => store.edit(s => { s.render.bgColor = (e.target as HTMLInputElement).value; }, { coalesce: 'bgColor' })} /><span /></div> : null}
+      {S.render.bg === 'custom' ? <div class="row"><span class="lbl">Color</span><input type="color" aria-label="Background color" value={S.render.bgColor ?? '#2f4a36'} onInput={e => store.edit(s => { s.render.bgColor = (e.target as HTMLInputElement).value; }, { coalesce: 'bgColor' })} /><span /></div> : null}
       {S.render.bg !== 'none' ? <div class="row"><span class="lbl">On sides</span><div class="chips">
         {SIDES.map(([v, t]) => { const on = S.render.bgSides.includes(v); return <button type="button" class={`chip${on ? ' on' : ''}`} aria-pressed={on}
           onClick={() => store.edit(s => { const b = s.render.bgSides; s.render.bgSides = b.includes(v) ? b.filter(x => x !== v) : [...b, v]; wallFit(s); })}>{t}</button>; })}
       </div><span /></div> : null}
-      {bgArcShown(S) ? <div class="row"><span class="lbl" title="How much of the round wall the background covers, centred on each chosen side">Arc</span>
+      {bgArcShown(S) ? <div class="row"><span class="lbl" title="How much of the round wall the background covers, centered on each chosen side">Arc</span>
         <input class="slider" type="range" min={20} max={360} step={5} value={S.render.bgArc} aria-label="Background arc" onInput={e => store.edit(s => setBgArc(s, +(e.target as HTMLInputElement).value), { coalesce: 'bgArc' })} />
         <span class="val">{arcText(S.render.bgArc)}</span></div> : null}
       <BgPictures store={store} S={S} />
@@ -446,7 +446,7 @@ export function TankPicker({ store, preview, onClose, onChosen, onMaker, libN }:
             <div class="chips">
               {SIZE_CHIPS.map(([c, t]) => <button type="button" class={`chip${chips.has(c) ? ' on' : ''}`} aria-pressed={chips.has(c)} onClick={() => { const n = new Set(chips); if (n.has(c)) n.delete(c); else n.add(c); setChips(n); }}>{t}</button>)}
               <button type="button" class={`chip${fits ? ' on' : ''}`} aria-pressed={fits} disabled={comm.noSpace} title={comm.noSpace ? 'Set your space in Constraints first (comes in shell step 5)' : 'Only tanks that fit the space you set'} onClick={() => setFits(!fits)}>Fits my space</button>
-              <button type="button" class={`chip${allSizes ? ' on' : ''}`} aria-pressed={allSizes} data-testid="all-sizes" title="Popular sizes only, or every size and product in the catalogue" onClick={() => setAllSizes(!allSizes)}>All sizes</button>
+              <button type="button" class={`chip${allSizes ? ' on' : ''}`} aria-pressed={allSizes} data-testid="all-sizes" title="Popular sizes only, or every size and product in the catalog" onClick={() => setAllSizes(!allSizes)}>All sizes</button>
               <button type="button" class={`chip${sale ? ' on' : ''}`} aria-pressed={sale} title="Only tanks with a sale price on record; each row says when it was last checked" onClick={() => setSale(!sale)}>On sale</button>
             </div>
             <TankFilters f={tf} set={setFilter} shown={comm.rows.length} total={comm.total} brands={comm.brands} u={u} extra={chips.size + (fits ? 1 : 0) + (sale ? 1 : 0)} onClear={clearAll} />

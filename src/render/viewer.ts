@@ -594,7 +594,7 @@ export class Viewer {
     this.overlay?.remove(); this.overlay = null; this.lastFrame = null;
   }
   /** The small "Building the tank…" note while a reveal runs (index.html #buildHint). */
-  private hint(on: boolean) { const h = document.getElementById('buildHint'); if (h) h.hidden = !on; }
+  private hint(on: boolean) { const h = document.getElementById('buildHint'); if (h) h.hidden = !on; dispatchEvent(new CustomEvent('tank:building', { detail: { on } })); }   // FD (R165): the shell's own loading bar listens (shell/loading.tsx)
   /** During a reveal, keep a copy of each frame (the canvas is cleared once shown): the next part fades in over it. */
   private keepFrame() {
     const c = this.canvas, l = this.lastFrame ??= document.createElement('canvas');
@@ -1161,7 +1161,7 @@ export class Viewer {
   private content: { x0: number; x1: number; y0: number; y1: number; vx: number; vw: number }[] = [];
 
   // ---------- Export: render bigger, crop to the tanks, label split views, then save ----------
-  exportPNG(mult: number): Promise<Blob> {
+  exportPNG(mult: number, credit?: string): Promise<Blob> {
     const dpr = this.fullRatio(), k = dpr * mult;
     this.govApplied = 1; this.renderer.setPixelRatio(k);
     this.exporting = true; this.draw(); this.exporting = false;
@@ -1178,6 +1178,10 @@ export class Viewer {
         g.fillStyle = 'rgba(20, 24, 30, 0.75)'; g.fillRect(x, y, w, fs * 1.5);
         g.fillStyle = '#fff'; g.fillText(label, x + fs * 0.4, y + fs * 0.25);
       });
+    }
+    if (credit) { // FD (R155): the site address in a corner, so a shared picture leads back to the tool
+      const fs = Math.round(Math.max(14, 0.024 * out.h) * k); g.font = `600 ${fs}px system-ui, "Segoe UI", sans-serif`; g.textBaseline = 'bottom'; g.textAlign = 'right';
+      const x = t.width - fs * 0.7, y = t.height - fs * 0.6; g.fillStyle = 'rgba(0, 0, 0, 0.45)'; g.fillText(credit, x + 1, y + 1); g.fillStyle = 'rgba(255, 255, 255, 0.85)'; g.fillText(credit, x, y);
     }
     return new Promise((resolve, reject) => {
       t.toBlob(b => {

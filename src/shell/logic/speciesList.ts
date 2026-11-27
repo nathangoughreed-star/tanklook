@@ -23,7 +23,7 @@ export function rowOf(sp: Species, units: Units): ListRow {
   return {
     id: sp.id, name: sp.name, sci: sp.sci, cat: sp.cat, catLabel: CATEGORIES.find(x => x[0] === sp.cat)?.[1] ?? sp.cat, tl: sp.tl,
     size: sp.female ? `${fmtLen(sp.tl, units)} / ${fmtLen(sp.female.tl, units)}` : fmtLen(sp.tl, units),
-    care: c ? EXPERTISE_NAME[c.care] : '', careN: c?.care ?? 0, origin: (o ? continentText(o) : '') + (gloForm(sp) ? `${o ? '; ' : ''}GloFish colours: ${LAB_LABEL}` : ''),
+    care: c ? EXPERTISE_NAME[c.care] : '', careN: c?.care ?? 0, origin: (o ? continentText(o) : '') + (gloForm(sp) ? `${o ? '; ' : ''}GloFish colors: ${LAB_LABEL}` : ''),
     suits: suitsOf(sp).map(k => KIND_WORD[k]).join(', '), group: ROLES.find(r => r[0] === roleOf(sp))![1], hidden: !speciesInScope(sp),
   };
 }
