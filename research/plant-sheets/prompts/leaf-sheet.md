@@ -103,3 +103,18 @@ Species: Microsorum pteropus (Java fern), submersed. Canvas 3:2 landscape, a gri
 ```
 Species: Echinodorus 'Ozelot' (spotted Amazon sword), submersed. Canvas 3:2 landscape, a grid of 3 columns x 2 rows. Top row: three leaves seen from their upper side, a mid green to olive with scattered irregular dark red-brown blotches and streaks (leopard-like markings), lance- to oval-shaped, about four and a half times as long as wide, with a long stalk (about a quarter of the length), a ruffled wavy margin and strong parallel veins. Bottom row: the undersides of the same three leaves in the same order, the outline mirrored left-right, a paler yellow-green to pinkish with the blotches showing through faintly.
 ```
+
+## Marimo skin sheet (R182, 2026-11-26)
+
+Nathan 2026-11-26, after three procedural passes ("lol still quite bad"): "maybe the chatgpt sheet for a skin on a lumpy
+ball model with you adding fuzz". Not a leaf sheet: one prompt on its own (no shared block). Save as
+`C:\Users\nreed\fish-sheets\plants\marimo-d1.png`. Use: the left half is a seamless tile wrapped over the lumpy ball
+(triplanar, so no seam or pole pinch); the right half gives the fringe: its loose filaments against white become
+alpha cards round the outline, and the tile's light/dark drives a few short fur shells for the velvet.
+
+```
+Create a texture reference sheet for a marimo moss ball (Aegagropila linnaei) for texturing a 3D model. Canvas 2:1 landscape, split into two square halves.
+LEFT HALF: a seamless, tileable square texture of the marimo's surface, seen straight down from above as if the ball's skin were flattened: a dense velvet of fine, short, slightly curly green filaments, matted into small irregular tufts with darker creases between them, the tufts about one eighth of the square across. It must tile perfectly: the left edge continues into the right edge and the top into the bottom with no visible seam, and no tuft or spot repeats in a noticeable pattern. Fill the whole square edge to edge, no border, no vignette.
+RIGHT HALF: on a pure white (#FFFFFF) background, the upper edge of the same ball seen from the side at a large scale: the velvet surface fills the bottom 60% of the square with a gently curved top outline, and above that outline the loose filaments stick out into the white, short and dense near the surface, a few longer stray wisps reaching further, all of them fine and clearly separated against the white.
+Colour: a deep natural olive to moss green, with a few slightly yellower tips and darker olive in the creases; not lime, not neon, not blue-green. Flat, even, diffuse light: no cast shadows, no specular glare, no rim light, no glow, no water droplets, no bubbles. Photorealistic and faithful to a healthy aquarium marimo, not stylized, not a cartoon, no outlines. No text, labels, rulers or props.
+```
