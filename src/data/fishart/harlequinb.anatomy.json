@@ -75,9 +75,9 @@
     14.98,
     15.68,
     16.62,
-    16.531,
-    15.405,
-    14.28,
+    17.09,
+    16.4,
+    15.44,
     12.994,
     11.15,
     9.94,
@@ -109,9 +109,9 @@
     16.8,
     17.44,
     17.12,
-    16.981,
-    16.016,
-    15.373,
+    17.53,
+    17.09,
+    16.48,
     13.91,
     12.801,
     11.193,
@@ -287,6 +287,7 @@
    "pelvicOrPectoral": null,
    "caudal": {
     "type": "round",
+    "notchFrac": 0.0,
     "tipUPctSL": -25.4,
     "outline": [
      [
@@ -434,7 +435,7 @@
    ],
    "source": "top panel of the generated sheet, blue-share mask (thr 0.60); the narrower side of the centre line",
    "fit": {
-    "thick": 0.76,
+    "thick": 0.77,
     "pedT": 0.3,
     "rmsPctSL": 0.61,
     "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
@@ -734,9 +735,9 @@
       225.0
      ]
     ],
-    "ver": "aa966093"
+    "ver": "7aa5ca55"
    },
-   "fit": "{'thick': 0.76, 'pedT': 0.3, 'rmsPctSL': 0.61, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
+   "fit": "{'thick': 0.77, 'pedT': 0.3, 'rmsPctSL': 0.61, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }
  },
  "reliability": {

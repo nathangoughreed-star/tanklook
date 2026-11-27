@@ -346,5 +346,19 @@
  "sat_auto": true,
  "fin_opacity": {
   "preset": "solid"
+ },
+ "body_recolour": {
+  "sat": [
+   0.2,
+   0.3
+  ],
+  "hue": 8,
+  "lift": 1.2,
+  "feather": 4,
+  "ridge": [
+   0.7,
+   0.14
+  ],
+  "pectoral": 0.25
  }
 }
