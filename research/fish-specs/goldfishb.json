@@ -314,5 +314,6 @@
  "fin_opacity": {
   "preset": "solid"
  },
- "sat_lin": 1
+ "sat_lin": 1,
+ "solid_near": 20
 }
