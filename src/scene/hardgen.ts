@@ -206,12 +206,23 @@ export function genWood(variant: string, seed: number, size: number, hs?: HardSt
     }
   }
   if (variant === 'cholla') for (const l of out) l.knob = hsv(hs, 'holes'); // its lattice reads the Holes setting from here
-  // fit: centre on x and z, base on y = 0, scale to the size
+  // fit: centre on x and z, base on y = 0, stretched to fill the type's box (woodBox) for this size and settings
   const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
   for (const l of out) for (const p of l.pts) for (let i = 0; i < 3; i++) { lo[i] = Math.min(lo[i], p[i]); hi[i] = Math.max(hi[i], p[i]); }
-  const k = size / Math.max(1e-6, P.tall ? hi[1] - Math.min(0, lo[1]) : hi[0] - lo[0]), cx = (lo[0] + hi[0]) / 2, cz = (lo[2] + hi[2]) / 2, y0 = Math.min(0, lo[1]);
-  for (const l of out) { l.pts = l.pts.map(p => [(p[0] - cx) * k, Math.max(0, p[1] - y0) * k, (p[2] - cz) * k]); l.r0 *= k; l.r1 *= k; }
+  const [bx, by, bz] = woodBox(variant, size, hs), y0 = Math.min(0, lo[1]);
+  const kx = bx / Math.max(1e-6, hi[0] - lo[0]), ky = by / Math.max(1e-6, hi[1] - y0), kz = bz / Math.max(1e-6, hi[2] - lo[2]), kr = Math.cbrt(kx * ky * kz);
+  const cx = (lo[0] + hi[0]) / 2, cz = (lo[2] + hi[2]) / 2;
+  for (const l of out) { l.pts = l.pts.map(p => [(p[0] - cx) * kx, Math.max(0, p[1] - y0) * ky, (p[2] - cz) * kz]); l.r0 *= kr; l.r1 *= kr; }
   return out;
+}
+
+/** Each generated wood's box per unit size [length, height, width] (manzanita: size = height): the boxes the scene used
+ *  before HG1, so layouts, cover and the search place a piece as they did; new types get their own. */
+const BOX: Record<string, V3> = { spider: [1, 0.5, 0.8], manzanita: [0.7, 1, 0.7], mopani: [1, 0.45, 0.3], branch: [1, 0.65, 0.45], malaysian: [1, 0.6, 0.6], redmoor: [1, 0.7, 0.8], cholla: [1, 0.35, 0.3] };
+/** A generated wood's [length, height, width] in mm: its type's box, Spread trading height for width (0.5 = the box). */
+export function woodBox(variant: string, size: number, hs?: HardStyle): V3 {
+  const b = BOX[variant] ?? [1, 0.65, 0.45], sp = hsv(hs, 'spread');
+  return [b[0] * size, b[1] * size * (1.35 - 0.7 * sp), b[2] * size * (0.7 + 0.6 * sp)];
 }
 
 /** Height scale for a rock (its Height setting): 0.5 = the type's own; 0 = 0.55x; 1 = 1.6x. */

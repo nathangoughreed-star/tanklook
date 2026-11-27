@@ -10,7 +10,7 @@ import { backdropDepth, clamp, clearOfWall, D2R } from './physics';
 import { bowlDims, bowlRadius, clampIn, footprint, shapeOf } from './shape';
 import { clampGround, groundHeight, radialTerrain, type Ground } from './terrain';
 import type { CompId, HardStyle, Item, ItemKind, LayerDens, LayoutId, Tank, TankSetup } from './types';
-import { genWood, isGenWood, tallK, type Limb } from './hardgen';
+import { genWood, isGenWood, tallK, woodBox, type Limb } from './hardgen';
 
 /** `salt`: offered in a saltwater tank only (live rock, corals). */
 export interface Variant { kind: ItemKind; label: string; hint: string; size: number; min: number; max: number; salt?: true; fake?: Fake;
@@ -322,7 +322,8 @@ export function itemDims(it: Pick<Item, 'kind' | 'variant' | 'seed' | 'size' | '
   if (it.kind === 'cave' && it.variant === 'planter') return [s, 0.4 * s, 0.45 * s];
   if (it.kind === 'cave') return it.variant === 'arch' ? [s, 0.5 * s, 0.45 * s] : it.variant === 'tube' ? [s, 0.42 * s, 0.42 * s] : [s, 0.5 * s, s];
   if (it.variant in SHELLS) return shellDims(it.variant, s);
-  if (it.variant === 'climb' || isGenWood(it.variant)) { const b = limbBox(woodLimbs(it.variant, it.seed, s, it.hs)); return [b[0], b[1], b[2]]; }
+  if (isGenWood(it.variant)) return woodBox(it.variant, s, it.hs);
+  if (it.variant === 'climb') { const b = limbBox(woodLimbs(it.variant, it.seed, s)); return [b[0], b[1], b[2]]; }
   return [s, 0.65 * s, 0.45 * s];
 }
 
