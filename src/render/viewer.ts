@@ -23,6 +23,7 @@ import { OUTLINE } from './fish3d';
 import { SWAY, setFlowJets } from './plant3d';
 import type { FlowJet } from '../scene/flow';
 import { SWIM } from './swim';
+import { BUB, onBubbleLive } from './gear/bubbles';
 import { Roam } from './roam';
 import { Crawl } from './crawl';
 import { Cling } from './cling';
@@ -296,6 +297,8 @@ export class Viewer {
   private swimAny = false;
   private swayScan = true;
   private swayAny = false;
+  /** a tank has air bubble columns (gear/bubbles.ts): they rise on the sway clock while the sway is on */
+  private bubAny = false;
   private swayAt = 0;
   private swayT = 0;
   private swayCost = 8;
@@ -314,21 +317,21 @@ export class Viewer {
   /** What can move: plants that sway, fish that swim (and the free swimmers among them that drift). Redone after every rebuild. */
   private scanMovers() {
     if (!this.swayScan) return;
-    this.swayScan = false; let pl = false, fi = false; const dr: THREE.Object3D[] = [], cr: THREE.Object3D[] = [], cl: THREE.Object3D[] = [];
+    this.swayScan = false; let pl = false, fi = false, bu = false; const dr: THREE.Object3D[] = [], cr: THREE.Object3D[] = [], cl: THREE.Object3D[] = [];
     for (const vp of this.vps) {
       // the outlets' current in this tank (gear3d userData.jets, scene/flow.ts): the plants' sway and the roaming fish feel it
       const jets: FlowJet[] = []; vp.scene?.traverse(o => { if (o.userData.jets) jets.push(...(o.userData.jets as FlowJet[])); });
       this.jetsOf.set(vp, jets);
-      vp.scene?.traverse(o => { if (o.userData.sway) pl = true; if (o.userData.swimmer) fi = true; if (o.userData.roam) { dr.push(o); o.userData.flowJets = jets; } if (o.userData.crawl) cr.push(o); if (o.userData.cling) cl.push(o); });
+      vp.scene?.traverse(o => { if (o.userData.sway) pl = true; if (o.userData.bubbles && o.visible) bu = true; if (o.userData.swimmer) fi = true; if (o.userData.roam) { dr.push(o); o.userData.flowJets = jets; } if (o.userData.crawl) cr.push(o); if (o.userData.cling) cl.push(o); });
     }
-    this.swayAny = pl; this.swimAny = fi; this.drifters = dr; this.crawlers = cr; this.clingers = cl;
+    this.swayAny = pl; this.bubAny = bu; this.swimAny = fi; this.drifters = dr; this.crawlers = cr; this.clingers = cl;
   }
   private swayDue() {
     if (!(this.sway || this.swim) || this.reveal || this.needsBuild || perf.level > 0 || fxClock.frozen != null) { this.swayAt = 0; return false; }
     const now = performance.now();
     if (now - this.lastInput > CAUS_IDLE_MS) { this.swayAt = 0; return false; }
     this.scanMovers();
-    if (!((this.sway && this.swayAny) || (this.swim && !this.swimAuto && this.swimAny)) || now - this.swayAt < Math.min(200, Math.max(33, 3 * this.swayCost))) return false;
+    if (!((this.sway && (this.swayAny || this.bubAny)) || (this.swim && !this.swimAuto && this.swimAny)) || now - this.swayAt < Math.min(200, Math.max(33, 3 * this.swayCost))) return false;
     this.swayT += this.swayAt ? Math.min(now - this.swayAt, 200) : 0; this.swayAt = now;
     return true;
   }
@@ -447,7 +450,8 @@ export class Viewer {
     for (const ev of ['pointermove', 'pointerdown', 'wheel', 'keydown'] as const) window.addEventListener(ev, () => this.noteInput(), { passive: true });
     new ResizeObserver(() => { this.dirty = true; }).observe(host);
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { this.dirty = true; });
-    onPictureLoad(() => { this.dirty = true; }); // a background picture finished decoding into its texture
+    onPictureLoad(() => { this.dirty = true; });
+    onBubbleLive(() => { this.dirty = true; }); // the air valve slider while it is dragged (no rebuild) // a background picture finished decoding into its texture
     // three's loop (window frames, or the XR session's while one runs); an AR session draws through xrFrame instead (render/ar.ts)
     this.renderer.setAnimationLoop((t, f) => {
       if (this.xrFrame && f) this.xrFrame(t, f);
@@ -822,6 +826,7 @@ export class Viewer {
     this.scanMovers();
     const swimOn = this.swim && !this.swimAuto && !this.exporting;
     SWIM.uSwim.value.set(this.swayT / 1000, swimOn ? 1 : 0); { const dt = (this.swayT - this.roamT) / 1000; this.roamT = this.swayT; this.roam.update(this.drifters, dt, swimOn, !!this.sel.fish); this.crawl.update(this.crawlers, dt, swimOn, !!this.sel.fish); this.cling.update(this.clingers, dt, swimOn, !!this.sel.fish); }
+    BUB.uBubT.value = this.swayT / 1000; // the bubbles rise on the same clock (still when it stops)
     SWAY.uSway.value.set(this.swayT / 1000, this.sway && !this.exporting ? PLANT_SWAY_AMP : 0);
     const sc = this.store.scene, w = this.host.clientWidth, h = Math.max(60, this.host.clientHeight - this.reserve), r = this.renderer;
     this.canvas.style.height = this.reserve ? h + 'px' : ''; this.host.style.setProperty('--reserve', this.reserve + 'px');

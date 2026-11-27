@@ -66,6 +66,9 @@ export interface TechSetup {
   /** how the canister's return enters the tank (Nathan 2026-11-26): the flared lily pipe (absent: the default), a spray bar along
    *  the back glass, or the plain nozzle. It sets the current the plants and fish feel (scene/flow.ts) and what is drawn. */
   returnOutlet?: 'lily' | 'spraybar' | 'nozzle';
+  /** the air pump's control valve (Nathan 2026-11-27), 0 shut .. 1 wide open; absent = AIR_VALVE_DEFAULT. More air means more,
+   *  bigger bubbles and a wider, rougher column from the airstone and the sponge lift tubes (render/gear/bubbles.ts), not faster ones. */
+  airValve?: number;
   /** real pumps picked from the gear catalogue (lane GP): gear part (airpump, powerhead, wavemaker) -> product id. A chosen product
    *  replaces that part's generic price and watts, the flow rows count its gal/h, and it is drawn at its own size and colours;
    *  absent = the generic pump, priced and powered as before */
@@ -101,6 +104,10 @@ export interface HeaterUnit { product?: string; w?: number; kit?: boolean; owned
 
 // ---- the canister's return path (lane IL1)
 /** The canister the return-path gear sits on: the first canister unit, its flow and its hose (inside diameter, inches; a generic one's is an estimate by flow). */
+/** The air pump valve's setting when the owner has not moved it (TechSetup.airValve). */
+export const AIR_VALVE_DEFAULT = 0.7;
+/** How open the air valve is, 0 .. 1. */
+export const airValveOf = (t: TechSetup) => t.airValve ?? AIR_VALVE_DEFAULT;
 export function canisterOf(S: TankSetup, t: TechSetup) {
   const u = filterUnits(t).find(x => x.kind === 'canister'); if (!u) return undefined;
   const f = filterFor(S, 'canister', u.model, u.product);

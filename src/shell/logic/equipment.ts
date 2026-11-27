@@ -3,9 +3,9 @@
 // in use marked, and an independent "Use this one for sure" lock per item. Pure: no DOM. Engine calls go only through scene/techEdit.ts (P4),
 // scene/gearOwn.ts (P8) and src/units.ts; the catalogue lists are read from data/gearCatalog.ts and data/hoods.ts.
 import { tempIssues } from './lidTemp';
-import { commitTech, withTech, addReturnInline, removeReturnInline, setReturnOutlet, addHeater, pickHeaterProduct, tuneHeater, addFilter, pickFilterProduct, tuneFilter, setPump, setRowProduct, pickLightProduct, tuneLight, pickPreset, setHeaterWatts, setLightWatts } from '../../scene/techEdit';
+import { commitTech, withTech, addReturnInline, removeReturnInline, setReturnOutlet, addHeater, pickHeaterProduct, tuneHeater, addFilter, pickFilterProduct, tuneFilter, setPump, setAirValve, setRowProduct, pickLightProduct, tuneLight, pickPreset, setHeaterWatts, setLightWatts } from '../../scene/techEdit';
 import { editGear, gearOfTank, GENERIC, isLockedItem, isOwned, lockItem, ownItem, ownedFor, setInUse, unlockItem, unownItem, type GearModel } from '../../scene/gearOwn';
-import { deliveredFlow, filterUnits, heatLoss, heaterUnits, presetsFor, roomOf, rowsFor, specialHeaters, techOf, withChoice, rowProduct, GEAR } from '../../scene/tech';
+import { airValveOf, deliveredFlow, filterUnits, heatLoss, heaterUnits, presetsFor, roomOf, rowsFor, specialHeaters, techOf, withChoice, rowProduct, GEAR } from '../../scene/tech';
 import {
   FILTER_PRODUCTS, HEATER_PRODUCTS, REEF_ROWS, hoseLabel, inlineFor, inlineKinds, type InlineKind, filterProduct, heaterProduct, lightProduct, lightsFor, listedPrice, productName, pumpProduct, pumpRatedFor, pumpsFor,
   reefOptionProducts, reefProduct, skimmerSuitsGal, type SkimmerProduct, type ChillerProduct, type UvProduct, type SumpProduct, type OverflowProduct,
@@ -358,3 +358,13 @@ export const addInline = (S: TankSetup, id: string): void => commitTech(S, s => 
 export const removeInline = (S: TankSetup, id: string): void => commitTech(S, s => removeReturnInline(s, id));
 /** The canister's outlet in the tank: lily pipe, spray bar or nozzle (scene/flow.ts: it sets the current plants and fish feel). */
 export const setOutlet = (S: TankSetup, kind: 'lily' | 'spraybar' | 'nozzle'): void => commitTech(S, s => setReturnOutlet(s, kind));
+/** The air pump's valve (Nathan 2026-11-27), 0..1. */
+export const setValve = (S: TankSetup, v: number): void => commitTech(S, s => setAirValve(s, v));
+/** The air valve card: null when nothing in the tank runs on air (no airstone, no sponge filter). */
+export function airView(S: TankSetup): { valve: number; columns: string; stone: boolean; sponges: number } | null {
+  if (!S.tech || !S.water.on) return null;
+  const t = techOf(S), stone = t.rows.air === 'airstone', sponges = filterUnits(t).filter(u => u.kind === 'sponge').length;
+  if (!stone && !sponges) return null;
+  const parts = [stone ? 'the airstone' : '', sponges ? (sponges > 1 ? `${sponges} sponge filters` : 'the sponge filter') : ''].filter(Boolean);
+  return { valve: airValveOf(t), columns: parts.join(' and '), stone, sponges };
+}

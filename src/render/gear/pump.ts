@@ -1,8 +1,10 @@
 // Air pump, airstone and powerhead / wavemaker. (render/gear3d.ts split per type, lane GM1, 2026-10-29: moved as is, no behaviour change).
 import * as THREE from 'three';
 import { type PumpProduct } from '../../data/gearCatalog';
+import { pumpFor, techOf, filterUnits } from '../../scene/tech';
+import type { TankSetup } from '../../scene/types';
 import { clamp } from '../../scene/physics';
-import { UP, V, along, hash, C, hexOr, Frame, Spot, lerp, line, overRim, behind, lineCutout, cutoutY, addJets } from './common';
+import { UP, V, along, C, hexOr, Frame, Spot, lerp, line, overRim, behind, lineCutout, cutoutY, addJets } from './common';
 import { cabinetGear, PUMP_H } from '../../scene/cabinetGear';
 
 export function airPump(f: Frame, u: number, to: THREE.Vector3, bIn: number) {
@@ -43,14 +45,14 @@ export function airstone(f: Frame, sp: Spot) {
   airPump(f, u, f.P(u, g + 14, b), b);
 }
 
-/** A rising column of bubbles from p to the surface: `n` per 100 mm, up to radius rmax, wandering a little as they rise. */
-export function bubbles(f: Frame, p: THREE.Vector3, top: number, n: number, rmax: number) {
-  const k = Math.max(1, Math.round(((top - p.y) / 100) * n));
-  for (let i = 0; i < k; i++) {
-    const y = p.y + ((i + hash(i, 1, 2) * 0.6) / k) * (top - p.y - 3), sway = 1 + (y - p.y) / 60;
-    const r = rmax * (0.45 + 0.55 * hash(i, 3, 4)) * (0.8 + 0.25 * (y - p.y) / (top - p.y + 1));
-    f.kit.ball('clear', V(p.x + (hash(i, 5, 6) - 0.5) * 2 * sway, y, p.z + (hash(i, 7, 8) - 0.5) * 2 * sway), r, C.water, 0.04, 1);
-  }
+/** A rising column of bubbles from p to the surface (animated: gear/bubbles.ts). `n` = bubbles per 100 mm of column wide open on a
+ *  generic pump (the old still column's density), up to radius rmax; `spread` = how far it wanders by the top, mm. The pump's
+ *  strength: a picked air pump's output (gal/h of air) against a generic one's ~40 gal/h, shared by the columns it feeds. */
+export function bubbles(f: Frame, p: THREE.Vector3, top: number, n: number, rmax: number, spread = 22) {
+  const air = pumpFor(techOf(f.S), 'airpump'), cols = Math.max(1, airColumns(f.S));
+  const k = air?.airGph ? clamp(air.airGph / (40 * cols), 0.45, 1.4) : 1;
+  // the still column showed n per 100 mm; at 230 mm/s that is n * 2.3 bubbles a second
+  f.kit.streams.push({ p: p.clone(), top, rate: n * 2.3, rmax, spread, k });
 }
 
 /** A powerhead / wavemaker on the frame's glass at u, aimed into the tank and a little along it. A catalogue pump (lane GP) is drawn
@@ -81,3 +83,9 @@ export function powerhead(f: Frame, sp: Spot, big: boolean, prod?: PumpProduct) 
   kit.tube('room', overRim(f, u, p0.clone().addScaledVector(dir, 12).add(V(0, r * 0.7, 0)), 6, f.top + 30), 2.4, C.black, 0, 6);
 }
 
+
+/** How many bubble columns the air pump feeds: the airstone and each sponge filter. */
+function airColumns(S: TankSetup) {
+  const t = techOf(S);
+  return (t.rows.air === 'airstone' ? 1 : 0) + filterUnits(t).filter(u => u.kind === 'sponge').length;
+}
