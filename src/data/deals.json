@@ -442,8 +442,8 @@
     "usd": 36.56
    },
    "url": "https://www.walmart.com/ip/Aqua-Culture-5-Gallon-Aquarium-Starter-Kit-With-LED-Lighting/20693704",
-   "asOf": "2026-11-18",
-   "note": "Out of stock when the page was read 2026-11-16 ($36.56). LED hood, Tetra internal filter, no heater. 2026-11-18: page shows $36.56 but OUT OF STOCK.",
+   "asOf": "2026-11-26",
+   "note": "Out of stock when the page was read 2026-11-16 ($36.56). LED hood, Tetra internal filter, no heater. 2026-11-18: page shows $36.56 but OUT OF STOCK. Re-read 2026-11-26 in a browser (parts sweep): still OUT OF STOCK, no price shown.",
    "look": {
     "lid": "hood",
     "guessed": [
@@ -477,8 +477,8 @@
     "usd": 52.97
    },
    "url": "https://www.walmart.com/ip/Vibrant-Life-10-Gallon-Aquarium-Starter-Kit-with-Blue-and-White-LED-Lights/15316464908",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-10-19 in a browser. In stock. 75 gph power filter, blue and white LED hood, no heater.",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-10-19 in a browser. In stock. 75 gph power filter, blue and white LED hood, no heater. Re-read 2026-11-26 in a browser (parts sweep): $52.97, in stock. LED hood with feeding hole, 75 GPH filter, no heater.",
    "look": {
     "lid": "hood",
     "guessed": [],
@@ -511,11 +511,11 @@
     "name": "Tetra Whisper PF20"
    },
    "price": {
-    "usd": 119.14
+    "usd": 142.97
    },
    "url": "https://www.walmart.com/ip/Tetra-Aquarium-20-Gallon-Complete-Tropical-Fish-Tank-Kit-with-LED-Lighting-and-Decor-for-Freshwater-Fish/51494060",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-10-19 in a browser. In stock. Tank 24x12x16 in; hinged LED hood, Whisper PF20, heater, thermometer.",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-10-19 in a browser. In stock. Tank 24x12x16 in; hinged LED hood, Whisper PF20, heater, thermometer. Re-read 2026-11-26 in a browser (parts sweep): $142.97 (was $119.14), in stock. Hinged LED hood, filter, heater (watts not stated), thermometer, decor.",
    "look": {
     "lid": "hood",
     "light": {
@@ -553,8 +553,8 @@
     "usd": 158.42
    },
    "url": "https://www.walmart.com/ip/Aqueon-Aquarium-Starter-Kit-with-LED-Lighting-20-High/424027537",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-10-19 in a browser. In stock. Low-profile LED hood, QuietFlow 10 filter, 100 W preset heater.",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-10-19 in a browser. In stock. Low-profile LED hood, QuietFlow 10 filter, 100 W preset heater. Re-read 2026-11-26 in a browser (parts sweep): $158.42, in stock. LED hood, QuietFlow 10, 100 W preset heater, thermometer, net.",
    "look": {
     "lid": "hood",
     "guessed": [],
@@ -582,11 +582,12 @@
     "filter"
    ],
    "price": {
-    "usd": 189.97
+    "usd": 53.71,
+    "regularUsd": 85.19
    },
    "url": "https://www.walmart.com/ip/Tetra-10-Gallon-Glass-LED-Aquarium-Kit/1070285979",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-10-19 in a browser. In stock. Whisper PF10, LED hood, no heater. Tank 20 x 10 x 12 in: the Walmart listing says \"approximate dimensions\" (read 2026-10-20). Re-read 2026-11-18: price now $189.97, sold and shipped by Walmart.com, in stock (was $79.09 on 11-16; the jump is what the page shows).",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-10-19 in a browser. In stock. Whisper PF10, LED hood, no heater. Tank 20 x 10 x 12 in: the Walmart listing says \"approximate dimensions\" (read 2026-10-20). Re-read 2026-11-18: price now $189.97, sold and shipped by Walmart.com, in stock (was $79.09 on 11-16; the jump is what the page shows). Re-read 2026-11-26 in a browser (parts sweep): $53.71, was $85.19 (Black Friday), OUT OF STOCK.",
    "look": {
     "lid": "hood",
     "light": {
@@ -618,11 +619,12 @@
     "name": "Imagitarium power filter"
    },
    "price": {
-    "usd": 92.99
+    "usd": 69.74,
+    "regularUsd": 92.99
    },
    "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-2015-w-x-126-h-10-gallon-3946395",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-11-16 in a browser. Store pickup only (not shipped); stock depends on the store. LED hood, power filter, heater.",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-11-16 in a browser. Store pickup only (not shipped); stock depends on the store. LED hood, power filter, heater. Re-read 2026-11-26 in a browser (parts sweep): $69.74, reg $92.99 (25% off, no end date shown). Hood with LED and feeding door, adjustable heater (watts not stated), HOB filter, strip thermometer, net: hood kit-only.",
    "look": {
     "lid": "hood",
     "light": {
@@ -655,11 +657,12 @@
     "name": "Imagitarium power filter"
    },
    "price": {
-    "usd": 147.99
+    "usd": 110.99,
+    "regularUsd": 147.99
    },
    "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-2417-w-x-1735-h-20-gallon-3946408",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-11-16 in a browser. Store pickup only (not shipped); stock depends on the store. 24.17 in wide, 17.35 in high; LED hood with feeding door, power filter, heater.",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-11-16 in a browser. Store pickup only (not shipped); stock depends on the store. 24.17 in wide, 17.35 in high; LED hood with feeding door, power filter, heater. Re-read 2026-11-26 in a browser (parts sweep): $110.99, reg $147.99 (no end date shown); only 1 left.",
    "look": {
     "lid": "hood",
     "light": {
@@ -692,11 +695,12 @@
     "name": "Imagitarium power filter"
    },
    "price": {
-    "usd": 179.99
+    "usd": 134.99,
+    "regularUsd": 179.99
    },
    "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-3633-w-x-159-h-40-gallons-3946424",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-11-16 in a browser. Store pickup only (not shipped); stock depends on the store. 36.33 in wide, 15.9 in high; LED hood, filter, heater.",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-11-16 in a browser. Store pickup only (not shipped); stock depends on the store. 36.33 in wide, 15.9 in high; LED hood, filter, heater. Re-read 2026-11-26 in a browser (parts sweep): $134.99, reg $179.99 (no end date shown); only 1 left.",
    "look": {
     "lid": "hood",
     "light": {
@@ -725,11 +729,12 @@
     "heater"
    ],
    "price": {
-    "usd": 162.99
+    "usd": 122.24,
+    "regularUsd": 162.99
    },
    "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-3012-w-x-2082-h-29-gallon-3946416",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-11-16 in a browser. Store pickup only (not shipped); stock depends on the store. Contents as the 10 and 20 gal sizes.",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-11-16 in a browser. Store pickup only (not shipped); stock depends on the store. Contents as the 10 and 20 gal sizes. Re-read 2026-11-26 in a browser (parts sweep): $122.24, reg $162.99 (no end date shown); pickup only (ship not available).",
    "look": {
     "lid": "hood",
     "light": {
@@ -762,11 +767,12 @@
     "heater"
    ],
    "price": {
-    "usd": 249.99
+    "usd": 187.49,
+    "regularUsd": 249.99
    },
    "url": "https://www.petco.com/product/imagitarium-led-aquarium-kit-4775-w-x-2389-h-55-gallons-3946432",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-11-16 in a browser; contents re-read 2026-11-18 (TL1): aquarium hood with LED and feeding door, heater, hang-on-back power filter, thermometer strip, net. Store pickup only (not shipped); stock depends on the store.",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-11-16 in a browser; contents re-read 2026-11-18 (TL1): aquarium hood with LED and feeding door, heater, hang-on-back power filter, thermometer strip, net. Store pickup only (not shipped); stock depends on the store. Re-read 2026-11-26 in a browser (parts sweep): $187.49, reg $249.99 (no end date shown); only 1 left.",
    "look": {
     "lid": "hood",
     "light": {
@@ -806,8 +812,8 @@
     "regularUsd": 92.39
    },
    "url": "https://www.chewy.com/tetra-complete-tropical-fish-aquarium/dp/1452806",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-10-19 in a browser. In stock. Tank 20x10x12 in; LED hood, Tetra internal filter. No heater (reviews confirm).",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-10-19 in a browser. In stock. Tank 20x10x12 in; LED hood, Tetra internal filter. No heater (reviews confirm). Re-read 2026-11-26 in a browser (parts sweep): $76.74, list $92.39, in stock (a CYBER30 code is offered, not applied).",
    "look": {
     "lid": "hood",
     "light": {
@@ -839,11 +845,12 @@
     "name": "Aqueon SmartClean"
    },
    "price": {
-    "usd": 129.99
+    "usd": 103.99,
+    "regularUsd": 129.99
    },
    "url": "https://www.chewy.com/aqueon-smart-clean-filtration-led/dp/1720486",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-10-19 in a browser. In stock. LED hood, SmartClean filter, preset heater. Re-read 2026-11-18: $129.99, no list price shown (was $126.01), in stock.",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-10-19 in a browser. In stock. LED hood, SmartClean filter, preset heater. Re-read 2026-11-18: $129.99, no list price shown (was $126.01), in stock. Re-read 2026-11-26 in a browser (parts sweep): $103.99, list $129.99, in stock. LED hood, SmartClean filter, preset 78 F heater, net, thermometer.",
    "look": {
     "lid": "hood",
     "guessed": [],
@@ -879,8 +886,8 @@
     "usd": 190.69
    },
    "url": "https://www.chewy.com/tetra-complete-tropical-fish-aquarium/dp/1452814",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-10-19 in a browser. In stock. LED hood, Tetra filter and heater (reviews mention the heater). Tank 30.22 x 12.53 x 18.75 in from the listing photo (Nathan, 2026-10-20).",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-10-19 in a browser. In stock. LED hood, Tetra filter and heater (reviews mention the heater). Tank 30.22 x 12.53 x 18.75 in from the listing photo (Nathan, 2026-10-20). Re-read 2026-11-26 in a browser (parts sweep): $190.69, in stock (CYBER30 code offered, not applied).",
    "look": {
     "lid": "hood",
     "light": {
@@ -916,8 +923,8 @@
     "regularUsd": 142.99
    },
    "url": "https://www.chewy.com/tetra-aquarium-led-lighting-decor/dp/696158",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-10-19 in a browser. LED hood, Whisper filter, Tetra mini heater (preset 78F), plants. Tank 24 x 12 x 16.5 in from the Chewy listing specs (read 2026-10-20).",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-10-19 in a browser. LED hood, Whisper filter, Tetra mini heater (preset 78F), plants. Tank 24 x 12 x 16.5 in from the Chewy listing specs (read 2026-10-20). Re-read 2026-11-26 in a browser (parts sweep): $119.14, list $142.99, in stock (CYBER30 code offered). LED hood, Tetra mini heater, Whisper filter, plant mat + 4 plants.",
    "look": {
     "lid": "hood",
     "light": {
@@ -949,12 +956,12 @@
     "name": "Aqueon SmartClean"
    },
    "price": {
-    "usd": 121.02,
+    "usd": 103.99,
     "regularUsd": 129.99
    },
    "url": "https://www.amazon.com/dp/B0DT1VKK9S",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-10-19 in a browser. In stock, sold by Amazon.com. LED hood, SmartClean filter, preset heater. Re-read 2026-11-18: $121.02, in stock.",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-10-19 in a browser. In stock, sold by Amazon.com. LED hood, SmartClean filter, preset heater. Re-read 2026-11-18: $121.02, in stock. Re-read 2026-11-26 in a browser (parts sweep): $103.99 new, list $129.99, in stock.",
    "look": {
     "lid": "hood",
     "guessed": [],
@@ -987,11 +994,12 @@
     "name": "Aqueon SmartClean"
    },
    "price": {
-    "usd": 181.51
+    "usd": 151.99,
+    "regularUsd": 189.99
    },
    "url": "https://www.amazon.com/dp/B0DT1NMX61",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-10-19 in a browser. In stock, sold by Amazon.com. LED hood, SmartClean filter, preset heater. Re-read 2026-11-18: $181.51, in stock.",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-10-19 in a browser. In stock, sold by Amazon.com. LED hood, SmartClean filter, preset heater. Re-read 2026-11-18: $181.51, in stock. Re-read 2026-11-26 in a browser (parts sweep): $151.99 new, list $189.99, in stock.",
    "look": {
     "lid": "hood",
     "guessed": [
@@ -1029,8 +1037,8 @@
     "usd": 173.01
    },
    "url": "https://www.amazon.com/dp/B0BJ1L73GR",
-   "asOf": "2026-10-19",
-   "note": "Page read 2026-10-19 in a browser. Sold by Amazon.com, 8 left. Hinged LED hood, filter, heater, thermometer. 2026-11-18: page shows $173.01 but the page showed no Add to Cart button or availability line, so it may be out of stock or unbuyable; asOf left at the last confirmed read (10-19).",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-10-19 in a browser. Sold by Amazon.com, 8 left. Hinged LED hood, filter, heater, thermometer. 2026-11-18: page shows $173.01 but the page showed no Add to Cart button or availability line, so it may be out of stock or unbuyable; asOf left at the last confirmed read (10-19). Re-read 2026-11-26 in a browser (parts sweep): Currently unavailable (no price).",
    "look": {
     "lid": "hood",
     "guessed": [],
@@ -1142,8 +1150,8 @@
     "regularUsd": 150
    },
    "url": "https://www.petco.com/shop/en/petcostore/product/imagitarium-40-gallon-breeder-open-glass-aquarium-tank",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-11-16 in a browser: $75.00 (was $150.00 on 2026-10-27), store pickup / same-day only. Open-top aquarium glass, not a front-opening terrarium: needs a screen lid (sold separately). No sale end shown."
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-11-16 in a browser: $75.00 (was $150.00 on 2026-10-27), store pickup / same-day only. Open-top aquarium glass, not a front-opening terrarium: needs a screen lid (sold separately). No sale end shown. Re-read 2026-11-26 in a browser (parts sweep): $75.00, reg $150.00, tank only."
   },
   {
    "id": "target-reptizoo-40",
@@ -1292,8 +1300,8 @@
     "usd": 108
    },
    "url": "https://www.walmart.com/ip/Vibrant-Life-20-Gallon-Aquarium-Starter-Kit-with-Blue-and-White-LED-Lights/15303758976",
-   "asOf": "2026-11-18",
-   "note": "Page read 2026-11-16 in a browser. In stock, sold by Walmart. 125 gph power filter, blue and white LED clip light, hood with feeding door, no heater.",
+   "asOf": "2026-11-26",
+   "note": "Page read 2026-11-16 in a browser. In stock, sold by Walmart. 125 gph power filter, blue and white LED clip light, hood with feeding door, no heater. Re-read 2026-11-26 in a browser (parts sweep): $108.00, in stock. LED hood, 125 GPH filter, no heater.",
    "look": {
     "lid": "hood",
     "guessed": [
