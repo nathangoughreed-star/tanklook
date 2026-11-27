@@ -23,7 +23,10 @@ TL = typical adult total length in the aquarium. Photos = Wikimedia Commons cate
 | serpae | Serpae tetra, *Hyphessobrycon eques* | 1.6 in | own | - (adipose -> red) | [12](https://commons.wikimedia.org/wiki/Category:Hyphessobrycon_eques) |
 | congotetra | Congo tetra (male), *Phenacogrammus interruptus* | 3.3 in | own | - (adipose -> red) | [18](https://commons.wikimedia.org/wiki/Category:Phenacogrammus_interruptus) |
 | silverdollar | Silver dollar, *Metynnis argenteus* | 5.5 in | proxy *M. hypsauchen* (depth 79 % SL, top of range: check vs photo) | - (adipose -> red) | [5](https://commons.wikimedia.org/wiki/Category:Metynnis_argenteus) |
-| denison | Denison barb, *Sahyadria denisonii* | 6 in | **none**: hand-written estimate, depth 25 % SL, n=0 specimens (fish-new mass check may have nothing to compare: confirm depth and mass vs photos) | - | [29](https://commons.wikimedia.org/wiki/Category:Puntius_denisonii) |
+| denison | c9e6fc2c | approved 2026-11-27 ("Approve all 4") | depth is an estimate (no FishShapes); red stripe runs full length (sheet) |
+| domino | 57497d3f | approved 2026-11-27 ("Approve all 4") | |
+| flamehawk | 57497d3f | approved 2026-11-27 ("Approve all 4") | sat 1.3 |
+| frontosa | 57497d3f | approved 2026-11-27 ("Approve all 4") | |
 | paradisefish | Paradise fish (male), *Macropodus opercularis* | 3.5 in | own | - | [42](https://commons.wikimedia.org/wiki/Category:Macropodus_opercularis) |
 | jackdempsey | Jack Dempsey, *Rocio octofasciata* | 10 in | own | - | [29](https://commons.wikimedia.org/wiki/Category:Rocio_octofasciata) |
 | frontosa | Frontosa, *Cyphotilapia frontosa* | 13 in | own | - | [22](https://commons.wikimedia.org/wiki/Category:Cyphotilapia_frontosa) |
