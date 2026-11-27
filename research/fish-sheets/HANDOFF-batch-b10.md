@@ -46,5 +46,14 @@ The dottyback proxy's specimens are not orchid-sized, so its mass check is a san
 ## State table (fill in as each lands)
 | id | sheet | built | verdict | sha | live |
 |---|---|---|---|---|---|
-| flameangel | no | no | | | no |
-| orchiddottyback | no | no | | | no |
+| flameangel | yes (15:16, title match, visual_check done) | yes, gate pass (sat 1.3; depth 55.1 % SL vs 54.9) | sent to Nathan 2026-11-27, waiting | see git log | no |
+| orchiddottyback | yes (15:18, title match, visual_check done) | yes, gate pass (mass 0.96-1.48x proxy; proxy depth unchecked) | sent to Nathan 2026-11-27, waiting | see git log | no |
+
+## Build notes (2026-11-27)
+- **flameangelb's first build failed at the headless shots** (`profile` of an undefined plan: the photo loader had not registered the look). A rerun of
+  `fish-autoshot.mjs` worked straight away, so it was transient (files still being written while the dev server read them). Rebuilt with
+  `fish-batch.py --batch b10 --rebuild flameangel --only flameangel`: **`--rebuild` takes the base id, not the model id** (`flameangelb` silently did nothing).
+- Watch at review: the flame angel render is redder than the sheet (autosat 1.3; the sheet's yellow-orange lower flank reads red). If Nathan agrees, set
+  `sat` by hand (PIPELINE step 8). The dottyback's pectorals stand out from the body in the front view (as drawn in the front fin map).
+- Review pictures: `shots/b10-review.png` (4 views). The tank shot is made in the page: `loadPhotoFish` + `goLive` on the two looks, then stock the base
+  species, so the shared `fishLive.json` is never edited for a picture.
