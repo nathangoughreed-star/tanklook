@@ -1,5 +1,5 @@
 {
-  "_about": "Build-B fish Nathan approved to replace a species' look for every visitor (main.ts). Key: the species id (species.json). look: the build-B row whose art replaces it (e.g. angelb). approved: the date Nathan approved it, after its cleanup edits. ?photoart still shows every build-B fish, approved or not.",
+  "_about": "Build-B fish Nathan approved to replace a species' look for every visitor (main.ts). Key: the species id (species.json). look: the build-B row whose art replaces it (e.g. angelb). approved: the date Nathan approved it, after its cleanup edits. ?photoart still shows every build-B fish, approved or not. A species whose own row is its build-B model (clownknife, bambooshark: R194) names itself as the look, so its images load; goLive leaves it as it is.",
   "live": {
     "angel": {
       "look": "angelb",
@@ -364,6 +364,10 @@
     "hillstream": {
       "look": "hillstreamb",
       "approved": "2026-11-27"
+    },
+    "bichir": {
+      "look": "bichirb",
+      "approved": "2026-11-25"
     },
     "labeo": {
       "look": "labeob",

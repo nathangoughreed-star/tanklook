@@ -8,11 +8,11 @@
 // GroupCare (lane P1, src/data/groups.ts, plan-path1-animal-first.md) is read through CARE when it lands; until then the defaults hold:
 // recommended minimum = CARE.group else 1, no depth limit, no length limit, zone from the species' own `zone` / `level`.
 import { careOf } from './zone';
-import { getSpecies } from '../data/species';
+import { getSpecies, type Species } from '../data/species';
 import { getTankModel, pickRimless, TANK_MODELS, tankFromModel, type TankModel, type TankVariant } from '../data/tanks';
 import { defaultProfile, demandOf, type DemandOpts } from '../demand';
 import { bareSetup } from './defaults';
-import { volume } from './physics';
+import { volume, waterY } from './physics';
 import { countsAgainstWater, isOver, stockingOf } from './stocking';
 import { MIN_SLACK_PCT } from './animalfit';
 import { geometryOf, minDataOf, speciesMinimum, tankMinimum, type MinRow } from './tankMin';
@@ -119,6 +119,22 @@ export function setPool(S: TankSetup, animals: AnimalCount[]): void {
   S.water.level = poolShare(S.tank, animals) * POOL_DEPTH;
   S.layout.id = 'paludarium'; S.lid = 'mesh';
 }
+/** R200, APPROVED (Nathan 2026-11-27, "Approve 1.5x"); "our judgment", no source: the water a fully aquatic fish needs in a paludarium pool, as a multiple of its body
+ *  height (its card height, which includes fins): enough to turn upright and swim without grounding. One constant, so his answer is a one-line change.
+ *  Replaces the old `depth < body length` test, which kept shallow pools free of fish; the tank minimum itself has no height rule from length (R150). */
+export const POOL_BODY_HEIGHTS = 1.5;
+/** Water depth the pool of this paludarium gives (mm), before any scape substrate: the level setPool picks. */
+export const poolDepthMm = (T: TankSetup['tank'], animals: AnimalCount[]): number => waterY(T, poolShare(T, animals) * POOL_DEPTH);
+/** The least pool depth a fully aquatic species needs (mm); 0 for any animal that also lives on land. */
+export const minPoolDepthMm = (sp: Species): number => sp.habitat !== 'water' ? 0 : POOL_BODY_HEIGHTS * sp.tl * sp.aspect;
+/** True when, with `add` in the set, the pool the land leaves in `T` is shallower than some fully aquatic fish in the set (or `add`) needs. Only in a
+ *  paludarium (land + water animals); `add` can be the land animal that makes an earlier fish too shallow. */
+export const poolTooShallow = (T: TankSetup['tank'], set: AnimalCount[], add: AnimalCount): boolean => {
+  const all = [...set, add];
+  if (!isMixed(all)) return false;
+  const depth = poolDepthMm(T, all);
+  return all.some(a => { const sp = a.n > 0 ? getSpecies(a.species) : undefined; return !!sp && depth < minPoolDepthMm(sp); });
+};
 /** The land side's gear rows (heat, thermostat, UVB, gauge, misting, timer) for a paludarium build, merged into the setup's Tech rows. */
 export function withDryGear(S: TankSetup, animals: AnimalCount[], build: DryBuild): TankSetup {
   const t = techOf(S), land = animals.filter(a => a.n > 0 && getSpecies(a.species)?.habitat === 'land').map(a => a.species);
@@ -279,6 +295,8 @@ export function tankOptions(animals: AnimalCount[]): TankFit[] {
 
 /** A model as a candidate: its catalogue entry, else (the editor's own tank) built from the model. */
 const candidateOf = (m: TankModel): Candidate => PALUDARIA.find(c => c.m.id === m.id) ?? TERRARIA.find(c => c.m.id === m.id) ?? { m, T: tankFromModel(m), litres: volume(tankFromModel(m)).litres };
+/** poolTooShallow for a catalogue tank model (the generator's view). */
+export const poolTooShallowIn = (m: TankModel, set: AnimalCount[], add: AnimalCount): boolean => poolTooShallow(candidateOf(m).T, set, add);
 
 /** These animals judged in ONE given tank (the verdict tankOptions gives that size): the chosen tank with a tankmate added, the fork card's
  *  in-space tank. A tank with more litres can still fail where a smaller one holds them (cubes and talls fail length / minimum), so comparing

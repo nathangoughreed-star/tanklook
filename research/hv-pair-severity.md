@@ -4,8 +4,8 @@
 
 Three families went from red to amber because no source is on file. Counts are ordered pair lines. The worst mismatches now shown only as a Caution:
 
-- pH (1400 lines): greenneon+ocellaris: Green neon tetra with Ocellaris clownfish: water chemistry: pH 3.0-6.5 against its 8.0-8.4 (gap 1.5) | greenneon+royalgramma: Green neon tetra with Royal gramma: water chemistry: pH 3.0-6.5 against its 8.0-8.4 (gap 1.5)
-- GH (341 lines): merah+endler: Endler's livebearer with Strawberry rasbora: water hardness: GH 15-35 against its 1-5 (gap 10) | dwarfrasbora+endler: Dwarf spotted rasbora with Endler's livebearer: water hardness: GH 1-5 against its 15-35 (gap 10)
+- pH (1445 lines): greenneon+bambooshark: Brownbanded bamboo shark with Green neon tetra: water chemistry: pH 8.0-8.4 against its 3.0-6.5 (gap 1.5) | greenneon+ocellaris: Green neon tetra with Ocellaris clownfish: water chemistry: pH 3.0-6.5 against its 8.0-8.4 (gap 1.5)
+- GH (344 lines): merah+endler: Endler's livebearer with Strawberry rasbora: water hardness: GH 15-35 against its 1-5 (gap 10) | dwarfrasbora+endler: Dwarf spotted rasbora with Endler's livebearer: water hardness: GH 1-5 against its 15-35 (gap 10)
 - look-alike rivals (4 lines): rainbowshark+redtailshark: Rainbow shark with Red-tail shark: rivals of its look-alike, keep one rainbow shark | rainbowshark+redtailshark: Red-tail shark with Rainbow shark: rivals of its look-alike, keep one rainbow shark
 
 Everything else below is the full list. Every pair of aquatic species in the catalogue in a big tank with heater and filter; a line is listed when the rule fields behind it are claimed / assumption / unsourced.
@@ -15,12 +15,12 @@ Everything else below is the full list. Every pair of aquatic species in the cat
 - rainbowshark+redtailshark: Red-tail shark with Rainbow shark: rivals of its look-alike, keep one rainbow shark
 - lawnmowerblenny+tailspotblenny: Lawnmower blenny with Tailspot blenny: rivals of its look-alike, keep one blenny
 
-## now AMBER (was red) | gh/ghOk: 341 pair lines
+## now AMBER (was red) | gh/ghOk: 344 pair lines
 - neon+endler: Endler's livebearer with Neon tetra: water hardness: GH 15-35 against its 1-12
 - cardinal+boesemani: Boeseman's rainbowfish with Cardinal tetra: water hardness: GH 9-19 against its 1-8
 - cardinal+guppy: Cardinal tetra with Guppy: water hardness: GH 1-8 against its 8-25
 
-## now AMBER (was red) | ph/phOk: 1400 pair lines
+## now AMBER (was red) | ph/phOk: 1445 pair lines
 - neon+molly: Black molly with Neon tetra: water chemistry: pH 7.5-8.5 against its 4.0-7.5
 - neon+yellowlab: Neon tetra with Yellow lab cichlid: water chemistry: pH 4.0-7.5 against its 7.6-8.6
 - neon+peacock: Neon tetra with Peacock cichlid: water chemistry: pH 4.0-7.5 against its 7.5-9.0
@@ -34,12 +34,12 @@ Everything else below is the full list. Every pair of aquatic species in the cat
 - neon+oscar: Oscar with Neon tetra: would eat it (our judgment: no source on file)
 - neon+rswcrayfish: Red swamp crayfish with Neon tetra: would eat it (our judgment: no source on file)
 
-## stays RED, tagged | temper: 494 pair lines
+## stays RED, tagged | temper: 499 pair lines
 - neon+convict: Convict cichlid with Neon tetra: too aggressive for it (our judgment: no source on file)
 - neon+rainbowshark: Rainbow shark with Neon tetra: too aggressive for it (our judgment: no source on file)
 - neon+redtailshark: Red-tail shark with Neon tetra: too aggressive for it (our judgment: no source on file)
 
-## stays RED, tagged | temper/nip/slow: 185 pair lines
+## stays RED, tagged | temper/nip/slow: 193 pair lines
 - blackskirt+guppy: Black skirt tetra with Guppy: would harass its long fins (our judgment: no source on file)
 - blackskirt+endler: Black skirt tetra with Endler's livebearer: would harass its long fins (our judgment: no source on file)
 - blackskirt+betta: Black skirt tetra with Betta: would harass its long fins (our judgment: no source on file)

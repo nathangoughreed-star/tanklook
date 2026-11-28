@@ -867,6 +867,14 @@
    "accessed": "2026-11-19",
    "kind": "consensus",
    "note": "RX2 (2026-11-19): page opened or searched; per-value quote in the provenance rule"
+  },
+  "floridamuseum.ufl.edu": {
+   "title": "Florida Museum of Natural History, Discover Fishes species profiles",
+   "by": "Florida Museum of Natural History",
+   "url": "https://www.floridamuseum.ufl.edu/discover-fish/species-profiles/brownbanded-bambooshark/",
+   "accessed": "2026-11-25",
+   "kind": "reference",
+   "note": "R150 (2026-11-25): page opened; per-value quote in the provenance rule"
   }
  }
 }

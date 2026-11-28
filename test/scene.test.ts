@@ -158,11 +158,13 @@ describe('species search', () => {
   });
 });
 
+// the bound catches typos in tl (an extra digit); a species really longer than 400 mm is listed here with its length, so a typo in its own row still fails: the bound is its value, not a blanket raise
+const LARGE_KNOWN: Record<string, number> = { bichir: 445, clownknife: 915, bambooshark: 945 };
 describe('species data', () => {
   it('every species has a sane size, card aspect and resting offset', () => {
     expect(new Set(SPECIES.map(s => s.id)).size).toBe(SPECIES.length);
     for (const s of SPECIES) {
-      expect(s.tl, s.id).toBeGreaterThanOrEqual(10); expect(s.tl, s.id).toBeLessThanOrEqual(s.body === 'snake' ? 1500 : 400);
+      expect(s.tl, s.id).toBeGreaterThanOrEqual(10); expect(s.tl, s.id).toBeLessThanOrEqual(s.body === 'snake' ? 1500 : LARGE_KNOWN[s.id] ?? 400);
       expect(s.aspect, s.id).toBeGreaterThan(0.1); expect(s.aspect, s.id).toBeLessThan(1.6);
       // the lowest point of the drawing lies inside the card, below the centre line
       expect(s.rest, s.id).toBeGreaterThan(0); expect(s.rest, s.id).toBeLessThanOrEqual(s.aspect / 2);

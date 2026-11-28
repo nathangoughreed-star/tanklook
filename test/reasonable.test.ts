@@ -24,7 +24,8 @@ const ratio = (r: (typeof rows)[number]) => r.litres / Math.max(1, r.wantL);
 
 describe('every water species finds a sensible catalogue tank', () => {
   if ((globalThis as any).process?.env.GEN_REASON) writeFileSync('research/reasonableness.md', ['# Smallest passing tank per species (worst first)', '', 'id | adult cm | smallest tank | litres | wants L | passing / wanted | limited by | stated length/area', '--|--|--|--|--|--|--|--', ...[...rows].sort((a, b) => ratio(b) - ratio(a)).map(r => `${r.id} | ${r.tl} | ${r.tank ?? 'none'} | ${Math.round(r.litres)} | ${r.wantL} | ${ratio(r).toFixed(2)} | ${r.limiting} | ${r.explicit ? 'yes' : ''}`)].join('\n') + '\n');
-  it('fits some catalogue tank', () => { expect(rows.filter(r => !r.tank).map(r => r.id)).toEqual([]); });
+  // no stock tank is wide enough for a 3 ft bamboo shark (needs about 82 x 41 in, custom): the same exception test/minimum.test.ts lists
+  it('fits some catalogue tank', () => { expect(rows.filter(r => !r.tank).map(r => r.id)).toEqual(['bambooshark']); });
   it('a species whose minimum is derived from its gallon figure is never held to a tank much bigger than those litres', () => {
     expect(rows.filter(r => !r.explicit && r.wantL > 0 && ratio(r) > 1.7).map(r => `${r.id} wants ${r.wantL} L but needs ${Math.round(r.litres)} L (${r.limiting})`)).toEqual([]);
   });
