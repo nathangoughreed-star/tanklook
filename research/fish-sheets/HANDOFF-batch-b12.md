@@ -50,3 +50,4 @@ Not in b12 (told Nathan): lined seahorse (upright body), kissing gourami and blo
 | bluedamsel | (group 2) | approved 2026-11-28 ("Approve group 2") | blue very saturated |
 | boxfish | (group 2) | approved 2026-11-28 ("Approve group 2") | proxy depth O. immaculatus; mass-soft 1.22-1.60x |
 | dwarfchainloach | (group 2), fixed | approved 2026-11-28 ("Approve group 2") | fishshapes.json depth set by hand 23 / 22-26 (FishBase: "elongated"); plan_extra barbels |
+| elephantnose | (group 3) | shown 2026-11-28 | tube-snout outline --face 14 (row 78); gate head/mid 0.22 is the trunk; mass-soft 1.14-1.56x |
