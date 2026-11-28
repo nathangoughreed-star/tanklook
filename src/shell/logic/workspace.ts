@@ -148,8 +148,8 @@ export interface SubSwatch { id: string; label: string }
 export interface SubOpt { id: string; label: string; preset?: string; brand?: boolean }
 export interface SubTypeView { id: string; label: string; options: SubOpt[] }
 const GENERIC: Record<string, SubOpt[]> = {
-  gravel: [{ id: 'blue', label: 'Blue' }, { id: 'red', label: 'Red' }, { id: 'onyx', label: 'Black' }, { id: 'wgrav', label: 'White' }, { id: 'pink', label: 'Pink' }, { id: 'green', label: 'Green' }, { id: 'custom', label: 'Clown puke', preset: 'clownpuke' }],
-  natural: [{ id: 'gravel', label: 'Natural gravel' }],
+  gravel: [{ id: 'blue', label: 'Blue' }, { id: 'red', label: 'Red' }, { id: 'onyx', label: 'Black' }, { id: 'wgrav', label: 'White' }, { id: 'pink', label: 'Pink' }, { id: 'green', label: 'Green' }, { id: 'custom', label: 'Clown puke', preset: 'clownpuke' }, { id: 'custom', label: 'Glass marbles', preset: 'marbles' }],
+  natural: [{ id: 'gravel', label: 'Natural gravel' }, { id: 'custom', label: 'Crushed gravel', preset: 'crushed' }, { id: 'custom', label: 'River stone', preset: 'riverstone' }],
   pea: [{ id: 'pea', label: 'Pea gravel' }],
   sand: [{ id: 'white', label: 'White sand' }, { id: 'black', label: 'Black sand' }],
   soil: [],
@@ -169,7 +169,7 @@ export function substrateTypes(): SubTypeView[] {
 /** Which type the current substrate belongs to. */
 export function subTypeOf(sub: { show: boolean; type: string; custom: { preset?: string } }): string {
   if (!sub.show) return 'bare';
-  if (sub.type === 'custom') return sub.custom.preset ? 'gravel' : 'custom';
+  if (sub.type === 'custom') { const p = sub.custom.preset; return p ? Object.keys(GENERIC).find(id => GENERIC[id].some(o => o.preset === p)) ?? 'gravel' : 'custom'; }
   const b = brandOf(sub.type); if (b) return b.type;
   if (SUBSTRATES[sub.type as keyof typeof SUBSTRATES]?.terra) return 'terra';
   for (const id of Object.keys(GENERIC)) if (GENERIC[id].some(o => o.id === sub.type)) return id;
