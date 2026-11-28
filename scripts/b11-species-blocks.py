@@ -6,6 +6,7 @@ Usage: python -I scripts/b11-species-blocks.py   (then fish-prompt-fill.py per f
 import json, os, sys
 
 B = 'C:/Users/nreed/fish-sheets/'
+BATCH = 'b11'   # b12-species-blocks.py imports this module and sets BATCH, S, ORDER
 FRONT = ('Seen from the front, the closed mouth is a fine lip line on a solid head surface; the nostrils are faint marks '
          'on the skin, never dark holes or openings.')
 SUBDUED = 'Natural colouring, slightly subdued, not neon-saturated.\n\n'
@@ -388,7 +389,7 @@ ORDER = list(S)
 
 
 def block(id, s):
-    fs = json.load(open(B + id + '-b11-gen/fishshapes.json'))
+    fs = json.load(open(B + id + '-' + BATCH + '-gen/fishshapes.json'))
     depth = round(fs['depth'])
     # FishShapes gives the snowflake moray a head depth of 3% SL (half its body depth): a measuring artifact, left out
     ratios = '' if id == 'snowflakemoray' else '* Head depth = approximately %d%% of standard length.\\n' % round(fs['head'])
@@ -432,13 +433,13 @@ if __name__ == '__main__' and sys.argv[1:] == ['--finish']:
     # after fish-prompt-fill.py: strip absent fins, copy to the committed prompt queue
     REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     for id in ORDER:
-        p = B + id + '-b11-gen/prompt.txt'
+        p = B + id + '-' + BATCH + '-gen/prompt.txt'
         t = strip_fins(open(p, encoding='utf-8').read(), S[id].get('no_fins', []))
         open(p, 'w', encoding='utf-8').write(t)
-        open(os.path.join(REPO, 'research', 'fish-sheets', 'prompts', id + '-b11-5row.md'), 'w', encoding='utf-8').write(t)
+        open(os.path.join(REPO, 'research', 'fish-sheets', 'prompts', id + '-' + BATCH + '-5row.md'), 'w', encoding='utf-8').write(t)
         print(id, len(t))
 elif __name__ == '__main__':
     for id in ORDER:
-        open(B + id + '-b11-gen/species.txt', 'w', encoding='utf-8').write(block(id, S[id]))
+        open(B + id + '-' + BATCH + '-gen/species.txt', 'w', encoding='utf-8').write(block(id, S[id]))
         print(id, 'no fins: ' + ','.join(S[id].get('no_fins', [])) if S[id].get('no_fins') else id)
-    json.dump({id: S[id].get('no_fins', []) for id in ORDER}, open(B + 'b11-no-fins.json', 'w'))
+    json.dump({id: S[id].get('no_fins', []) for id in ORDER}, open(B + BATCH + '-no-fins.json', 'w'))
