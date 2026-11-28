@@ -5,7 +5,7 @@ Chat BH1, 2026-11-28. Inputs: `design-summary.md` (Nathan's priorities and answe
 ## The slice in one paragraph
 Five pilot species, chosen so each covers a different body and a different way of using the scape, get a new brain and body while every other species keeps today's swim code untouched. The new system has three layers: a **world map of what the scape offers** (places, surfaces, insides, food patches), a **per-fish mind** (drives plus personality pick one behavior at a time from a shared library), and a **body** (three locomotion modes on one burst / glide / pause clock, rest poses that take the shape of the surface, secondary motion). Displays (courting, dominance) sit on top as two shared encounter scripts. No species-specific code: a species is a data file written from its ethogram.
 
-Out of scope, as Nathan set: tank events (water change, lights, keeper), day/night, breeding mechanics (eggs, fry, brood care). Colour states only where a display needs them (one tint, see decision 3).
+Out of scope, as Nathan set: tank events (water change, lights, keeper), day/night, breeding mechanics (eggs, fry, brood care). No colour states in slice 1 (Nathan: later).
 
 ## Pilot species (all five already have a live build-B model)
 | Species | Body mode | Attaches as | Scape use it proves | Display it proves |
@@ -100,7 +100,13 @@ One JSON per species, read by the system, written by hand for the five pilots an
 ```
 Numbers are judgement tuned on screen, not measurements (every ethogram says the measurements don't exist).
 
-## Decisions for Nathan
+## Nathan's answers (2026-11-28): design settled, S1 can start
+1. Pilots: the five as recommended (cory, pleco, kuhli, gudgeon, krib pair).
+2. Rollout: per species, as each is approved ("as we go").
+3. Colour-up: not in slice 1 ("wait til later"). S5 displays use pose and fins only.
+4. Leaf perching: slice 2 ("we can add it later").
+
+## Decisions for Nathan (asked; answered above)
 1. **Pilots**: the five above (cory, pleco, kuhli, gudgeon, krib pair), rummynose left on the old sim as the control. OK, or swap one?
 2. **Rollout**: per species on `behaviorLive.json` after his approval (recommended), or one switch for the whole tank once all five pass?
 3. **Colour-up in displays**: one tint on the existing fish texture (male brightens while displaying, about 1 s in and out) in S5, or leave colour out of slice 1?
