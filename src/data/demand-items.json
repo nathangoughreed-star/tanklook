@@ -2237,6 +2237,13 @@
    "hi": 15,
    "unit": "each, 1-2 in juvenile; That Pet Place small $6.99 (store only), Petco $6.49, AquaticArts $7.99 and iFISH $14.99 (snippets) (SO1 R202 search 2026-11-28; stock varies)",
    "url": "https://www.thatpetplace.com/Rocio-octofasciata-jack-dempsey-237530"
+  },
+  "animal:paradisefish": {
+   "lo": 9,
+   "mode": 10,
+   "hi": 33,
+   "unit": "each; Aquatics Unlimited $9.99-$19.99, AZ Gardens red $9.42, That Pet Place $9.99 (store only), LiveAquaria blue paradise $32.99 (snippets only) (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://www.thatpetplace.com/"
   }
  }
 }

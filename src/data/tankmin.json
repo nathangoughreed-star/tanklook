@@ -3002,6 +3002,25 @@
     "url": "https://www.seriouslyfish.com/species/rocio-octofasciata/"
    },
    "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of every minimum found (6 figures: Seriously Fish 64 gal; Aquarium Source 55 gal; Aquariadise 50 gal; Fishkeeping World 80 gal; LiveAquaria 55 gal; That Pet Place 75 gal), 63 gal (SO1 R202, 2026-11-28)"
+  },
+  "paradisefish": {
+   "red": {
+    "L": 800,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/macropodus-opercularis/",
+    "states": "80 x 30 cm, about 72 litres (19 US gal), the minimum for a single pair",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 19.7,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care pages",
+    "url": "https://www.seriouslyfish.com/species/macropodus-opercularis/"
+   },
+   "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of every minimum found (3 figures: Seriously Fish 19 gal; Aquarium Source 20 gal; FishLab 20 gal), 19.7 gal (SO1 R202, 2026-11-28)"
   }
  }
 }

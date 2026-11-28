@@ -37,6 +37,7 @@ export const CHEM: Record<string, { ph: R; gh?: R; phOk?: R; ghOk?: R }> = {
   guppy: { ph: [7, 8.3], gh: [8, 25] }, endler: { ph: [7, 8.5], gh: [15, 35] }, glasscatfish: { ph: [4.0, 7.0], gh: [1, 10] }, yoyoloach: { ph: [6.0, 7.5], gh: [2, 12] }, clownpleco: { ph: [6.8, 7.6], gh: [5, 15] }, saltpepper: { ph: [5.5, 7.5], gh: [2, 10] }, firemouth: { ph: [6.5, 8.5], gh: [2, 15] }, neonrainbow: { ph: [6.8, 7.5], gh: [5, 15] }, falsejulii: { ph: [5.8, 7.2], gh: [1, 12] }, peacockgudgeon: { ph: [6.5, 7.5], gh: [5, 10] }, clownkilli: { ph: [4.0, 7.0], gh: [1, 8] }, electricblueacara: { ph: [6.5, 8.0], gh: [5, 25] }, convict: { ph: [6.0, 8.0], gh: [5, 25] }, glowlight: { ph: [5.5, 7.5], gh: [2, 15] }, pleco: { ph: [6.5, 7.5], gh: [5, 25] }, threespot: { ph: [5.5, 8.5], gh: [3, 35] }, platy: { ph: [7.0, 8.2], gh: [9, 25] }, molly: { ph: [7.5, 8.5], gh: [10, 25] },
   bichir: { ph: [6.2, 7.8], gh: [5, 20], phOk: [6.0, 7.8] }, // R150: Seriously Fish 6.2-7.8 and 5-20 dGH; hobby pages 6.0-7.8
   clownknife: { ph: [6.5, 7.5], gh: [2, 15], phOk: [6.0, 8.0] }, // R150: aquariumfish.com 6.5-7.5; Seriously Fish 6.0-8.0, 2-15 dGH
+  paradisefish: { ph: [6.0, 8.0], gh: [5, 20], phOk: [5.8, 8.0] },
   jackdempsey: { ph: [6.5, 8.0], gh: [8, 20], phOk: [6.0, 8.0] },
   frontosa: { ph: [8.0, 9.0], gh: [10, 20] },
   denison: { ph: [6.8, 7.8], gh: [5, 25], phOk: [6.5, 7.8] },
