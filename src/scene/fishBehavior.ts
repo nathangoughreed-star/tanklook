@@ -119,7 +119,7 @@ const SLOWER: StyleSpec = { rate: 1.1, tau: 0.45, turn: 14, mix: [0.45, 0.3, 0.2
 export const STYLE: Record<string, StyleSpec> = {
   danio: { rate: 2.0, tau: 0.3, turn: 22, mix: [0.65, 0.15, 0.2] }, cpd: QUICK, whitecloud: QUICK, neon: QUICK, cardinal: QUICK, greenneon: QUICK, ember: QUICK,
   merah: QUICK, exclamation: QUICK, dwarfrasbora: QUICK, chili: QUICK, harlequin: SLOWER,
-  dwarfpencil: { rate: 0.9, tau: 0.5, turn: 12, mix: [0.4, 0.3, 0.3] }, guppy: SLOWER, endler: SLOWER, glasscatfish: SLOWER, neonrainbow: QUICK, clownkilli: SLOWER, glowlight: QUICK, serpae: QUICK, denison: QUICK, congotetra: QUICK, cherrybarb: SLOWER, peapuffer: { rate: 1.0, tau: 0.4, turn: 25, mix: [0.4, 0.2, 0.4] },
+  dwarfpencil: { rate: 0.9, tau: 0.5, turn: 12, mix: [0.4, 0.3, 0.3] }, guppy: SLOWER, endler: SLOWER, glasscatfish: SLOWER, neonrainbow: QUICK, clownkilli: SLOWER, glowlight: QUICK, serpae: QUICK, congotetra: QUICK, cherrybarb: SLOWER, peapuffer: { rate: 1.0, tau: 0.4, turn: 25, mix: [0.4, 0.2, 0.4] },
 };
 
 /**
