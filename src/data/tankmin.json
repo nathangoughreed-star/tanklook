@@ -3079,6 +3079,25 @@
     "url": "https://www.seriouslyfish.com/species/dario-dario/"
    },
    "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of the two minimums found (Seriously Fish 11 gal; Aquarium Source 10 gal, 20 gal for more than 6 fish; Fishkeeping World 10 gal), 10.5 gal (SO1 R202, 2026-11-28)"
+  },
+  "serpae": {
+   "red": {
+    "L": 800,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/hyphessobrycon-eques/",
+    "states": "80 x 30 cm, about 72 litres (19 US gal), the absolute minimum, for 12-15 fish",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 19.7,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care pages",
+    "url": "https://www.seriouslyfish.com/species/hyphessobrycon-eques/"
+   },
+   "why": "the footprint is Seriously Fish's stated base (FishBase: a tank of at least 60 cm); the gallon figure is the mean of every minimum found (3 figures: Seriously Fish 19 gal; Aquarium Source 20 gal; Fishkeeping World 20 gal), 19.7 gal (SO1 R202, 2026-11-28)"
   }
  }
 }

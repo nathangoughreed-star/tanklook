@@ -2265,6 +2265,13 @@
    "hi": 17,
    "unit": "each, 0.5-0.8 in; That Pet Place $9.99 (store only), Aquatic Arts male-only $16.99, Imperial Tropicals $6.99 (sold out) (snippets only) (SO1 R202 search 2026-11-28; stock varies)",
    "url": "https://aquaticarts.com/products/scarlet-badis"
+  },
+  "animal:serpae": {
+   "lo": 3,
+   "mode": 4,
+   "hi": 6,
+   "unit": "each; Aquahuna $2.75 (packs of 8), Petco red minor serpae 12-pack $71.49 (about $6 each) (snippets only) (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://aquahuna.com/collections/tetra/products/serpae-tetra"
   }
  }
 }

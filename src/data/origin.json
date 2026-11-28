@@ -147,5 +147,6 @@
  "paradisefish": {"c": ["asia"], "r": "Southern China south of the Yangtze, Taiwan, Hainan, northern and central Vietnam, northeast Laos; farmed extensively for the trade, with selectively bred strains (blue, red) sold", "s": "Seriously Fish; FishBase"},
  "greenspotpuffer": {"c": ["asia"], "r": "Sri Lanka, India, Myanmar, Thailand, Cambodia, Vietnam, Malaysia, Indonesia and the Philippines, north to China: rivers, floodplains, estuaries and mangroves (euryhaline)", "s": "Seriously Fish; FishBase"},
  "bumblebeegoby": {"c": ["asia"], "r": "Western Borneo: Sarawak, Brunei and West Kalimantan, and the Natuna Islands; fresh and brackish waters (FishBase also lists Malaysia, Indonesia, Singapore)", "s": "Seriously Fish; FishBase"},
- "scarletbadis": {"c": ["asia"], "r": "Brahmaputra tributaries in West Bengal and Assam, India, possibly Bhutan; trade fish are mostly males, and whether they are wild or captive-bred is not stated", "s": "Seriously Fish; FishBase"}
+ "scarletbadis": {"c": ["asia"], "r": "Brahmaputra tributaries in West Bengal and Assam, India, possibly Bhutan; trade fish are mostly males, and whether they are wild or captive-bred is not stated", "s": "Seriously Fish; FishBase"},
+ "serpae": {"c": ["samerica"], "r": "Amazon drainage (Brazil, Peru, Bolivia) and the Rio Paraguay (Brazil, Paraguay, Argentina); the trade fish are farmed, and ornamental strains (long-finned, balloon) and blood-tetra hybrids are sold", "s": "Seriously Fish; FishBase"}
 }

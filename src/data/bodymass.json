@@ -946,6 +946,12 @@
    "b": 3.12,
    "src": "fishbase-bayes",
    "note": "FishBase ID 60260 Bayesian (TL cm, a 0.00180-0.00842, b 2.94-3.30); its length-weight table has no rows (SO1 R202)"
+  },
+  "serpae": {
+   "a": 0.01349,
+   "b": 3.14,
+   "src": "fishbase-bayes",
+   "note": "FishBase ID 46294 Bayesian (TL cm, a 0.00695-0.02619, b 2.97-3.31); its three table rows are SL and are not used (SO1 R202)"
   }
  }
 }
