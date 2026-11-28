@@ -24,7 +24,8 @@ const lowest = (p: SwimPose, s: SwimmerSpec) => p.y - 0.45 * s.len * Math.sin(Ma
 describe('FB1 data', () => {
   it('every hover / dig entry names a real species and sane numbers', () => {
     const ids = new Set(SPECIES.map(s => s.id));
-    for (const [id, h] of Object.entries(HOVER)) { expect(ids.has(id), id).toBe(true); expect(h.w).toBeGreaterThan(0); expect(h.w).toBeLessThanOrEqual(1); expect(h.pec).toBeGreaterThan(0); expect(h.pec).toBeLessThanOrEqual(1); expect(h.caudal).toBeGreaterThanOrEqual(0); expect(h.caudal).toBeLessThanOrEqual(1); }
+    const sessile = new Set(SPECIES.filter(s => s.kind === 'sessile').map(s => s.id)); // anemones keep an all-zero hover row on purpose (never swim)
+    for (const [id, h] of Object.entries(HOVER)) { expect(ids.has(id), id).toBe(true); if (sessile.has(id)) continue; expect(h.w).toBeGreaterThan(0); expect(h.w).toBeLessThanOrEqual(1); expect(h.pec).toBeGreaterThan(0); expect(h.pec).toBeLessThanOrEqual(1); expect(h.caudal).toBeGreaterThanOrEqual(0); expect(h.caudal).toBeLessThanOrEqual(1); }
     for (const [id, d] of Object.entries(DIG)) {
       expect(ids.has(id), id).toBe(true);
       expect(SPECIES.find(s => s.id === id)!.zone, id).toBe('bottom'); // digging is a bottom dweller's habit
