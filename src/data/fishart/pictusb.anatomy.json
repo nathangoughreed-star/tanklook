@@ -549,44 +549,44 @@
     100
    ],
    "halfWidthPctSL": [
-    5.62,
-    5.62,
-    5.62,
-    5.62,
-    5.62,
-    5.62,
-    5.62,
-    5.62,
-    5.62,
-    5.7,
+    1.68,
+    2.82,
+    3.69,
+    4.46,
+    5.03,
+    5.8,
     6.38,
+    6.87,
     7.31,
-    9.06,
-    9.96,
-    10.02,
-    10.07,
-    10.13,
-    10.18,
-    10.24,
-    9.57,
-    8.96,
-    8.31,
-    8.071,
-    7.392,
-    6.375,
-    5.175,
-    3.975,
-    2.958,
-    1.918,
-    1.4,
-    1.126,
-    1.02
+    7.67,
+    8.0,
+    7.74,
+    9.74,
+    9.79,
+    9.35,
+    8.91,
+    8.48,
+    8.04,
+    7.6,
+    7.32,
+    6.47,
+    6.31,
+    6.135,
+    5.638,
+    4.893,
+    4.015,
+    3.137,
+    2.392,
+    1.595,
+    1.174,
+    0.948,
+    0.86
    ],
    "source": "top panel of the generated sheet, blue-share mask (thr 0.60); the narrower side of the centre line",
    "fit": {
-    "thick": 0.97,
-    "pedT": 0.261,
-    "rmsPctSL": 0.89,
+    "thick": 0.93,
+    "pedT": 0.057,
+    "rmsPctSL": 0.81,
     "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
    }
   },
@@ -824,7 +824,7 @@
      "fk": 926.0,
      "y0": -0.1223
     },
-    "thickx": 1.03,
+    "thickx": 1.078,
     "noTail": false,
     "measuredWidth": true,
     "aspect": 0.433,
@@ -890,9 +890,9 @@
       254.0
      ]
     ],
-    "ver": "4782d906"
+    "ver": "b8e574b0"
    },
-   "fit": "{'thick': 0.97, 'pedT': 0.261, 'rmsPctSL': 0.89, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
+   "fit": "{'thick': 0.93, 'pedT': 0.057, 'rmsPctSL': 0.81, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }
  },
  "reliability": {
