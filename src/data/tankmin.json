@@ -3137,6 +3137,25 @@
     "url": "https://www.seriouslyfish.com/species/apistogramma-agassizii/"
    },
    "why": "the footprint is Seriously Fish's stated base for a pair (FishBase: a tank of at least 60 cm); the gallon figure is the mean of every minimum found (3 figures: Seriously Fish 14 gal; Aquarium Co-Op 20 gal; aqua-fish 20 gal), 18 gal; a harem wants more (a retailer snippet says 100 L or more)"
+  },
+  "blackneon": {
+   "red": {
+    "L": 800,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/hyphessobrycon-herbertaxelrodi/",
+    "states": "80 x 30 cm, about 72 litres (19 US gal), the smallest tank to consider",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 16.3,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care pages",
+    "url": "https://www.seriouslyfish.com/species/hyphessobrycon-herbertaxelrodi/"
+   },
+   "why": "the footprint is Seriously Fish's stated base (FishBase: a tank of at least 60 cm); the gallon figure is the mean of every minimum found (3 figures: Seriously Fish 19 gal; Aquarium Source 20 gal; Aquarium Co-Op 10 gal for six fish), 16.3 gal (SO3 R204, 2026-11-28)"
   }
  }
 }

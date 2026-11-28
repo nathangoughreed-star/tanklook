@@ -970,6 +970,12 @@
    "b": 2.98,
    "src": "fishbase-bayes",
    "note": "FishBase ID 26703 Bayesian (TL cm, a 0.01087-0.02908, b 2.84-3.12); its three table rows are SL (n 1307, 3, 115; b 2.79-3.16) and are not used (SO3 R204)"
+  },
+  "blackneon": {
+   "a": 0.01202,
+   "b": 3.09,
+   "src": "fishbase-bayes",
+   "note": "FishBase ID 10654 Bayesian (TL cm, a 0.00479-0.03019, b 2.89-3.29); its one table row (SL, n=1, b 3.000) is not used (SO3 R204)"
   }
  }
 }
