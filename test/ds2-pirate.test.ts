@@ -96,7 +96,7 @@ describe('the six existing looks are unchanged', () => {
     }
     return out;
   };
-  // EP1 (2026-11-28): regenerated again: tied epiphytes are seated on the real wood / rock surface in the handed-out scene, which moves their x / depth by a few mm and the 'ordered' axis in 48 of 135 (checked: every other item identical)
+  // EP1 (2026-11-28): regenerated again: tied epiphytes are seated on the real wood / rock surface (recipe reseat), which moves their x / depth and the 'ordered' axis, and planted-community and brackish-rocky-coast pick another composition (their cover search now sees the plants where they are drawn)
   // R94 (2026-11-15): test/fixtures/ds2-looks-main.json was regenerated once from this snap() because the auto glass thickness moved to stocked sizes (items sit on the glass)
   it('draws every other archetype exactly as origin/main did', () => { expect(snap()).toEqual(looksMain); }, 400000);   // 2026-11-27: ~60 s alone, over the 120 s default on the loaded CI runner
 });

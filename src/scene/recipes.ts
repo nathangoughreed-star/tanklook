@@ -283,7 +283,7 @@ function clean(a: Archetype, d: Density, S: TankSetup): void {
 }
 /** What every level and step gets after its starter set is drawn: the archetype's own cuts, then its background. */
 /** Every raised coral back on the rock under it (CF1): the size caps, the weight budget and the step drawing all resize the rock a coral was planned on. */
-const reseat = (S: TankSetup) => { seatHook.corals?.(S); return S; };
+const reseat = (S: TankSetup) => { seatHook.corals?.(S); seatHook.epiphytes?.(S); return S; }; // EP1: after the pieces were resized or dropped, the tied plants go back onto them (else they float where the old piece was)
 /** EP1: a copy handed out, its tied plants seated on the real surface. Only the copy: the search above measures the
  *  unseated scenes, so seating never changes which design a recipe picks. */
 const handOut = (S: TankSetup) => { const c = structuredClone(S); seatHook.epiphytes?.(c); return c; };

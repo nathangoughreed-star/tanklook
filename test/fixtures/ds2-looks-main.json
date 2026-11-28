@@ -234,40 +234,40 @@
   "mode": "none"
  },
  "planted-community/open": {
-  "n": 42,
-  "h": 581273817,
+  "n": 62,
+  "h": 2404886384,
   "sub": "custom",
   "ax": [
    1,
-   0.785,
-   -0.75,
-   0.306,
-   0
+   1,
+   0,
+   -0.163,
+   1
   ],
   "mode": "live"
  },
  "planted-community/balanced": {
-  "n": 77,
-  "h": 1368537314,
+  "n": 81,
+  "h": 3277925340,
   "sub": "custom",
   "ax": [
    1,
    1,
-   -0.75,
-   0.442,
-   0
+   -0.402,
+   0.123,
+   1
   ],
   "mode": "live"
  },
  "planted-community/full": {
-  "n": 140,
-  "h": 3523438625,
+  "n": 159,
+  "h": 1916564425,
   "sub": "custom",
   "ax": [
    1,
    1,
-   -0.75,
-   -0.098,
+   0.376,
+   -0.35,
    1
   ],
   "mode": "live"
@@ -1170,40 +1170,40 @@
   "mode": "live"
  },
  "brackish-rocky-coast/open": {
-  "n": 18,
-  "h": 2407215141,
+  "n": 17,
+  "h": 115597052,
   "sub": "custom",
   "ax": [
    1,
    -1,
    -0.75,
-   0.591,
+   0.64,
    1
   ],
   "mode": "live"
  },
  "brackish-rocky-coast/balanced": {
-  "n": 37,
-  "h": 1549107815,
+  "n": 33,
+  "h": 410826624,
   "sub": "custom",
   "ax": [
    1,
    -1,
    -0.75,
-   0.294,
+   0.43,
    1
   ],
   "mode": "live"
  },
  "brackish-rocky-coast/full": {
-  "n": 44,
-  "h": 269675610,
+  "n": 41,
+  "h": 1038802050,
   "sub": "custom",
   "ax": [
    1,
    -1,
    -0.75,
-   0.505,
+   0.594,
    1
   ],
   "mode": "live"

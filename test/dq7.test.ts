@@ -14,9 +14,10 @@ import type { CandidateRecord, DiscoverySession } from '../src/scene/discoveryTy
 import type { Fish, TankSetup } from '../src/scene/types';
 
 const GOLDEN: Record<string, string[]> = {
+  // EP1 (2026-11-28): one design re-keyed (1e2hk811j7q4 -> 1kynl1g1ngm5): its tied plants now sit on the real wood surface (recipe reseat), which changes the key
   // HG1 (2026-11-27): a and b re-captured: the generated wood skeletons (scene/hardgen.ts) put the limbs plants are tied onto elsewhere, so the drawn designs differ
-  a: ['19hla0x4qt3e', '1e2hk811j7q4', '19hla0x4qt3e|1b5izw11tl1g'],
-  b: ['1e2hk811j7q4', '1ypy6wh1jppt', '1e2hk811j7q4|1cz32b33d6so'],
+  a: ['19hla0x4qt3e', '1kynl1g1ngm5', '19hla0x4qt3e|1b5izw11tl1g'],
+  b: ['1kynl1g1ngm5', '1ypy6wh1jppt', '1kynl1g1ngm5|1cz32b33d6so'],
   c: ['0w51b2l11bw0', '1cz32b33d6so', '0w51b2l11bw0|1b5izw11tl1g'],
 };
 

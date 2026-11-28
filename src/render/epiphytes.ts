@@ -127,6 +127,7 @@ export function seatEpiphytes(S: TankSetup): number {
       h = nearestSurface(meshes, base);
       if (h && h.d > Math.max(0, it.lift) + 10) h = null; // the ground is nearer: it was never on a piece
     }
+    if (h && it.host === h.item && h.p.distanceTo(base) < 0.5) { seen.set(it.id, seatKey(it)); continue; } // already on it: untouched, so seating twice changes nothing
     if (h) tieTo(S, it, h); else untie(it);
     seen.set(it.id, seatKey(it));
     if (seatKey(it) + it.pitch + ',' + it.tilt !== before) moved++;
