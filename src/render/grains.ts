@@ -66,7 +66,9 @@ export function grainLook(sub: TankSetup['substrate']): GrainLook | null {
 /** Whether a blend has painted-only patches (sand or mud) beside its 3D stones. */
 export const grainPatchy = (sub: TankSetup['substrate']) => sub.type === 'custom' && sub.custom.grains.length > 1 && !sub.custom.grains.every(g => grain3D(g.grain));
 /** About how far the grains rise above the painted ground (mm): leaf litter lies on them. */
-export const grainTop = (g: GrainLook | null) => (g ? (g.size[0] + g.size[1]) / 2 * (g.shape === 'chip' ? 0.15 : 0.22) : 0);
+export const grainTop = (g: GrainLook | null) => (g ? (g.size[0] + g.size[1]) / 2 * (g.shape === 'chip' ? 0.15 : solidGrain(g) ? 0.7 : 0.22) : 0);
+/** Grains packed as solid bodies (packedGrains), not strewn: big ones (5/16 in and up) and round ones (marbles), where overlaps and gaps show. */
+export const solidGrain = (g: GrainLook) => g.shape === 'stone' && ((g.size[0] + g.size[1]) / 2 >= 8 || (g.sphere ?? 0) >= 0.85);
 
 const grainGeo = new Map<string, THREE.BufferGeometry[]>();
 /**
@@ -111,6 +113,7 @@ export function stoneGeos(round: number, speckle: boolean, detail: number, spher
     }
     smooth.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
     smooth.translate(0, sy * 0.25, 0); // its middle a quarter of its height up: lift 0 sinks it about halfway
+    smooth.userData.sy = sy; smooth.userData.sz = sz; // the packer (packedGrains) sizes its contacts from them
     smooth.userData.keep = true; return smooth;
   });
   grainGeo.set(key, gs); return gs;
@@ -225,7 +228,75 @@ function stoneMat(rough: number, opacity: number) {
 }
 /** Grains in the top layer: enough to cover the floor about once, sunk in (stones about halfway, chips a little), packed
  *  (a pile grid of a third of a grain), each coloured from the ground's shades; darker under water if terrestrial. */
-export const grainMeshes = (S: TankSetup, T: Tank, ground: GroundAt) => cachedGrains('top', S, T, () => grainLooks(S.substrate).flatMap((g, i) => topGrains(S, T, ground, g, i)));
+export const grainMeshes = (S: TankSetup, T: Tank, ground: GroundAt) => cachedGrains('top', S, T, () => {
+  const gs = grainLooks(S.substrate);
+  return gs.some(solidGrain) ? packedGrains(S, T, ground, gs) : gs.flatMap((g, i) => topGrains(S, T, ground, g, i));
+});
+/**
+ * Solid grains (Nathan 2026-11-28: marbles 'should act and pack like solid spheres', and black holes showed between big
+ * grains): every 3D grain of the ground dropped one at a time onto the bed, settling on the ground or on the grains already
+ * there as round bodies (sphere on sphere contact, never through), at the lowest of eight nearby spots (it rolls into a
+ * hollow). The bed starts 0.4 of a grain below the painted ground and fills to about a grain above it: two layers, so a gap in
+ * the top layer shows the grains under it, not the painted ground. A blend's grains are packed together (each point picks a
+ * grain by its share there; sand and mud patches stay paint). A spatial hash keeps it near linear: 30k grains at most.
+ */
+function packedGrains(S: TankSetup, T: Tank, ground: GroundAt, looks: GrainLook[]): THREE.InstancedMesh[] {
+  const r = rng(29 + blendSeed(S)), inBy = insideIn(T), area = footprint(T).area, { L, D } = T;
+  const kinds = looks.map(grainKinds), pals = looks.map(g => g.colors.map(c => new THREE.Color(c).multiplyScalar(0.8)));
+  const wy = S.water.on ? waterY(T, S.water.level) : -Infinity;
+  const big = Math.max(...looks.map(g => g.size[1])), mean = looks.reduce((a, g) => a + (g.size[0] + g.size[1]) / 2, 0) / looks.length;
+  // per placed grain: plan position, centre height, contact radius
+  const MAX = 30000, X = new Float32Array(MAX), Dp = new Float32Array(MAX), Y = new Float32Array(MAX), R = new Float32Array(MAX);
+  const C = Math.max(4, big), NX = Math.ceil(L / C) + 2, NZ = Math.ceil(D / C) + 2, grid: number[][] = Array.from({ length: NX * NZ }, () => []);
+  const cellOf = (x: number, d: number) => (Math.floor(x / C) + 1) * NZ + Math.floor(d / C) + 1;
+  const rest = (x: number, d: number, rc: number, hh: number, base: number) => {
+    let y = base + hh; const i0 = Math.floor(x / C) + 1, j0 = Math.floor(d / C) + 1;
+    for (let i = i0 - 1; i <= i0 + 1; i++) for (let j = j0 - 1; j <= j0 + 1; j++) {
+      const cell = grid[i * NZ + j]; if (!cell) continue;
+      for (const k of cell) { const dx = X[k] - x, dd = Dp[k] - d, rr = R[k] + rc, p2 = dx * dx + dd * dd; if (p2 < rr * rr) y = Math.max(y, Y[k] + Math.sqrt(rr * rr - p2)); }
+    }
+    return y;
+  };
+  const per: number[][][] = kinds.map(ks => ks.map(() => [])), tint: number[][][] = kinds.map(ks => ks.map(() => []));
+  const q = new THREE.Quaternion(), qa = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), ax = new THREE.Vector3(), pos = new THREE.Vector3(), scl = new THREE.Vector3(), mx = new THREE.Matrix4(), col = new THREE.Color();
+  const tries = Math.round(2 * 3 * area * 0.85 / (Math.PI * (mean * 0.45) ** 2));
+  let n = 0, miss = 0; // `miss`: drops in a row that found the bed full; past a few hundred, it is full everywhere
+  for (let t = 0; t < tries && n < MAX && miss < 600; t++) {
+    const x0 = r() * L, d0 = r() * D;
+    // which grain lands here: by each one's share at this point (a blend), the rest is a sand or mud patch
+    const w = looks.map(g => (g.at ? g.at(x0, d0) : 1)), tw = w.reduce((a, b) => a + b, 0), u = r() * Math.max(1, tw);
+    let li = -1; for (let k = 0, acc = 0; k < w.length; k++) { acc += w[k]; if (u < acc) { li = k; break; } }
+    const yaw = r() * Math.PI * 2, tilt = (r() - 0.5) * 0.4, tiltA = r() * Math.PI * 2, ki = Math.floor(r() * 10), su = r(), pc = r(), sh = r();
+    if (li < 0) continue;
+    const g = looks[li], K = kinds[li][ki % kinds[li].length], size = g.size[0] + su * (g.size[1] - g.size[0]);
+    const sy = K.geo.userData.sy ?? 1, sz = K.geo.userData.sz ?? 1, hh = 0.5 * sy * size, rc = 0.5 * size * (1 + sy + sz) / 3;
+    // settle: the lowest of eight spots within a grain's width (rolling into the hollow between its neighbours)
+    let bx = 0, bd = 0, by = Infinity, bg = 0;
+    for (let c = 0; c < 8; c++) {
+      const x = x0 + (c ? (r() - 0.5) * rc * 2 : 0), d = d0 + (c ? (r() - 0.5) * rc * 2 : 0);
+      if (inBy(x, d) < rc * 0.9) continue; // clear of the glass
+      const gy = ground(x, d)[1], y = rest(x, d, rc, hh, gy - 0.4 * size);
+      if (y < by) { by = y; bx = x; bd = d; bg = gy; }
+    }
+    if (by === Infinity || by - hh > bg + 0.5 * size) { miss++; continue; } // the bed is full here (two layers: the second rests on the first)
+    miss = 0;
+    X[n] = bx; Dp[n] = bd; Y[n] = by; R[n] = rc; grid[cellOf(bx, bd)]?.push(n); n++;
+    qa.setFromAxisAngle(up, yaw); ax.set(Math.cos(tiltA), 0, Math.sin(tiltA)); q.setFromAxisAngle(ax, tilt).multiply(qa);
+    pos.set(bx, by - sy * 0.25 * size, -bd); scl.set(size, size, size); // the geometry's middle is a quarter of its height up
+    for (const v of mx.compose(pos, q, scl).elements) per[li][ki % kinds[li].length].push(v);
+    const p = pals[li], k = (0.85 + sh * 0.3) * (g.wet && by < wy ? 0.55 : 1);
+    col.copy(p[Math.floor(pc * p.length)]).multiplyScalar(k); tint[li][ki % kinds[li].length].push(col.r, col.g, col.b);
+  }
+  const out: THREE.InstancedMesh[] = [];
+  kinds.forEach((ks, li) => ks.forEach((K, i) => {
+    if (!per[li][i].length) return;
+    const m = new THREE.InstancedMesh(K.geo, K.mat, per[li][i].length / 16);
+    m.instanceMatrix = new THREE.InstancedBufferAttribute(new Float32Array(per[li][i]), 16);
+    m.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(tint[li][i]), 3);
+    m.computeBoundingSphere(); m.userData.scatter = true; m.userData.grains = true; m.renderOrder = -1; out.push(m);
+  }));
+  return out;
+}
 function topGrains(S: TankSetup, T: Tank, ground: GroundAt, g: GrainLook, layer: number, area = footprint(T).area): THREE.InstancedMesh[] {
   const mean = (g.size[0] + g.size[1]) / 2, foot = Math.PI * (mean / 2) ** 2 * (g.shape === 'chip' ? 0.55 : 0.8);
   const wy = g.wet && S.water.on ? waterY(T, S.water.level) : -Infinity, chip = g.shape === 'chip', count = Math.min(30000, Math.round(1.6 * area / foot)); // 1.6 covers (was 1.25): fewer painted gaps showing
@@ -264,10 +335,42 @@ function paneGrains(S: TankSetup, T: Tank, groundY: (x: number, d: number) => nu
   const per: THREE.Matrix4[][] = kinds.map(() => []), tint: THREE.Color[][] = kinds.map(() => []);
   const pal = g.colors.map(c => new THREE.Color(c)), wy = g.wet && S.water.on ? waterY(T, S.water.level) : -Infinity;
   const q = new THREE.Quaternion(), qa = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), ax = new THREE.Vector3();
-  const inBy = insideIn(T);
+  const inBy = insideIn(T), solid = solidGrain(g);
+  /**
+   * Solid grains (marbles, pebbles) against a pane: discs dropped into the pane's plane, each resting on the floor or on the
+   * ones under it (never overlapping, Nathan 2026-11-28), the lowest of six nearby spots, up to the ground's edge; each grain
+   * touches the glass. Buckets along the pane keep it near linear.
+   */
+  const packPane = (e: ReturnType<typeof footprint>['edges'][number], avg: number) => {
+    const yaw = Math.atan2(-(e.b[1] - e.a[1]), e.b[0] - e.a[0]), W = Math.max(4, g.size[1]), NB = Math.ceil(e.len / W) + 2;
+    const B: number[][] = Array.from({ length: NB }, () => []), Sx: number[] = [], Yc: number[] = [], Rr: number[] = [];
+    const tries = Math.min(20000, Math.round(3 * e.len * avg / (Math.PI * (mean * 0.45) ** 2)));
+    for (let i = 0; i < tries; i++) {
+      const s0 = r() * e.len, size = g.size[0] + r() * (g.size[1] - g.size[0]), ki = Math.floor(r() * kinds.length), c = pal[Math.floor(r() * pal.length)], k = 0.85 + r() * 0.3, a = r() * Math.PI * 2;
+      const K = kinds[ki], sy = K.geo.userData.sy ?? 1, sz = K.geo.userData.sz ?? 1, hh = 0.5 * sy * size, rc = 0.5 * size * (1 + sy + sz) / 3;
+      let bs = 0, by = Infinity;
+      for (let cc = 0; cc < 6; cc++) {
+        const sp = s0 + (cc ? (r() - 0.5) * rc * 2 : 0); if (sp < rc || sp > e.len - rc) continue;
+        let y = hh; const b0 = Math.floor(sp / W) + 1;
+        for (let bi = b0 - 1; bi <= b0 + 1; bi++) for (const j of B[bi] ?? []) { const dx = Sx[j] - sp, rr = Rr[j] + rc; if (dx * dx < rr * rr) y = Math.max(y, Yc[j] + Math.sqrt(rr * rr - dx * dx)); }
+        if (y < by) { by = y; bs = sp; }
+      }
+      if (by === Infinity) continue;
+      const t = bs / e.len, px = e.a[0] + (e.b[0] - e.a[0]) * t, pd = e.a[1] + (e.b[1] - e.a[1]) * t, top = groundY(px, pd);
+      if (by > top - 0.15 * size) continue; // up to the ground's edge (the top layer takes over there)
+      const inset = rc + 0.4, x = px - e.n[0] * inset, d = pd - e.n[1] * inset;
+      if (inBy(x, d) < inset - 0.5) continue; // a corner: the other pane is too near
+      if (g.at && r() >= g.at(px, pd)) continue; // a blend: only on this grain's patches
+      Sx.push(bs); Yc.push(by); Rr.push(rc); B[Math.floor(bs / W) + 1].push(Sx.length - 1);
+      qa.setFromAxisAngle(up, yaw + a);
+      per[ki].push(new THREE.Matrix4().compose(new THREE.Vector3(x, by - sy * 0.25 * size, -d), qa, new THREE.Vector3(size, size, size)));
+      tint[ki].push(c.clone().multiplyScalar(k * 1.3 * (by < wy ? 0.55 : 1) * (FX.ground ? 0.7 + 0.3 * Math.min(1, by / (top || 1)) : 1)));
+    }
+  };
   for (const e of footprint(T).edges) {
     const yaw = Math.atan2(-(e.b[1] - e.a[1]), e.b[0] - e.a[0]); // world angle of the pane (z = -depth)
     const avg = (groundY(e.a[0], e.a[1]) + groundY(e.b[0], e.b[1]) + groundY((e.a[0] + e.b[0]) / 2, (e.a[1] + e.b[1]) / 2)) / 3;
+    if (solid) { packPane(e, avg); continue; }
     const n = Math.min(20000, Math.round((FX.ground ? 1.5 : 1.3) * e.len * avg / (mean * mean * (chip ? 0.35 : 0.6))));
     for (let i = 0; i < n; i++) {
       const t = r(), size = g.size[0] + r() * (g.size[1] - g.size[0]), ki = Math.floor(r() * kinds.length), c = pal[Math.floor(r() * pal.length)];
