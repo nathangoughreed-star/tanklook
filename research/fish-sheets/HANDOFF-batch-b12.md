@@ -24,7 +24,7 @@ Steps: `PIPELINE.md`. Same method as b11 (`HANDOFF-batch-b11.md`).
 | severum | Severum (wild type), *Heros efasciatus* | 8 in | own | - | |
 | greenterror | Green terror (male), *Andinoacara rivulatus* | 8 in | own | - | nuchal hump |
 | agassizii | Agassiz's dwarf cichlid (male), *Apistogramma agassizii* | 3 in | own | - | spade tail |
-| elephantnose | Elephantnose, *Gnathonemus petersii* | 9 in | own | - | chin trunk: build with the tube-snout outline (`--face`, method row 75) |
+| elephantnose | Elephantnose, *Gnathonemus petersii* | 9 in | own | - | chin trunk: build with the tube-snout outline (`--face`, method row 78) |
 | arowana | Silver arowana, *Osteoglossum bicirrhosum* | 24 in | own | - | |
 | upsidedowncat | Upside-down catfish, *Synodontis nigriventris* | 3.5 in | proxy *S. nigrita* | - (adipose) | drawn upright |
 | dwarfchainloach | Dwarf chain loach, *Ambastaia sidthimunki* | 2 in | proxy *Botia histrionica* | - | check depth vs photo |

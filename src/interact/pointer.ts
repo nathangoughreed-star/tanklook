@@ -16,7 +16,8 @@ import { tankView } from '../render/tankView';
 import { clingsTo, fishTL, getSpecies, leafUp, restsOnFloor, speciesOf } from '../data/species';
 import { restsOnGround } from '../scene/water';
 import { D2R, backdropDepth, clamp, clampFish } from '../scene/physics';
-import { clampItem } from '../scene/items';
+import { EPIPHYTES, clampItem } from '../scene/items';
+import { isHost, tieTo, untie, type SurfaceHit } from '../render/epiphytes';
 import { glassFrame, nearestGlass } from '../scene/shape';
 import { coralSeat, leafProbe, underProbe } from '../render/items';
 import { dragPool, groundHeight, type PoolPart } from '../scene/terrain';
@@ -28,7 +29,7 @@ import { groupSize, moveGroup, settleFish, turnGroup, type Group } from '../scen
 import { gearGrab, gearLean, gearMove, pickGear, pickRow, nudgePlace, drawnPlace, withPlace, cycleSkip, cycleNote, rimFor, type GearDrag } from './gearDrag';
 import { cycle, gearSel, setGearSel } from '../render/gearSel';
 import { clickTarget, type ClickTarget } from './clickMenu';
-import { viewLocked } from './viewLock';
+import { viewLocked, isWatching, FISH_TAP, WATCH_EXIT } from './viewLock';
 import { MAX_PATCHES, addArea, placeSingle, erasable, erasePatches, extendPath, newPatch, patchAt } from '../scene/brush';
 
 type DragMode = 'front' | 'top' | 'side' | 'glass';
@@ -66,6 +67,22 @@ function surfaceHit(vp: Viewport, S: TankSetup, ray: THREE.Ray, skip: Set<number
   }
   if (!piece) return ground;
   return !ground || ray.origin.distanceTo(piece) < ray.origin.distanceTo(ground) ? piece : ground;
+}
+
+/**
+ * EP1 (R198, 2026-11-27): where a dragged epiphyte sticks under the pointer: the first stone, wood, cave or ornament face
+ * the ray meets (base on it, tied to it), the substrate when the ray reaches that first (planted there, untied), or null
+ * over the glass or open water (the plant keeps its last spot).
+ */
+function stickHit(vp: Viewport, S: TankSetup, ray: THREE.Ray, skip: Set<number>): { host: SurfaceHit } | { ground: THREE.Vector3 } | null {
+  const hosts = solids(vp, skip).filter(m => { const it = S.items.find(q => q.id === m.userData.item); return !!it && isHost(it); });
+  const h = new THREE.Raycaster(ray.origin, ray.direction).intersectObjects(hosts, false)[0];
+  const ground = surfaceHit(vp, S, ray, new Set(S.items.map(it => it.id)));
+  if (h && h.face && (!ground || h.distance <= ray.origin.distanceTo(ground))) {
+    const o = h.object;
+    return { host: { item: o.userData.item, p: h.point.clone(), n: h.face.normal.clone().transformDirection(o.matrixWorld), local: o.worldToLocal(h.point.clone()), d: 0 } };
+  }
+  return ground ? { ground } : null;
 }
 
 /** Views within this many degrees of level drag aquascape pieces on an upright plane (see `move.wall`). */
@@ -119,6 +136,16 @@ function boxPickIn(viewer: Viewer, store: Store, vp: Viewport, x0: number, y0: n
  *  an animal, piece, gear, the light, stand or lid opens its menu at its options (clickMenu.ts). */
 export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'items' | 'fish' | 'gear', kind?: ItemKind, id?: number | string) => boolean = () => true, focus?: (t: ClickTarget) => void) {
   const canvas = viewer.canvas;
+  { // BR2: a tap on an animal shows its label (what it is doing, and why when it is rushing a flagged pair); in Watch mode a tap on open water leaves Watch. Looks only, never picks or edits.
+    let down: { x: number; y: number; id: number } | null = null;
+    canvas.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY, id: e.pointerId }; });
+    canvas.addEventListener('pointerup', e => {
+      const d = down; down = null; if (!d || d.id !== e.pointerId || Math.hypot(e.clientX - d.x, e.clientY - d.y) >= 4) return;
+      const h = viewer.hitTest(e.clientX, e.clientY);
+      if (h?.fishId != null && viewer.fishLabel(h.fishId)) dispatchEvent(new CustomEvent(FISH_TAP, { detail: { id: h.fishId } }));
+      else { dispatchEvent(new CustomEvent(FISH_TAP, { detail: { id: null } })); if (isWatching()) dispatchEvent(new Event(WATCH_EXIT)); }
+    });
+  }
   const boxPick = (vp: Viewport, x0: number, y0: number, x1: number, y1: number) => boxPickIn(viewer, store, vp, x0, y0, x1, y1);
   // dragging an aquascape item: `grab` = the grabbed point relative to the piece's base, kept under the pointer while
   // the base slides over the ground and other pieces; riders = pieces resting on it, which move with it
@@ -130,7 +157,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   let box: { vp: Viewport; x: number; y: number; moved: boolean } | null = null;
   const boxEl = document.createElement('div'); boxEl.className = 'selbox'; boxEl.hidden = true; viewer.host.appendChild(boxEl);
   type FishRider = { id: number; dx: number; dd: number; dy: number };
-  let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; fishRiders: FishRider[]; skip: Set<number>; float: THREE.Plane | null; wall: THREE.Plane | null; coral: boolean; moved: boolean } | null = null;
+  let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; fishRiders: FishRider[]; skip: Set<number>; float: THREE.Plane | null; wall: THREE.Plane | null; coral: boolean; epi: boolean; moved: boolean } | null = null;
   let drag: { vp: Viewport; plane: THREE.Plane; mode: DragMode; off: THREE.Vector3; moved: boolean } | null = null;
   let orbit: { i: number; x: number; y: number; az: number; el: number } | null = null;
   let lp: { x: number; y: number; timer: ReturnType<typeof setTimeout> } | null = null; // a finger held on gear, waiting to pick it up (GD1)
@@ -281,10 +308,13 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
         }
         for (const id of grp.fish) { const f = S.fish.find(z => z.id === id); if (f) fishRiders.push({ id, dx: f.x - it.x, dd: f.depth - it.depth, dy: f.y - base(it) }); }
       }
+      // EP1: an epiphyte on its own sticks to whatever it is slid over; nothing rides along on a plant
+      const epi = it.kind === 'plant' && EPIPHYTES.has(it.variant) && !inGroup;
+      if (epi) riders.length = 0;
       const at = new THREE.Raycaster(hit.ray.origin, hit.ray.direction).intersectObject(hit.mesh, false)[0]?.point ?? hit.mesh.position;
       const skip = new Set([it.id, ...riders.map(r => r.id)]);
       const coral = it.kind === 'coral', float = !coral && Math.abs(it.lift - supportLift(hit.vp, S, it.x, it.depth, skip)) > 2 ? new THREE.Plane(new THREE.Vector3(0, 1, 0), -at.y) : null;
-      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, fishRiders, skip, float, wall: wallPlane(hit.vp.cam, S.camera.el, at), coral, moved: false };
+      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, fishRiders, skip, float, wall: wallPlane(hit.vp.cam, S.camera.el, at), coral, epi, moved: false };
       return;
     }
     if (!editable || hit.fishId == null || !hit.mesh || !(canPick('fish', undefined, hit.fishId) || (store.groupCount > 1 && store.inGroup('fish', hit.fishId)))) {
@@ -357,6 +387,16 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     if (gear) { gearMove(viewer, store, gear, e.clientX, e.clientY); return; }
     if (move) {
       const m = move, hit = viewer.hitTest(e.clientX, e.clientY); if (!hit || hit.vp !== m.vp) return;
+      if (m.epi) { // EP1 (R198): an epiphyte slides over the hardscape under the pointer and sticks where it is let go
+        const st = stickHit(m.vp, store.scene.tanks[m.vp.i], hit.ray, m.skip); if (!st) return; // over the glass or open water: stays put
+        store.editTank(m.vp.i, t => {
+          const it = t.items.find(q => q.id === m.id); if (!it) return;
+          if ('host' in st) tieTo(t, it, st.host);
+          else { untie(it); it.x = st.ground.x; it.depth = -st.ground.z; clampItem(it, t.tank, t); }
+        }, { coalesce: 'item-drag' });
+        m.moved = true;
+        return;
+      }
       // the ray the base travels along: the pointer's ray, shifted back by the grab point
       const S0 = store.scene.tanks[m.vp.i], base = hit.ray.clone(); base.origin.sub(m.grab);
       const plane = m.wall ?? m.float;
@@ -440,7 +480,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     // a plain click on empty space (no orbit drag) clears the selection, so nothing is highlighted
     // a click on a cabinet stand opens or closes its doors (lane SF, Nathan 2026-10-26: "have the doors open on click to reveal beneath")
     // a click on an animal, piece, gear, the light, stand or lid opens its menu at its options (Nathan 2026-11-11)
-    if (orbit && viewLocked() && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) viewer.startleAtPoint(e.clientX, e.clientY); // BR: a tap on open water in Tank only / Full screen startles the fish
+    if (orbit && viewLocked() && !isWatching() && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) viewer.startleAtPoint(e.clientX, e.clientY); // BR: a tap on open water in Tank only / Full screen startles the fish
     if (orbit && !viewLocked() && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) {
       const hit = focus ? viewer.hitTest(e.clientX, e.clientY) : null, t = hit && store.isEditing(hit.vp.i) ? clickTarget(viewer, store, hit) : null;
       if (viewer.handleAt(e.clientX, e.clientY) && viewer.standAt(e.clientX, e.clientY) && (!t || t.kind === 'stand')) { tankView.standOpen = !tankView.standOpen; viewer.rebuild(); } // only from the handle box (CB1); the stand's options open on any other click

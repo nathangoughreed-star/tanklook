@@ -1,0 +1,75 @@
+{
+ "commit": "15a710b8",
+ "build": 2958,
+ "dirty": true,
+ "when": "2026-11-27T16:08:30.512Z",
+ "size": [
+  1400,
+  900
+ ],
+ "fx": [
+  "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed,shadows",
+  "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed,shadows,mirror"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "photo-60t-low": {
+   "shots": [
+    "photo-60t-low-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png",
+    "photo-60t-low-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows-mirror.png"
+   ],
+   "ab": {
+    "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed,shadows,mirror": {
+     "A": {
+      "gpuMs": 13.62,
+      "gpuP95": 18.7,
+      "cpuMs": 1.8,
+      "cpuP95": 4.5,
+      "calls": 231,
+      "triangles": 1021455
+     },
+     "B": {
+      "gpuMs": 13.64,
+      "gpuP95": 18.35,
+      "cpuMs": 2,
+      "cpuP95": 4.4,
+      "calls": 231,
+      "triangles": 1021455
+     },
+     "gpuDelta": -0.01,
+     "gpuDeltaP95": 2.14,
+     "timer": true
+    }
+   }
+  },
+  "planted4-low": {
+   "shots": [
+    "planted4-low-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png",
+    "planted4-low-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows-mirror.png"
+   ],
+   "ab": {
+    "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed,shadows,mirror": {
+     "A": {
+      "gpuMs": 14.56,
+      "gpuP95": 24.01,
+      "cpuMs": 4.4,
+      "cpuP95": 9.7,
+      "calls": 554,
+      "triangles": 1087912
+     },
+     "B": {
+      "gpuMs": 15.44,
+      "gpuP95": 23.79,
+      "cpuMs": 4.9,
+      "cpuP95": 8.9,
+      "calls": 554,
+      "triangles": 1087912
+     },
+     "gpuDelta": 0.2,
+     "gpuDeltaP95": 2.96,
+     "timer": true
+    }
+   }
+  }
+ }
+}

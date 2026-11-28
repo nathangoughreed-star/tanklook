@@ -20,6 +20,8 @@ const RECORDED = (manifest as { models: Record<string, Rec> }).models;
 const $ = (id: string) => document.getElementById(id)!;
 const FOV = 28, W = 400, H = 250;
 const VIEWS: [label: string, yaw: number, pitch: number][] = [['Side', 0, 0], ['3/4', 0.55, 0.18], ['Front', Math.PI / 2, 0.05], ['Top', 0, 1.45]];
+// ?belly adds the underside (clingers on the glass show it all the time: Nathan 2026-11-27, oto)
+if (new URLSearchParams(location.search).has('belly')) { VIEWS.push(['Belly', 0, -1.45]); document.documentElement.style.setProperty('--views', '5'); }
 const LIGHTS = [['flat', 'Preview light'], ['tank', 'Tank light']] as const;
 
 // every look: the species, and the female of a dimorphic one
@@ -307,8 +309,12 @@ let next = 0;
 function step() {
   const t0 = performance.now();
   while (next < LOOKS.length && performance.now() - t0 < 30) {
-    const sp = LOOKS[next++], { hash, out } = renderLook(sp);
-    hashes.set(sp.look, hash); outs.set(sp.look, out); fill(sp, out);
+    const sp = LOOKS[next++];
+    // a look that fails to build (2026-11-23: the ?photoart clownknife and bambooshark have no body plan outside that flag) is logged and
+    // skipped with an empty hash, so it never counts as changed and the other looks can still be recorded
+    let r: ReturnType<typeof renderLook>;
+    try { r = renderLook(sp); } catch (e) { console.error('review: cannot render ' + sp.look, e); hashes.set(sp.look, ''); continue; }
+    hashes.set(sp.look, r.hash); outs.set(sp.look, r.out); fill(sp, r.out);
   }
   summary();
   if (next < LOOKS.length) setTimeout(step, 0);

@@ -6,6 +6,11 @@ import { swimFieldFor } from './swimWorld';
 import { makeSwimSim } from '../scene/swimSim';
 import type { SwimmerSpec, SwimSim } from '../scene/swimTypes';
 import type { Tank, TankSetup } from '../scene/types';
+import { getSpecies } from '../data/species';
+import { youngLengths } from '../data/growth';
+import { foeReason } from '../scene/foes';
+import { actLabel } from '../scene/actWords';
+import { ACT } from '../scene/swimTypes';
 import { flowAt, jetsKey, type FlowJet } from '../scene/flow';
 
 /** What build.ts leaves on a fish's card mesh so the viewer can roam it. */
@@ -43,6 +48,21 @@ export class Roam {
     if (x < this.xr[0] || x > this.xr[1] || y < this.yr[0] || y > this.yr[1]) return false;
     this.sim.startle(x, y, this.zMid); return true;
   }
+  /** BR2: what fish `id` is doing, for the tap label: the words, the sim's act code and, for a rush between a flagged pair, the verdict's sentence (`why`). Null before the sim runs or for an unknown fish. Computed on demand only. */
+  actOf(id: number, meshes: THREE.Object3D[]): { act: number; text: string; why?: string; kind: string } | null {
+    if (!this.sim) return null;
+    const mesh = meshes.find(m => (m.userData.roam as RoamData | undefined)?.spec.id === id); if (!mesh) return null;
+    const rd = mesh.userData.roam as RoamData, kind = rd.spec.kind ?? '', sp = getSpecies(kind); if (!sp) return null;
+    const act = this.sim.act(id); if (act < 0) return null;
+    const tid = this.sim.actTarget(id), other = tid >= 0 ? meshes.find(m => (m.userData.roam as RoamData | undefined)?.spec.id === tid) : undefined;
+    const ok = other ? (other.userData.roam as RoamData).spec.kind ?? '' : '', os = ok ? getSpecies(ok) : undefined;
+    let why: string | undefined;
+    if (os && (act === ACT.chase || act === ACT.flee)) {
+      const tl = youngLengths(rd.world.S.fish), r = act === ACT.chase ? foeReason(sp, os, tl) : foeReason(os, sp, tl);
+      if (r) why = act === ACT.chase ? `${sp.name} ${r}.` : `${os.name} ${r}.`;
+    }
+    return { act, kind, why, text: actLabel(sp.name, act, kind, os?.name) };
+  }
   /** BR: rushes and random alarms on or off (off while something is selected or dragged in edit mode). */
   setEvents(on: boolean) { this.sim?.setEvents(on); this.eventsOn = on; }
   private eventsOn = true;
@@ -54,7 +74,7 @@ export class Roam {
     const specs: SwimmerSpec[] = [], world = (meshes[0].userData.roam as RoamData).world;
     for (const m of meshes) specs.push((m.userData.roam as RoamData).spec);
     const wf = swimFieldFor(world), jets = (meshes[0].userData.flowJets as FlowJet[] | undefined) ?? [];
-    const key = specs.map(s => `${s.id}|${s.len}|${s.zone}|${s.pace ?? 1}|${s.style ? [s.style.rate, s.style.tau, s.style.turn, s.style.mix] : ''}|${s.rest ?? ''}|${s.hover ? [s.hover.w, s.hover.pec, s.hover.caudal] : ''}|${s.dig ? [s.dig.k, s.dig.dark, s.dig.rest, s.dig.rate] : ''}|${s.habit ? [s.habit.home, s.habit.post, s.habit.leash, s.habit.act, s.habit.dart, s.habit.peck, s.habit.patrol, s.habit.flick, s.habit.hop] : ''}|${s.band}|${s.tall ?? ''}|${s.kind ?? ''}|${s.foes ?? ''}|${s.guard ?? ''}|${s.pair ?? ''}|${s.group?.key}|${s.home.x},${s.home.y},${s.home.z},${s.home.yaw},${s.home.pitch},${s.home.roll}`).join(';') + '#' + wf.key + '#' + jetsKey(jets);
+    const key = specs.map(s => `${s.id}|${s.len}|${s.zone}|${s.pace ?? 1}|${s.style ? [s.style.rate, s.style.tau, s.style.turn, s.style.mix] : ''}|${s.rest ?? ''}|${s.hover ? [s.hover.w, s.hover.pec, s.hover.caudal] : ''}|${s.dig ? [s.dig.k, s.dig.dark, s.dig.rest, s.dig.rate] : ''}|${s.habit ? [s.habit.home, s.habit.post, s.habit.leash, s.habit.act, s.habit.dart, s.habit.peck, s.habit.patrol, s.habit.flick, s.habit.hop] : ''}|${s.gulp ? [s.gulp.perHour, s.gulp.dart] : ''}|${s.band}|${s.tall ?? ''}|${s.kind ?? ''}|${s.foes ?? ''}|${s.guard ?? ''}|${s.pair ?? ''}|${s.group?.key}|${s.home.x},${s.home.y},${s.home.z},${s.home.yaw},${s.home.pitch},${s.home.roll}`).join(';') + '#' + wf.key + '#' + jetsKey(jets);
     if (key !== this.key || !this.sim) {
       const t0 = performance.now();
       // the outlets' current (scene/flow.ts): the field answers flow() too; still water without outlets

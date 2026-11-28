@@ -1,8 +1,8 @@
 # Species list
 
-Generated from `src/data/species.json` by `scripts/species-list.mjs`; do not edit by hand. 115 species. Sizes are adult total length in inches (male / female where they differ). "Hidden on live" marks the 25 terrarium animals the aquarium-only site does not offer (R19).
+Generated from `src/data/species.json` by `scripts/species-list.mjs`; do not edit by hand. 141 species. Sizes are adult total length in inches (male / female where they differ). "Hidden on live" marks the 25 terrarium animals the aquarium-only site does not offer (R19).
 
-## Freshwater fish (62)
+## Freshwater fish (79)
 
 | Common name | Scientific name | Adult size | Care level | Where from | Suits | Picker group |
 |---|---|---|---|---|---|---|
@@ -10,7 +10,7 @@ Generated from `src/data/species.json` by `scripts/species-list.mjs`; do not edi
 | Bala shark | *Balantiocheilos melanopterus* | 13.0″ | Intermediate | Asia | Freshwater, Vivarium | Schooling fish |
 | Betta | *Betta splendens* | 2.6″ / 2.2″ | Intermediate | Asia | Freshwater, Vivarium | Centerpiece fish |
 | Black molly | *Poecilia sphenops* | 3.3″ / 3.8″ | Beginner | North America, Central America and South America | Freshwater, Vivarium | Schooling fish |
-| Black skirt tetra | *Gymnocorymbus ternetzi* | 2.8″ | Beginner | South America; GloFish colours: The Lab | Freshwater, Vivarium | Schooling fish |
+| Black skirt tetra | *Gymnocorymbus ternetzi* | 2.8″ | Beginner | South America; GloFish colors: The Lab | Freshwater, Vivarium | Schooling fish |
 | Blue-nosed mbuna | *Labeotropheus trewavasae* | 4.7″ | Intermediate | Africa | Freshwater, Vivarium | African cichlids |
 | Boeseman's rainbowfish | *Melanotaenia boesemani* | 4.3″ / 3.1″ | Intermediate | Australia / Oceania | Freshwater, Vivarium | Schooling fish |
 | Bolivian ram | *Mikrogeophagus altispinosus* | 3.5″ | Intermediate | South America | Freshwater, Vivarium | South American cichlids |
@@ -20,9 +20,14 @@ Generated from `src/data/species.json` by `scripts/species-list.mjs`; do not edi
 | Celestial pearl danio | *Danio margaritatus* | 1.0″ / 1.0″ | Beginner | Asia | Freshwater, Vivarium | Schooling fish |
 | Cherry barb | *Rohanella (Puntius) titteya* | 2.2″ / 2.0″ | Beginner | Asia | Freshwater, Vivarium | Schooling fish |
 | Chili rasbora | *Boraras brigittae* | 0.9″ | Intermediate | Asia | Freshwater, Vivarium | Schooling fish |
+| Clown killifish | *Epiplatys annulatus* | 1.7″ / 1.5″ | Intermediate | Africa | Freshwater, Vivarium | Schooling fish |
+| Clown knifefish | *Chitala ornata* | 36.0″ | Expert | Asia | Freshwater, Vivarium | Centerpiece fish |
 | Clown loach | *Chromobotia macracanthus* | 9.1″ | Intermediate | Asia | Freshwater, Vivarium | Bottom & cleanup crew |
+| Clown pleco | *Panaque maccus* | 3.9″ | Beginner | South America | Freshwater, Vivarium | Algae eaters |
 | Cockatoo dwarf cichlid | *Apistogramma cacatuoides* | 3.3″ / 2.0″ | Intermediate | South America | Freshwater, Vivarium | South American cichlids |
 | Comet goldfish | *Carassius auratus* | 9.8″ | Beginner | Asia | Freshwater, Vivarium | Centerpiece fish |
+| Common pleco | *Hypostomus plecostomus* | 15.0″ | Beginner | South America | Freshwater, Vivarium | Algae eaters |
+| Convict cichlid | *Amatitlania nigrofasciata* | 5.9″ / 3.9″ | Beginner | Central America | Freshwater, Vivarium | Central American cichlids |
 | Croaking gourami | *Trichopsis vittata* | 3.1″ | Intermediate | Asia | Freshwater, Vivarium | Community fish |
 | Demasoni cichlid | *Pseudotropheus demasoni* | 2.8″ | Intermediate | Africa | Freshwater, Vivarium | African cichlids |
 | Discus | *Symphysodon aequifasciatus* | 5.9″ | Expert | South America | Freshwater, Vivarium | South American cichlids |
@@ -30,10 +35,16 @@ Generated from `src/data/species.json` by `scripts/species-list.mjs`; do not edi
 | Dwarf gourami | *Trichogaster lalius* | 3.1″ / 2.6″ | Beginner | Asia | Freshwater, Vivarium | Centerpiece fish |
 | Dwarf pencilfish | *Nannostomus marginatus* | 1.4″ | Intermediate | South America | Freshwater, Vivarium | Schooling fish |
 | Dwarf spotted rasbora | *Boraras maculatus* | 1.2″ | Intermediate | Asia | Freshwater, Vivarium | Schooling fish |
+| Electric blue acara | *Andinoacara pulcher* | 6.9″ | Beginner | South America | Freshwater, Vivarium | Centerpiece fish |
 | Ember tetra | *Hyphessobrycon amandae* | 0.9″ | Beginner | South America | Freshwater, Vivarium | Schooling fish |
+| Endler's livebearer | *Poecilia wingei* | 1.1″ / 1.5″ | Beginner | South America | Freshwater, Vivarium | Schooling fish |
 | Exclamation point rasbora | *Boraras urophthalmoides* | 0.7″ | Intermediate | Asia | Freshwater, Vivarium | Schooling fish |
+| False julii corydoras | *Corydoras trilineatus* | 2.6″ | Beginner | South America | Freshwater, Vivarium | Bottom & cleanup crew |
 | Fancy goldfish | *Carassius auratus* | 8.0″ | Beginner | Asia | Freshwater, Vivarium | Centerpiece fish |
+| Firemouth cichlid | *Thorichthys meeki* | 5.7″ | Beginner | Central America | Freshwater, Vivarium | Central American cichlids |
 | German blue ram | *Mikrogeophagus ramirezi* | 2.0″ / 1.7″ | Intermediate | South America | Freshwater, Vivarium | South American cichlids |
+| Glass catfish | *Kryptopterus vitreolus* | 3.1″ | Intermediate | Asia | Freshwater, Vivarium | Schooling fish |
+| Glowlight tetra | *Hemigrammus erythrozonus* | 1.9″ | Beginner | South America | Freshwater, Vivarium | Schooling fish |
 | Golden mbuna | *Melanochromis auratus* | 4.3″ / 3.9″ | Intermediate | Africa | Freshwater, Vivarium | African cichlids |
 | Green neon tetra | *Paracheirodon simulans* | 1.2″ | Intermediate | South America | Freshwater, Vivarium | Schooling fish |
 | Guppy | *Poecilia reticulata* | 1.5″ / 2.1″ | Beginner | South America | Freshwater, Vivarium | Schooling fish |
@@ -45,12 +56,14 @@ Generated from `src/data/species.json` by `scripts/species-list.mjs`; do not edi
 | Livingstone's cichlid | *Nimbochromis livingstonii* | 9.8″ | Intermediate | Africa | Freshwater, Vivarium | African cichlids |
 | Malawi synodontis | *Synodontis njassae* | 7.5″ | Intermediate | Africa | Freshwater, Vivarium | Bottom & cleanup crew |
 | Marbled hatchetfish | *Carnegiella strigata* | 1.6″ | Intermediate | South America | Freshwater, Vivarium | Schooling fish |
+| Neon dwarf rainbowfish | *Melanotaenia praecox* | 3.8″ / 3.1″ | Beginner | Australia / Oceania | Freshwater, Vivarium | Schooling fish |
 | Neon tetra | *Paracheirodon innesi* | 1.5″ | Beginner | South America | Freshwater, Vivarium | Schooling fish |
 | Oscar | *Astronotus ocellatus* | 11.8″ | Intermediate | South America | Freshwater, Vivarium | South American cichlids |
 | Otocinclus | *Otocinclus vittatus* | 1.3″ | Intermediate | South America | Freshwater, Vivarium | Algae eaters |
 | Panda corydoras | *Corydoras panda* | 1.8″ | Beginner | South America | Freshwater, Vivarium | Bottom & cleanup crew |
 | Pea puffer | *Carinotetraodon travancoricus* | 1.2″ / 1.1″ | Intermediate | Asia | Freshwater, Vivarium | Community fish |
 | Peacock cichlid | *Aulonocara stuartgranti* | 4.6″ / 3.9″ | Intermediate | Africa | Freshwater, Vivarium | African cichlids |
+| Peacock gudgeon | *Tateurndina ocellicauda* | 3.5″ / 3.1″ | Beginner | Australia / Oceania | Freshwater, Vivarium | Schooling fish |
 | Pearl gourami | *Trichopodus leerii* | 4.7″ / 4.3″ | Beginner | Asia | Freshwater, Vivarium | Centerpiece fish |
 | Peppered corydoras | *Corydoras paleatus* | 2.8″ | Beginner | South America | Freshwater, Vivarium | Bottom & cleanup crew |
 | Platy | *Xiphophorus maculatus* | 1.6″ / 2.4″ | Beginner | North America and Central America | Freshwater, Vivarium | Schooling fish |
@@ -59,15 +72,19 @@ Generated from `src/data/species.json` by `scripts/species-list.mjs`; do not edi
 | Red-tail shark | *Epalzeorhynchos bicolor* | 5.9″ | Intermediate | Asia | Freshwater, Vivarium | Bottom & cleanup crew |
 | Reticulated hillstream loach | *Sewellia lineolata* | 2.4″ | Intermediate | Asia | Freshwater, Vivarium | Centerpiece fish |
 | Rummy-nose tetra | *Hemigrammus rhodostomus* | 2.0″ | Beginner | South America | Freshwater, Vivarium | Schooling fish |
+| Salt and pepper corydoras | *Corydoras habrosus* | 1.7″ | Beginner | South America | Freshwater, Vivarium | Bottom & cleanup crew |
+| Senegal bichir | *Polypterus senegalus* | 17.5″ | Intermediate | Africa | Freshwater, Vivarium | Bottom & cleanup crew |
 | Siamese algae eater | *Crossocheilus oblongus* | 5.9″ | Beginner | Asia | Freshwater, Vivarium | Algae eaters |
 | Sparkling gourami | *Trichopsis pumila* | 1.9″ | Intermediate | Asia | Freshwater, Vivarium | Community fish |
 | Sterba's corydoras | *Corydoras sterbai* | 2.6″ | Beginner | South America | Freshwater, Vivarium | Bottom & cleanup crew |
 | Strawberry rasbora | *Boraras merah* | 0.9″ | Intermediate | Asia | Freshwater, Vivarium | Schooling fish |
 | Swordtail | *Xiphophorus hellerii* | 4.3″ / 4.7″ | Intermediate | North America and Central America | Freshwater, Vivarium | Schooling fish |
-| Tiger barb | *Puntigrus tetrazona* | 2.8″ | Beginner | Asia; GloFish colours: The Lab | Freshwater, Vivarium | Schooling fish |
+| Three-spot gourami | *Trichopodus trichopterus* | 7.1″ | Beginner | Asia | Freshwater, Vivarium | Centerpiece fish |
+| Tiger barb | *Puntigrus tetrazona* | 2.8″ | Beginner | Asia; GloFish colors: The Lab | Freshwater, Vivarium | Schooling fish |
 | White cloud mountain minnow | *Tanichthys albonubes* | 1.6″ | Beginner | Asia | Freshwater, Vivarium | Schooling fish |
 | Yellow lab cichlid | *Labidochromis caeruleus* | 3.9″ / 3.5″ | Beginner | Africa | Freshwater, Vivarium | African cichlids |
-| Zebra danio | *Danio rerio* | 2.0″ | Beginner | Asia; GloFish colours: The Lab | Freshwater, Vivarium | Schooling fish |
+| Yoyo loach | *Botia almorhae* | 6.3″ | Beginner | Asia | Freshwater, Vivarium | Bottom & cleanup crew |
+| Zebra danio | *Danio rerio* | 2.0″ | Beginner | Asia; GloFish colors: The Lab | Freshwater, Vivarium | Schooling fish |
 
 ## Freshwater inverts (12)
 
@@ -86,21 +103,30 @@ Generated from `src/data/species.json` by `scripts/species-list.mjs`; do not edi
 | Redclaw crayfish | *Cherax quadricarinatus* | 7.9″ | Intermediate | Australia / Oceania | Freshwater, Vivarium | Inverts |
 | Thai micro crab | *Limnopilos naiyanetri* | 0.5″ | Intermediate | Asia | Freshwater, Vivarium | Inverts |
 
-## Saltwater fish (11)
+## Saltwater fish (20)
 
 | Common name | Scientific name | Adult size | Care level | Where from | Suits | Picker group |
 |---|---|---|---|---|---|---|
 | Banggai cardinalfish | *Pterapogon kauderni* | 3.1″ | Beginner | Indo-Pacific | Saltwater | Community fish |
 | Blue tang | *Paracanthurus hepatus* | 12.2″ | Intermediate | Indo-Pacific | Saltwater | Centerpiece fish |
 | Blue-green chromis | *Chromis viridis* | 3.9″ | Beginner | Indo-Pacific and Red Sea | Saltwater | Schooling fish |
+| Brownbanded bamboo shark | *Chiloscyllium punctatum* | 37.2″ | Expert | Indo-Pacific | Saltwater | Centerpiece fish |
 | Coral beauty angelfish | *Centropyge bispinosa* | 4.5″ | Intermediate | Indo-Pacific | Saltwater | Centerpiece fish |
 | Firefish goby | *Nemateleotris magnifica* | 3.5″ | Beginner | Indo-Pacific and Red Sea | Saltwater | Community fish |
+| Flame angelfish | *Centropyge loricula* | 5.9″ | Intermediate | Indo-Pacific | Saltwater | Centerpiece fish |
+| Foxface rabbitfish | *Siganus vulpinus* | 9.8″ | Beginner | Indo-Pacific | Saltwater | Centerpiece fish |
+| Kole tang | *Ctenochaetus strigosus* | 7.3″ | Beginner | Indo-Pacific | Saltwater | Centerpiece fish |
+| Lawnmower blenny | *Salarias fasciatus* | 5.9″ | Intermediate | Indo-Pacific | Saltwater | Bottom & cleanup crew |
 | Mandarin dragonet | *Synchiropus splendidus* | 2.8″ / 2.0″ | Expert | Indo-Pacific | Saltwater | Centerpiece fish |
 | Ocellaris clownfish | *Amphiprion ocellaris* | 3.9″ | Beginner | Indo-Pacific | Saltwater | Centerpiece fish |
+| Orchid dottyback | *Pseudochromis fridmani* | 3.0″ | Beginner | Red Sea | Saltwater | Bottom & cleanup crew |
+| Pajama cardinalfish | *Sphaeramia nematoptera* | 3.3″ | Beginner | Indo-Pacific | Saltwater | Community fish |
 | Royal gramma | *Gramma loreto* | 3.1″ | Beginner | Caribbean / West Atlantic | Saltwater | Bottom & cleanup crew |
 | Six-line wrasse | *Pseudocheilinus hexataenia* | 3.9″ | Beginner | Indo-Pacific and Red Sea | Saltwater | Centerpiece fish |
+| Tailspot blenny | *Ecsenius stigmatura* | 2.6″ | Beginner | Indo-Pacific | Saltwater | Bottom & cleanup crew |
 | Yellow tang | *Zebrasoma flavescens* | 7.9″ | Beginner | Indo-Pacific | Saltwater | Centerpiece fish |
 | Yellow watchman goby | *Cryptocentrus cinctus* | 4.7″ | Beginner | Indo-Pacific | Saltwater | Bottom & cleanup crew |
+| Yellowtail blue damselfish | *Chrysiptera parasema* | 3.0″ | Beginner | Indo-Pacific | Saltwater | Community fish |
 
 ## Saltwater inverts (3)
 

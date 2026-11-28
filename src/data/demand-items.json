@@ -2188,6 +2188,97 @@
    "hi": 150,
    "unit": "each; LiveAquaria $92.99, That Pet Place $149.99 (out of stock); a $600 premium listing ignored (RX2 search 2026-11-19)",
    "url": "https://liveaquaria.com/product/345/?pcatid=345"
+  },
+  "animal:bichir": {
+   "lo": 13,
+   "mode": 15,
+   "hi": 25,
+   "unit": "each, 2-5 in juvenile; That Pet Place small $14.99 (store only), Imperial Tropicals $12.99, LiveAquaria 3-5 in $24.99 (R150 search 2026-11-25; stock varies)",
+   "url": "https://www.thatpetplace.com/Polypterus-senegalus-senegal-bichir-213446"
+  },
+  "animal:clownknife": {
+   "lo": 18,
+   "mode": 20,
+   "hi": 30,
+   "unit": "each, 3-4 in juvenile; aquariumfish.com $19.99 (sold out), Monster Aquarium 4 in $18, AZ Gardens 3-4 in from $29 (R150 search 2026-11-25)",
+   "url": "https://aquariumfish.com/products/clown-knifefish"
+  },
+  "animal:bambooshark": {
+   "lo": 250,
+   "mode": 400,
+   "hi": 530,
+   "unit": "each, 8-18 in juvenile; Pete's Aquariums 8-18 in $249.99-$529.99, SaltwaterFish 10-12 in $496.99 (R150 search 2026-11-25)",
+   "url": "https://www.saltwaterfish.com/product-brown-banded-bamboo-shark"
+  },
+  "animal:congotetra": {
+   "lo": 12,
+   "mode": 15,
+   "hi": 33,
+   "unit": "each, juvenile; That Pet Place $12.99 (store only), LiveAquaria $32.99 for a longfin group (search snippet, sold out); the middle is an estimate (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://www.thatpetplace.com/Phenacogrammus-interruptus-congo-tetra-213568"
+  },
+  "animal:denison": {
+   "lo": 13,
+   "mode": 25,
+   "hi": 38,
+   "unit": "each, 1-3 in; AquaticArts tank-bred $33.99 (search snippet), LiveAquaria $8.99 sold out and from $37.76 (snippets), Aquatics Unlimited $12.99-$79.99 by size; the middle is an estimate (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://www.aquaticarts.com/"
+  },
+  "animal:frontosa": {
+   "lo": 25,
+   "mode": 30,
+   "hi": 39,
+   "unit": "each, 1-3 in juvenile; That Pet Place N. Burundi $24.99 (store only), AquariumFish.com $33.14 sale (reg. $38.99), LiveAquaria captive-bred $29.99 and Petco $29.99 (snippets) (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://www.thatpetplace.com/Cyphotilapia-frontosa-248205"
+  },
+  "animal:jackdempsey": {
+   "lo": 6,
+   "mode": 8,
+   "hi": 15,
+   "unit": "each, 1-2 in juvenile; That Pet Place small $6.99 (store only), Petco $6.49, AquaticArts $7.99 and iFISH $14.99 (snippets) (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://www.thatpetplace.com/Rocio-octofasciata-jack-dempsey-237530"
+  },
+  "animal:paradisefish": {
+   "lo": 9,
+   "mode": 10,
+   "hi": 33,
+   "unit": "each; Aquatics Unlimited $9.99-$19.99, AZ Gardens red $9.42, That Pet Place $9.99 (store only), LiveAquaria blue paradise $32.99 (snippets only) (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://www.thatpetplace.com/"
+  },
+  "animal:greenspotpuffer": {
+   "lo": 8,
+   "mode": 11,
+   "hi": 17,
+   "unit": "each, about 1 in; AquariumFish.com $8.49 sale (sold out), Petco $10.99, That Pet Place small $16.99 (snippets) (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://www.thatpetplace.com/Tetraodon-nigroviridis-green-spotted-puffer-213698"
+  },
+  "animal:bumblebeegoby": {
+   "lo": 5,
+   "mode": 6,
+   "hi": 6,
+   "unit": "each; Petco $5.49, AquariumFish.com $5.79 (3 for $15.29), Aquatic Arts $5.99 (snippets only) (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://aquariumfish.com/products/bumblebee-goby"
+  },
+  "animal:scarletbadis": {
+   "lo": 7,
+   "mode": 9,
+   "hi": 17,
+   "unit": "each, 0.5-0.8 in; That Pet Place $9.99 (store only), Aquatic Arts male-only $16.99, Imperial Tropicals $6.99 (sold out) (snippets only) (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://aquaticarts.com/products/scarlet-badis"
+  },
+  "animal:serpae": {
+   "lo": 3,
+   "mode": 4,
+   "hi": 6,
+   "unit": "each; Aquahuna $2.75 (packs of 8), Petco red minor serpae 12-pack $71.49 (about $6 each) (snippets only) (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://aquahuna.com/collections/tetra/products/serpae-tetra"
+  },
+  "animal:silverdollar": {
+   "lo": 8,
+   "mode": 10,
+   "hi": 30,
+   "unit": "each, 1-3 in; iFISH $8.39, Quinns Fins $7.99-$39.99 by size, Aquatics Unlimited $9.99-$29.99 (snippets only) (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://aquaticsunlimited.com/product/tetra-silver-dollar-metynnis-argenteus/"
   }
  }
 }

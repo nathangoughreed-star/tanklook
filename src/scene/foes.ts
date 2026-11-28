@@ -25,3 +25,14 @@ export function foesOf(species: Species[], tl?: Record<string, number>): Map<str
   }
   return out;
 }
+
+/** BR2: the verdict's own sentence for why `s` goes at `o` (the same reason foesOf matched, e.g. "would eat it"), or null when the pair is not flagged. */
+export function foeReason(s: Species, o: Species, tl?: Record<string, number>): string | null {
+  if (s === o || s.habitat === 'land' || o.habitat === 'land') return null;
+  for (const w of whysAnimal(s, Infinity, 3, [o], { tl })) {
+    if (w.kind !== 'compat' || w.temp) continue;
+    const t = w.text.replace(/^compatibility: /, '');
+    if (!/^it /.test(t) && ACTS.test(t)) return t.replace(/ \([^)]*\)$/, '');
+  }
+  return null;
+}

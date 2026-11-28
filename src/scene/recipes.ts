@@ -283,7 +283,10 @@ function clean(a: Archetype, d: Density, S: TankSetup): void {
 }
 /** What every level and step gets after its starter set is drawn: the archetype's own cuts, then its background. */
 /** Every raised coral back on the rock under it (CF1): the size caps, the weight budget and the step drawing all resize the rock a coral was planned on. */
-const reseat = (S: TankSetup) => { seatHook.corals?.(S); return S; };
+const reseat = (S: TankSetup) => { seatHook.corals?.(S); seatHook.epiphytes?.(S); return S; }; // EP1: after the pieces were resized or dropped, the tied plants go back onto them (else they float where the old piece was)
+/** EP1: a copy handed out, its tied plants seated on the real surface. Only the copy: the search above measures the
+ *  unseated scenes, so seating never changes which design a recipe picks. */
+const handOut = (S: TankSetup) => { const c = structuredClone(S); seatHook.epiphytes?.(c); return c; };
 function finish(a: Archetype, d: Density, S: TankSetup): TankSetup {
   const tw = TWEAKS[a.id] ?? {};
   if (tw.noPlants) S.items = S.items.filter(it => it.kind !== 'plant' && it.kind !== 'artificial');
@@ -601,14 +604,14 @@ export function recipeDensAt(a: Archetype, stop: number): Stops {
 /** The scene of one slider stop 0..4 (a copy). The three named stops come with the base; the two between are drawn here, once. */
 export function stopScene(base: RecipeBase, stop: number): TankSetup {
   const s = Math.max(0, Math.min(4, Math.round(stop)));
-  if (s % 2 === 0) return structuredClone(base.scenes[s === 0 ? 'open' : s === 2 ? 'balanced' : 'full']);
+  if (s % 2 === 0) return handOut(base.scenes[s === 0 ? 'open' : s === 2 ? 'balanced' : 'full']);
   const k = s === 1 ? 0 : 1;
   base.mids[k] ??= drawMid(base, s as 1 | 3);
-  return structuredClone(base.mids[k]!);
+  return handOut(base.mids[k]!);
 }
 
 /** The starting scene of an archetype at a density (a copy: the base can hand it out again). */
-export const sceneAt = (base: RecipeBase, d: Density): TankSetup => structuredClone(base.scenes[d]);
+export const sceneAt = (base: RecipeBase, d: Density): TankSetup => handOut(base.scenes[d]);
 
 /** `recipeScene(archetype, density, tank)`: the starting scene, or undefined for an archetype without a look (coming soon). */
 export function recipeScene(a: Archetype | string, d: Density, tank: TankModel, animals?: AnimalCount[], now = Date.now()): TankSetup | undefined {

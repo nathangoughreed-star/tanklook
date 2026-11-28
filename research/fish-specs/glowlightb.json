@@ -1,6 +1,6 @@
 {
  "id": "glowlightb",
- "sheet": "C:/Users/nreed/fish-sheets/glowlight-b5-gen-s0.861/sheet3.png",
+ "sheet": "C:/Users/nreed/fish-sheets/glowlight-b5-gen/sheet3.png",
  "species": {
   "name": "Glowlight tetra",
   "sci": "Hemigrammus erythrozonus",
@@ -11,326 +11,330 @@
  "landmarks": {
   "ped": [
    240,
-   185
+   183
   ],
   "dorsalBase": [
    [
     252,
-    158
+    152
    ],
    [
     282,
-    157
+    151
    ],
    [
     312,
-    153
+    147
    ],
    [
-    342,
-    144
+    337,
+    135
    ],
    [
-    372,
-    138
+    367,
+    127
    ],
    [
-    402,
-    134
+    384,
+    123
    ],
    [
-    432,
-    129
+    414,
+    121
    ],
    [
-    462,
-    124
+    444,
+    115
    ],
    [
-    485,
-    113
-   ],
-   [
-    515,
-    108
-   ],
-   [
-    545,
+    472,
     102
    ],
    [
-    575,
-    101
+    487,
+    99
    ],
    [
-    599,
-    99
+    517,
+    94
+   ],
+   [
+    547,
+    89
+   ],
+   [
+    577,
+    86
+   ],
+   [
+    601,
+    84
    ]
   ],
   "analBase": [
    [
     252,
-    214
+    216
    ],
    [
     282,
-    213
+    215
    ],
    [
-    305,
-    221
+    307,
+    225
    ],
    [
-    335,
-    229
+    337,
+    234
    ],
    [
-    365,
-    238
+    367,
+    244
    ],
    [
-    395,
-    247
-   ],
-   [
-    425,
+    397,
     254
    ],
    [
-    455,
-    261
+    427,
+    262
    ],
    [
-    479,
-    264
+    457,
+    269
+   ],
+   [
+    480,
+    273
    ]
   ]
  },
  "eye": [
   848,
-  186,
-  22
+  184,
+  24
  ],
  "pectoral": {
   "root": [
-   749,
-   225
+   744,
+   226
   ],
   "poly": [
    [
-    749,
-    225
+    744,
+    226
    ],
    [
-    748,
-    240
+    743,
+    241
    ],
    [
-    731,
-    243
-   ],
-   [
-    714,
-    245
-   ],
-   [
-    704,
-    246
-   ],
-   [
-    694,
-    247
-   ],
-   [
-    691,
-    247
-   ],
-   [
-    681,
-    247
-   ],
-   [
-    674,
-    246
-   ],
-   [
-    667,
+    726,
     244
    ],
    [
-    659,
-    239
+    709,
+    246
    ],
    [
-    648,
-    231
+    699,
+    247
+   ],
+   [
+    692,
+    247
+   ],
+   [
+    682,
+    247
+   ],
+   [
+    676,
+    247
+   ],
+   [
+    669,
+    247
+   ],
+   [
+    662,
+    244
+   ],
+   [
+    654,
+    240
+   ],
+   [
+    643,
+    232
+   ],
+   [
+    631,
+    220
+   ],
+   [
+    627,
+    212
    ],
    [
     636,
-    219
-   ],
-   [
-    632,
-    211
-   ],
-   [
-    641,
-    205
-   ],
-   [
-    661,
-    204
-   ],
-   [
-    673,
-    204
-   ],
-   [
-    681,
-    205
-   ],
-   [
-    687,
     206
    ],
    [
-    695,
+    657,
+    205
+   ],
+   [
+    668,
+    205
+   ],
+   [
+    676,
+    206
+   ],
+   [
+    682,
     207
    ],
    [
-    700,
+    691,
     208
    ],
    [
-    708,
-    210
+    696,
+    209
    ],
    [
-    717,
-    213
+    704,
+    211
    ],
    [
-    732,
-    219
+    712,
+    214
+   ],
+   [
+    727,
+    220
    ]
   ],
   "spread": 0.33
  },
  "pelvic": {
   "root": [
-   614,
-   272
+   611,
+   283
   ],
-  "len": 95,
+  "len": 91,
   "poly": [
    [
-    614,
-    272
+    611,
+    283
    ],
    [
-    610,
-    274
+    594,
+    300
    ],
    [
-    595,
-    289
-   ],
-   [
-    587,
-    296
+    586,
+    307
    ],
    [
     581,
-    301
-   ],
-   [
-    575,
-    306
-   ],
-   [
-    571,
-    309
-   ],
-   [
-    568,
     311
    ],
    [
-    562,
-    315
+    577,
+    314
    ],
    [
-    554,
+    571,
     319
    ],
    [
+    568,
+    321
+   ],
+   [
+    561,
+    325
+   ],
+   [
+    553,
+    330
+   ],
+   [
     540,
-    325
-   ],
-   [
-    535,
-    325
-   ],
-   [
-    535,
-    315
-   ],
-   [
-    536,
-    304
-   ],
-   [
-    537,
-    296
+    335
    ],
    [
     538,
-    289
+    336
+   ],
+   [
+    535,
+    325
+   ],
+   [
+    536,
+    314
+   ],
+   [
+    537,
+    306
+   ],
+   [
+    538,
+    300
    ],
    [
     541,
-    282
+    293
    ],
    [
     545,
-    277
+    288
    ],
    [
     550,
-    273
+    284
    ],
    [
-    558,
-    270
+    556,
+    281
    ],
    [
-    567,
-    271
+    561,
+    281
    ],
    [
-    573,
-    271
+    572,
+    282
    ],
    [
-    580,
-    272
+    579,
+    283
    ],
    [
-    591,
-    272
+    590,
+    283
+   ],
+   [
+    607,
+    285
    ]
   ]
  },
- "card_sheet": "C:/Users/nreed/fish-sheets/glowlight-b5-gen-s0.861/sheet3card.png",
+ "card_sheet": "C:/Users/nreed/fish-sheets/glowlight-b5-gen/sheet3card.png",
  "dorsals": 2,
  "dense": true,
  "eye_iris": [
-  "#88806e",
-  "#1c1d23"
+  "#8c8376",
+  "#69645b"
  ],
- "eye_pupil": "#08090b",
- "eye_full": 30,
- "eye_pupil_frac": 0.337,
+ "eye_pupil": "#07090a",
+ "eye_full": 32,
+ "eye_pupil_frac": 0.34,
  "width_pct_sl": 14.0,
  "fishshapes": {
   "n": 3,
@@ -356,17 +360,5 @@
  "fin_opacity": {
   "preset": "clear"
  },
- "fin_opacity_source": "clear (photo check): planted tanks: fins glassy, plants clearly through, only the red dorsal front and white fin tips pigmented. Commons: Tetra Glowlight cropped.jpg, Hemigrammus erythrozonus h080.jpg, Hemigrammus erythrozonus.jpg, Tetra Glowlight.jpg",
- "body_clear": {
-  "zones": {
-   "trunk": "translucent",
-   "lowerrear": "clear",
-   "stalk": "clear",
-   "head": "faint"
-  },
-  "inner": {
-   "sac": "#a9ac9e"
-  }
- },
- "body_clear_source": "trunk translucent, lowerrear clear, stalk clear, head faint (photo check): 2026-11-25; Commons: Hemigrammus erythrozonus h080.jpg, Tetra Glowlight cropped.jpg: plants and the net plainly through the whole trunk, clearest at the rear and the stalk; the head faintly; a silvery-grey gut sac behind the gill cover; the spine hidden under the red line"
+ "fin_opacity_source": "clear (photo check): planted tanks: fins glassy, plants clearly through, only the red dorsal front and white fin tips pigmented. Commons: Tetra Glowlight cropped.jpg, Hemigrammus erythrozonus h080.jpg, Hemigrammus erythrozonus.jpg, Tetra Glowlight.jpg"
 }

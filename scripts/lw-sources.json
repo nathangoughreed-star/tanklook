@@ -676,5 +676,83 @@
   "a": 0.02291,
   "b": 3.03,
   "src": "fishbase-bayes"
+ },
+ "bichir": {
+  "a": 0.00457,
+  "b": 2.99,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 5024 Bayesian (TL cm); its four TL rows (a 0.015/0.002/0.003/0.00302, b 2.65/2.90/3.17/3.177) average 197 g at 36 cm vs 206 g here (R150)"
+ },
+ "clownknife": {
+  "a": 0.00726,
+  "b": 3.0,
+  "src": "fishbase",
+  "note": "FishBase ID 27034 length-weight row (TL cm, one 88 cm fish; b 3.000 likely assumed); the Bayesian a 0.00468, b 3.06 gives 16 % less at 91 cm (R150)"
+ },
+ "bambooshark": {
+  "a": 0.00407,
+  "b": 3.09,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 5903 Bayesian (TL cm); FishBase has no length-weight row for this species (R150)"
+ },
+ "congotetra": {
+  "a": 0.01072,
+  "b": 3.02,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 10660 Bayesian (TL cm, a 0.00489-0.02350, b 2.84-3.20); its one table row (SL, n=3, b 3.000) is not used (SO1 R202)"
+ },
+ "denison": {
+  "a": 0.01047,
+  "b": 3.02,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 24148 Bayesian (TL cm, a 0.00895-0.01226, b 2.98-3.06); its five TL table rows (a 0.0061-0.0128, b 2.97-3.20, n 27-100, Kerala rivers) bracket it (SO1 R202)"
+ },
+ "frontosa": {
+  "a": 0.01445,
+  "b": 2.99,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 8572 Bayesian (TL cm, a 0.00671-0.03113, b 2.82-3.16); its one table row (SL, n=3, b 3.000) is not used (SO1 R202)"
+ },
+ "jackdempsey": {
+  "a": 0.02692,
+  "b": 3.03,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 3616 Bayesian (TL cm, a 0.01195-0.06065, b 2.84-3.22); its one table row (SL, n=3, b 3.000) is not used (SO1 R202)"
+ },
+ "paradisefish": {
+  "a": 0.01288,
+  "b": 2.97,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 4777 Bayesian (TL cm, a 0.00682-0.02434, b 2.80-3.14); its two TL rows (a 0.012, b 2.954 and 3.088, n 45-46) agree (SO1 R202)"
+ },
+ "greenspotpuffer": {
+  "a": 0.0263,
+  "b": 2.88,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 7763 Bayesian (TL cm, a 0.01227-0.05639, b 2.71-3.05); its one table row (SL, n=3, b 3.000) is not used (SO1 R202)"
+ },
+ "bumblebeegoby": {
+  "a": 0.01,
+  "b": 3.0,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 25066 Bayesian (TL cm, a 0.00442-0.02263, b 2.81-3.19); its one table row (SL, n=3, b 3.000) is not used (SO1 R202)"
+ },
+ "scarletbadis": {
+  "a": 0.00389,
+  "b": 3.12,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 60260 Bayesian (TL cm, a 0.00180-0.00842, b 2.94-3.30); its length-weight table has no rows (SO1 R202)"
+ },
+ "serpae": {
+  "a": 0.01349,
+  "b": 3.14,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 46294 Bayesian (TL cm, a 0.00695-0.02619, b 2.97-3.31); its three table rows are SL and are not used (SO1 R202)"
+ },
+ "silverdollar": {
+  "a": 0.02754,
+  "b": 3.11,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 25518 Bayesian (TL cm, a 0.01539-0.04930, b 2.96-3.26); its one table row (SL, n=11, Catalao Lake) is not used (SO1 R202)"
  }
 }

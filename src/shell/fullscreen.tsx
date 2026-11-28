@@ -2,7 +2,8 @@
 import { useEffect, useState } from 'preact/hooks';
 import { Icon } from './ui';
 import { setViewLocked } from '../interact/viewLock';
-import { FS_OFF, lookOnly, choose, fsItems, isIphone, keyChoice, onFullscreenChange, EXIT_IDLE_MS, type FsEnv, type FsId, type FsState } from './logic/fullscreen';
+import { setShowView, showView } from '../render/showView';
+import { FS_OFF, lookOnly, choose, fsAvailable, fsItems, isIphone, keyChoice, onFullscreenChange, EXIT_IDLE_MS, type FsEnv, type FsId, type FsState } from './logic/fullscreen';
 
 type FsEl = HTMLElement & { webkitRequestFullscreen?: () => Promise<void> };
 type FsDoc = Document & { webkitFullscreenElement?: Element | null; webkitExitFullscreen?: () => Promise<void> };
@@ -11,14 +12,26 @@ const isFull = () => !!(document.fullscreenElement || (document as FsDoc).webkit
 
 let state: FsState = { ...FS_OFF, fullscreen: isFull() };
 const subs = new Set<() => void>();
-const set = (s: FsState) => { state = s; setViewLocked(lookOnly(s)); subs.forEach(f => f()); setTimeout(() => dispatchEvent(new Event('resize')), 50); }; // the viewer follows the new size
+const set = (s: FsState) => { state = s; setViewLocked(lookOnly(s)); if (!s.tankOnly) setShowView(false); // leaving the bare tank leaves Show too
+  subs.forEach(f => f()); setTimeout(() => dispatchEvent(new Event('resize')), 50); }; // the viewer follows the new size
 
+export const getFs = (): FsState => state;
 export function chooseFs(id: FsId) {
   const r = choose(state, env(), id);
   set(r.next);
   const el = document.documentElement as FsEl, d = document as FsDoc;
   if (r.action === 'enter') (el.requestFullscreen?.() ?? el.webkitRequestFullscreen?.())?.catch(() => set({ ...state, fullscreen: isFull(), viaApi: false }) /* the browser said no: Tank only still applies */);
   else if (r.action === 'exit' && isFull()) (d.exitFullscreen?.() ?? d.webkitExitFullscreen?.())?.catch(() => { /* already out */ });
+}
+
+/**
+ * The Show view (plan VF2 S6, Nathan 2026-11-27: two looks, Edit and Show): the bare tank (Full screen where the browser has
+ * it, else Tank only) seen from the front, low and close, the water filling the frame (render/showView.ts). Again: back to Edit.
+ */
+export function toggleShow() {
+  if (showView()) { chooseFs(state.viaApi ? 'full' : 'tank'); return; }
+  if (!state.tankOnly) chooseFs(fsAvailable(env()) ? 'full' : 'tank');
+  setShowView(true); subs.forEach(f => f());
 }
 
 let installed = false;
@@ -49,5 +62,5 @@ export function FsExit({ full }: { full: boolean }) {
     wake(); addEventListener('pointermove', wake); addEventListener('pointerdown', wake);
     return () => { clearTimeout(t); removeEventListener('pointermove', wake); removeEventListener('pointerdown', wake); };
   }, []);
-  return <button type="button" class={`btn sm fsexit glass${shown ? '' : ' idle'}`} title="Back to the app (F or Esc)" onClick={() => chooseFs(full ? 'full' : 'tank')}><Icon name="x" /> {full ? 'Exit full screen' : 'Exit tank only'}</button>;
+  return <button type="button" class={`btn sm fsexit glass${shown ? '' : ' idle'}`} title="Back to the app (F or Esc)" onClick={() => chooseFs(full ? 'full' : 'tank')}><Icon name="x" /> {showView() ? 'Exit show view' : full ? 'Exit full screen' : 'Exit tank only'}</button>;
 }

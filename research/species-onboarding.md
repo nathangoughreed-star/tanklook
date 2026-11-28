@@ -70,6 +70,8 @@ Write all of these in `groups.ts` (`bands`, `msg`, `sexed`, `max`, `territory`) 
 | provenance rules for every number | `src/data/provenance.ts` (the sources ratchet) |
 | forms, if sold in colours | `src/data/forms.json`, `src/art/forms.ts` |
 
+If a build-B photo model exists or is in progress for the species (branch `claude/glbfish-e5`), point the species at it (its art key = the species id) instead of adding a second species row. The drawn `fishgen.ts` plan stays as the fallback without `?photoart` (Nathan 2026-11-24, "B model, keep drawn"; the Senegal bichir had both a `bichirb` test row and an onboarded `bichir`).
+
 ## 8. Commit
 `npx tsc --noEmit`, `npm run build`, `npx vitest run test/species-onboarding.test.ts test/sources.test.ts` plus the species / picker / groups / origin tests. List what the species still lacks in the commit message and the lane README.
 

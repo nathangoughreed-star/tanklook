@@ -41,6 +41,10 @@ describe('swimHabit', () => {
 
   it('keeps each fish near its home, still where it should be, and turns the gramma belly to the rock (600 s)', () => {
     const sim = makeSwimSim(fish, field, seed), dt = 1 / 30;
+    // LV1 (2026-11-28): foraging off. Since BR2's bottom-dweller foraging (00325ebf) the gramma's ledge share came out 0.011 < 0.02 on CI
+    // (Linux, Node 22) on every run while passing on Windows, so main stayed red and nothing deployed after a670307a (06:03 UTC).
+    // Foraging draws on its own stream and this test measures home-keeping, not foraging (test/swimAct.test.ts does).
+    sim.setForaging?.(false);
     const mr = fish.map(() => 1e9), far = fish.map(() => 0), over = fish.map(() => 0), atHome = fish.map(() => 0), homeRoll = fish.map(() => 0), still = fish.map(() => 0), turned = fish.map(() => 0); let steps = 0, minRatio = 1e9;
     for (let s = 0; s < 600 / dt; s++) {
       sim.step(dt);

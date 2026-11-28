@@ -1,0 +1,75 @@
+{
+ "commit": "5cad32f0",
+ "build": 3040,
+ "dirty": true,
+ "when": "2026-11-27T23:26:35.516Z",
+ "size": [
+  2200,
+  1300
+ ],
+ "fx": [
+  "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed,shadows",
+  "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed,shadows,hue"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "hue-test": {
+   "shots": [
+    "hue-test-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png",
+    "hue-test-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows-hue.png"
+   ],
+   "ab": {
+    "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed,shadows,hue": {
+     "A": {
+      "gpuMs": 9.47,
+      "gpuP95": 17.02,
+      "cpuMs": 6.5,
+      "cpuP95": 9.8,
+      "calls": 330,
+      "triangles": 820498
+     },
+     "B": {
+      "gpuMs": 9.54,
+      "gpuP95": 15.62,
+      "cpuMs": 6.5,
+      "cpuP95": 11,
+      "calls": 330,
+      "triangles": 820498
+     },
+     "gpuDelta": -0.04,
+     "gpuDeltaP95": 1,
+     "timer": true
+    }
+   }
+  },
+  "planted4": {
+   "shots": [
+    "planted4-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png",
+    "planted4-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows-hue.png"
+   ],
+   "ab": {
+    "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed,shadows,hue": {
+     "A": {
+      "gpuMs": 11.52,
+      "gpuP95": 12.64,
+      "cpuMs": 5.9,
+      "cpuP95": 10.4,
+      "calls": 560,
+      "triangles": 1099972
+     },
+     "B": {
+      "gpuMs": 11.6,
+      "gpuP95": 12.62,
+      "cpuMs": 6.6,
+      "cpuP95": 9.7,
+      "calls": 560,
+      "triangles": 1099972
+     },
+     "gpuDelta": 0.14,
+     "gpuDeltaP95": 0.93,
+     "timer": true
+    }
+   }
+  }
+ }
+}

@@ -112,7 +112,7 @@ if EDGE:   # the whole depth profile against panel 5's grey body (method row 61)
     A['_rotationDeg'] = J['method']['rotationDeg']
     SW_ = os.path.join(os.path.dirname(spec['sheet']), 'sheet.webp')
     skip_ = [(min(q[0] for q in spec[k_]['poly']) - 8, max(q[0] for q in spec[k_]['poly']) + 8) for k_ in spec.get('clamp_skip', ['pectoral', 'pelvic']) if spec.get(k_, {}).get('poly')]   # spec 'clamp_skip': ['pectoral'] when the pelvic fin lies along the belly and its stations read as body (afrab, method row 67)
-    ch_ = se_.clamp_profile(SW_, A, skip_x=skip_)   # paired-fin stations are not clamped to the fin map (the waist at the pectoral, method row 65)
+    ch_ = se_.clamp_profile(SW_, A, skip_x=skip_, top=spec.get('clamp_top', True))   # paired-fin stations are not clamped to the fin map (the waist at the pectoral, method row 65)
     for fk_, runs_ in se_.fin_bases(SW_, A).items():   # fin bases from the fin map: only ever widened (a short base cut the fin's front off)
         cand_ = [(n_, r_) for n_ in (fk_, fk_ + '2') if A['fins'].get(n_) and A['fins'][n_].get('baseStartPctSL') is not None for r_ in runs_]
         if not cand_: continue
@@ -204,14 +204,22 @@ if spec.get('card_sheet'):   # the body card from a sheet whose panel 1 has the 
     sqc = Image.new('RGB', (N, N)); sqc.paste(cs_.crop((0, 0, cs_.width, sy1 + 8)), (0, 0))
     side_card = os.path.join(work, 'side_full_card.png'); sqc.save(side_card)
     if spec.get('root_band', 1): import fishroot; print('root band: %d px darkened in side_full_card.png' % fishroot.smooth_root(side_card, LM['ped']))
+if spec.get('body_recolour'):   # body-only recolour (harlequin too orange, Nathan 2026-11-27; scripts/fishrecolour.py, method row 74): fins and the fin card keep the sheet's colour
+    import fishrecolour; print('body recolour: %d px in %s' % (fishrecolour.recolour_side(side_card, A, spec['body_recolour'], spec.get('eye')), os.path.basename(side_card)))
 FO = spec.get('fin_opacity')   # per-fin opacity profiles (method row 61): the card keeps coverage only, scripts/fish-fin-opacity.py writes the maps below
 mem = ['--membrane', ','.join(map(str, spec['membrane']))] if spec.get('membrane') and FO is None else []   # see-through median fins (method row 61): body card only, the fin card feeds the paired fins, which get their own membrane in textures.ts
 run(S('fish-cutout-card.py'), side_card, anat, card, *common, *er, *mem)
 fincard = os.path.join(shots, ID + '-fincard.png')
 fincommon = [v for i, v in enumerate(common) if not (v == '--clip-head' or (i and common[i - 1] == '--clip-head'))]   # the fin card is read only inside the fin polygons: no head clip, which cut the tailspot blenny's throat pelvics (method row 47)
-run(S('fish-cutout-card.py'), os.path.join(work, 'side_full.png'), anat, fincard, *fincommon)
-run(S('fish-projcards.py'), os.path.join(work, 'sheet.png'), os.path.join(work, 'sheet.png'), at, os.path.join(shots, ID + '-proj'),
-    '--top', '%d,%d' % (ty0 - 6, ty1 + 6), '--front', '%d,%d,%d,%d' % (fx0, fy0_ - 4, fx1, fy1_ + 4), '--sat', sat, *(['--mask-thr', BAND_THR] if BAND_THR < 40 else []), *(['--anchor'] if spec.get('top_card_anchor') else []), *(['--fill'] if spec.get('top_card_fill') else []))   # method row 75c
+fin_src = os.path.join(work, 'side_full.png')
+if (spec.get('body_recolour') or {}).get('pectoral') is not None and (spec.get('pectoral') or {}).get('poly'):   # clear pectorals the sheet painted coloured (harlequin)
+    import fishrecolour; fishrecolour.recolour_poly(fin_src, os.path.join(work, 'side_full_fin.png'), spec['pectoral']['poly'], spec['body_recolour']['pectoral'], spec['body_recolour']); fin_src = os.path.join(work, 'side_full_fin.png')
+run(S('fish-cutout-card.py'), fin_src, anat, fincard, *fincommon)
+proj_src = os.path.join(work, 'sheet.png')
+if spec.get('body_recolour'):   # the top and front panels show no fins: the whole fish there gets the body colour
+    import fishrecolour; fishrecolour.recolour_panels(proj_src, os.path.join(work, 'sheet_rc.png'), [(ty0 - 6, ty1 + 6), (fy0_ - 4, fy1_ + 4)], spec['body_recolour'], BAND_THR); proj_src = os.path.join(work, 'sheet_rc.png')
+run(S('fish-projcards.py'), proj_src, proj_src, at, os.path.join(shots, ID + '-proj'),
+    '--top', '%d,%d' % (ty0 - 6, ty1 + 6), '--front', '%d,%d,%d,%d' % (fx0, fy0_ - 4, fx1, fy1_ + 4), '--sat', sat, *(['--mask-thr', BAND_THR] if BAND_THR < 40 else []), *(['--anchor'] if spec.get('top_card_anchor') else []), *(['--fill'] if spec.get('top_card_fill') else []))   # method row 80
 out = os.path.join(ROOT, 'public', 'art', 'fish')
 os.makedirs(out, exist_ok=True)
 for src, dst in ((card, ID), (os.path.join(shots, ID + '-proj-top.png'), ID + '-top'), (os.path.join(shots, ID + '-proj-front.png'), ID + '-front')):

@@ -6,7 +6,7 @@ Added so main's CI passes. Pages read by a fetch tool; "est" = our estimate, not
 - Variants (neonb, oscarb ...): alternate models, excluded from SPECIES, listed in ALL_SPECIES (src/data/variants.ts).
 
 ## Status
-Held, not in the catalogue (model-only row, left out of SPECIES by the 4aadb581 fix; still drawn on the review page): the onboarding checklist (test/species-onboarding.test.ts) also wants a gallery picture, model-versions record, bodymass, HOVER, space-factor, NEEDS, demand row and a tankmin footprint, which the fish lane makes. To release one: write those, make it a catalogue row, and paste its rows from below (bambooshark is not sourced well enough, see above).
+Superseded by R150 below. Was: held, not in the catalogue (model-only row, left out of SPECIES by the 4aadb581 fix; still drawn on the review page): the onboarding checklist (test/species-onboarding.test.ts) also wants a gallery picture, model-versions record, bodymass, HOVER, space-factor, NEEDS, demand row and a tankmin footprint, which the fish lane makes. To release one: write those, make it a catalogue row, and paste its rows from below (bambooshark is not sourced well enough, see above).
 
 ## Rows ready to paste (clownknife + bichirb: care.ts / groups.ts / climatedata.ts / waterchem.ts / origin.json)
 ```
@@ -19,3 +19,11 @@ Held, not in the catalogue (model-only row, left out of SPECIES by the 4aadb581 
  "bichirb": {"c": ["africa"], "r": "Shallow swamps, marshes and lagoons across tropical Africa, Senegal to the Nile", "s": "Seriously Fish"},
   clownknife: { ph: [6.0, 8.0], gh: [2, 15] }, bichirb: { ph: [6.2, 7.8], gh: [5, 20] },
 ```
+
+## R150 (2026-11-25): onboarded, all three
+All three are catalogue species now (listed without ?photoart; fishLive.json names each as its own look so the build-B images load). Sources and figures: the provenance rules in src/data/provenance.ts and the side-session notes (onboard-3-research.md). Summary:
+- **bichirb** (id kept: no alias mechanism, and the art, sheets and specs are all keyed bichirb): 13 in (mean of captive sizes); floor 166 x 60.5 cm (Seriously Fish 150 x 60 and Practical Fishkeeping 6 x 2 ft, averaged); 117.5 gal (mean of 55, 90, 120, 143, 180); lid required; prey 110 mm (est); FishBase Bayesian LW (agrees with the mean of its 4 TL rows).
+- **clownknife**: 36 in (Furry Critter "routinely exceed three feet"); 2 m long (Seriously Fish) x 24 in (the standard 200-240 gal width); 200 gal (Furry Critter); lid; prey 450 mm (half its length, a knifefish care page); FishBase LW row (one 88 cm fish).
+- **bambooshark**: 37 in (mean of 30, 36, 41, 41 in); floor 82 x 41 in (That Pet Place: width at least its length, length 2-3x); 227 gal (mean of 180, 200, 300; LiveAquaria 360 unread); FishBase Bayesian LW (no rows exist); temperature 72-78 F rests on an unconfirmed retailer snippet (est). No stock tank is 41 in deep, so none passes: test/minimum.test.ts lists it as BEYOND_CATALOGUE.
+- Water depth: Nathan 2026-11-25 removed the rule that marked a tank "not assessed" when its water is shallower than the fish is long (src/scene/tankMin.ts measureLines).
+- Sex: bichir males have a thicker anal fin, knifefish dimorphism unreported, shark males have claspers: one model each, no sex-ratio rule.

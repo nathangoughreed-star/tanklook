@@ -308,7 +308,7 @@ const AQ_VERT = 'varying vec3 vAqP; varying vec3 vAqN;';
 const AQ_FRAG = `
 uniform vec4 uEm[${AQ_MAX}]; uniform int uEmN; uniform float uMode, uAmb, uBright, uNorm, uBeamM, uRef, uCard, uSub, uFish, uPane; uniform vec3 uLCol;
 float aqSpec = 0.0;
-uniform float uFxTone, uFxCaus, uFxTime, uFxDepth, uFxLine; uniform sampler2D uCausTex; uniform vec4 uCausK; uniform float uCausOff;
+uniform float uFxTone, uFxCaus, uFxTime, uFxDepth, uFxLine, uFxHue; uniform sampler2D uCausTex; uniform vec4 uCausK; uniform float uCausOff;
 uniform float uKeyDir, uKeyAtt, uKeyComp, uKeySat; uniform vec4 uKeyK;
 uniform float uFishCap; uniform float uRoomMat, uRoomK, uSpillR, uTankRound, uAlgH; uniform vec3 uSpill, uTankMin, uTankMax; uniform vec4 uWater, uWTint; uniform vec3 uWCol; uniform float uPop, uFishCard, uFishRing;
 varying vec3 vAqP; varying vec3 vAqN;
@@ -529,7 +529,8 @@ const AQ_MAP = `#ifdef USE_MAP
  */
 const AQ_TONE = 'if (uFxTone > 0.5 && uRoomMat < 0.5 && !(uMapOn > 0.5 && uSub > 0.5)) { vec3 aqC = gl_FragColor.rgb;\n' +
   '  if (uFxTone < 1.5) gl_FragColor.rgb = aqAgx(aqC * 0.808);\n' +
-  '  else gl_FragColor.rgb = mix(min(aqC, vec3(1.0)), aqAces(aqC * 0.877), 0.35 + 0.65 * smoothstep(0.0, 0.18, dot(aqC, vec3(0.2126, 0.7152, 0.0722)))); }\n';
+  '  else gl_FragColor.rgb = mix(min(aqC, vec3(1.0)), aqAces(aqC * 0.877), 0.35 + 0.65 * smoothstep(0.0, 0.18, dot(aqC, vec3(0.2126, 0.7152, 0.0722))));\n' +
+  '  if (uFxHue > 0.5) gl_FragColor.rgb = aqHueKeep(aqC, gl_FragColor.rgb); }\n';
 // three's AgX and ACES (tonemapping_pars_fragment), which three compiles in only when renderer.toneMapping is set
 const AQ_TONE_GLSL = `
 vec3 aqAgx(vec3 c) {
@@ -541,6 +542,16 @@ vec3 aqAgx(vec3 c) {
   c = mat3(1.127101, -0.141330, -0.141330, -0.110607, 1.157824, -0.110607, -0.016494, -0.016494, 1.251936) * c;
   c = pow(max(c, 0.0), vec3(2.2));
   return clamp(mat3(1.6605, -0.1246, -0.0182, -0.5876, 1.1329, -0.1006, -0.0728, -0.0083, 1.1187) * c, 0.0, 1.0);
+}
+// Hue keep (fx hue, lane VF2-A R195): the curve's brightness and saturation (its max and min channel) with the hue of
+// ref (where each channel sits between ref's min and max), both gamma-encoded so the hue is the one seen on screen.
+// Per-channel curves (ACES; a saturation boost then a clamp) push saturated red-orange toward red.
+vec3 aqHueKeep(vec3 ref, vec3 t) {
+  vec3 a = pow(max(ref, 0.0), vec3(0.4545)), b = pow(max(t, 0.0), vec3(0.4545));
+  float lo = min(min(a.r, a.g), a.b), r = max(max(a.r, a.g), a.b) - lo;
+  if (r < 1e-4) return t;
+  float bl = min(min(b.r, b.g), b.b), bh = max(max(b.r, b.g), b.b);
+  return pow(bl + (bh - bl) * (a - lo) / r, vec3(2.2));
 }
 vec3 aqAces(vec3 c) {
   c = mat3(0.59719, 0.07600, 0.02840, 0.35458, 0.90834, 0.13383, 0.04823, 0.01566, 0.83777) * (c / 0.6);
@@ -585,7 +596,9 @@ function aqPatch(this: THREE.Material, shader: THREE.WebGLProgramParametersWithU
       // wherever the light is strong): values up to 0.6 are untouched, so the body matches its card, and only
       // highlights roll off toward 1; then the highlight and a faint silvery sheen toward the edges on top
       'if (uFish > 0.5) {\n' +
-      '  float aqS = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqS), outgoingLight, 1.35 + 0.35 * uPop), 0.0) * (1.0 + 0.2 * uPop);\n' +
+      '  vec3 aqF0 = outgoingLight; float aqS = dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)); outgoingLight = max(mix(vec3(aqS), outgoingLight, 1.35 + 0.35 * uPop), 0.0) * (1.0 + 0.2 * uPop);\n' +
+      // hue kept (fx hue, R195): the boost drives a weak channel below 0, and the clamp turned red-orange into pure red
+      '  if (uFxHue > 0.5) outgoingLight = aqHueKeep(aqF0, outgoingLight);\n' +
       '  aqM = max(max(outgoingLight.r, outgoingLight.g), outgoingLight.b);\n' +
       '  float aqKn = uFishCap > 0.5 ? 0.82 : 0.6; if (aqM > aqKn) outgoingLight *= (aqKn + (1.0 - aqKn) * (1.0 - exp(-(aqM - aqKn) / (1.0 - aqKn)))) / aqM;\n' +
       '  vec3 aqV = normalize(cameraPosition - vAqP); float aqRim = pow(1.0 - abs(dot(normalize(vAqN), aqV)), 3.0);\n' +

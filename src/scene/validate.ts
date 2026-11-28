@@ -4,7 +4,7 @@ import { fishTL, getSpecies, hasForm, hasSpecies } from '../data/species';
 import { defaultSetup } from './defaults';
 import { migrateBlend } from './blend';
 import { parsePatches } from './brush';
-import { ANIMAL_RANGE, DENS_RANGE, LIBRARY, MAX_ITEMS, clampItem, legacyDens, starterItems } from './items';
+import { ANIMAL_RANGE, DENS_RANGE, LIBRARY, MAX_ITEMS, clampItem, legacyDens, seatHook, starterItems } from './items';
 import { CEILING_H, CEILING_MAX, CEILING_MIN, WALL_GAP, WALL_GAP_MAX, clamp, mapToTank } from './physics';
 import { MH_BULBS, TECH_IDS, fitFixture } from './lightout';
 import { clearTopGear } from './topgear';
@@ -16,7 +16,8 @@ import { TABLE_MAX, fitTable } from './table';
 import { GROW_RATE_MAX } from './growtime';
 import { keepInWater } from './water';
 import { pieSize, radialSize, sameGrid, sampleTerrain, swampTerrain, type Ground } from './terrain';
-import { SCENE_VERSION, type BgImage, type BgSide, type Fish, type Item, type LightTech, type Scene, type Tank, type CustomTankRef, type TankSetup } from './types';
+import { isBrandId } from '../data/substrateBrands';
+import { SCENE_VERSION, type BrandSub, type BgImage, type BgSide, type Fish, type Item, type LightTech, type Scene, type Tank, type CustomTankRef, type TankSetup } from './types';
 import { adoptImages, sidesTouch } from './images';
 import { ownParse, parseTech } from './tech';
 import { pairRule } from '../data/groups';
@@ -310,7 +311,8 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       ...(l.mapStepLux != null ? { mapStepLux: Math.round(num(l.mapStepLux, 500, 250, 5000) / 250) * 250 } : {}),
     },
     substrate: {
-      show: bool(s.show, d.substrate.show), type: pick(s.type, ['gravel', 'pea', 'clown', 'blue', 'onyx', 'black', 'white', 'aragonite', 'coral', 'soil', 'tsand', 'clay', 'bark', 'layered', 'custom'] as const, 'gravel'),
+      show: bool(s.show, d.substrate.show), type: typeof s.type === 'string' && isBrandId(s.type) ? s.type as BrandSub : pick(s.type, ['gravel', 'pea', 'clown', 'blue', 'onyx', 'black', 'white', 'red', 'pink', 'green', 'wgrav', 'aragonite', 'coral', 'soil', 'tsand', 'clay', 'bark', 'layered', 'custom'] as const, 'gravel'),
+      ...(typeof s.priceLb === 'number' && Number.isFinite(s.priceLb) && s.priceLb >= 0 ? { priceLb: Math.round(Math.min(500, s.priceLb) * 100) / 100 } : {}), // SB1: the user's own $/lb, absent stays absent
       // leaf litter (lane T1, 2026-10-16, no version bump): absent stays absent
       ...(s.litter && typeof s.litter === 'object' ? { litter: (() => { const l = s.litter as Record<string, unknown>; return {
         leaf: pick(l.leaf, ['mixed', 'oak', 'magnolia', 'catappa'] as const, 'mixed'), density: Math.round(num(l.density, 50, 0, 100)), seed: Math.round(num(l.seed, 1, 1, 1e6)) }; })() } : {}),
@@ -361,7 +363,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       })(),
     },
     backdrop: { // added 2026-10-15; older files: none
-      kind: pick(bd.kind, ['none', 'rock', 'river', 'reef', 'cork', 'moss', 'jungle'] as const, d.backdrop.kind),
+      kind: pick(bd.kind, ['none', 'rock', 'rockblock', 'river', 'reef', 'cork', 'corkplate', 'moss', 'jungle'] as const, d.backdrop.kind),
       depth: Math.round(num(bd.depth, d.backdrop.depth, ...LIMITS.backdrop)), seed: Math.round(num(bd.seed, 1, 1, 1e9)),
     },
     grow: { // added 2026-10-15 (lane GR3); older files: low-tech, Time 0
@@ -415,6 +417,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
   ensureUids(setup, true); // DX0: a stable uid on every animal and item (an older file gets them here)
   keepInWater(setup); fitTable(setup);
   fitFixture(setup.light, setup.tank, false); // 2026-10-15: older lights clamped into their fixture's usual ranges
+  seatHook.epiphytes?.(setup); // EP1 (R197): tied plants onto the real surface (an older file's tie spots were guessed against the pre-HG1 shapes)
   clearTopGear(setup); // lane S231 2026-10-26: a light over a dry tank clears its lid gear
   return setup;
 }
@@ -440,6 +443,7 @@ function parseItems(raw: unknown[], T: Tank, warn: (m: string) => void, g: Groun
       ...(typeof o.growth === 'number' && Number.isFinite(o.growth) ? { growth: o.growth } : {}),
       ...((v.kind === 'stone' || v.kind === 'wood') && cleanHs(o.hs) ? { hs: cleanHs(o.hs) } : {}),
       ...(v.kind === 'plant' && typeof o.parent === 'number' && Number.isInteger(o.parent) && o.parent > 0 && o.parent !== id ? { parent: o.parent } : {}),
+      ...(v.kind === 'plant' && typeof o.host === 'number' && Number.isInteger(o.host) && o.host > 0 && o.host !== id && Array.isArray(o.hostAt) && o.hostAt.length === 3 && o.hostAt.every(n => typeof n === 'number' && Number.isFinite(n)) ? { host: o.host, hostAt: (o.hostAt as number[]).map(n => Math.round(n * 10) / 10) as [number, number, number] } : {}),
       ...(v.kind === 'plant' && typeof o.planted === 'number' && Number.isFinite(o.planted) ? { planted: Math.round(clamp(o.planted, -GROW_RATE_MAX, 1) * 1000) / 1000 } : {}),
     };
     clampItem(it, T, g); out.push(it);
@@ -447,6 +451,7 @@ function parseItems(raw: unknown[], T: Tank, warn: (m: string) => void, g: Groun
   // a parent that is gone (or never was) is just no parent
   const ids = new Set(out.map(it => it.id));
   for (const it of out) if (it.parent != null && !ids.has(it.parent)) delete it.parent;
+  for (const it of out) if (it.host != null && !ids.has(it.host)) { delete it.host; delete it.hostAt; } // EP1: a host that is gone is reseated from where the plant is
   if (bad) warn(`${bad} unknown aquascape items were skipped.`);
   if (raw.length > MAX_ITEMS) warn(`Only the first ${MAX_ITEMS} aquascape items were loaded.`);
   return out;

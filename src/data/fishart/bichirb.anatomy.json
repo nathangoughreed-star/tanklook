@@ -103,17 +103,17 @@
     2.15,
     2.6,
     3.1,
-    1.716,
-    1.597,
-    2.551,
+    4.25,
+    5.77,
+    6.01,
     4.77,
     5.01,
     5.01,
     5.01,
     5.01,
     5.01,
-    5.25,
-    5.01,
+    5.26,
+    4.67,
     4.77,
     4.68,
     4.471,
@@ -499,6 +499,7 @@
    "pelvicOrPectoral": null,
    "caudal": {
     "type": "round",
+    "notchFrac": 0.0,
     "tipUPctSL": -14.8,
     "outline": [
      [
@@ -869,7 +870,7 @@
     "pupilFrac": 0.317,
     "proj": {
      "fk": 962.0,
-     "y0": -0.0007
+     "y0": -0.0053
     },
     "thickx": 0.777,
     "noTail": false,
@@ -932,7 +933,7 @@
       236.0
      ]
     ],
-    "ver": "d63bed74"
+    "ver": "ae27bbe8"
    },
    "fit": "{'thick': 1.58, 'pedT': 0.3, 'rmsPctSL': 1.31, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
   }

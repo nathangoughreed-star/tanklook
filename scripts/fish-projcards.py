@@ -26,7 +26,7 @@ a = np.asarray(Image.open(aligned).convert('RGB'))[y0:y1]
 SAT = float(opt['--sat']) if '--sat' in opt else 1.0
 MT = float(opt.get("--mask-thr", 30)); m = a.max(2) > MT   # --mask-thr 12: near-black fish (black molly, b6)
 if '--anchor' in sys.argv:
-    # --anchor (spec top_card_anchor, method row 75c; pictus b11): the sheet drew the top view shorter than the side view (snout at x 877 vs 964),
+    # --anchor (spec top_card_anchor, method row 80; pictus b11): the sheet drew the top view shorter than the side view (snout at x 877 vs 964),
     # so the card painted only the rear ~90 % of the body and the 3D snout showed a dark square cap. Lay the panel on its OWN body tip (an opening
     # drops thin barbels / whiskers past the snout) and scale it uniformly so its length matches SL or TL, whichever it is nearer (fish-topview --anchor).
     from scipy import ndimage as nd
@@ -45,7 +45,7 @@ mid = float(np.median([(np.nonzero(m[:, x])[0].min() + np.nonzero(m[:, x])[0].ma
 a = a.copy(); a[:, :max(0, xcut)] = 0; m = a.max(2) > MT; rows = np.nonzero(m.any(1))[0]
 half = max(mid - rows.min(), rows.max() - mid); Ht = 2 * int(np.ceil(half * s)) + 16
 al = np.clip((a.max(2).astype(float) - 12) / 40, 0, 1)
-if '--fill' in sys.argv:   # --fill (spec top_card_fill, method row 75c): black spots inside the body read as background (alpha = brightness); the filled body is opaque
+if '--fill' in sys.argv:   # --fill (spec top_card_fill, method row 80): black spots inside the body read as background (alpha = brightness); the filled body is opaque
     from scipy import ndimage as nd
     al = np.maximum(al, nd.binary_fill_holes(nd.binary_opening(m, iterations=4)).astype(float))   # opened first: barbels looping back along the flanks would enclose the black gap beside the body
 rgba = Image.fromarray(np.dstack([desat(a, SAT), (al * 255).astype(np.uint8)]), 'RGBA')

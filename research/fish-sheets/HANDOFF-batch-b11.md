@@ -31,7 +31,7 @@ TL = typical adult total length in the aquarium. Photos = Wikimedia Commons cate
 | jackdempsey | Jack Dempsey, *Rocio octofasciata* | 10 in | own | - | [29](https://commons.wikimedia.org/wiki/Category:Rocio_octofasciata) |
 | frontosa | Frontosa, *Cyphotilapia frontosa* | 13 in | own | - | [22](https://commons.wikimedia.org/wiki/Category:Cyphotilapia_frontosa) |
 | blackghost | Black ghost knifefish, *Apteronotus albifrons* | 8 in (20 in max) | own | dorsal, pelvic | [16](https://commons.wikimedia.org/wiki/Category:Apteronotus_albifrons) |
-| pictus | 7cd2abef, barbels 36df4f18, head 1fa8fab6 | approved 2026-11-28 ("Approve pictus") | barbels (row 75b) and head end / top card (row 75c) |
+| pictus | 7cd2abef, barbels 36df4f18, head 1fa8fab6 | approved 2026-11-28 ("Approve pictus") | barbels (row 79) and head end / top card (row 80) |
 | greenspotpuffer | Green spotted puffer, *Dichotomyctere nigroviridis* | 6.5 in | own (as *Tetraodon nigroviridis*) | pelvic | [11](https://commons.wikimedia.org/wiki/Category:Tetraodon_nigroviridis) |
 | bumblebeegoby | Bumblebee goby, *Brachygobius doriae* | 1.6 in | own | - (2nd dorsal -> red) | [5](https://commons.wikimedia.org/wiki/Category:Brachygobius_doriae) |
 | scarletbadis | Scarlet badis (male), *Dario dario* | 0.8 in | proxy *D. hysginon* | - | [2: male + female](https://commons.wikimedia.org/wiki/File:Dario_dario_male.jpg) |
@@ -59,7 +59,7 @@ TL = typical adult total length in the aquarium. Photos = Wikimedia Commons cate
 |---|---|---|---|
 | congotetra | c9e6fc2c | approved 2026-11-27 ("congo tetra looks good") | go-live waits for the catalogue entry (proposed session "b11 catalogue entries") |
 | bumblebeegoby | c9e6fc2c | broad head kept 2026-11-27 ("Keep it") | top view follows the sheet's broad goby head (R194 lane: not the width cap) |
-| copperband | c9e6fc2c, snout aaae5e4a | snout rebuilt as a tube (method row 75), awaiting his look | |
+| copperband | c9e6fc2c, snout aaae5e4a | snout rebuilt as a tube (method row 78), awaiting his look | |
 | blackghost | failed | - | step pending: fish-spec-from-fins has no no-dorsal path |
 | denison | c9e6fc2c | not shown yet | no visual_check yet |
 | greenspotpuffer | 5cb46c6a | approved 2026-11-28 ("Approve all 4") | mass check up to 1.9x |

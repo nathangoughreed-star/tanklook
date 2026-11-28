@@ -1,7 +1,7 @@
 // Builds a three.js scene for one tank from scene data. Rebuilt on every content change (cheap at this scale);
 // textures and card materials are cached across rebuilds.
 import { swimPace } from '../scene/swimPace';
-import { BENTHIC, DIG, HABIT, HOVER, STYLE, digGrainK } from '../scene/fishBehavior';
+import { BENTHIC, DIG, HABIT, HOVER, REST_PITCH, STYLE, digGrainK, gulpFor } from '../scene/fishBehavior';
 import { bedOf } from '../scene/substrateCheck';
 import { hasTankLight } from '../scene/roomlight';
 import { hookCalm } from './swim';
@@ -39,9 +39,10 @@ import { roughOf } from '../scene/types';
 import { getImage } from '../scene/images';
 import { LU, addBeams, addFixture, addHoodLamps, applyLighting, glassFx, setWaterVolumeMode, waterVolumeMaterial } from './lighting';
 import { addAlgae } from './algae';
-import { FXU } from './fx';
+import { surfaceMaterial } from './surface';
 import { buildGear, gearKey, solidBoxes } from './gear3d';
 import { itemDeps, itemMesh, leafProbe, solidProbe, underProbe } from './items';
+import './epiphytes'; // EP1: sets seatHook.epiphytes (tied plants onto the real surface)
 import { rootsKey, rootsMesh } from './roots';
 import { outlineKey, spaceOutline } from './spaceOutline';
 import { addBackdrop, backdropGeometry } from './backdrop';
@@ -440,34 +441,6 @@ function addTank(sc: THREE.Scene, S: TankSetup & { units: Units }, T: Tank) {
 }
 
 /**
- * The rippled shimmer on the underside of the water: seen from below at a low angle the surface turns into a mirror
- * (total internal reflection) and bright ripple lines run along it. Bright lines where a few crossing waves cancel, as
- * sharp as the angle is low, weaker from above. The ripples drift on the caustic clock (FXU.uFxTime, Nathan 2026-11-12):
- * they move only while the caustics move (the viewer advances it only then) and are still otherwise.
- */
-function surfaceShimmer(m: THREE.MeshBasicMaterial) {
-  m.onBeforeCompile = sh => {
-    sh.uniforms.uFxTime = FXU.uFxTime;
-    sh.vertexShader = 'varying vec3 vSurfW;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\n  vSurfW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
-    sh.fragmentShader = 'varying vec3 vSurfW;\nuniform float uFxTime;\n' + sh.fragmentShader.replace('#include <opaque_fragment>', `#include <opaque_fragment>
-  {
-    vec2 p = vSurfW.xz * vec2(0.3, 1.3); // mm; squeezed along the tank, so the lines stretch along it
-    float t = uFxTime;
-    float h = sin(p.x * 0.022 + p.y * 0.060 + 1.4 * sin(p.y * 0.031 + 0.21 * t) + 0.30 * t)
-            + sin(p.x * 0.035 - p.y * 0.083 + 2.0 - 0.38 * t)
-            + sin(p.x * 0.057 + p.y * 0.121 + 0.7 * sin(p.x * 0.019 - 0.17 * t) + 0.46 * t)
-            + sin(p.x * 0.011 + p.y * 0.157 + 4.1 - 0.27 * t);
-    float line = pow(clamp(1.0 - abs(h) * 0.6, 0.0, 1.0), 7.0);
-    vec3 v = normalize(cameraPosition - vSurfW);
-    float low = 1.0 - abs(v.y), f = low * low * low, below = v.y < 0.0 ? 1.0 : 0.3;
-    float s = clamp((line * (0.35 + 0.9 * f) + f * 0.2) * below, 0.0, 1.0);
-    gl_FragColor = vec4(mix(gl_FragColor.rgb, vec3(0.88, 0.96, 1.0), s), max(gl_FragColor.a, s * 0.85));
-  }`);
-  };
-  m.customProgramCacheKey = () => 'water-shimmer';
-}
-
-/**
  * The water surface (seen from above or when orbiting; edge-on straight on) and a faint meniscus line where it meets
  * the glass. The colour of the water itself is a tint in the lighting shader (see aqWaterPath).
  */
@@ -478,10 +451,10 @@ function addWater(sc: THREE.Scene, S: TankSetup, T: Tank) {
   const arch = archBulge(T) > 0, ring = levelRing(T, y); // an arch's surface reaches out to its front glass at that height
   const surf = new THREE.Mesh(flatGeometry(bowl ? circleRing(T, r) : ring, y), basic(look.color, { transparent: true, opacity: look.opacity, depthWrite: false, side: THREE.DoubleSide }));
   (surf.material as THREE.Material).userData.waterSurf = true; // recoloured in place (patchLook)
-  surfaceShimmer(surf.material as THREE.MeshBasicMaterial);
-  surf.renderOrder = 4; surf.userData.nolight = true; sc.add(surf);
+  surfaceMaterial(surf.material as THREE.MeshBasicMaterial); // ripple shimmer, and the mirror from below (render/surface.ts, VF2 S4)
+  surf.renderOrder = 4; surf.userData.nolight = true; surf.userData.waterSurface = true; surf.userData.waterY = y; sc.add(surf);
   const line = lines(ringLines(bowl ? circleRing(T, r - 0.6) : arch ? ring.map(p => [p[0] + (p[0] < T.L / 2 ? 0.6 : -0.6), p[1] + (p[1] < T.D / 2 ? 0.6 : -0.6)] as P) : offsetRing(T, -0.6), y), 0xe8f6fa, 0.45);
-  line.renderOrder = 4; sc.add(line);
+  line.renderOrder = 4; line.userData.surfaceLine = true; sc.add(line);
   // the water's own colour where only the empty page is behind it (audit #18; objects are tinted in their shader);
   // built even at opacity 0 and hidden there, so stepping the opacity off 0 is an in-place patch (patchLook), not a rebuild
   let vol: THREE.BufferGeometry;
@@ -559,9 +532,9 @@ function shadedSolid(geo: THREE.BufferGeometry, color: number, grain?: Grain) {
 function addStand(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.stand.show) return;
   const t = glassThickness(T, S.render.glass), top = tankUnderside(T, S.render), h = S.stand.height, fin = STAND_FINISHES[S.stand.finish], wf = S.stand.finish;
-  { // R96: a catalogue stand is drawn from its own look (sampled colours, sheen, grain, door / leg layout), not the three generic finishes
+  { // R96: a catalogue stand is drawn from its own look (a rectangular one under a bowfront too: the bow sits inside the L x D box the stand covers; a bowfront stand keeps the bow-shaped generic cabinet) (sampled colours, sheen, grain, door / leg layout), not the three generic finishes
     const prod = S.stand.style === 'cabinet' || S.stand.style === 'frame' ? standOf(S) : undefined;
-    if (prod?.look && shapeOf(T) === 'rect' && !tankView.standOpen) { addProductStand(sc, prod.kind, prod.look, { L: T.L, D: T.D, top, h }, shadedBox); return; }
+    if (prod?.look && (shapeOf(T) === 'rect' || (shapeOf(T) === 'bow' && prod.shape !== 'bow')) && !tankView.standOpen) { addProductStand(sc, prod.kind, prod.look, { L: T.L, D: T.D, top, h }, shadedBox); return; }
   }
   if (S.stand.style === 'frame') { addFrameStand(sc, T, t, top, h, fin.color); return; }
   if (S.stand.style === 'table') { addTableStand(sc, S, T, top, h, fin.color, wf); return; }
@@ -1854,7 +1827,7 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
     } else if (rests) restOn(p, m, w, sp.rest * w - (isArachnid(sp.art) ? 0 : 1));
     if (swim) { // free roam (render/roam.ts): the sim moves this mesh from the spot it was placed at, which is its Reset pose
       const e = new THREE.Euler().setFromQuaternion(m.quaternion, 'YXZ'), R2D = 180 / Math.PI;
-      m.userData.roam = { spec: { id: f.id, len: w, zone: sp.zone === 'bottom' ? 'bottom' : 'water', pace: swimPace(sp.id), hover: HOVER[sp.id], habit: HABIT[sp.id], rest: sp.zone === 'bottom' ? BENTHIC[sp.id] : undefined, style: STYLE[sp.id], dig: sp.zone === 'bottom' && DIG[sp.id] ? { ...DIG[sp.id], k: digGrainK(DIG[sp.id], bedOf(S)?.grain), dark: hasTankLight(S.light) ? 0 : 1, rest: sp.rest * w } : undefined, band: [...BANDS[sp.level ?? 'mid']] as [number, number], tall: h / 2, kind: sp.id, foes: behave.foes.get(sp.id), guard: (CARE[sp.id]?.temper ?? 0) >= 1 || !!CARE[sp.id]?.guard || undefined, pair: pairRule(sp.id) && behave.n.get(sp.id) === 2 ? sp.id : undefined, group: sp.group ? { key: sp.id, tight: sp.group === 'school' } : undefined,
+      m.userData.roam = { spec: { id: f.id, len: w, zone: sp.zone === 'bottom' ? 'bottom' : 'water', pace: swimPace(sp.id), hover: HOVER[sp.id], habit: HABIT[sp.id], gulp: gulpFor(sp.id, sp.zone === 'bottom', !hasTankLight(S.light)), rest: sp.zone === 'bottom' ? BENTHIC[sp.id] : undefined, restPitch: sp.zone === 'bottom' ? REST_PITCH[sp.id] : undefined, rad: sp.zone === 'bottom' && REST_PITCH[sp.id] !== undefined ? sp.rest * w / 1.3 : undefined, style: STYLE[sp.id], dig: sp.zone === 'bottom' && DIG[sp.id] ? { ...DIG[sp.id], k: digGrainK(DIG[sp.id], bedOf(S)?.grain), dark: hasTankLight(S.light) ? 0 : 1, rest: sp.rest * w } : undefined, band: [...BANDS[sp.level ?? 'mid']] as [number, number], tall: h / 2, kind: sp.id, foes: behave.foes.get(sp.id), guard: (CARE[sp.id]?.temper ?? 0) >= 1 || !!CARE[sp.id]?.guard || undefined, pair: pairRule(sp.id) && behave.n.get(sp.id) === 2 ? sp.id : undefined, group: sp.group ? { key: sp.id, tight: sp.group === 'school' } : undefined,
         home: { x: m.position.x, y: m.position.y, z: m.position.z, yaw: e.y * R2D, pitch: e.z * R2D, roll: e.x * R2D } }, world: { S, T, rise } };
       hookCalm(m); // the tail beat is set per fish while it hovers or digs (render/swim.ts)
     }

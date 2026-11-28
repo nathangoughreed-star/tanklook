@@ -42,6 +42,12 @@ export interface SwimmerSpec {
   style?: { rate: number; tau: number; turn: number; /** FB2: share of time in [pulse-glide, slow steady cruise, hover with fin sculling]; the fish (a school together) switches between them every 5-15 s. Absent = all pulse-glide. */ mix?: [number, number, number] };
   /** FB2: share of its time a bottom dweller sits still (resting, breathing) between short foraging trips, 0..1; absent = the old mix (about 70 %). Bottom dwellers only. */
   rest?: number;
+  /** Resting pitch of a bottom dweller, degrees (negative = nose down); a quarter of it is kept while it moves along the floor. Absent = -20 (a cory propped
+   *  on its fins). 0 = lies flat (bichir, 2026-11-24: a long fish at -20 lifts its tail inches off the floor). Bottom dwellers only (fishBehavior.ts REST_PITCH). */
+  restPitch?: number;
+  /** Body radius, mm (clearance from the floor, glass and decor; a bottom dweller rests at 1.3 x it above the floor). Absent = 0.12 x len, a typical
+   *  fish. Given for the fish that lie flat (REST_PITCH) from the drawing's lowest point, so a slim body rests on the bed instead of above it. */
+  rad?: number;
   /** FB1: digging / hiding habit (fishBehavior.ts DIG) already resolved for this tank: `k` = how well the bed suits it (0 = no dig, hides still), `dark` 0..1 = the tank is dark (more digging), `rest` = height of the body centre above the ground when it lies (mm). Bottom dwellers only. */
   dig?: { rate: number; depth: number; pitch: number; hold: [number, number]; hide: number; hideT: [number, number]; k: number; dark: number; rest: number };
   /** FB3 (R118): home, range, posture and small actions (fishBehavior.ts HABIT). The sim picks a home spot in the tank (the species' rock, cave, bolt-hole, burrow, host or a patch; see swimHome.ts) and keeps the fish within `leash` body lengths of it. Absent = roams as before. */
@@ -56,6 +62,8 @@ export interface SwimmerSpec {
   guard?: boolean;
   /** BR: a pair former (groups.ts PAIR_FORMERS) of which exactly two are in the tank: both carry the same key, share one home and stay within about 3 body lengths. */
   pair?: string;
+  /** R145: air gulping (fishBehavior.ts GULP) resolved for this tank: trips to the surface per hour, `dart` = a quick near-vertical dash up and back (a bottom fish), else a slow rise from mid-water (a labyrinth fish). */
+  gulp?: { perHour: number; dart: boolean };
   /** Same school / shoal = same key (species id + split index); undefined = loner. `tight` = a school (aligned), else a shoal (loose). */
   group?: { key: string; tight: boolean };
   /** Where it was placed: its Reset pose. yaw/pitch/roll in degrees as in the scene's Fish. */
@@ -73,7 +81,17 @@ export interface SwimPose { x: number; y: number; z: number; yaw: number; pitch:
   /** The current (scene/flow.ts): how fast the tail beats against the usual (1; up to ~1.8 working hard against a strong flow). Absent = 1. */
   beat?: number }
 
+/** BR2: what a fish is doing now, in the sim's own terms (read on demand by `SwimSim.act`; the label's words live in scene/actWords.ts). */
+export const ACT = { swim: 0, rest: 1, hover: 2, shoal: 3, forage: 4, dig: 5, hidden: 6, home: 7, peck: 8, patrol: 9, gulp: 10, startled: 11, chase: 12, flee: 13, pair: 14 } as const;
+export type Act = typeof ACT[keyof typeof ACT];
+
 export interface SwimSim {
+  /** BR2: what fish `id` is doing right now (an ACT code), worked out when asked, so nothing costs anything per frame; -1 if unknown. */
+  act(id: number): number;
+  /** BR2: for a chase, the id of the fish being rushed; for a flee, the id of the one it runs from; -1 otherwise. */
+  actTarget(id: number): number;
+  /** BR2: bottom-dweller foraging (a dip-and-peck at the bed) on or off; on by default. For tests that compare against the old motion. */
+  setForaging?(on: boolean): void;
   /** BR: counts since the sim was made: rushes started, of them guard rushes, and alarms (random, clicks and chases). For tests and the debug page. */
   readonly events: { chases: number; guards: number; startles: number };
   /** BR: an alarm at a point (mm): animals within about `radius` bolt away, schools tighten and turn together, bottom fish freeze. A click on open water outside edit mode. */
@@ -86,6 +104,8 @@ export interface SwimSim {
   pose(id: number): SwimPose | null;
   /** Put these fish (all if omitted) back at their placed spots. */
   reset(ids?: number[]): void;
+  /** R145: send fish `id` up for a breath of air now (dev page / tests); false if it has no GULP entry or cannot go just now. */
+  gulp?(id: number): boolean;
 }
 
 export type MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, seed: number) => SwimSim;

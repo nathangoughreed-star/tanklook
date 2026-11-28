@@ -17,14 +17,14 @@ full = a.max(2) > float(opt.get("--mask-thr", 30))   # --mask-thr 12: near-black
 q = np.where(full, a[..., 2] / (a[..., 0] + a[..., 2] + 1e-6), 0)
 qb = np.asarray(Image.fromarray((q * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(2))).astype(float) / 255
 body = full if '--fullbody' in sys.argv else full & (qb > thr)
-if '--body-tip' in sys.argv:   # --body-tip (method row 75c): whiskers fanned out at the snout are not body (pictus: they made the nose an 11 % SL flat plate); widths from the opened mask
+if '--body-tip' in sys.argv:   # --body-tip (method row 80): whiskers fanned out at the snout are not body (pictus: they made the nose an 11 % SL flat plate); widths from the opened mask
     from scipy import ndimage as _nd0; full = _nd0.binary_opening(full, iterations=4); body = full if '--fullbody' in sys.argv else full & (qb > thr)   # --fullbody: bodies that aren't bluer than their fins (orange fish)
 H, W = body.shape
 SL = A['slPx'] * 2; sxs = A['landmarks']['snoutPxOriginal'][0] * 2 + x0
 ANCH = '--anchor' in sys.argv   # --anchor: stations are laid on the top panel's OWN snout tip and tail tip (the panel is often 1-2 % longer than the side view)
 if ANCH:
     _fa = full
-    if '--body-tip' in sys.argv:   # --body-tip (spec top_card_anchor, method row 75c): barbels drawn past the snout set the tip, so the snout stations read the barbels (pictus: narrow squared nose)
+    if '--body-tip' in sys.argv:   # --body-tip (spec top_card_anchor, method row 80): barbels drawn past the snout set the tip, so the snout stations read the barbels (pictus: narrow squared nose)
         from scipy import ndimage as _nd; _fa = _nd.binary_opening(full, iterations=4)
     cx_ = np.nonzero(_fa.any(0))[0]; tip_, tail_ = float(cx_.max()), float(cx_.min())
     L_ = tip_ - tail_; ref_ = A['tlPx'] * 2 if abs(L_ - A['tlPx'] * 2) < abs(L_ - SL) else SL   # a top panel without its tail fin ends at the stalk: measure it against SL, not TL (else the rear stations fall off the end: E-GEN tang)

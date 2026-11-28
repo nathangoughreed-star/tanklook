@@ -10,16 +10,19 @@
 //   mix       mixed grain sizes sorted by hollow / foot, per-grain colour variation (render/grains.ts, scatter.ts, lane VF-C2)
 //   sand      a fine detail layer in the painted-only sand tiles (render/textures.ts, lane VF-C2)
 //   shadows   cast shadows from the fixture onto the scape, the gear and the fish (render/castShadow.ts, castPass.ts, lane SH1)
+//   hue       hue kept through the fish saturation boost and the tone map (lighting.ts aqHueKeep, lane VF2-A R195): saturated
+//             red-orange no longer clips to pure red (flame angel 14 deg read 357 deg)
 //   waterline the bright band and meniscus at the water surface, and the front pane's reflection (lighting.ts, items.ts)
+//   mirror    the underside of the water surface reflects the scape from a low front view (render/surface.ts, plan VF2 S4; Full quality only)
 // Set from the page address: `?fx=caustics,depth,tonemap` (on), `?fx=tonemap:aces`, `?fx=-caustics` (off), `?fx=none`.
 // Shader effects read uniforms (FXU, shared by every lit program): switching them never recompiles. Build-time effects
 // (contact, ground, variety) are read when the scene is built; a change calls the listeners (the viewer rebuilds).
 // Dev server: `window.__fx` (get / set) for the A/B scripts (scripts/vf-shots.mjs).
-export type FxKey = 'caustics' | 'depth' | 'contact' | 'ground' | 'tonemap' | 'variety' | 'waterline' | 'embed' | 'mix' | 'sand' | 'shadows';
-export interface Fx { caustics: boolean; depth: boolean; contact: boolean; ground: boolean; tonemap: 0 | 1 | 2; variety: boolean; waterline: boolean; embed: boolean; mix: boolean; sand: boolean; shadows: boolean }
+export type FxKey = 'caustics' | 'depth' | 'contact' | 'ground' | 'tonemap' | 'variety' | 'waterline' | 'embed' | 'mix' | 'sand' | 'shadows' | 'hue' | 'mirror';
+export interface Fx { caustics: boolean; depth: boolean; contact: boolean; ground: boolean; tonemap: 0 | 1 | 2; variety: boolean; waterline: boolean; embed: boolean; mix: boolean; sand: boolean; shadows: boolean; hue: boolean; mirror: boolean }
 
-/** What ships (each switches on once Nathan has seen it and said yes; variety on: Nathan 2026-11-11, lane VF-B; tonemap ACES and caustics (animated), depth and waterline: Nathan 2026-11-12, lane VF-A; contact and ground: Nathan 2026-11-12, lane VF-C; embed: Nathan 2026-11-12 blind test, lane VF-C2). */
-export const FX_DEFAULT: Readonly<Fx> = { caustics: true, depth: true, contact: true, ground: true, tonemap: 2, variety: true, waterline: true, embed: true, mix: false, sand: false, shadows: true };
+/** What ships (each switches on once Nathan has seen it and said yes; mirror: Nathan 2026-11-27, lane VF2-B; hue: Nathan 2026-11-27, lane VF2-A; variety on: Nathan 2026-11-11, lane VF-B; tonemap ACES and caustics (animated), depth and waterline: Nathan 2026-11-12, lane VF-A; contact and ground: Nathan 2026-11-12, lane VF-C; embed: Nathan 2026-11-12 blind test, lane VF-C2). */
+export const FX_DEFAULT: Readonly<Fx> = { caustics: true, depth: true, contact: true, ground: true, tonemap: 2, variety: true, waterline: true, embed: true, mix: false, sand: false, shadows: true, hue: true, mirror: true };
 
 const TONE: Record<string, 0 | 1 | 2> = { none: 0, off: 0, agx: 1, aces: 2 };
 
@@ -28,8 +31,8 @@ export function parseFx(q: string | null | undefined, base: Fx = { ...FX_DEFAULT
   const fx = { ...base };
   if (!q) return fx;
   for (const raw of q.split(',').map(s => s.trim().toLowerCase()).filter(Boolean)) {
-    if (raw === 'none') { Object.assign(fx, { caustics: false, depth: false, contact: false, ground: false, tonemap: 0, variety: false, waterline: false, embed: true, mix: false, sand: false, shadows: false }); continue; }
-    if (raw === 'all') { Object.assign(fx, { caustics: true, depth: true, contact: true, ground: true, tonemap: fx.tonemap || 1, variety: true, waterline: true, embed: true, mix: true, sand: true, shadows: true }); continue; }
+    if (raw === 'none') { Object.assign(fx, { caustics: false, depth: false, contact: false, ground: false, tonemap: 0, variety: false, waterline: false, embed: true, mix: false, sand: false, shadows: false, hue: false, mirror: false }); continue; }
+    if (raw === 'all') { Object.assign(fx, { caustics: true, depth: true, contact: true, ground: true, tonemap: fx.tonemap || 1, variety: true, waterline: true, embed: true, mix: true, sand: true, shadows: true, hue: true, mirror: true }); continue; }
     const off = raw.startsWith('-'), [k, v] = raw.replace(/^[-+]/, '').split(/[:=]/);
     if (k === 'tonemap') fx.tonemap = off ? 0 : v != null ? TONE[v] ?? 1 : 1;
     else if (k === 'agx' || k === 'aces') fx.tonemap = off ? 0 : TONE[k];
@@ -49,6 +52,7 @@ export const FXU = {
   uFxCaus: { value: FX.caustics ? 1 : 0 },
   uFxDepth: { value: FX.depth ? 1 : 0 },
   uFxLine: { value: FX.waterline ? 1 : 0 },
+  uFxHue: { value: FX.hue ? 1 : 0 },
   /** Caustic clock, seconds (render/viewer.ts advances it while caustics are on; `freezeFx` holds it for the A/B scripts). */
   uFxTime: { value: 0 },
 };
@@ -63,7 +67,7 @@ export function tickFx(ms: number) {
   if (t === FXU.uFxTime.value) return false;
   FXU.uFxTime.value = t; return true;
 }
-const syncU = () => { FXU.uFxTone.value = FX.tonemap; FXU.uFxCaus.value = FX.caustics ? 1 : 0; FXU.uFxDepth.value = FX.depth ? 1 : 0; FXU.uFxLine.value = FX.waterline ? 1 : 0; };
+const syncU = () => { FXU.uFxTone.value = FX.tonemap; FXU.uFxCaus.value = FX.caustics ? 1 : 0; FXU.uFxDepth.value = FX.depth ? 1 : 0; FXU.uFxLine.value = FX.waterline ? 1 : 0; FXU.uFxHue.value = FX.hue ? 1 : 0; };
 
 const listeners = new Set<(fx: Fx, changed: FxKey[]) => void>();
 /** Called after a change, with the keys that changed (build-time effects: rebuild; shader ones: just redraw). */

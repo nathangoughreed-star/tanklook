@@ -1,0 +1,24 @@
+{
+ "commit": "a49b9cf8",
+ "build": 3041,
+ "dirty": false,
+ "when": "2026-11-27T23:29:18.256Z",
+ "size": [
+  2200,
+  1300
+ ],
+ "fx": [
+  "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed,shadows",
+  "caustics,depth,contact,ground,tonemap:aces,variety,waterline,embed,shadows,hue"
+ ],
+ "gpu": "ANGLE (Intel, Intel(R) Arc(TM) Pro Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+ "scenes": {
+  "hue-close": {
+   "shots": [
+    "hue-close-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows.png",
+    "hue-close-front-caustics-depth-contact-ground-tonemap-aces-variety-waterline-embed-shadows-hue.png"
+   ],
+   "ab": {}
+  }
+ }
+}

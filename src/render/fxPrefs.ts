@@ -18,6 +18,8 @@ export const FX_LABELS: Record<string, { label: string; help: string }> = {
   embed: { label: 'Rocks and wood sunk into the substrate', help: 'Hardscape sits down in the bed with a small berm and spilled grains round its base, instead of resting on top.' },
   mix: { label: 'Mixed grain sizes', help: 'Coarse and fine grains sort into the hollows and by the feet of rocks, each grain a slightly different colour.' },
   shadows: { label: 'Cast shadows', help: 'Rock, wood, plants and gear throw shadows from the light onto the sand and each other, as a real light does.' },
+  hue: { label: 'True colours', help: 'Bright red and orange fish and plants keep their real hue instead of drifting to pure red in strong light.' },
+  mirror: { label: 'Water surface reflection', help: 'Seen from below the water line, the underside of the surface mirrors the tank, rippled (Full quality only).' },
   sand: { label: 'Sand detail texture', help: 'A fine speckled layer on painted sand, so it reads as sand up close.' },
 };
 export const TONE_NAMES = ['None', 'AgX', 'ACES'];

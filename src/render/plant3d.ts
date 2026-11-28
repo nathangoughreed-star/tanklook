@@ -1453,7 +1453,7 @@ export function setFlowJets(jets: readonly FlowJet[] | undefined) {
   js.forEach((j, i) => { P[i].set(j.x, j.y, j.z, j.r0); D[i].set(j.dx, j.dy, j.dz, j.u0); });
 }
 /** scene/flow.ts flowAt on the GPU (keep the two the same). */
-const FLOW_GLSL = `vec3 aqFlowAt(vec3 p) {
+export const FLOW_GLSL = `vec3 aqFlowAt(vec3 p) {
   vec3 v = vec3(0.0);
   for (int i = 0; i < ${MAX_JETS}; i++) {
     if (i >= uJetN) break;

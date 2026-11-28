@@ -15,7 +15,7 @@ import { setLid, lidLocked, takeStandNote, clearStandNote, setDoors, doorLocked,
 import { lockNote } from '../scene/integrated';
 import { lockObject, unlockObject, isLocked } from '../scene/locks';
 import { placementOf, putOnFloor, putOnStand, putOnMyFurniture, putOnFurniture, minTop, setStandProduct, type Placement } from '../scene/placement';
-import { standsFor, standOf, standProduct, standRatingLine, standCheck, GENERIC_STAND_NOTE, type StandProduct } from '../data/stands';
+import { standsFor, standOf, standMatch, standProduct, standRatingLine, standCheck, GENERIC_STAND_NOTE, type StandProduct } from '../data/stands';
 import { tankKind, type SetupKind } from '../scene/pickerKind';
 import { keepInWater } from '../scene/water';
 import { clampItem } from '../scene/items';
@@ -388,7 +388,12 @@ export function TankPicker({ store, preview, onClose, onChosen, onMaker, libN }:
   const [sel, setSel] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const searching = !!q.trim();
-  const custom = customRows(S, lib, u, q), comm = useMemo(() => commercialRows(S, u, { q, chips, fits, sale, f: tf, popular: !allSizes && !q.trim() }), [S, u, q, chips, fits, sale, tf, allSizes]);
+  const custom = customRows(S, lib, u, q);
+  // Two tiers, Common tanks then All tanks (Nathan 2026-11-27); a search always reaches every tank. Both counts follow the filters.
+  const tierAll = allSizes || !!q.trim();
+  const commAll = useMemo(() => commercialRows(S, u, { q, chips, fits, sale, f: tf }), [S, u, q, chips, fits, sale, tf]);
+  const commCommon = useMemo(() => commercialRows(S, u, { q, chips, fits, sale, f: tf, popular: true }), [S, u, q, chips, fits, sale, tf]);
+  const comm = tierAll ? commAll : commCommon;
   const showCustom = g.custom || searching, showComm = g.commercial || searching;
   const visible: PickRow[] = [...(showCustom ? custom : []), ...(showComm ? comm.rows : [])];
   const cur = visible.find(r => r.key === sel) ?? [...custom, ...comm.rows].find(r => r.key === sel);
@@ -443,16 +448,20 @@ export function TankPicker({ store, preview, onClose, onChosen, onMaker, libN }:
         <div class={`group${showComm ? ' open' : ''}`}>
           <button type="button" class="gh" aria-expanded={showComm} onClick={() => flip('commercial')}>Commercial tanks <span class="n">{comm.total}</span><span class="sum">{showComm ? 'fixed size and build' : commercialLine(S, comm.total).replace(/^\d+ · /, '')}</span></button>
           {showComm ? <div class="gb">
+            <div class="seg full tiers" role="group" aria-label="Which tanks to list">
+              <button type="button" class={!tierAll ? 'on' : ''} aria-pressed={!tierAll} data-testid="tier-common" disabled={searching} title={searching ? 'A search looks through every tank' : 'The classic standard sizes, any maker'} onClick={() => setAllSizes(false)}>Common tanks <span class="n">{commCommon.rows.length}</span></button>
+              <button type="button" class={tierAll ? 'on' : ''} aria-pressed={tierAll} data-testid="all-sizes" title="Every size, maker and kit in the catalog" onClick={() => setAllSizes(true)}>All tanks <span class="n">{commAll.rows.length}</span></button>
+            </div>
+            <div class="hint tierhint">{tierAll ? (searching ? 'Searching every size, maker and kit.' : 'Every size, maker and kit in the catalog.') : 'The classic standard sizes, any maker. Switch to All tanks for every product.'}</div>
             <div class="chips">
               {SIZE_CHIPS.map(([c, t]) => <button type="button" class={`chip${chips.has(c) ? ' on' : ''}`} aria-pressed={chips.has(c)} onClick={() => { const n = new Set(chips); if (n.has(c)) n.delete(c); else n.add(c); setChips(n); }}>{t}</button>)}
               <button type="button" class={`chip${fits ? ' on' : ''}`} aria-pressed={fits} disabled={comm.noSpace} title={comm.noSpace ? 'Set your space in Constraints first (comes in shell step 5)' : 'Only tanks that fit the space you set'} onClick={() => setFits(!fits)}>Fits my space</button>
-              <button type="button" class={`chip${allSizes ? ' on' : ''}`} aria-pressed={allSizes} data-testid="all-sizes" title="Popular sizes only, or every size and product in the catalog" onClick={() => setAllSizes(!allSizes)}>All sizes</button>
               <button type="button" class={`chip${sale ? ' on' : ''}`} aria-pressed={sale} title="Only tanks with a sale price on record; each row says when it was last checked" onClick={() => setSale(!sale)}>On sale</button>
             </div>
             <TankFilters f={tf} set={setFilter} shown={comm.rows.length} total={comm.total} brands={comm.brands} u={u} extra={chips.size + (fits ? 1 : 0) + (sale ? 1 : 0)} onClear={clearAll} />
-            <div class="hint" data-testid="tank-count">{comm.rows.length} of {comm.total} shown</div>
+            <div class="hint" data-testid="tank-count">{comm.rows.length} {tierAll ? "" : "common "}tank{comm.rows.length === 1 ? "" : "s"} shown</div>
             {comm.rows.map(row)}
-            {!allSizes && !searching ? <button type="button" class="btn sm" data-testid="show-all-sizes" onClick={() => setAllSizes(true)}>Show all sizes and products</button> : null}
+            {!tierAll ? <button type="button" class="btn sm" data-testid="show-all-sizes" onClick={() => setAllSizes(true)}>See all {commAll.rows.length} tanks</button> : null}
             {!comm.rows.length ? <div class="hint">{sale ? 'No tank sale is on record.' : 'No commercial tank matches.'}</div> : null}
           </div> : null}
         </div>
@@ -472,11 +481,19 @@ function TankTile({ r }: { r: PickRow }) {
 
 /** SP1: real stands that fit this tank, as picture tiles (price, style, where sold); "Generic" is the fallback estimate. */
 function StandPicker({ S, store }: { S: TankSetup; store: Store }) {
-  const lb = filledLb(S), gal = volume(S.tank).gallons, fit = standsFor(S.tank), cur = standOf(S), explicit = !!S.stand.product && !!standProduct(S.stand.product) && cur?.id === S.stand.product;
-  if (!fit.length) return <div class="hint" data-testid="stand-generic">No stand product is listed for this size, so the budget uses a generic estimate ({GENERIC_STAND_NOTE.split(': ')[1]}).</div>;
+  const lb = filledLb(S), gal = volume(S.tank).gallons, cur = standOf(S), explicit = !!S.stand.product && !!standProduct(S.stand.product) && cur?.id === S.stand.product;
+  // Nathan 2026-11-28: a toggle between stands made for this tank and every stand that holds it (larger ones too); made-for first, then cheapest
+  const made = standsFor(S.tank), all = standsFor(S.tank, true);
+  const [wide, setWide] = useState(() => !made.length || (!!cur && standMatch(cur, S.tank) === 'fits'));
+  const showAll = wide || !made.length, fit = showAll ? all : made;
+  if (!all.length) return <div class="hint" data-testid="stand-generic">No stand product is listed for this size, so the budget uses a generic estimate ({GENERIC_STAND_NOTE.split(': ')[1]}).</div>;
   return (
-    <div class="standpick" role="group" aria-label="Stands that fit this tank">
-      <div class="cap">Stands that fit this tank <span class="n">{fit.length}</span></div>
+    <div class="standpick" role="group" aria-label="Stands for this tank">
+      {all.length > made.length ? <div class="seg full tiers" role="group" aria-label="Which stands to list">
+        <button type="button" class={!showAll ? 'on' : ''} aria-pressed={!showAll} data-testid="stands-made" disabled={!made.length} title={made.length ? 'Stands sold for this size and shape' : 'No stand is sold for this size and shape'} onClick={() => setWide(false)}>Made for this tank <span class="n">{made.length}</span></button>
+        <button type="button" class={showAll ? 'on' : ''} aria-pressed={showAll} data-testid="stands-all" title="Also larger stands whose top covers the whole tank" onClick={() => setWide(true)}>Any that fit <span class="n">{all.length}</span></button>
+      </div> : null}
+      <div class="hint tierhint">{showAll ? (made.length ? 'Made-for stands first, then larger stands whose top covers the whole tank.' : 'No stand is sold for this size and shape; these larger stands cover the whole tank. The budget uses a generic estimate until you pick one.') : 'Stands sold for this size and shape. Any that fit adds larger stands that hold it.'}</div>
       <div class="pgrid">
         {fit.map(p => { const rate = standRatingLine(p), chk = standCheck(p, lb, gal); return (
           <button type="button" class={`ptile stile${cur?.id === p.id ? ' on' : ''}`} aria-pressed={cur?.id === p.id} onClick={() => { clearStandNote(); store.edit(s => setStandProduct(s, p)); }}>
@@ -485,6 +502,7 @@ function StandPicker({ S, store }: { S: TankSetup; store: Store }) {
             <div class="tmeta"><span>${Math.round(p.priceUsd)}</span><span>{p.kind === 'cabinet' ? 'Cabinet' : 'Open frame'}, {p.color.split(',')[0].split(' (')[0]}</span></div>
             {rate ? <small class="why rating" data-testid="stand-rating">{rate}</small> : null}
             {chk ? <small class={`why ${chk.level === 'over' ? 'bad' : 'warn'}`} data-testid="stand-check">{chk.text}</small> : null}
+            {standMatch(p, S.tank) === 'fits' ? <small class="why" data-testid="stand-larger">Larger stand, made for {p.fits.map(([l, d]) => `${l} × ${d} in`).join(' or ')}</small> : null}
             <small class="why">{p.seller}{p.est.includes('priceUsd') ? ' · price is a guess' : ''}</small>
           </button>
         ); })}

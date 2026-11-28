@@ -1,6 +1,6 @@
 {
  "id": "electricblueacarab",
- "sheet": "C:/Users/nreed/fish-sheets/electricblueacara-b5-gen-s1.163/sheet3.png",
+ "sheet": "C:/Users/nreed/fish-sheets/electricblueacara-b5-gen-s1.138/sheet3.png",
  "species": {
   "name": "Electric blue acara",
   "sci": "Andinoacara pulcher",
@@ -10,37 +10,37 @@
  "plan": "oscar",
  "landmarks": {
   "ped": [
-   279,
-   200
+   278,
+   198
   ],
   "dorsalBase": [
    [
-    291,
-    155
+    290,
+    153
    ],
    [
-    321,
-    149
+    320,
+    147
    ],
    [
     345,
-    131
+    128
    ],
    [
-    375,
-    108
+    376,
+    104
    ],
    [
     405,
-    94
+    92
    ],
    [
     435,
-    82
+    81
    ],
    [
     465,
-    72
+    71
    ],
    [
     495,
@@ -48,7 +48,7 @@
    ],
    [
     525,
-    61
+    60
    ],
    [
     555,
@@ -77,261 +77,261 @@
   ],
   "analBase": [
    [
-    291,
-    254
+    290,
+    250
    ],
    [
-    321,
-    254
+    320,
+    251
    ],
    [
-    343,
-    274
+    342,
+    269
    ],
    [
-    373,
-    294
+    372,
+    289
    ],
    [
-    403,
-    309
+    402,
+    303
    ],
    [
-    433,
-    321
+    432,
+    315
    ],
    [
-    463,
-    328
+    462,
+    322
    ],
    [
     487,
-    332
+    327
    ]
   ]
  },
  "eye": [
-  765,
-  179,
+  764,
+  175,
   19
  ],
  "pectoral": {
   "root": [
-   655,
-   243
+   654,
+   239
   ],
   "poly": [
    [
-    655,
-    243
+    654,
+    239
    ],
    [
     655,
-    256
+    252
    ],
    [
     649,
-    265
-   ],
-   [
-    635,
-    273
-   ],
-   [
-    622,
-    279
-   ],
-   [
-    612,
-    282
-   ],
-   [
-    592,
-    284
-   ],
-   [
-    583,
-    283
-   ],
-   [
-    575,
-    280
-   ],
-   [
-    563,
-    271
-   ],
-   [
-    556,
     261
    ],
    [
+    635,
+    269
+   ],
+   [
+    623,
+    274
+   ],
+   [
+    611,
+    277
+   ],
+   [
+    592,
+    279
+   ],
+   [
+    582,
+    278
+   ],
+   [
+    572,
+    274
+   ],
+   [
+    563,
+    267
+   ],
+   [
+    556,
+    257
+   ],
+   [
     551,
-    251
+    247
    ],
    [
     547,
-    237
+    233
    ],
    [
     544,
-    222
-   ],
-   [
-    547,
-    211
-   ],
-   [
-    551,
-    207
-   ],
-   [
-    568,
-    203
-   ],
-   [
-    581,
-    204
-   ],
-   [
-    593,
-    207
-   ],
-   [
-    610,
-    211
-   ],
-   [
-    619,
-    214
-   ],
-   [
-    629,
     218
    ],
    [
-    641,
-    225
+    547,
+    207
    ],
    [
-    653,
-    235
+    551,
+    203
+   ],
+   [
+    567,
+    199
+   ],
+   [
+    582,
+    201
+   ],
+   [
+    593,
+    203
+   ],
+   [
+    610,
+    207
+   ],
+   [
+    618,
+    210
+   ],
+   [
+    628,
+    214
+   ],
+   [
+    640,
+    221
+   ],
+   [
+    654,
+    231
    ]
   ],
   "spread": 0.32
  },
  "pelvic": {
   "root": [
-   649,
-   330
+   650,
+   324
   ],
-  "len": 110,
+  "len": 109,
   "poly": [
    [
-    649,
-    330
+    650,
+    324
    ],
    [
-    625,
-    345
-   ],
-   [
-    609,
-    352
-   ],
-   [
-    602,
-    355
-   ],
-   [
-    600,
-    355
-   ],
-   [
-    597,
-    356
-   ],
-   [
-    596,
-    356
-   ],
-   [
-    592,
-    358
-   ],
-   [
-    590,
-    358
-   ],
-   [
-    585,
-    360
-   ],
-   [
-    570,
-    367
-   ],
-   [
-    548,
-    375
-   ],
-   [
-    554,
-    365
-   ],
-   [
-    569,
-    352
-   ],
-   [
-    571,
-    345
-   ],
-   [
-    573,
+    626,
     339
    ],
    [
+    610,
+    346
+   ],
+   [
+    603,
+    347
+   ],
+   [
+    600,
+    349
+   ],
+   [
+    597,
+    350
+   ],
+   [
+    596,
+    350
+   ],
+   [
+    593,
+    351
+   ],
+   [
+    590,
+    352
+   ],
+   [
+    586,
+    354
+   ],
+   [
+    570,
+    361
+   ],
+   [
+    549,
+    365
+   ],
+   [
+    561,
+    356
+   ],
+   [
+    569,
+    346
+   ],
+   [
+    572,
+    338
+   ],
+   [
+    574,
+    334
+   ],
+   [
     580,
-    338
+    332
    ],
    [
-    585,
-    338
+    586,
+    332
    ],
    [
-    589,
-    338
+    590,
+    332
    ],
    [
-    594,
-    337
+    595,
+    331
    ],
    [
     598,
-    337
+    331
    ],
    [
     602,
-    337
+    331
    ],
    [
-    609,
-    336
+    610,
+    330
    ],
    [
     631,
-    333
+    327
    ]
   ]
  },
- "card_sheet": "C:/Users/nreed/fish-sheets/electricblueacara-b5-gen-s1.163/sheet3card.png",
+ "card_sheet": "C:/Users/nreed/fish-sheets/electricblueacara-b5-gen-s1.138/sheet3card.png",
  "dense": true,
  "eye_iris": [
-  "#343c42",
-  "#2f3039"
+  "#54302c",
+  "#29313c"
  ],
- "eye_pupil": "#080c11",
+ "eye_pupil": "#090d12",
  "eye_full": 26,
  "eye_pupil_frac": 0.351,
  "width_pct_sl": 26.0,
@@ -365,5 +365,6 @@
    "preset": "clear"
   }
  },
- "fin_opacity_source": "pigmented, caudal translucent, pectoral clear (photo check): weak evidence: one true electric blue photo (dark, unusable) plus the neon-blue A. pulcher line: blue dorsal / anal barely see-through, caudal background faintly through, pectorals clear. Commons: The Electric Blue Acara (Andinoacara pulcher, electric blue morph).jpg, Andinoacara pulcher spec. neonblue.jpg, Andinoacara pulcher spec. neonblue & offspring 2.jpg"
+ "fin_opacity_source": "pigmented, caudal translucent, pectoral clear (photo check): weak evidence: one true electric blue photo (dark, unusable) plus the neon-blue A. pulcher line: blue dorsal / anal barely see-through, caudal background faintly through, pectorals clear. Commons: The Electric Blue Acara (Andinoacara pulcher, electric blue morph).jpg, Andinoacara pulcher spec. neonblue.jpg, Andinoacara pulcher spec. neonblue & offspring 2.jpg",
+ "clamp_top": false
 }

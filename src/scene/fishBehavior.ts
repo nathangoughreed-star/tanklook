@@ -35,6 +35,19 @@ export const HOVER: Record<string, HoverSpec> = {
   royalgramma: { w: 0.35, pec: 0.6, caudal: 0.3 }, firefish: { w: 0.55, pec: 0.5, caudal: 0.2 }, banggai: { w: 0.6, pec: 0.9, caudal: 0.2 },
   koletang: { w: 0.1, pec: 0.5, caudal: 0.5 },
   foxface: { w: 0.15, pec: 0.6, caudal: 0.4 },
+  bichir: { w: 0.4, pec: 0.8, caudal: 0.15 }, // R150: props itself on its pectorals and fans them while still
+  clownknife: { w: 0.5, pec: 0.4, caudal: 0.1 }, // R150: hangs in the water and creeps on its long anal fin
+  bambooshark: { w: 0.5, pec: 0.3, caudal: 0.2 }, // R150: rests on the floor most of the day
+  silverdollar: { w: 0.15, pec: 0.6, caudal: 0.4 }, // SO1 (R202)
+  serpae: { w: 0.15, pec: 0.6, caudal: 0.4 }, // SO1 (R202)
+  scarletbadis: { w: 0.35, pec: 0.8, caudal: 0.3 }, // SO1 (R202)
+  bumblebeegoby: { w: 0.35, pec: 0.5, caudal: 0.3 }, // SO1 (R202)
+  greenspotpuffer: { w: 0.5, pec: 1, caudal: 0.2 }, // SO1 (R202)
+  paradisefish: { w: 0.3, pec: 0.7, caudal: 0.3 }, // SO1 (R202)
+  jackdempsey: { w: 0.5, pec: 0.9, caudal: 0.25 }, // SO1 (R202)
+  frontosa: { w: 0.5, pec: 0.9, caudal: 0.25 }, // SO1 (R202)
+  denison: { w: 0.15, pec: 0.6, caudal: 0.4 }, // SO1 (R202)
+  congotetra: { w: 0.15, pec: 0.6, caudal: 0.4 }, // SO1 (R202)
   flameangel: { w: 0.35, pec: 0.7, caudal: 0.3 },
   lawnmowerblenny: { w: 0.4, pec: 1, caudal: 0.2 },
   orchiddottyback: { w: 0.3, pec: 0.7, caudal: 0.3 },
@@ -95,7 +108,7 @@ const SLOWER: StyleSpec = { rate: 1.1, tau: 0.45, turn: 14, mix: [0.45, 0.3, 0.2
 export const STYLE: Record<string, StyleSpec> = {
   danio: { rate: 2.0, tau: 0.3, turn: 22, mix: [0.65, 0.15, 0.2] }, cpd: QUICK, whitecloud: QUICK, neon: QUICK, cardinal: QUICK, greenneon: QUICK, ember: QUICK,
   merah: QUICK, exclamation: QUICK, dwarfrasbora: QUICK, chili: QUICK, harlequin: SLOWER,
-  dwarfpencil: { rate: 0.9, tau: 0.5, turn: 12, mix: [0.4, 0.3, 0.3] }, guppy: SLOWER, endler: SLOWER, glasscatfish: SLOWER, neonrainbow: QUICK, clownkilli: SLOWER, glowlight: QUICK, cherrybarb: SLOWER, peapuffer: { rate: 1.0, tau: 0.4, turn: 25, mix: [0.4, 0.2, 0.4] },
+  dwarfpencil: { rate: 0.9, tau: 0.5, turn: 12, mix: [0.4, 0.3, 0.3] }, guppy: SLOWER, endler: SLOWER, glasscatfish: SLOWER, neonrainbow: QUICK, clownkilli: SLOWER, glowlight: QUICK, serpae: QUICK, denison: QUICK, congotetra: QUICK, cherrybarb: SLOWER, peapuffer: { rate: 1.0, tau: 0.4, turn: 25, mix: [0.4, 0.2, 0.4] },
 };
 
 /**
@@ -106,9 +119,21 @@ export const STYLE: Record<string, StyleSpec> = {
 export const BENTHIC: Record<string, number> = {
   bronzecory: 0.85, pepperedcory: 0.85, saltpepper: 0.85, falsejulii: 0.85, pandacory: 0.85, sterbai: 0.85, pygmycory: 0.8, // corys: mostly still, the shoal goes foraging now and then
   watchman: 0.88, // FB3: sits on its sand patch, hops now and then
+  bambooshark: 0.9, // R150: sedentary, nocturnal
+  bichir: 0.85, // R150: nocturnal, rests on the floor most of the day
+  bumblebeegoby: 0.85, // SO1 (R202): a goby that sits on the floor or a hide and hops between spots
   kuhli: 0.8, clownloach: 0.75, yoyoloach: 0.75, syno: 0.75, sae: 0.72, rainbowshark: 0.75, redtailshark: 0.75,
 };
 
+/**
+ * Resting angle on the bottom (2026-11-24, Nathan: "it should lay flat against the bottom"): degrees, negative = nose down; a quarter of it is
+ * kept while it moves along the floor. A bottom dweller not listed rests at -20 (a cory propped on its pectorals, head down). A listed fish also takes
+ * its body radius from its drawing (render/build.ts), so a slim body rests on the bed instead of 0.12 body lengths up (the bichir floated 1.6 in).
+ */
+export const REST_PITCH: Record<string, number> = {
+  kuhli: 0, // eel-shaped: lies along the bed or half buried in it (DIG), never propped on its fins; floated about 0.5 in up and tilted before (2026-11-24)
+  bichir: 0, // lies flat on the floor, body resting on the substrate (Seriously Fish, FishBase: "lies quiet or glides about with snake-like movements")
+};
 /**
  * Home, range, posture and small repeated actions (FB3, R118, 2026-11-18; design in research/design/fish-habits.md). Fish listed here are
  * tied to a place: the sim picks a home spot in the tank (a rock face, a cave mouth, a bolt-hole, a burrow mouth, a host, a patch) and keeps the
@@ -146,6 +171,8 @@ export const HABIT: Record<string, HabitSpec> = {
   royalgramma: H('crevice', 'hug',      4.5,   1.3, 0.85, 0,   0.5,  2.5, 1.5, 0.4, 0,   0.5, [3, 25]),  // holds a cave or overhang, belly to the rock (upside down under ledges), darts out and back
   koletang: H('crevice', 'hug',      35,  2,   0.3,  0,   0.85, 0,   8,   1.5, 0,   0.5),
   foxface: H('crevice', 'mid',      30,  2,   0,    1.2, 0.7,  0.3, 6,   1.5, 0,   0,   [3, 12]),
+  bichir: H('crevice', 'perch',    8,   1.3, 0,    0,   0.5,  0.5, 2,   0.8, 0,   0.3, [10, 60]), // R150: sits on its fins near a cave, prowls the floor
+  bambooshark: H('crevice', 'perch',  6,   1.3, 0,    0,   0.4,  0.3, 1,   0.6, 0,   0.2, [20, 90]), // R150: sits by its shaded hide, prowls at night
   flameangel: H('crevice', 'hug',      10,  1.5, 0.7,  0,   0.55, 1.2, 8,   0.4, 0,   0),
   lawnmowerblenny: H('crevice', 'perch',    15,  1.2, 0.2,  0,   0.45, 0.6, 12,  0.8, 1,   3,   [3, 15]),
   orchiddottyback: H('crevice', 'hoverLow', 8,   1.3, 0,    1,   0.6,  1.2, 2,   1,   1,   0,   [3, 12]),
@@ -173,4 +200,36 @@ export const HABIT: Record<string, HabitSpec> = {
   peacockgudgeon: H('host', 'hoverLow', 6, 1.4, 0, 0.8, 0.45, 0.3, 3, 1, 0, 1),
   electricblueacara: H('crevice', 'hoverLow', 8,   1.5, 0,    0.8, 0.4,  0.8, 1,   1,   1,   0,   [4, 25]),
   convict: H('crevice', 'hoverLow', 6,   1.5, 0,    0.8, 0.5,  1.5, 1,   1.5, 1,   0,   [4, 25]),
+};
+
+/**
+ * Air gulping (R145, 2026-11-24; sources and figures per species in research/air-gulping.md): fish that breathe air make a trip to the
+ * surface now and then, take a gulp and go back to where they were. Labyrinth fish (bettas, gouramis) breathe air all the time; corys,
+ * plecos, otos, loaches, the clown knife and the bichir are facultative air-breathers that go up more in warm or still water.
+ * perHour = trips per hour in a planted tank at about 77 °F (normal oxygen); night = rate multiplier in a dark tank (absent = 1);
+ * dart = a quick near-vertical dash up and back (default: bottom fish dart, water fish rise slowly from mid-water).
+ * Kept rare on purpose: a trip is a few seconds, so even a betta at 12 an hour spends under 2 % of its time on them.
+ * ESTIMATES: every rate below is an estimate (no published trips-per-hour figure) except the corydoras, which take the low end of FishBase's
+ * C. aeneus "1 to 45 times per hour"; each row's range and basis is in research/air-gulping.md. Nathan accepted estimates here (2026-11-27)
+ * because the rate only paces an animation: it feeds no verdict, cost or advice, and the app must never show it as a fact.
+ */
+export interface GulpSpec { perHour: number; night?: number; dart?: boolean }
+const CORY: GulpSpec = { perHour: 4, night: 1.3 };
+export const GULP: Record<string, GulpSpec> = {
+  // labyrinth fish: obligate air-breathers, a slow rise from mid-water, a gulp, a slow sink back
+  betta: { perHour: 12 }, dwarfgourami: { perHour: 10 }, honeygourami: { perHour: 10 }, sparklinggourami: { perHour: 15 }, croakinggourami: { perHour: 15 },
+  gourami: { perHour: 10 }, threespot: { perHour: 12 },
+  // corydoras: intestinal air-breathing, a dash straight up from the floor and back down
+  bronzecory: CORY, pepperedcory: CORY, pandacory: CORY, pygmycory: CORY, sterbai: CORY, saltpepper: CORY, falsejulii: CORY,
+  // armoured suckermouths: air held in the stomach / an esophageal pouch, mostly when the water is short of oxygen.
+  // NOT SEEN YET: they cling (render/cling.ts) and the herps below crawl (render/crawl.ts), so the swim sim never runs them; these rows wait for a trip there
+  pleco: { perHour: 1, night: 1.5 }, bristlenose: { perHour: 1, night: 1.5 }, oto: { perHour: 2 },
+  // others
+  kuhli: { perHour: 1.5, night: 1.5 }, clownknife: { perHour: 8, dart: false }, bichir: { perHour: 4, night: 1.5 },
+  adf: { perHour: 4 }, axolotl: { perHour: 3 }, firenewt: { perHour: 2 },
+};
+/** The GULP entry for this tank, or undefined: `dark` = no tank light (the night rate applies). */
+export const gulpFor = (id: string, bottom: boolean, dark: boolean): { perHour: number; dart: boolean } | undefined => {
+  const g = GULP[id]; if (!g || !(g.perHour > 0)) return undefined;
+  return { perHour: g.perHour * (dark ? g.night ?? 1 : 1), dart: g.dart ?? bottom };
 };

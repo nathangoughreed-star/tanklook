@@ -92,26 +92,26 @@
  },
  "blackwater-creek/balanced": {
   "n": 24,
-  "h": 489620367,
+  "h": 8825808,
   "sub": "custom",
   "ax": [
    1,
    -0.013,
    -0.5,
-   -0.367,
+   -0.614,
    -1
   ],
   "mode": "live"
  },
  "blackwater-creek/full": {
   "n": 41,
-  "h": 3707330827,
+  "h": 3563798054,
   "sub": "custom",
   "ax": [
    1,
    0.275,
    -0.516,
-   -0.239,
+   -0.446,
    -1
   ],
   "mode": "live"
@@ -234,313 +234,313 @@
   "mode": "none"
  },
  "planted-community/open": {
-  "n": 42,
-  "h": 581273817,
+  "n": 62,
+  "h": 2404886384,
   "sub": "custom",
   "ax": [
    1,
-   0.785,
-   -0.75,
-   0.306,
-   0
+   1,
+   0,
+   -0.163,
+   1
   ],
   "mode": "live"
  },
  "planted-community/balanced": {
-  "n": 77,
-  "h": 1368537314,
+  "n": 81,
+  "h": 3277925340,
   "sub": "custom",
   "ax": [
    1,
    1,
-   -0.75,
-   0.442,
-   0
+   -0.402,
+   0.123,
+   1
   ],
   "mode": "live"
  },
  "planted-community/full": {
-  "n": 140,
-  "h": 3217627417,
+  "n": 159,
+  "h": 1916564425,
   "sub": "custom",
   "ax": [
    1,
    1,
-   -0.75,
-   0.022,
+   0.376,
+   -0.35,
    1
   ],
   "mode": "live"
  },
  "overgrown-jungle/open": {
   "n": 71,
-  "h": 3052191864,
+  "h": 2540355204,
   "sub": "custom",
   "ax": [
    1,
    1,
    -0.675,
-   -0.238,
+   -0.324,
    -0.5
   ],
   "mode": "live"
  },
  "overgrown-jungle/balanced": {
   "n": 101,
-  "h": 2936506474,
+  "h": 1095403684,
   "sub": "custom",
   "ax": [
    1,
    1,
    -0.75,
-   -0.216,
+   -0.237,
    -0.2
   ],
   "mode": "live"
  },
  "overgrown-jungle/full": {
   "n": 216,
-  "h": 3367413881,
+  "h": 507903332,
   "sub": "custom",
   "ax": [
    1,
    1,
    -0.678,
-   -0.216,
+   -0.335,
    -0.143
   ],
   "mode": "live"
  },
  "overgrown-garden/open": {
   "n": 32,
-  "h": 678849300,
+  "h": 325382827,
   "sub": "custom",
   "ax": [
    1,
    0.275,
    -0.75,
-   -0.255,
+   -0.248,
    0.667
   ],
   "mode": "live"
  },
  "overgrown-garden/balanced": {
   "n": 58,
-  "h": 685239561,
+  "h": 2771679545,
   "sub": "custom",
   "ax": [
    1,
    0.847,
    -0.576,
-   -0.228,
+   -0.272,
    0.6
   ],
   "mode": "live"
  },
  "overgrown-garden/full": {
   "n": 93,
-  "h": 2951164313,
+  "h": 2951781455,
   "sub": "custom",
   "ax": [
    1,
    1,
    -0.545,
-   -0.515,
+   -0.533,
    0.5
   ],
   "mode": "live"
  },
  "mossy-wood-ferns/open": {
   "n": 16,
-  "h": 1731749433,
+  "h": 2807831198,
   "sub": "pea",
   "ax": [
    1,
    -0.119,
    -0.75,
-   0.437,
+   0.308,
    0.5
   ],
   "mode": "live"
  },
  "mossy-wood-ferns/balanced": {
   "n": 18,
-  "h": 2977266124,
+  "h": 2558111963,
   "sub": "pea",
   "ax": [
    1,
    -0.499,
    -0.75,
-   0.686,
+   0.53,
    0.778
   ],
   "mode": "live"
  },
  "mossy-wood-ferns/full": {
   "n": 89,
-  "h": 3769195,
+  "h": 2992531535,
   "sub": "pea",
   "ax": [
    1,
    1,
    -0.75,
-   0.249,
+   0.155,
    0.6
   ],
   "mode": "live"
  },
  "driftwood-nature/open": {
   "n": 59,
-  "h": 2375276333,
+  "h": 1972316491,
   "sub": "custom",
   "ax": [
    1,
    0.936,
    -0.24,
-   -0.243,
+   -0.327,
    0.6
   ],
   "mode": "live"
  },
  "driftwood-nature/balanced": {
   "n": 118,
-  "h": 2190648484,
+  "h": 880172456,
   "sub": "custom",
   "ax": [
    1,
    1,
    0.236,
-   -0.193,
+   -0.22,
    0.714
   ],
   "mode": "live"
  },
  "driftwood-nature/full": {
   "n": 220,
-  "h": 3850020655,
+  "h": 3065748756,
   "sub": "custom",
   "ax": [
    1,
    1,
    -0.023,
-   -0.329,
+   -0.365,
    0.529
   ],
   "mode": "live"
  },
  "underwater-forest/open": {
   "n": 37,
-  "h": 610545576,
+  "h": 308626459,
   "sub": "custom",
   "ax": [
    1,
    0.812,
    -0.75,
-   0.198,
+   0.161,
    0
   ],
   "mode": "live"
  },
  "underwater-forest/balanced": {
   "n": 76,
-  "h": 1261972153,
+  "h": 4090545394,
   "sub": "custom",
   "ax": [
    1,
    1,
    -0.566,
-   -0.179,
+   -0.268,
    -0.25
   ],
   "mode": "live"
  },
  "underwater-forest/full": {
   "n": 134,
-  "h": 2333021784,
+  "h": 2918723255,
   "sub": "custom",
   "ax": [
    1,
    1,
    -0.422,
-   -0.156,
+   -0.211,
    -0.167
   ],
   "mode": "live"
  },
  "african-cichlid-rockscape/open": {
   "n": 18,
-  "h": 2327398035,
+  "h": 3477320147,
   "sub": "custom",
   "ax": [
    1,
    -1,
    -0.75,
-   0.585,
+   0.491,
    1
   ],
   "mode": "live"
  },
  "african-cichlid-rockscape/balanced": {
   "n": 37,
-  "h": 1169788712,
+  "h": 2226450853,
   "sub": "custom",
   "ax": [
    1,
    -1,
    -0.75,
-   0.43,
+   0.341,
    1
   ],
   "mode": "live"
  },
  "african-cichlid-rockscape/full": {
   "n": 44,
-  "h": 2357551734,
+  "h": 3049513005,
   "sub": "custom",
   "ax": [
    1,
    -1,
    -0.75,
-   0.554,
+   0.534,
    1
   ],
   "mode": "live"
  },
  "rocky-river-stream/open": {
   "n": 24,
-  "h": 4067785523,
+  "h": 1006196504,
   "sub": "gravel",
   "ax": [
    1,
    -1,
    -0.75,
-   0.703,
+   0.674,
    1
   ],
   "mode": "live"
  },
  "rocky-river-stream/balanced": {
   "n": 45,
-  "h": 1731447808,
+  "h": 1352327232,
   "sub": "gravel",
   "ax": [
    1,
    -0.445,
    -0.75,
-   -0.009,
+   -0.054,
    1
   ],
   "mode": "live"
  },
  "rocky-river-stream/full": {
   "n": 67,
-  "h": 2938575356,
+  "h": 2045926256,
   "sub": "gravel",
   "ax": [
    1,
    -0.056,
    -0.75,
-   -0.005,
+   -0.078,
    1
   ],
   "mode": "live"
@@ -625,78 +625,78 @@
  },
  "goldfish-palace/open": {
   "n": 25,
-  "h": 3896183284,
+  "h": 2357573454,
   "sub": "pea",
   "ax": [
    1,
    -1,
    -0.75,
-   0.717,
+   0.687,
    1
   ],
   "mode": "live"
  },
  "goldfish-palace/balanced": {
   "n": 59,
-  "h": 804725421,
+  "h": 3180245770,
   "sub": "pea",
   "ax": [
    1,
    -1,
    -0.75,
-   0.693,
+   0.68,
    1
   ],
   "mode": "live"
  },
  "goldfish-palace/full": {
   "n": 91,
-  "h": 1773383719,
+  "h": 1036580655,
   "sub": "pea",
   "ax": [
    1,
    -0.945,
    -0.75,
-   0.499,
+   0.446,
    1
   ],
   "mode": "live"
  },
  "betta-retreat/open": {
   "n": 23,
-  "h": 4040576915,
+  "h": 3039452559,
   "sub": "white",
   "ax": [
    1,
    0.128,
    0.721,
-   -0.038,
+   -0.045,
    0.333
   ],
   "mode": "live"
  },
  "betta-retreat/balanced": {
   "n": 58,
-  "h": 3716555467,
+  "h": 844614029,
   "sub": "white",
   "ax": [
    1,
    1,
    -0.291,
-   0.108,
+   0.017,
    0.556
   ],
   "mode": "live"
  },
  "betta-retreat/full": {
   "n": 142,
-  "h": 3425382432,
+  "h": 640036791,
   "sub": "white",
   "ax": [
    1,
    1,
    0.051,
-   0.06,
+   -0.074,
    0.429
   ],
   "mode": "live"
@@ -1132,59 +1132,59 @@
  },
  "mudskipper-mudflat/open": {
   "n": 43,
-  "h": 37939720,
+  "h": 18926927,
   "sub": "custom",
   "ax": [
    1,
    0.673,
    -0.75,
-   0.324,
+   0.278,
    1
   ],
   "mode": "live"
  },
  "mudskipper-mudflat/balanced": {
   "n": 67,
-  "h": 2440476231,
+  "h": 1834603733,
   "sub": "custom",
   "ax": [
    1,
    0.98,
    -0.75,
-   0.251,
+   0.239,
    1
   ],
   "mode": "live"
  },
  "mudskipper-mudflat/full": {
   "n": 99,
-  "h": 2647624489,
+  "h": 966131826,
   "sub": "custom",
   "ax": [
    1,
    1,
    -0.75,
-   0.622,
+   0.609,
    1
   ],
   "mode": "live"
  },
  "brackish-rocky-coast/open": {
-  "n": 18,
-  "h": 2429499493,
+  "n": 17,
+  "h": 115597052,
   "sub": "custom",
   "ax": [
    1,
    -1,
    -0.75,
-   0.585,
+   0.64,
    1
   ],
   "mode": "live"
  },
  "brackish-rocky-coast/balanced": {
-  "n": 37,
-  "h": 3228145681,
+  "n": 33,
+  "h": 410826624,
   "sub": "custom",
   "ax": [
    1,
@@ -1196,131 +1196,131 @@
   "mode": "live"
  },
  "brackish-rocky-coast/full": {
-  "n": 44,
-  "h": 3405745824,
+  "n": 41,
+  "h": 1038802050,
   "sub": "custom",
   "ax": [
    1,
    -1,
    -0.75,
-   0.554,
+   0.594,
    1
   ],
   "mode": "live"
  },
  "puffer-den/open": {
   "n": 12,
-  "h": 2308950263,
+  "h": 4084309306,
   "sub": "pea",
   "ax": [
    1,
    -0.395,
    -0.75,
-   0.737,
+   0.723,
    0.5
   ],
   "mode": "live"
  },
  "puffer-den/balanced": {
   "n": 28,
-  "h": 1000399741,
+  "h": 3462042280,
   "sub": "pea",
   "ax": [
    1,
    0.33,
    -0.75,
-   0.54,
+   0.383,
    0.667
   ],
   "mode": "live"
  },
  "puffer-den/full": {
   "n": 89,
-  "h": 481695467,
+  "h": 3017178732,
   "sub": "pea",
   "ax": [
    1,
    1,
    -0.75,
-   0.167,
+   0.458,
    0.75
   ],
   "mode": "live"
  },
  "brackish-planted/open": {
   "n": 19,
-  "h": 389826802,
+  "h": 3968945687,
   "sub": "pea",
   "ax": [
    1,
    -0.153,
    -0.75,
-   0.498,
+   0.361,
    0.429
   ],
   "mode": "live"
  },
  "brackish-planted/balanced": {
   "n": 34,
-  "h": 2534352839,
+  "h": 3543622939,
   "sub": "pea",
   "ax": [
    1,
    0.33,
    -0.75,
-   0.567,
+   0.556,
    0.636
   ],
   "mode": "live"
  },
  "brackish-planted/full": {
   "n": 144,
-  "h": 1085050697,
+  "h": 4185501083,
   "sub": "pea",
   "ax": [
    1,
    1,
    -0.75,
-   0.288,
+   0.145,
    0.556
   ],
   "mode": "live"
  },
  "fiddler-crab-beach/open": {
   "n": 43,
-  "h": 37939720,
+  "h": 18926927,
   "sub": "custom",
   "ax": [
    1,
    0.673,
    -0.75,
-   0.324,
+   0.278,
    1
   ],
   "mode": "live"
  },
  "fiddler-crab-beach/balanced": {
   "n": 67,
-  "h": 578641243,
+  "h": 3720800358,
   "sub": "custom",
   "ax": [
    1,
    0.98,
    -0.75,
-   0.251,
+   0.238,
    1
   ],
   "mode": "live"
  },
  "fiddler-crab-beach/full": {
   "n": 99,
-  "h": 113331786,
+  "h": 2472907840,
   "sub": "custom",
   "ax": [
    1,
    1,
    -0.75,
-   0.622,
+   0.607,
    1
   ],
   "mode": "live"
@@ -1678,39 +1678,39 @@
  },
  "cypress-swamp/open": {
   "n": 44,
-  "h": 3556372819,
+  "h": 1939972847,
   "sub": "gravel",
   "ax": [
    1,
    0.628,
    -0.75,
-   0.14,
+   0.125,
    1
   ],
   "mode": "live"
  },
  "cypress-swamp/balanced": {
   "n": 65,
-  "h": 3336981389,
+  "h": 3418136112,
   "sub": "gravel",
   "ax": [
    1,
    0.987,
    -0.75,
-   0.288,
+   0.267,
    1
   ],
   "mode": "live"
  },
  "cypress-swamp/full": {
   "n": 105,
-  "h": 1098189095,
+  "h": 2499298395,
   "sub": "gravel",
   "ax": [
    1,
    1,
    -0.75,
-   0.383,
+   0.34,
    1
   ],
   "mode": "live"

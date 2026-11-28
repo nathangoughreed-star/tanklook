@@ -10,7 +10,7 @@ import { SPECIES, type Species } from '../../data/species';
 import { CARE, EXPERTISE_NAME } from '../../data/care';
 import type { TankModel } from '../../data/tanks';
 import { whyAnimal } from '../../scene/animalfit';
-import { catalogueSizes, fitIn, zoneOf, type AnimalCount, type Zone } from '../../scene/tankfit';
+import { catalogueSizes, fitIn, poolTooShallowIn, zoneOf, type AnimalCount, type Zone } from '../../scene/tankfit';
 import { animalsOf, rankTankmates, startPick, type Pk } from '../stockPlanLogic';
 import { focalAnimals, recipeLook } from '../../scene/recipes';
 import { STYLES } from '../../scene/items';
@@ -173,7 +173,9 @@ function buildPlan(a: Archetype, tank: TankModel, kinds: number, exclude?: Reado
     });
     let tries = 0;
     for (const sp of [...open.filter(s => !zones.has(zoneOf(s))), ...open.filter(s => zones.has(zoneOf(s)))]) {
-      const add = animalsOf([startPick(sp.id)])[0], here = fitIn([...set, add], tank);
+      const add = animalsOf([startPick(sp.id)])[0];
+      if (poolTooShallowIn(tank, set, add)) { why(`${sp.name}: the pool the land leaves here is too shallow for it`); continue; }
+      const here = fitIn([...set, add], tank);
       if (!here || here.fails.length) { why(`${sp.name} would not fit alongside in this tank`); continue; }
       if (++tries > 14) break;
       const bad = welfareProblem([...set, add], tank);
