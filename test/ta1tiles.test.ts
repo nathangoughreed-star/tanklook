@@ -15,7 +15,8 @@ describe('TA1 scape tiles', () => {
     expect(ids.filter(id => !has('scape', id))).toEqual([]);
   });
   it('every preset substrate and leaf litter has a tile', () => {
-    expect(Object.keys(SUBSTRATES).filter(id => !has('substrate', id))).toEqual([]);
+    const SB1 = ['red', 'pink', 'green', 'wgrav']; // SB1 (2026-11-26): the picker draws these (and the sb- products) procedurally, no baked tile
+    expect(Object.keys(SUBSTRATES).filter(id => !id.startsWith('sb-') && !SB1.includes(id) && !has('substrate', id))).toEqual([]);
     expect(['mixed', 'oak', 'magnolia', 'catappa'].filter(l => !has('substrate', 'litter-' + l))).toEqual([]);
   });
 });

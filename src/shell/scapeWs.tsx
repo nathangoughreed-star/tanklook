@@ -7,8 +7,10 @@ import type { Viewer } from '../render/viewer';
 import { drawSubstrate, drawBlendTile, type PresetSubstrate } from '../art/placeholder';
 import { groundVolume } from '../scene/setupsheet';
 import { ideasLabel } from './logic/discover';
-import { substrateView, terrainView, brushView, placedView, setSubstrateType, setRough, slopePreset, setLitterLeaf, setLitterDensity, shuffleLitter, setCorner, addPiece, LEAVES } from './logic/scape';
-import { tankFraming, SCAPE_TABS, scapeTiles, scapeFacts, substrateSwatches, terrainMode, enterVisit, revertVisit, visitDirty, type ScapeTab, type Visit } from './logic/workspace';
+import { BLEND_PRESETS } from '../scene/blend';
+import type { SubOpt, SubTypeView } from './logic/workspace';
+import { substrateView, terrainView, brushView, placedView, setSubstrateType, setBlendPreset, setPriceLb, setRough, slopePreset, setLitterLeaf, setLitterDensity, shuffleLitter, setCorner, addPiece, LEAVES } from './logic/scape';
+import { tankFraming, SCAPE_TABS, scapeTiles, scapeFacts, substrateTypes, subTypeOf, subOptOn, subFacts, terrainMode, enterVisit, revertVisit, visitDirty, type ScapeTab, type Visit } from './logic/workspace';
 import { Group, Icon } from './ui';
 import { LenRow } from './tank';
 import { dragPiece } from './drag';
@@ -46,23 +48,40 @@ function ScapeSide({ store }: { store: Store }) {
 
 /** Substrate & ground: swatches, an either/or terrain switch (slopes and typed depths OR the custom grid), typed depths. */
 function GroundSection({ store, getViewer }: { store: Store; getViewer: () => Viewer | undefined }) {
+  const [picked, setPicked] = useState<string | null>(null);
+  const cur0 = subTypeOf(store.tank.substrate); useEffect(() => setPicked(null), [cur0]);
   const S = store.tank, units = store.scene.units, sv = substrateView(S, units), tv = terrainView(S, 0);
-  const swatches = substrateSwatches(), tm = terrainMode(tv.on);
+  const types = substrateTypes(), curType = subTypeOf(S.substrate), shown = picked ?? curType, shownType = types.find(t => t.id === shown) ?? types[0], tm = terrainMode(tv.on), facts = subFacts(S.substrate);
   const gv = S.substrate.show ? groundVolume(S) : null;
   const pick = (t: string) => { setSubstrateType(store, t); if (t === 'bare') { const v = getViewer(); if (v?.terrainEdit.on) { v.terrainEdit.on = false; v.rebuild(); } } };
-  const sw = (id: string, label: string) => (
-    <button type="button" class={`wssw${sv.type === id ? ' on' : ''}`} aria-pressed={sv.type === id} title={label} onClick={() => pick(id)}>
-      <Swatch type={id} blend={S.substrate.custom} /><span>{label}</span></button>
+  const pickOpt = (o: SubOpt) => { if (o.preset) setBlendPreset(store, o.preset); else pick(o.id); };
+  const pickType = (t: SubTypeView) => {
+    setPicked(t.id);
+    if (t.id === 'bare') return pick('bare');
+    if (t.id === curType || !t.options.length) return;
+    pickOpt(t.options[0]); // a type opens on its first look; the row below lists the rest
+  };
+  const sw = (o: SubOpt) => (
+    <button type="button" class={`wssw${subOptOn(S.substrate, o) ? ' on' : ''}`} aria-pressed={subOptOn(S.substrate, o)} title={o.label} onClick={() => pickOpt(o)}>
+      <Swatch type={o.id} blend={o.preset ? BLEND_PRESETS[o.preset] : S.substrate.custom} /><span>{o.label}</span></button>
   );
   const max = S.tank.H * 0.5;
   const corner = (key: 'fl' | 'fr' | 'bl' | 'br', label: string) => <LenRow label={label} mm={S.substrate[key]} min={10} max={max} u={units} onMm={mm => setCorner(store, key, mm)} />;
-  const aq = swatches.filter(s => !s.terra), terra = swatches.filter(s => s.terra);
+  const lbs = gv ? gv.litres * 1.6 * 2.2046 : 0, unitL = facts?.b.per === 'L', amount = unitL ? (gv?.litres ?? 0) : lbs, priceLb = facts ? (S.substrate.priceLb ?? facts.b.price) : 0;
   const gal = gv ? gv.litres / 3.785 : 0;
   return (
     <div class="wsground" onChange={() => store.seal()}>
       <h3>Substrate <span class="hint">what the floor is made of</span></h3>
-      <div class="wsswatches">{sw('bare', 'Bare bottom')}{aq.map(s => sw(s.id, s.label))}{sw('custom', 'Custom blend')}</div>
-      {terra.length ? <><div class="cap">Terrarium</div><div class="wsswatches">{terra.map(s => sw(s.id, s.label))}</div></> : null}
+      <div class="chips wstypes" role="tablist" aria-label="Substrate type">{types.map(t => <button type="button" role="tab" class={`chip big${shown === t.id ? ' on' : ''}`} aria-selected={shown === t.id} onClick={() => pickType(t)}>{t.label}</button>)}</div>
+      {shownType.options.length && shownType.id !== 'custom' ? <div class="wsswatches">{shownType.options.map(sw)}</div> : null}
+      {facts ? <div class="card wsfacts" aria-label="Product facts">
+        <div class="drow"><span>{facts.b.brand} {facts.b.name}{facts.b.colour ? `, ${facts.b.colour}` : ''}</span><b>{facts.nutrient}</b></div>
+        <div class="drow"><span>Water</span><b>{facts.ph}</b></div>
+        <div class="drow"><span>Grain size</span><b>{facts.size}</b></div>
+        <div class="row"><span class="lbl">Price per {facts.b.per}</span><span class="val"><input class="input num" type="number" min={0} step="0.01" inputMode="decimal" aria-label={`Price per ${facts.b.per} (USD)`} placeholder={facts.b.price.toFixed(2)} value={S.substrate.priceLb ?? ''} onInput={e => { const v = (e.target as HTMLInputElement).value; setPriceLb(store, v === '' ? null : +v); }} /><span class="unit">$/{facts.b.per}</span></span></div>
+        <div class="hint">{S.substrate.priceLb != null ? 'Your price.' : `Our guess: $${facts.b.price.toFixed(2)}/${facts.b.per} from a ${facts.b.bag} ${facts.b.per} bag at ${facts.b.retailer}, ${facts.b.date}.`} {gv ? `About $${Math.round(amount * priceLb)} for this tank (${Math.round(amount)} ${facts.b.per}).` : ''}</div>
+        <div class="hint">{facts.b.note}</div>
+      </div> : null}
       {sv.custom ? <div class="card"><Blend store={store} /></div> : null}
       <SliderRow label="Roughness" title="Lumps and ripples on the ground's skin only" min={0} max={100} value={sv.rough} text={sv.roughText} onInput={v => setRough(store, v)} />
 

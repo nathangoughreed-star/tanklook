@@ -5,6 +5,7 @@
 //   prefers mismatch (corys on gravel)                                  -> level 'prefers': a soft advisory
 //   plant deeper-rooted than the bed where it stands                    -> level 'plant'
 //   a bed deeper than its grain's anaerobic threshold                   -> level 'deep'
+import { brandOf } from '../data/substrateBrands';
 import { DEEP_MM, DWELLER, MM_IN, PLANT_DEPTH, SUBSTRATE_TRAITS, grainRank } from '../data/substrateTraits';
 import { getSpecies } from '../data/species';
 import { groundHeight } from './terrain';
@@ -25,6 +26,8 @@ export function bedOf(S: TankSetup): { grain: Grain; sharp: boolean; name: strin
     const grain = big.length ? big.reduce((a, g) => (grainRank(g.grain) > grainRank(a.grain) ? g : a)).grain : c.grains[0].grain;
     return { grain, sharp: false, name: GRAIN_WORD[grain] };
   }
+  const b = brandOf(sub.type);
+  if (b) { const top = b.mm[1], grain: Grain = top <= 2.5 ? 'sand' : top <= 9 ? 'gravel' : 'pebble'; return { grain, sharp: b.round < 0.45, name: `${b.brand} ${b.name}` }; } // SB1: a product's grain from its stated size
   return SUBSTRATE_TRAITS[sub.type];
 }
 
