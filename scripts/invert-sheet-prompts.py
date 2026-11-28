@@ -26,7 +26,7 @@ CANVAS AND LAYOUT
 * Five horizontal rows separated by at least 3% of the canvas height of empty black space.
 {layout}* All views use exactly the same physical scale.
 {proj}
-* Keep every part within its assigned view area.
+{fixc}* Keep every part within its assigned view area.
 * Center the views consistently.
 
 MASTER GEOMETRY — MOST IMPORTANT
@@ -37,7 +37,7 @@ First establish one anatomically accurate three-dimensional specimen. All five r
 Natural colouring, slightly subdued, not neon-saturated.
 
 {color}
-
+{fixk}
 Color boundaries must wrap continuously over the three-dimensional form, remaining consistent in all projections.
 {rows}{check}"""
 
@@ -198,6 +198,185 @@ SHEETS['scarlethermit_t2'] = dict(SHEETS['scarlethermit'], id='scarlethermit', v
 * The shell is the same shell, same size and coil direction, in every row.""")
 
 
+# ---------- Milestone batch m1 (the 20 milestone inverts, hybrid method approved by Nathan 2026-11-28: "Yes, hybrid") ----------
+# Fixes from judging the six t1 sheets (research/invert-model-method.md, sheet test results), in every m1 prompt:
+#  colours drifted darker or wrong (trochus, zoanthid, urchin) -> colours stated in words and kept at photo brightness;
+#  the crab's "side" came out 3/4 -> true elevations, camera level; the urchin's top view came out 25% small and the
+#  shrimp's 11% long -> the scale lock is spelled out per view; the hermit's empty shell changed -> same shell every
+#  row; the trochus sheet had no map -> every sheet has a segmentation map row. Crustaceans use Nathan's crab blocks.
+# Commons photo references per species: research/invert-sheets/refs-m1.md (for the colour check after the sheet).
+FIX_CANVAS = """* Side, front, top and bottom views are true orthographic elevations with the camera level with the axis: no three-quarter angle, no tilt, no dorsal surface showing in a side view.
+* Scale lock: the body length in every top or bottom view equals the body length in the side view, and the width in every front view equals the width in the top view. Never enlarge or shrink a view to fill its row.
+"""
+FIX_COLOR = """* Show the colours as in a well-lit aquarium photograph of a healthy adult: do not darken, desaturate, or tint them toward brown or grey. A darker or duller rendering is wrong.
+* Surfaces as on the live animal: glossy where it is glossy, smooth where it is smooth. Do not add hair, granules, or bumps the species does not have.
+"""
+
+SNAIL_ROWS = """ROW 1 — SIDE VIEW, CRAWLING (MASTER)
+True orthographic side elevation from the animal's left, head pointing right, the sole flat on an invisible horizontal line, shell carried as when crawling, {animal_pose} This view establishes the master silhouette.
+ROW 2 — SIDE SEGMENTATION MAP
+An exact pixel-aligned duplicate of row 1 recolored flat: shell grey (#808080), aperture lip and visible shell interior white (#FFFFFF), foot yellow (#FFFF00), head, snout and tentacles blue (#0000FF), {map_extra}eyes red (#FF0000). No texture, outlines or shading.
+ROW 3 — SHELL ALONE: APERTURE VIEW AND BACK VIEW
+Two views side by side, separated by black space, the empty shell with the animal removed, apex up, shell axis vertical. Left: aperture facing the viewer. Right: the same shell turned 180 degrees about its vertical axis. Same scale and height as each other and as the shell in row 1.
+ROW 4 — SHELL ALONE: APEX AND BASE
+Two views side by side, separated by black space. Left: straight down on the apex. Right: straight up at the base and aperture. Same diameter as each other.
+ROW 5 — SOLE VIEW
+The crawling snail of row 1 seen from directly below, as through aquarium glass: the sole of the foot, head and tentacles, the shell's rim around it. Head pointing right."""
+SNAIL_CHECK_TXT = """FINAL GEOMETRIC VALIDATION
+Before rendering, verify:
+
+* The same shell (size, whorl count, coil direction and pattern) in every row.
+* The shell is right-handed (dextral): with the apex up and the aperture facing the viewer, the aperture is on the right.
+* Identical physical scale across all views; the shell diameter in row 4 equals the shell width in row 3.
+* The segmentation map is a recoloring of row 1, not a new drawing.
+"""
+
+
+def snail(k, common, sci, geometry, color, animal_pose, map_extra=''):
+    rows = SNAIL_ROWS.format(animal_pose=animal_pose, map_extra=map_extra)
+    return dict(common=common, sci=sci, ver='m1', fix=True, parts='the shell, foot, head and tentacles',
+                layout='* Rows 3 and 4 contain two views side by side, separated by black space.\n', geometry=geometry, color=color,
+                rows=rows + '\n' + SNAIL_CHECK_TXT)
+
+
+SHRIMP_ROWS = """ROW 1 — MASTER SIDE VIEW
+True orthographic elevation from the left side, head pointing right, standing on its walking legs, {ant} This view establishes the master silhouette.
+ROW 2 — SIDE BODY, APPENDAGES REMOVED
+The exact same body as row 1 at the same scale and position, with every leg, swimmeret, antenna and antennule removed at its base. Keep the rostrum, eyes and tail fan. A subtraction, not a new drawing.
+ROW 3 — TOP VIEW, APPENDAGES REMOVED
+A true orthographic dorsal projection of the body from row 2, head pointing right, the tail fan spread flat. Its length from rostrum tip to tail fan equals the length in row 2 exactly.
+ROW 4 — FRONT VIEW AND SEGMENTATION MAP
+Left: the full {common} seen from the front. Right: the same silhouette recolored flat: body grey (#808080), {claws}walking legs yellow (#FFFF00), antennae and antennules blue (#0000FF), eyes white (#FFFFFF).
+ROW 5 — SIDE SEGMENTATION MAP
+An exact duplicate of row 1 recolored flat: body grey (#808080), {claws}walking legs yellow (#FFFF00), swimmerets cyan (#00FFFF), antennae and antennules blue (#0000FF), tail fan green (#00FF00), eyes white (#FFFFFF). No texture or outlines."""
+
+
+def shrimp(k, common, sci, geometry, color, appendages, pose, check, ant='antennae swept back over the body.', claws=''):
+    return dict(common=common, sci=sci, ver='m1', fix=True, parts='the legs, claws, antennae, rostrum and tail fan',
+                layout='* Row 4 contains two views side by side, separated by black space.\n', geometry=geometry, color=color,
+                appendages=appendages, pose=pose, check=check + '\n* Side views face right.\n* Identical body silhouette in rows 1 and 2; identical body length in rows 2 and 3.',
+                rows=SHRIMP_ROWS.format(ant=ant, common=common, claws=claws))
+
+
+CARIDEAN = """* One pair of long antennae and one pair of short forked antennules, from the front of the head.
+* Five walking legs per side under the carapace, in order from front to back: {legs}
+* Five small swimmerets per side under abdominal segments 1 to 5.
+* Tail fan: one central telson and two uropods per side."""
+CAR_POSE = """* Standing on walking legs 3, 4 and 5 on each side, their tips on one invisible horizontal ground plane.
+* Legs 1 and 2 held forward under the head.
+* Antennae swept back over the body, both on the same arc.
+* Tail fan spread flat."""
+
+M1 = {
+    # ---- saltwater snails ----
+    'nassarius': snail('nassarius', 'nassarius snail', 'Nassarius vibex', """* Adult shell height 0.5 inches; shell height approximately 1.3 times its width.
+* Ovate-conical shell of about 6 convex whorls with strong rounded axial ribs crossed by fine spiral threads, giving a beaded surface.
+* A thick, glossy callus pad spreading over the underside around the aperture; a short notch-like siphonal canal at the base of the aperture.
+* The animal: a long, narrow, very active foot ending in two short pointed tail tips; a long tubular siphon held forward and up like a snorkel; two long slender tentacles with eyes at their bases.
+* Not a cone, not a turban shell.""", """Shell: grey-brown to olive with darker brown mottling and a darker band on the body whorl; callus pad cream-white and glossy. Foot, siphon and tentacles translucent white with fine dark specks.""",
+        'siphon extended forward and up, tentacles forward.', 'siphon cyan (#00FFFF), '),
+    'cerith': snail('cerith', 'cerith snail', 'Cerithium litteratum', """* Adult shell height 1 inch; shell height approximately 2.2 times its width.
+* Tall, slender, sharply pointed spire of about 10 whorls, each with a spiral row of rounded knobs at the shoulder and finer beaded spiral cords below.
+* Oval aperture with a short, slightly upturned siphonal canal at its base.
+* The animal: a short broad foot, a snout, two slender tentacles with eyes near their bases.
+* Not a turret shell without knobs; not an auger.""", """Shell: cream-white with rows of dark brown to black square spots and blotches following the spiral cords. Foot and head pale grey-cream, finely mottled darker.""",
+        'snout and tentacles extended forward.'),
+    'astrea': snail('astrea', 'astrea snail', 'Lithopoma tectum', """* Adult shell height 1 inch; shell height approximately equal to its width.
+* Pyramid-shaped conical shell of about 6 whorls; each whorl carries oblique axial folds that make a wavy, star-like edge when seen from the apex.
+* Base almost flat with fine spiral threads; round aperture closed by a thick, white, oval calcareous operculum carried on the back of the foot.
+* The animal: a broad foot, a short snout, two tentacles.""", """Shell: greenish-grey to olive-tan, the folds a little paler; base cream. Operculum white. Foot and head olive-grey with fine darker mottling.""",
+        'operculum visible on the back of the foot behind the shell.', 'operculum cyan (#00FFFF), '),
+    'fightingconch': snail('fightingconch', 'Florida fighting conch', 'Strombus alatus', """* Adult shell length 3 inches; heavy shell, length approximately 1.6 times its width.
+* Short pointed spire; a large body whorl with a row of blunt knobs on the shoulder; the adult outer lip flared into a thick wing with a stromboid notch near its front end.
+* Long narrow aperture.
+* The animal: a narrow muscular foot carrying a sickle-shaped brown operculum (used to lever and leap), a long extensible snout, and two long eye stalks each ending in a large ringed eye.""", """Shell: orange-brown to chestnut with paler zigzag mottling; aperture glossy salmon-orange inside. Body mottled olive-grey with pale speckles. Eyes yellow-green with a dark pupil ring.""",
+        'both eye stalks raised and the snout extended forward.', 'operculum cyan (#00FFFF), '),
+    # ---- freshwater snails ----
+    'assassinsnail': snail('assassinsnail', 'assassin snail', 'Anentome helena', """* Adult shell height 0.8 inches; shell height approximately 2 times its width.
+* Tall conical spire of about 7 whorls with fine axial ribs; oval aperture with a short siphonal canal.
+* The animal: a broad foot, a long siphon tube held forward, two slender tentacles.""", """Shell: bright yellow to golden-amber spiral bands alternating with dark chocolate-brown bands, about three bands per whorl. Foot and siphon grey-green, finely speckled.""",
+        'siphon extended forward.', 'siphon cyan (#00FFFF), '),
+    'rabbitsnail': snail('rabbitsnail', 'yellow rabbit snail', 'Tylomelania sp.', """* Adult shell height 2.5 inches; shell height approximately 3 times its width.
+* Tall turreted spire of about 10 slightly convex whorls with faint axial ribs; the oldest top whorls often worn smooth.
+* The animal: a large foot and a long, wrinkled, trunk-like snout; two long tentacles that droop to the sides like rabbit ears.""", """Shell: dark chocolate brown to black. Foot, snout and tentacles bright golden yellow.""",
+        'snout extended forward and down, tentacles drooping to the sides.'),
+    'hornednerite': snail('hornednerite', 'horned nerite snail', 'Clithon corona', """* Adult shell width 0.5 inches; a globular shell with a low spire, height approximately 0.9 times its width.
+* A row of 4 to 6 long, slender, slightly curved black spines (horns) on the shoulder of the body whorl.
+* D-shaped aperture closed by a calcareous operculum; smooth glossy surface.
+* The animal: a broad foot, a short snout, two tentacles.""", """Shell: golden yellow to olive with dense black zigzag lines and dark spiral bands; horns black. Foot and head grey.""",
+        'tentacles forward.'),
+    'trapdoorsnail': snail('trapdoorsnail', 'Japanese trapdoor snail', 'Cipangopaludina japonica', """* Adult shell height 1.8 inches; shell height approximately 1.3 times its width.
+* Globose-conical shell of about 6 strongly convex whorls with deep sutures; smooth with fine growth lines and faint spiral ridges.
+* Large oval aperture closed by a thin, brown, horny operculum (the trapdoor) carried on the back of the foot.
+* The animal: a broad foot, a short snout, two tentacles (the right one thicker in males).""", """Shell: olive-green to dark olive-brown, paler at the aperture lip. Operculum brown. Foot and head dark grey with fine pale gold specks.""",
+        'operculum visible on the back of the foot behind the shell.', 'operculum cyan (#00FFFF), '),
+    # ---- saltwater shrimp ----
+    'fireshrimp': shrimp('fireshrimp', 'fire shrimp', 'Lysmata debelius', """* Adult body length 2 inches from the rostrum tip to the end of the tail fan.
+* Carapace approximately 38% of the body length; six abdominal segments; abdomen arched at the third segment.
+* Short toothed rostrum, stalked eyes, long antennae approximately 1.5 times the body length.
+* A slender caridean cleaner shrimp, the same build as the peppermint shrimp; no large claws.""", """Body: solid deep scarlet red, opaque, with a few small white spots on the back of the carapace. Antennae and antennules white. Walking legs white. Eyes dark red-brown.""",
+        CARIDEAN.format(legs='1. a short leg with a tiny pincer; 2. a long, thin leg with a tiny pincer; 3, 4 and 5. thin walking legs ending in pointed tips.') + '\n\nNo large claws.', CAR_POSE,
+        """* Exactly five walking legs per side, the second pair the longest.\n* Exactly two long antennae and two antennules."""),
+    'coralbanded': shrimp('coralbanded', 'coral-banded shrimp', 'Stenopus hispidus', """* Adult body length 2.5 inches without the claws; the third pair of legs carries long claws longer than the body.
+* Body covered with small forward-pointing spines; carapace approximately 40% of the body length; six abdominal segments.
+* Three pairs of very long, thin, white antennae and antennules, each about 2 times the body length.
+* Not a lobster: a slender spiny body and very long thin claws.""", """Body and claws: bold alternating crosswise bands of red and white, about three red bands on the abdomen and two on each claw. Antennae white. Walking legs translucent white. Tail fan with a red band.""",
+        """* Three pairs of long white antennae and antennules from the front of the head.
+* Five legs per side, in order from front to back: 1 and 2. small legs with tiny pincers; 3. a very long leg ending in a large slender claw; 4 and 5. thin walking legs ending in pointed tips.
+* Five small swimmerets per side under abdominal segments 1 to 5.
+* Tail fan: one central telson and two uropods per side.""", """* Standing on legs 4 and 5 on each side, their tips on one invisible horizontal ground plane.
+* Both big claws held forward and out to the sides, open, at the same angles.
+* Antennae swept up and back, all on matching arcs.
+* Tail fan spread flat.""", """* Exactly two big claws, both on leg pair 3, equal in size.\n* Exactly three pairs of long antennae.""", claws='big claws red (#FF0000), '),
+    'pistolshrimp': shrimp('pistolshrimp', "Randall's pistol shrimp", 'Alpheus randalli', """* Adult body length 1.5 inches.
+* Stout body; carapace extends forward over the eyes as a hood (the eyes are covered by the carapace, seen through it); short rostrum.
+* First leg pair asymmetric: one greatly enlarged snapping claw (about 50% of the body length, swollen palm) and one small slender claw.
+* Antennae short, about 0.8 times the body length.""", """Body and legs translucent white with bold crosswise bands of orange-red, about two bands per segment; the big claw banded the same way. Antennae orange. Eyes dark, faintly visible under the hood.""",
+        """* One pair of antennae and one pair of antennules.
+* Five legs per side, in order from front to back: 1. a claw: on the shrimp's RIGHT side a large snapping claw, on its LEFT side a small slender claw; 2. a thin leg with a tiny pincer; 3, 4 and 5. walking legs ending in pointed tips.
+* Five small swimmerets per side under abdominal segments 1 to 5.
+* Tail fan: one central telson and two uropods per side.
+
+This is the one exception to mirror symmetry: the two first-leg claws differ in size. Every other appendage mirrors.""", """* Standing on legs 3, 4 and 5 on each side, their tips on one invisible horizontal ground plane.
+* Both claws held forward in front of the head; the big claw on the right side of the body.
+* Antennae forward and out.
+* Tail fan spread flat.""", """* Exactly one big snapping claw, on the shrimp's right side, and one small claw on its left.\n* The big claw is on the same side of the body in every view (mirrored correctly in front and top views).""", ant='antennae forward and out.', claws='claws red (#FF0000), '),
+    # ---- freshwater shrimp ----
+    'crystalred': shrimp('crystalred', 'crystal red shrimp', 'Caridina logemanni (crystal red line)', """* Adult body length 1 inch.
+* Small dwarf shrimp: carapace approximately 35% of the body length, short straight rostrum, stalked eyes, antennae about the body length.
+* The first two leg pairs end in tiny fan-like brushes for feeding.""", """Opaque chalk white body with bold deep red bands: the head and carapace front red, one broad red band across the middle of the abdomen, the tail fan base red; tail fan tips white. Legs white with faint red rings. Antennae red-tinted.""",
+        CARIDEAN.format(legs='1 and 2. short legs ending in tiny feeding brushes; 3, 4 and 5. thin walking legs ending in pointed tips.'), CAR_POSE,
+        """* Exactly five walking legs per side.\n* Exactly two long antennae and two antennules."""),
+    'ghostshrimp': shrimp('ghostshrimp', 'ghost shrimp', 'Palaemonetes paludosus', """* Adult body length 1.5 inches.
+* Slender, completely transparent body; long toothed rostrum curving slightly up; carapace approximately 35% of the body length; abdomen arched at the third segment.
+* Second leg pair longer, with small claws; long antennae approximately 1.2 times the body length.""", """Clear glassy body, the internal organs faintly visible; a few small orange dots at the tips of the first claws and on the tail fan; a faint orange-amber tint to the gut. Eyes dark.""",
+        CARIDEAN.format(legs='1. a short leg with a tiny pincer; 2. a longer leg with a small claw; 3, 4 and 5. thin walking legs ending in pointed tips.'), CAR_POSE,
+        """* Exactly five walking legs per side, the second pair with small claws.\n* Exactly two long antennae and two antennules."""),
+    'bambooshrimp': shrimp('bambooshrimp', 'bamboo shrimp', 'Atyopsis moluccensis', """* Adult body length 3 inches.
+* Heavy-bodied freshwater filter-feeding shrimp: short rostrum, stalked eyes, short antennae about 0.5 times the body length.
+* The first two leg pairs end in large fan-shaped brushes of fine hairs (the filter fans), open like four small hands.
+* Walking legs thick and strong.""", """Body warm tan-brown to chestnut with a narrow cream stripe along the middle of the back from the carapace to the tail. Fans pale cream. Legs tan with faint darker rings.""",
+        CARIDEAN.format(legs='1 and 2. short legs each ending in a large open fan of fine hairs; 3, 4 and 5. thick walking legs ending in pointed tips.'), """* Standing on legs 3, 4 and 5 on each side, their tips on one invisible horizontal ground plane.
+* All four fans held forward and open, as when filter feeding.
+* Antennae forward.
+* Tail fan spread flat.""", """* Exactly four fans (two per side) and three walking legs per side.\n* Exactly two antennae and two antennules.""", ant='all four fans held forward and open, antennae forward.', claws='fans red (#FF0000), '),
+    'sulawesicardinal': shrimp('sulawesicardinal', 'Sulawesi cardinal shrimp', 'Caridina dennerli', """* Adult body length 0.8 inches.
+* Small dwarf shrimp: carapace approximately 35% of the body length, short rostrum, stalked eyes, antennae about the body length.
+* The first two leg pairs end in tiny feeding brushes.""", """Body deep cardinal red with scattered small round white spots over the carapace and abdomen. The tips of the first two leg pairs white like gloves. Walking legs red with white tips. Antennae red.""",
+        CARIDEAN.format(legs='1 and 2. short legs ending in tiny white feeding brushes; 3, 4 and 5. thin walking legs ending in pointed tips.'), CAR_POSE,
+        """* Exactly five walking legs per side.\n* Exactly two long antennae and two antennules."""),
+}
+SHEETS.update(M1)
+
+# Tuxedo urchin redo (t1 failed: teal bands and maroon spines instead of ultramarine and golden-green, top view 25% small,
+# test too flat). Colours and the scale lock now stated; queued in its own folder (tuxedourchin-inv2-gen).
+SHEETS['tuxedourchin_t2'] = dict(SHEETS['tuxedourchin'], id='tuxedourchin', ver='t2', inv=2, fix=True, geometry="""* Adult test diameter 2 inches, height approximately 70% of the diameter: a nearly round globe, flattened only a little at the mouth side.
+* Ten meridian zones from the mouth (bottom centre) to the top: five covered with rows of short, even spines (spine length approximately 10% of the diameter) and five bare, alternating. The bare zones are slightly wider than the spined zones at the equator.
+* Short tube feet between the spines on the lower half.
+* Not a long-spined urchin; spines short, dense and fine.
+* The top view and the bottom view have exactly the same diameter as the side view's width.""", color="""Bare zones: deep ultramarine to violet-blue, smooth, with fine darker stippling; never teal or green. Spines: short, golden-green to olive-tan, a few with reddish bases; never maroon or near black. Mouth area dark.""")
+
+
 PROJ = "* No perspective distortion, labels, rulers, borders, shadows, or additional objects."
 PROJ_CRUST = "* Strict orthographic projection without perspective distortion.\n* No labels, rulers, borders, shadows, ground lines, or additional objects."
 
@@ -208,7 +387,8 @@ def prompt(v):
         return v['raw']
     c = 'appendages' in v   # a crustacean: Nathan's crab blocks
     geo = v['geometry'] + ('\n\nAppendages\n' + v['appendages'] if c else '')
-    return HEAD.format(**{**v, 'geometry': geo, 'prio': (PRIO_CRUST if c else PRIO).format(**v), 'proj': PROJ_CRUST if c else PROJ,
+    fx = v.get('fix')
+    return HEAD.format(**{**v, 'fixc': FIX_CANVAS if fx else '', 'fixk': FIX_COLOR if fx else '', 'geometry': geo, 'prio': (PRIO_CRUST if c else PRIO).format(**v), 'proj': PROJ_CRUST if c else PROJ,
                           'pose': POSE_CRUST.format(pose=v['pose']) if c else '', 'check': '\n' + CHECK_CRUST.format(check=v['check']) if c else ''})
 
 
@@ -217,7 +397,7 @@ if __name__ == '__main__':
     for key, v in SHEETS.items():
         k, text, ver = v.get('id', key), prompt(v), v.get('ver', 't1')
         open(f'research/invert-sheets/prompts/{k}-{ver}.md', 'w', encoding='utf-8').write(f'<!-- invert sheet test {ver}, {v["common"]}, 2026-11-28; scripts/invert-sheet-prompts.py{v.get("note", "")} -->\n' + text)
-        d = f'C:/Users/nreed/fish-sheets/{k}-inv1-gen'; os.makedirs(d, exist_ok=True)
+        d = f'C:/Users/nreed/fish-sheets/{k}-inv{v.get("inv", 1)}-gen'; os.makedirs(d, exist_ok=True)
         # a folder that already holds its sheet keeps the prompt that made it (sheet.json / prompt-*.txt record which)
         if v.get('noqueue'):
             print(k, ver, len(text), 'written to research only (not queued)'); continue

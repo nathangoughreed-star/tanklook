@@ -131,6 +131,23 @@ outright. Body plans like these don't loft from silhouettes (see "Why not build 
 
 **Decision (Nathan 2026-11-28): "Yes, hybrid".** This answers open question 1. Each new invert: Commons photos, a sheet (the crab template for crustaceans), measured ratios and map colours from the sheet, a colour check against the photos, then the generator spec. The urchin needs a t2 sheet with its colours stated before it is measured.
 
+### Milestone sheet batch m1 (2026-11-28, Nathan via C26: "recompile the ref image model queue ... and then start the script back up")
+`scripts/invert-sheet-prompts.py` (the `M1` block) writes 16 prompts to `research/invert-sheets/prompts/<id>-m1.md` and
+`C:/Users/nreed/fish-sheets/<id>-inv1-gen/prompt.txt`.
+- **Who is in it:** the 15 milestone inverts with no sheet yet (nassarius, cerith, astrea, fighting conch, fire,
+  coral-banded, pistol; crystal red, ghost, bamboo, Sulawesi cardinal, assassin, rabbit, horned nerite, trapdoor),
+  plus the tuxedo urchin t2 redo (`tuxedourchin-inv2-gen`).
+- **Sheet-test fixes in every prompt:**
+  - colours in words, kept at the brightness of an aquarium photo, never darkened;
+  - glossy and smooth where the animal is;
+  - true elevations with no 3/4 view;
+  - a scale lock per view;
+  - the same shell in every row.
+- **Snails** get a new five-row layout: side, side map, shell front and back, apex and base, sole.
+- **Shrimp** use the crab template's blocks: appendage count per side, a fixed pose, a checklist. The pistol shrimp's
+  asymmetric claws are stated as the one exception to mirroring.
+- **Photo references:** `research/invert-sheets/refs-m1.md`.
+
 ### First hybrid result: zoanthids (2026-11-28, Nathan: "can we see a result from the hybrid approach?")
 `reefShape('zoanthid-h')`, morph `dragoneye-h` in `src/render/coral3d.ts`; review picture
 `research/screens/invert-c/hybrid-zoanthid.jpg` (photo, sheet rows, pilot before, hybrid after). Lab only.
