@@ -3098,6 +3098,25 @@
     "url": "https://www.seriouslyfish.com/species/hyphessobrycon-eques/"
    },
    "why": "the footprint is Seriously Fish's stated base (FishBase: a tank of at least 60 cm); the gallon figure is the mean of every minimum found (3 figures: Seriously Fish 19 gal; Aquarium Source 20 gal; Fishkeeping World 20 gal), 19.7 gal (SO1 R202, 2026-11-28)"
+  },
+  "silverdollar": {
+   "red": {
+    "L": 1800,
+    "W": 380,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/metynnis-argenteus/",
+    "states": "180 x 38 cm, about 260 litres (69 US gal), for an adult group; juveniles can start smaller",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 73,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care pages",
+    "url": "https://www.seriouslyfish.com/species/metynnis-argenteus/"
+   },
+   "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of every minimum found (3 figures: Seriously Fish 69 gal; Aquarium Source 75 gal for 5; Fishkeeping World 75 gal for 5), 73 gal (SO1 R202, 2026-11-28)"
   }
  }
 }

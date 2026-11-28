@@ -148,5 +148,6 @@
  "greenspotpuffer": {"c": ["asia"], "r": "Sri Lanka, India, Myanmar, Thailand, Cambodia, Vietnam, Malaysia, Indonesia and the Philippines, north to China: rivers, floodplains, estuaries and mangroves (euryhaline)", "s": "Seriously Fish; FishBase"},
  "bumblebeegoby": {"c": ["asia"], "r": "Western Borneo: Sarawak, Brunei and West Kalimantan, and the Natuna Islands; fresh and brackish waters (FishBase also lists Malaysia, Indonesia, Singapore)", "s": "Seriously Fish; FishBase"},
  "scarletbadis": {"c": ["asia"], "r": "Brahmaputra tributaries in West Bengal and Assam, India, possibly Bhutan; trade fish are mostly males, and whether they are wild or captive-bred is not stated", "s": "Seriously Fish; FishBase"},
- "serpae": {"c": ["samerica"], "r": "Amazon drainage (Brazil, Peru, Bolivia) and the Rio Paraguay (Brazil, Paraguay, Argentina); the trade fish are farmed, and ornamental strains (long-finned, balloon) and blood-tetra hybrids are sold", "s": "Seriously Fish; FishBase"}
+ "serpae": {"c": ["samerica"], "r": "Amazon drainage (Brazil, Peru, Bolivia) and the Rio Paraguay (Brazil, Paraguay, Argentina); the trade fish are farmed, and ornamental strains (long-finned, balloon) and blood-tetra hybrids are sold", "s": "Seriously Fish; FishBase"},
+ "silverdollar": {"c": ["samerica"], "r": "Probably endemic to the Rio Tapajos drainage, Brazil (M. argenteus); the trade also sells M. hypsauchen from the Amazon, Rio Paraguay and Guyana Shield, and the US trade fish sold as argenteus may be hypsauchen (FishBase)", "s": "Seriously Fish; FishBase"}
 }

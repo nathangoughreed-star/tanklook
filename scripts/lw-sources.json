@@ -748,5 +748,11 @@
   "b": 3.14,
   "src": "fishbase-bayes",
   "note": "FishBase ID 46294 Bayesian (TL cm, a 0.00695-0.02619, b 2.97-3.31); its three table rows are SL and are not used (SO1 R202)"
+ },
+ "silverdollar": {
+  "a": 0.02754,
+  "b": 3.11,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 25518 Bayesian (TL cm, a 0.01539-0.04930, b 2.96-3.26); its one table row (SL, n=11, Catalao Lake) is not used (SO1 R202)"
  }
 }
