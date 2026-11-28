@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Invert lab</title>
+<style>body{margin:0;background:#1c2128;color:#ddd;font:13px system-ui} #out{display:block}</style></head>
+<body><canvas id="out"></canvas>
+<script>addEventListener('error', e => document.body.append('ERR ' + (e.message || e.target?.src))); addEventListener('unhandledrejection', e => document.body.append('REJ ' + e.reason));</script>
+<script type="module" src="./lab.ts"></script>
+</body>
+</html>

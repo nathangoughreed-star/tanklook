@@ -20,7 +20,17 @@ export interface Shrimp3D {
   fan: (x: CanvasRenderingContext2D, W: number, H: number) => void;
   /** crayfish: the first walking legs are big chelae; size x the default (a redclaw's is ~1.35), patch = the colour of an outer patch on the palm */
   claw?: { size: number; patch?: string };
+  /** build C: limbs ringed in colour c, n rings per width, share = how much of each ring period is the band colour */
+  band?: { c: string; n: number; share: number };
 }
+
+/** Where the carapace ends along the spine (fraction) and the six abdominal segments' relative lengths. */
+export const CARA = 0.4, SEG = [1, 1.05, 1.05, 0.95, 0.9, 1.25];
+/** Spine fraction [front, rear] of abdominal segment k (0..5): the skin's x, so marks can sit on the segment rims. */
+export const segRange = (k: number) => {
+  const tot = SEG.reduce((a, b) => a + b), a = SEG.slice(0, k).reduce((s, b) => s + b, 0);
+  return [CARA + (1 - CARA) * a / tot, CARA + (1 - CARA) * (a + SEG[k]) / tot];
+};
 
 /** A vertical gradient over the whole skin (dorsal midline at the top, keel at the bottom). */
 function bands(x: CanvasRenderingContext2D, W: number, H: number, stops: [number, string][]) {
@@ -91,6 +101,40 @@ export const SHRIMP3D: Record<string, Shrimp3D> = {
       blade(x, W, H, '#c8281e', 1, 0.7);
       x.fillStyle = '#f6f4ee';
       for (const [u, v] of [[0.62, 0.5], [0.78, 0.35], [0.78, 0.65], [0.45, 0.5]]) { x.beginPath(); x.ellipse(u * W, v * H, 0.06 * W, 0.14 * H, 0, 0, Math.PI * 2); x.fill(); }
+    },
+  },
+  // peppermint shrimp (Lysmata wurdemanni / boggessi), build C pilot 2026-11-28 (research/invert-model-method.md).
+  // Photos: Commons Lysmata_wurdemanni_(I0699), _0468, Nausicaa; Lysmata_boggessi. A clear glassy body with a faint
+  // amber-pink cast (the gut and liver show as a warm shadow under the carapace); thin red lines run lengthwise along
+  // the abdomen (three a side) and across it at every segment rim, oblique red lines on the carapace; clear legs ringed
+  // red, the second pair long and thin; long red antennae; big amber eyes; the tail fan clear with red lines. Measured
+  // on 0468 (side on): carapace ~0.38 of the body without rostrum, abdomen arched at the third segment, legs reach about
+  // 0.4 body lengths below it, antennae about 1.5 body lengths.
+  peppermint: {
+    rost: 0.075, up: 0.012, hump: 0.85, deep: 1.0, legL: 1.35, stand: 0.075, ant: 1.55, glass: 0.66, leg: '#e0a898', antC: '#c04a3c', eye: '#b07a2c',
+    band: { c: '#c8382c', n: 90, share: 0.85 },
+    skin: (x, W, H) => {
+      bands(x, W, H, [[0, '#d08a7a'], [0.5, '#dea494'], [1, '#eac0b2']]);
+      const g = x.createRadialGradient(0.22 * W, 0.5 * H, 0, 0.22 * W, 0.5 * H, 0.16 * W); // the warm organ shadow in the carapace
+      g.addColorStop(0, 'rgba(206,110,60,0.85)'); g.addColorStop(1, 'rgba(206,110,60,0)'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+    },
+    marks: (x, W, H) => {
+      const R = rng(17); x.strokeStyle = '#c42e26'; x.lineCap = 'round';
+      const wav = (x0: number, x1: number, y: number, lw: number) => { // a slightly wavy line, broken now and then
+        x.lineWidth = lw * H; x.beginPath(); let pen = false;
+        for (let u = x0; u <= x1; u += 0.004) { const yy = (y + 0.012 * Math.sin(u * 60 + y * 9)) * H; if (R() < 0.015) { pen = false; continue; } if (pen) x.lineTo(u * W, yy); else { x.moveTo(u * W, yy); pen = true; } }
+        x.stroke();
+      };
+      for (const y of [0.12, 0.3, 0.48, 0.66]) wav(CARA - 0.02, 0.97, y, 0.028); // lengthwise lines along the abdomen
+      for (let k = 0; k < 6; k++) { const [, b] = segRange(k); x.lineWidth = 0.016 * H; x.beginPath(); x.moveTo((b - 0.012) * W, 0.1 * H); x.lineTo((b - 0.006) * W, 0.7 * H); x.stroke(); } // segment rims
+      x.lineWidth = 0.03 * H; x.beginPath(); x.moveTo(CARA * W, 0.02 * H); x.lineTo((CARA - 0.01) * W, 0.9 * H); x.stroke(); // the carapace's rear rim
+      for (const [x0, y0, x1, y1] of [[0.05, 0.55, 0.3, 0.12], [0.1, 0.8, 0.36, 0.38], [0.2, 0.85, 0.38, 0.62]]) { x.lineWidth = 0.028 * H; x.beginPath(); x.moveTo(x0 * W, y0 * H); x.quadraticCurveTo((x0 + x1) / 2 * W, (y0 + y1) / 2 * H + 0.06 * H, x1 * W, y1 * H); x.stroke(); }
+    },
+    fan: (x, W, H) => {
+      blade(x, W, H, '#ead8d0', 0.45, 0.4);
+      x.strokeStyle = '#c42e26'; x.lineWidth = 0.08 * H; x.globalAlpha = 0.9;
+      for (const v of [0.3, 0.7]) { x.beginPath(); x.moveTo(0.1 * W, v * H); x.lineTo(0.95 * W, (0.5 + (v - 0.5) * 1.3) * H); x.stroke(); }
+      x.globalAlpha = 1;
     },
   },
   // crayfish (S238): the shrimp body plan with a short rostrum, a straight deeper abdomen and big chelae on the first legs

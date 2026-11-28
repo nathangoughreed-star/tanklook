@@ -6,7 +6,7 @@
 import { type Ctx, type Proj, type Pt, blob, body, hexA, soft } from './paint';
 
 export type SnailView = 'side' | 'foot' | 'shell';
-type Kind = 'nerite' | 'mystery' | 'ramshorn' | 'trumpet' | 'turbo';
+type Kind = 'nerite' | 'mystery' | 'ramshorn' | 'trumpet' | 'turbo' | 'trochus';
 export interface SnailSpec { kind: Kind; shell: [string, string, string]; foot: [string, string]; mark: string }
 
 export const SNAILS: Record<string, SnailSpec> = {
@@ -17,6 +17,9 @@ export const SNAILS: Record<string, SnailSpec> = {
   trumpet: { kind: 'trumpet', shell: ['#5a4a38', '#8a7a62', '#b0a080'], foot: ['#6a6258', '#a09888'], mark: '#4a2a1a' },
   // Mexican turbo (marine): a turban shell, olive-brown mottled with paler spiral ridges
   turbo: { kind: 'turbo', shell: ['#4a4a32', '#76704c', '#9a9068'], foot: ['#5a5048', '#8a8070'], mark: '#c8c0a0' },
+  // banded trochus (Trochus histrio / maculatus), build C pilot 2026-11-28 (research/invert-model-method.md): colours
+  // sampled from Commons photos Trochus_histrio_01/02 and Trochus_maculatus_01 (cream ground ~#baa089, flames ~#9c685c)
+  trochus: { kind: 'trochus', shell: ['#a8987c', '#c4b294', '#dccdb0'], foot: ['#5e5a50', '#9a9484'], mark: '#94524a' },
 };
 
 /** Card aspect (height / width) per view, and the side view's resting offset (v of the sole). */
@@ -26,6 +29,7 @@ export const SNAIL_META: Record<Kind, { side: number; glass: number }> = {
   ramshorn: { side: 0.86, glass: 0.62 },
   trumpet: { side: 0.5, glass: 0.34 },
   turbo: { side: 0.92, glass: 0.86 },
+  trochus: { side: 0.92, glass: 0.86 },
 };
 /**
  * 3D snail (render/snail3d.ts), one generator for every shell: a logarithmic spiral, an aperture ellipse swept round
@@ -44,7 +48,9 @@ export const SNAIL_META: Record<Kind, { side: number; glass: number }> = {
 // footH: the foot's height (default 0.22); head: the head's radius (default from the foot's width); ph: samples around the whorl (default 24); seam: false = no painted suture
 // (a nerite's body whorl envelops the earlier ones, so a seam along it would be a false crease); fillCut: rows where the
 // aperture plane misses the whorl take their cut from the rows either side instead of a clamp (see rawShell)
-export interface Shell3D { turns: number; grow: number; drop: number; ap: [number, number]; axis: [number, number, number]; size: number; tall: number; at: number; foot: number; tent: number; mark: 'axial' | 'spiral' | 'growth' | 'spots'; open?: [number, number, number]; tilt?: number; incl?: number; lip?: number; footEnd?: number; footW?: number; footH?: number; head?: number; ph?: number; seam?: boolean; fillCut?: boolean }
+export interface Shell3D { turns: number; grow: number; drop: number; ap: [number, number]; axis: [number, number, number]; size: number; tall: number; at: number; foot: number; tent: number; mark: 'axial' | 'spiral' | 'growth' | 'spots' | 'flames'; open?: [number, number, number]; tilt?: number; incl?: number; lip?: number; footEnd?: number; footW?: number; footH?: number; head?: number; ph?: number; seam?: boolean; fillCut?: boolean;
+  /** build C: section squareness, outer-face lean, beaded cords, coil samples, texture width, flames per turn (research/invert-model-method.md) */
+  sq?: number; shear?: number; cords?: { n: number; beads: number; h: number }; nth?: number; texW?: number; flames?: number }
 export const SHELL3D: Record<Kind, Shell3D> = {
   nerite: { turns: 1.8, grow: 10, drop: 0.2, ap: [0.95, 0.95], incl: 15, open: [0.05, -1, 0], lip: 0.03, axis: [-0.3, 0.35, 0.9], size: 0.8, tall: 0.42, at: 0.46, foot: 0.2, footEnd: 0.95, footW: 0.76, footH: 0.13, head: 0.085, ph: 48, seam: false, fillCut: true, tent: 0.085, mark: 'axial' },
   mystery: { turns: 4, grow: 3, drop: 1.5, ap: [0.7, 1.05], incl: 30, axis: [-0.55, 0.8, 0.25], size: 0.66, tall: 0.78, at: 0.42, foot: 0.02, footW: 0.3, footH: 0.15, tent: 0.1, mark: 'spiral' },
@@ -52,6 +58,9 @@ export const SHELL3D: Record<Kind, Shell3D> = {
   // shell overhangs behind it), aperture down and forward onto the foot, long thin tentacles
   ramshorn: { turns: 4, grow: 1.9, drop: 0, ap: [0.52, 0.52], incl: 0, open: [0.55, -0.85, 0], lip: 0.04, axis: [0, 0, -1], size: 0.64, tall: 0.7, at: 0.36, foot: 0.24, footEnd: 0.9, footW: 0.36, footH: 0.2, tent: 0.09, mark: 'growth' },
   trumpet: { turns: 9, grow: 1.32, drop: 7, ap: [0.45, 1.5], incl: 65, open: [0.75, -0.65, 0], axis: [-0.95, 0.2, 0], size: 0.72, tall: 0.3, at: 0.5, foot: 0.45, footEnd: 0.93, footW: 0.2, footH: 0.1, tent: 0.07, mark: 'spots' },
+  // banded trochus, measured (Commons photos, scripts/invert-lab): height / width 0.84-0.98, apical angle 58-65 deg, a
+  // flat base, about 8 flat-sided whorls with 4-5 beaded spiral cords each, aperture low and oblique onto the foot
+  trochus: { turns: 7, grow: 1.42, drop: 2.4, ap: [0.34, 0.36], sq: 4, shear: 0.6, cords: { n: 14, beads: 22, h: 0.12 }, nth: 640, ph: 64, texW: 4096, flames: 6, incl: 70, open: [0.2, -1, 0], lip: 0.04, axis: [-0.15, 1, 0.1], size: 0.62, tall: 0.62, at: 0.44, foot: 0.04, footW: 0.32, footH: 0.14, seam: false, tent: 0.11, mark: 'flames' },
   turbo: { turns: 5, grow: 2.2, drop: 2.2, ap: [0.66, 1.1], incl: 25, axis: [-0.25, 0.95, 0.15], size: 0.64, tall: 0.8, at: 0.42, foot: 0.02, footW: 0.3, footH: 0.15, tent: 0.08, mark: 'spiral' },
 };
 export const shell3D = (art: string) => ({ ...SHELL3D[SNAILS[art].kind], spec: SNAILS[art] });
@@ -113,7 +122,7 @@ function drawSide(s: SnailSpec, ctx: Ctx, P: Proj, W: number, A: number) {
   if (s.kind === 'nerite') {
     const pts: Pt[] = [[0.86, b - 0.05], [0.84, b - 0.24], [0.62, b - 0.42], [0.36, b - 0.44], [0.12, b - 0.32], [0.06, b - 0.08], [0.12, b - 0.04]];
     S3(b - 0.44, b - 0.04, pts, l => { zebra(l, P, W, s, 0.1, 0.84, b - 0.46, b - 0.03); soft(l, P, 0.3, 0.7, b - 0.43, b - 0.32, '#ffffff', 0.18, [0.1, 0.1], [0.02, 0.05]); });
-  } else if (s.kind === 'mystery' || s.kind === 'turbo') { // turbo: the same globose outline, a lower spire
+  } else if (s.kind === 'mystery' || s.kind === 'turbo' || s.kind === 'trochus') { // turbo: the same globose outline, a lower spire
     const cu = 0.44, cv = b - 0.34, r = 0.32;
     S3(cv - 0.42, cv + r, [...ellipse(0.27, cv - 0.25, 0.13, 0.14, 16)], l => spiral(l, P, W, 0.27, cv - 0.25, 0.12, 1.5, s.mark, 0.5));
     S3(cv - r, cv + r, ellipse(cu, cv, r, r), l => {
@@ -137,6 +146,7 @@ const GLASS: Record<Kind, { su: number; ru: number; rv: number; fu: number; fru:
   ramshorn: { su: 0.44, ru: 0.44, rv: 0.28, fu: 0.55, fru: 0.32, frv: 0.13 },
   trumpet: { su: 0.4, ru: 0.4, rv: 0.15, fu: 0.62, fru: 0.3, frv: 0.11 },
   turbo: { su: 0.46, ru: 0.46, rv: 0.41, fu: 0.52, fru: 0.4, frv: 0.28 },
+  trochus: { su: 0.46, ru: 0.46, rv: 0.41, fu: 0.52, fru: 0.4, frv: 0.28 },
 };
 
 function drawFoot(s: SnailSpec, ctx: Ctx, P: Proj, W: number) {
@@ -162,7 +172,7 @@ function drawShell(s: SnailSpec, ctx: Ctx, P: Proj, W: number) {
   const pts = s.kind === 'trumpet' ? [[0.78, -0.12], [0.4, -0.15], [0, 0, 'c'], [0.4, 0.15], [0.78, 0.12]] as Pt[] : ellipse(g.su, 0, g.ru * 0.97, g.rv);
   body(ctx, P, W, pts, -g.rv, g.rv, [[0, s.shell[2]], [0.5, s.shell[1]], [1, s.shell[0]]], 0.07, l => {
     if (s.kind === 'nerite') zebra(l, P, W, s, 0.02, 0.86, -g.rv, g.rv);
-    else if (s.kind === 'mystery' || s.kind === 'turbo') spiral(l, P, W, g.su - 0.08, -0.03, g.ru * 0.85, 2.2, s.mark, 0.55, g.rv / g.ru);
+    else if (s.kind === 'mystery' || s.kind === 'turbo' || s.kind === 'trochus') spiral(l, P, W, g.su - 0.08, -0.03, g.ru * 0.85, 2.2, s.mark, 0.55, g.rv / g.ru);
     else if (s.kind === 'ramshorn') {
       l.strokeStyle = hexA(s.mark, 0.45); l.lineWidth = 0.012 * W;
       for (let i = 0; i < 14; i++) { const u = 0.04 + i * 0.062, [x0, y0] = P(u, -g.rv), [x1, y1] = P(u + 0.02, g.rv); l.beginPath(); l.moveTo(x0, y0); l.lineTo(x1, y1); l.stroke(); }

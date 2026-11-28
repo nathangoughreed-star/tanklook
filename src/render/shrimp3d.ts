@@ -8,7 +8,7 @@
 // the body carried s.stand above its default ride height (the legs reach down the extra).
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { SHRIMP3D, type Shrimp3D } from '../art/shrimps';
+import { CARA, SHRIMP3D, segRange, type Shrimp3D } from '../art/shrimps';
 import { hullMaterial, taperTube } from './fish3d';
 
 export const isShrimp3D = (art: string) => art in SHRIMP3D;
@@ -43,11 +43,7 @@ function shade(g: THREE.BufferGeometry, k?: number[]) {
 // ---------- body ----------
 
 /** Where the parts sit along the spine (fractions of its length) and the six segments' relative lengths. */
-const CARA = 0.4, SEG = [1, 1.05, 1.05, 0.95, 0.9, 1.25];
-const segRange = (k: number) => {
-  const tot = SEG.reduce((a, b) => a + b), a = SEG.slice(0, k).reduce((s, b) => s + b, 0);
-  return [CARA + (1 - CARA) * a / tot, CARA + (1 - CARA) * (a + SEG[k]) / tot];
-};
+// (CARA, SEG and segRange live in art/shrimps.ts, so a species' marks can sit on the segment landmarks: build C)
 
 /** The body's centre line, head to tail: the carapace level, the abdomen arched (`hump`) and the tail carried lower. */
 function spine(s: Shrimp3D) {
@@ -274,6 +270,18 @@ function fanGeometry(s: Shrimp3D) {
 
 let hull: THREE.Material | undefined;
 /** The solid shrimp for a card of width w (add it as a child of the card mesh, whose own painting is empty for 3D shrimp). */
+/** Build C: banded limbs (peppermint: clear legs ringed red). The leg colour and the band colour alternate along the
+ *  limb (by position, so each joint segment carries a few rings), times the form shade already in the colours. */
+function band(s: Shrimp3D, g: THREE.BufferGeometry) {
+  if (!s.band) return g;
+  const p = g.attributes.position, c = g.attributes.color, a = new THREE.Color(s.leg), b = new THREE.Color(s.band.c), m = new THREE.Color();
+  for (let i = 0; i < p.count; i++) {
+    const k = 0.5 + 0.5 * Math.sin((p.getY(i) * 0.8 - p.getX(i) * 0.6 + p.getZ(i) * 0.3) * s.band.n), w = smooth(0.35, 0.65, k) * s.band.share;
+    m.copy(a).lerp(b, w); c.setXYZ(i, c.getX(i) * m.r, c.getY(i) * m.g, c.getZ(i) * m.b);
+  }
+  return g;
+}
+
 export function shrimpBody(art: string, w: number) {
   const s = SHRIMP3D[art], grp = new THREE.Group(), see = s.glass ? { transparent: true, opacity: s.glass } : {};
   const body = geo(art + ':body', () => bodyGeometry(s));
@@ -286,8 +294,8 @@ export function shrimpBody(art: string, w: number) {
     const o = new THREE.Mesh(body, hull); o.userData.nolight = true; grp.add(o);
   }
   grp.add(new THREE.Mesh(geo(art + ':fan', () => fanGeometry(s)), mat('fan:' + art, () => new THREE.MeshBasicMaterial({ map: skinTexture(s.fan, 128, 64), transparent: true, side: THREE.DoubleSide, depthWrite: !s.glass }))));
-  const legs = geo(art + ':legs', () => legGeometry(s)), ants = geo(art + ':ant', () => antennaGeometry(s));
-  const lm = mat('leg:' + art, () => new THREE.MeshBasicMaterial({ color: s.leg, vertexColors: true, ...see }));
+  const legs = geo(art + ':legs', () => band(s, legGeometry(s))), ants = geo(art + ':ant', () => antennaGeometry(s));
+  const lm = mat('leg:' + art, () => new THREE.MeshBasicMaterial({ color: s.band ? '#ffffff' : s.leg, vertexColors: true, ...see }));
   const am = mat('ant:' + art, () => new THREE.MeshBasicMaterial({ color: s.antC, vertexColors: true, ...(s.glass ? see : {}) }));
   if (s.claw) {
     const cg = geo(art + ':claw', () => clawGeometry(s, false)), pm = s.claw.patch ? mat('patch:' + art, () => new THREE.MeshBasicMaterial({ color: s.claw!.patch, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 })) : undefined;
@@ -298,9 +306,9 @@ export function shrimpBody(art: string, w: number) {
   }
   // the two small front pairs (the feeding arms) hang from their own pivot so the swim code can work them while the shrimp sits (userData.cheli, render/crawl.ts)
   const fsp = spine(s), ff = fsp.at(0.08), fpx = ff.c.x, fpy = ff.c.y - HV * s.deep * 0.75;
-  const frontLegs = s.claw ? null : geo(art + ':legsF', () => legGeometry(s, 'front').translate(-fpx, -fpy, 0));
+  const frontLegs = s.claw ? null : geo(art + ':legsF', () => band(s, legGeometry(s, 'front')).translate(-fpx, -fpy, 0));
   for (const side of [1, -1]) {
-    const o = new THREE.Mesh(s.claw ? legs : geo(art + ':legsR', () => legGeometry(s, 'rest')), lm); o.scale.z = side; grp.add(o);
+    const o = new THREE.Mesh(s.claw ? legs : geo(art + ':legsR', () => band(s, legGeometry(s, 'rest'))), lm); o.scale.z = side; grp.add(o);
     if (frontLegs) { const pv = new THREE.Group(); pv.position.set(fpx, fpy, 0); pv.scale.z = side; pv.userData.cheli = { side }; pv.add(new THREE.Mesh(frontLegs, lm)); grp.add(pv); }
     const q = new THREE.Mesh(ants, am); q.scale.z = side; grp.add(q);
   }
