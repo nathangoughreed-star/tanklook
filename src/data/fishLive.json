@@ -420,6 +420,18 @@
     "greenspotpuffer": {
       "look": "greenspotpufferb",
       "approved": "2026-11-28"
+    },
+    "scarletbadis": {
+      "look": "scarletbadisb",
+      "approved": "2026-11-28"
+    },
+    "serpae": {
+      "look": "serpaeb",
+      "approved": "2026-11-28"
+    },
+    "silverdollar": {
+      "look": "silverdollarb",
+      "approved": "2026-11-28"
     }
   }
 }
