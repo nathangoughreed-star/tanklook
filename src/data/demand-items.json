@@ -2244,6 +2244,13 @@
    "hi": 33,
    "unit": "each; Aquatics Unlimited $9.99-$19.99, AZ Gardens red $9.42, That Pet Place $9.99 (store only), LiveAquaria blue paradise $32.99 (snippets only) (SO1 R202 search 2026-11-28; stock varies)",
    "url": "https://www.thatpetplace.com/"
+  },
+  "animal:greenspotpuffer": {
+   "lo": 8,
+   "mode": 11,
+   "hi": 17,
+   "unit": "each, about 1 in; AquariumFish.com $8.49 sale (sold out), Petco $10.99, That Pet Place small $16.99 (snippets) (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://www.thatpetplace.com/Tetraodon-nigroviridis-green-spotted-puffer-213698"
   }
  }
 }

@@ -724,5 +724,11 @@
   "b": 2.97,
   "src": "fishbase-bayes",
   "note": "FishBase ID 4777 Bayesian (TL cm, a 0.00682-0.02434, b 2.80-3.14); its two TL rows (a 0.012, b 2.954 and 3.088, n 45-46) agree (SO1 R202)"
+ },
+ "greenspotpuffer": {
+  "a": 0.0263,
+  "b": 2.88,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 7763 Bayesian (TL cm, a 0.01227-0.05639, b 2.71-3.05); its one table row (SL, n=3, b 3.000) is not used (SO1 R202)"
  }
 }

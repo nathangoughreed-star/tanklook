@@ -144,5 +144,6 @@
  "denison": {"c": ["asia"], "r": "Western Ghats rivers of Kerala and Karnataka, southern India; endangered in the wild, so the trade fish are commercially bred in Southeast Asia and Eastern Europe", "s": "Seriously Fish; FishBase"},
  "frontosa": {"c": ["africa"], "r": "Northern Lake Tanganyika, Cape Tembwe to Bulu Point: Burundi, DR Congo, Tanzania; commonly bred in aquariums, with regional variants sold", "s": "Seriously Fish; FishBase"},
  "jackdempsey": {"c": ["camerica"], "r": "Atlantic slope of Central America: Rio Actopan, Veracruz, Mexico to the Chamelecon and Ulua rivers, Honduras; feral in the US and elsewhere", "s": "Seriously Fish; FishBase"},
- "paradisefish": {"c": ["asia"], "r": "Southern China south of the Yangtze, Taiwan, Hainan, northern and central Vietnam, northeast Laos; farmed extensively for the trade, with selectively bred strains (blue, red) sold", "s": "Seriously Fish; FishBase"}
+ "paradisefish": {"c": ["asia"], "r": "Southern China south of the Yangtze, Taiwan, Hainan, northern and central Vietnam, northeast Laos; farmed extensively for the trade, with selectively bred strains (blue, red) sold", "s": "Seriously Fish; FishBase"},
+ "greenspotpuffer": {"c": ["asia"], "r": "Sri Lanka, India, Myanmar, Thailand, Cambodia, Vietnam, Malaysia, Indonesia and the Philippines, north to China: rivers, floodplains, estuaries and mangroves (euryhaline)", "s": "Seriously Fish; FishBase"}
 }

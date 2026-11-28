@@ -3021,6 +3021,26 @@
     "url": "https://www.seriouslyfish.com/species/macropodus-opercularis/"
    },
    "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of every minimum found (3 figures: Seriously Fish 19 gal; Aquarium Source 20 gal; FishLab 20 gal), 19.7 gal (SO1 R202, 2026-11-28)"
+  },
+  "greenspotpuffer": {
+   "red": {
+    "L": 1200,
+    "W": 325,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Seriously Fish and Pufferfish Enthusiasts Worldwide, averaged",
+    "url": "https://www.seriouslyfish.com/species/dichotomyctere-nigroviridis/",
+    "states": "Seriously Fish 120 x 30 cm (about 108 litres, 29 US gal); Pufferfish Enthusiasts Worldwide 120 x 35 x 50 cm for one adult (about 200 litres, 53 gal); the two widths averaged, 120 x 32.5 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 41,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care pages",
+    "url": "https://www.seriouslyfish.com/species/dichotomyctere-nigroviridis/"
+   },
+   "why": "the length is the same on both pages; the gallon figure is the mean of the two minimums that state one (Seriously Fish 29 gal; Pufferfish Enthusiasts Worldwide 53 gal), 41 gal (SO1 R202, 2026-11-28)"
   }
  }
 }

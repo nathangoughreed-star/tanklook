@@ -875,6 +875,14 @@
    "accessed": "2026-11-25",
    "kind": "reference",
    "note": "R150 (2026-11-25): page opened; per-value quote in the provenance rule"
+  },
+  "pufferfishenthusiastsworldwide.com": {
+   "title": "Pufferfish Enthusiasts Worldwide, green spotted pufferfish care sheet",
+   "by": "Pufferfish Enthusiasts Worldwide",
+   "url": "https://www.pufferfishenthusiastsworldwide.com/post/green-spotted-pufferfish-care-sheet",
+   "accessed": "2026-11-28",
+   "kind": "consensus",
+   "note": "SO1 R202: salinity by growth stage, adult tank size, temperament; per-value quote in the provenance rule"
   }
  }
 }
