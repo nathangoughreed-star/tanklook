@@ -6,6 +6,11 @@ import { swimFieldFor } from './swimWorld';
 import { makeSwimSim } from '../scene/swimSim';
 import type { SwimmerSpec, SwimSim } from '../scene/swimTypes';
 import type { Tank, TankSetup } from '../scene/types';
+import { getSpecies } from '../data/species';
+import { youngLengths } from '../data/growth';
+import { foeReason } from '../scene/foes';
+import { actLabel } from '../scene/actWords';
+import { ACT } from '../scene/swimTypes';
 import { flowAt, jetsKey, type FlowJet } from '../scene/flow';
 
 /** What build.ts leaves on a fish's card mesh so the viewer can roam it. */
@@ -42,6 +47,21 @@ export class Roam {
     const x = ray.origin.x + ray.direction.x * t, y = ray.origin.y + ray.direction.y * t;
     if (x < this.xr[0] || x > this.xr[1] || y < this.yr[0] || y > this.yr[1]) return false;
     this.sim.startle(x, y, this.zMid); return true;
+  }
+  /** BR2: what fish `id` is doing, for the tap label: the words, the sim's act code and, for a rush between a flagged pair, the verdict's sentence (`why`). Null before the sim runs or for an unknown fish. Computed on demand only. */
+  actOf(id: number, meshes: THREE.Object3D[]): { act: number; text: string; why?: string; kind: string } | null {
+    if (!this.sim) return null;
+    const mesh = meshes.find(m => (m.userData.roam as RoamData | undefined)?.spec.id === id); if (!mesh) return null;
+    const rd = mesh.userData.roam as RoamData, kind = rd.spec.kind ?? '', sp = getSpecies(kind); if (!sp) return null;
+    const act = this.sim.act(id); if (act < 0) return null;
+    const tid = this.sim.actTarget(id), other = tid >= 0 ? meshes.find(m => (m.userData.roam as RoamData | undefined)?.spec.id === tid) : undefined;
+    const ok = other ? (other.userData.roam as RoamData).spec.kind ?? '' : '', os = ok ? getSpecies(ok) : undefined;
+    let why: string | undefined;
+    if (os && (act === ACT.chase || act === ACT.flee)) {
+      const tl = youngLengths(rd.world.S.fish), r = act === ACT.chase ? foeReason(sp, os, tl) : foeReason(os, sp, tl);
+      if (r) why = act === ACT.chase ? `${sp.name} ${r}.` : `${os.name} ${r}.`;
+    }
+    return { act, kind, why, text: actLabel(sp.name, act, kind, os?.name) };
   }
   /** BR: rushes and random alarms on or off (off while something is selected or dragged in edit mode). */
   setEvents(on: boolean) { this.sim?.setEvents(on); this.eventsOn = on; }

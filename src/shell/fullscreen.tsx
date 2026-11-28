@@ -13,6 +13,7 @@ let state: FsState = { ...FS_OFF, fullscreen: isFull() };
 const subs = new Set<() => void>();
 const set = (s: FsState) => { state = s; setViewLocked(lookOnly(s)); subs.forEach(f => f()); setTimeout(() => dispatchEvent(new Event('resize')), 50); }; // the viewer follows the new size
 
+export const getFs = (): FsState => state;
 export function chooseFs(id: FsId) {
   const r = choose(state, env(), id);
   set(r.next);
