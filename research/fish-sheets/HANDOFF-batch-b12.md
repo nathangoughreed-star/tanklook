@@ -7,6 +7,7 @@ Steps: `PIPELINE.md`. Same method as b11 (`HANDOFF-batch-b11.md`).
 - **Done:** steps 1, 3, 4. Generator `python -I scripts/b12-species-blocks.py` (imports `block()` / `strip_fins()` from `b11-species-blocks.py`),
   `fish-prompt-fill.py` per folder, then `b12-species-blocks.py --finish` (strips absent fins, copies to `prompts/<id>-b12-5row.md`).
   Each `C:/Users/nreed/fish-sheets/<id>-b12-gen/` has `fishshapes.json`, `species.txt`, `prompt.txt`, `species-entry.json` (name, sci, TL for `fish-batch.py`; no catalogue row yet).
+- **Sheets running (2026-11-28, terminal tab, worktree copy of sheet-queue).** Group 1 built f86ea63a; `fish-batch.py --batch b12 --group 4 --idle 90` per group.
 - **Next (Nathan): sheets.** `python scripts/sheet-queue.py --all` picks exactly these 20 (it skips `*-f1-gen`; every b11 folder has its sheet).
   Use the worktree copy until branch `claude/unruffled-pike-9ae74f` is merged (main's copy would also take the 18 banned f1 folders).
 - **Then:** `python -I scripts/fish-batch.py --batch b12 --group 4 --idle 90`, visual check, 4-view review sheet (`fishsheet.mjs`), Nathan's verdicts here.
@@ -37,3 +38,11 @@ Steps: `PIPELINE.md`. Same method as b11 (`HANDOFF-batch-b11.md`).
 | melanurus | Melanurus wrasse (male), *Halichoeres melanurus* | 4.5 in | own | - | |
 
 Not in b12 (told Nathan): lined seahorse (upright body), kissing gourami and blood parrot (store forms are colour forms / hybrids). Optional: redo the Denison barb sheet (red stripe ran full length).
+
+## Review log
+| fish | built | verdict (Nathan) | note |
+|---|---|---|---|
+| agassizii | f86ea63a | shown 2026-11-28 | |
+| arowana | f86ea63a | shown 2026-11-28 | gate: head/mid width 0.53, eye 1.8 % SL (eye reads small) |
+| bicolorblenny | f86ea63a | shown 2026-11-28 | head cirri not visible |
+| blackneon | f86ea63a | shown 2026-11-28 | eye lost the red top; mass-soft 1.49x |
