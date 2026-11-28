@@ -926,8 +926,10 @@ export function parseTech(raw: unknown): TechSetup | undefined {
     }
     if (Object.keys(place).length) t.place = place;
   }
+  if (typeof r.airValve === 'number' && isFinite(r.airValve)) t.airValve = Math.min(1, Math.max(0, r.airValve)); // the air pump's valve (2026-11-27)
+  if (r.returnOutlet === 'spraybar' || r.returnOutlet === 'nozzle') t.returnOutlet = r.returnOutlet; // was dropped on load (the outlet reset to the lily pipe)
   // lane GV9: a Tech-menu edit saves only the rows set by hand (keepSet), so a tech of a room / tank temperature or gear places alone is kept too
-  return Object.keys(rows).length || t.preset || t.heaters || t.filters || t.filterless || t.returnInline || t.sump || t.roomC !== undefined || t.targetC !== undefined || t.measuredC !== undefined || t.place ? t : undefined;
+  return Object.keys(rows).length || t.preset || t.heaters || t.filters || t.filterless || t.returnInline || t.sump || t.roomC !== undefined || t.targetC !== undefined || t.measuredC !== undefined || t.place || t.airValve !== undefined || t.returnOutlet ? t : undefined;
 }
 
 /** The filter option the budget assumes while the owner has chosen none (filterState 'unset'): what inferTech picks for a tank not started from its animals
