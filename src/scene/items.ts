@@ -1483,6 +1483,7 @@ function starterItemsRaw(S: TankSetup, keepHard?: Item[]): Item[] {
   let items = out.slice(0, MAX_ITEMS);
   if (S.layout.fit) items = fitItems(items, S.layout.fit, S.grow.feed, !!S.water.salt, LIBRARY); // lane PG step 4: only plants that fit the light and care
   seatHook.corals?.({ ...S, items });
+  seatHook.epiphytes?.({ ...S, items }); // EP1: the tied plants onto the real surface of their piece
   return items;
 }
 
@@ -1490,10 +1491,10 @@ function starterItemsRaw(S: TankSetup, keepHard?: Item[]): Item[] {
  * Set by the renderer (it has the pieces' real shapes): drops each raised coral onto the actual top of the rock under
  * it. The layouts only guess a rock's top from its box, which left corals floating over a tipped or lumpy rock.
  */
-export const seatHook: { corals?: (S: TankSetup) => void } = {};
+export const seatHook: { corals?: (S: TankSetup) => void; epiphytes?: (S: TankSetup) => number } = {};
 
 /** What a coral rests on: the hardscape pieces' poses and the ground's shape (a coral is not part of it). */
-const supportSig = (t: TankSetup) => t.items.filter(it => it.kind !== 'plant' && it.kind !== 'coral' && it.kind !== 'artificial').map(it => [it.id, it.variant, it.x, it.depth, it.size, it.lift, it.pitch ?? 0, it.tilt ?? 0, it.yaw].join()).join('|')
+const supportSig = (t: TankSetup) => t.items.filter(it => it.kind !== 'plant' && it.kind !== 'coral' && it.kind !== 'artificial').map(it => [it.id, it.variant, it.seed, it.hs ? JSON.stringify(it.hs) : '', it.x, it.depth, it.size, it.lift, it.pitch ?? 0, it.tilt ?? 0, it.yaw].join()).join('|')
   + '#' + t.terrain.on + t.terrain.h.reduce((a, v, i) => a + v * (1 + (i % 7)), 0);
 const lastSupport = new WeakMap<TankSetup, string>();
 /**
@@ -1502,6 +1503,21 @@ const lastSupport = new WeakMap<TankSetup, string>();
  * seated again: it follows a rock that is still under it, and drops to the ground where its rock is gone. Called by the store
  * after every edit; a tank it has not seen yet is only noted (a loaded scene is left as it is).
  */
+/** What a tied epiphyte rests on, and where the tied ones are (a dragged or pasted one is tied again from where it is). */
+const tiedSig = (t: TankSetup) => supportSig(t) + '#' + t.items.filter(it => it.kind === 'plant' && EPIPHYTES.has(it.variant) && (it.host != null || it.lift > 2)).map(it => [it.id, it.x, it.depth, it.lift, it.host ?? ''].join()).join('|');
+const lastTied = new WeakMap<TankSetup, string>();
+/**
+ * EP1 (R197, 2026-11-27): tied epiphytes sit on their piece, never in the water over it. After any edit that moved a piece
+ * of hardscape, the ground or a tied plant, and the first time a tank is seen (an older file, whose tie spots were guessed
+ * against the pre-HG1 shapes), every tied plant is seated on the real surface (render/epiphytes.ts).
+ */
+export function keepEpiphytesSeated(t: TankSetup) {
+  if (!seatHook.epiphytes) return;
+  const sig = tiedSig(t);
+  if (lastTied.get(t) === sig) return;
+  seatHook.epiphytes(t);
+  lastTied.set(t, tiedSig(t));
+}
 export function keepCoralsSeated(t: TankSetup) {
   if (!t.items.some(it => it.kind === 'coral')) { lastSupport.delete(t); return; }
   const sig = supportSig(t), prev = lastSupport.get(t);

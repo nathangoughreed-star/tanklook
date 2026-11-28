@@ -337,6 +337,11 @@ export interface Item {
   /** Plants that spread (lane PR, 2026-10-16, no version bump): the plant this one grew from (a runner's daughter, a pup, a
    *  cutting). Only a note: it is a real plant that can be selected, moved and deleted on its own. Absent = planted. */
   parent?: number;
+  /** Epiphytes (java fern, anubias, buce, java moss; lane EP1 R197 / R198, 2026-11-27): the stone, wood, cave or ornament it
+   *  is tied onto and the tie point in that piece's own mesh frame (mm), so it follows the piece when it moves, turns or is
+   *  reshaped (render/epiphytes.ts seats it on the real surface). Absent = not tied (or an older file: seated on load). */
+  host?: number;
+  hostAt?: [number, number, number];
   /** A daughter shown in a Time preview (scene/propagate.ts): who and which (`<root id>/<n>/...`). Never saved: keeping
    *  the preview drops it and the daughter stays as a plant. */
   brood?: string;

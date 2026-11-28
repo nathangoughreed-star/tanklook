@@ -16,7 +16,8 @@ import { tankView } from '../render/tankView';
 import { clingsTo, fishTL, getSpecies, leafUp, restsOnFloor, speciesOf } from '../data/species';
 import { restsOnGround } from '../scene/water';
 import { D2R, backdropDepth, clamp, clampFish } from '../scene/physics';
-import { clampItem } from '../scene/items';
+import { EPIPHYTES, clampItem } from '../scene/items';
+import { isHost, tieTo, untie, type SurfaceHit } from '../render/epiphytes';
 import { glassFrame, nearestGlass } from '../scene/shape';
 import { coralSeat, leafProbe, underProbe } from '../render/items';
 import { dragPool, groundHeight, type PoolPart } from '../scene/terrain';
@@ -66,6 +67,22 @@ function surfaceHit(vp: Viewport, S: TankSetup, ray: THREE.Ray, skip: Set<number
   }
   if (!piece) return ground;
   return !ground || ray.origin.distanceTo(piece) < ray.origin.distanceTo(ground) ? piece : ground;
+}
+
+/**
+ * EP1 (R198, 2026-11-27): where a dragged epiphyte sticks under the pointer: the first stone, wood, cave or ornament face
+ * the ray meets (base on it, tied to it), the substrate when the ray reaches that first (planted there, untied), or null
+ * over the glass or open water (the plant keeps its last spot).
+ */
+function stickHit(vp: Viewport, S: TankSetup, ray: THREE.Ray, skip: Set<number>): { host: SurfaceHit } | { ground: THREE.Vector3 } | null {
+  const hosts = solids(vp, skip).filter(m => { const it = S.items.find(q => q.id === m.userData.item); return !!it && isHost(it); });
+  const h = new THREE.Raycaster(ray.origin, ray.direction).intersectObjects(hosts, false)[0];
+  const ground = surfaceHit(vp, S, ray, new Set(S.items.map(it => it.id)));
+  if (h && h.face && (!ground || h.distance <= ray.origin.distanceTo(ground))) {
+    const o = h.object;
+    return { host: { item: o.userData.item, p: h.point.clone(), n: h.face.normal.clone().transformDirection(o.matrixWorld), local: o.worldToLocal(h.point.clone()), d: 0 } };
+  }
+  return ground ? { ground } : null;
 }
 
 /** Views within this many degrees of level drag aquascape pieces on an upright plane (see `move.wall`). */
@@ -130,7 +147,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
   let box: { vp: Viewport; x: number; y: number; moved: boolean } | null = null;
   const boxEl = document.createElement('div'); boxEl.className = 'selbox'; boxEl.hidden = true; viewer.host.appendChild(boxEl);
   type FishRider = { id: number; dx: number; dd: number; dy: number };
-  let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; fishRiders: FishRider[]; skip: Set<number>; float: THREE.Plane | null; wall: THREE.Plane | null; coral: boolean; moved: boolean } | null = null;
+  let move: { vp: Viewport; id: number; grab: THREE.Vector3; riders: Rider[]; fishRiders: FishRider[]; skip: Set<number>; float: THREE.Plane | null; wall: THREE.Plane | null; coral: boolean; epi: boolean; moved: boolean } | null = null;
   let drag: { vp: Viewport; plane: THREE.Plane; mode: DragMode; off: THREE.Vector3; moved: boolean } | null = null;
   let orbit: { i: number; x: number; y: number; az: number; el: number } | null = null;
   let lp: { x: number; y: number; timer: ReturnType<typeof setTimeout> } | null = null; // a finger held on gear, waiting to pick it up (GD1)
@@ -284,7 +301,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
       const at = new THREE.Raycaster(hit.ray.origin, hit.ray.direction).intersectObject(hit.mesh, false)[0]?.point ?? hit.mesh.position;
       const skip = new Set([it.id, ...riders.map(r => r.id)]);
       const coral = it.kind === 'coral', float = !coral && Math.abs(it.lift - supportLift(hit.vp, S, it.x, it.depth, skip)) > 2 ? new THREE.Plane(new THREE.Vector3(0, 1, 0), -at.y) : null;
-      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, fishRiders, skip, float, wall: wallPlane(hit.vp.cam, S.camera.el, at), coral, moved: false };
+      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, fishRiders, skip, float, wall: wallPlane(hit.vp.cam, S.camera.el, at), coral, epi: it.kind === 'plant' && EPIPHYTES.has(it.variant) && !riders.length, moved: false };
       return;
     }
     if (!editable || hit.fishId == null || !hit.mesh || !(canPick('fish', undefined, hit.fishId) || (store.groupCount > 1 && store.inGroup('fish', hit.fishId)))) {
@@ -357,6 +374,16 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     if (gear) { gearMove(viewer, store, gear, e.clientX, e.clientY); return; }
     if (move) {
       const m = move, hit = viewer.hitTest(e.clientX, e.clientY); if (!hit || hit.vp !== m.vp) return;
+      if (m.epi) { // EP1 (R198): an epiphyte slides over the hardscape under the pointer and sticks where it is let go
+        const st = stickHit(m.vp, store.scene.tanks[m.vp.i], hit.ray, m.skip); if (!st) return; // over the glass or open water: stays put
+        store.editTank(m.vp.i, t => {
+          const it = t.items.find(q => q.id === m.id); if (!it) return;
+          if ('host' in st) tieTo(t, it, st.host);
+          else { untie(it); it.x = st.ground.x; it.depth = -st.ground.z; clampItem(it, t.tank, t); }
+        }, { coalesce: 'item-drag' });
+        m.moved = true;
+        return;
+      }
       // the ray the base travels along: the pointer's ray, shifted back by the grab point
       const S0 = store.scene.tanks[m.vp.i], base = hit.ray.clone(); base.origin.sub(m.grab);
       const plane = m.wall ?? m.float;

@@ -283,7 +283,7 @@ function clean(a: Archetype, d: Density, S: TankSetup): void {
 }
 /** What every level and step gets after its starter set is drawn: the archetype's own cuts, then its background. */
 /** Every raised coral back on the rock under it (CF1): the size caps, the weight budget and the step drawing all resize the rock a coral was planned on. */
-const reseat = (S: TankSetup) => { seatHook.corals?.(S); return S; };
+const reseat = (S: TankSetup) => { seatHook.corals?.(S); seatHook.epiphytes?.(S); return S; };
 function finish(a: Archetype, d: Density, S: TankSetup): TankSetup {
   const tw = TWEAKS[a.id] ?? {};
   if (tw.noPlants) S.items = S.items.filter(it => it.kind !== 'plant' && it.kind !== 'artificial');

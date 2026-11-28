@@ -42,6 +42,7 @@ import { addAlgae } from './algae';
 import { FXU } from './fx';
 import { buildGear, gearKey, solidBoxes } from './gear3d';
 import { itemDeps, itemMesh, leafProbe, solidProbe, underProbe } from './items';
+import './epiphytes'; // EP1: sets seatHook.epiphytes (tied plants onto the real surface)
 import { rootsKey, rootsMesh } from './roots';
 import { outlineKey, spaceOutline } from './spaceOutline';
 import { addBackdrop, backdropGeometry } from './backdrop';

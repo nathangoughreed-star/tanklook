@@ -248,8 +248,10 @@ export function shuffleHard(s: TankSetup, seed: number) {
     if (it.kind === 'coral') continue; // seated below, on whatever rock now stands under it
     const at = EPIPHYTES.has(it.variant) ? perch(s, it.x, it.depth, r, hard) : null;
     if (!at && it.lift <= 0) continue;
+    delete it.host; delete it.hostAt; // EP1: tied again below from the perch guess, onto the new piece's real surface
     Object.assign(it, at ?? { lift: 0 }); clampItem(it, s.tank, s);
   }
   carryUids({ items: beforeItems, fish: [] }, s); // DX0: stable uids (a hard piece drawn again keeps its own)
+  seatHook.epiphytes?.(s); // EP1
   seatHook.corals?.(s); // the corals follow the new rock, or drop to the sand where theirs is gone (CF1)
 }
