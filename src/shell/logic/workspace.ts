@@ -15,7 +15,7 @@ import { volume } from '../../scene/physics';
 import { categories, inUseItem, itemName } from './equipment';
 import { galText, sitsOnSummary, dims, bgSummary, lidDetail } from './tank';
 import { placementOf } from '../../scene/placement';
-import { productName } from '../../scene/integrated';
+import { productName, productOf } from '../../scene/integrated';
 import type { CameraSettings, ItemKind, TankSetup } from '../../scene/types';
 import type { Store } from '../../scene/store';
 import type { SectionId } from './sections';
@@ -183,7 +183,9 @@ export function wsSide(S: TankSetup, id: SectionId): WsSide {
 export function tankLines(S: TankSetup): [string, string][] {
   const T = S.tank, p = placementOf(S), out: [string, string][] = [];
   const name = S.product || S.integrated ? (productName(S) || 'Commercial tank') : (S.customTank?.name ? (/^custom/i.test(S.customTank.name) ? S.customTank.name : `Custom: ${S.customTank.name}`) : 'Custom');
-  out.push(['Tank', name], ['Dimensions', dims(T, 'in')], ['Volume', galText(volume(T).gallons)], ['Water', S.water.on ? (isSalt(S) ? 'Saltwater' : 'Freshwater') : 'No water']);
+  // the maker's rating is a size name; the volume is what the glass holds filled to the brim. Name both so "36 gal" over "38 gal" reads as two things (Nathan 2026-11-28)
+  const gal = volume(T).gallons, rated = productOf(S)?.m.ratedGal, sold = rated && Math.round(gal) !== rated ? ` (sold as ${rated} gal)` : '';
+  out.push(['Tank', name], ['Dimensions', dims(T, 'in')], ['Volume', `${galText(gal)} inside the glass${sold}`],['Water', S.water.on ? (isSalt(S) ? 'Saltwater' : 'Freshwater') : 'No water']);
   if (!(p === 'floor' && S.stand.need === 'ask')) out.push([p === 'stand' ? 'Stand' : 'Sits on', sitsOnSummary(S, 'in')]);
   if (S.render.bg !== 'none' || S.backdrop.kind !== 'none') out.push(['Background', bgSummary(S)]);
   out.push(['Lid and top', lidDetail(S)]);
