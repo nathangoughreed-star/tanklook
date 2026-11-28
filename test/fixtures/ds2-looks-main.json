@@ -975,40 +975,40 @@
   "mode": "live"
  },
  "clownfish-anemone/open": {
-  "n": 15,
-  "h": 2548860554,
+  "n": 14,
+  "h": 3114891436,
   "sub": "aragonite",
   "ax": [
    1,
-   -0.849,
+   -1,
    1,
-   0.51,
+   0.713,
    1
   ],
   "mode": "live"
  },
  "clownfish-anemone/balanced": {
-  "n": 23,
-  "h": 3387356119,
+  "n": 22,
+  "h": 3376711170,
   "sub": "aragonite",
   "ax": [
    1,
-   -0.349,
+   -0.445,
    1,
-   0.284,
+   0.492,
    1
   ],
   "mode": "live"
  },
  "clownfish-anemone/full": {
-  "n": 31,
-  "h": 795908299,
+  "n": 30,
+  "h": 619092073,
   "sub": "aragonite",
   "ax": [
    1,
-   -0.188,
+   -0.264,
    1,
-   0.304,
+   0.455,
    1
   ],
   "mode": "live"

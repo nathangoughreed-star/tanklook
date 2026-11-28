@@ -17,7 +17,7 @@ export function migrateAnemoneItems(s: Pick<TankSetup, 'items' | 'fish' | 'tank'
     const sp = it.kind === 'coral' ? getSpecies(ITEM_SPECIES[it.variant] ?? '') : undefined;
     if (!sp) { keep.push(it); continue; }
     const g = groundHeight(s, s.tank, it.x, it.depth), onRock = it.lift > 5;
-    moved.push({ id: id++, ...(it.uid ? { uid: it.uid } : {}), species: sp.id, x: it.x, y: g + Math.max(0, it.lift), depth: it.depth, yaw: it.yaw, pitch: 0, roll: 0, bend: 0,
+    moved.push({ id: id++, species: sp.id, ...(it.uid ? { uid: it.uid } : {}), x: it.x, y: g + Math.max(0, it.lift), depth: it.depth, yaw: it.yaw, pitch: 0, roll: 0, bend: 0,
       surface: onRock ? 'hardscape' : 'floor', ...(Math.round(it.size) !== sp.tl ? { tl: Math.round(it.size) } : {}) });
   }
   if (!moved.length) return 0;
