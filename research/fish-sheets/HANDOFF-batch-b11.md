@@ -31,7 +31,7 @@ TL = typical adult total length in the aquarium. Photos = Wikimedia Commons cate
 | jackdempsey | Jack Dempsey, *Rocio octofasciata* | 10 in | own | - | [29](https://commons.wikimedia.org/wiki/Category:Rocio_octofasciata) |
 | frontosa | Frontosa, *Cyphotilapia frontosa* | 13 in | own | - | [22](https://commons.wikimedia.org/wiki/Category:Cyphotilapia_frontosa) |
 | blackghost | Black ghost knifefish, *Apteronotus albifrons* | 8 in (20 in max) | own | dorsal, pelvic | [16](https://commons.wikimedia.org/wiki/Category:Apteronotus_albifrons) |
-| pictus | 7cd2abef, barbels 36df4f18, head see commit after f4fb65cb | fix done, awaiting his look | barbels (row 75b) and head end / top card (row 75c) fixed 2026-11-28; 4-view `shots/pictus-head3.png` |
+| pictus | 7cd2abef, barbels 36df4f18, head 1fa8fab6 | approved 2026-11-28 ("Approve pictus") | barbels (row 75b) and head end / top card (row 75c) |
 | greenspotpuffer | Green spotted puffer, *Dichotomyctere nigroviridis* | 6.5 in | own (as *Tetraodon nigroviridis*) | pelvic | [11](https://commons.wikimedia.org/wiki/Category:Tetraodon_nigroviridis) |
 | bumblebeegoby | Bumblebee goby, *Brachygobius doriae* | 1.6 in | own | - (2nd dorsal -> red) | [5](https://commons.wikimedia.org/wiki/Category:Brachygobius_doriae) |
 | scarletbadis | Scarlet badis (male), *Dario dario* | 0.8 in | proxy *D. hysginon* | - | [2: male + female](https://commons.wikimedia.org/wiki/File:Dario_dario_male.jpg) |
@@ -77,8 +77,8 @@ TL = typical adult total length in the aquarium. Photos = Wikimedia Commons cate
 
 ## Next chat: start here (2026-11-28)
 - Approved, waiting for catalogue (SO1 / SO2 lanes, R202; they message "catalogue ready: <id>", then add `<id>: {look: "<id>b", approved: <date>}` to fishLive.json):
-  congotetra, denison, domino, flamehawk, frontosa, greenspotpuffer, jackdempsey, nasotang, paradisefish, powderbluetang, scarletbadis, serpae, silverdollar.
+  congotetra, denison, domino, flamehawk, frontosa, greenspotpuffer, jackdempsey, nasotang, paradisefish, pictus, powderbluetang, scarletbadis, serpae, silverdollar.
 - Not approved yet: bumblebeegoby (broad head kept; ask for model approval), copperband (tube snout rebuilt, show Nathan).
-- Show Nathan: pictus (barbels + head fixed). Fix: snowflakemoray (eel). Step pending (code path): blackghost (no dorsal), lionfish (rows join). Sheet redo: picasso.
+- Fix: snowflakemoray (eel). Step pending (code path): blackghost (no dorsal), lionfish (rows join). Sheet redo: picasso.
 - b12: prompts ready (`HANDOFF-batch-b12.md`); Nathan runs the queue, then `fish-batch.py --batch b12 --group 4`.
 - Review pictures: `scripts/review/fishsheet.mjs` (usage `node fishsheet.mjs <port> <name> <ids>` against a dev server of this worktree, saves to `shots/`). Stop Vite servers after each batch (RAM).
