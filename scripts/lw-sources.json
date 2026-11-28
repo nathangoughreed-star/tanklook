@@ -778,5 +778,11 @@
   "b": 3.08,
   "src": "fishbase-bayes",
   "note": "FishBase ID 10910 Bayesian (TL cm, a 0.00251-0.01382, b 2.88-3.28); the species has no length-weight table rows (SO3 R204)"
+ },
+ "bluedamsel": {
+  "a": 0.01445,
+  "b": 3.0,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 5695 summary-page Bayesian estimate (TL cm, a 0.00630-0.03316, b 2.80-3.20); its one table row (SL, n=3, b 3.000) is not used (SO3 R204)"
  }
 }

@@ -3194,6 +3194,27 @@
     "url": "https://www.seriouslyfish.com/species/ambastaia-sidthimunki/"
    },
    "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of every minimum found (3 figures: Seriously Fish 19 gal; Aquarium Co-Op 20 gal; Aquarium Source 30 gal for a small group), 23 gal (SO3 R204, 2026-11-28)"
+  },
+  "bluedamsel": {
+   "red": {
+    "L": 756,
+    "W": 306,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Quality Marine",
+    "url": "https://www.qualitymarine.com/quality-marine/fish/damsels/chrysiptera/blue-devil-cc-15006",
+    "states": "every figure found, averaged: Aquarium Source 20-30 gal (25); Quality Marine 30 gal; SaltwaterFish 30 gal; Reefapp 100 L (26 gal) = 27.9 gal",
+    "from": "volume",
+    "ref": "g29"
+   },
+   "vol": {
+    "gal": 27.9,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged retail and care pages",
+    "url": "https://www.aquariumsource.com/blue-devil-damselfish/"
+   },
+   "why": "the mean of every minimum found (4 figures: Aquarium Source 20-30 gal (25); Quality Marine 30 gal; SaltwaterFish 30 gal; Reefapp 100 L (26 gal)), 27.9 gal; the footprint is the standard g29 tank (756 x 306 mm) nearest that volume, because the pages give no base; Seriously Fish has no page for this species (SO3 R204, 2026-11-28)"
   }
  }
 }
