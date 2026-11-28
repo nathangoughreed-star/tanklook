@@ -43,6 +43,7 @@ export const PLANT_DEPTH: Record<string, { min: number; rec: number }> = {
  *  `prefers`: coarsest grain it likes (a soft advisory). `minDepth`: mm of bed it needs to bury in. `sharp`: sharp / rough substrate is a Caution. */
 export interface DwellerRule { needs?: Grain; prefers?: Grain; minDepth?: number; sharp?: boolean; why: string }
 export const DWELLER: Record<string, DwellerRule> = {
+  bta: { why: 'sits on rock or sand and anchors its foot in a crevice or rubble; no grain need stated (Aquariadise, Coral Magazine); keep it off a bare floor in strong flow' },
   kuhli: { needs: 'sand', minDepth: 1 * MM_IN, sharp: true, why: 'buries itself in soft sand and scrapes its barbels and belly on coarse or sharp material' },
   bichir: { prefers: 'sand', why: 'rests and hunts on the floor on its pectoral fins; soft sand or smooth gravel spares its belly (hobby pages), Seriously Fish states no grain' },
   bambooshark: { prefers: 'sand', why: 'a floor shark that rests on sand and mud bottoms in the wild (Florida Museum); soft sand spares its belly' },

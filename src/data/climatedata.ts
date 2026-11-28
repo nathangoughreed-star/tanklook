@@ -42,6 +42,7 @@ export const WATER: Record<string, { ok: R; tol: R; est?: true }> = {
   mandarin: { ok: [24,27], tol: [22,28] },
   cleanershrimp: { ok: [24,27], tol: [20,29] },
   turbo: { ok: [22,25], tol: [20,28] },
+  bta: { ok: [24,27], tol: [22,29] },
   hermit: { ok: [24,27], tol: [21,29] },
   firetoad: { ok: [18,24], tol: [15,27] },
   firenewt: { ok: [16,22], tol: [10,24] },

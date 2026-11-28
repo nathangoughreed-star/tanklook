@@ -6,6 +6,7 @@ export const SPACE_FACTOR_CLASS: Record<string, [number, string]> = {
   invert: [0.48, 'shrimp and snails'], amphibian: [0.56, 'aquatic frogs'],
 };
 export const SPACE_FACTOR: Record<string, [number, string]> = {
+  bta: [0.48, 'sessile invertebrate: takes no swimming room, its floor patch is counted separately (invert class; no calibration row yet)'],
   neon: [1.18, 'tiny body; one-species tank: AqAdvisor 37% vs ours 32% with 20'],
   cardinal: [1.09, 'tiny body; one-species tank: AqAdvisor 48% vs ours 44% with 20'],
   ember: [1.66, 'tiny body; one-species tank: AqAdvisor 27% vs ours 16% with 20'],

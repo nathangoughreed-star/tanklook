@@ -101,6 +101,7 @@
  "mandarin": {"c": ["indopacific"], "r": "Western Pacific: Ryukyu Islands to Australia", "s": "FishBase"},
  "cleanershrimp": {"c": ["indopacific", "redsea"], "r": "Red Sea and East Africa across the Indo-Pacific", "s": "SeaLifeBase", "est": 1},
  "turbo": {"c": ["indopacific"], "r": "Indo-West Pacific", "s": "SeaLifeBase", "est": 1},
+ "bta": {"c": ["indopacific", "redsea"], "r": "Red Sea and the Indo-Pacific", "s": "SeaLifeBase", "est": 1},
  "hermit": {"c": ["caribbean"], "r": "Florida, the Bahamas and the Caribbean", "s": "SeaLifeBase"},
  "dartfrog": {"c": ["samerica"], "r": "The Guianas and northern Brazil", "s": "AmphibiaWeb"},
  "treefrog": {"c": ["oceania"], "r": "Northern and eastern Australia and southern New Guinea", "s": "AmphibiaWeb"},

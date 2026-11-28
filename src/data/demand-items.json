@@ -324,6 +324,7 @@
    "unit": "each; LiveAquaria $4.69, Nua $2.99, AquaticsUnl $9.99",
    "url": "https://www.liveaquaria.com/products/marble-hatchet"
   },
+  "animal:bta": {"lo": 60, "mode": 80, "hi": 100, "unit": "each; green and rose bubble-tips about $60-100 online", "url": "https://aquaticsunlimited.com/?p=18984"},
   "animal:hermit": {
    "lo": 2,
    "mode": 3,

@@ -7,7 +7,9 @@ import { FRESH_TIERS, NEEDS, isCoralNeed, isLand, parRange, type LightVerdict } 
 import { outcomeOf, type Outcome } from './plantfit';
 import { groundHeight } from './terrain';
 import { lightProduct } from '../data/gearCatalog';
-import type { GrowFeed, Item } from './types';
+import type { Fish, GrowFeed, Item } from './types';
+import { getSpecies } from '../data/species';
+import { sessileSpec } from '../art/sessile';
 
 /** `verdict` is 'dim' / 'bright' only when the item will really struggle with the light (hardy plants outside their range are 'fine'
  *  with a recommendation in `outcome`; lane OC). */
@@ -22,6 +24,23 @@ export function itemLights(S: LightScene & { items: Item[] }): Map<number, ItemL
   if (!env) return null;
   const out = new Map<number, ItemLight>();
   for (const it of S.items) { const l = lightOfItem(S, env, it); if (l) out.set(it.id, l); }
+  return out;
+}
+/** The reef pieces a stocked sessile animal stands for, as coral items (id = the animal's fish id): its light is judged like a coral's (needs: NEEDS[species art shape]). */
+type SessileScene = LightScene & { fish: Pick<Fish, 'id' | 'species' | 'x' | 'depth' | 'y' | 'surface' | 'tl'>[] };
+export function sessileAsCorals(S: SessileScene): Item[] {
+  return S.fish.flatMap(f => {
+    const sp = getSpecies(f.species); if (sp?.kind !== 'sessile') return [];
+    const base = f.surface === 'hardscape' ? f.y ?? 0 : groundHeight(S, S.tank, f.x, f.depth);
+    return [{ id: f.id, kind: 'coral', variant: sessileSpec(sp.art).shape, seed: 1, x: f.x, depth: f.depth, lift: Math.max(0, base - groundHeight(S, S.tank, f.x, f.depth)), yaw: 0, pitch: 0, tilt: 0, size: f.tl ?? sp.tl } as Item];
+  });
+}
+/** Light of each stocked sessile animal, by fish id. */
+export function sessileLights(S: SessileScene): Map<number, ItemLight> | null {
+  if (!(wattsOf(S) > 0)) return null;
+  const env = lightEnvCached(S); if (!env) return null;
+  const out = new Map<number, ItemLight>();
+  for (const it of sessileAsCorals(S)) { const l = lightOfItem(S, env, it); if (l) out.set(it.id, l); }
   return out;
 }
 /** One item's light and outcome (null for items that need none); `env` from lightEnvCached. The tank's care is its growth feed. */
@@ -53,11 +72,11 @@ const STEM = new Set(['stem', 'stemred', 'rotala', 'ludwigia', 'hornwort', 'anac
 const DEMAND = { none: 0, recommended: 1, required: 2 } as const;
 
 /** One line for the tank, e.g. "Medium light (40 PAR) with stems and carpets: CO2 required, full ferts. Acropora at 90 PAR: too dim." */
-export function tankSummary(S: LightScene & { items: Item[] }): string | null {
+export function tankSummary(S: LightScene & { items: Item[]; fish?: SessileScene['fish'] }): string | null {
   const lo = lightOutCached(S), lights = itemLights(S);
   if (!lo || !lights) return null;
   const plants = S.items.filter(i => i.kind === 'plant' && !isLand(NEEDS[i.variant]) && NEEDS[i.variant]);
-  const corals = S.items.filter(i => i.kind === 'coral' && NEEDS[i.variant]);
+  const corals = [...S.items.filter(i => i.kind === 'coral' && NEEDS[i.variant]), ...(S.fish ? sessileAsCorals(S as SessileScene) : [])];
   const fit = lightFitNote(S);
   if (!plants.length && !corals.length) return fit ? fit + '.' : null;
   const bits: string[] = fit ? [fit] : [];

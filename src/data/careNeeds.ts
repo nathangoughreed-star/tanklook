@@ -25,6 +25,10 @@ export const NEEDS: Record<string, CareNeed[]> = {
   // S238 (2026-10-26): crayfish climb out of an open top (The Shrimp Farm: a lid is required; Guidarium and Aquatic Arts: escape artists); the Thai micro crab too (Aquariadise)
   ...Object.fromEntries(['cpo', 'cajundwarf', 'rswcrayfish', 'redclaw'].map(id => [id, [{ kind: 'environment', severity: 'S3', text: 'Lid: crayfish climb out; needs a tight lid, and gaps for cords and hoses closed' }]])),
   thaicrab: [{ kind: 'environment', severity: 'S2', text: 'Lid: micro crabs escape through gaps; needs a lid with small cord openings' }],
+  bta: [
+    { kind: 'maturity', severity: 'S3', text: 'Tank maturity: best in a tank at least 6 months old, with stable water and steady light' },
+    { kind: 'environment', severity: 'S2', text: 'Stings and wanders: it can sting small fish and shrimp and drift into a pump or overflow; guard intakes' },
+  ],
   hermit: [{ kind: 'environment', severity: 'S2', text: 'Shells: needs a spare shell each; short of shells they can attack snails' }],
   // an advisory, not a computed result: the engine does not model territorial behaviour (gbr review 2026-10-22)
   gbr: [{ kind: 'environment', severity: 'S1', text: 'Breeding territory: when breeding, rams may chase other bottom-dwelling fish; provide separate sheltered areas and watch for any fish kept away from food or cover' }],

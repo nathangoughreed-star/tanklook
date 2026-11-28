@@ -35,7 +35,7 @@ export function fitFish(f: Fish, s: TankSetup) {
   const sp = speciesOf(f); if (!sp) return;
   const A = s.tank, top = waterY(A, s.water.level), w = fishTL(f, sp);
   if (f.surface === 'glass') { f.y = clamp(f.y, ...glassBand(s, A, sp, w, sp.habitat === 'land' ? groundHeight(s, A, f.x, f.depth) : 0)); return; }
-  if (sp.kind === 'snail') return;
+  if (sp.kind === 'snail' || sp.kind === 'sessile') return;
   const h = w * sp.aspect;
   if (sp.habitat === 'land') { // onto the nearest ground above the water; left where it is if the tank has no land
     if (groundHeight(s, A, f.x, f.depth) < top) { const p = nearestLand(s, A, top, f.x, f.depth); if (p) { f.x = p.x; f.depth = p.depth; } }

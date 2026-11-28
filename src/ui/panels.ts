@@ -42,6 +42,7 @@ import { scapeSec, type ScapeSec } from '../scene/itemEdit';
 import { gateView, gatedChips, setGate } from './logic/plantGate';
 import { GRAIN_LOOK, SUBSTRATES, drawFishCard } from '../art/placeholder';
 import { drawSnailCard } from '../art/snails';
+import { drawSessileCard } from '../art/sessile';
 import { SPECIES, fishTL, getSpecies, searchSpecies, speciesOf, speciesTag, type Sex, type Species } from '../data/species';
 import { BACKGROUNDS, STAND_FINISHES } from '../render/build';
 import { BACKDROPS } from '../render/backdrop';
@@ -857,7 +858,7 @@ export function attachPanels(store: Store, viewer: Viewer) {
       preview3d.show(sp);
     } else { // no WebGL: the painted card
       let c = previewArt.get(sp.look);
-      if (!c) previewArt.set(sp.look, c = sp.kind === 'snail' ? drawSnailCard(sp.art, 'side', 640) : drawFishCard(sp.art, sp.aspect, 640));
+      if (!c) previewArt.set(sp.look, c = sp.kind === 'sessile' ? drawSessileCard(sp.art, 640) : sp.kind === 'snail' ? drawSnailCard(sp.art, 'side', 640) : drawFishCard(sp.art, sp.aspect, 640));
       $('spPreviewArt').replaceChildren(c);
     }
     $('spPreviewName').innerHTML = `${esc(sp.name)} <i>${esc(sp.sci)}</i>`;

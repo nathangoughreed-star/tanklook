@@ -13,6 +13,7 @@ import { drawFishCard } from '../art/placeholder';
 import { artMeta } from '../art/fishgen';
 import { SHRIMP3D } from '../art/shrimps';
 import { drawSnailCard } from '../art/snails';
+import { drawSessileCard } from '../art/sessile';
 import {
   DEFAULT_QUERY, pickView, stockView, selectionView, addSpecies, setCount, removeMisfits,
   flip, del, dup, setSex, setSize, setAlbino, dropSpecies, copySelection, COPY_START, COPY_RANGE, type CopyOpt, setPair, setGender, findSpecies, rowKeyOf, speciesDetail, noteIn, type PickQuery, type PickRow,
@@ -46,7 +47,7 @@ export function FishArt({ id, look, big, art }: { id: string; look: string; big?
   useEffect(() => { setSrc(baked); }, [baked]);
   const fallback = () => {
     let u = paint.get(look);
-    if (u === undefined) { try { const sp = getSpecies(id)!; u = (sp.kind === 'snail' ? drawSnailCard(sp.art, 'side', 480) : drawFishCard(art ?? sp.art, art ? speciesAspectOf(art, sp.aspect) : sp.aspect, 480)).toDataURL(); } catch { u = ''; } paint.set(look, u); }
+    if (u === undefined) { try { const sp = getSpecies(id)!; u = (sp.kind === 'sessile' ? drawSessileCard(sp.art, 480) : sp.kind === 'snail' ? drawSnailCard(sp.art, 'side', 480) : drawFishCard(art ?? sp.art, art ? speciesAspectOf(art, sp.aspect) : sp.aspect, 480)).toDataURL(); } catch { u = ''; } paint.set(look, u); }
     if (u && u !== src) setSrc(u);
   };
   return <img class={`fishart${big ? ' big' : ''}`} src={src} alt="" loading={big ? 'eager' : 'lazy'} draggable={false} onError={fallback} />;

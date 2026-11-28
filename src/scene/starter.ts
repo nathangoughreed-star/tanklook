@@ -62,6 +62,7 @@ const fightMax = (sp: Species, litres: number, lengthMm?: number) => fightsOverC
 /** How a species is stocked: the first group, the step it grows by, the most of it. */
 function stocking(sp: Species) {
   if (sp.pair) return { start: 2, step: 0, max: 2 };
+  if (sp.kind === 'sessile') return { start: 1, step: 0, max: 1 }; // an anemone or clam is a centrepiece, one at a time
   const g = CARE[sp.id]?.group ?? 0; // the smallest group it is kept in (lane CG hook)
   if (isInvert(sp)) return sp.kind === 'snail' ? { start: 2, step: 1, max: 4 } : sp.group ? { start: Math.max(5, g), step: 1, max: Math.max(10, g) } : { start: 1, step: 1, max: 3 };
   if (sp.habitat !== 'water') return { start: 2, step: 1, max: 6 }; // frogs, toads, newts
@@ -165,6 +166,8 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
     let keep = Math.max(1, Math.floor([...count.values()].reduce((a, n) => a + n, 0) * stop)); // floor: with the engine's cheaper small fish a Few-sized set is 30+ animals, and the bottom of the range must stay one
     for (const [sp, n] of count) { const k = Math.min(n, keep); keep -= k; if (k) count.set(sp, k); else count.delete(sp); }
   }
+  // the clownfish nano is built round its bubble-tip anemone (an item until 2026-11-28): one, whatever the stop's budget, unless the stop is None
+  if (id === 'clownnano' && salt) { const bta = getSpecies('bta'); if (bta && !count.has(bta)) count.set(bta, 1); }
   const fish: Fish[] = [], ids = new Set<number>();
   let next = firstId;
   const maleCap = (sp: Species) => mostMalesFor(CARE[sp.id], volume(s.tank).litres) ?? Infinity; // a males rule (cpd): the rest go in as females, so a starter shows no fighting warning
@@ -184,7 +187,7 @@ export function starterAnimals(s: TankSetup, firstId: number): Fish[] {
  * stay, they swim); 'animal': the animals only; 'all' (a new layout or Shuffle): every piece, and the animals when the
  * animal stop is above None (at None the user's own animals stay). `firstFishId`: the store's next free animal id.
  */
-export function regenerate(s: TankSetup, what: Layer | 'all', firstFishId: number) {
+export function regenerate(s: TankSetup, what: Layer | 'all', firstFishId: number, pinAnemone = true) {
   const before = { items: s.items, fish: s.fish }; // DX0: a redraw that draws a piece again keeps its uid
   // an open-top garden's rim planters and houseplants (lane OG2) are not the starter's: they stay through a layer's redraw (a new layout or Shuffle, 'all', clears them)
   const garden = what === 'all' || what === 'animal' ? [] : s.items.filter(it => isGardenPiece(it) && (what !== 'plant' || layerOf(it) !== 'hard')); // (the plant redraw already keeps the hardscape, the garden's rock and wood with it)
@@ -192,6 +195,10 @@ export function regenerate(s: TankSetup, what: Layer | 'all', firstFishId: numbe
   else if (what !== 'animal') s.items = starterItems(s);
   if (garden.length) { let id = s.items.reduce((m, it) => Math.max(m, it.id), 0); for (const it of garden) s.items.push({ ...it, id: ++id }); }
   if (what === 'animal' || (what === 'all' && (s.layout.dens ?? DEFAULT_DENS).animal > 0)) s.fish = starterAnimals(s, firstFishId);
+  if (pinAnemone && what === 'all' && s.layout.id === 'clownnano' && s.water.on && s.water.salt && !s.fish.some(f => f.species === 'bta')) { // the nano's anemone, also with the animal stop at None (it was a layout item until 2026-11-28)
+    const bta = getSpecies('bta'), id = Math.max(firstFishId, ...s.fish.map(f => f.id + 1));
+    if (bta) { const f: Fish = { id, species: 'bta', x: s.tank.L / 2, y: 0, depth: s.tank.D / 2, yaw: 0, pitch: 0, roll: 0, bend: 0 }, t = { ...s, fish: [...s.fish, f] }; placeNew(t, rng((s.layout.animalSeed ?? s.layout.seed) * 7919 + 17), new Set([id])); s.fish = t.fish; }
+  }
   carryUids(before, s);
 }
 

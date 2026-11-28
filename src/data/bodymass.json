@@ -600,6 +600,7 @@
    "src": "sealifebase-congener",
    "note": "congener Turbo cornutus, SW Korea, shell length 4.9-11.2 cm, n 42 (SeaLifeBase); 78 g at 70 mm (lane SN 2026-10-22)"
   },
+  "bta": {"a": 0.02963, "b": 3, "src": "estimate", "note": "typical adult mass 100 g at a 150 mm disc (keeper references, not FishBase)"},
   "hermit": {
    "a": 0.07407,
    "b": 3,

@@ -3,6 +3,7 @@
 // search. Each picture is a still of the same 3D model the tank draws, baked ahead of time into public/gallery/<look>.webp so the page
 // loads pictures, not 3D (live renders took ~20 s for all 84); an animal with no baked file is drawn live once and kept. Picking a tile hands
 // the id to the stocking screen, which then shows the bare tank sized for it.
+import { drawSessileCard } from '../art/sessile';
 import { scopeSpecies, speciesInScope } from '../scope';
 import { CARE } from '../data/care';
 import { HERP, herpGroup } from '../data/herpstock';
@@ -106,7 +107,8 @@ export function attachStockGallery(view: HTMLElement, pick: (id: string) => void
       if (!url) {
         if (tool === undefined) { try { tool = new SpeciesPreview(1); } catch { tool = null; } }
         try {
-          if (tool) { const [u, w, h] = trimmed(tool.snapshot(sp, size[0], size[1]), tool.canvas); url = u; stillDims.set(key, [w, h]); }
+          if (sp.kind === 'sessile') { const c = drawSessileCard(sp.art, size[0]); url = c.toDataURL(); stillDims.set(key, [c.width, c.height]); }
+          else if (tool) { const [u, w, h] = trimmed(tool.snapshot(sp, size[0], size[1]), tool.canvas); url = u; stillDims.set(key, [w, h]); }
           else { const c = drawFishCard(sp.art, sp.aspect, size[0]); url = c.toDataURL(); stillDims.set(key, [c.width, c.height]); }
         } catch { url = ''; }
         stills.set(key, url);

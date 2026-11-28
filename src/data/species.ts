@@ -3,6 +3,7 @@ import { FORMS, formArt, type SpeciesForms } from '../art/forms';
 import { scopeSpecies, speciesInScope } from '../scope';
 import { herpMeta } from '../art/herps';
 import { snailAspect, snailRest } from '../art/snails';
+import { sessileMeta } from '../art/sessile';
 import type { Surface } from '../scene/types';
 import data from './species.json';
 
@@ -24,7 +25,11 @@ export interface Species {
   /** 'bottom': always rests on the substrate; dragging slides it along the floor. */
   zone?: 'bottom';
   /** 'snail': clings to the substrate, a glass pane or hardscape. */
-  kind?: 'snail';
+  kind?: 'snail' | 'sessile';
+  /** Sessile animals (kind 'sessile': anemones, later clams): the species ids that shelter in it (clownfish, porcelain crab). */
+  hosts?: string[];
+  /** Sessile: how far it creeps, in inches per day (0 = fixed). */
+  creep?: number;
   /** Surfaces it can cling to (steers Shuffle and drags): snails and plecos anywhere, shrimp on the floor or hardscape.
    * Absent = the floor (or the water) only. */
   surfaces?: Surface[];
@@ -63,18 +68,18 @@ export interface Species {
 /** 'f' = female; absent = male (or a species drawn the same either way). */
 export type Sex = 'f';
 
-interface RawSpecies { albino?: string; id: string; cat?: string; name: string; sci: string; tl: number; art: string; aspect?: number; zone?: string; kind?: string; group?: string; pair?: boolean; level?: string; habitat?: string; cling?: string; note?: string; body?: string; female?: { art: string; tl: number } }
+interface RawSpecies { albino?: string; id: string; cat?: string; name: string; sci: string; tl: number; art: string; aspect?: number; zone?: string; kind?: string; hosts?: string[]; creep?: number; group?: string; pair?: boolean; level?: string; habitat?: string; cling?: string; note?: string; body?: string; female?: { art: string; tl: number } }
 
 function resolve(r: RawSpecies): Species {
-  const kind = r.kind === 'snail' ? 'snail' as const : undefined, zone = r.zone === 'bottom' ? 'bottom' as const : undefined;
-  const meta = kind ? { aspect: snailAspect(r.art, 'side'), rest: snailRest(r.art) } : artMeta(r.art) ?? herpMeta(r.art);
+  const kind = r.kind === 'snail' ? 'snail' as const : r.kind === 'sessile' ? 'sessile' as const : undefined, zone = r.zone === 'bottom' ? 'bottom' as const : undefined;
+  const meta = kind === 'snail' ? { aspect: snailAspect(r.art, 'side'), rest: snailRest(r.art) } : kind === 'sessile' ? sessileMeta(r.art) : artMeta(r.art) ?? herpMeta(r.art);
   const aspect = r.aspect ?? meta?.aspect ?? 0.4, rest = meta?.rest ?? aspect / 2;
-  const habitat: Habitat = kind ? 'both' : r.habitat === 'land' || r.habitat === 'both' ? r.habitat : 'water';
+  const habitat: Habitat = kind === 'snail' ? 'both' : r.habitat === 'land' || r.habitat === 'both' ? r.habitat : 'water';
   const group = r.group === 'school' || r.group === 'shoal' ? r.group : undefined, level = r.level === 'top' || r.level === 'low' ? r.level : undefined;
-  const surfaces: Surface[] | undefined = kind || r.cling === 'any' ? (habitat === 'land' ? ['floor', 'glass', 'hardscape'] : ['floor', 'glass', 'hardscape', 'under']) : // land climbers (frogs, geckos, spiders) do not hang under aquatic leaves
+  const surfaces: Surface[] | undefined = kind === 'sessile' ? ['floor', 'hardscape'] : kind || r.cling === 'any' ? (habitat === 'land' ? ['floor', 'glass', 'hardscape'] : ['floor', 'glass', 'hardscape', 'under']) : // land climbers (frogs, geckos, spiders) do not hang under aquatic leaves
      r.cling === 'hangs' ? ['floor', 'hardscape', 'under'] : r.cling === 'hardscape' ? ['floor', 'hardscape']
     : r.cling === 'top' ? ['floor', 'top', 'hardscape'] : undefined; // 'top': perches on the bottom, on hardscape or leaves, or floats at the water surface, never on glass (dwarf frog)
-  const sp: Species = { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, surfaces, habitat, cat: CATEGORIES.some(c => c[0] === r.cat) ? r.cat as Category : 'fw-fish', group, level, note: r.note, look: r.id, ...(r.pair ? { pair: true } : {}), ...(r.body === 'snake' ? { body: 'snake' as const } : {}) };
+  const sp: Species = { id: r.id, name: r.name, sci: r.sci, tl: r.tl, art: r.art, aspect, rest, zone, kind, surfaces, habitat, cat: CATEGORIES.some(c => c[0] === r.cat) ? r.cat as Category : 'fw-fish', group, level, note: r.note, look: r.id, ...(r.pair ? { pair: true } : {}), ...(r.hosts ? { hosts: r.hosts } : {}), ...(r.creep !== undefined ? { creep: r.creep } : {}), ...(r.body === 'snake' ? { body: 'snake' as const } : {}) };
   if ((r as { salt?: unknown }).salt === true) sp.salt = true; // marine (lane B hook 2026-10-13; absent = freshwater)
   if (r.female) {
     const m = (artMeta(r.female.art) ?? herpMeta(r.female.art))!;
@@ -146,7 +151,7 @@ function formSpecies(s: Species, form?: string, fin?: string): Species {
 /** This fish's total length (mm): its custom size if set, else the adult length of its sex. */
 export const fishTL = (f: { tl?: number; sex?: Sex }, sp: Species) => f.tl ?? (f.sex === 'f' && sp.female ? sp.female.tl : sp.tl);
 /** Always rests on the ground or hardscape (bottom dwellers, land animals and snails not on glass); 'both' animals depend on the water at their spot. */
-export const restsOnFloor = (sp: Species, surface?: string) => surface !== 'glass' && surface !== 'top' && (sp.zone === 'bottom' || sp.habitat === 'land' || sp.kind === 'snail');
+export const restsOnFloor = (sp: Species, surface?: string) => surface !== 'glass' && surface !== 'top' && (sp.zone === 'bottom' || sp.habitat === 'land' || sp.kind === 'snail' || sp.kind === 'sessile');
 /** Can it cling to this surface? */
 export const clingsTo = (sp: Species, surface: Surface) => !!sp.surfaces?.includes(surface);
 /** May sit on the top of a plant leaf: a water or snail animal that uses hardscape (not land climbers, which perch on dry wood). */
@@ -157,7 +162,7 @@ export const leafUp = (sp: Species) => !onLeaves(sp) ? 0 : clingsTo(sp, 'under')
 /** Needs water: hidden in a dry tank. */
 export const needsWater = (sp: Species) => sp.habitat === 'water';
 /** Short list tag: snail, bottom, land or amphibious. */
-export const speciesTag = (sp: Species) => sp.kind === 'snail' ? 'snail' : sp.zone === 'bottom' ? 'bottom' : sp.habitat === 'land' ? 'land' : sp.habitat === 'both' ? 'amphibious' : '';
+export const speciesTag = (sp: Species) => sp.kind === 'sessile' ? 'sessile' : sp.kind === 'snail' ? 'snail' : sp.zone === 'bottom' ? 'bottom' : sp.habitat === 'land' ? 'land' : sp.habitat === 'both' ? 'amphibious' : '';
 
 /** Case- and accent-insensitive search over common and scientific names; prefix matches rank first. */
 /** The Animals categories offered in this scope. */

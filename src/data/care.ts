@@ -109,7 +109,7 @@ export const CARE: Record<string, AnimalCare> = {
   bluetang: A(2, 681, 1, [24, 27], { solo: true, fam: 'tang' }), firefish: A(1, 75, 0, [24, 27]), banggai: A(1, 38, 0, [24, 27]),
   sixline: A(1, 208, 1, [24, 27], { solo: true, prey: { mm: 30, cats: ['sw-invert'] } }), chromis: A(1, 115, 0, [24, 27]),
   coralbeauty: A(2, 265, 1, [24, 27], { solo: true, coral: 1 }), watchman: A(1, 75, 0, [24, 27]), mandarin: A(3, 265, 0, [24, 27]),
-  cleanershrimp: A(1, 75, 0, [24, 27]), turbo: A(1, 40, 0, [24, 27]), hermit: A(1, 40, 0, [24, 27], { prey: { mm: 50, cats: ['sw-invert'] } }),
+  cleanershrimp: A(1, 75, 0, [24, 27]), turbo: A(1, 40, 0, [24, 27]), bta: A(2, 600, 0, [24, 27]), hermit: A(1, 40, 0, [24, 27], { prey: { mm: 50, cats: ['sw-invert'] } }),
   dartfrog: A(1, 40, 1), treefrog: A(1, 76, 0, undefined, { prey: { mm: 50, cats: ['amphibian', 'land-invert'] } }), firetoad: A(1, 57, 0), firenewt: A(1, 66, 0),
   adf: A(2, 19, 0, [22, 27]), axolotl: A(2, 110, 0, [15, 18], { prey: { mm: 80 }, tol: [10, 22] }),
   crestedgecko: A(1, 127, 0, undefined, { solo: true, prey: { mm: 40, cats: ['land-invert'] } }), crestedharlequin: A(1, 127, 1, undefined, { solo: true, prey: { mm: 40, cats: ['land-invert'] } }),

@@ -1574,6 +1574,7 @@
   "turbo": {
    "why": "aquatic invertebrate: clearance only (Decision 3)"
   },
+  "bta": {"red": {"L": 914, "W": 457, "mark": "derived (est)", "est": true, "site": "Coral Magazine", "url": "https://coralmagazine.com/2019/04/25/best-aquarium-invertebrates-bubbletip-anemone", "states": "30 gal -> 30 gal", "from": "volume", "ref": "g30b"}, "vol": {"gal": 30, "mark": "sourced (est)", "est": true, "site": "Coral Magazine", "url": "https://coralmagazine.com/2019/04/25/best-aquarium-invertebrates-bubbletip-anemone"}, "why": "sessile invertebrate: 30 gal minimum from the retailer and magazine pages; footprint derived from the 30 gal tank"},
   "hermit": {
    "vol": {
     "gal": 10,
