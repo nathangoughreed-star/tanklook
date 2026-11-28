@@ -38,7 +38,7 @@ main { padding: 0 16px 40px }
 .ver.changed { color: var(--warn); font-weight: 600 }
 .top label { margin-left: auto }
 .note { width: 100%; margin-top: 6px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--chip) }
-.views { display: grid; grid-template-columns: 70px repeat(4, minmax(0, 1fr)); gap: 4px; margin-top: 6px; align-items: center }
+.views { display: grid; grid-template-columns: 70px repeat(var(--views, 4), minmax(0, 1fr)); gap: 4px; margin-top: 6px; align-items: center }
 .views .lab { font-size: 11px; color: var(--muted) }
 .views canvas { width: 100%; height: auto; border-radius: 4px; background: linear-gradient(#cfe3ee, #a9c9da) }
 .views .tank canvas { background: linear-gradient(#20343d, #0f1d24) }

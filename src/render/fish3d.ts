@@ -635,7 +635,8 @@ const BELLIES: Record<string, BellyPaint> = {
 };
 
 function bellyPlate(art: string, p: Plan, bend: number) {
-  const paint = BELLIES[art]; if (!paint) return null;
+  // a build-B look (`otob`, `bristlenoseb`) keeps its species' belly: clingers show it on the glass (Nathan 2026-11-27)
+  const paint = BELLIES[art] ?? BELLIES[art.replace(/[bc]$/, '')]; if (!paint) return null;
   const key = `belly|${art}|${bend}|${fish3d.fade}`;
   let g = geoCache.get(key);
   const ring = sections(p), Z = Math.max(...Array.from({ length: 41 }, (_, i) => ring(p.pedU + (1 - p.pedU) * i / 40).t)) * 1.02;

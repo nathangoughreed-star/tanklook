@@ -20,6 +20,8 @@ const RECORDED = (manifest as { models: Record<string, Rec> }).models;
 const $ = (id: string) => document.getElementById(id)!;
 const FOV = 28, W = 400, H = 250;
 const VIEWS: [label: string, yaw: number, pitch: number][] = [['Side', 0, 0], ['3/4', 0.55, 0.18], ['Front', Math.PI / 2, 0.05], ['Top', 0, 1.45]];
+// ?belly adds the underside (clingers on the glass show it all the time: Nathan 2026-11-27, oto)
+if (new URLSearchParams(location.search).has('belly')) { VIEWS.push(['Belly', 0, -1.45]); document.documentElement.style.setProperty('--views', '5'); }
 const LIGHTS = [['flat', 'Preview light'], ['tank', 'Tank light']] as const;
 
 // every look: the species, and the female of a dimorphic one
