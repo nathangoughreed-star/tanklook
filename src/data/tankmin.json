@@ -3255,6 +3255,27 @@
     "url": "https://www.seriouslyfish.com/species/gnathonemus-petersii/"
    },
    "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of every minimum found (6 figures: Seriously Fish 64 gal; Aquarium Source 50 gal in the text and 75 gal in its FAQ, 62.5 gal; Fishkeeping World 50 gal; TankFlare 75 gal; Guidarium 200 L (52.8 gal); That Pet Place 120 gal) = 70.7 gal; Fishkeeper wants at least 5 x 2 ft (no gallons); TankFlare and Guidarium are search-result snippets (SO3 R204, 2026-11-28)"
+  },
+  "bicolorblenny": {
+   "red": {
+    "L": 756,
+    "W": 306,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Top Shelf Aquatics",
+    "url": "https://topshelfaquatics.com/pages/saltwater-fish/bicolor-blenny",
+    "states": "every figure found, averaged: Top Shelf 30 gal; Saltwater Aquarium Blog 30 gal; Quality Marine 30 gal; Microcosm 20 gal; CBA Aquatics 20+ gal = 26 gal",
+    "from": "volume",
+    "ref": "g29"
+   },
+   "vol": {
+    "gal": 26,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged retail and care pages",
+    "url": "https://www.saltwateraquariumblog.com/bicolor-blenny-care/"
+   },
+   "why": "the mean of every minimum found (5 figures: Top Shelf 30 gal; Saltwater Aquarium Blog 30 gal; Quality Marine 30 gal; Microcosm 20 gal; CBA Aquatics 20+ gal), 26 gal; Microcosm and CBA are search-result snippets, Fishkeeper gives no figure; the footprint is the standard g29 tank (756 x 306 mm) nearest that volume, because the pages give no base; Seriously Fish has no page for this species (SO3 R204, 2026-11-28)"
   }
  }
 }

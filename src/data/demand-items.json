@@ -2335,6 +2335,13 @@
    "hi": 60,
    "unit": "each, 3-5 in; Predatory Fins $14-$45 (4 in), Chief's Treats $19.99 (3-4 in), Rockland Aquarium $27.99 (4-5.5 in), Mastahbetta $30, Coastgem $36 (4 in), That Pet Place $49.99, LiveAquaria $59.99 (3-6 in) (several sold out) (SO3 R204 search 2026-11-28; That Pet Place page opened, the rest search snippets)",
    "url": "https://www.thatpetplace.com/Gnathonemus-petersii-elephantnose-fish-208490"
+  },
+  "animal:bicolorblenny": {
+   "lo": 20,
+   "mode": 32,
+   "hi": 80,
+   "unit": "each; AquariumFish.com $19.98, Whitlyn Aquatics $19.99, Live Aquaria from $25.19, Worldwide Corals $33.99 (1.25-2.25 in), Petco $36.99, Aquatics Unlimited $65.99-$79.99 (search snippets) (SO3 R204 search 2026-11-28; stock varies)",
+   "url": "https://worldwidecorals.com/products/ecsenius-bicolor"
   }
  }
 }
