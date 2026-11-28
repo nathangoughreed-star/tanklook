@@ -18,7 +18,8 @@ describe('live rock and corals (lane E, 2026-10-14)', () => {
   it('survive a save and load unchanged', () => {
     const s = defaultScene(), T = s.tanks[0].tank;
     s.tanks[0].water.salt = true;
-    s.tanks[0].items = REEF.map((v, i) => makeItem(T, v, i + 1, 100 + i, T.L * (0.15 + 0.17 * i), T.D / 2, { lift: i * 10 }));
+    // (the anemone is a stocked animal now: a saved anemone item becomes the animal on load, test/sessile.test.ts)
+    s.tanks[0].items = REEF.filter(v => v !== 'anemone').map((v, i) => makeItem(T, v, i + 1, 100 + i, T.L * (0.15 + 0.17 * i), T.D / 2, { lift: i * 10 }));
     s.tanks[0].items.forEach(it => { it.uid = `i${it.id}`; }); // (v10: items carry a uid)
     const back = parseScene(JSON.parse(JSON.stringify(s)));
     expect(back.warnings).toEqual([]);

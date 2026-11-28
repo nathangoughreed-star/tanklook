@@ -101,6 +101,7 @@
  "mandarin": {"c": ["indopacific"], "r": "Western Pacific: Ryukyu Islands to Australia", "s": "FishBase"},
  "cleanershrimp": {"c": ["indopacific", "redsea"], "r": "Red Sea and East Africa across the Indo-Pacific", "s": "SeaLifeBase", "est": 1},
  "turbo": {"c": ["indopacific"], "r": "Indo-West Pacific", "s": "SeaLifeBase", "est": 1},
+ "bta": {"c": ["indopacific", "redsea"], "r": "Red Sea and the Indo-Pacific", "s": "SeaLifeBase", "est": 1},
  "hermit": {"c": ["caribbean"], "r": "Florida, the Bahamas and the Caribbean", "s": "SeaLifeBase"},
  "dartfrog": {"c": ["samerica"], "r": "The Guianas and northern Brazil", "s": "AmphibiaWeb"},
  "treefrog": {"c": ["oceania"], "r": "Northern and eastern Australia and southern New Guinea", "s": "AmphibiaWeb"},
@@ -149,5 +150,6 @@
  "bumblebeegoby": {"c": ["asia"], "r": "Western Borneo: Sarawak, Brunei and West Kalimantan, and the Natuna Islands; fresh and brackish waters (FishBase also lists Malaysia, Indonesia, Singapore)", "s": "Seriously Fish; FishBase"},
  "scarletbadis": {"c": ["asia"], "r": "Brahmaputra tributaries in West Bengal and Assam, India, possibly Bhutan; trade fish are mostly males, and whether they are wild or captive-bred is not stated", "s": "Seriously Fish; FishBase"},
  "serpae": {"c": ["samerica"], "r": "Amazon drainage (Brazil, Peru, Bolivia) and the Rio Paraguay (Brazil, Paraguay, Argentina); the trade fish are farmed, and ornamental strains (long-finned, balloon) and blood-tetra hybrids are sold", "s": "Seriously Fish; FishBase"},
- "silverdollar": {"c": ["samerica"], "r": "Probably endemic to the Rio Tapajos drainage, Brazil (M. argenteus); the trade also sells M. hypsauchen from the Amazon, Rio Paraguay and Guyana Shield, and the US trade fish sold as argenteus may be hypsauchen (FishBase)", "s": "Seriously Fish; FishBase"}
+ "silverdollar": {"c": ["samerica"], "r": "Probably endemic to the Rio Tapajos drainage, Brazil (M. argenteus); the trade also sells M. hypsauchen from the Amazon, Rio Paraguay and Guyana Shield, and the US trade fish sold as argenteus may be hypsauchen (FishBase)", "s": "Seriously Fish; FishBase"},
+ "agassizii": {"c": ["samerica"], "r": "Amazon basin from the Rio Ucayali (Peru) to the Capim River (Brazil), type locality Lake Manacapuru; the trade fish are mostly captive-bred, and many selected colour strains (fire red, double red, gold) are sold", "s": "Seriously Fish; FishBase"}
 }

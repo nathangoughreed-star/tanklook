@@ -186,7 +186,7 @@ export function scapeSetup(build: Build, style: Exclude<LayoutId, 'none'>, mode:
   if (isLandStyle(style)) S.water.on = false;
   if (style === 'blackwater') Object.assign(S.water, { color: BLACKWATER[0], opacity: BLACKWATER[1] });
   styleGround(S);
-  regenerate(S, 'all', 0);
+  regenerate(S, 'all', 0, false); // (a scape adds no animal: the build's stock is what was priced)
   const silk = finSensitive(build.animals), T = withPlantMode(S, mode, silk);
   shuffleFish(T, rng(11 + style.length * 17 + T.fish.length), undefined, 100);
   return T;

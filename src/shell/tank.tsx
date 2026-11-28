@@ -483,17 +483,17 @@ function TankTile({ r }: { r: PickRow }) {
 function StandPicker({ S, store }: { S: TankSetup; store: Store }) {
   const lb = filledLb(S), gal = volume(S.tank).gallons, cur = standOf(S), explicit = !!S.stand.product && !!standProduct(S.stand.product) && cur?.id === S.stand.product;
   // Nathan 2026-11-28: a toggle between stands made for this tank and every stand that holds it (larger ones too); made-for first, then cheapest
-  const made = standsFor(S.tank), all = standsFor(S.tank, true);
+  const made = standsFor(S.tank), all = standsFor(S.tank, true, { lb, gal });   // larger stands only when the filled tank is within their stated limits
   const [wide, setWide] = useState(() => !made.length || (!!cur && standMatch(cur, S.tank) === 'fits'));
   const showAll = wide || !made.length, fit = showAll ? all : made;
-  if (!all.length) return <div class="hint" data-testid="stand-generic">No stand product is listed for this size, so the budget uses a generic estimate ({GENERIC_STAND_NOTE.split(': ')[1]}).</div>;
+  if (!all.length) return <div class="hint" data-testid="stand-generic">No stand product is listed for this size (or none rated for this tank's weight), so the budget uses a generic estimate ({GENERIC_STAND_NOTE.split(': ')[1]}).</div>;
   return (
     <div class="standpick" role="group" aria-label="Stands for this tank">
       {all.length > made.length ? <div class="seg full tiers" role="group" aria-label="Which stands to list">
         <button type="button" class={!showAll ? 'on' : ''} aria-pressed={!showAll} data-testid="stands-made" disabled={!made.length} title={made.length ? 'Stands sold for this size and shape' : 'No stand is sold for this size and shape'} onClick={() => setWide(false)}>Made for this tank <span class="n">{made.length}</span></button>
-        <button type="button" class={showAll ? 'on' : ''} aria-pressed={showAll} data-testid="stands-all" title="Also larger stands whose top covers the whole tank" onClick={() => setWide(true)}>Any that fit <span class="n">{all.length}</span></button>
+        <button type="button" class={showAll ? 'on' : ''} aria-pressed={showAll} data-testid="stands-all" title="Also larger stands whose top covers the whole tank, within their stated weight and gallon limits" onClick={() => setWide(true)}>Any that fit <span class="n">{all.length}</span></button>
       </div> : null}
-      <div class="hint tierhint">{showAll ? (made.length ? 'Made-for stands first, then larger stands whose top covers the whole tank.' : 'No stand is sold for this size and shape; these larger stands cover the whole tank. The budget uses a generic estimate until you pick one.') : 'Stands sold for this size and shape. Any that fit adds larger stands that hold it.'}</div>
+      <div class="hint tierhint">{showAll ? (made.length ? 'Made-for stands first, then larger stands whose top covers the whole tank and whose stated limits hold it.' : 'No stand is sold for this size and shape; these larger stands cover the whole tank and are within their stated weight and gallon limits. The budget uses a generic estimate until you pick one.') : 'Stands sold for this size and shape. Any that fit adds larger stands that hold it.'}</div>
       <div class="pgrid">
         {fit.map(p => { const rate = standRatingLine(p), chk = standCheck(p, lb, gal); return (
           <button type="button" class={`ptile stile${cur?.id === p.id ? ' on' : ''}`} aria-pressed={cur?.id === p.id} onClick={() => { clearStandNote(); store.edit(s => setStandProduct(s, p)); }}>

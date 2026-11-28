@@ -23,6 +23,8 @@ import { D2R, clamp, waterY } from '../scene/physics';
 import { bowlRadius, frontAt, archBulge, insideBy, shapeOf } from '../scene/shape';
 import { groundHeight } from '../scene/terrain';
 import type { Item, Tank, TankSetup } from '../scene/types';
+import { fishTL, getSpecies } from '../data/species';
+import { sessileSpec } from '../art/sessile';
 import type { SwimField, V3 } from '../scene/swimTypes';
 
 export const PLANT_CORE = 0.5;
@@ -167,6 +169,11 @@ export function buildSwimField(S: TankSetup, T: Tank, opts: SwimFieldOpts = {}):
     if (it.variant === 'planter' || ((it.kind === 'plant' || it.kind === 'artificial') && isFloat(it.variant))) continue;
     const [l, hh, w] = itemDims(it), base = groundHeight(S, T, it.x, it.depth) + it.lift - itemSink(it);
     anchors.push({ kind: it.kind, variant: it.variant, x: it.x, z: -it.depth, y0: base, y1: base + hh, r: Math.max(l, w) / 2 });
+  }
+  for (const f of S.fish) { // a sessile animal (anemone) is a host: the swimmers that shelter in it hold just over its tentacles
+    const sp = getSpecies(f.species); if (sp?.kind !== 'sessile') continue;
+    const w = fishTL(f, sp), base = f.surface === 'hardscape' ? f.y : groundHeight(S, T, f.x, f.depth);
+    anchors.push({ kind: 'coral', variant: sessileSpec(sp.art).shape, x: f.x, z: -f.depth, y0: base, y1: base + w * 0.4, r: w / 2 });
   }
   const field: SwimFieldEx = {
     min: [0, 0, -D], max: [L, waterTop, 0], waterTop, cell: h, dims: [nx, ny, nz], data, store, anchors,

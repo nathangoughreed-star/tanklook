@@ -402,7 +402,9 @@ export class Viewer {
    * the Eye distance (camera rule); only the image window follows. The fish, rock or plant under the pointer, else the
    * point under it at the orbit centre's depth. Cleared with unpinOrbit when the drag ends; the pan stays.
    */
-  private pin: { i: number; nx: number; ny: number; P: THREE.Vector3 } | null = null;
+  private pin: { i: number; nx: number; ny: number; P: THREE.Vector3; once?: boolean } | null = null;
+  /** Pan view i so the tank-space point P (mm) sits mid-view on the next draw, then leave it there (one-shot pin; Hardscape > Substrate centres the ground, Nathan 2026-11-28). */
+  centreOn(i: number, P: THREE.Vector3) { this.pin = { i, nx: 0, ny: 0, P, once: true }; this.dirty = true; }
   pinOrbit(clientX: number, clientY: number) {
     const hit = this.hitTest(clientX, clientY); if (!hit || !this.shown[hit.vp.i]) return; // not drawn yet: no camera to aim from
     const vp = hit.vp, r = this.host.getBoundingClientRect(), x = clientX - r.left - vp.x, y = clientY - r.top - vp.y;
@@ -915,6 +917,7 @@ export class Viewer {
     if (q && qk >= 0) {
       const { hx, hy, c } = frame(qk), vp = active[qk], v = q.P.clone().applyMatrix4(vp.cam.matrixWorldInverse), d = -v.z;
       if (d > 1) this.setPan(q.i, (c.cx - v.x / d + q.nx * hx) * vp.w / (2 * hx), (v.y / d - q.ny * hy - c.cy) * vp.h / (2 * hy));
+      if (q.once) this.pin = null;
     }
     this.content = [];
     for (const [k, vp] of active.entries()) {

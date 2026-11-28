@@ -34,7 +34,7 @@ import { backdropDepth, D2R, IN, ceilingH, clamp, floorY, glassThickness, HOOD_H
 import { triangulate, alongRun, archBulge, backgroundRuns, bowlDims, bowlRadius, chord, circleRing, clipToFootprint, facingRuns, footprint, frontAt, frontSlope, halfWidth, inside, levelRing, nearestGlass, offsetRing, offsetWalls, runLength, shapeOf, subRun, type P } from '../scene/shape';
 import { TABLE_TOP, cornerWalls, wallGap, tableCentre, tableOn, tableRing, wallPlane } from '../scene/table';
 import { groundHeight, pieSegs, poolHandles, poolWet, terrainDisc, terrainPoints, type PoolPart } from '../scene/terrain';
-import type { Background, Fish, Tank, TankSetup, Units } from '../scene/types';
+import type { Background, Fish, Item, Tank, TankSetup, Units } from '../scene/types';
 import { roughOf } from '../scene/types';
 import { getImage } from '../scene/images';
 import { LU, addBeams, addFixture, addHoodLamps, applyLighting, glassFx, setWaterVolumeMode, waterVolumeMaterial } from './lighting';
@@ -42,6 +42,7 @@ import { addAlgae } from './algae';
 import { surfaceMaterial } from './surface';
 import { buildGear, gearKey, solidBoxes } from './gear3d';
 import { itemDeps, itemMesh, leafProbe, solidProbe, underProbe } from './items';
+import { sessileSpec } from '../art/sessile';
 import './epiphytes'; // EP1: sets seatHook.epiphytes (tied plants onto the real surface)
 import { rootsKey, rootsMesh } from './roots';
 import { outlineKey, spaceOutline } from './spaceOutline';
@@ -1783,6 +1784,12 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
       }
       return;
     }
+    if (sp.kind === 'sessile') { // anemone, later clams: drawn by the reef builder, resting where it sits, never swimming (art/sessile.ts)
+      if (!S.water.on) return;
+      const w = fishTL(f, sp), m = sessileMesh(S, T, f, sp, base(f)); register(m, w, w * sp.aspect);
+      if ((f.surface ?? 'floor') === 'floor') add(contactShadow(S, T, f.x, f.depth, base(f), w * 0.8, w * 0.5, f.yaw));
+      return;
+    }
     if (!S.water.on && needsWater(sp)) return; // dry tank: fish stay in the scene data, hidden until the water is back
     const w = fishTL(f, sp), h = w * sp.aspect;
     const herp = isHerp3D(sp.art), fin = f.fin ?? finRange(sp.art)?.def ?? 1; // fin posture, lane FE1
@@ -1863,6 +1870,15 @@ function addContents(b: BuiltTank, S: TankSetup, T: Tank, selId: Sel, selItem: S
   return built;
 }
 
+
+/** A sessile animal's 3D body: the reef builder's shape for its species, set on the ground or rock under it (a synthetic coral item gives the shape and its baked light). */
+function sessileMesh(S: TankSetup, T: Tank, f: Fish, sp: Species, ground: number): THREE.Mesh {
+  let h = 0; for (const c of f.uid ?? String(f.id)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  const it = { id: -1, kind: 'coral', variant: sessileSpec(sp.art).shape, seed: 1 + (h % 9000), x: f.x, depth: f.depth, lift: 0, yaw: f.yaw, pitch: 0, tilt: 0, size: fishTL(f, sp) } as Item;
+  const m = itemMesh(S, T, it)!;
+  m.position.y = ground - 1; delete m.userData.item;
+  return m;
+}
 /** Material of a picking card whose animal is drawn in 3D. */
 const HIDDEN = new THREE.MeshBasicMaterial({ visible: false });
 HIDDEN.userData.cached = true; HIDDEN.userData.keep = true;

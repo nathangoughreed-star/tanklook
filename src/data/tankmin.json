@@ -1574,6 +1574,7 @@
   "turbo": {
    "why": "aquatic invertebrate: clearance only (Decision 3)"
   },
+  "bta": {"red": {"L": 914, "W": 457, "mark": "derived (est)", "est": true, "site": "Coral Magazine", "url": "https://coralmagazine.com/2019/04/25/best-aquarium-invertebrates-bubbletip-anemone", "states": "30 gal -> 30 gal", "from": "volume", "ref": "g30b"}, "vol": {"gal": 30, "mark": "sourced (est)", "est": true, "site": "Coral Magazine", "url": "https://coralmagazine.com/2019/04/25/best-aquarium-invertebrates-bubbletip-anemone"}, "why": "sessile invertebrate: 30 gal minimum from the retailer and magazine pages; footprint derived from the 30 gal tank"},
   "hermit": {
    "vol": {
     "gal": 10,
@@ -3117,6 +3118,25 @@
     "url": "https://www.seriouslyfish.com/species/metynnis-argenteus/"
    },
    "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of every minimum found (3 figures: Seriously Fish 69 gal; Aquarium Source 75 gal for 5; Fishkeeping World 75 gal for 5), 73 gal (SO1 R202, 2026-11-28)"
+  },
+  "agassizii": {
+   "red": {
+    "L": 600,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/apistogramma-agassizii/",
+    "states": "a base of 60 x 30 cm, about 54 litres (14 US gal), suits a single pair",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 18,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care pages",
+    "url": "https://www.seriouslyfish.com/species/apistogramma-agassizii/"
+   },
+   "why": "the footprint is Seriously Fish's stated base for a pair (FishBase: a tank of at least 60 cm); the gallon figure is the mean of every minimum found (3 figures: Seriously Fish 14 gal; Aquarium Co-Op 20 gal; aqua-fish 20 gal), 18 gal; a harem wants more (a retailer snippet says 100 L or more)"
   }
  }
 }

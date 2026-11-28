@@ -1,6 +1,6 @@
 // Lane SP1 (Nathan 2026-11-16): stands are real products: fit filter, price row, drawn style follows the pick, old files still load.
 import { describe, expect, it } from 'vitest';
-import { STAND_PRODUCTS, standOf, standsFor, standFits, standProduct, standMatch } from '../src/data/stands';
+import { STAND_PRODUCTS, standOf, standsFor, standFits, standProduct, standMatch, standCheck } from '../src/data/stands';
 import { getTankModel, tankFromModel } from '../src/data/tanks';
 import { defaultProfile, demandOf } from '../src/demand';
 import { bareSetup } from '../src/scene/defaults';
@@ -113,5 +113,13 @@ describe('bowfront stands', () => {
     expect(all.slice(0, made.length)).toEqual(made);                                      // made-for first
     expect(all.some(p => p.id === 'af-40b-cabinet')).toBe(true);                           // a 36 x 18 stand holds a 30 x 12 tank
     expect(standsFor(setup('g40b').tank, true).some(p => p.fits.every(([l]) => l < 35))).toBe(false);   // nothing shorter than the tank
+  });
+  it('a larger stand must hold the filled tank: over its stated weight or gallon rating, it is left out of Any that fit', () => {
+    const T = setup('bow46').tank, load = { lb: 450, gal: 49 };   // a filled 46 gal bowfront
+    const ids = standsFor(T, true, load).map(p => p.id);
+    expect(ids).not.toContain('af-40b-cabinet');   // 400 lb rating
+    expect(ids).not.toContain('likeem-40');        // rated 40 gal
+    for (const p of standsFor(T, true, load)) expect(standCheck(p, load.lb, load.gal)).toBeUndefined();
+    expect(standsFor(setup('bow36').tank, true, { lb: 400, gal: 37 }).slice(0, 2).every(p => p.shape === 'bow')).toBe(true);   // made-for stands stay
   });
 });

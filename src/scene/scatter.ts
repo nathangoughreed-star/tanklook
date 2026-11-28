@@ -6,7 +6,7 @@
 import { rng } from '../art/paint';
 import { finRange } from '../art/fishgen';
 import { snakeFoot, snakeStageFor } from '../art/snakes';
-import { clingsTo, fishTL, getSpecies, onLeaves, speciesOf, type Species } from '../data/species';
+import { clingsTo, fishTL, getSpecies, onLeaves, SPECIES, speciesOf, type Species } from '../data/species';
 import { backdropDepth, clamp, clampFish, spawnSnail, waterY } from './physics';
 import { hardscape, itemDims, itemToTank, underside } from './items';
 import { isTarantula, tarantulaBend } from '../art/tarantulas';
@@ -93,12 +93,26 @@ export function shuffleFish(s: TankSetup, r: () => number, only?: string | ((f: 
   }
   // groups first (they need the room), then the loners, which keep clear of everything already placed
   const groups = [...bySpecies.entries()].map(([id, fish]) => ({ sp: getSpecies(id)!, fish })).filter(e => e.sp)
-    .sort((a, b) => +grouped(b.sp, b.fish.length) - +grouped(a.sp, a.fish.length));
+    .sort((a, b) => +(b.sp.kind === 'sessile') - +(a.sp.kind === 'sessile') || +grouped(b.sp, b.fish.length) - +grouped(a.sp, a.fish.length)); // sessile animals first: hosts are placed before the animals that live in them
 
-  const hides = s.items.filter(it => HIDES.has(it.variant)), hard = hardscape(s), hardLeaf = hardscape(s, s.items, 1, true), leafSpots = underside(s), perchy = hardscape(s, s.items, PERCH_FROG), perchSnake = hardscape(s, s.items, PERCH_SNAKE), hosts = anemones(s);
+  const hides = s.items.filter(it => HIDES.has(it.variant)), hard = hardscape(s), hardLeaf = hardscape(s, s.items, 1, true), leafSpots = underside(s), perchy = hardscape(s, s.items, PERCH_FROG), perchSnake = hardscape(s, s.items, PERCH_SNAKE);
   for (const e of groups) {
     const sp = e.sp;
-    if (hosts.length && HOSTED.has(sp.id)) { // clownfish settle in a bubble-tip anemone: the whole group in one of them
+    if (sp.kind === 'sessile') { // anemone, clam: on a rock top or the floor, never in free water; it keeps clear of the others (research/design/sessile-livestock.md)
+      for (const f of e.fish) {
+        const w = fishTL(f, sp);
+        let q: { x: number; depth: number; y: number; surface: 'floor' | 'hardscape' } | null = null;
+        for (let k = 0; k < 24 && !q; k++) {
+          const c = hard.area > 0 && r() < 0.8 ? hard.spot(r) : null, p = c ? { ...c, surface: 'hardscape' as const } : (() => { const u = spot(w / 2, w); return { x: u.x, depth: u.depth, y: g(u.x, u.depth), surface: 'floor' as const }; })();
+          if (p.y + w * 0.4 < top && inside(A, p.x, p.depth, w * 0.3) && !crowded(p, w)) q = p;
+        }
+        q ??= (() => { const u = spot(w / 2, w); return { x: u.x, depth: u.depth, y: g(u.x, u.depth), surface: 'floor' as const }; })();
+        Object.assign(f, q, { yaw: Math.round(r() * 360 - 180), pitch: 0, roll: 0, bend: 0 }); note(f, w);
+      }
+      continue;
+    }
+    const hosts = anemones(s, sp.id);
+    if (hosts.length && hostedBy(sp.id)) { // clownfish settle in a bubble-tip anemone: the whole group in one of them
       const a = hosts[Math.floor(r() * hosts.length)];
       for (const f of e.fish) {
         const w = fishTL(f, sp), h = w * sp.aspect, ang = r() * 2 * Math.PI, d = r() * a.r * 0.6;
@@ -268,16 +282,23 @@ export function placeNew(s: TankSetup, r: () => number, ids: Set<number>) {
   if ([...ids].some(id => !joined.has(id))) shuffleFish(s, r, f => ids.has(f.id) && !joined.has(f.id));
 }
 
-/** Species that host in a bubble-tip anemone when the tank has one (clownfish; follow-up from lane T4, 2026-10-16). */
-const HOSTED = new Set(['ocellaris']);
+/** Does any sessile species shelter this one (clownfish in an anemone: species `hosts`)? */
+const hostedBy = (id: string) => SPECIES.some(x => x.kind === 'sessile' && x.hosts?.includes(id));
 
-/** The bubble-tip anemones of a salt tank: centre, disc radius and the height of the tentacle tops (mm). */
-function anemones(s: TankSetup) {
+/** The hosts of species `id` in a salt tank: stocked sessile animals that shelter it, and (saved tanks not yet migrated) bubble-tip coral items.
+ *  Centre, disc radius and the height of the tentacle tops (mm). */
+export function anemones(s: TankSetup, id: string) {
   if (!s.water.on || !s.water.salt) return [];
-  return s.items.filter(it => it.kind === 'coral' && it.variant === 'anemone').map(it => {
+  const fromFish = s.fish.flatMap(f => {
+    const sp = getSpecies(f.species); if (sp?.kind !== 'sessile' || !sp.hosts?.includes(id)) return [];
+    const w = fishTL(f, sp), base = f.surface === 'hardscape' ? f.y : groundHeight(s, s.tank, f.x, f.depth);
+    return [{ x: f.x, depth: f.depth, r: w / 2, top: base + w * 0.4 * 0.8 }];
+  });
+  const fromItems = id === 'ocellaris' ? s.items.filter(it => it.kind === 'coral' && it.variant === 'anemone').map(it => {
     const [, ht] = itemDims(it);
     return { x: it.x, depth: it.depth, r: it.size / 2, top: groundHeight(s, s.tank, it.x, it.depth) + it.lift + ht * 0.8 };
-  });
+  }) : [];
+  return [...fromFish, ...fromItems];
 }
 
 /** Weight of the glass, per mm², for a clinging fish choosing where to sit (floor 1, hardscape tops GRAZE). */

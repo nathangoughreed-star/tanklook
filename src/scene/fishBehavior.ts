@@ -14,6 +14,8 @@ export interface HoverSpec {
   caudal: number;
 }
 export const HOVER: Record<string, HoverSpec> = {
+  // sessile animals (anemones, clams; kind 'sessile'): never hover or swim, so the hover timers stay at rest
+  bta: { w: 0, pec: 0, caudal: 0 },
   // labyrinth fish: feel their way with the pectoral feelers, hang still between slow trips
   betta: { w: 0.7, pec: 1, caudal: 0.15 }, gourami: { w: 0.6, pec: 0.9, caudal: 0.2 }, dwarfgourami: { w: 0.6, pec: 0.9, caudal: 0.2 },
   honeygourami: { w: 0.6, pec: 0.9, caudal: 0.2 }, sparklinggourami: { w: 0.5, pec: 0.8, caudal: 0.25 }, croakinggourami: { w: 0.5, pec: 0.8, caudal: 0.25 },
@@ -38,6 +40,7 @@ export const HOVER: Record<string, HoverSpec> = {
   bichir: { w: 0.4, pec: 0.8, caudal: 0.15 }, // R150: props itself on its pectorals and fans them while still
   clownknife: { w: 0.5, pec: 0.4, caudal: 0.1 }, // R150: hangs in the water and creeps on its long anal fin
   bambooshark: { w: 0.5, pec: 0.3, caudal: 0.2 }, // R150: rests on the floor most of the day
+  agassizii: { w: 0.55, pec: 0.9, caudal: 0.25 }, // SO3 (R204)
   silverdollar: { w: 0.15, pec: 0.6, caudal: 0.4 }, // SO1 (R202)
   serpae: { w: 0.15, pec: 0.6, caudal: 0.4 }, // SO1 (R202)
   scarletbadis: { w: 0.35, pec: 0.8, caudal: 0.3 }, // SO1 (R202)

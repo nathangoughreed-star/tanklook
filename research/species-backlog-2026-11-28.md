@@ -45,7 +45,7 @@ These come from `src/scene/archetypes.ts`. Filling these gaps meets the roadmap'
    - Clams (maxima, derasa) use the same mode.
    - The current bubble-tip coral item migrates to the new animal.
 2. **Welfare-flagged species are included, each with a warning** ("include them but more information is good. Just have a warning with it"). This is the common-pleco treatment: list the true adult size, the minimum tank, and why they usually fail.
-3. **Hybrids: not answered yet**, still open.
+3. **Hybrids get their own species rows** (Nathan: "Own species rows"). Blood parrot and flowerhorn each get a full species.json row with their own care, size and compatibility data, not rules inherited from a parent cichlid. The scientific-name field says "hybrid" and names the likely parent species. They can't take FishBase length-weight rows, so their body mass needs a cited stand-in source (R143b).
 4. **30 fish sheets for the first 50: yes.**
 5. **New ask: soft corals, snails and shrimp may each need a new modeling process** ("modeling the soft corals may need a new modeling process, same with snails and shrimp"). The parametric snail and shrimp specs and the procedural coral items aren't assumed good enough anymore. Effect on section 5:
    - Steps 1 and 2 aren't "no sheets, quick wins" any more. Each waits on an invert modeling method, which could be a reference-sheet method like build-B for fish.

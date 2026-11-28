@@ -93,6 +93,7 @@ export const CARE: Record<string, AnimalCare> = {
   bichir: A(2, 445, 0, [24, 28], { prey: { mm: 110 } }), // R150 (2026-11-25): minL = the mean of 5 minimums, 117.5 gal; prey = an estimate, a third of its length
   clownknife: A(3, 757, 1, [24, 28], { prey: { mm: 450 }, solo: true }), // R150: minL = 200 gal (Furry Critter's minimum); prey = half its length (a knifefish care page)
   bambooshark: A(3, 859, 1, [22, 26], { prey: { mm: 150 }, solo: true }), // R150: minL = the mean of 3 minimums, 227 gal; prey = an estimate (crabs, shrimp, small fish)
+  agassizii: A(2, 68, 1, [24, 28], { tol: [22, 29], tolEst: true, guard: 900, cover: 'cave' }), // SO3 R204 (2026-11-28): minL = the mean of 3 minimums (14, 20, 20 gal) = 18 gal; temper 1 (males guard a territory, a lone female turns hyper-aggressive in a small tank); a cave per female; no prey size found, so predation is not marked as researched
   silverdollar: A(1, 276, 0, [24, 28], { tol: [22, 29], tolEst: true, group: 5, prey: { mm: 30 } }), // SO1 R202 (2026-11-28): minL = the mean of 3 minimums (69, 75, 75 gal) = 73 gal; prey = an estimate (the pages name neons, bettas and shrimp as at risk, no size)
   serpae: A(1, 75, 1, [22, 27], { tol: [20, 28], tolEst: true, group: 6, nip: true }), // SO1 R202 (2026-11-28): minL = the mean of 3 minimums (19, 20, 20 gal) = 19.7 gal; temper 1 and nip because three pages describe fin nipping, worst in small groups
   scarletbadis: A(2, 40, 0, [22, 26], { tol: [18, 27], tolEst: true, cover: 'plants' }), // SO1 R202 (2026-11-28): minL = the mean of 2 minimums (11, 10 gal) = 10.5 gal; temper 0 (peaceful to other species; males sparring is a group rule)
@@ -109,7 +110,7 @@ export const CARE: Record<string, AnimalCare> = {
   bluetang: A(2, 681, 1, [24, 27], { solo: true, fam: 'tang' }), firefish: A(1, 75, 0, [24, 27]), banggai: A(1, 38, 0, [24, 27]),
   sixline: A(1, 208, 1, [24, 27], { solo: true, prey: { mm: 30, cats: ['sw-invert'] } }), chromis: A(1, 115, 0, [24, 27]),
   coralbeauty: A(2, 265, 1, [24, 27], { solo: true, coral: 1 }), watchman: A(1, 75, 0, [24, 27]), mandarin: A(3, 265, 0, [24, 27]),
-  cleanershrimp: A(1, 75, 0, [24, 27]), turbo: A(1, 40, 0, [24, 27]), hermit: A(1, 40, 0, [24, 27], { prey: { mm: 50, cats: ['sw-invert'] } }),
+  cleanershrimp: A(1, 75, 0, [24, 27]), turbo: A(1, 40, 0, [24, 27]), bta: A(2, 600, 0, [24, 27]), hermit: A(1, 40, 0, [24, 27], { prey: { mm: 50, cats: ['sw-invert'] } }),
   dartfrog: A(1, 40, 1), treefrog: A(1, 76, 0, undefined, { prey: { mm: 50, cats: ['amphibian', 'land-invert'] } }), firetoad: A(1, 57, 0), firenewt: A(1, 66, 0),
   adf: A(2, 19, 0, [22, 27]), axolotl: A(2, 110, 0, [15, 18], { prey: { mm: 80 }, tol: [10, 22] }),
   crestedgecko: A(1, 127, 0, undefined, { solo: true, prey: { mm: 40, cats: ['land-invert'] } }), crestedharlequin: A(1, 127, 1, undefined, { solo: true, prey: { mm: 40, cats: ['land-invert'] } }),

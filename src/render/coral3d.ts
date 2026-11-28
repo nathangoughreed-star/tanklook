@@ -266,6 +266,78 @@ function zoanthid(r: R, s: number) {
   return stand(parts);
 }
 
+// ---------- Build C pilot (2026-11-28; research/invert-model-method.md): zoanthids measured from photos ----------
+// Photo Commons Zoanthus-dragon-eye.jpg (+ Vi_-_Zoanthus_sociatus_-_2): polyps packed so the discs almost touch, facing
+// out from the rock all over it, not just the crown; each oral disc is a set of rings (radial profiles from
+// scripts/invert-lab/radial.py, lifted to the photo's bright side): a grey-lavender mouth, a rust-orange inner disc
+// darkening to red-brown, a pale lavender ring near the rim, then a fringe of about 26 short pointed green tentacles
+// in two lengths, splayed out and a little up; short brown columns, mostly hidden under the discs.
+type ZoaMorph = { ring: [number, string][]; tent: [string, string]; col: string };
+const ZOA_C: Record<string, ZoaMorph> = {
+  dragoneye: { ring: [[0, '#b4b4c8'], [0.17, '#a2a0bc'], [0.3, '#c4723a'], [0.55, '#b0562e'], [0.74, '#8a3a34'], [0.86, '#c4b4d0'], [0.95, '#8a5a6a'], [1, '#5a8a32']], tent: ['#4e9a2c', '#9ae05a'], col: '#7a4a2a' },
+  purple: { ring: [[0, '#b8c0f0'], [0.17, '#a0a0e8'], [0.3, '#cc80c4'], [0.55, '#b860a0'], [0.74, '#7a58a6'], [0.86, '#c8bce0'], [0.95, '#6a6a80'], [1, '#5a8a32']], tent: ['#4e9a2c', '#9ae05a'], col: '#6a4a3a' },
+};
+const ringCol = (m: ZoaMorph, f: number) => {
+  const r = m.ring; let i = 1; while (i < r.length - 1 && r[i][0] < f) i++;
+  const [a, ca] = r[i - 1], [b, cb] = r[i], k = Math.min(1, Math.max(0, (f - a) / (b - a || 1)));
+  return C(ca).lerp(C(cb), k);
+};
+/** One polyp along +y, base at the origin: column, oral disc (rings), tentacle fringe. rd = disc radius. */
+function zoaPolyp(r: R, m: ZoaMorph, rd: number, hp: number) {
+  const parts: G[] = [], col = C(m.col);
+  const cyl = new THREE.CylinderGeometry(rd * 0.62, rd * 0.7, hp, 9, 2, true).translate(0, hp / 2, 0);
+  parts.push(paint(cyl, v => col.clone().multiplyScalar(0.6 + 0.4 * v.y / hp)));
+  // the disc: rings of vertices (centre fan out to the rim), a shallow bowl, the rim a little raised
+  const RF = [0, 0.1, 0.17, 0.24, 0.3, 0.42, 0.55, 0.65, 0.74, 0.8, 0.86, 0.91, 0.95, 1], NS = 28, pos: number[] = [], cl: number[] = [], idx: number[] = [];
+  for (const f of RF) for (let j = 0; j < NS; j++) {
+    const a = j / NS * Math.PI * 2, rr = rd * f * (1 + 0.04 * Math.sin(a * 3 + rd));
+    pos.push(rr * Math.cos(a), hp + rd * 0.18 * f * f - rd * 0.05, rr * Math.sin(a));
+    const c = ringCol(m, f); cl.push(c.r, c.g, c.b);
+  }
+  for (let i = 0; i < RF.length - 1; i++) for (let j = 0; j < NS; j++) { const a = i * NS + j, b = i * NS + (j + 1) % NS, c = a + NS, d = b + NS; idx.push(a, b, c, b, d, c); }
+  const disc = new THREE.BufferGeometry(); disc.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); disc.setAttribute('color', new THREE.Float32BufferAttribute(cl, 3)); disc.setIndex(idx);
+  parts.push(disc);
+  // tentacles: two alternating lengths, splayed out and up, darker at the root, bright at the tip
+  const NT = 26, [t0, t1] = m.tent.map(C), up = V(0, 1, 0);
+  for (let j = 0; j < NT; j++) {
+    const a = (j + 0.5) / NT * Math.PI * 2 + (r() - 0.5) * 0.08, L = rd * (j & 1 ? 0.4 : 0.58) * (0.85 + 0.3 * r()), out = V(Math.cos(a), 0, Math.sin(a));
+    const dir = out.clone().multiplyScalar(Math.cos(0.42)).addScaledVector(up, Math.sin(0.42)).normalize();
+    const cone = new THREE.ConeGeometry(rd * 0.1, L, 4, 1, true).translate(0, L / 2, 0);
+    paint(cone, v => t0.clone().lerp(t1, Math.min(1, v.y / L * 1.2)));
+    cone.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(up, dir)).translate(out.x * rd * 0.93, hp + rd * 0.13, out.z * rd * 0.93);
+    parts.push(cone);
+  }
+  return mergeGeometries(parts.map(g => { g.deleteAttribute('uv'); g.deleteAttribute('normal'); return g.index ? g.toNonIndexed() : g; }))!;
+}
+/** Zoanthid colony, build C: a domed rock covered all over with packed polyps facing out from its surface. */
+function zoanthidC(r: R, s: number, morph = 'dragoneye') {
+  const rl = s * 0.7, rh = s * 0.5, rock = rockGeo(r, rl, rh, rl * 0.85), parts: G[] = [clean(part(rock, ROCK, Math.round(s)), false)];
+  const m = ZOA_C[morph], rd = Math.max(2.5, s * 0.05), gap = rd * 1.7;
+  // polyps on the rock's own surface: area-weighted random points on its triangles, kept where they face out (not
+  // down) and at least `gap` from every polyp already placed (dart throwing), so the discs pack nearly touching
+  const P = rock.attributes.position, I = rock.index, nt = (I ? I.count : P.count) / 3, vi = (k: number) => (I ? I.getX(k) : k);
+  const A = new THREE.Vector3(), B = new THREE.Vector3(), Cc = new THREE.Vector3(), cum: number[] = []; let tot = 0;
+  rock.computeBoundingBox(); const y0 = rock.boundingBox!.min.y, yh = rock.boundingBox!.max.y - y0;
+  for (let t = 0; t < nt; t++) {
+    A.fromBufferAttribute(P, vi(3 * t)); B.fromBufferAttribute(P, vi(3 * t + 1)); Cc.fromBufferAttribute(P, vi(3 * t + 2));
+    tot += new THREE.Vector3().crossVectors(B.clone().sub(A), Cc.clone().sub(A)).length() / 2; cum.push(tot);
+  }
+  const placed: THREE.Vector3[] = [];
+  for (let tries = 0; tries < 14000 && placed.length < 500; tries++) {
+    const w = r() * tot; let lo = 0, hi = nt - 1; while (lo < hi) { const md = (lo + hi) >> 1; if (cum[md] < w) lo = md + 1; else hi = md; }
+    A.fromBufferAttribute(P, vi(3 * lo)); B.fromBufferAttribute(P, vi(3 * lo + 1)); Cc.fromBufferAttribute(P, vi(3 * lo + 2));
+    let a = r(), b = r(); if (a + b > 1) { a = 1 - a; b = 1 - b; }
+    const p = A.clone().addScaledVector(B.clone().sub(A), a).addScaledVector(Cc.clone().sub(A), b);
+    const n = new THREE.Vector3().crossVectors(B.clone().sub(A), Cc.clone().sub(A)).normalize();
+    if (n.y < -0.15 || p.y < y0 + yh * 0.12 || placed.some(q => q.distanceToSquared(p) < gap * gap)) continue;
+    placed.push(p);
+    const k = 0.85 + r() * 0.3, g = zoaPolyp(r, m, rd * k, rd * (0.25 + r() * 0.25));
+    g.applyQuaternion(along(n.lerp(V(0, 1, 0), 0.25).normalize())).translate(p.x, p.y - rd * 0.1, p.z);
+    parts.push(soft(g, s));
+  }
+  return stand(parts);
+}
+
 const HAMMER: [string, string][] = [['#4a7a5a', '#a8f0c8'], ['#7a6a3a', '#f2d070'], ['#5a6a8a', '#b8d8f8']];
 const TORCH: [string, string][] = [['#6a7a3a', '#e8e070'], ['#8a6a4a', '#7af0e0'], ['#4a7a6a', '#f0c060']];
 /**
@@ -444,6 +516,8 @@ export function reefShape(variant: string, seed: number, size: number): G {
   if (variant === 'montipora') return plate(r, size);
   if (variant === 'mushroom') return mushroom(r, size);
   if (variant === 'zoanthid') return fit(zoanthid(r, size), size);
+  if (variant === 'zoanthid-c') return fit(zoanthidC(r, size), size); // build C pilot (lab only until approved)
+  if (variant === 'zoanthid-c-purple') return fit(zoanthidC(r, size, 'purple'), size);
   if (variant === 'hammer') return fit(euphyllia(r, size, false), size);
   if (variant === 'torch') return fit(euphyllia(r, size, true), size);
   if (variant === 'acrofine') return acroFine(r, size);

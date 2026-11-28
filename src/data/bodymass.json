@@ -600,6 +600,12 @@
    "src": "sealifebase-congener",
    "note": "congener Turbo cornutus, SW Korea, shell length 4.9-11.2 cm, n 42 (SeaLifeBase); 78 g at 70 mm (lane SN 2026-10-22)"
   },
+  "bta": {
+   "a": 0.02963,
+   "b": 3,
+   "src": "estimate",
+   "note": "typical adult mass 100 g at a 150 mm disc (keeper references, not FishBase)"
+  },
   "hermit": {
    "a": 0.07407,
    "b": 3,
@@ -958,6 +964,12 @@
    "b": 3.11,
    "src": "fishbase-bayes",
    "note": "FishBase ID 25518 Bayesian (TL cm, a 0.01539-0.04930, b 2.96-3.26); its one table row (SL, n=11, Catalao Lake) is not used (SO1 R202)"
+  },
+  "agassizii": {
+   "a": 0.01778,
+   "b": 2.98,
+   "src": "fishbase-bayes",
+   "note": "FishBase ID 26703 Bayesian (TL cm, a 0.01087-0.02908, b 2.84-3.12); its three table rows are SL (n 1307, 3, 115; b 2.79-3.16) and are not used (SO3 R204)"
   }
  }
 }

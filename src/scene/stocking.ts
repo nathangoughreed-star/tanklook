@@ -45,7 +45,7 @@ export function massG(id: string, tlMm?: number): number {
  * activity and diet classes after the usual bioload rules of thumb (goldfish and big predatory cichlids are the messy ones;
  * schooling swimmers, rainbowfish and tangs run hot; sit-and-wait and algae-grazing species and cold-blooded herps run low).
  */
-export const MET_CLASS = { messy: 1.5, active: 1.2, normal: 1, sedentary: 0.7, grazer: 0.6, shrimp: 0.5, shell: 0.3, applesnail: 0.6, herp: 0.4 } as const;
+export const MET_CLASS = { messy: 1.5, active: 1.2, normal: 1, sedentary: 0.7, grazer: 0.6, shrimp: 0.5, shell: 0.3, applesnail: 0.6, herp: 0.4, sessile: 0.35 } as const;
 export type MetClass = keyof typeof MET_CLASS;
 const MET_BY_ID: Record<string, MetClass> = {
   goldfish: 'messy', comet: 'messy', oscar: 'messy', clownloach: 'active',
@@ -55,14 +55,14 @@ const MET_BY_ID: Record<string, MetClass> = {
   bronzecory: 'sedentary', sterbai: 'sedentary', pandacory: 'sedentary', pepperedcory: 'sedentary', yoyoloach: 'active', clownpleco: 'grazer', saltpepper: 'sedentary', falsejulii: 'sedentary', pleco: 'messy', pygmycory: 'sedentary', betta: 'sedentary', bristlenose: 'grazer', oto: 'grazer', hillstream: 'grazer', mandarin: 'sedentary', banggai: 'sedentary', royalgramma: 'sedentary', koletang: 'active', foxface: 'active', pajamacardinal: 'sedentary', tailspotblenny: 'sedentary',
   bichir: 'sedentary', watchman: 'sedentary', discus: 'sedentary', gbr: 'sedentary', angel: 'sedentary', kuhli: 'sedentary', peapuffer: 'sedentary', firefish: 'sedentary',
   axolotl: 'herp', firenewt: 'herp', adf: 'herp', firetoad: 'herp',
-  hermit: 'shell',
+  hermit: 'shell', bta: 'sessile', // anemone: eats fish waste and small meals (keeper references, est)
   // lane SN (2026-10-22): apple snails eat and foul like small fish ("waste equivalent to several small fish", furrycritter; "excrete a lot of
   // waste", petfishonline), so they waste like a fish of their mass; the small snails keep the shell class ("minimal waste", furrycritter)
   mystery: 'applesnail',
 };
 /** Class of a species: by id, else by category (shrimp, snails), else normal. */
 export function metClass(sp: Species): MetClass {
-  return MET_BY_ID[sp.id] ?? (sp.kind === 'snail' ? 'shell' : sp.cat.endsWith('invert') ? 'shrimp' : 'normal');
+  return MET_BY_ID[sp.id] ?? (sp.kind === 'sessile' ? 'sessile' : sp.kind === 'snail' ? 'shell' : sp.cat.endsWith('invert') ? 'shrimp' : 'normal');
 }
 
 /** Waste doubles about every 10 K (Q10 = 2); 25 C is the reference. */
@@ -94,7 +94,7 @@ function spaceFactorAq(sp: Species, g: number): number {
 }
 // Snails crawl on the glass and substrate and take no swimming room (2026-10-21: the AqAdvisor fit read 10 trumpet snails as 109 % of a
 // 5 gal); their waste counts in filtration and their footprint on the floor (snailFloorCm2, lane SN).
-export const spaceOf = (sp: Species, tlMm: number) => sp.kind === 'snail' ? 0 : massG(sp.id, tlMm) ** SPACE_EXP * spaceFactor(sp);
+export const spaceOf = (sp: Species, tlMm: number) => sp.kind === 'snail' || sp.kind === 'sessile' ? 0 : massG(sp.id, tlMm) ** SPACE_EXP * spaceFactor(sp);
 /** Water space is not linear in count (Nathan 2026-10-21): above SCHOOL_REF fish in the water, n fish take
  *  SCHOOL_REF x (n / SCHOOL_REF)^SCHOOL_EXP fish's worth of room, so later fish add less; up to SCHOOL_REF each fish counts in full
  *  (only AqAdvisor reads lone fish higher; the experts' single-fish rules, e.g. one fancy goldfish per 20 gal, do not). Waste
@@ -235,7 +235,9 @@ export const INVERT_FLOOR = 0.3;
  *  Snails are measured by footprint instead (snailFloorCm2). */
 export const floorShare = (sp: Species) => FLOOR_SHARE[zoneOf(sp)] * (FLOOR_FACTOR[sp.id]?.[0] ?? (isInvert(sp) ? INVERT_FLOOR : 1));
 /** Floor area one animal uses, cm2 (0 for swimmers and land animals; snails by footprint, lane SN; shrimp and crabs at INVERT_FLOOR). */
-export const floorUseCm2 = (sp: Species, tlMm: number) => !countsAgainstWater(sp) ? 0 : sp.kind === 'snail' ? snailFloorCm2(sp, tlMm)
+/** A sessile animal's floor: its disc (width tlMm) as a circle, cm2; it holds that patch of rock or sand (and its sting reach). */
+export const sessileFloorCm2 = (tlMm: number) => Math.PI / 4 * (tlMm / 10) ** 2;
+export const floorUseCm2 = (sp: Species, tlMm: number) => !countsAgainstWater(sp) ? 0 : sp.kind === 'sessile' ? sessileFloorCm2(tlMm) : sp.kind === 'snail' ? snailFloorCm2(sp, tlMm)
   : floorShare(sp) * FLOOR_SQIN_PER_IN * SQIN_CM2 * habitatLengthMm(sp, tlMm) / IN_MM;
 /** Live plants take up nitrogen: up to +25 % at 15 plants per 100 L (a painted patch counts as 3 plants). A documented guess. */
 const PLANT_MAX = 0.25, PLANTS_PER_100L_FULL = 15, PATCH_PLANTS = 3;

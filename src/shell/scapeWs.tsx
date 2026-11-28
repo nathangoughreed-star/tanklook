@@ -2,6 +2,7 @@
 // and the substrate & ground section (swatches, typed depths, slope presets, custom terrain as an either/or switch). SC1 (2026-11-17): leaf litter and the scatter brush moved to the piece tabs; the cross-section drawing and the Add-a-pool button are gone.
 // Every edit is the old panel's own (logic/scape.ts through store.edit), so undo works as it did.
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { Vector3 } from 'three';
 import type { Store } from '../scene/store';
 import type { Viewer } from '../render/viewer';
 import { drawSubstrate, drawBlendTile, type PresetSubstrate } from '../art/placeholder';
@@ -119,7 +120,7 @@ export function ScapeWorkspace({ store, getViewer, phone, onDone, onIdeas }: { s
   if (!visit.current) visit.current = enterVisit(store);
   const S = store.tank;
   const [tab, setTab] = useState<ScapeTab>('stone');
-  const [menu, setMenu] = useState<'substrate' | 'objects'>('objects');
+  const [menu, setMenu] = useState<'substrate' | 'objects'>('substrate'); // opens on Substrate (Nathan 2026-11-28)
   const [q, setQ] = useState('');
   const dirty = useMemo(() => visitDirty(store, visit.current!), [store.rev, store.mark]);
   const searching = !!q.trim();
@@ -127,6 +128,14 @@ export function ScapeWorkspace({ store, getViewer, phone, onDone, onIdeas }: { s
   const facts = scapeFacts(S);
   // pieces can be picked in the view while the workspace is open (App sets this from the open section as well; this keeps tests and the first frame right)
   useEffect(() => { pickItems.sec = 'hardscape'; const f = tankFraming(store.tank.camera); if (f) store.cam(c => { Object.assign(c, f); }); }, []);   // WS3: opens framed on the tank, not the room
+  // Substrate open: the ground mid-view, no dragging to find it (Nathan 2026-11-28); a steep top-down eye sees the lid, not the ground
+  useEffect(() => {
+    if (menu !== 'substrate') return;
+    store.cam(c => { c.el = Math.min(Math.max(c.el, 5), 20); });
+    const v = getViewer(), vp = v?.current; if (!v || !vp) return;
+    const T = store.tank.tank, q = store.tank.substrate, depth = q.show ? (q.fl + q.fr + q.bl + q.br) / 4 : 0;
+    v.centreOn(vp.i, new Vector3(T.L / 2, depth / 2, -T.D / 2));
+  }, [menu]);
   const add = (id: string) => { addPiece(store, id); };
   const ideas = ideasLabel('scape');
   return (

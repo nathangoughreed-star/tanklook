@@ -184,7 +184,7 @@ export const isSwampy = (id: LayoutId) => id === 'swamp' || id === 'paludarium';
 export const isReefy = (id: LayoutId) => STYLE_KIND[id] === 'salt';
 /** AQ1 (src/scope.ts): library pieces only a terrarium / herp enclosure uses (land plants and succulents, the climbing branch, the half-log hide, the water dish). */
 const LAND_ONLY: ReadonlySet<string> = new Set(['climb', 'halflog', 'dish', 'stonedish']);
-export const variantInScope = (id: string): boolean => !aquariumOnly() || !(LAND_ONLY.has(id) || (LIBRARY[id]?.hint ?? '').startsWith('Terrarium:'));
+export const variantInScope = (id: string): boolean => id !== 'anemone' && (!aquariumOnly() || !(LAND_ONLY.has(id) || (LIBRARY[id]?.hint ?? '').startsWith('Terrarium:')));
 /** A style (layout) offered in this scope: no terrarium styles and no swamp / paludarium while only aquariums are in scope. */
 export const styleInScope = (id: LayoutId): boolean => !aquariumOnly() || !(isLandStyle(id) || isSwampy(id));
 /** The picker's groups, in order. */
@@ -651,7 +651,7 @@ export const STYLES: Record<Exclude<LayoutId, 'none'>, StyleSpec> = {
   hillstream: { hard: [0.5, 2.2], plant: [0.3, 1.8], animals: ['hillstream', 'danio', 'whitecloud', 'oto', 'nerite', 'cherryshrimp'] },
   softreef: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['ocellaris', 'royalgramma', 'firefish', 'banggai', 'chromis', 'watchman', 'cleanershrimp', 'turbo', 'hermit'] },
   spsreef: { hard: [0.4, 2], plant: [0.4, 2.2], animals: ['royalgramma', 'firefish', 'chromis', 'sixline', 'coralbeauty', 'yellowtang', 'cleanershrimp', 'turbo', 'hermit'] },
-  clownnano: { hard: [0.4, 1.8], plant: [0.4, 2], animals: ['ocellaris', 'royalgramma', 'firefish', 'cleanershrimp', 'turbo', 'hermit'] },
+  clownnano: { hard: [0.4, 1.8], plant: [0.4, 2], animals: ['bta', 'ocellaris', 'royalgramma', 'firefish', 'cleanershrimp', 'turbo', 'hermit'] },
 };
 /** A slider value as a density within a style's [Sparse, Packed] range: Medium (2) is 1, smooth in between. Past
  *  Packed it keeps climbing, to three times Packed at 6; below Sparse it stays Sparse (the layer is then thinned to a
@@ -1070,7 +1070,7 @@ function starterItemsRaw(S: TankSetup, keepHard?: Item[]): Item[] {
   } else if (id === 'reef' || isReefy(id)) {
     // live rock islands (two in the designed set, a channel between), a few rocks stacked on each; branching and plate
     // corals up on the rock, mushrooms and leathers lower down and on the sand. Offered in a saltwater tank only (the UI).
-    const foci = designed ? DESIGNED_FOCI[id]! : st.foci, nano = id === 'clownnano';
+    const foci = designed ? DESIGNED_FOCI[id]! : st.foci;
     // a long tank gets wider islands of more rocks, not bigger rocks
     const base = clamp(Math.min(L, D * 1.5, H * 1.3) * 0.3, 60, 240) * st.scale, wide = clamp(L / (base * 3.5), 1, 2.5);
     layer('hard', () => {
@@ -1128,8 +1128,7 @@ function starterItemsRaw(S: TankSetup, keepHard?: Item[]): Item[] {
           const a = Math.PI * (0.15 + r() * 0.7);
           grow(coral(false), clamp(cx + Math.cos(a) * s0 * 1.1, 30, L - 30), clamp(cz - Math.sin(a) * s0 * 0.75, 30, D - 30), s0 * (0.45 + r() * 0.3), 0);
         }
-        // the nano: a bubble-tip anemone on the highest rock, where the clownfish pair settle in it
-        if (nano && fi === 0 && tops.length) { const { rk, y } = tops[0]; grow('anemone', rk.x + (r() - 0.5) * 20, rk.depth - itemDims(rk)[2] * 0.2, s0 * 0.75, y); }
+        // (the nano's bubble-tip anemone is a stocked animal now, species 'bta': scene/starter.ts starterAnimals pins one)
       });
     });
   } else if (id === 'nature') {

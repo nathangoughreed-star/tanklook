@@ -6,6 +6,7 @@ export const SPACE_FACTOR_CLASS: Record<string, [number, string]> = {
   invert: [0.48, 'shrimp and snails'], amphibian: [0.56, 'aquatic frogs'],
 };
 export const SPACE_FACTOR: Record<string, [number, string]> = {
+  bta: [0.48, 'sessile invertebrate: takes no swimming room, its floor patch is counted separately (invert class; no calibration row yet)'],
   neon: [1.18, 'tiny body; one-species tank: AqAdvisor 37% vs ours 32% with 20'],
   cardinal: [1.09, 'tiny body; one-species tank: AqAdvisor 48% vs ours 44% with 20'],
   ember: [1.66, 'tiny body; one-species tank: AqAdvisor 27% vs ours 16% with 20'],
@@ -56,6 +57,7 @@ export const SPACE_FACTOR: Record<string, [number, string]> = {
   bichir: [1.36, "big body, fish over 30 g: the class median; no AqAdvisor row to fit it against yet (R150, 2026-11-25)"],
   clownknife: [1.36, "big body, fish over 30 g: the class median; no AqAdvisor row to fit it against yet (R150, 2026-11-25)"],
   bambooshark: [1.36, "big body, fish over 30 g: the class median; no AqAdvisor row to fit it against yet (R150, 2026-11-25)"],
+  agassizii: [0.83, "mid body, fish 2 to 30 g: the class median; no AqAdvisor row to fit it against yet (SO3 R204, 2026-11-28)"],
   silverdollar: [1.36, "big body, fish over 30 g: the class median; no AqAdvisor row to fit it against yet (SO1 R202, 2026-11-28)"],
   serpae: [1.58, "tiny body, fish under 2 g: the class median; no AqAdvisor row to fit it against yet (SO1 R202, 2026-11-28)"],
   scarletbadis: [1.58, "tiny body, fish under 2 g: the class median; no AqAdvisor row to fit it against yet (SO1 R202, 2026-11-28)"],

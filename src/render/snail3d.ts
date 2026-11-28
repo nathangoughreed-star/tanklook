@@ -24,15 +24,23 @@ function shade(g: THREE.BufferGeometry, dark = 0.28, flank = 0) {
   g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
 }
 
-const TH = 160, PH0 = 24; // samples along the coil, around the whorl (a shell's own `ph` overrides)
+const TH0 = 160, PH0 = 24; // samples along the coil, around the whorl (a shell's own `ph` overrides)
 
 /** A coil's frame: growth k per radian, total angle T, the whorl centre / tangent at angle th (shell frame, coil axis = y, spire up). */
 function coil(s: Shell3D) {
   const T = s.turns * Math.PI * 2, k = Math.log(s.grow) / (Math.PI * 2);
   // the whorl cross-section at angle th, around the whorl ph (0 = outer edge, pi/2 = toward the spire), flared by f
+  // build C (research/invert-model-method.md): `sq` squares the section (superellipse exponent, 2 = ellipse), `shear`
+  // leans its outer face in toward the spire (a cone's straight side; the base stays flat), `cords` raises beaded spiral
+  // cords on it (n per round of the section, beads per turn, height as a share of the section)
+  const e = 2 / (s.sq ?? 2), se = (c: number) => Math.sign(c) * Math.abs(c) ** e, cd = s.cords;
   const pt = (th: number, ph: number, f = 1): [number, number, number] => {
-    const sc = Math.exp(k * (th - T)), r = sc * (1 + f * s.ap[0] * Math.cos(ph));
-    return [r * Math.cos(th), sc * (-s.drop + f * s.ap[1] * Math.sin(ph)), r * Math.sin(th)];
+    const sc = Math.exp(k * (th - T)), cs = Math.cos(ph), sn = Math.sin(ph);
+    let dr = f * s.ap[0] * (s.sq ? se(cs) : cs), dy = f * s.ap[1] * (s.sq ? se(sn) : sn);
+    if (cd) { const b = Math.max(0, Math.cos(ph * cd.n)) ** 2 * (0.55 + 0.45 * Math.cos(th * cd.beads + ph * 3)), m = 1 + cd.h * b; dr *= m; dy *= m; }
+    if (s.shear) dr -= dy * s.shear;
+    const r = sc * (1 + dr);
+    return [r * Math.cos(th), sc * (-s.drop + dy), r * Math.sin(th)];
   };
   return { T, k, pt };
 }
@@ -63,7 +71,7 @@ export function sutures(s: Shell3D): [number, number] | null {
  * Then a dark mantle cavity closes it, its rim on duplicated lip vertices so the lip keeps a crisp edge.
  */
 function rawShell(s: Shell3D) {
-  const PH = s.ph ?? PH0, { T, k, pt } = coil(s), drop = s.drop, pos: number[] = [], uv: number[] = [], idx: number[] = [];
+  const PH = s.ph ?? PH0, TH = s.nth ?? TH0, { T, k, pt } = coil(s), drop = s.drop, pos: number[] = [], uv: number[] = [], idx: number[] = [];
   const C = new THREE.Vector3(...pt(T, 0, 0));
   const tan = new THREE.Vector3(k * Math.cos(T) - Math.sin(T), -k * drop, k * Math.sin(T) + Math.cos(T)).normalize();
   const b = (s.incl ?? 0) * Math.PI / 180, n = tan.clone().multiplyScalar(Math.cos(b)).add(new THREE.Vector3(0, -Math.sin(b), 0)).normalize();
@@ -141,7 +149,7 @@ function shellGeometry(s: Shell3D, lift: number) {
 
 /** The shell's paint along its own coordinates: base by side of the whorl, then the species' pattern. */
 function shellTexture(s: Shell3D, sp: Pick<SnailSpec, 'shell' | 'mark'>) {
-  const W = 1024, H = 128, c = document.createElement('canvas'); c.width = W; c.height = H;
+  const W = s.texW ?? 1024, H = s.texW ? 256 : 128, c = document.createElement('canvas'); c.width = W; c.height = H;
   const x = c.getContext('2d')!, [dk, md, lt] = sp.shell;
   // around the whorl (the texture is flipped: canvas row = 1 - ph / 2pi): outer edge md, top (toward the spire) lt,
   // inner md, underside dk
@@ -164,6 +172,30 @@ function shellTexture(s: Shell3D, sp: Pick<SnailSpec, 'shell' | 'mark'>) {
   } else if (s.mark === 'growth') { // fine growth lines
     const n = Math.round(s.turns * 34);
     for (let i = 0; i < n; i++) { const u = (i + r()) / n * W; x.globalAlpha = 0.18 + 0.15 * r(); x.lineWidth = 1.5; x.beginPath(); x.moveTo(u, 0); x.lineTo(u, H); x.stroke(); }
+  } else if (s.mark === 'flames') { // build C (trochus): broad oblique flames across each whorl, broken at the cords
+    const n = Math.round(s.turns * (s.flames ?? 6)), T = s.turns * Math.PI * 2, X = (th: number) => th / T * W;
+    for (let i = 0; i < n; i++) {
+      const th0 = (i + r() * 0.5) / n * T, wd = (0.25 + 0.35 * r()) * W / n, lean = W / n * (0.5 + 0.3 * r());
+      x.globalAlpha = 0.5 + 0.25 * r(); x.fillStyle = sp.mark;
+      // from the top of the whorl (ph = pi/2, row 0.75) down past the periphery (ph = -0.6), leaning forward along the coil
+      const y0 = row(Math.PI * 0.6) * H, y1 = row(Math.PI * 2 - 0.7) * H, x0 = X(th0);
+      // the outer face runs from row y0 down through the canvas edge (ph = 0) and on from the top (wrapT): draw it twice
+      for (const dy of [0, -H]) { x.beginPath(); x.moveTo(x0, y0 + dy); x.lineTo(x0 + wd, y0 + dy); x.lineTo(x0 + wd + lean, y1 + H + dy); x.lineTo(x0 + lean, y1 + H + dy); x.fill(); }
+    }
+    // mottle: the flames break into blotches and the ground carries small flecks of both colours (photos: never clean bands)
+    for (let i = 0; i < W * 1.2; i++) { x.globalAlpha = 0.25 + 0.3 * r(); x.fillStyle = r() < 0.55 ? sp.mark : lt; x.beginPath(); x.ellipse(r() * W, r() * H, 2 + 5 * r(), 1.5 + 3 * r(), 0, 0, 7); x.fill(); }
+    // the cords' beads catch the light: pale dots along each cord, dark between them
+    const cd = s.cords;
+    if (cd) for (let m = 0; m < cd.n; m++) {
+      const ph = (m / cd.n) * Math.PI * 2, y = row(ph) * H;
+      for (let kk = 0; kk < cd.beads * s.turns + 2; kk++) {
+        const th = (kk * Math.PI * 2 - ph * 3) / cd.beads; if (th < 0 || th > T) continue;
+        x.globalAlpha = 0.35; x.fillStyle = lt; x.beginPath(); x.ellipse(X(th), y, W / (cd.beads * s.turns) * 0.3, H / cd.n * 0.22, 0, 0, 7); x.fill();
+      }
+    }
+    // the base: thin radial streaks on the underside of the body whorl
+    x.globalAlpha = 0.5; x.strokeStyle = sp.mark; x.lineWidth = 2;
+    for (let i = 0; i < s.turns * 30; i++) { const u = r() * W, y0 = row(Math.PI * 1.15) * H, y1 = row(Math.PI * 1.85) * H; x.beginPath(); x.moveTo(u, y0); x.lineTo(u + 8, y1); x.stroke(); }
   } else { // spots, and flame lines across the whorl
     x.fillStyle = sp.mark;
     for (let i = 0; i < 260; i++) { x.globalAlpha = 0.5; x.beginPath(); x.ellipse(r() * W, r() * H, 3 + 3 * r(), 2 + 2 * r(), 0, 0, 7); x.fill(); }
