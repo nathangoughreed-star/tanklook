@@ -1,4 +1,4 @@
-<!-- invert sheet test 1, peppermint shrimp, 2026-11-28; scripts/invert-sheet-prompts.py -->
+<!-- invert sheet test t1, peppermint shrimp, 2026-11-28; scripts/invert-sheet-prompts.py -->
 Create a scientifically accurate orthographic reference sheet of a single adult peppermint shrimp (Lysmata wurdemanni) for 3D model reconstruction.
 
 PRIMARY OBJECTIVE

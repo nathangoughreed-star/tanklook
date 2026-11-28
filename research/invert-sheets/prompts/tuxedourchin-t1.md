@@ -1,4 +1,4 @@
-<!-- invert sheet test 1, tuxedo urchin, 2026-11-28; scripts/invert-sheet-prompts.py -->
+<!-- invert sheet test t1, tuxedo urchin, 2026-11-28; scripts/invert-sheet-prompts.py -->
 Create a scientifically accurate orthographic reference sheet of a single adult tuxedo urchin (Mespilia globulus) for 3D model reconstruction.
 
 PRIMARY OBJECTIVE

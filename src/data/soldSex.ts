@@ -33,6 +33,10 @@ export const SOLD_BY: Record<string, SoldBy> = {
   // cichlids
   kribensis: S('sexed', true, 'sold as 1 male + 1 female pairs (Dan\'s Fish, Light.fish, Imperial Tropicals)'),
   cockatoo: S('sexed', true, 'aquariumfish.com sells pairs and males; Fish Barn sells females alone; schools of 4 for juveniles'),
+  paradisefish: S('unsexed', false, 'checked 2026-11-28 by search: US shops (That Pet Place, LiveAquaria, Nuaqua, aquariumfish.com) list it with no sex choice, one fish per listing; a hobbyist pair ($10, a forum post) and a German retailer pair were the only pairs, and an Australian shop lists a male alone'),
+  jackdempsey: S('unsexed', true, 'checked 2026-11-28 by search: Aquatic Arts, Petco, iFISH and a stock list sell juveniles (1.5-3 in) with no sex choice ("sex of fish is never guaranteed", Monster Fish Keepers; a bioacuatica listing says UNSEXED); no sexed pair listing seen'),
+  frontosa: S('unsexed', false, 'checked 2026-11-28 by search: LiveFishDirect lists 1.25 in juveniles at $20, LiveAquaria and That Pet Place sell small juveniles, Wet Spot lists locality-named fish at $25-40; none states a sex, and juveniles cannot be sexed, so a group is a mixed lot'),
+  scarletbadis: S('sexed', true, 'checked 2026-11-28 by search: Aquatic Arts sells males only (it does not sex fish, so every shipped fish is a male) and Dans Fish lists "Scarlet Badis, Male" (out of stock); other US shops (That Pet Place, Imperial Tropicals, Mastah Betta) show it sold out; no matched pair listing seen'),
   agassizii: S('sexed', false, 'SO3 R204 2026-11-28, search snippets only: Aquatics Unlimited lists a double red male ($24.99) and the Aqua Huna and Wetspot fire red / Alenquer listings are single named fish; no pair or trio lot was seen, so kept as sexed like the cockatoo dwarf cichlid'),
   yellowlab: S('unsexed', true, 'sold as unsexed juveniles (Capital Cichlids sellers, LiveFishDirect "unsexed juvenile" option, Guidarium)'),
   peacock: S('sexed', true, 'LiveFishDirect offers Male / Female / Unsexed; ThatPetPlace and Rockland sell adult males; "assorted" bags are mixed'),

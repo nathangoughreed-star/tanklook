@@ -292,6 +292,14 @@
    "kind": "consensus",
    "note": "per-value page url and verbatim quote in research/sourcing/<batch>.json, checked by scripts/verify-quotes.mjs"
   },
+  "coralmagazine.com": {
+   "title": "Coral Magazine (best aquarium invertebrates: bubbletip anemone)",
+   "by": "Coral Magazine",
+   "url": "https://coralmagazine.com/2019/04/25/best-aquarium-invertebrates-bubbletip-anemone",
+   "accessed": "2026-11-28",
+   "kind": "consensus",
+   "note": "30 gal minimum and 12 in maximum size read from a search result snippet, page not opened (bubble-tip anemone, sessile livestock lane 2026-11-28)"
+  },
   "modestfish.com": {
    "title": "Modest Fish care guides",
    "by": "Modest Fish",
@@ -891,6 +899,14 @@
    "accessed": "2026-11-28",
    "kind": "consensus",
    "note": "hobby species profile (SO3 R204)"
+  },
+  "practicalfishkeeping.co.uk": {
+   "title": "Practical Fishkeeping: Why are elephantnoses so hard to keep?",
+   "by": "Practical Fishkeeping",
+   "url": "https://www.practicalfishkeeping.co.uk/features/why-are-elephantnoses-so-hard-to-keep/",
+   "accessed": "2026-11-28",
+   "kind": "reference",
+   "note": "opened 2026-11-28 (SO3 R204): alone or groups of more than five, sensitive to poor water and many chemical medications, dim tank with hides"
   }
  }
 }

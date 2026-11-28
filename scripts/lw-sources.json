@@ -790,5 +790,23 @@
   "b": 2.75,
   "src": "fishbase-bayes",
   "note": "FishBase ID 6555 summary-page Bayesian estimate (TL cm, a 0.03503-0.08622, b 2.61-2.89); its three table rows (a 0.060-0.129, b 2.52-2.72; two TL, one FL; n 12-20) are close to it (SO3 R204)"
+ },
+ "elephantnose": {
+  "a": 0.01259,
+  "b": 2.86,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 2085 summary-page Bayesian estimate (TL cm, a 0.00585-0.02711, b 2.68-3.04); FishBase lists 35 cm SL as its maximum, well above the hobby 9-10 in (SO3 R204)"
+ },
+ "bicolorblenny": {
+  "a": 0.00851,
+  "b": 2.86,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 6033 summary-page Bayesian estimate (TL cm, a 0.00469-0.01544, b 2.71-3.01); the page shows no length-weight table rows (SO3 R204)"
+ },
+ "arowana": {
+  "a": 0.00417,
+  "b": 3.1,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 6234 summary-page Bayesian estimate (TL cm, a 0.00229-0.00760, b 2.93-3.27); FishBase maximum 90 cm TL, 6 kg (SO3 R204)"
  }
 }
