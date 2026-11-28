@@ -40,6 +40,7 @@ export const HOVER: Record<string, HoverSpec> = {
   bichir: { w: 0.4, pec: 0.8, caudal: 0.15 }, // R150: props itself on its pectorals and fans them while still
   clownknife: { w: 0.5, pec: 0.4, caudal: 0.1 }, // R150: hangs in the water and creeps on its long anal fin
   bambooshark: { w: 0.5, pec: 0.3, caudal: 0.2 }, // R150: rests on the floor most of the day
+  arowana: { w: 0.2, pec: 0.5, caudal: 0.3 }, // SO3 (R204)
   bicolorblenny: { w: 0.3, pec: 0.7, caudal: 0.35 }, // SO3 (R204)
   elephantnose: { w: 0.2, pec: 0.7, caudal: 0.35 }, // SO3 (R204)
   boxfish: { w: 0.3, pec: 0.9, caudal: 0.2 }, // SO3 (R204)

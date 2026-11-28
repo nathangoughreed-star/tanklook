@@ -1012,6 +1012,12 @@
    "b": 2.86,
    "src": "fishbase-bayes",
    "note": "FishBase ID 6033 summary-page Bayesian estimate (TL cm, a 0.00469-0.01544, b 2.71-3.01); the page shows no length-weight table rows (SO3 R204)"
+  },
+  "arowana": {
+   "a": 0.00417,
+   "b": 3.1,
+   "src": "fishbase-bayes",
+   "note": "FishBase ID 6234 summary-page Bayesian estimate (TL cm, a 0.00229-0.00760, b 2.93-3.27); FishBase maximum 90 cm TL, 6 kg (SO3 R204)"
   }
  }
 }
