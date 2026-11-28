@@ -396,6 +396,30 @@
     "goldfish": {
       "look": "goldfishb",
       "approved": "2026-11-27"
+    },
+    "congotetra": {
+      "look": "congotetrab",
+      "approved": "2026-11-27"
+    },
+    "denison": {
+      "look": "denisonb",
+      "approved": "2026-11-27"
+    },
+    "frontosa": {
+      "look": "frontosab",
+      "approved": "2026-11-27"
+    },
+    "jackdempsey": {
+      "look": "jackdempseyb",
+      "approved": "2026-11-28"
+    },
+    "paradisefish": {
+      "look": "paradisefishb",
+      "approved": "2026-11-28"
+    },
+    "greenspotpuffer": {
+      "look": "greenspotpufferb",
+      "approved": "2026-11-28"
     }
   }
 }
