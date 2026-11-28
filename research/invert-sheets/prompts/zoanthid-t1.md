@@ -1,4 +1,4 @@
-<!-- invert sheet test 1, zoanthid colony (button polyp), 2026-11-28; scripts/invert-sheet-prompts.py -->
+<!-- invert sheet test t1, zoanthid colony (button polyp), 2026-11-28; scripts/invert-sheet-prompts.py -->
 Create a scientifically accurate orthographic reference sheet of a single adult zoanthid colony (button polyp) (Zoanthus sp., dragon-eye colour form) for 3D model reconstruction.
 
 PRIMARY OBJECTIVE
