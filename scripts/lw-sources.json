@@ -706,5 +706,11 @@
   "b": 3.02,
   "src": "fishbase-bayes",
   "note": "FishBase ID 24148 Bayesian (TL cm, a 0.00895-0.01226, b 2.98-3.06); its five TL table rows (a 0.0061-0.0128, b 2.97-3.20, n 27-100, Kerala rivers) bracket it (SO1 R202)"
+ },
+ "frontosa": {
+  "a": 0.01445,
+  "b": 2.99,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 8572 Bayesian (TL cm, a 0.00671-0.03113, b 2.82-3.16); its one table row (SL, n=3, b 3.000) is not used (SO1 R202)"
  }
 }

@@ -93,6 +93,7 @@ export const CARE: Record<string, AnimalCare> = {
   bichir: A(2, 445, 0, [24, 28], { prey: { mm: 110 } }), // R150 (2026-11-25): minL = the mean of 5 minimums, 117.5 gal; prey = an estimate, a third of its length
   clownknife: A(3, 757, 1, [24, 28], { prey: { mm: 450 }, solo: true }), // R150: minL = 200 gal (Furry Critter's minimum); prey = half its length (a knifefish care page)
   bambooshark: A(3, 859, 1, [22, 26], { prey: { mm: 150 }, solo: true }), // R150: minL = the mean of 3 minimums, 227 gal; prey = an estimate (crabs, shrimp, small fish)
+  frontosa: A(2, 594, 1, [23, 27], { tol: [22, 28], tolEst: true, group: 5, prey: { mm: 105 }, guard: 1200, cover: 'cave' }), // SO1 R202 (2026-11-28): minL = the mean of 4 group minimums (228, 125, 125, 150 gal) = 157 gal; prey = an estimate, a third of its length (no source gives a size)
   denison: A(2, 217, 1, [18, 25], { tol: [15, 26], tolEst: true, group: 6 }), // SO1 R202 (2026-11-28): minL = the mean of 4 minimums (64, 55, 55, 55 gal) = 57.25 gal; temper 1 because it chases slow, delicate fish (Aquarium Source, Aquariadise); no prey figure found, so predation is not marked as researched
   congotetra: A(1, 128, 0, [23, 27], { tol: [22, 28], tolEst: true, group: 6, preyChecked: true }), // SO1 R202 (2026-11-28): minL = the mean of 5 minimums (29, 30, 30, 40, 40 gal) = 33.8 gal; no source says it eats tankmates
   pajamacardinal: A(1, 98, 0, [22, 26], { preyChecked: true }), // RX2 (R139 phase 2, 2026-11-19)

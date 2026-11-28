@@ -2963,6 +2963,26 @@
     "url": "https://www.seriouslyfish.com/species/sahyadria-denisonii/"
    },
    "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of every minimum found (4 figures: Seriously Fish 64 gal; Aquarium Source 55 gal; Fishkeeping World 55 gal; Aquariadise 55 gal, 75 gal better), 57.25 gal (SO1 R202, 2026-11-28)"
+  },
+  "frontosa": {
+   "red": {
+    "L": 2115,
+    "W": 605,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Seriously Fish and a standard 150 gal tank, averaged",
+    "url": "https://www.seriouslyfish.com/species/cyphotilapia-frontosa/",
+    "states": "Seriously Fish 240 x 60 x 60 cm (about 864 litres, 228 US gal); the retail pages' 125-150 gal fit a standard 72 x 24 in tank (183 x 61 cm); the two bases averaged, 211.5 x 60.5 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 157,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care pages",
+    "url": "https://www.seriouslyfish.com/species/cyphotilapia-frontosa/"
+   },
+   "why": "the mean of the group minimums found (4 figures: Seriously Fish 228 gal; Fishkeeping World 125 gal for 3+ adults; Aquariadise 125-150 gal for 4-6, 125 used; That Pet Place 150 gal), 157 gal; a single adult needs 70-75 gal (Fishkeeping World, Aquariadise) (SO1 R202, 2026-11-28)"
   }
  }
 }
