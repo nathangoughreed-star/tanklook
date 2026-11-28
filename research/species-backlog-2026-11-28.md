@@ -37,7 +37,22 @@ These come from `src/scene/archetypes.ts`. Filling these gaps meets the roadmap'
 | cool-native-creek / coldwater | Japanese ricefish, paradise fish, dojo loach |
 | clownfish-anemone | maroon clownfish (second host clown), bubble-tip anemone as livestock |
 
-## 3. Decisions for Nathan (none of this is started)
+## 3a. Nathan's answers (2026-11-28)
+
+1. **Anemones are animals you stock**, not decorations: "should probably be treated as animals, but some plumbing might have to change since they are sessile". So:
+   - The bubble-tip and rock flower anemones become species rows.
+   - The stocking and swim code needs a sessile mode: placed on rock like an item, slow creep, light and flow needs, the host link to clownfish and porcelain crabs.
+   - Clams (maxima, derasa) use the same mode.
+   - The current bubble-tip coral item migrates to the new animal.
+2. **Welfare-flagged species are included, each with a warning** ("include them but more information is good. Just have a warning with it"). This is the common-pleco treatment: list the true adult size, the minimum tank, and why they usually fail.
+3. **Hybrids: not answered yet**, still open.
+4. **30 fish sheets for the first 50: yes.**
+5. **New ask: soft corals, snails and shrimp may each need a new modeling process** ("modeling the soft corals may need a new modeling process, same with snails and shrimp"). The parametric snail and shrimp specs and the procedural coral items aren't assumed good enough anymore. Effect on section 5:
+   - Steps 1 and 2 aren't "no sheets, quick wins" any more. Each waits on an invert modeling method, which could be a reference-sheet method like build-B for fish.
+   - Write that method first: pilot one snail (trochus), one shrimp (peppermint) and one soft coral (zoanthids), then batch.
+   - Until that method exists, saltwater and freshwater fish (steps 3 and 4) can go first, since build-B is ready.
+
+## 3. Decisions for Nathan (asked 2026-11-28; answers in 3a)
 
 1. **Anemones as livestock or decor?** Today the bubble-tip anemone is a coral item. The roadmap wants it, and the rock flower anemone, as livestock with a clownfish or porcelain-crab pairing. Recommendation: keep anemones as placeable items (they sit, light and flow matter) and add a host link from item to fish, rather than putting them in species.json.
 2. **Welfare-flagged species.** These usually die in home tanks or outgrow them. Should they get the common-pleco treatment (listed, with a true-size or "expert, usually starves" warning), or stay out?
