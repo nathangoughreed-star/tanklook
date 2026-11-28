@@ -176,6 +176,7 @@
   {"id": "greenspotpufferb", "name": "Green spotted puffer", "sci": "Dichotomyctere nigroviridis", "tl": 165, "art": "greenspotpufferb", "aspect": 0.361},
   {"id": "jackdempseyb", "name": "Jack Dempsey cichlid", "sci": "Rocio octofasciata", "tl": 250, "art": "jackdempseyb", "aspect": 0.479},
   {"id": "nasotangb", "name": "Naso tang", "sci": "Naso elegans", "tl": 300, "art": "nasotangb", "aspect": 0.4},
+  {"id": "paradisefishb", "name": "Paradise fish", "sci": "Macropodus opercularis", "tl": 90, "art": "paradisefishb", "aspect": 0.429},
   {"id": "oscar", "albino": "https://link.springer.com/article/10.1007/s10750-022-04921-w", "name": "Oscar", "sci": "Astronotus ocellatus", "tl": 300, "art": "oscar"},
   {"id": "goldfish", "name": "Fancy goldfish", "sci": "Carassius auratus", "tl": 203, "group": "shoal", "art": "goldfish"},
   {"id": "comet", "name": "Comet goldfish", "sci": "Carassius auratus", "tl": 250, "group": "shoal", "art": "comet", "note": "Single-tailed goldfish; grows to 30 cm, best in a pond or a very large tank."},
