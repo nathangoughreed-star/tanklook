@@ -350,7 +350,9 @@ function zoanthidC(r: R, s: number, morph = 'dragoneye') {
     for (let i = 0; i < pg.count; i++) {
       q.fromBufferAttribute(pg, i); let dm = Infinity; for (const p of placed) dm = Math.min(dm, p.distanceTo(q));
       const k = 1 - Math.min(1, Math.max(0, (dm - gap * 0.7) / (gap * 0.35))); if (k <= 0) continue;
-      c0.fromBufferAttribute(cg, i).lerp(mc.clone().multiplyScalar(0.8 + 0.2 * Math.sin(i * 12.9898)), k); cg.setXYZ(i, c0.r, c0.g, c0.b);
+      // keep the rock's own light and dark (grit, pits, coralline patches) under the tint: a flat colour shows every facet
+      c0.fromBufferAttribute(cg, i); const lum = (c0.r + c0.g + c0.b) / 3;
+      c0.lerp(mc.clone().multiplyScalar(Math.min(1.35, Math.max(0.55, lum / 0.42))), k); cg.setXYZ(i, c0.r, c0.g, c0.b);
     }
   }
   if (typeof window !== 'undefined') (window as unknown as { __zoaNN?: number }).__zoaNN = median(placed.map(p => Math.min(...placed.filter(q => q !== p).map(q => q.distanceTo(p))))) / rd;
