@@ -1,6 +1,6 @@
 # Batch b11: 20 new roster species (sheet queue)
 
-Started 2026-11-27 by lane b11. Nathan: "write prompts for like 20 species I want a long queue to work on"; list approved in chat ("Approve all 20"). Request R195.
+Started 2026-11-27 by lane b11. Nathan: "write prompts for like 20 species I want a long queue to work on"; list approved in chat ("Approve all 20"). Request R205.
 Steps live in `PIPELINE.md`; this file holds only the fish list and batch notes.
 
 ## State

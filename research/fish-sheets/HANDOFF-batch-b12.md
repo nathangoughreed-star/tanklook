@@ -1,6 +1,6 @@
 # Batch b12: 20 more roster species (sheet queue)
 
-Started 2026-11-28 by lane b11. Nathan: "there should be nothing stopping us from continuing to generate ref sheets. get another queue set up please"; list approved ("Approve all 20"). Request R195b.
+Started 2026-11-28 by lane b11. Nathan: "there should be nothing stopping us from continuing to generate ref sheets. get another queue set up please"; list approved ("Approve all 20"). Request R206.
 Steps: `PIPELINE.md`. Same method as b11 (`HANDOFF-batch-b11.md`).
 
 ## State
