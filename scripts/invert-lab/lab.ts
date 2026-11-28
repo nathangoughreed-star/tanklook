@@ -52,6 +52,7 @@ views.forEach(([name, d], i) => {
   cam.lookAt(c); cam.updateProjectionMatrix();
   renderer.render(scene, cam);
   x.drawImage(renderer.domElement, i * T, 24);
-  x.fillStyle = '#ddd'; x.font = '14px system-ui'; x.fillText(`${m} · ${name}`, i * T + 8, 17);
+  const nn = (window as unknown as { __zoaNN?: number }).__zoaNN; // zoanthid colonies: median polyp spacing / disc radius
+  x.fillStyle = '#ddd'; x.font = '14px system-ui'; x.fillText(`${m} · ${name}${nn && i === 0 ? ` · spacing ${nn.toFixed(2)} rd` : ''}`, i * T + 8, 17);
 });
 (window as unknown as { __labDone: boolean }).__labDone = true;
