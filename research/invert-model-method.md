@@ -1,6 +1,6 @@
 # Invert model method ("build C"): snails, shrimp, soft corals
 
-Status: **PILOT, waiting on Nathan's verdict** (2026-11-28). It gates the 20 invert species in the first milestone of
+Status: **PILOT + sheet test done, waiting on Nathan's verdict** (2026-11-28). It gates the 20 invert species in the first milestone of
 `research/species-backlog-2026-11-28.md` (section 3a, answer 5).
 Ask (Nathan 2026-11-28): "modeling the soft corals may need a new modeling process, same with snails and shrimp."
 Pilots: banded trochus snail, peppermint shrimp, zoanthids. Review pictures: `research/screens/invert-c/`.
@@ -101,7 +101,35 @@ priority, a count per side in order, a fixed symmetric pose, strict orthographic
 (`PRIO_CRUST`, `POSE_CRUST`, `CHECK_CRUST`). Peppermint and scarlet hermit have t2 prompts with them, written for a redo
 and not queued (their t1 sheets exist).
 Judge each sheet on: same specimen in every row, measured ratios held, rows usable by a script (maps flat, black clean),
-and the look against the reference photos. Results go in the table below once the sheets are in.
+and the look against the reference photos.
+
+### Results (t1 sheets, judged 2026-11-28)
+Review pictures: `research/screens/invert-c/sheet-<id>.jpg` (sheet, Commons photos, build C pilot where one exists).
+New photos for the judging: crab `File:Female_Mithraculus_sculptus_Crab.jpg`; hermit `File:Paguristes_cadenati.jpg`,
+`File:Hermit_or_Just_Crabby?_(5245725908).jpg`; urchin `File:Erizo_de_mar_(Mespilia_globulus),_Anilao,_Filipinas,_2023-08-22,_DD_283.jpg`,
+`File:Mespilia_globulus_MHNT_supinf_Balicasag.jpg` (all on commons.wikimedia.org).
+Row sizes were measured by script (bounding boxes of the non-black blobs). "Black clean" is the share of background
+pixels at value 8 or below.
+| Sheet | Same specimen | Ratios / scale | Maps, black | Against the photos | Verdict |
+|---|---|---|---|---|---|
+| Trochus | yes | front H/W 0.88 (photos 0.84-0.98); top and base within 3% of the front width | no map row; black 95% | flames, cords, base streaks right; flames too dark maroon, cream too grey-green; foot near-black (photos: grey) | good reference |
+| Peppermint | yes | top view 11% longer than side | front map = front view to the pixel; black 99% | clear body, red lines, banded legs right; lines follow segment rims more than the photos' lengthwise lines | best sheet |
+| Emerald crab (Nathan's prompt) | yes | carapace H/W 0.74; ventral within 5% of dorsal | map clean; black 99% | leg count right in every view; carapace too knobby and blotched, legs too hairy; the "side" is a 3/4 perspective | good |
+| Scarlet hermit | crab yes; the empty shell is a different shell | consistent | map clean; black 99% | red legs, yellow eyestalks right; legs too granular/hairy (photos: smooth, glossy) | good |
+| Tuxedo urchin | yes | **top view 25% smaller than the side view**; test H/W 0.52, too flat for a near-globular species | zone map clean, matches the bottom view; black 95% | **colours wrong**: teal bands + maroon spines; photos show deep ultramarine bands and short golden-green spines | fails |
+| Zoanthid | yes | polyp top and ring map identical in size | ring map clean (5 rings); black 99.6% | orange centre, mauve ring, green fringe as in the photos; disc duller; colony columns too tall | good |
+
+**Finding:** the sheets are consistent and orthographic (5 of 6 keep one scale), and the maps are clean enough for
+a script to read. The weak point is colour: 3 of 6 drift darker or wrong against the photos, and the urchin is wrong
+outright. Body plans like these don't loft from silhouettes (see "Why not build B"), so the proposal is a **hybrid**:
+- The sheet replaces step 3's photo measuring. It gives clean orthographic ratios, ring and zone maps, and
+  pattern references on black, which real photos rarely give.
+- The generator still builds the geometry.
+- Every colour is checked against the Commons photos and lifted to the photos where the sheet drifts.
+- A sheet that fails the photo check (urchin t1) is redone with the colours stated in the prompt, before anything is
+  measured from it.
+
+Waiting on Nathan's verdict.
 
 ## Correction log (Nathan's corrections, newest last)
 | Date | Model | Correction | Fix |
