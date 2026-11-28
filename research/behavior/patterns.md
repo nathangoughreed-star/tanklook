@@ -1,6 +1,6 @@
 # Behavior patterns across species (R208, running synthesis)
 
-Species so far: peacock gudgeon (`peacockgudgeon.md`), panda cory (`pandacory.md`), kribensis (`kribensis.md`), bristlenose pleco (`bristlenose.md`), rummynose tetra (`rummynose.md`). Still to come: kuhli loach. Research only: the new behavior system gets designed from this list, not fitted to `swimTypes.ts` (Nathan 2026-11-28).
+Species so far: peacock gudgeon (`peacockgudgeon.md`), panda cory (`pandacory.md`), kribensis (`kribensis.md`), bristlenose pleco (`bristlenose.md`), rummynose tetra (`rummynose.md`), kuhli loach (`kuhli.md`). Design summary: `design-summary.md`. Research only: the new behavior system gets designed from this list, not fitted to `swimTypes.ts` (Nathan 2026-11-28).
 
 ## Shared by every species so far
 - **Stop-go, not cruising.** Short purposeful moves, then pauses (a hover or a settle). Even the rummynose's "smooth" cruising is burst-and-coast, so all five share one movement cycle (burst, glide, pause) with different lengths: a short glide and almost no pause for the tetra, long pauses and settling for the cory and gudgeon, crawl steps for the pleco.
@@ -29,17 +29,25 @@ Species so far: peacock gudgeon (`peacockgudgeon.md`), panda cory (`pandacory.md
 - **A sense of security fed by cover AND companions:** more cover makes the gudgeon and cory bolder, small groups make tetras and corys skittish.
 - **Day/night:** every species has a night mode (tetra hovers and disperses, cory explores at dusk, pleco comes out, krib rests in cover).
 
+## Added by the kuhli (6 species)
+- **Spaces fish can go inside**: sand, leaf litter, root masses and crevices are places to travel through and vanish into, not solid ground. A fish can be fully hidden.
+- **Whole-body undulation** as a third body mode (after tail swimming and surface crawling).
+- **Contact as a per-species setting**: kuhlis and corys pile up and slide over each other.
+- **Tank events as triggers**: a water change sets off the kuhli dance, keeper movement sets off tetra feeding anticipation, lights off and on drive the day/night modes.
+- **Escape into concealment** (kuhli, pleco, krib, gudgeon) versus escape away with the group (tetra).
+- **Home variants**: owned and defended (gudgeon, krib, pleco) / shared communal spots (kuhli knots, cory piles) / none (tetra).
+
 ## Axes along which species differ (the candidate per-species settings)
-| Axis | Gudgeon | Panda cory | Kribensis | Bristlenose | Rummynose |
-|---|---|---|---|---|---|
-| Rest posture | perches on the bottom or hardscape, or hovers low | belly on the substrate, truly still | hovers near cover (never belly-down) | stuck to any surface at any angle, in a cave, wedged, or flat on the bottom | hovers level in mid water, also at night |
-| Home anchor | male: a cave he keeps returning to | none | the pair's cave + territory | mature male: an owned cave | none |
-| Home range | close to the cave | whole bottom | one section of the tank, much bigger when breeding | cave plus nearby grazing surfaces | whole open middle water |
-| Group shape | loose aggregation, keeps spacing | clusters, touching is fine | bonded pair | solitary (ignores others, no following) | emergent school, tight when scared, loose when relaxed, gone in the dark |
-| Aggression | defends the cave when approached, short chase, returns | none (yields) | proximity-triggered charge, turns back; longer chases when breeding | shoves at food, short chase and return, male cave fights with cheek spines | none (races for food) |
-| Feeding | picks single items, strikes at moving prey | sifts sand, snout buried | picks at the substrate and spits sand + intercepts sinking food | rasps surfaces (algae, wood biofilm, wafers, vegetables) | intercepts drifting food, takes it at the surface or bottom |
-| Special | lateral display | air dash, glass and current swimming | digging, female quiver, fry herding and signals | crawls on surfaces with the surface setting its orientation, upside down, backs out of caves | turns pass through the school, nose colour as a signal |
-| Parental care | male guards and fans eggs | none, eats eggs | both parents, split roles | male fans and guards eggs in the cave | none, scatters and eats eggs |
+| Axis | Gudgeon | Panda cory | Kribensis | Bristlenose | Rummynose | Kuhli |
+|---|---|---|---|---|---|---|
+| Rest posture | perches on the bottom or hardscape, or hovers low | belly on the substrate, truly still | hovers near cover (never belly-down) | stuck to any surface at any angle, in a cave, wedged, or flat on the bottom | hovers level in mid water, also at night | lies curved, sideways or draped, hidden or buried |
+| Home anchor | male: a cave he keeps returning to | none | the pair's cave + territory | mature male: an owned cave | none | shared resting spots, not owned |
+| Home range | close to the cave | whole bottom | one section of the tank, much bigger when breeding | cave plus nearby grazing surfaces | whole open middle water | bottom, roots and sand (inside spaces) |
+| Group shape | loose aggregation, keeps spacing | clusters, touching is fine | bonded pair | solitary (ignores others, no following) | emergent school, tight when scared, loose when relaxed, gone in the dark | loose, tangles into knots |
+| Aggression | defends the cave when approached, short chase, returns | none (yields) | proximity-triggered charge, turns back; longer chases when breeding | shoves at food, short chase and return, male cave fights with cheek spines | none (races for food) | none |
+| Feeding | picks single items, strikes at moving prey | sifts sand, snout buried | picks at the substrate and spits sand + intercepts sinking food | rasps surfaces (algae, wood biofilm, wafers, vegetables) | intercepts drifting food, takes it at the surface or bottom | probes, sifts, digs head-down, feeds in crevices |
+| Special | lateral display | air dash, glass and current swimming | digging, female quiver, fry herding and signals | crawls on surfaces with the surface setting its orientation, upside down, backs out of caves | turns pass through the school, nose colour as a signal | burrows, the loach dance (water-change trigger), whole-body undulation |
+| Parental care | male guards and fans eggs | none, eats eggs | both parents, split roles | male fans and guards eggs in the cave | none, scatters and eats eggs | none (rarely seen) |
 
 ## Structure suggested independently by the answers
 1. A **library of shared behaviors** (rest, settle, scoot, hover, pivot, investigate, forage-pick, forage-sift, dart-to-cover, follow, display, chase-and-return, guard, dig, air dash ...), each species switching on a subset with its own tuning.
