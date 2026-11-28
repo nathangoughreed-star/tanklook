@@ -1,6 +1,6 @@
 # Behavior patterns across species (R208, running synthesis)
 
-Species so far: peacock gudgeon (`peacockgudgeon.md`), panda cory (`pandacory.md`), kribensis (`kribensis.md`), bristlenose pleco (`bristlenose.md`), rummynose tetra (`rummynose.md`), kuhli loach (`kuhli.md`). Design summary: `design-summary.md`. Research only: the new behavior system gets designed from this list, not fitted to `swimTypes.ts` (Nathan 2026-11-28).
+Species so far: peacock gudgeon (`peacockgudgeon.md`), panda cory (`pandacory.md`), kribensis (`kribensis.md`), bristlenose pleco (`bristlenose.md`), rummynose tetra (`rummynose.md`), kuhli loach (`kuhli.md`), betta (`betta.md`). Design summary: `design-summary.md`. Research only: the new behavior system gets designed from this list, not fitted to `swimTypes.ts` (Nathan 2026-11-28).
 
 ## Shared by every species so far
 - **Stop-go, not cruising.** Short purposeful moves, then pauses (a hover or a settle). Even the rummynose's "smooth" cruising is burst-and-coast, so all five share one movement cycle (burst, glide, pause) with different lengths: a short glide and almost no pause for the tetra, long pauses and settling for the cory and gudgeon, crawl steps for the pleco.
@@ -36,6 +36,13 @@ Species so far: peacock gudgeon (`peacockgudgeon.md`), panda cory (`pandacory.md
 - **Tank events as triggers**: a water change sets off the kuhli dance, keeper movement sets off tetra feeding anticipation, lights off and on drive the day/night modes.
 - **Escape into concealment** (kuhli, pleco, krib, gudgeon) versus escape away with the group (tetra).
 - **Home variants**: owned and defended (gudgeon, krib, pleco) / shared communal spots (kuhli knots, cory piles) / none (tetra).
+
+## Added by the betta (7 species)
+- **Resting against structure** is now in 6 of 7 (all but the tetra): leaf, stem, substrate, ledge, cave. Picking a favourite rest spot and settling against it is a core shared behavior.
+- **Fins as secondary motion**: long fins drag, trail on turns and fold or ripple independently of the body. That's a movement-realism requirement (it also fits angelfish and fancy goldfish).
+- **Individual personality**: the betta and cory answers both ask for per-fish curiosity, aggression, prey drive, activity level and favourite spots, not one profile per species.
+- **Displays are a shared repertoire**: lateral display (gudgeon, krib, betta), frontal flare (betta, krib facing an intruder), fin spread (pleco, krib). They're set off by something (a rival, a reflection, a long-finned tankmate), not constant.
+- **Prey drive toward small animals** (betta, gudgeon: shrimplets and fry) is a per-species setting with stalk-then-lunge.
 
 ## Axes along which species differ (the candidate per-species settings)
 | Axis | Gudgeon | Panda cory | Kribensis | Bristlenose | Rummynose | Kuhli |

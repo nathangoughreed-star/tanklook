@@ -1,0 +1,20 @@
+# Male betta (Betta splendens, long-finned): ethogram (R208)
+
+Source: a ChatGPT answer to the scoped prompt (scape interaction, displays, no breeding mechanics), gathered by Nathan on 2026-11-28. This is a digest; the full answer is in the C25 chat transcript.
+
+## Character
+Inquisitive, solitary and territorial, with favourite resting places and a strong interest in what's right around it. Explores, inspects, hunts when the chance comes, visits the surface, and **rests against structure**. Movement is deliberate and easily interrupted: swim, hover and supported rest keep switching. Aggression changes its posture and movement for a while; it isn't its whole personality. **Individuals differ a lot** (curiosity, aggression, prey drive, activity, favourite resting spots).
+
+## Movement mechanics
+Pectorals flutter, then a deliberate sweep of the tail. Propulsion alternates with gliding. Stops by easing the tail and adjusting the pectorals. Turns start with the head and body bending, and **the long fins sweep round after it**. Hovering: body nearly still, pectorals working constantly. The big fins add drag, slow acceleration and trail behind on turns, and they fold, ripple, spread and settle **independently of the body**. Can dart fast, but doesn't keep up speed. Turns are tight, not wide circles.
+
+## Ethogram (scape interaction and social, short form)
+**Moving:** slow cruising with trailing fins (very often, upper and middle water); patrols familiar routes (often); hovers beside plants (often); swims up to objects and faces them closely (often); threads between stems, folding its fins through gaps (often); cruises just under the surface (often); gulps air at the surface (regularly, normal, not an emergency); moves out of strong flow to shelter behind plants or hardscape (often).
+**Resting (all touching structure):** belly on a broad leaf near the surface, fins hanging over the edge (often); belly-down or leaning on the substrate (often, more common than keepers expect); propped against a ledge, wood or rock (sometimes); quietly inside a cave or log (sometimes, depends on the fish); held up among leaves and stems (often); still just under the surface (sometimes). Keeps the same favourite spots.
+**Feeding:** swims to the keeper and waits (often); snaps food at the surface (often); intercepts sinking food (often); picks at the bottom (sometimes); inspects leaves and snaps tiny organisms (sometimes); spits food out and tries again (sometimes); stalks small prey and lunges (shrimp, fry).
+**Social and displays:** ignores peaceful tankmates (often, varies by fish); swims up to new animals and looks them over (sometimes); picks at snails' antennae (sometimes); **frontal flare**: faces the rival, gill "beard" out, fins spread; **lateral display**: side on, fins fully out, body curved or quivering; flares at its own reflection (depends on the lighting); territorial charge, chase and then either drop it or keep harassing (varies by temperament); bites (escalated aggression or prey); retreats into plants when intimidated. Long-finned tankmates can be read as rivals.
+**Startle and stress:** darts away with the fins trailing sharply; freezes; glass surfing or pacing (stress, which differs from a patrol); clamped fins; bites its own tail (occasionally reported).
+**Courting (no breeding mechanics):** builds a bubble nest without any female present (sometimes, depends on the fish); hangs around the nest and confronts intruders. Courtship display with curved body and spread fins toward a female (uncommon outside breeding setups).
+
+## What a generic animation gets wrong (its list)
+Constant tail swimming with no pauses; fins always spread like a show fish; rigid fins turning with the body instead of trailing, folding and rippling; wide turning circles; staying only at the top; never touching leaves, wood or substrate at rest; treating air gulps as an emergency; constant aggression rather than aggression set off by something; mixing up patrolling with stress pacing; every male identical.
