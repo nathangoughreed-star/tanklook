@@ -12,7 +12,8 @@ import type { TankSetup } from '../scene/types';
 import { LIMITS } from '../scene/validate';
 import { CEILING_MAX, CEILING_MIN, ceilingH } from '../scene/physics';
 import { roomSummary, heightText, conditionWord, CONDITION_STOPS, setCondition, type Units } from './logic/tank';
-import { chooseFs, useFsItems } from './fullscreen';
+import { chooseFs, toggleShow, useFsItems } from './fullscreen';
+import { showView } from '../render/showView';
 import {
   CAM_PRESETS, CAM_SLIDERS, SHOWS, PNG_SIZES, camReadout, roomRead, roomByHand, roomAuto, ROOM_MAX, ROOM_HINT, presetNow, presetOf, loadHidden, saveHidden, loadMap, saveMap, pngName, pngTitle, anotherMoment, KEYS,
   type ShowId,
@@ -162,6 +163,7 @@ export function ViewCluster({ store, getViewer, phone, compare }: { store: Store
           <RoomGroup store={store} />
           <div class="vsec"><h3>Window</h3>
             {fs.items.map(it => <button type="button" class="btn sm fsitem" title={it.hint} onClick={() => { setOpen(false); chooseFs(it.id); }}>{it.label}{it.id === 'full' ? <span class="kbd">F</span> : null}</button>)}
+            <button type="button" class="btn sm fsitem" title="The picture to share: the tank from the front at eye level under the water line, nothing else on screen (Esc goes back)" onClick={() => { setOpen(false); toggleShow(); }}>{showView() ? 'Exit show view' : 'Show view'}</button>
           </div>
           <div class="vsec"><h3>Export PNG</h3>
             <div class="chips">{PNG_SIZES.map(m => <button type="button" class="btn sm chip" title={px(m)} onClick={() => png(m)}>{m}×</button>)}</div>
