@@ -11,7 +11,7 @@
    "dims": {
     "L_in": 30.7,
     "D_in": 15.7,
-    "H_in": 22.6
+    "H_in": 20.9
    },
    "includes": [
     "tank",
@@ -31,7 +31,8 @@
     "finish": "black",
     "lid": "hood",
     "guessed": [
-     "stand: a bow-front cabinet in dark grey wood with plank doors (PetSmart photos); drawn as the generic cabinet, no bow-front stand model yet"
+     "stand: a bow-front cabinet in dark grey wood with plank doors (PetSmart photos); drawn as the generic cabinet, no bow-front stand model yet",
+     "tank height: PetSmart's 30.7 x 15.7 x 22.6 in includes the hood (Nathan 2026-11-28: it read 40 gal); the glass is drawn at the catalog 36 gal bowfront's 20.9 in (Aqueon), ~38 gal inside the glass"
     ],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
@@ -238,7 +239,7 @@
    "dims": {
     "L_in": 30.7,
     "D_in": 15.7,
-    "H_in": 22.2
+    "H_in": 20.9
    },
    "includes": [
     "tank",
@@ -263,6 +264,9 @@
    "note": "Page read live. Tank 30.7x15.7x22.2 in (PetSmart.ca listing; the .com page redirects); hood, white LED, Silenstream 40 filter, 200 W heater, thermometer, net. No stand. Re-read 2026-11-26 (parts sweep, page fetched): $89.99, was $179.99, thru 11/29 (item 5282370). Bow hood with white LED: kit-only. Silenstream PF40, 200 W heater: sold alone (library).",
    "look": {
     "lid": "hood",
+     "guessed": [
+      "tank height: PetSmart's 30.7 x 15.7 x 22.2 in includes the hood (Nathan 2026-11-28: it read 40 gal); the glass is drawn at the catalog 36 gal bowfront's 20.9 in (Aqueon), ~38 gal inside the glass"
+     ],
     "light": {
      "says": "LED in the hood (no watts, Kelvin or PAR published)"
     }
