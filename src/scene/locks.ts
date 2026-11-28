@@ -27,6 +27,9 @@ export const TANK_PROPS: Record<string, readonly (keyof TankSetup)[]> = {
   room: ['stand', 'wall', 'person', 'lid', 'doors'],   // the room around the tank. The 3D BACKDROP is a physical wall INSIDE the habitat: it is Hardscape (HARDSCAPE_KEYS), not room
   water: ['water'],
 };
+/** Finer tank groups a kit lock may hold instead of the whole room (a bundle with a hood and no stand holds only the lid). Not listed among TANK_PROPS, so scope and "all groups" stay as they were. */
+export const TANK_SUBGROUPS: Record<string, readonly (keyof TankSetup)[]> = { stand: ['stand'], lid: ['lid'] };
+const tankGroup = (g: string) => TANK_PROPS[g] ?? TANK_SUBGROUPS[g] ?? [];
 /** The hardscape tab's non-item state (lane AB5): the relief backdrop (foam rock wall, cork, moss, jungle ...) is built into the habitat, so it moves, locks and prices with the hardscape. A lock on it has the target 'backdrop'. */
 export const HARDSCAPE_KEYS: readonly (keyof TankSetup)[] = ['backdrop'];
 /** The substrate lock covers these keys of the TankSetup (painted patches included). */
@@ -112,10 +115,10 @@ export function lockRoster(t: TankSetup, species: string, mode: RosterMode, n = 
 export function unlockRoster(t: TankSetup, species: string): Locks {
   const L = t.locks ??= emptyLocks(); L.roster = L.roster.filter(r => r.species !== species); return L;
 }
-/** R125: hold the parts a kit / bundle includes (tank size, stand + lid = the room, light, filter, heater), marked `kit` so a swap asks first (Store.kitGate). */
+/** R125: hold the parts a kit / bundle includes (tank size, stand, lid, light, filter, heater), marked `kit` so a swap asks first (Store.kitGate). The stand and the lid are held apart: a bundle with a hood and no stand leaves the stand free. */
 export function lockKitParts(t: TankSetup, includes: readonly string[]): void {
-  const has = (p: string) => includes.includes(p), room = has('stand') || has('lid');
-  const props = [...(has('tank') ? ['dimensions'] : []), ...(room ? ['room'] : [])];
+  const has = (p: string) => includes.includes(p);
+  const props = [...(has('tank') ? ['dimensions'] : []), ...(has('stand') ? ['stand'] : []), ...(has('lid') ? ['lid'] : [])];
   const L = t.locks ??= emptyLocks();
   const hold = (target: string, p?: string[]) => { lockObject(t, target, p); L.objects.find(o => o.target === target)!.kit = true; };
   if (props.length) hold('tank', props);
@@ -127,7 +130,7 @@ export function kitViolations(before: TankSetup[], after: TankSetup[]): { tank: 
   before.forEach((b, i) => {
     const a = after[i], kit = b.locks?.objects.filter(o => o.kit); if (!a || !kit?.length) return;
     for (const v of lockViolations(b, a, { objects: kit, roster: [] })) {
-      const name = v.target === 'tank' ? (v.props?.length ? v.props : ['dimensions']).map(g => g === 'dimensions' ? 'tank' : g === 'room' ? 'stand and lid' : g).join(' and ') : v.target === 'light' ? 'light' : v.target === 'filter' ? 'filter' : v.target === 'heater' ? 'heater' : v.target;
+      const name = v.target === 'tank' ? (v.props?.length ? v.props : ['dimensions']).map(g => g === 'dimensions' ? 'tank' : g === 'room' ? 'stand and lid' : g === 'lid' ? 'lid' : g === 'stand' ? 'stand' : g).join(' and ') : v.target === 'light' ? 'light' : v.target === 'filter' ? 'filter' : v.target === 'heater' ? 'heater' : v.target;
       out.push({ tank: i, target: v.target, name });
     }
   });
@@ -157,7 +160,7 @@ export function lockViolations(before: TankSetup, after: TankSetup, locks: Locks
     } else if (o.target === 'substrate') {
       if (SUBSTRATE_KEYS.some(k => !same(before[k], after[k]))) out.push({ kind: 'substrate', target: 'substrate', detail: 'The substrate (settings, terrain or patches) changed.' });
     } else if (o.target === 'tank') {
-      const held = o.props?.length ? o.props : Object.keys(TANK_PROPS), hit = held.filter(g => (TANK_PROPS[g] ?? []).some(k => !same(before[k], after[k])));
+      const held = o.props?.length ? o.props : Object.keys(TANK_PROPS), hit = held.filter(g => tankGroup(g).some(k => !same(before[k], after[k])));
       if (hit.length) out.push({ kind: 'tank', target: 'tank', props: hit, detail: `The tank's ${hit.join(', ')} changed.` });
     } else {
       for (let i = 0; i < B.length; i++) {
