@@ -24,6 +24,7 @@ import { scapeSec } from './logic/scape';
 import { openClicked } from './clickOpen';
 import { shouldWelcome, landing } from './logic/start';
 import { watchLiveArt } from '../art/liveFish';
+import { bhParams } from '../behavior/params';
 
 export async function bootShell() {
   document.documentElement.classList.remove('gb-new'); // BF1: the index.html pre-paint guard (hid the old markup, set a plain background)
@@ -37,7 +38,9 @@ export async function bootShell() {
   const { scene: restored, error: saveError } = Store.loadLocalChecked(); // a return visit resumes the autosave; a first visit opens an empty tank (shell step 2)
   const start = startMode(restored, saveError);
   applySavedFx();
+  const bh = bhParams();   // R208: ?bh&places (affordance overlay), ?scene=bh1 (review tank, never saved)
   const store = new Store(restored ?? freshScene());   // a first visit opens an empty tank behind the Start sheet (FD's example-behind-the-sheet reverted, Nathan 2026-11-27)
+  if (bh.scene === 'bh1') store.replace((await import('../behavior/bh1Scene')).bh1Scene());
   store.subscribe(kind => { if (kind === 'scene') landing.untouched = false; });   // the first edit makes the tank the visitor's: no result card, no silent swap
 
   // the existing viewer, unchanged: a host with its canvas, moved into the view area by App
@@ -47,7 +50,7 @@ export async function bootShell() {
 
   // autosave, as the old shell does (panels.ts): 400 ms after the last change, and on leaving the page
   let timer = 0;
-  const save = () => { clearTimeout(timer); timer = 0; store.saveLocal(); dispatchEvent(new Event('ui2:saved')); };
+  const save = () => { if (bh.scene) return; clearTimeout(timer); timer = 0; store.saveLocal(); dispatchEvent(new Event('ui2:saved')); };
   store.subscribe(kind => { if (kind === 'select') return; clearTimeout(timer); timer = window.setTimeout(save, 400); });
   addEventListener('pagehide', () => { if (timer) save(); });
 
@@ -73,7 +76,9 @@ export async function bootShell() {
   };
   addEventListener('hashchange', openLink);
   const linked = openLink();
-  if (!linked && start.message) files.say(start.message, true);
+  if (bh.places) void import('../behavior/overlay').then(m => m.attachPlaces(viewer!, store));
+  if (bh.scene) { /* the review tank opens straight, no start sheet */ }
+  else if (!linked && start.message) files.say(start.message, true);
   else if (!linked && shouldWelcome(restored, saveError)) files.openStart();   // SS1: a first visit asks how to start
   if (import.meta.env.DEV || import.meta.env.VITE_GB_HANDLE) Object.assign(window, { __gb: { store, viewer } }); // VITE_GB_HANDLE=1: a production build for scripts/perf-*.mjs
   document.body.dataset.ui2 = 'ready';
