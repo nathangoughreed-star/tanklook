@@ -2209,6 +2209,13 @@
    "hi": 530,
    "unit": "each, 8-18 in juvenile; Pete's Aquariums 8-18 in $249.99-$529.99, SaltwaterFish 10-12 in $496.99 (R150 search 2026-11-25)",
    "url": "https://www.saltwaterfish.com/product-brown-banded-bamboo-shark"
+  },
+  "animal:congotetra": {
+   "lo": 12,
+   "mode": 15,
+   "hi": 33,
+   "unit": "each, juvenile; That Pet Place $12.99 (store only), LiveAquaria $32.99 for a longfin group (search snippet, sold out); the middle is an estimate (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://www.thatpetplace.com/Phenacogrammus-interruptus-congo-tetra-213568"
   }
  }
 }

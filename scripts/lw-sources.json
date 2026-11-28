@@ -694,5 +694,11 @@
   "b": 3.09,
   "src": "fishbase-bayes",
   "note": "FishBase ID 5903 Bayesian (TL cm); FishBase has no length-weight row for this species (R150)"
+ },
+ "congotetra": {
+  "a": 0.01072,
+  "b": 3.02,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 10660 Bayesian (TL cm, a 0.00489-0.02350, b 2.84-3.20); its one table row (SL, n=3, b 3.000) is not used (SO1 R202)"
  }
 }

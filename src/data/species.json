@@ -79,6 +79,7 @@
   {"id": "oscarb", "name": "Tiger oscar", "sci": "Astronotus ocellatus", "tl": 305, "art": "oscarb", "aspect": 0.564},
   {"id": "bichirb", "name": "Senegal bichir", "sci": "Polypterus senegalus", "tl": 305, "art": "bichirb", "aspect": 0.193},
   {"id": "bichir", "name": "Senegal bichir", "sci": "Polypterus senegalus", "tl": 445, "zone": "bottom", "level": "low", "art": "bichir", "note": "Sold at 2-4 in but a captive adult reaches 12-16 in; a nocturnal, air-breathing floor predator that eats any tankmate that fits its mouth and escapes through any gap in the lid (Seriously Fish, Practical Fishkeeping). Sized at 17.5 in (445 mm), the upper end of captive adults (Nathan 2026-11-26); its look is the build-B model row bichirb (fishLive.json)."},
+  {"id": "congotetra", "name": "Congo tetra", "sci": "Phenacogrammus interruptus", "tl": 88, "group": "school", "art": "congotetra", "aspect": 0.443, "note": "Males reach about 3.5 in with long dorsal and tail filaments; the females are smaller and plainer. A skittish shoaler: at least 6, 8-10 better, in a tank about 4 ft long (Seriously Fish, Aquariadise). Peaceful, but males may nip fins of smaller fish."},
   {"id": "angelb", "name": "Angelfish", "sci": "Pterophyllum scalare", "tl": 150, "art": "angelb", "aspect": 1.382},
   {"id": "bettab", "name": "Betta", "sci": "Betta splendens", "tl": 65, "art": "bettab", "aspect": 0.516},
   {"id": "blackskirtb", "name": "Black skirt tetra", "sci": "Gymnocorymbus ternetzi", "tl": 70, "art": "blackskirtb", "aspect": 0.708},

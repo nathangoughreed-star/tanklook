@@ -2925,6 +2925,25 @@
     "url": "https://www.thatpetplace.com/articles/true-sharks-article"
    },
    "why": "That Pet Place's shark rule (floor width at least the adult length, length at least twice it) at the low end, 82 x 41 in; a forum keeper's 7 x 4 ft agrees; the gallon figure is the mean of the minimums found (Wikipedia 180 gal; That Pet Place 200 gal; SaltwaterFish 300 gal), 227 gal; LiveAquaria's 360 gal could not be opened (R150, 2026-11-25)"
+  },
+  "congotetra": {
+   "red": {
+    "L": 1200,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/phenacogrammus-interruptus/",
+    "states": "120 x 30 x 30 cm, about 108 litres (29 US gal); young fish can be kept in smaller tanks",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 33.8,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care pages",
+    "url": "https://www.seriouslyfish.com/species/phenacogrammus-interruptus/"
+   },
+   "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of every minimum found (5 figures: Seriously Fish 29 gal; Aquarium Source 30 gal; That Pet Place 30 gal; Live Fish Direct 40+ gal; Aquariadise 40 gal), 33.8 gal (SO1 R202, 2026-11-28)"
   }
  }
 }
