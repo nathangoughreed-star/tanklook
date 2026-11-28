@@ -1,4 +1,4 @@
-<!-- invert sheet test 1, banded trochus snail, 2026-11-28; scripts/invert-sheet-prompts.py -->
+<!-- invert sheet test t1, banded trochus snail, 2026-11-28; scripts/invert-sheet-prompts.py -->
 Create a scientifically accurate orthographic reference sheet of a single adult banded trochus snail (Trochus sp.) for 3D model reconstruction.
 
 PRIMARY OBJECTIVE

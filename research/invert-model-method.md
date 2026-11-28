@@ -92,6 +92,14 @@ One ChatGPT 5-row reference sheet per body plan in the milestone, to judge wheth
 | Hermit crab | scarlet reef hermit | side; crab out of shell; top; front + map; empty shell |
 | Urchin | tuxedo urchin | side; side without spines; top; bottom + zone map; spine strip |
 | Polyp colony | zoanthid (dragon-eye) | polyp top + side; disc ring map; closed polyp; colony patch; colony on rock |
+**Crab template (R207, Nathan 2026-11-28: "I had to alter the emerald crab prompt ... because it was printing wrong
+before"):** his rewrite is the emerald crab prompt word for word (`emeraldcrab-t1.md`; the folder's `prompt.txt` is the
+original). It states the 10 appendages, five per side in order; it has a dorsal master view, a carapace-only dorsal
+view, a front segmentation map (claws red, legs yellow, eyes white), a ventral view and a final checklist. New crabs copy
+it and change only the species facts. Its general blocks are now in the script for every crustacean: the appendage
+priority, a count per side in order, a fixed symmetric pose, strict orthographic with no ground lines, and the checklist
+(`PRIO_CRUST`, `POSE_CRUST`, `CHECK_CRUST`). Peppermint and scarlet hermit have t2 prompts with them, written for a redo
+and not queued (their t1 sheets exist).
 Judge each sheet on: same specimen in every row, measured ratios held, rows usable by a script (maps flat, black clean),
 and the look against the reference photos. Results go in the table below once the sheets are in.
 
