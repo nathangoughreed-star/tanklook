@@ -29,7 +29,7 @@ import { groupSize, moveGroup, settleFish, turnGroup, type Group } from '../scen
 import { gearGrab, gearLean, gearMove, pickGear, pickRow, nudgePlace, drawnPlace, withPlace, cycleSkip, cycleNote, rimFor, type GearDrag } from './gearDrag';
 import { cycle, gearSel, setGearSel } from '../render/gearSel';
 import { clickTarget, type ClickTarget } from './clickMenu';
-import { viewLocked } from './viewLock';
+import { viewLocked, isWatching, FISH_TAP, WATCH_EXIT } from './viewLock';
 import { MAX_PATCHES, addArea, placeSingle, erasable, erasePatches, extendPath, newPatch, patchAt } from '../scene/brush';
 
 type DragMode = 'front' | 'top' | 'side' | 'glass';
@@ -136,6 +136,16 @@ function boxPickIn(viewer: Viewer, store: Store, vp: Viewport, x0: number, y0: n
  *  an animal, piece, gear, the light, stand or lid opens its menu at its options (clickMenu.ts). */
 export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'items' | 'fish' | 'gear', kind?: ItemKind, id?: number | string) => boolean = () => true, focus?: (t: ClickTarget) => void) {
   const canvas = viewer.canvas;
+  { // BR2: a tap on an animal shows its label (what it is doing, and why when it is rushing a flagged pair); in Watch mode a tap on open water leaves Watch. Looks only, never picks or edits.
+    let down: { x: number; y: number; id: number } | null = null;
+    canvas.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY, id: e.pointerId }; });
+    canvas.addEventListener('pointerup', e => {
+      const d = down; down = null; if (!d || d.id !== e.pointerId || Math.hypot(e.clientX - d.x, e.clientY - d.y) >= 4) return;
+      const h = viewer.hitTest(e.clientX, e.clientY);
+      if (h?.fishId != null && viewer.fishLabel(h.fishId)) dispatchEvent(new CustomEvent(FISH_TAP, { detail: { id: h.fishId } }));
+      else { dispatchEvent(new CustomEvent(FISH_TAP, { detail: { id: null } })); if (isWatching()) dispatchEvent(new Event(WATCH_EXIT)); }
+    });
+  }
   const boxPick = (vp: Viewport, x0: number, y0: number, x1: number, y1: number) => boxPickIn(viewer, store, vp, x0, y0, x1, y1);
   // dragging an aquascape item: `grab` = the grabbed point relative to the piece's base, kept under the pointer while
   // the base slides over the ground and other pieces; riders = pieces resting on it, which move with it
@@ -470,7 +480,7 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
     // a plain click on empty space (no orbit drag) clears the selection, so nothing is highlighted
     // a click on a cabinet stand opens or closes its doors (lane SF, Nathan 2026-10-26: "have the doors open on click to reveal beneath")
     // a click on an animal, piece, gear, the light, stand or lid opens its menu at its options (Nathan 2026-11-11)
-    if (orbit && viewLocked() && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) viewer.startleAtPoint(e.clientX, e.clientY); // BR: a tap on open water in Tank only / Full screen startles the fish
+    if (orbit && viewLocked() && !isWatching() && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) viewer.startleAtPoint(e.clientX, e.clientY); // BR: a tap on open water in Tank only / Full screen startles the fish
     if (orbit && !viewLocked() && e.type === 'pointerup' && Math.hypot(e.clientX - orbit.x, e.clientY - orbit.y) < 4) {
       const hit = focus ? viewer.hitTest(e.clientX, e.clientY) : null, t = hit && store.isEditing(hit.vp.i) ? clickTarget(viewer, store, hit) : null;
       if (viewer.handleAt(e.clientX, e.clientY) && viewer.standAt(e.clientX, e.clientY) && (!t || t.kind === 'stand')) { tankView.standOpen = !tankView.standOpen; viewer.rebuild(); } // only from the handle box (CB1); the stand's options open on any other click

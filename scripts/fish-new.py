@@ -17,7 +17,7 @@ Usage: python fish-new.py <work> <id> "<Common name>" "<Genus species>" <tl_mm> 
 import sys, os, json, shutil, subprocess, importlib.util
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
-KEEP = ('sat', 'alo', 'aw', 'taper', 'smooth_tail', 'pedt_max', 'clip_head', 'outline', 'fy0', 'erase', 'pec_window', 'anchor_top',
+KEEP = ('clamp_top', 'sat', 'alo', 'aw', 'taper', 'smooth_tail', 'pedt_max', 'clip_head', 'outline', 'fy0', 'erase', 'pec_window', 'anchor_top',
         'no_tail', 'dorsals', 'smooth', 'warm', 'plan', 'plan_extra', 'fin_gap', 'card_sheet_off', 'sat_auto', 'membrane', 'stalk', 'fin_opacity', 'fin_opacity_source', 'sat_lin', 'front_ramp', 'front_ramp_why', 'solid_near', 'body_recolour')
 PROXY_LO, PROXY_HI = 0.75, 1.3   # a proxy fish keeps its drawn depth inside [lo*0.75, hi*1.3] (row 64)
 STRETCH_AT = 0.08   # band around the median when there is no measured range (proxy numbers only)
@@ -63,8 +63,12 @@ def main(argv):
     proxy = bool(fsh.get('proxy_for'))
     lo, hi = (fsh.get('range') or {}).get('depth', [fsh['depth'] * (1 - STRETCH_AT), fsh['depth'] * (1 + STRETCH_AT)])
     if lo == hi: lo, hi = fsh['depth'] * (1 - STRETCH_AT), fsh['depth'] * (1 + STRETCH_AT)
-    want = (lambda d: min(max(d, lo), hi)) if proxy else (lambda d: fsh['depth'])
-    rule = f'proxy range {lo:.1f}-{hi:.1f} (row 49)' if proxy else f'own median {fsh["depth"]:.1f} (row 56)'
+    # Nathan 2026-11-28 (method row 76; 5-fish test beside real photos: coral beauty, Siamese algae eater, hatchet, firefish, glowlight):
+    # own-species numbers keep the drawn depth when it lies inside the measured range, else go to the nearest range edge. Stretching
+    # every sheet to the median of 3 specimens made the coral beauty 60.9 % SL deep from a sheet drawn at 51.8. One specimen (no range): median.
+    own_range = not proxy and len((fsh.get('range') or {}).get('depth') or []) == 2 and fsh['range']['depth'][0] < fsh['range']['depth'][1]
+    want = (lambda d: min(max(d, lo), hi)) if (proxy or own_range) else (lambda d: fsh['depth'])
+    rule = f'proxy range {lo:.1f}-{hi:.1f} (row 49)' if proxy else (f'own range {lo:.1f}-{hi:.1f} (row 76)' if own_range else f'own median {fsh["depth"]:.1f} (row 56)')
     nostretch = '--no-stretch' in flags
     if proxy and not nostretch and lo * PROXY_LO <= drawn <= hi * PROXY_HI:
         # Nathan 2026-11-25 (clown pleco squashed 22.8 -> 18.4, yoyo loach stretched 22.7 -> 28.7, harlequin 34 -> 29, "the pleco has the body issue again"):

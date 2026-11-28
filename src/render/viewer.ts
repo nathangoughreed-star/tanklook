@@ -14,6 +14,8 @@ import { HOOD_H, PART, buildTank, disposeScene, envKey, lookKey, patchLook, patc
 import { drawViewMap } from './viewmap';
 import { applyFraming, fovFor, frameBox, frameStraightOn, pairCentre, pairEnvelope, placeCamera, windowCentre } from './camera';
 import { castShadows, off as castOff } from './castPass';
+import { mirrorOff, mirrorPass } from './surface';
+import { onShowView, showCamera, showFrame, showView } from './showView';
 import { glowColor, placeSlice, roomLevel, setLightUniforms, setWaterUniforms } from './lighting';
 import { FROST } from './build';
 import { autoStep, levelOf, onPerf, perf, setFps, AUTO_QUALITY } from './perf';
@@ -232,6 +234,10 @@ export class Viewer {
   /** The ratio a full-quality picture is drawn at (an export always uses this), and what the Performance level draws at while still. */
   private fullRatio() { return Math.min(devicePixelRatio, 2); }
   private baseRatio() { return this.fullRatio() * levelOf().ratio; }
+  /** The frame being drawn is camera motion (drawGoverned): the water mirror is not redrawn then (render/surface.ts). */
+  private moving = false;
+  /** A motion frame skipped the water mirror's redraw: the rest frame draws it (govRest). */
+  private mirrorDue = false;
   private frostPlain = false;
   private variantDue = false;
   private fpsShown = 0;
@@ -241,7 +247,7 @@ export class Viewer {
     const t0 = performance.now(), motion = t0 - this.lastDrawAt < GOV_MOTION_MS;
     if (!this.adaptive) { if (this.govApplied !== 1) this.applyRatio(1); }
     else if (motion && this.govApplied !== this.govScale) this.applyRatio(this.govScale);
-    this.draw();
+    this.moving = motion && !built; this.draw(); this.moving = false;
     const t1 = performance.now(), gap = t1 - this.lastDrawAt; this.lastDrawAt = t1;
     // only continuous motion counts: not the first frame of a burst, not a frame that built the scene or ran the reveal
     if (!this.adaptive || !motion || built || this.reveal || this.govSkip-- > 0) { this.govSlow = this.govFast = 0; return; }
@@ -352,8 +358,8 @@ export class Viewer {
   private govStep(scale: number) { this.govScale = scale; this.govSlow = this.govFast = 0; this.govGap = 0; this.govSkip = 6; this.dirty = true; }
   /** Nothing drawn for GOV_REST ms: the camera has stopped, so give the full picture back. */
   private govRest() {
-    if (this.govApplied === 1 || performance.now() - this.lastDrawAt < GOV_REST) return;
-    this.applyRatio(1); this.dirty = true;
+    if ((this.govApplied === 1 && !this.mirrorDue) || performance.now() - this.lastDrawAt < GOV_REST) return;
+    this.mirrorDue = false; this.applyRatio(1); this.dirty = true; // (also the water mirror's redraw, skipped while the camera moved)
   }
   /** Custom terrain editing: show grid dots in the edited tanks; `hot` = the dot being dragged. UI state, not scene data. */
   terrainEdit: TerrainEdit = { on: false, hot: null, pool: 0 };
@@ -449,6 +455,7 @@ export class Viewer {
     onGearSel(() => { this.syncGearSel(); this.dirty = true; });
     setPieceSource(vi => this.vps[vi]?.scene?.children.flatMap(o => (o.userData.gearPieces ?? []) as GearPiece[]) ?? []);
     // visual-fidelity switches (render/fx.ts): shader ones are uniforms (a redraw), build-time ones (contact, variety) rebuild
+    onShowView(() => { this.applyRatio(1); this.dirty = true; });
     onFx((_, ch) => { if (ch.includes('caustics')) this.causReset(); if (ch.some(k => k === 'contact' || k === 'ground' || k === 'variety' || k === 'embed' || k === 'mix' || k === 'sand')) this.rebuild(); else this.invalidate(); });
     for (const ev of ['pointermove', 'pointerdown', 'wheel', 'keydown'] as const) window.addEventListener(ev, () => this.noteInput(), { passive: true });
     new ResizeObserver(() => { this.dirty = true; }).observe(host);
@@ -837,12 +844,13 @@ export class Viewer {
     const active = this.active, hw = (w - GAP) / 2;
     if (active.length === 1) Object.assign(active[0], { x: 0, y: 0, w, h });
     else { Object.assign(active[0], { x: 0, y: 0, w: hw, h }); Object.assign(active[1], { x: hw + GAP, y: 0, w: hw, h }); }
+    const show = showView() && !this.pair, camOf = (vp: Viewport) => (show ? showCamera(vp.S) : vp.S.camera);
     for (const vp of active) {
       // the pair's setups are copies made at build time; a camera move replaces the scene camera object, so re-point it every frame (AB12: orbit and zoom looked frozen)
       if (this.pair) vp.S.camera = this.pairCamOf(vp.i) ?? sc.tanks[0].camera;
       // same for a preview of the active tank (BG1: Discover's preview drew a stale copy, so orbit and zoom did nothing while pan worked)
       else if (this.preview && !this.previewOwnCam && vp.i === sc.active && sc.tanks[vp.i]) vp.S.camera = sc.tanks[vp.i].camera;
-      placeCamera(vp.cam, vp.T, vp.S.camera);
+      placeCamera(vp.cam, vp.T, camOf(vp)); // the Show view (VF2 S6) has its own eye; the scene's camera stays as it is
       for (const o of vp.overhead ?? []) o.visible = !this.hideOverhead || vp.cam.position.y < o.userData.overhead;
     }
     // framing counts the tank and a hood on it, never the lights above: a fixture shows only once zoomed out enough (Nathan 2026-10-09)
@@ -858,7 +866,7 @@ export class Viewer {
     // lens from the straight-on view, kept at every orbit angle (see frameStraightOn); it frames the tank (and a hood)
     // only: a stand or table runs off the bottom and shows once zoomed out (Nathan 2026-10-14, audit #29: on a stand,
     // the default tank was a small box on top of the cabinet)
-    const boxes = active.map(vp => frameStraightOn(vp.T, vp.S.camera, vp.w / vp.h, headroom(vp.S)));
+    const boxes = active.map(vp => frameStraightOn(vp.T, camOf(vp), vp.w / vp.h, headroom(vp.S)));
     // locked (or one tank): one FOV for all, so sizes stay directly comparable; unlocked: each view frames itself
     const shared = fovFor(Math.max(...boxes.map(b => b.t)), lensZoom(active[0].S.camera));
     // Discovery's pair (AB11): ONE physical scale. Eye distance and zoom are shared (side B's follow A's), so one FOV from the LARGER envelope
@@ -908,8 +916,8 @@ export class Viewer {
     }
     this.content = [];
     for (const [k, vp] of active.entries()) {
-      const S = vp.S, { fov, hx, hy, c } = frame(k);
-      const pan = this.pans[vp.i]; c.cx -= pan.x * 2 * hx / vp.w; c.cy += pan.y * 2 * hy / vp.h; // the picture follows the pointer
+      const S = vp.S, sf = show ? showFrame(vp.cam, S, vp.w / vp.h) : null, { fov, hx, hy, c } = sf ?? frame(k);
+      const pan = sf ? { x: 0, y: 0 } : this.pans[vp.i]; c.cx -= pan.x * 2 * hx / vp.w; c.cy += pan.y * 2 * hy / vp.h; // the picture follows the pointer (Show: fixed)
       this.shown[vp.i] = { cx: c.cx, cy: c.cy, hx, hy };
       // the tank + stand (+ table) on the canvas, CSS px: what an exported PNG is cropped to (audit #49)
       const a = wins[k].all, px = (t: number) => vp.x + ((t - c.cx) / hx + 1) / 2 * vp.w, py = (t: number) => vp.y + (1 - ((t - c.cy) / hy + 1) / 2) * vp.h;
@@ -918,7 +926,7 @@ export class Viewer {
       const person = vp.scene?.getObjectByName('person');
       if (person) this.placePerson(vp, person, headroom(S), bottom(S));
       r.setViewport(vp.x, vp.y, vp.w, vp.h); r.setScissor(vp.x, vp.y, vp.w, vp.h);
-      r.setClearColor(new THREE.Color(0xd9dde2).multiplyScalar(0.06 + 0.94 * roomLevel(roomOf(S.light)))); r.clear(); // the space beyond the room dims with the room light
+      r.setClearColor(show ? new THREE.Color(0x07090b) : new THREE.Color(0xd9dde2).multiplyScalar(0.06 + 0.94 * roomLevel(roomOf(S.light)))); r.clear(); // the space beyond the room dims with the room light (Show: the room dark)
       setLightUniforms(vp.T, S.light, S.lid, S.render.beams, S); setWaterUniforms(vp.T, S.water, S.render.pop, S.condition);
       castShadows(r, vp.i, vp.scene!, vp.T, this.castRev, o => this.isHidden(o), [...this.hidden].join());
       placeSlice(vp.scene!, vp.T, { ...S, tank: vp.T }, wattsOf({ ...S, tank: vp.T }) > 0); placeShells(vp.scene!, vp.T, S); OUTLINE.uPop.value = S.render.pop; OUTLINE.uVpH.value = vp.h; // placeSlice: the Light map layer at a set height
@@ -935,6 +943,10 @@ export class Viewer {
       if (this.hidden.size) for (const o of vp.scene!.children) if (o.visible && this.isHidden(o)) { o.visible = false; held.push(o); }
       // the owner's dashed space outline is a planning aid: never in a PNG export or a thumbnail (Nathan 2026-10-21)
       if (this.exporting) vp.scene!.traverse(o => { if (o.visible && (o.userData.spaceOutline || o.userData.gearSelBox)) { o.visible = false; held.push(o); } });
+      // the Show view (VF2 S6): the room is dark, as with its lights off, so the side panes show no wall or furniture
+      if (show) vp.scene!.traverse(o => { if (o.visible && o.userData.room) { o.visible = false; held.push(o); } });
+      // the water surface from below mirrors the scape (render/surface.ts, VF2 S4): its picture, redrawn only when the view or scene changed
+      const pr = r.getPixelRatio(); if (!mirrorPass(r, vp.i, vp.scene!, vp.cam, this.castRev, vp.w * pr, vp.h * pr, [...this.hidden].join() + (upTo < PART.animals ? '|' + upTo : ''), show, this.moving && !this.exporting) && this.moving) this.mirrorDue = true;
       // a painted patch being edited (render/brushmesh.ts): the rest of the tank is drawn, faded toward the room, then the patch over it
       let focus = vp.scene!.children.filter(o => o.userData.focus && o.visible), fade = 0.68;
       // menu focus (render/menuFocus.ts): the open Tech / Animals / Hardscape / Plants menu's parts, the rest faded; never in an export
@@ -949,7 +961,7 @@ export class Viewer {
       for (const o of culled) { o.onBeforeRender = THREE.Object3D.prototype.onBeforeRender; o.onAfterRender = THREE.Object3D.prototype.onAfterRender; }
       cb.setLocked(false); cb.setMask(true); gl.colorMask(true, true, true, true);
     }
-    r.setScissorTest(false); castOff();
+    r.setScissorTest(false); castOff(); mirrorOff();
     if (this.reveal) this.keepFrame();
     if (this.swayFrame) return; // only the plants moved: the maps and the panels that follow each frame stay as they are
     // one viewpoint map per view, at its bottom-left corner, drawn from that view's own camera, tank and person
@@ -1077,6 +1089,14 @@ export class Viewer {
   hitTest(clientX: number, clientY: number) {
     const h = this.hitTest0(clientX, clientY); if (!h || !this.pair) return h;
     return { ...h, fishId: null, itemId: null, dot: null, pool: null, mesh: undefined } as typeof h;
+  }
+  /** BR2: the tap label of fish `id` right now: its words, the verdict's sentence for a rush between a flagged pair, and where it is on screen (client px, a little above the fish). Null when the fish is not roaming (motion off, not a swimmer). Computed when asked; nothing runs per frame. */
+  fishLabel(id: number): { text: string; why?: string; act: number; x: number; y: number } | null {
+    const a = this.roam.actOf(id, this.drifters); if (!a) return null;
+    const m = this.drifters.find(d => d.userData.id === id), vp = this.active.find(v => v.fishMeshes?.includes(m as THREE.Mesh)) ?? this.active[0]; if (!m || !vp) return null;
+    const r = this.host.getBoundingClientRect(), v = m.getWorldPosition(new THREE.Vector3()), tall = ((m.userData.roam as { spec: { tall?: number } }).spec.tall ?? 10);
+    const top = v.clone(); top.y += tall; top.project(vp.cam);
+    return { ...a, x: r.left + vp.x + (top.x + 1) / 2 * vp.w, y: r.top + (1 - top.y) / 2 * vp.h };
   }
   /** BR: a click on open water in the look-only view sets off an alarm there (fish bolt, schools tighten); false when it hit an animal or a piece, or missed the water. */
   startleAtPoint(clientX: number, clientY: number): boolean {

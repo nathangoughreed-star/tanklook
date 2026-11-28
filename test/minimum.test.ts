@@ -146,12 +146,12 @@ describe('noncompensation: each measure on its own', () => {
     expect(speciesMinimum(kuhli, g(60, 6)).limiting).toBe('width');
     expect(speciesMinimum(kuhli, g(60, 6)).pct).toBeGreaterThan(100);
   });
-  it('Decision 3: kuhli in a 36 x 20 in tray at 2 in of water reads "not assessed", not a pass', () => {
+  it('R150 (Nathan 2026-11-25, replaces the Decision 3 depth rule): no tank-height rule from body length; kuhli in a 36 x 20 in tray at 2 in of water is judged on its floor', () => {
     const S = { ...setupOf(rectIn(36, 20, 2 / 0.9), true), fish: fishOf(['kuhli']) }, row = tankMinimum(S).rows[0];
-    expect(row.assessed).toBe(false); expect(row.reason).toMatch(/^not assessed/);
-    expect(row.pct).toBeGreaterThan(MIN_SLACK_PCT); // not a pass anywhere: the gate, the tank fit and the hard truths read pct
-    expect(whyAnimal(getSpecies('kuhli')!, volume(S.tank).litres, 3, [], { fit: minFit(S) })?.text).toMatch(/not assessed/);
-    expect(minWarnings(tankMinimum(S), 'in')[0].text).toMatch(/^1 Kuhli loach: not assessed: [\d.]+" of water/);
+    expect(row.assessed).toBe(true); expect(row.pct).toBeLessThan(Infinity);
+    // a fish longer than the water is deep (a 3 ft knifefish in 27 in of water) is assessed too
+    const K = { ...setupOf(rectIn(96, 30, 30), true), fish: fishOf(['kuhli']) };
+    expect(tankMinimum(K).rows[0].assessed).toBe(true);
   });
 });
 
@@ -260,7 +260,9 @@ describe('turning-clearance sweep (diagnostic)', () => {
   it('covers every species, and a smallest passing tank exists for each wet one', () => {
     const rows = sweep();
     expect(rows.length).toBe(SPECIES.length);
-    for (const r of rows) if (!r.land) expect(r.hit, r.sp.id).toBeDefined();
+    // R150: the bamboo shark needs a floor about 82 x 41 in (That Pet Place); no stock tank is that wide, so none may pass (a custom tank only)
+    const BEYOND_CATALOGUE = ['bambooshark'];
+    for (const r of rows) if (!r.land) expect(!!r.hit, r.sp.id).toBe(!BEYOND_CATALOGUE.includes(r.sp.id));
   });
   if ((globalThis as any).process?.env.GEN_CLEARANCE) it('writes research/clearance-sweep.md', () => {
     const rows = sweep(), inch = (mm: number) => (mm / IN_MM).toFixed(1), yn = (b: boolean) => b ? 'yes' : '**no**';

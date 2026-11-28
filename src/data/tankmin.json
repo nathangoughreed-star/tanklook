@@ -2865,5 +2865,66 @@
    },
    "why": "the mean of every minimum found (4 figures: Aquarium Domain 65 gal; LiveAquaria 70 gal; Reefs.com 70 gal; SaltwaterFish 120 gal), 81 gal; the footprint is the standard g75 tank (1220 x 458 mm) nearest that volume, because the pages give no base"
   }
+,
+  "bichir": {
+   "red": {
+    "L": 1665,
+    "W": 605,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Seriously Fish and Practical Fishkeeping, averaged",
+    "url": "https://www.seriouslyfish.com/species/polypterus-senegalus/",
+    "states": "Seriously Fish 150 x 60 x 60 cm; Practical Fishkeeping (fishkeeper.co.uk) at least 6 x 2 x 2 ft; the two bases averaged, 166 x 60.5 cm",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 117.5,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care pages",
+    "url": "https://www.seriouslyfish.com/species/polypterus-senegalus/"
+   },
+   "why": "the two pages that give a base averaged (150 x 60 cm, 6 x 2 ft); the gallon figure is the mean of every minimum found (5 figures: Furry Critter 55 gal; Aquarium Source 90 gal; That Pet Place 120 gal; Seriously Fish 143 gal; Practical Fishkeeping 180 gal), 117.5 gal (R150, 2026-11-25)"
+  }
+,
+  "clownknife": {
+   "red": {
+    "L": 2000,
+    "W": 610,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "Seriously Fish (length); Furry Critter (gallons)",
+    "url": "https://www.seriouslyfish.com/species/chitala-ornata/",
+    "states": "Seriously Fish: at least 2 m long (no width); Furry Critter: 200 gal absolute minimum, 300+ recommended; the width is the 24 in front to back of a standard 200-240 gal tank",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 200,
+    "mark": "sourced",
+    "site": "Furry Critter",
+    "url": "https://www.furrycritter.com/pages/articles/fish/clown_knife.htm"
+   },
+   "why": "Seriously Fish's 2 m length (the only footprint figure found) with the 24 in width of the standard tanks that hold Furry Critter's 200 gal minimum; hobby pages say 200-300 gal (R150, 2026-11-25)"
+  },
+  "bambooshark": {
+   "red": {
+    "L": 2083,
+    "W": 1041,
+    "mark": "sourced (est)",
+    "est": true,
+    "site": "That Pet Place",
+    "url": "https://www.thatpetplace.com/articles/true-sharks-article",
+    "states": "not less than 200 gallons; width at least the adult length (41 in) and length 2-3 times that: 82 x 41 in at the low end",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 227,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care pages",
+    "url": "https://www.thatpetplace.com/articles/true-sharks-article"
+   },
+   "why": "That Pet Place's shark rule (floor width at least the adult length, length at least twice it) at the low end, 82 x 41 in; a forum keeper's 7 x 4 ft agrees; the gallon figure is the mean of the minimums found (Wikipedia 180 gal; That Pet Place 200 gal; SaltwaterFish 300 gal), 227 gal; LiveAquaria's 360 gal could not be opened (R150, 2026-11-25)"
+  }
  }
 }

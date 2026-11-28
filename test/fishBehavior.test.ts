@@ -13,8 +13,9 @@ const home = (x: number, y: number, z: number, yaw = 0) => ({ x, y, z, yaw, pitc
 const kuhliSpec = (k: number, dark: number, id: number, len = 100): SwimmerSpec => ({ id, len, zone: 'bottom', band: [0, 0.05], group: { key: 'kuhli', tight: false }, home: home(150 + id * 40, 80, -380), dig: { ...DIG.kuhli, k, dark, rest: len * 0.05 } });
 const bed = (ground: number) => boxTank(900, 450, 450, ground, OBS);
 /** Run `secs` of sim; `visit` sees every fish's pose each step. */
-function run(specs: SwimmerSpec[], ground: number, secs: number, seed: number, visit: (p: SwimPose, s: SwimmerSpec, t: number) => void) {
+function run(specs: SwimmerSpec[], ground: number, secs: number, seed: number, visit: (p: SwimPose, s: SwimmerSpec, t: number) => void, foraging = true) {
   const sim = makeSwimSim(specs, bed(ground), seed), dt = 1 / 30;
+  if (!foraging) sim.setForaging!(false);
   for (let s = 0; s < secs / dt; s++) { sim.step(dt); for (const sp of specs) visit(sim.pose(sp.id)!, sp, s * dt); }
 }
 const finite = (p: object) => Object.values(p).every(v => Number.isFinite(v));
@@ -281,7 +282,9 @@ describe('FB2: shrimp, frogs and bottom dwellers rest', () => {
     const rest = (specLen: number, share: number | undefined, seed: number) => {
       const specs: SwimmerSpec[] = Array.from({ length: 6 }, (_, k) => ({ id: k + 1, len: specLen, zone: 'bottom' as const, band: [0, 0.05] as [number, number], rest: share, group: { key: 'g', tight: false }, home: home(150 + k * 60, 80, -300) }));
       let still = 0, tot = 0, breath = 0, bad = 0; const prev = specs.map(() => null as SwimPose | null);
-      run(specs, 70, 1800, seed, (p, s) => { if (!finite(p)) bad++; const q = prev[s.id - 1]; if (q) { const v = Math.hypot(p.x - q.x, p.z - q.z) * 30 / s.len; tot++; if (v < 0.06) { still++; breath += p.breath ?? 0; } } prev[s.id - 1] = { ...p }; });
+      // BR2 (2026-11-28): foraging OFF here. This test counts a fish as still when it moves under 0.06 body lengths/s; a forager pecking at the bed is that slow too, so
+      // with foraging on the unspecified fish's share rose ~0.03 and the cory margin over it fell under 0.05. The rest shares themselves (BENTHIC) are unchanged; forage time comes out of roam time.
+      run(specs, 70, 1800, seed, (p, s) => { if (!finite(p)) bad++; const q = prev[s.id - 1]; if (q) { const v = Math.hypot(p.x - q.x, p.z - q.z) * 30 / s.len; tot++; if (v < 0.06) { still++; breath += p.breath ?? 0; } } prev[s.id - 1] = { ...p }; }, false);
       return { still: still / tot, breath: breath / Math.max(1, still), bad };
     };
     const old = rest(60, undefined, 3), cory = rest(60, BENTHIC.bronzecory, 3), loach = rest(100, BENTHIC.clownloach, 3), shark = rest(150, BENTHIC.sae, 3);

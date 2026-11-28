@@ -10,8 +10,10 @@
 //
 // Options: --fx "none;all"   --scenes planted4,nano,reef (names in the scenes dir, or .json paths)   --dir research/visual/vf0 (not --out: lowprio.ps1 would take it)
 //          --views front,ground,rock,plant:grass (plant:<variant> = a close-up of the front-most one; lane VF-B)
+//                  show = the Show view (VF2 S6);  at:x/y/d/zoom/az/el/dist = centred on that point (mm, d = from the front glass), zoom, angles and eye distance (VF2-B)
 //          --times 7.3,7.8,8.3   shoot each view at these caustic-clock times (a strip of the motion)
 //          --size 1050x850   --pairs 40   --no-shots   --no-numbers   --sheet (one side-by-side PNG per tank and view)
+//          --abview show   the view the fx A/B frames are timed in (default front; VF2-B)
 //          --rest 20 [--throttle 4]   tank left alone / orbiting / idle for 20 s per fx set, normal CPU and 4x slower (caustic safeguards)
 //          --measure   (lane ART1) per-plant-variant S / L / S>0.8 share / low-vs-top darkening, pass / fail against the gates, into vf-shots.json
 //          --plant "on=1,sat=0.9,glow=1"   (lane ART1) plant tone constants / the PT glow switch, set at load through ?plant= (dev server only)
@@ -112,7 +114,8 @@ const KIT = () => {
     /** Camera: 'front' (as saved), 'ground' (front centre of the substrate), 'rock' (the largest stone or wood), 'line' (the water line on the front glass), 'under' (the water's underside, looking up from below it). */
     async view(kind) {
       const S = st().scene.tanks[0], T = S.tank;
-      st().cam(c => { if (kind === 'front') Object.assign(c, front0); else if (kind === 'under') Object.assign(c, front0, { el: -28, zoom: 2.6 }); else if (kind.startsWith('at:')) { const a = kind.slice(3).split('/').map(Number); c.zoom = a[3] ?? 3; if (a[4] != null) c.az = a[4]; if (a[5] != null) c.el = a[5]; } else c.zoom = kind === 'ground' ? 3.2 : kind === 'line' ? 4 : 2.6; }, 0);
+      window.__show?.(kind === 'show'); if (kind === 'show') { v().draw(); await raf(); return; } // VF2 S6: the Show view (its own eye; the scene camera untouched)
+      st().cam(c => { if (kind === 'front') Object.assign(c, front0); else if (kind === 'under') Object.assign(c, front0, { el: -28, zoom: 2.6 }); else if (kind.startsWith('at:')) { const a = kind.slice(3).split('/').map(Number); c.zoom = a[3] ?? 3; if (a[4] != null) c.az = a[4]; if (a[5] != null) c.el = a[5]; if (a[6] != null) c.dist = a[6]; } else c.zoom = kind === 'ground' ? 3.2 : kind === 'line' ? 4 : 2.6; }, 0);
       v().setPan(0, 0, 0); v().draw(); await raf();
       if (kind === 'front') return;
       // ('plant:<variant>', lane VF-B: the front-most plant of that variant, its middle)
@@ -303,7 +306,7 @@ try {
       }
       await br.ev('__vf.view("front")');
       if (flag('sheet') && (FXSETS.length > 1 || TIMES.length > 1)) for (const [view, urls] of Object.entries(grid)) {
-        save(`sheet-${name}-${view.replace(":", "-")}.png`, await br.ev(`__vf.sheet(${JSON.stringify(urls)}, ${JSON.stringify(labels[view])}, ${JSON.stringify(`${name} ${view} (build ${build} ${commit})`)})`, 600_000));
+        save(`sheet-${name}-${view.replace(/[:/]/g, "-")}.png`, await br.ev(`__vf.sheet(${JSON.stringify(urls)}, ${JSON.stringify(labels[view])}, ${JSON.stringify(`${name} ${view} (build ${build} ${commit})`)})`, 600_000));
       }
     }
     if (flag('measure')) { // ART1: plant colour per variant against the gates (green median S <= 0.60 and L <= 0.45, <= 15 % of pixels above S 0.8, >= 15 % darker low than high)
@@ -329,7 +332,7 @@ try {
       await br.s('Emulation.setCPUThrottlingRate', { rate: 1 });
     }
     if (!flag('no-numbers')) {
-      await br.ev('__vf.view("front")');
+      await br.ev(`__vf.view(${JSON.stringify(opt("abview", "front"))})`);
       const sets = FXSETS.length > 1 ? FXSETS.slice(1) : [FXSETS[0]];
       for (const fx of sets) {
         row.ab[fx] = await br.ev(`__vf.ab(${JSON.stringify(FXSETS[0])}, ${JSON.stringify(fx)}, ${PAIRS})`, 900_000);

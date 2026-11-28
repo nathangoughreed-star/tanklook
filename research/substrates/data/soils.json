@@ -1,0 +1,291 @@
+[
+  {
+    "id": "fluval-stratum",
+    "brand": "Fluval",
+    "name": "Plant & Shrimp Stratum",
+    "kind": "soil",
+    "fresh": true,
+    "nutrient": "active",
+    "phEffect": "lowers",
+    "colours": [
+      {"name": "Dark brown", "hex": "#3c301f", "shades": ["#100b04", "#473825", "#645038", "#302313", "#1e190f", "#7d674c"], "photo": "fluval-stratum-3.jpg"}
+    ],
+    "grainMm": [3, 5],
+    "gloss": 0.15,
+    "round": 0.75,
+    "bags": [
+      {"lb": 4.4, "usd": 15.03, "retailer": "Bulk Reef Supply (sale, was 18.79)", "url": "https://bulkreefsupply.com/stratum-plant-shrimp-substrate-fluval.html", "date": "2026-11-26"},
+      {"lb": 8.8, "usd": 23.83, "retailer": "Bulk Reef Supply (sale, was 29.79)", "url": "https://bulkreefsupply.com/stratum-plant-shrimp-substrate-fluval.html", "date": "2026-11-26"},
+      {"lb": 8.8, "usd": 16.99, "retailer": "PetSmart (sale, was 28.99)", "url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/aquarium-substrate/fluval-plant-and-shrimp-stratum-aquarium-substrate-planted-tank-substrate-shrimp-substrate-5162045.html", "date": "2026-11-26"},
+      {"lb": 8.8, "usd": 32.99, "retailer": "That Pet Place", "url": "https://www.thatpetplace.com/fluval-plant-shrimp-stratum-8-8-lb", "date": "2026-11-26"}
+    ],
+    "priceLb": 2.71,
+    "priceLbNote": "23.83/8.8 lb at Bulk Reef Supply (steady retail). PetSmart sale 1.93/lb, list 3.29/lb. Page for 17.6 lb size on PetSmart/Chewy exists but price not read (Chewy returned 429).",
+    "coverage": null,
+    "photos": [
+      {"url": "https://bulkreefsupply.com/stratum-plant-shrimp-substrate-fluval.html", "file": "research/substrates/photos/fluval-stratum-1.jpg", "what": "4.4 lb bag front (no grain close-up)"},
+      {"url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/aquarium-substrate/fluval-plant-and-shrimp-stratum-aquarium-substrate-planted-tank-substrate-shrimp-substrate-5162045.html", "file": "research/substrates/photos/fluval-stratum-2.jpg", "what": "In a planted tank with red shrimp, dark brown granules at bottom"},
+      {"url": "https://www.petsmart.com/fish/decor-gravel-and-substrate/aquarium-substrate/fluval-plant-and-shrimp-stratum-aquarium-substrate-planted-tank-substrate-shrimp-substrate-5162045.html", "file": "research/substrates/photos/fluval-stratum-3.jpg", "what": "Grain close-up beside a dime (hex sampled from the bottom strip and inset)"}
+    ],
+    "notes": "Volcanic soil from Mount Aso, Japan (PetSmart image text). Maker claim: supports neutral to slightly acidic pH (PetSmart); Bulk Reef Supply copy says granules soften water and reduce carbonate hardness without staining. Grain 3-5 mm per Bulk Reef Supply (the powder Bio-Stratum is a separate 1-3 mm product, not priced here). Grains are round, rough, dark brown (not black). Gives newborn shrimp refuge (Chewy/PetSmart copy). Reviews mention cloudy water after rinsing; maker says rinse gently. Same product line as Fluval 'Plant Stratum'. Fluval Biomax is NOT a substrate (it is ceramic filter media), so it is left out."
+  },
+  {
+    "id": "ada-aqua-soil-amazonia",
+    "brand": "ADA (Aqua Design Amano)",
+    "name": "Aqua Soil Amazonia Ver.2 (Normal)",
+    "kind": "soil",
+    "fresh": true,
+    "nutrient": "fertilized",
+    "phEffect": "lowers",
+    "colours": [
+      {"name": "Black-brown", "hex": "#3a2924", "shades": ["#3a2925", "#44302a", "#3d2d28", "#422e28", "#231919", "#4a352c"], "photo": "amazonia-1.jpg"}
+    ],
+    "grainMm": [2, 5],
+    "gloss": 0.1,
+    "round": 0.65,
+    "bags": [
+      {"lb": null, "liters": 9, "usd": 61.99, "retailer": "Aqua Forest Aquarium (US; page says shipping built in, 'Ver. 2 9L')", "url": "https://aquaforestaquarium.com/products/ada-aqua-soil-amazonia-ver-2-normal-9l-42-99-10-shipping", "date": "2026-11-26"},
+      {"lb": null, "liters": 27, "usd": 161.97, "retailer": "Aqua Forest Aquarium, Amazonia POWDER 9L x3 pack, 10% off (about 53.99 per 9L bag; from search listing title, page itself not loaded)", "url": "https://aquaforestaquarium.com/products/ada-aqua-soil-amazonia-powder-9l-3-bags-10-off-161-97-30-shipping", "date": "2026-11-26"}
+    ],
+    "priceLb": null,
+    "priceLbNote": "Sold by the litre, bag weight not stated on pages read. Price per litre 61.99/9 = 6.89 (Ver.2 Normal). Aqua Forest handle says 42.99 but live price read from the product feed was 61.99.",
+    "coverage": "One retailer snippet: one 9 L bag gives about 4 in depth over 1 sq ft (retailer search snippet; ADA states no figure on the pages I read).",
+    "photos": [
+      {"url": "https://aquaforestaquarium.com/products/ada-aqua-soil-amazonia-ver-2-normal-9l-42-99-10-shipping", "file": "research/substrates/photos/amazonia-1.jpg", "what": "Grain close-up filling the frame, dark brown-black granules (hex sampled here)"},
+      {"url": "https://aquaforestaquarium.com/products/ada-aqua-soil-amazonia-ver-2-normal-9l-42-99-10-shipping", "file": "research/substrates/photos/amazonia-2.jpg", "what": "Bag front, Amazonia Ver.2"},
+      {"url": "https://aquaforestaquarium.com/products/ada-aqua-soil-amazonia-ver-2-normal-9l-42-99-10-shipping", "file": "research/substrates/photos/amazonia-3.jpg", "what": "Layout/in-tank marketing shot"}
+    ],
+    "notes": "Japanese black soil with a nutrient supplement bag included (Aqua Forest page). Maker/retailer claims: lowers hardness and brings pH down to 5.5-6.5 (Aquasabi), colloid particles clear water, granules keep their shape for a long period (Aqua Forest). Grain approx 2-5 mm (Aquasabi search listing). Powder type is finer (about 1-2 mm class, not stated numerically). Expect ammonia and cloudiness at start; Aquasabi warns of algae if nutrients are excessive. Not rinsed. Colour is black when wet, brown-black in photo. Retailer disagreement over price is large (Ubuy 105 USD, Aqua Forest 61.99)."
+  },
+  {
+    "id": "eco-complete-black",
+    "brand": "CaribSea",
+    "name": "Eco-Complete Planted (now Eco-Planted) Black",
+    "kind": "natural",
+    "fresh": true,
+    "nutrient": "active",
+    "phEffect": "none",
+    "colours": [
+      {"name": "Black", "hex": "#544f53", "shades": ["#261e24", "#5d585b", "#787578", "#3b3539", "#494245", "#a2a0a3"], "photo": "eco-complete-black-1.jpg"}
+    ],
+    "grainMm": [0.25, 7],
+    "gloss": 0.2,
+    "round": 0.3,
+    "bags": [
+      {"lb": 20, "usd": 25.04, "retailer": "Bulk Reef Supply (page shows 25.04 next to 33.38)", "url": "https://www.bulkreefsupply.com/eco-planted-aquarium-substrate-black-20lbs-caribsea.html", "date": "2026-11-26"},
+      {"lb": 20, "usd": 33.99, "retailer": "That Pet Place (sale, was 37.39)", "url": "https://www.thatpetplace.com/eco-complete-planted-aquarium-substrate-20lb", "date": "2026-11-26"}
+    ],
+    "priceLb": 1.25,
+    "priceLbNote": "25.04/20 lb at Bulk Reef Supply; That Pet Place 1.70/lb.",
+    "coverage": "None stated. That Pet Place: one bag has the surface area of about four bags of ordinary gravel (copy); maker has a quantity calculator.",
+    "photos": [
+      {"url": "https://www.bulkreefsupply.com/eco-planted-aquarium-substrate-black-20lbs-caribsea.html", "file": "research/substrates/photos/eco-complete-black-1.jpg", "what": "Pile of dry grains on white, angular rough black volcanic-looking pieces"}
+    ],
+    "notes": "Only one photo found. Typical size 0.25-7.0 mm (Bulk Reef Supply and That Pet Place), so a mixed fine-to-chunky look. Listed as containing iron, calcium and other minerals (Bulk Reef Supply). That Pet Place: nitrate and carbonate free, will not increase pH or carbonate hardness. Pre-wet, live bacteria, no rinse (maker line on older packaging; not on pages read). The product was renamed Eco-Planted (Fitz Fish Ponds page). Shades come from a product pile on white, so they run slightly lighter than a wet tank bed."
+  },
+  {
+    "id": "eco-complete-red",
+    "brand": "CaribSea",
+    "name": "Eco-Complete Planted (Eco-Planted) Red",
+    "kind": "natural",
+    "fresh": true,
+    "nutrient": "active",
+    "phEffect": "none",
+    "colours": [
+      {"name": "Red", "hex": "#846158", "shades": ["#3a2627", "#946c60", "#734e45", "#bc9383", "#64362c", "#e0bfad"], "photo": "eco-complete-red-1.jpg"}
+    ],
+    "grainMm": [3, 6],
+    "gloss": 0.2,
+    "round": 0.3,
+    "bags": [
+      {"lb": 20, "usd": 25.04, "retailer": "Bulk Reef Supply (page shows 25.04 next to 33.38)", "url": "https://www.bulkreefsupply.com/eco-planted-aquarium-substrate-red-20lbs-caribsea.html", "date": "2026-11-26"}
+    ],
+    "priceLb": 1.25,
+    "priceLbNote": "25.04/20 lb at Bulk Reef Supply. Second retailer for Red not read (Chewy returned 429).",
+    "coverage": null,
+    "photos": [
+      {"url": "https://www.bulkreefsupply.com/eco-planted-aquarium-substrate-red-20lbs-caribsea.html", "file": "research/substrates/photos/eco-complete-red-1.jpg", "what": "Pile on white, angular red-brown and dark shale pieces mixed"}
+    ],
+    "notes": "Described as all-natural shale rock with no dyes, paints or coatings (Bulk Reef Supply). Typical size 3.0-6.0 mm per that page. The pile mixes rust red, brown and near-black chips, so the bed reads dark brick red, not bright red. No pH claim on the page read."
+  },
+  {
+    "id": "eco-complete-cichlid",
+    "brand": "CaribSea",
+    "name": "Eco-Complete African Cichlid (Zack)",
+    "kind": "natural",
+    "fresh": true,
+    "nutrient": "active",
+    "phEffect": "raises",
+    "colours": [
+      {"name": "Tan / smoky shell mix", "hex": "#877a67", "shades": ["#34271c", "#a3957e", "#c6baa4", "#5e5446", "#7f6c54", "#e5dbc4"], "photo": "eco-complete-cichlid-1.jpg"}
+    ],
+    "grainMm": [5, 10],
+    "gloss": 0.35,
+    "round": 0.3,
+    "bags": [
+      {"lb": 20, "usd": 20.33, "retailer": "Bulk Reef Supply (sale, was 27.10)", "url": "https://fresh.bulkreefsupply.com/eco-complete-african-cichlid-gravel-substrate-20lbs-caribsea.html", "date": "2026-11-26"}
+    ],
+    "priceLb": 1.02,
+    "priceLbNote": "20.33/20 lb at Bulk Reef Supply; Chewy page not readable (429).",
+    "coverage": "None from maker. A customer Q&A on the Bulk Reef Supply page suggests about 1 lb per gallon for a 1-2 in bed (community answer, not a spec).",
+    "photos": [
+      {"url": "https://fresh.bulkreefsupply.com/eco-complete-african-cichlid-gravel-substrate-20lbs-caribsea.html", "file": "research/substrates/photos/eco-complete-cichlid-1.jpg", "what": "Pile on white: flat, curved shell-like chips in tan, grey and smoky brown"}
+    ],
+    "notes": "Aragonite based to keep pH higher without chemicals; adds calcium, magnesium, carbonate; buffers for the life of the tank (Bulk Reef Supply copy). Typical size 5-10 mm. The page calls the colour 'dark', but the photo shows light tan and smoky shell pieces: I trust the photo. For African cichlid tanks, not for soft-water plant or shrimp tanks."
+  },
+  {
+    "id": "controsoil",
+    "brand": "UNS (Ultum Nature Systems)",
+    "name": "Controsoil",
+    "kind": "soil",
+    "fresh": true,
+    "nutrient": "active",
+    "phEffect": "lowers",
+    "colours": [
+      {"name": "Black", "hex": "#424242", "shades": ["#3a3a3a", "#171717", "#5a5a5a", "#4a4a4a", "#515151", "#767676"], "photo": "controsoil-black-2.jpg"},
+      {"name": "Brown", "hex": "#8b5d2e", "shades": ["#9f6930", "#ad773e", "#4c2808", "#764e1f", "#8d5922", "#caa67f"], "photo": "controsoil-brown-2.jpg"}
+    ],
+    "grainMm": [5, 5],
+    "gloss": 0.1,
+    "round": 0.9,
+    "bags": [
+      {"lb": null, "liters": 1, "usd": 22.79, "retailer": "Bulk Reef Supply, Fine Black", "url": "https://fresh.bulkreefsupply.com/fine-controsoil-substrate-black-ultum-nature-systems.html", "date": "2026-11-26"},
+      {"lb": null, "liters": 3, "usd": 29.99, "retailer": "Bulk Reef Supply, Fine Black", "url": "https://fresh.bulkreefsupply.com/fine-controsoil-substrate-black-ultum-nature-systems.html", "date": "2026-11-26"},
+      {"lb": null, "liters": 10, "usd": 65.79, "retailer": "Bulk Reef Supply, Fine Black", "url": "https://fresh.bulkreefsupply.com/fine-controsoil-substrate-black-ultum-nature-systems.html", "date": "2026-11-26"},
+      {"lb": null, "liters": 10, "usd": 65.79, "retailer": "Bulk Reef Supply, Fine Brown (1 L 22.79, 3 L 29.99 same page)", "url": "https://fresh.bulkreefsupply.com/fine-controsoil-substrate-brown-ultum-nature-systems.html", "date": "2026-11-26"}
+    ],
+    "priceLb": null,
+    "priceLbNote": "Sold by the litre; bag weight not on any page read. 65.79/10 L = 6.58 per litre for the 10 L bag (3 L is 10.00/L, 1 L is 22.79/L).",
+    "coverage": "Aquasabi (EU): 1 L suits tanks up to about 8 L, 3 L up to about 34 L, 10 L up to about 76 L (as a layer; depth not stated).",
+    "photos": [
+      {"url": "https://fresh.bulkreefsupply.com/fine-controsoil-substrate-black-ultum-nature-systems.html", "file": "research/substrates/photos/controsoil-black-2.jpg", "what": "Normal Black pile on white, round matte granules (hex sampled)"},
+      {"url": "https://fresh.bulkreefsupply.com/fine-controsoil-substrate-black-ultum-nature-systems.html", "file": "research/substrates/photos/controsoil-black-3.jpg", "what": "Fine Black pile on white"},
+      {"url": "https://fresh.bulkreefsupply.com/fine-controsoil-substrate-brown-ultum-nature-systems.html", "file": "research/substrates/photos/controsoil-brown-2.jpg", "what": "Normal Brown pile on white, golden-tan round granules (hex sampled)"},
+      {"url": "https://fresh.bulkreefsupply.com/fine-controsoil-substrate-brown-ultum-nature-systems.html", "file": "research/substrates/photos/controsoil-brown-1.jpg", "what": "Brown bags in 10 L, 3 L, 1 L sizes (packaging only)"},
+      {"url": "https://fresh.bulkreefsupply.com/fine-controsoil-substrate-black-ultum-nature-systems.html", "file": "research/substrates/photos/controsoil-black-1.jpg", "what": "Black bag, listing main photo"}
+    ],
+    "notes": "Sold as Extra Fine / Fine / Normal. Normal grain is 'around 5 mm' per Aquasabi.de (no figure for Fine or Extra Fine, hence grainMm only reflects Normal). Bulk Reef Supply: stabilises pH around 6.8 over time, pH and KH buffering (slightly acidic, lower hardness); Aquasabi: buffers pH, can lower KH, no rinsing. Low ammonia release for a soil (retailer descriptions); forum reports mixed. Brown looks tan in the pile photo (about golden brown), so it reads lighter than Amazonia or Stratum. Photo hex for Black looks grey because of studio lighting on a white background: a wet bed is nearer #2a2a2a. Netlea Soil: no US listing found. The Bulk Reef Supply brand page is 'Marfied/UNS Controsoil' in image filenames (same product, older name)."
+  },
+  {
+    "id": "tropica-aquarium-soil",
+    "brand": "Tropica",
+    "name": "Aquarium Soil (2-3 mm)",
+    "kind": "soil",
+    "fresh": true,
+    "nutrient": "active",
+    "phEffect": "lowers",
+    "colours": [
+      {"name": "Dark brown-black (estimated)", "hex": "#2b2420", "shades": ["#1b1512", "#2b2420", "#38302a", "#463c35", "#231d19"], "photo": "tropica-soil-1.jpg"}
+    ],
+    "grainMm": [2, 3],
+    "gloss": 0.1,
+    "round": 0.7,
+    "bags": [
+      {"lb": null, "liters": 3, "usd": 26.96, "retailer": "J&L Aquatics (store country not verified; currency not verified)", "url": "https://jlaquatics.com/products/tropica-aquarium-soil-3-litre", "date": "2026-11-26"}
+    ],
+    "priceLb": null,
+    "priceLbNote": "Only one price found; Amazon.com listings exist (3 L B00TU4NKC2, 9 L B00ZFXAZXE) but Amazon returned 503, so no confirmed US dollar price. 26.96/3 L = 8.99 per litre if the J&L price is USD.",
+    "coverage": "Maker formula (J&L page): length x width x depth in cm / 1000 = litres needed.",
+    "photos": [
+      {"url": "https://jlaquatics.com/products/tropica-aquarium-soil-3-litre", "file": "research/substrates/photos/tropica-soil-1.jpg", "what": "Two bags (3 L and 9 L), packaging only; no grain photo found, so colour is estimated"}
+    ],
+    "notes": "Complete active bottom layer, no base layer needed (J&L page). Lowers pH and slightly affects water chemistry; 2-3 mm grain; change 25-50 percent water at least twice weekly for the first 4 weeks (J&L page, from Tropica copy). Described by other listings as burned from clays / Japanese volcanic granulate (Aquasabi, Amazon listings). Colour is ESTIMATED: Tropica's pack art shows dark soil, but I found no grain close-up."
+  },
+  {
+    "id": "seachem-flourite-red",
+    "brand": "Seachem",
+    "name": "Flourite Red",
+    "kind": "natural",
+    "fresh": true,
+    "nutrient": "inert",
+    "phEffect": "none",
+    "colours": [
+      {"name": "Red", "hex": "#7e4c3f", "shades": ["#250f0b", "#734034", "#8c5749", "#b5735f", "#a36050", "#d9957d"], "photo": "flourite-red-2.jpg"}
+    ],
+    "grainMm": null,
+    "gloss": 0.2,
+    "round": 0.25,
+    "bags": [
+      {"lb": 15.4, "usd": 22.99, "retailer": "That Pet Place", "url": "https://www.thatpetplace.com/flourite-red-15lb", "date": "2026-11-26"},
+      {"lb": 15.4, "usd": 24.99, "retailer": "Tropical Treasures WYO (search listing)", "url": "https://tropicaltreasureswyo.com/products/flourite-red-15-4-lb", "date": "2026-11-26"},
+      {"lb": 7.7, "usd": 14.99, "retailer": "Josh's Frogs (search listing)", "url": "https://joshsfrogs.com/sp/seachem-flourite-red-gravel-3-5-kg-schem37130", "date": "2026-11-26"}
+    ],
+    "priceLb": 1.49,
+    "priceLbNote": "22.99/15.4 lb at That Pet Place.",
+    "coverage": "None stated; Seachem has a project calculator (3.5 kg and 7 kg bags only).",
+    "photos": [
+      {"url": "https://www.seachem.com/flourite-red.php", "file": "research/substrates/photos/flourite-red-2.jpg", "what": "Close-up of grains filling frame (Seachem bulk image): flat angular reddish-brown chips (hex sampled)"},
+      {"url": "https://www.seachem.com/flourite-red.php", "file": "research/substrates/photos/flourite-red-1.jpg", "what": "Bag front"}
+    ],
+    "notes": "Spelled 'Flourite' by Seachem (not Fluorite). Porous clay gravel, not chemically coated or treated, will not alter pH (Seachem page); no laterite or modifiers needed. Grain size not stated by Seachem or the retailers read, so grainMm is null (photo shows angular chips, rough 3-6 mm by eye only). Rinse until water runs clear (long-standing label advice; not on the pages I read). Inert for pH, but iron-rich clay supports rooted plants."
+  },
+  {
+    "id": "seachem-flourite-dark",
+    "brand": "Seachem",
+    "name": "Flourite Dark",
+    "kind": "natural",
+    "fresh": true,
+    "nutrient": "inert",
+    "phEffect": "none",
+    "colours": [
+      {"name": "Dark (dark brown)", "hex": "#372b27", "shades": ["#140c09", "#423531", "#51433e", "#251c19", "#322622", "#64544e"], "photo": "flourite-dark-2.jpg"}
+    ],
+    "grainMm": null,
+    "gloss": 0.2,
+    "round": 0.25,
+    "bags": [
+      {"lb": 15.4, "usd": 21.67, "retailer": "That Pet Place", "url": "https://www.thatpetplace.com/flourite-dark-15lb", "date": "2026-11-26"},
+      {"lb": 7.7, "usd": 16.79, "retailer": "Aquarium Connection (search listing; 29.99 flat gravel shipping)", "url": "https://aquariumconnection.com/?p=337702", "date": "2026-11-26"}
+    ],
+    "priceLb": 1.41,
+    "priceLbNote": "21.67/15.4 lb at That Pet Place.",
+    "coverage": "None stated. That Pet Place: use at least half Flourite if mixing with other substrate.",
+    "photos": [
+      {"url": "https://www.seachem.com/flourite-dark.php", "file": "research/substrates/photos/flourite-dark-2.jpg", "what": "Grain close-up filling frame: angular dark chocolate-brown chips (hex sampled)"},
+      {"url": "https://www.seachem.com/flourite-dark.php", "file": "research/substrates/photos/flourite-dark-1.jpg", "what": "Bag front"}
+    ],
+    "notes": "Same porous clay as Flourite Red, darker. That Pet Place lists colour 'brown' and mineral analysis, no pH claim; Seachem text for the Flourite line says not coated and will not alter pH (flourite-red page). Grain size not stated anywhere I read. The brief asked for Red and Dark only, so plain Flourite and Flourite Black Sand are not here."
+  },
+  {
+    "id": "seachem-laterite",
+    "brand": "Seachem",
+    "name": "Laterite (additive)",
+    "kind": "natural",
+    "fresh": true,
+    "nutrient": "active",
+    "phEffect": "none",
+    "colours": [],
+    "grainMm": null,
+    "gloss": null,
+    "round": null,
+    "bags": [],
+    "priceLb": null,
+    "priceLbNote": "Could not price: seachem.com/laterite.php returns a 404 redirect and That Pet Place search returns no product, and web searches found only Flourite results. Likely discontinued or hard to find in the US; Seachem now says Flourite needs no laterite.",
+    "coverage": null,
+    "photos": [],
+    "notes": "Laterite is an iron-rich clay additive placed under gravel, not a full bed (general knowledge, not confirmed from a Seachem page today). Nothing was verifiable today, so all numeric fields are null. A similar product found: Brightwell Florinbase laterite powder 320 g at Bulk Reef Supply (https://fresh.bulkreefsupply.com/florinbase-laterite-powder-320g-brightwell-aquatics.html), price not read."
+  },
+  {
+    "id": "walstad-organic-potting-soil",
+    "brand": "Miracle-Gro / generic organic",
+    "name": "Organic potting soil (Walstad method), with sand or gravel cap",
+    "kind": "soil",
+    "fresh": true,
+    "nutrient": "fertilized",
+    "phEffect": "none",
+    "colours": [
+      {"name": "Very dark brown (estimated)", "hex": "#3b2b1f", "shades": ["#1f1610", "#2c2018", "#3b2b1f", "#4a382a", "#5a4636"], "photo": null}
+    ],
+    "grainMm": null,
+    "gloss": 0,
+    "round": 0.4,
+    "bags": [
+      {"lb": null, "cuFt": 1, "usd": 7.48, "retailer": "Walmart, Miracle-Gro Organic Raised Bed and Garden Soil 1 cu ft (search listing; not a potting mix)", "url": "https://www.walmart.com/ip/46650452", "date": "2026-11-26"}
+    ],
+    "priceLb": null,
+    "priceLbNote": "Home Depot pages (homedepot.com) returned HTTP 403 and Ace Hardware pages 403, so no per-lb price. Bag weights not read. Search listings: Ace Moisture Control potting mix 1 cu ft 14.99; Kroger Miracle-Gro potting mix 1 cu ft 9.99 (was 13.99). Typical 1 cu ft bag runs about 20-30 lb in general, unverified.",
+    "coverage": "r/walstad FAQ (via search result): a soil layer of about 1 in is fine; thin cap of about 0.25 in worked for one poster, medium sand works better than fine sand.",
+    "photos": [],
+    "notes": "No exact product 'Miracle-Gro Organic Choice Potting Soil' is sold now; Walstad community advice (r/walstad FAQ) is to pick an organic mix with no perlite, fertilizer or moisture-control additives and no wood chips (tannins). A Home Depot review claims the Walstad-recommended mix was discontinued (unverified). Bed is soil under 1-2 cm of sand or gravel cap; leaches ammonia early, needs a weeks-long cycle and plant-heavy start. Photo not taken (no product photo with grains)."
+  }
+]
