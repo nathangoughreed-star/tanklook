@@ -1,6 +1,6 @@
 # Invert model method ("build C"): snails, shrimp, soft corals
 
-Status: **PILOT + sheet test done, waiting on Nathan's verdict** (2026-11-28). It gates the 20 invert species in the first milestone of
+Status: **APPROVED as the hybrid** (Nathan 2026-11-28: "Yes, hybrid"). The sheet is used for measuring; the generator builds the geometry; colours are checked against photos. It gates the 20 invert species in the first milestone of
 `research/species-backlog-2026-11-28.md` (section 3a, answer 5).
 Ask (Nathan 2026-11-28): "modeling the soft corals may need a new modeling process, same with snails and shrimp."
 Pilots: banded trochus snail, peppermint shrimp, zoanthids. Review pictures: `research/screens/invert-c/`.
@@ -129,8 +129,9 @@ outright. Body plans like these don't loft from silhouettes (see "Why not build 
 - A sheet that fails the photo check (urchin t1) is redone with the colours stated in the prompt, before anything is
   measured from it.
 
-Waiting on Nathan's verdict.
+**Decision (Nathan 2026-11-28): "Yes, hybrid".** This answers open question 1. Each new invert: Commons photos, a sheet (the crab template for crustaceans), measured ratios and map colours from the sheet, a colour check against the photos, then the generator spec. The urchin needs a t2 sheet with its colours stated before it is measured.
 
 ## Correction log (Nathan's corrections, newest last)
 | Date | Model | Correction | Fix |
 |---|---|---|---|
+| 2026-11-28 | method | "Yes, hybrid": sheet + generator, not generator alone | steps 3-4 now take numbers from the sheet; colours checked against the photos |
