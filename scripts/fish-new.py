@@ -18,7 +18,7 @@ import sys, os, json, shutil, subprocess, importlib.util
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 KEEP = ('clamp_top', 'sat', 'alo', 'aw', 'taper', 'smooth_tail', 'pedt_max', 'clip_head', 'outline', 'fy0', 'erase', 'pec_window', 'anchor_top',
-        'no_tail', 'dorsals', 'smooth', 'warm', 'plan', 'plan_extra', 'fin_gap', 'card_sheet_off', 'sat_auto', 'membrane', 'stalk', 'fin_opacity', 'fin_opacity_source', 'sat_lin', 'front_ramp', 'front_ramp_why', 'solid_near', 'body_recolour')
+        'no_tail', 'dorsals', 'smooth', 'warm', 'plan', 'plan_extra', 'fin_gap', 'card_sheet_off', 'sat_auto', 'membrane', 'stalk', 'fin_opacity', 'fin_opacity_source', 'sat_lin', 'front_ramp', 'front_ramp_why', 'solid_near', 'body_recolour', 'top_card_anchor', 'top_card_fill', 'top_card_why', 'barbel_note')
 PROXY_LO, PROXY_HI = 0.75, 1.3   # a proxy fish keeps its drawn depth inside [lo*0.75, hi*1.3] (row 64)
 STRETCH_AT = 0.08   # band around the median when there is no measured range (proxy numbers only)
 TOL = 0.02          # built depth within 2 % of the target: no (further) stretch

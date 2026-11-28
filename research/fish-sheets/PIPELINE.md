@@ -101,6 +101,7 @@ Read the side/3-4/front/top renders beside the sheet. Fix through the spec, then
   harlequin, balashark, comet, chromis, clownloach.
 - **Cory recipe** (bristlenose; loaches if the snout reads wedge-shaped; rows 52-53): spec `plan: "pepperedcory"`,
   `outline: "--level --thr 8 --open 9 --snout-open 15"`, `plan_extra: {"barbels": 0.045, "barbelR": 0.006}`.
+- **Tube or beak snout** (copperband b11, method row 78): the `--open 9` disc erases a thin snout, leaving only the flat card. Spec `outline: "--level --thr 8 --open 9 --face <snout % SL> --face-open 1"`, then rebuild.
 - **Front layer vs eye/mouth** (three-spot, row of 2026-11-25): where the front panel draws the mouth far below the eyes versus the side
   view, set the front layer on the mouth (spec `fy0`), not on the eyes. Check eye-to-mouth delta side vs front (log.csv `eye_mouth_delta`).
 - **No nose hole from the front**; **no split-dorsal misread** (step 4 fixes): look at the front render.

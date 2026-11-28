@@ -5,32 +5,37 @@
 import * as THREE from 'three';
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../art/paint';
-import { blendOrder } from '../scene/blend';
+import { blendOrder, grainShape } from '../scene/blend';
 import { GRAIN_LOOK, SUBSTRATES, blendWeights, blendZone, grain3D, shadesOf } from '../art/placeholder';
 import { waterY } from '../scene/physics';
 import { footprint } from '../scene/shape';
-import type { Grain, Tank, TankSetup } from '../scene/types';
+import type { BlendGrain, Tank, TankSetup } from '../scene/types';
 import { FX } from './fx';
 import { insideIn, scatter, type GroundAt, type ScatterKind } from './scatter';
 
 /** How a ground's grains look in 3D: chips (bark) or stones, diameter range (mm), roundness 0-1, colours, flecked,
  *  darker when wet (terrestrial grounds only); `at`: the share of the floor it covers at a point (a blend's patches;
  *  absent = everywhere). */
-export interface GrainLook { shape: 'stone' | 'chip'; size: [number, number]; round: number; colors: string[]; speckle: boolean; wet: boolean; at?: (x: number, d: number) => number }
+export interface GrainLook {
+  shape: 'stone' | 'chip'; size: [number, number]; round: number; colors: string[]; speckle: boolean; wet: boolean; at?: (x: number, d: number) => number;
+  /** Grain editor (Nathan 2026-11-28; scene/blend.ts grainShape): 0-1 each; absent = from `round` (the presets). */
+  sphere?: number; angular?: number; rough?: number; opacity?: number;
+}
 /** The ground's 3D grains, one look per layer, none for a ground drawn as a surface only. Presets: bark and the gravel
  *  kinds; custom: its gravel and pebbles, a blend's on the patches the ground shader paints them on (sand and mud stay
  *  painted). Sizes from the tile art (radius px x mm per px). */
 export function grainLooks(sub: TankSetup['substrate']): GrainLook[] {
   if (sub.type === 'bark') return [{ shape: 'chip', size: [10, 22], round: 0.3, colors: SUBSTRATES.bark.shades, speckle: false, wet: true }];
   if (sub.type === 'custom') {
-    const b = sub.custom, look = (g: Grain, color: string, at?: GrainLook['at']): GrainLook => {
-      const G = GRAIN_LOOK[g];
-      return { shape: 'stone', size: [G.size[0] * 2, G.size[1] * 2], round: G.round, colors: shadesOf(color, 10, rng(5)), speckle: true, wet: false, at };
+    const b = sub.custom, look = (bg: BlendGrain, at?: GrainLook['at']): GrainLook => {
+      const G = GRAIN_LOOK[bg.grain], sh = grainShape(bg);
+      return { shape: 'stone', size: sh.size ?? [G.size[0] * 2, G.size[1] * 2], round: G.round, colors: colorRange(bg.color, sh.color2), speckle: sh.opacity > 0.9, wet: false, at,
+        sphere: sh.sphere, angular: sh.angular, rough: sh.rough, opacity: sh.opacity };
     };
-    if (b.grains.length === 1) return grain3D(b.grains[0].grain) ? [look(b.grains[0].grain, b.grains[0].color)] : [];
+    if (b.grains.length === 1) return grain3D(b.grains[0].grain) ? [look(b.grains[0])] : [];
     // one ratio per grain (art/placeholder `blendWeights`), the same the ground shader paints; each 3D grain's stones keep where it is
     const z = blendZone(b), out: GrainLook[] = [], ord = blendOrder(b);
-    ord.forEach((g, k) => { if (grain3D(g.grain)) out.push(look(g.grain, g.color, (x, d) => cover(blendWeights(b, x, d, z)[k]))); });
+    ord.forEach((g, k) => { if (grain3D(g.grain)) out.push(look(g, (x, d) => cover(blendWeights(b, x, d, z)[k]))); });
     return out;
   }
   const t = SUBSTRATES[sub.type];
@@ -38,6 +43,14 @@ export function grainLooks(sub: TankSetup['substrate']): GrainLook[] {
   const mmPx = t.tile * 2 / 512; // tile px -> mm
   return [{ shape: 'stone', size: [t.size[0] * 2 * mmPx, t.size[1] * 2 * mmPx], round: t.round ?? 0.8, colors: t.shades, speckle: !!t.speckle, wet: !!t.terra }];
 }
+/** Ten colours across a grain's range: `color` to `color2`, each a touch lighter or darker; no `color2` = shades of `color`. */
+function colorRange(color: string, color2: string | null): string[] {
+  if (!color2) return shadesOf(color, 10, rng(5));
+  const r = rng(5), a = new THREE.Color(color), b = new THREE.Color(color2);
+  return Array.from({ length: 10 }, (_, i) => '#' + a.clone().lerp(b, (i + r() * 0.8) / 9.8).offsetHSL(0, 0, (r() - 0.5) * 0.06).getHexString());
+}
+/** A grain look's shape, filled in from `round` where the editor left it (presets: rounder = smoother and less angular). */
+const shapeOf = (g: GrainLook) => ({ sphere: g.sphere ?? 0.6, angular: g.angular ?? Math.max(0, 0.9 - g.round) * 0.8, rough: g.rough ?? 0.55, opacity: g.opacity ?? 1 });
 /** Stones to keep so that a share `r` of the floor is covered (the layer is 1.25 stone-covers thick, so chance covers
  *  1 - exp(-K p): keeping r of them would show well over r of the floor as stone). */
 const COVER_K = 1.6;
@@ -53,32 +66,79 @@ export function grainLook(sub: TankSetup['substrate']): GrainLook | null {
 /** Whether a blend has painted-only patches (sand or mud) beside its 3D stones. */
 export const grainPatchy = (sub: TankSetup['substrate']) => sub.type === 'custom' && sub.custom.grains.length > 1 && !sub.custom.grains.every(g => grain3D(g.grain));
 /** About how far the grains rise above the painted ground (mm): leaf litter lies on them. */
-export const grainTop = (g: GrainLook | null) => (g ? (g.size[0] + g.size[1]) / 2 * (g.shape === 'chip' ? 0.15 : 0.22) : 0);
+export const grainTop = (g: GrainLook | null) => (g ? (g.size[0] + g.size[1]) / 2 * (g.shape === 'chip' ? 0.15 : solidGrain(g) ? 0.7 : 0.22) : 0);
+/** Grains packed as solid bodies (packedGrains), not strewn: big ones (5/16 in and up) and round ones (marbles), where overlaps and gaps show. */
+export const solidGrain = (g: GrainLook) => g.shape === 'stone' && ((g.size[0] + g.size[1]) / 2 >= 8 || (g.sphere ?? 0) >= 0.85);
 
 const grainGeo = new Map<string, THREE.BufferGeometry[]>();
-/** Six stone shapes for a roundness: a smooth-shaded subdivided icosahedron, its radius nudged by three broad bumps and
- *  a finer ripple (rougher the less round), flattened (stones settle on a flat side) and a little elongated; colour
- *  mottled per vertex (flecks for natural stone). Long axis = x, diameter 1. */
-export function stoneGeos(round: number, speckle: boolean, detail: number) {
-  const key = `s${round}${speckle}${detail}`; let gs = grainGeo.get(key); if (gs) return gs;
-  const r = rng(91);
-  gs = Array.from({ length: 6 }, () => {
-    const g0 = new THREE.IcosahedronGeometry(0.5, detail); g0.deleteAttribute('normal'); g0.deleteAttribute('uv');
-    const g = mergeVertices(g0), p = g.attributes.position, rough = (1 - round) * 0.5 + 0.06;
+/**
+ * Ten stone shapes (grain editor, Nathan 2026-11-28: the six lumpy balls read cartoony). A subdivided icosahedron, then:
+ * proportions from `sphere` (1 = a ball, every axis equal; lower = flatter and longer, each shape its own ratio); three broad
+ * lumps and a ripple, fewer the rounder; `angular` cuts it with 7-11 random planes (a broken stone's flat faces and edges)
+ * and turns its normals flat-faced; colour mottled per vertex (flecks for natural stone). Box-projected UVs for the surface
+ * grain texture (no seam, no pinched pole). Long axis = x, diameter 1. Non-indexed (each face its own corners).
+ */
+export function stoneGeos(round: number, speckle: boolean, detail: number, sphere = 0.6, angular = Math.max(0, 0.9 - round) * 0.8) {
+  const q = (v: number) => Math.round(v * 10) / 10, sp = q(sphere), an = q(angular);
+  const key = `s${round}${speckle}${detail}|${sp}|${an}`; let gs = grainGeo.get(key); if (gs) return gs;
+  const r = rng(91), irr = 1 - sp; // irregularity: none for a ball (glass marbles are all alike)
+  const dt = an > 0.25 ? Math.max(detail, 1) : detail; // facets need corners to cut
+  gs = Array.from({ length: 10 }, () => {
+    const g0 = new THREE.IcosahedronGeometry(0.5, dt); g0.deleteAttribute('normal'); g0.deleteAttribute('uv');
+    const g = mergeVertices(g0), p = g.attributes.position, lump = irr * (0.5 * (1 - round) + 0.22) + 0.015 * (1 - an);
     const bumps = Array.from({ length: 3 }, () => new THREE.Vector3(r() - 0.5, r() - 0.5, r() - 0.5).normalize()), ph = r() * 9;
-    const sy = 0.62 + r() * 0.25, sz = 0.72 + r() * 0.25, v = new THREE.Vector3(), col: number[] = [];
+    const sy = 1 - irr * (0.3 + r() * 0.4), sz = 1 - irr * (0.1 + r() * 0.35); // flat (y) and narrow (z) against its length
+    const planes = Array.from({ length: 6 + Math.floor(r() * 4) }, () => ({ n: new THREE.Vector3(r() - 0.5, r() - 0.5, r() - 0.5).normalize(), d: 0.2 + r() * 0.17 })); // deep cuts: big flat faces
+    const v = new THREE.Vector3(), col: number[] = [];
     for (let i = 0; i < p.count; i++) {
       v.fromBufferAttribute(p, i).normalize();
-      let k = 1; for (const b of bumps) k += rough * 0.5 * Math.max(0, v.dot(b)) ** 2 - rough * 0.12;
-      k += rough * 0.15 * Math.sin(v.x * 7 + ph) * Math.sin(v.y * 6 + ph * 2) * Math.sin(v.z * 8);
-      p.setXYZ(i, v.x * 0.5 * k, v.y * 0.5 * k * sy, v.z * 0.5 * k * sz);
+      let k = 1; for (const bp of bumps) k += lump * 0.5 * Math.max(0, v.dot(bp)) ** 2 - lump * 0.12;
+      k += lump * 0.15 * Math.sin(v.x * 7 + ph) * Math.sin(v.y * 6 + ph * 2) * Math.sin(v.z * 8);
+      let rad = 0.5 * k;
+      if (an > 0) { let cut = rad; for (const pl of planes) { const c = v.dot(pl.n); if (c > 0.05) cut = Math.min(cut, pl.d / c); } rad += (Math.max(cut, rad * 0.4) - rad) * an; }
+      p.setXYZ(i, v.x * rad, v.y * rad * sy, v.z * rad * sz);
       const m = 0.9 + r() * 0.14 + (speckle && r() < 0.12 ? (r() < 0.5 ? -0.3 : 0.25) : 0); col.push(m, m, m);
     }
     g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3)); g.computeVertexNormals();
-    g.translate(0, sy * 0.25, 0); // its middle a quarter of its height up: lift 0 sinks it about halfway
-    g.userData.keep = true; return g;
+    const smooth = g.toNonIndexed(), flat = smooth.clone(); flat.computeVertexNormals();
+    const ns = smooth.attributes.normal, nf = flat.attributes.normal, pp = smooth.attributes.position, uv = new Float32Array(pp.count * 2), w = Math.min(1, Math.max(0, (an - 0.25) / 0.45)); // facets shade flat only once really angular (a 20-face grain shaded flat reads as a die)
+    const a = new THREE.Vector3(), b = new THREE.Vector3(), ofs = [r(), r(), r(), r()];
+    for (let i = 0; i < pp.count; i++) {
+      a.fromBufferAttribute(ns, i); b.fromBufferAttribute(nf, i); a.lerp(b, w).normalize(); ns.setXYZ(i, a.x, a.y, a.z);
+      // box projection by the face's own normal (its three corners share it)
+      const f = i - (i % 3); b.fromBufferAttribute(nf, f);
+      const ax = Math.abs(b.x), ay = Math.abs(b.y), az = Math.abs(b.z), x = pp.getX(i), y = pp.getY(i), z = pp.getZ(i);
+      const [u0, v0] = ax >= ay && ax >= az ? [z, y] : ay >= az ? [x, z] : [x, y];
+      uv[i * 2] = u0 * 1.6 + ofs[0]; uv[i * 2 + 1] = v0 * 1.6 + ofs[1];
+    }
+    smooth.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    smooth.translate(0, sy * 0.25, 0); // its middle a quarter of its height up: lift 0 sinks it about halfway
+    smooth.userData.sy = sy; smooth.userData.sz = sz; // the packer (packedGrains) sizes its contacts from them
+    smooth.userData.keep = true; return smooth;
   });
   grainGeo.set(key, gs); return gs;
+}
+const grainTexs = new Map<string, THREE.CanvasTexture>();
+/**
+ * A stone's surface (grain editor): a tileable grey near 1 that the stone's colours multiply. Always a soft mottle and a
+ * few mineral flecks; `rough` adds fine light and dark speckle and small pits (a granular, unpolished face). Glass
+ * (`clear`): a plain face with faint swirls only. Quantized to fifths, so at most 12 textures.
+ */
+function grainTex(rough: number, clear: boolean) {
+  const rq = Math.round(rough * 5) / 5, key = `${rq}${clear}`; let t = grainTexs.get(key); if (t) return t;
+  const N = 128, c = document.createElement('canvas'); c.width = c.height = N; const x = c.getContext('2d')!, r = rng(131 + rq * 10);
+  x.fillStyle = clear ? '#f4f4f4' : '#e6e6e6'; x.fillRect(0, 0, N, N);
+  const dot = (px: number, py: number, rad: number, fill: string) => { x.fillStyle = fill; for (const ox of [-N, 0, N]) for (const oy of [-N, 0, N]) { x.beginPath(); x.arc(px + ox, py + oy, rad, 0, Math.PI * 2); x.fill(); } };
+  // soft mottle: big faint blotches
+  for (let i = 0; i < (clear ? 6 : 26); i++) dot(r() * N, r() * N, 8 + r() * 22, r() < 0.5 ? `rgba(0,0,0,${0.03 + r() * 0.04})` : `rgba(255,255,255,${0.03 + r() * 0.05})`);
+  if (!clear) {
+    for (let i = 0; i < 10; i++) dot(r() * N, r() * N, 1 + r() * 2.2, r() < 0.5 ? `rgba(20,16,12,${0.25 + r() * 0.3})` : `rgba(255,252,245,${0.3 + r() * 0.3})`); // mineral flecks
+    const n = Math.round(rq * 1600);
+    for (let i = 0; i < n; i++) dot(r() * N, r() * N, 0.5 + r() * 0.7, r() < 0.55 ? `rgba(0,0,0,${0.12 + 0.3 * r() * rq})` : `rgba(255,255,255,${0.1 + 0.25 * r() * rq})`); // grit
+    for (let i = 0; i < Math.round(rq * 70); i++) dot(r() * N, r() * N, 0.8 + r() * 1.3, `rgba(0,0,0,${0.3 + 0.3 * r()})`); // pits
+  }
+  t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; t.userData.keep = true;
+  grainTexs.set(key, t); return t;
 }
 /** Six bark chips: a jittered slab, thinner toward its edges (an angular chunk, thinner than wide), the cut sides and
  *  the under face darker than the top; long axis = x, length 1. Planar UVs for the fibre texture along the length. */
@@ -133,18 +193,113 @@ function glassGeo(g: THREE.BufferGeometry) {
 }
 const glassMat = (m: THREE.MeshBasicMaterial) => { let g = glassMats.get(m); if (!g) { g = m.clone(); g.userData.keep = true; g.userData.pane = true; delete g.userData.aq; /* clone() copies userData but not onBeforeCompile: a copied aq flag leaves it unlit */ glassMats.set(m, g); } return g; };
 export function grainKinds(g: GrainLook): ScatterKind[] {
+  if (g.shape === 'chip') {
+    let mat = grainMat.get('chip');
+    if (!mat) { mat = new THREE.MeshBasicMaterial({ vertexColors: true, map: barkFibre() }); mat.userData.keep = true; grainMat.set('chip', mat); }
+    return chipGeos().map(geo => ({ geo, mat: mat!, weight: 1, size: g.size, reach: 0.5 }));
+  }
   // small grains (gravel, under 8 mm): 20 triangles each, not 80 (18k stones in a 20-gal made it 2-3 ms)
-  const geos = g.shape === 'chip' ? chipGeos() : stoneGeos(g.round, g.speckle, (g.size[0] + g.size[1]) / 2 < 8 ? 0 : 1);
-  let mat = grainMat.get(g.shape);
-  if (!mat) { mat = new THREE.MeshBasicMaterial({ vertexColors: true, ...(g.shape === 'chip' ? { map: barkFibre() } : {}) }); mat.userData.keep = true; grainMat.set(g.shape, mat); }
-  return geos.map(geo => ({ geo, mat: mat!, weight: 1, size: g.size, reach: 0.5 }));
+  const sh = shapeOf(g), geos = stoneGeos(g.round, g.speckle, (g.size[0] + g.size[1]) / 2 < 8 ? 0 : 1, sh.sphere, sh.angular), mat = stoneMat(sh.rough, sh.opacity);
+  return geos.map(geo => ({ geo, mat, weight: 1, size: g.size, reach: 0.5 }));
+}
+/**
+ * A stone material (grain editor): the surface texture for its roughness; a highlight that sharpens and brightens the
+ * smoother the stone (polished and glass stones shine, rough ones none). Below full opacity the stone is shaded as glass,
+ * in step with how clear it is: deeper colour, bright through its middle (light passing through) and dark toward the edge
+ * where it reflects, with a thin bright rim. Opaque and lit: a dithered see-through (alphaHash) read as frosted speckle.
+ * Added to the lit shader (render/lighting.ts aqPatch) through its `post` hook.
+ */
+function stoneMat(rough: number, opacity: number) {
+  const rq = Math.round(rough * 10) / 10, oq = Math.round(opacity * 20) / 20, clear = oq < 0.95, key = `stone${rq}|${oq}`;
+  let m = grainMat.get(key); if (m) return m;
+  m = new THREE.MeshBasicMaterial({ vertexColors: true, map: grainTex(rq, clear) });
+  const gloss = (1 - rq) ** 2 * (clear ? 1.1 : 0.45), shin = (8 + (1 - rq) * 70).toFixed(1), gc = clear ? Math.min(1, (1 - oq) / 0.7) : 0;
+  m.userData.keep = true; m.userData.ng = key;
+  if (gloss > 0.01 || clear) m.userData.post = (sh: THREE.WebGLProgramParametersWithUniforms) => {
+    sh.fragmentShader = sh.fragmentShader.replace(/#include <opaque_fragment>(?![\s\S]*#include <opaque_fragment>)/,
+      `{ vec3 gV = normalize(cameraPosition - vAqP), gN = normalize(vAqN), gH = normalize(normalize(vec3(-0.2, 1.0, 0.35)) + gV);
+  float gL = min(dot(aqLt, vec3(0.333)), 1.5), gFace = abs(dot(gN, gV)), gF = pow(1.0 - gFace, 3.0);
+  vec3 gY = vec3(dot(outgoingLight, vec3(0.2126, 0.7152, 0.0722)));
+  outgoingLight = mix(outgoingLight, max(mix(gY, outgoingLight, 1.4), 0.0) * (0.35 + 0.95 * pow(gFace, 1.6)), ${gc.toFixed(3)});
+  outgoingLight += vec3(${gloss.toFixed(3)} * pow(max(dot(gN, gH), 0.0), ${shin}) + ${(0.3 * gc).toFixed(3)} * gF) * gL; }
+#include <opaque_fragment>`);
+  };
+  grainMat.set(key, m); return m;
 }
 /** Grains in the top layer: enough to cover the floor about once, sunk in (stones about halfway, chips a little), packed
  *  (a pile grid of a third of a grain), each coloured from the ground's shades; darker under water if terrestrial. */
-export const grainMeshes = (S: TankSetup, T: Tank, ground: GroundAt) => cachedGrains('top', S, T, () => grainLooks(S.substrate).flatMap((g, i) => topGrains(S, T, ground, g, i)));
+export const grainMeshes = (S: TankSetup, T: Tank, ground: GroundAt) => cachedGrains('top', S, T, () => {
+  const gs = grainLooks(S.substrate);
+  return gs.some(solidGrain) ? packedGrains(S, T, ground, gs) : gs.flatMap((g, i) => topGrains(S, T, ground, g, i));
+});
+/**
+ * Solid grains (Nathan 2026-11-28: marbles 'should act and pack like solid spheres', and black holes showed between big
+ * grains): every 3D grain of the ground dropped one at a time onto the bed, settling on the ground or on the grains already
+ * there as round bodies (sphere on sphere contact, never through), at the lowest of eight nearby spots (it rolls into a
+ * hollow). The bed starts 0.4 of a grain below the painted ground and fills to about a grain above it: two layers, so a gap in
+ * the top layer shows the grains under it, not the painted ground. A blend's grains are packed together (each point picks a
+ * grain by its share there; sand and mud patches stay paint). A spatial hash keeps it near linear: 30k grains at most.
+ */
+function packedGrains(S: TankSetup, T: Tank, ground: GroundAt, looks: GrainLook[]): THREE.InstancedMesh[] {
+  const r = rng(29 + blendSeed(S)), inBy = insideIn(T), area = footprint(T).area, { L, D } = T;
+  const kinds = looks.map(grainKinds), pals = looks.map(g => g.colors.map(c => new THREE.Color(c).multiplyScalar(0.8)));
+  const wy = S.water.on ? waterY(T, S.water.level) : -Infinity;
+  const big = Math.max(...looks.map(g => g.size[1])), mean = looks.reduce((a, g) => a + (g.size[0] + g.size[1]) / 2, 0) / looks.length;
+  // per placed grain: plan position, centre height, contact radius
+  const MAX = 30000, X = new Float32Array(MAX), Dp = new Float32Array(MAX), Y = new Float32Array(MAX), R = new Float32Array(MAX);
+  const C = Math.max(4, big), NX = Math.ceil(L / C) + 2, NZ = Math.ceil(D / C) + 2, grid: number[][] = Array.from({ length: NX * NZ }, () => []);
+  const cellOf = (x: number, d: number) => (Math.floor(x / C) + 1) * NZ + Math.floor(d / C) + 1;
+  const rest = (x: number, d: number, rc: number, hh: number, base: number) => {
+    let y = base + hh; const i0 = Math.floor(x / C) + 1, j0 = Math.floor(d / C) + 1;
+    for (let i = i0 - 1; i <= i0 + 1; i++) for (let j = j0 - 1; j <= j0 + 1; j++) {
+      const cell = grid[i * NZ + j]; if (!cell) continue;
+      for (const k of cell) { const dx = X[k] - x, dd = Dp[k] - d, rr = R[k] + rc, p2 = dx * dx + dd * dd; if (p2 < rr * rr) y = Math.max(y, Y[k] + Math.sqrt(rr * rr - p2)); }
+    }
+    return y;
+  };
+  const per: number[][][] = kinds.map(ks => ks.map(() => [])), tint: number[][][] = kinds.map(ks => ks.map(() => []));
+  const q = new THREE.Quaternion(), qa = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), ax = new THREE.Vector3(), pos = new THREE.Vector3(), scl = new THREE.Vector3(), mx = new THREE.Matrix4(), col = new THREE.Color();
+  const tries = Math.round(2 * 3 * area * 0.85 / (Math.PI * (mean * 0.45) ** 2));
+  let n = 0, miss = 0; // `miss`: drops in a row that found the bed full; past a few hundred, it is full everywhere
+  for (let t = 0; t < tries && n < MAX && miss < 600; t++) {
+    const x0 = r() * L, d0 = r() * D;
+    // which grain lands here: by each one's share at this point (a blend), the rest is a sand or mud patch
+    const w = looks.map(g => (g.at ? g.at(x0, d0) : 1)), tw = w.reduce((a, b) => a + b, 0), u = r() * Math.max(1, tw);
+    let li = -1; for (let k = 0, acc = 0; k < w.length; k++) { acc += w[k]; if (u < acc) { li = k; break; } }
+    const yaw = r() * Math.PI * 2, tilt = (r() - 0.5) * 0.4, tiltA = r() * Math.PI * 2, ki = Math.floor(r() * 10), su = r(), pc = r(), sh = r();
+    if (li < 0) continue;
+    const g = looks[li], K = kinds[li][ki % kinds[li].length], size = g.size[0] + su * (g.size[1] - g.size[0]);
+    const sy = K.geo.userData.sy ?? 1, sz = K.geo.userData.sz ?? 1, hh = 0.5 * sy * size, rc = 0.5 * size * (1 + sy + sz) / 3;
+    // settle: the lowest of eight spots within a grain's width (rolling into the hollow between its neighbours)
+    let bx = 0, bd = 0, by = Infinity, bg = 0;
+    for (let c = 0; c < 8; c++) {
+      const x = x0 + (c ? (r() - 0.5) * rc * 2 : 0), d = d0 + (c ? (r() - 0.5) * rc * 2 : 0);
+      if (inBy(x, d) < rc * 0.9) continue; // clear of the glass
+      const gy = ground(x, d)[1], y = rest(x, d, rc, hh, gy - 0.4 * size);
+      if (y < by) { by = y; bx = x; bd = d; bg = gy; }
+    }
+    if (by === Infinity || by - hh > bg + 0.5 * size) { miss++; continue; } // the bed is full here (two layers: the second rests on the first)
+    miss = 0;
+    X[n] = bx; Dp[n] = bd; Y[n] = by; R[n] = rc; grid[cellOf(bx, bd)]?.push(n); n++;
+    qa.setFromAxisAngle(up, yaw); ax.set(Math.cos(tiltA), 0, Math.sin(tiltA)); q.setFromAxisAngle(ax, tilt).multiply(qa);
+    pos.set(bx, by - sy * 0.25 * size, -bd); scl.set(size, size, size); // the geometry's middle is a quarter of its height up
+    for (const v of mx.compose(pos, q, scl).elements) per[li][ki % kinds[li].length].push(v);
+    const p = pals[li], k = (0.85 + sh * 0.3) * (g.wet && by < wy ? 0.55 : 1);
+    col.copy(p[Math.floor(pc * p.length)]).multiplyScalar(k); tint[li][ki % kinds[li].length].push(col.r, col.g, col.b);
+  }
+  const out: THREE.InstancedMesh[] = [];
+  kinds.forEach((ks, li) => ks.forEach((K, i) => {
+    if (!per[li][i].length) return;
+    const m = new THREE.InstancedMesh(K.geo, K.mat, per[li][i].length / 16);
+    m.instanceMatrix = new THREE.InstancedBufferAttribute(new Float32Array(per[li][i]), 16);
+    m.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(tint[li][i]), 3);
+    m.computeBoundingSphere(); m.userData.scatter = true; m.userData.grains = true; m.renderOrder = -1; out.push(m);
+  }));
+  return out;
+}
 function topGrains(S: TankSetup, T: Tank, ground: GroundAt, g: GrainLook, layer: number, area = footprint(T).area): THREE.InstancedMesh[] {
   const mean = (g.size[0] + g.size[1]) / 2, foot = Math.PI * (mean / 2) ** 2 * (g.shape === 'chip' ? 0.55 : 0.8);
-  const wy = g.wet && S.water.on ? waterY(T, S.water.level) : -Infinity, chip = g.shape === 'chip', count = Math.min(30000, Math.round(1.25 * area / foot));
+  const wy = g.wet && S.water.on ? waterY(T, S.water.level) : -Infinity, chip = g.shape === 'chip', count = Math.min(30000, Math.round(1.6 * area / foot)); // 1.6 covers (was 1.25): fewer painted gaps showing
   // a blend's layer: points over the floor kept by its share there (a few spare for the ones scatter turns down)
   let at: [number, number][] | undefined;
   if (g.at) {
@@ -180,10 +335,42 @@ function paneGrains(S: TankSetup, T: Tank, groundY: (x: number, d: number) => nu
   const per: THREE.Matrix4[][] = kinds.map(() => []), tint: THREE.Color[][] = kinds.map(() => []);
   const pal = g.colors.map(c => new THREE.Color(c)), wy = g.wet && S.water.on ? waterY(T, S.water.level) : -Infinity;
   const q = new THREE.Quaternion(), qa = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), ax = new THREE.Vector3();
-  const inBy = insideIn(T);
+  const inBy = insideIn(T), solid = solidGrain(g);
+  /**
+   * Solid grains (marbles, pebbles) against a pane: discs dropped into the pane's plane, each resting on the floor or on the
+   * ones under it (never overlapping, Nathan 2026-11-28), the lowest of six nearby spots, up to the ground's edge; each grain
+   * touches the glass. Buckets along the pane keep it near linear.
+   */
+  const packPane = (e: ReturnType<typeof footprint>['edges'][number], avg: number) => {
+    const yaw = Math.atan2(-(e.b[1] - e.a[1]), e.b[0] - e.a[0]), W = Math.max(4, g.size[1]), NB = Math.ceil(e.len / W) + 2;
+    const B: number[][] = Array.from({ length: NB }, () => []), Sx: number[] = [], Yc: number[] = [], Rr: number[] = [];
+    const tries = Math.min(20000, Math.round(3 * e.len * avg / (Math.PI * (mean * 0.45) ** 2)));
+    for (let i = 0; i < tries; i++) {
+      const s0 = r() * e.len, size = g.size[0] + r() * (g.size[1] - g.size[0]), ki = Math.floor(r() * kinds.length), c = pal[Math.floor(r() * pal.length)], k = 0.85 + r() * 0.3, a = r() * Math.PI * 2;
+      const K = kinds[ki], sy = K.geo.userData.sy ?? 1, sz = K.geo.userData.sz ?? 1, hh = 0.5 * sy * size, rc = 0.5 * size * (1 + sy + sz) / 3;
+      let bs = 0, by = Infinity;
+      for (let cc = 0; cc < 6; cc++) {
+        const sp = s0 + (cc ? (r() - 0.5) * rc * 2 : 0); if (sp < rc || sp > e.len - rc) continue;
+        let y = hh; const b0 = Math.floor(sp / W) + 1;
+        for (let bi = b0 - 1; bi <= b0 + 1; bi++) for (const j of B[bi] ?? []) { const dx = Sx[j] - sp, rr = Rr[j] + rc; if (dx * dx < rr * rr) y = Math.max(y, Yc[j] + Math.sqrt(rr * rr - dx * dx)); }
+        if (y < by) { by = y; bs = sp; }
+      }
+      if (by === Infinity) continue;
+      const t = bs / e.len, px = e.a[0] + (e.b[0] - e.a[0]) * t, pd = e.a[1] + (e.b[1] - e.a[1]) * t, top = groundY(px, pd);
+      if (by > top - 0.15 * size) continue; // up to the ground's edge (the top layer takes over there)
+      const inset = rc + 0.4, x = px - e.n[0] * inset, d = pd - e.n[1] * inset;
+      if (inBy(x, d) < inset - 0.5) continue; // a corner: the other pane is too near
+      if (g.at && r() >= g.at(px, pd)) continue; // a blend: only on this grain's patches
+      Sx.push(bs); Yc.push(by); Rr.push(rc); B[Math.floor(bs / W) + 1].push(Sx.length - 1);
+      qa.setFromAxisAngle(up, yaw + a);
+      per[ki].push(new THREE.Matrix4().compose(new THREE.Vector3(x, by - sy * 0.25 * size, -d), qa, new THREE.Vector3(size, size, size)));
+      tint[ki].push(c.clone().multiplyScalar(k * 1.3 * (by < wy ? 0.55 : 1) * (FX.ground ? 0.7 + 0.3 * Math.min(1, by / (top || 1)) : 1)));
+    }
+  };
   for (const e of footprint(T).edges) {
     const yaw = Math.atan2(-(e.b[1] - e.a[1]), e.b[0] - e.a[0]); // world angle of the pane (z = -depth)
     const avg = (groundY(e.a[0], e.a[1]) + groundY(e.b[0], e.b[1]) + groundY((e.a[0] + e.b[0]) / 2, (e.a[1] + e.b[1]) / 2)) / 3;
+    if (solid) { packPane(e, avg); continue; }
     const n = Math.min(20000, Math.round((FX.ground ? 1.5 : 1.3) * e.len * avg / (mean * mean * (chip ? 0.35 : 0.6))));
     for (let i = 0; i < n; i++) {
       const t = r(), size = g.size[0] + r() * (g.size[1] - g.size[0]), ki = Math.floor(r() * kinds.length), c = pal[Math.floor(r() * pal.length)];

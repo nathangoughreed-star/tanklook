@@ -22,7 +22,9 @@ def species():
 
 def build(d, base, batch):
     sp = species().get(base)
-    if not sp: return {'ok': False, 'why': f'{base} not in species.json'}
+    ent = os.path.join(d, 'species-entry.json')   # b11: new species not yet in the catalogue carry {name, sci, tl} in their folder
+    if not sp and os.path.exists(ent): sp = json.load(open(ent, encoding='utf8'))
+    if not sp: return {'ok': False, 'why': f'{base} not in species.json (and no species-entry.json)'}
     ID = base + 'b'; t = time.time()
     r = subprocess.run([sys.executable, '-I', os.path.join(HERE, 'fish-new.py'), d, ID, sp['name'], sp['sci'], str(sp['tl'])] + (['--no-autosat'] if os.environ.get('FISH_BATCH_NO_AUTOSAT') else []),
                        cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace')

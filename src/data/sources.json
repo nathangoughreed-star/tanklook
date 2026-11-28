@@ -292,6 +292,14 @@
    "kind": "consensus",
    "note": "per-value page url and verbatim quote in research/sourcing/<batch>.json, checked by scripts/verify-quotes.mjs"
   },
+  "coralmagazine.com": {
+   "title": "Coral Magazine (best aquarium invertebrates: bubbletip anemone)",
+   "by": "Coral Magazine",
+   "url": "https://coralmagazine.com/2019/04/25/best-aquarium-invertebrates-bubbletip-anemone",
+   "accessed": "2026-11-28",
+   "kind": "consensus",
+   "note": "30 gal minimum and 12 in maximum size read from a search result snippet, page not opened (bubble-tip anemone, sessile livestock lane 2026-11-28)"
+  },
   "modestfish.com": {
    "title": "Modest Fish care guides",
    "by": "Modest Fish",

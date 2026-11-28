@@ -80,6 +80,29 @@ turbo, cleaner shrimp and zoanthid item render exactly as before. The tank shot 
    a top-down picture of an irregular pattern (a zoa morph's disc) to sample ring colours from.
 2. Zoanthid morphs: one colony = one morph (as sold), or mixed?
 
+## Sheet test (Nathan 2026-11-28: "lets do a sheet test for each unique kind of body shape just to check how well it works")
+One ChatGPT 5-row reference sheet per body plan in the milestone, to judge whether sheets beat the measured generator
+(open question 1). Prompts: `scripts/invert-sheet-prompts.py` -> `research/invert-sheets/prompts/<id>-t1.md` and
+`C:/Users/nreed/fish-sheets/<id>-inv1-gen/prompt.txt`. Header = build B's method block, reworded where it named fins.
+| Body plan | Test species | Rows |
+|---|---|---|
+| Cone snail | banded trochus | side crawling; shell aperture / back; apex + base; sole through glass |
+| Caridean shrimp | peppermint | side; side without appendages; top; front + map; side map |
+| True crab | emerald crab | top; top without legs; side; front + map; underside |
+| Hermit crab | scarlet reef hermit | side; crab out of shell; top; front + map; empty shell |
+| Urchin | tuxedo urchin | side; side without spines; top; bottom + zone map; spine strip |
+| Polyp colony | zoanthid (dragon-eye) | polyp top + side; disc ring map; closed polyp; colony patch; colony on rock |
+**Crab template (R207, Nathan 2026-11-28: "I had to alter the emerald crab prompt ... because it was printing wrong
+before"):** his rewrite is the emerald crab prompt word for word (`emeraldcrab-t1.md`; the folder's `prompt.txt` is the
+original). It states the 10 appendages, five per side in order; it has a dorsal master view, a carapace-only dorsal
+view, a front segmentation map (claws red, legs yellow, eyes white), a ventral view and a final checklist. New crabs copy
+it and change only the species facts. Its general blocks are now in the script for every crustacean: the appendage
+priority, a count per side in order, a fixed symmetric pose, strict orthographic with no ground lines, and the checklist
+(`PRIO_CRUST`, `POSE_CRUST`, `CHECK_CRUST`). Peppermint and scarlet hermit have t2 prompts with them, written for a redo
+and not queued (their t1 sheets exist).
+Judge each sheet on: same specimen in every row, measured ratios held, rows usable by a script (maps flat, black clean),
+and the look against the reference photos. Results go in the table below once the sheets are in.
+
 ## Correction log (Nathan's corrections, newest last)
 | Date | Model | Correction | Fix |
 |---|---|---|---|

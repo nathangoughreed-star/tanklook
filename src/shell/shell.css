@@ -972,3 +972,13 @@ body.landdock .ui2app .viewer { margin-left: 400px; }
 .fishlabel .fl-why { margin-top: 2px; color: var(--text-2); }
 .fishlabel .fl-link { pointer-events: auto; background: none; border: 0; padding: 0; color: var(--accent, #4f8cff); text-decoration: underline; cursor: pointer; font: inherit; }
 body.watching, body.watching canvas { cursor: none; }
+/* grain editor (Nathan 2026-11-28): each 3D grain's shape and surface, folded under its line */
+.blend2 .bshape { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 4px; }
+.blend2 .bshape summary { cursor: pointer; color: var(--text-2); font-size: var(--fs-sm); }
+.blend2 .bshape[open] summary { margin-bottom: 4px; }
+.blend2 .bsrow { display: grid; grid-template-columns: 64px minmax(0, 1fr) 84px; align-items: center; gap: var(--s2); padding: 2px 0; }
+.blend2 .bsrow .bend { color: var(--text-3); font-size: var(--fs-sm); }
+.blend2 .bsrow .bend:last-child { text-align: right; }
+.blend2 .bcols { display: inline-flex; align-items: center; gap: var(--s2); }
+.blend2 .bsize { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2); }
+.blend2 .bshape > .btn { margin-top: 4px; }

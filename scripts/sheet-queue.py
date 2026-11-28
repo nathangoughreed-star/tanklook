@@ -99,7 +99,8 @@ def main(argv):
     single_instance()
     opt = {argv[i]: argv[i + 1] for i in range(len(argv) - 1) if argv[i] in ('--downloads',)}
     dl = opt.get('--downloads', os.path.join(os.path.expanduser('~'), 'Downloads')); redo = '--redo' in argv; noopen = '--no-open' in argv
-    if '--all' in argv: q = sorted(d for d in glob.glob(SHEETS + '/*-gen') if os.path.exists(d + '/prompt.txt') and not os.path.exists(d + '/sheet.webp'))
+    # --all never takes the colour-form *-f1-gen folders (no colour forms until every base model is approved; PIPELINE step 1)
+    if '--all' in argv: q = sorted(d for d in glob.glob(SHEETS + '/*-gen') if os.path.exists(d + '/prompt.txt') and not os.path.exists(d + '/sheet.webp') and not d.endswith('-f1-gen'))
     else: q = [a for i, a in enumerate(argv) if not a.startswith('--') and not (i > 0 and argv[i - 1] == '--downloads')]
     q = [d for d in q if os.path.exists(os.path.join(d, 'prompt.txt'))]
     for p in glob.glob(SHEETS + '/*/sheet-download.*'): FILED.add(digest(p))   # sheets filed by earlier runs count as repeats too
