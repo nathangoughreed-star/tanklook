@@ -16,7 +16,7 @@ Steps: `PIPELINE.md`. Same method as b11 (`HANDOFF-batch-b11.md`).
 ## The 20
 | id | Common / scientific | TL | FishShapes | Absent fins | Notes |
 |---|---|---|---|---|---|
-| bleedingheart | Bleeding heart tetra, *Hyphessobrycon erythrostigma* | 2.6 in | own | - (adipose) | |
+| bleedingheart | Bleeding heart tetra, *Hyphessobrycon erythrostigma* | approved 2026-11-28 ("Approve group 2") | own | - (adipose) | |
 | blackneon | Black neon tetra, *H. herbertaxelrodi* | 1.5 in | own (n=1) | - (adipose) | |
 | rosybarb | Rosy barb (male), *Pethia conchonius* | 4 in | own | - | |
 | giantdanio | Giant danio, *Devario aequipinnatus* | 4 in | own | - | |
@@ -27,14 +27,14 @@ Steps: `PIPELINE.md`. Same method as b11 (`HANDOFF-batch-b11.md`).
 | elephantnose | Elephantnose, *Gnathonemus petersii* | 9 in | own | - | chin trunk: build with the tube-snout outline (`--face`, method row 78) |
 | arowana | Silver arowana, *Osteoglossum bicirrhosum* | 24 in | own | - | |
 | upsidedowncat | Upside-down catfish, *Synodontis nigriventris* | 3.5 in | proxy *S. nigrita* | - (adipose) | drawn upright |
-| dwarfchainloach | Dwarf chain loach, *Ambastaia sidthimunki* | 2 in | proxy *Botia histrionica* | - | check depth vs photo |
+| dwarfchainloach | Dwarf chain loach, *Ambastaia sidthimunki* | approved 2026-11-28 ("Approve group 2") | proxy *Botia histrionica* | - | check depth vs photo |
 | maroonclown | Maroon clownfish, *Premnas biaculeatus* | 6 in | own | - | |
-| boxfish | Yellow boxfish (juvenile), *Ostracion cubicus* | 4 in | proxy *O. immaculatus* | pelvic | box body |
+| boxfish | Yellow boxfish (juvenile), *Ostracion cubicus* | approved 2026-11-28 ("Approve group 2") | proxy *O. immaculatus* | pelvic | box body |
 | valentini | Valentini puffer, *Canthigaster valentini* | 4 in | own | pelvic | |
 | purpletang | Purple tang, *Zebrasoma xanthurum* | 10 in | proxy *Z. flavescens* | - | |
 | bicolorblenny | Bicolor blenny, *Ecsenius bicolor* | 4 in | own | - | pectorals spread (rests on them) |
 | neongoby | Neon goby, *Elacatinus oceanops* | 2 in | own | - (2nd dorsal) | pelvic disc |
-| bluedamsel | Blue damselfish (male), *Chrysiptera cyanea* | 3 in | own | - | |
+| bluedamsel | Blue damselfish (male), *Chrysiptera cyanea* | approved 2026-11-28 ("Approve group 2") | own | - | |
 | melanurus | Melanurus wrasse (male), *Halichoeres melanurus* | 4.5 in | own | - | |
 
 Not in b12 (told Nathan): lined seahorse (upright body), kissing gourami and blood parrot (store forms are colour forms / hybrids). Optional: redo the Denison barb sheet (red stripe ran full length).
@@ -46,7 +46,7 @@ Not in b12 (told Nathan): lined seahorse (upright body), kissing gourami and blo
 | arowana | f86ea63a, rebuilt | fix 2026-11-28 ("arowana mouth/front needs work"); snout + forward barbels, shown | method row 81; mass 1.45-1.90x |
 | bicolorblenny | f86ea63a, rebuilt (row 76) | fix 2026-11-28 ("blenny looks too stretched long"); rebuilt, shown | method row 81 |
 | blackneon | f86ea63a | approved 2026-11-28 ("rest can ship") | go-live needs a catalogue row |
-| bleedingheart | (group 2) | shown 2026-11-28 | |
-| bluedamsel | (group 2) | shown 2026-11-28 | blue very saturated |
-| boxfish | (group 2) | shown 2026-11-28 | proxy depth O. immaculatus; mass-soft 1.22-1.60x |
-| dwarfchainloach | (group 2), fixed | fix 2026-11-28 ("Fix the loach"); rebuilt 21.5 % SL (was 30.1) + barbels, shown | fishshapes.json depth set by hand 23 / 22-26 (FishBase: "elongated"); plan_extra barbels |
+| bleedingheart | (group 2) | approved 2026-11-28 ("Approve group 2") | |
+| bluedamsel | (group 2) | approved 2026-11-28 ("Approve group 2") | blue very saturated |
+| boxfish | (group 2) | approved 2026-11-28 ("Approve group 2") | proxy depth O. immaculatus; mass-soft 1.22-1.60x |
+| dwarfchainloach | (group 2), fixed | approved 2026-11-28 ("Approve group 2") | fishshapes.json depth set by hand 23 / 22-26 (FishBase: "elongated"); plan_extra barbels |
