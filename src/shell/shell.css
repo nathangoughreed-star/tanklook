@@ -600,7 +600,7 @@ body.placing, body.placing * { cursor: copy !important; user-select: none }
 /* ---- request R91: Full screen / Tank only ---- */
 .fsitem { justify-content: space-between; display: flex; width: 100%; } .fsitem .kbd { color: var(--text-3); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: 11px; }
 .ui2app.tankonly { display: block; }
-.ui2app.tankonly > :not(.viewer):not(.fsexit) { display: none !important; }
+.ui2app.tankonly > :not(.viewer):not(.fsexit):not(.fishlabel) { display: none !important; }
 .ui2app.tankonly > .viewer { position: fixed; inset: 0; }
 .ui2app.tankonly .viewer .ov { display: none !important; }
 .fsexit { position: fixed; top: var(--s3); right: var(--s3); z-index: var(--z-toast); transition: opacity .4s; display: inline-flex; align-items: center; gap: var(--s1); }
@@ -966,3 +966,9 @@ body.landdock .ui2app .viewer { margin-left: 400px; }
 /* Commercial tanks: Common tanks / All tanks tiers (Nathan 2026-11-27) */
 .seg.tiers { display: flex; width: 100%; margin-bottom: 2px; } .seg.tiers button { flex: 1; } .seg.tiers .n { color: var(--text-3); font-weight: 400; margin-left: 4px; }
 .tierhint { margin: 0 0 var(--s1); }
+
+/* BR2: tap label over an animal, and Watch mode's hidden cursor */
+.fishlabel { position: fixed; z-index: var(--z-toast); transform: translate(-50%, -100%); max-width: min(280px, 80vw); padding: var(--s1) var(--s3); border-radius: var(--r-ctl); font-size: var(--fs-sm); color: var(--text); pointer-events: none; }
+.fishlabel .fl-why { margin-top: 2px; color: var(--text-2); }
+.fishlabel .fl-link { pointer-events: auto; background: none; border: 0; padding: 0; color: var(--accent, #4f8cff); text-decoration: underline; cursor: pointer; font: inherit; }
+body.watching, body.watching canvas { cursor: none; }

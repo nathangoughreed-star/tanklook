@@ -5,6 +5,7 @@
 // a hard projection at the end of every step keeps each centre at least its body radius out of anything solid.
 // step() allocates nothing: per-fish state lives in typed arrays, scratch values are locals.
 import { rng } from '../art/paint';
+import { ACT } from './swimTypes';
 import type { MakeSwimSim, SwimField, SwimPose, SwimSim, SwimmerSpec, V3 } from './swimTypes';
 import { makeIsItem, pickHomes } from './swimHome';
 
@@ -52,6 +53,9 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
   const rv = F(), stT = F(), stX = F(), stY = F(), stZ = F(), chT = F(), chCd = F(), gdCd = F();
   const prt = new Int32Array(n).fill(-1), kd = new Int32Array(n).fill(-1), chTg = new Int32Array(n).fill(-1), chGuard = new Uint8Array(n), hasFoe = new Uint8Array(n), guardF = new Uint8Array(n);
   const events = { chases: 0, guards: 0, startles: 0 }; let eventsOn = true, evT = 40 + RE() * 80, K = 0, foeM = new Uint8Array(0);
+  // BR2: foraging (a bottom dweller dips its snout to the bed and pecks while it roams). fgS 0/1, fgT = time left, fgCd = cooldown; its own stream (RF) so no other fish's randomness moves.
+  const RF = rng(seed ^ 0x7f4a7c15);
+  const fgS = new Uint8Array(n), fgT = F(), fgCd = F(), fleeFrom = new Int32Array(n).fill(-1); let foraging = true;
   const poses: SwimPose[] = [], idIndex = new Map<number, number>();
   const grad: V3 = [0, 0, 0];
 
@@ -150,6 +154,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
     if (!bottom[i]) modeT[i] = 5 + R() * 30; // loners hover later, not at once
     hS[i] = 0; hT[i] = 0; flickS[i] = 0; if (hb[i]) hCd[i] = 2 + RH() * 15;
     stT[i] = 0; chT[i] = 0; chTg[i] = -1; chGuard[i] = 0; chCd[i] = hasFoe[i] ? 6 + RE() * 55 : 1e9; gdCd[i] = 3 + RE() * 12;
+    fgS[i] = 0; fgCd[i] = 3 + RF() * 14; fleeFrom[i] = -1;
     aSt[i] = 0; if (aRate[i] > 0) aCd[i] = (0.2 + RA()) * 3600 / aRate[i]; // the first trip is not at once
   }
 
@@ -365,7 +370,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
   }
   function startChase(i: number, j: number, guard: boolean) {
     chT[i] = (guard ? 1 : 1.2) + RE() * 0.9; chTg[i] = j; chGuard[i] = guard ? 1 : 0; events.chases++; if (guard) events.guards++;
-    alarm(j, px[i], py[i], pz[i]); stT[j] = Math.max(stT[j], 2.5); startleAt(px[j], py[j], pz[j], len[j] * 5, i); // the victim bursts away and its neighbours (its school) with it
+    alarm(j, px[i], py[i], pz[i]); stT[j] = Math.max(stT[j], 2.5); fleeFrom[j] = i; startleAt(px[j], py[j], pz[j], len[j] * 5, i); // the victim bursts away and its neighbours (its school) with it
   }
   /** This fish's rush this step: starts one (a foe in range; a guard's intruder) or steers the one under way. Sets the override (ovOn ...). */
   function chaseStep(i: number, dt: number) {
@@ -523,6 +528,10 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       const dst = digSt[i];
       ovOn = 0; if (hb[i] && chT[i] <= 0) habitStep(i, dt); // FB3
       chaseStep(i, dt); pairStep(i); // BR
+      if (isB && foraging) { // BR2: a dip-and-peck at the bed in the middle of roaming (never while resting, digging, alarmed, rushing or at a habit action)
+        if (fgS[i]) { fgT[i] -= dt; if (fgT[i] <= 0 || mode[i] !== MOVE || dst !== 0 || stT[i] > 0 || chT[i] > 0 || hS[i] !== 0) { fgS[i] = 0; fgCd[i] = 6 + RF() * 25; } }
+        else { fgCd[i] -= dt; if (fgCd[i] <= 0) { if (mode[i] === MOVE && dst === 0 && stT[i] <= 0 && chT[i] <= 0 && hS[i] === 0) { fgS[i] = 1; fgT[i] = 3 + RF() * 5; } else fgCd[i] = 2 + RF() * 4; } }
+      }
       let sk = 0; if (stT[i] > 0) { stT[i] -= dt; sk = clamp(stT[i] / 2, 0, 1); } // BR: alarm strength: full for the first 0-2 s, then fading
       if (sRate[i] > 0) {
         const was = subMode[i];
@@ -727,7 +736,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
       // ---- speed
       const sv = 1 + 0.18 * Math.sin(T * w1[i] + ph3[i]) + 0.1 * Math.sin(T * w2[i] + ph2[i]);
       let target: number;
-      if (isB) target = mode[i] === REST ? L * (restS[i] > 0 ? 0.012 : 0.05) * (0.5 + 0.5 * Math.sin(T * 0.5 + ph1[i]) ** 2) : mode[i] === HOP ? L * 0.9 : L * 0.55 * sv * boost;
+      if (isB) target = mode[i] === REST ? L * (restS[i] > 0 ? 0.012 : 0.05) * (0.5 + 0.5 * Math.sin(T * 0.5 + ph1[i]) ** 2) : mode[i] === HOP ? L * 0.9 : L * (fgS[i] ? 0.12 : 0.55) * sv * boost;
       else if (mode[i] === REST) target = L * 0.04;
       else {
         target = cruise[i] * sv * boost;
@@ -823,6 +832,7 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
         calmS[i] += (calmT - calmS[i]) * Math.min(1, dt * (pulsing2 ? 14 : 3));
         { const bT = restS[i] > 0 && isB && mode[i] === REST && dst === 0 && spd[i] < L * 0.05 ? 1 : 0; breathS[i] += (bT - breathS[i]) * Math.min(1, dt * 2); if (restS[i] > 0) P.breath = breathS[i]; }
         P.fan = fanS[i]; P.calm = calmS[i]; P.dig = sunk; P.beat = 1 + 0.7 * effS[i]; if (sRate[i] > 0) P.sub = mode[i] === MOVE ? subMode[i] : 2; }
+      if (fgS[i] && digK[i] <= 0.001) pt = -16 - 12 * Math.sin(T * 9 + ph2[i]) * Math.sin(T * 1.3 + ph1[i]) ** 2; // BR2: snout down, a quick dip every second or so
       if (hb[i] && hS[i] === 5) pt += -22 + 8 * Math.sin(T * 15 + ph1[i]); // FB3: pecking: the snout bobs at the surface
       pitchS[i] += (pt - pitchS[i]) * Math.min(1, dt * 4);
       let rollT = clamp(-yawRate[i] * R2D * 0.12, -12, 12);
@@ -849,6 +859,26 @@ export const makeSwimSim: MakeSwimSim = (fish: SwimmerSpec[], field: SwimField, 
   let T = 0, tick = 0;
   return {
     events,
+    setForaging(on: boolean) { foraging = on; if (!on) fgS.fill(0); },
+    act(id: number) {
+      const i = idIndex.get(id); if (i === undefined) return -1;
+      if (aSt[i]) return ACT.gulp;
+      if (chT[i] > 0) return ACT.chase;
+      if (stT[i] > 0) return fleeFrom[i] >= 0 && chT[fleeFrom[i]] > 0 && chTg[fleeFrom[i]] === i ? ACT.flee : ACT.startled;
+      const d = digSt[i]; if (d === 6) return ACT.hidden; if (d === 5) return ACT.dig; if (d > 0) return ACT.dig;
+      if (hb[i]) { const h = hS[i]; if (h === 5 || h === 4) return ACT.peck; if (h === 2 || h === 1) return ACT.home; if (h === 6) return ACT.patrol; }
+      if (fgS[i]) return ACT.forage;
+      const j = prt[i]; if (j >= 0 && Math.hypot(px[i] - px[j], pz[i] - pz[j]) < len[i] * 1.6 && mode[i] !== REST) return ACT.pair;
+      if (mode[i] === REST) return bottom[i] ? ACT.rest : ACT.hover;
+      if (sRate[i] > 0 && subMode[i] === 2) return ACT.hover;
+      if (gi[i] >= 0 && mode[i] === MOVE) return ACT.shoal;
+      return ACT.swim;
+    },
+    actTarget(id: number) {
+      const i = idIndex.get(id); if (i === undefined) return -1;
+      const t = chT[i] > 0 ? chTg[i] : stT[i] > 0 && fleeFrom[i] >= 0 && chT[fleeFrom[i]] > 0 && chTg[fleeFrom[i]] === i ? fleeFrom[i] : -1;
+      return t >= 0 ? fish[t].id : -1;
+    },
     startle(x: number, y: number, z: number, radius = 380) { startleAt(x, y, z, radius, -1); },
     setEvents(on: boolean) { eventsOn = on; if (!on) for (let i = 0; i < n; i++) if (chT[i] > 0) endChase(i); },
     step(dt: number) {

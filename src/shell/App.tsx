@@ -18,6 +18,8 @@ import { Drawer } from './drawers';
 import { ViewCluster } from './view';
 import { PlumbSwitch, PlumbingView } from './plumbing';
 import { FsExit, useFs } from './fullscreen';
+import { FishLabel, OPEN_CHECK } from './fishLabel';
+import { exitWatch, onWatchChange, watchOn } from './watch';
 import { SettingsSection } from './settings';
 import { PrintSection, PrintPaper } from './print';
 import { AnimalsSection, SelectionDrawer, pickable } from './animals';
@@ -215,6 +217,10 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
   const slow = useStore(store);
   const phone = usePhone();
   const fs = useFs();
+  const [watching, setWatching] = useState(watchOn());
+  useEffect(() => onWatchChange(() => setWatching(watchOn())), []);
+  useEffect(() => { if (!fs.tankOnly) exitWatch(); }, [fs.tankOnly]); // the bare tank ended some other way: so does Watch
+  useEffect(() => { const f = () => { setSection(null); setMore(false); setDrawer('habitat'); }; addEventListener(OPEN_CHECK, f); return () => removeEventListener(OPEN_CHECK, f); }, []); // BR2: the tap label's "See the stocking check"
   const [section, setSection] = useState<SectionId | null>(phone || landing.untouched ? null : 'tank');
   const [more, setMore] = useState(false);
   const [drawer, setDrawer] = useState<CheckId | 'selection' | null>(null);
@@ -309,6 +315,7 @@ export function App({ store, viewHost, profile, preview, files, viewer }: AppPro
       <FileLayer store={store} files={files} />
       {door ? <AnimalDoor store={store} say={files.say} onClose={() => setDoor(false)} /> : null}
       {fs.tankOnly ? <FsExit full={fs.viaApi} /> : null}
+      <FishLabel getViewer={viewer} watch={watching} />
       {maker ? <Maker store={store} init={maker} viewHost={viewHost} getViewer={viewer} preview={preview} onEnd={() => { setMaker(null); setLibN(n => n + 1); }} /> : null}
     </div>
   );

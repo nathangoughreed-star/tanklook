@@ -1090,6 +1090,14 @@ export class Viewer {
     const h = this.hitTest0(clientX, clientY); if (!h || !this.pair) return h;
     return { ...h, fishId: null, itemId: null, dot: null, pool: null, mesh: undefined } as typeof h;
   }
+  /** BR2: the tap label of fish `id` right now: its words, the verdict's sentence for a rush between a flagged pair, and where it is on screen (client px, a little above the fish). Null when the fish is not roaming (motion off, not a swimmer). Computed when asked; nothing runs per frame. */
+  fishLabel(id: number): { text: string; why?: string; act: number; x: number; y: number } | null {
+    const a = this.roam.actOf(id, this.drifters); if (!a) return null;
+    const m = this.drifters.find(d => d.userData.id === id), vp = this.active.find(v => v.fishMeshes?.includes(m as THREE.Mesh)) ?? this.active[0]; if (!m || !vp) return null;
+    const r = this.host.getBoundingClientRect(), v = m.getWorldPosition(new THREE.Vector3()), tall = ((m.userData.roam as { spec: { tall?: number } }).spec.tall ?? 10);
+    const top = v.clone(); top.y += tall; top.project(vp.cam);
+    return { ...a, x: r.left + vp.x + (top.x + 1) / 2 * vp.w, y: r.top + (1 - top.y) / 2 * vp.h };
+  }
   /** BR: a click on open water in the look-only view sets off an alarm there (fish bolt, schools tighten); false when it hit an animal or a piece, or missed the water. */
   startleAtPoint(clientX: number, clientY: number): boolean {
     const h = this.hitTest0(clientX, clientY); if (!h || h.fishId != null || h.itemId != null) return false;

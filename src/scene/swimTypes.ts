@@ -81,7 +81,17 @@ export interface SwimPose { x: number; y: number; z: number; yaw: number; pitch:
   /** The current (scene/flow.ts): how fast the tail beats against the usual (1; up to ~1.8 working hard against a strong flow). Absent = 1. */
   beat?: number }
 
+/** BR2: what a fish is doing now, in the sim's own terms (read on demand by `SwimSim.act`; the label's words live in scene/actWords.ts). */
+export const ACT = { swim: 0, rest: 1, hover: 2, shoal: 3, forage: 4, dig: 5, hidden: 6, home: 7, peck: 8, patrol: 9, gulp: 10, startled: 11, chase: 12, flee: 13, pair: 14 } as const;
+export type Act = typeof ACT[keyof typeof ACT];
+
 export interface SwimSim {
+  /** BR2: what fish `id` is doing right now (an ACT code), worked out when asked, so nothing costs anything per frame; -1 if unknown. */
+  act(id: number): number;
+  /** BR2: for a chase, the id of the fish being rushed; for a flee, the id of the one it runs from; -1 otherwise. */
+  actTarget(id: number): number;
+  /** BR2: bottom-dweller foraging (a dip-and-peck at the bed) on or off; on by default. For tests that compare against the old motion. */
+  setForaging?(on: boolean): void;
   /** BR: counts since the sim was made: rushes started, of them guard rushes, and alarms (random, clicks and chases). For tests and the debug page. */
   readonly events: { chases: number; guards: number; startles: number };
   /** BR: an alarm at a point (mm): animals within about `radius` bolt away, schools tighten and turn together, bottom fish freeze. A click on open water outside edit mode. */
