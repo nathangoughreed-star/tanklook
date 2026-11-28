@@ -30,6 +30,11 @@ Six very different fish (a hopper, a sand-sifter, a territorial cichlid pair, a 
 - **Spaces fish can go inside and disappear into**: caves, crevices, root masses, leaf litter, soft sand (burrowing, needs a substrate type). Fish can be fully hidden.
 - **Tank events** the fish can react to: lights, feeding, water changes.
 
+## Answers from Nathan (2026-11-28)
+- Hidden fish: **keep it real**, no hints. Instead a View toggle menu to hide plants, gear, hardscape or animals, so you can find a hidden fish (logged as its own UI request).
+- More species: **yes**, gather betta, otocinclus, angelfish, Amano shrimp and nerite snail ethograms to firm up the first system.
+- Onboarding: **yes**, the ethogram prompt runs right after the ref sheet in the same ChatGPT chat; the queue script alternates image and ethogram prompts (logged as its own request, after BH1 fixes the template).
+
 ## Decisions for Nathan (updated after his priorities)
 Settled: no tank events, no day/night, no breeding mechanics; courting and dominance displays are in (part of the scape and social slice, after movement).
 1. **First slice**, suggested from his priorities: (a) **realistic movement**: the burst / glide / pause cycle per species, the three body modes (tail swimmer, surface crawler, whole-body undulator), explosive starts, real stillness at rest; (b) **interaction with the scape**: places as destinations (caves, cover, plants, open sand, hardscape surfaces), rest postures that use them (perch, lie on sand, cling at any angle, drape over a leaf, wedge in a crevice), substrate foraging (pick, sift, dig head-down), going into caves, roots and sand. Cohesion and home come with it because they decide where fish go.
