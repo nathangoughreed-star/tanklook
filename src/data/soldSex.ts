@@ -33,6 +33,7 @@ export const SOLD_BY: Record<string, SoldBy> = {
   // cichlids
   kribensis: S('sexed', true, 'sold as 1 male + 1 female pairs (Dan\'s Fish, Light.fish, Imperial Tropicals)'),
   cockatoo: S('sexed', true, 'aquariumfish.com sells pairs and males; Fish Barn sells females alone; schools of 4 for juveniles'),
+  agassizii: S('sexed', false, 'SO3 R204 2026-11-28, search snippets only: Aquatics Unlimited lists a double red male ($24.99) and the Aqua Huna and Wetspot fire red / Alenquer listings are single named fish; no pair or trio lot was seen, so kept as sexed like the cockatoo dwarf cichlid'),
   yellowlab: S('unsexed', true, 'sold as unsexed juveniles (Capital Cichlids sellers, LiveFishDirect "unsexed juvenile" option, Guidarium)'),
   peacock: S('sexed', true, 'LiveFishDirect offers Male / Female / Unsexed; ThatPetPlace and Rockland sell adult males; "assorted" bags are mixed'),
   demasoni: S('unsexed', false, 'no listing found with a sex option; sold as small juveniles that cannot be sexed (the species note says so)'),
