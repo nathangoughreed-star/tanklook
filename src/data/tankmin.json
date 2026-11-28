@@ -3060,6 +3060,25 @@
     "url": "https://www.seriouslyfish.com/species/brachygobius-doriae/"
    },
    "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of the two minimums found (Seriously Fish 11 gal; Aquarium Source 10 gal), 10.5 gal (SO1 R202, 2026-11-28)"
+  },
+  "scarletbadis": {
+   "red": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/dario-dario/",
+    "states": "45 x 30 cm, about 41 litres (11 US gal), for a pair or one male with several females",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 10.5,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care pages",
+    "url": "https://www.seriouslyfish.com/species/dario-dario/"
+   },
+   "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of the two minimums found (Seriously Fish 11 gal; Aquarium Source 10 gal, 20 gal for more than 6 fish; Fishkeeping World 10 gal), 10.5 gal (SO1 R202, 2026-11-28)"
   }
  }
 }

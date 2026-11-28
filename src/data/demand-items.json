@@ -2258,6 +2258,13 @@
    "hi": 6,
    "unit": "each; Petco $5.49, AquariumFish.com $5.79 (3 for $15.29), Aquatic Arts $5.99 (snippets only) (SO1 R202 search 2026-11-28; stock varies)",
    "url": "https://aquariumfish.com/products/bumblebee-goby"
+  },
+  "animal:scarletbadis": {
+   "lo": 7,
+   "mode": 9,
+   "hi": 17,
+   "unit": "each, 0.5-0.8 in; That Pet Place $9.99 (store only), Aquatic Arts male-only $16.99, Imperial Tropicals $6.99 (sold out) (snippets only) (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://aquaticarts.com/products/scarlet-badis"
   }
  }
 }

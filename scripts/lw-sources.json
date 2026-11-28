@@ -736,5 +736,11 @@
   "b": 3.0,
   "src": "fishbase-bayes",
   "note": "FishBase ID 25066 Bayesian (TL cm, a 0.00442-0.02263, b 2.81-3.19); its one table row (SL, n=3, b 3.000) is not used (SO1 R202)"
+ },
+ "scarletbadis": {
+  "a": 0.00389,
+  "b": 3.12,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 60260 Bayesian (TL cm, a 0.00180-0.00842, b 2.94-3.30); its length-weight table has no rows (SO1 R202)"
  }
 }
