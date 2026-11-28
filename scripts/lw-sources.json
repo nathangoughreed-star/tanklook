@@ -760,5 +760,35 @@
   "b": 2.98,
   "src": "fishbase-bayes",
   "note": "FishBase ID 26703 Bayesian (TL cm, a 0.01087-0.02908, b 2.84-3.12); its three table rows are SL (n 1307, 3, 115; b 2.79-3.16) and are not used (SO3 R204)"
+ },
+ "blackneon": {
+  "a": 0.01202,
+  "b": 3.09,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 10654 Bayesian (TL cm, a 0.00479-0.03019, b 2.89-3.29); its one table row (SL, n=1, b 3.000) is not used (SO3 R204)"
+ },
+ "bleedingheart": {
+  "a": 0.01995,
+  "b": 3.01,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 10651 Bayesian (TL cm, a 0.00906-0.04395, b 2.83-3.19); its one table row (SL, n=3, b 3.000) is not used (SO3 R204)"
+ },
+ "dwarfchainloach": {
+  "a": 0.00589,
+  "b": 3.08,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 10910 Bayesian (TL cm, a 0.00251-0.01382, b 2.88-3.28); the species has no length-weight table rows (SO3 R204)"
+ },
+ "bluedamsel": {
+  "a": 0.01445,
+  "b": 3.0,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 5695 summary-page Bayesian estimate (TL cm, a 0.00630-0.03316, b 2.80-3.20); its one table row (SL, n=3, b 3.000) is not used (SO3 R204)"
+ },
+ "boxfish": {
+  "a": 0.05495,
+  "b": 2.75,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 6555 summary-page Bayesian estimate (TL cm, a 0.03503-0.08622, b 2.61-2.89); its three table rows (a 0.060-0.129, b 2.52-2.72; two TL, one FL; n 12-20) are close to it (SO3 R204)"
  }
 }

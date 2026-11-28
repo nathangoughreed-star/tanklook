@@ -2293,6 +2293,41 @@
    "hi": 35,
    "unit": "each; Aqua Huna fire red $24.00, Aquatics Unlimited double red $24.99 (range $12.99-$29.99), Wetspot Alenquer $34.99, wild-type listing $12.99 (search snippets, sizes not shown) (SO3 R204 search 2026-11-28; stock varies)",
    "url": "https://aquahuna.com/products/apistogramma-agassizii-fire-red"
+  },
+  "animal:blackneon": {
+   "lo": 2,
+   "mode": 4,
+   "hi": 7,
+   "unit": "each; Petco 12-pack $18.99 (about $1.58 each), PetSmart $2.99 in store, Aquatic Arts $6.99, Live Fish Direct about $5 (search snippets, sizes not shown) (SO3 R204 search 2026-11-28; stock varies)",
+   "url": "https://www.aquaticarts.com/products/black-neon-tetra"
+  },
+  "animal:bleedingheart": {
+   "lo": 5,
+   "mode": 8,
+   "hi": 15,
+   "unit": "each; Nuaqua from $7.17, Imperial Tropicals $14.99 (search snippets; a $6.49 listing is the lookalike Socolof's tetra), sizes not shown (SO3 R204 search 2026-11-28; stock varies)",
+   "url": "https://nuaquashop.com/products/bleeding-heart-tetra"
+  },
+  "animal:dwarfchainloach": {
+   "lo": 7,
+   "mode": 12,
+   "hi": 25,
+   "unit": "each; Aquahuna $10.00 (packs of 4), Dan's Fish $14.99 aquarium-bred, That Pet Place $12.99 (out of stock), Aquarium Co-Op article $7-15, Aquatics Unlimited $24.99-$34.99 (search snippets, sizes not shown) (SO3 R204 search 2026-11-28; stock varies)",
+   "url": "https://aquahuna.com/collections/loach/products/dwarf-chain-loach-sidthimunki-botia"
+  },
+  "animal:bluedamsel": {
+   "lo": 10,
+   "mode": 15,
+   "hi": 35,
+   "unit": "each; Reef Chasers $9.99 (about 1.5 in), That Pet Place $14.99 (small), Saltwaterfish male $34.99 (2-3 in) (search snippets) (SO3 R204 search 2026-11-28; stock varies)",
+   "url": "https://www.reefchasers.com/products/blue-devil-damselfish"
+  },
+  "animal:boxfish": {
+   "lo": 39,
+   "mode": 80,
+   "hi": 140,
+   "unit": "each, juvenile; Saltwaterfish under 1 in $65.99 and 3.5-4.75 in $132.99, Aquatics Unlimited $139.99, Salty Underground $79.99, Top Shelf $38.99-$47.99 (search snippets; size and exact price unclear) (SO3 R204 search 2026-11-28; stock varies)",
+   "url": "https://www.saltwaterfish.com/product-cubicus-eastern-asia"
   }
  }
 }

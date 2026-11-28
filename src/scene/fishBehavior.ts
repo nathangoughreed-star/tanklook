@@ -40,6 +40,11 @@ export const HOVER: Record<string, HoverSpec> = {
   bichir: { w: 0.4, pec: 0.8, caudal: 0.15 }, // R150: props itself on its pectorals and fans them while still
   clownknife: { w: 0.5, pec: 0.4, caudal: 0.1 }, // R150: hangs in the water and creeps on its long anal fin
   bambooshark: { w: 0.5, pec: 0.3, caudal: 0.2 }, // R150: rests on the floor most of the day
+  boxfish: { w: 0.3, pec: 0.9, caudal: 0.2 }, // SO3 (R204)
+  bluedamsel: { w: 0.3, pec: 0.7, caudal: 0.35 }, // SO3 (R204)
+  dwarfchainloach: { w: 0.2, pec: 0.7, caudal: 0.35 }, // SO3 (R204)
+  bleedingheart: { w: 0.2, pec: 0.6, caudal: 0.35 }, // SO3 (R204)
+  blackneon: { w: 0.15, pec: 0.6, caudal: 0.4 }, // SO3 (R204)
   agassizii: { w: 0.55, pec: 0.9, caudal: 0.25 }, // SO3 (R204)
   silverdollar: { w: 0.15, pec: 0.6, caudal: 0.4 }, // SO1 (R202)
   serpae: { w: 0.15, pec: 0.6, caudal: 0.4 }, // SO1 (R202)
@@ -124,6 +129,7 @@ export const BENTHIC: Record<string, number> = {
   watchman: 0.88, // FB3: sits on its sand patch, hops now and then
   bambooshark: 0.9, // R150: sedentary, nocturnal
   bichir: 0.85, // R150: nocturnal, rests on the floor most of the day
+  dwarfchainloach: 0.8, // SO3 (R204): a bottom-living loach (Seriously Fish: cover of rocks and wood on sand; the pages do not state the zone, so this is an estimate)
   bumblebeegoby: 0.85, // SO1 (R202): a goby that sits on the floor or a hide and hops between spots
   kuhli: 0.8, clownloach: 0.75, yoyoloach: 0.75, syno: 0.75, sae: 0.72, rainbowshark: 0.75, redtailshark: 0.75,
 };
@@ -181,6 +187,7 @@ export const HABIT: Record<string, HabitSpec> = {
   orchiddottyback: H('crevice', 'hoverLow', 8,   1.3, 0,    1,   0.6,  1.2, 2,   1,   1,   0,   [3, 12]),
   pajamacardinal: H('host',    'mid',      8,   1.5, 0,    2,   0.3,  0.4, 0,   0.3, 0,   0.5, [4, 15]),
   yellowtailblue: H('host',    'hoverLow', 6,   1.4, 0,    1.5, 0.55, 1,   2,   1.2, 1,   0.5, [3, 12]),
+  bluedamsel:    H('host',    'hoverLow', 6,   1.4, 0,    1.5, 0.55, 1,   2,   1.2, 1,   0.5, [3, 12]),  // SO3 (R204): copied from the yellowtail blue damsel, the same reef-damsel habit
   tailspotblenny: H('crevice', 'perch',    5,   1.2, 0.2,  0,   0.2,  1.5, 3,   0.3, 2,   2,   [4, 25]),
   firefish:    H('bolt',    'hoverLow', 4,   1.2, 0,    3,   0.35, 0.5, 0,   0,   7,   2,   [4, 12]),  // hangs over its bolt-hole, flicks the dorsal, dives in when startled
   watchman:    H('burrow',  'perch',    2.5, 1.2, 0,    0,   0.15, 0.25, 0,  0,   1.5, 2,   [8, 40]),  // on the sand at its burrow mouth, still, short hops, no cruising
