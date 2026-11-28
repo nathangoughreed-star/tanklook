@@ -42,7 +42,7 @@ Not in b12 (told Nathan): lined seahorse (upright body), kissing gourami and blo
 ## Review log
 | fish | built | verdict (Nathan) | note |
 |---|---|---|---|
-| agassizii | f86ea63a | shown 2026-11-28 | |
-| arowana | f86ea63a | shown 2026-11-28 | gate: head/mid width 0.53, eye 1.8 % SL (eye reads small) |
-| bicolorblenny | f86ea63a | shown 2026-11-28 | head cirri not visible |
-| blackneon | f86ea63a | shown 2026-11-28 | eye lost the red top; mass-soft 1.49x |
+| agassizii | f86ea63a | approved 2026-11-28 ("rest can ship") | go-live needs a catalogue row |
+| arowana | f86ea63a | fix 2026-11-28 ("arowana mouth/front needs work") | gate: head/mid width 0.53, eye 1.8 % SL |
+| bicolorblenny | f86ea63a | fix 2026-11-28 ("blenny looks too stretched long") | |
+| blackneon | f86ea63a | approved 2026-11-28 ("rest can ship") | go-live needs a catalogue row |
