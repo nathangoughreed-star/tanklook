@@ -436,6 +436,26 @@
     "agassizii": {
       "look": "agassiziib",
       "approved": "2026-11-28"
+    },
+    "blackneon": {
+      "look": "blackneonb",
+      "approved": "2026-11-28"
+    },
+    "bleedingheart": {
+      "look": "bleedingheartb",
+      "approved": "2026-11-28"
+    },
+    "dwarfchainloach": {
+      "look": "dwarfchainloachb",
+      "approved": "2026-11-28"
+    },
+    "bluedamsel": {
+      "look": "bluedamselb",
+      "approved": "2026-11-28"
+    },
+    "boxfish": {
+      "look": "boxfishb",
+      "approved": "2026-11-28"
     }
   }
 }
