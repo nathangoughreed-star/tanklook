@@ -4,8 +4,9 @@ Status: **research summary for Nathan to react to. Nothing built.** Source: the 
 
 ## Nathan's priorities (2026-11-28) — these override the block list below
 - **High:** what the animals do in general (their everyday behavior mix); **interaction with substrate, plants, caves and hardscape**; **realism of movement**.
-- **Out of scope:** tank events (water change, lights, keeper movement: "this is the kind of stuff I dont really care about"), day vs night behavior, breeding.
-- So blocks 4 (darkness part), 8 (tank events), 9 and 11 are dropped. Colour states (10) are low priority, kept only where they show stress.
+- **Out of scope:** tank events (water change, lights, keeper movement: "this is the kind of stuff I dont really care about"), day vs night behavior, breeding mechanics (eggs, fry, brood care).
+- **In scope (Nathan, same day):** simple social displays: males courting females (following, quivering, fin spreading, colour up) and dominance displays between rivals (lateral display, flaring, short chase and return). "I have no interest in actual breeding mechanics though." The ethograms already have these: gudgeon lateral display and courtship, krib female quiver and male fin spread, pleco cheek-spine display, cory male following.
+- So blocks 4 (darkness part), 8 (tank events) and 9 are dropped; block 11 shrinks to its displays (courting, dominance) without breeding. Colour states (10) are low priority, kept only where they show stress.
 
 ## The main finding
 Six very different fish (a hopper, a sand-sifter, a territorial cichlid pair, a surface crawler, a schooler, a burrower) need **no species-specific code**. Each is a different selection and tuning of about ten shared building blocks. New species become data: an ethogram (the prompt), then a choice of blocks and settings.
@@ -30,7 +31,7 @@ Six very different fish (a hopper, a sand-sifter, a territorial cichlid pair, a 
 - **Tank events** the fish can react to: lights, feeding, water changes.
 
 ## Decisions for Nathan (updated after his priorities)
-Settled: no tank events, no day/night, no breeding.
+Settled: no tank events, no day/night, no breeding mechanics; courting and dominance displays are in (part of the scape and social slice, after movement).
 1. **First slice**, suggested from his priorities: (a) **realistic movement**: the burst / glide / pause cycle per species, the three body modes (tail swimmer, surface crawler, whole-body undulator), explosive starts, real stillness at rest; (b) **interaction with the scape**: places as destinations (caves, cover, plants, open sand, hardscape surfaces), rest postures that use them (perch, lie on sand, cling at any angle, drape over a leaf, wedge in a crevice), substrate foraging (pick, sift, dig head-down), going into caves, roots and sand. Cohesion and home come with it because they decide where fish go.
 2. **Hidden fish:** a kuhli in the roots or a pleco in its cave can be fully out of sight. Show a hint (a tail tip sticking out, a "3 hiding" label), or keep it real?
 3. **More species first?** Candidates that might add a new scape interaction: betta (rests on leaves near the surface), otocinclus (grazes on leaves and glass in groups), a shrimp or snail (invertebrates walking on everything), angelfish (tall, weaves between stems).
