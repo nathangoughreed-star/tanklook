@@ -3,7 +3,7 @@
 // Pure: describes what may change (editableFields) and what a change did (diffTouches). Equipment is not a tab (plan decision 2): light, tech,
 // layout seeds, brief and the rest are "support" state, free in a proposal (it is previewed and accepted whole) but never view state.
 import { layerOf } from './items';
-import { FISH_PROPS, HARDSCAPE_KEYS, ITEM_PROPS, SUBSTRATE_KEYS, TANK_PROPS, changedGroups, locksOf } from './locks';
+import { FISH_PROPS, HARDSCAPE_KEYS, ITEM_PROPS, SUBSTRATE_KEYS, TANK_PROPS, TANK_SUBGROUPS, changedGroups, locksOf } from './locks';
 import type { Fish, Item, Locks, TankSetup } from './types';
 
 export type Tab = 'tank' | 'animals' | 'plants' | 'hardscape' | 'substrate';
@@ -85,7 +85,7 @@ export function editableFields(tank: TankSetup, scope: readonly Tab[], locks: Lo
   const tl = lockOf('tank'), allTank = Object.keys(TANK_PROPS);
   return {
     scope: TABS.filter(on),
-    tank: on('tank') ? (tl ? (tl.props?.length ? allTank.filter(g => !tl.props!.includes(g)) : []) : allTank) : [],
+    tank: on('tank') ? (tl ? (tl.props?.length ? allTank.filter(g => !tl.props!.includes(g) && !(g === 'room' && tl.props!.some(p => p in TANK_SUBGROUPS))) : []) : allTank) : [],
     substrate: on('substrate') && !lockOf('substrate'),
     items: live(tank.items, ITEM_PROPS, it => layerOf(it) === 'plant' ? 'plants' : 'hardscape'),
     fish: live(tank.fish, FISH_PROPS, () => 'animals'),

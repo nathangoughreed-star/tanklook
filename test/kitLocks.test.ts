@@ -10,7 +10,7 @@ describe('kit gate', () => {
     const s = mk(), h0 = s.tank.stand.height, asked: string[][] = []; let go: (u: boolean) => void = () => {};
     s.kitGate = (hit, g) => { asked.push(hit.map(x => x.name)); go = g; };
     s.edit(t => { t.stand.height = h0 + 50; });
-    expect(asked).toEqual([['stand and lid']]); expect(s.tank.stand.height).toBe(h0);
+    expect(asked).toEqual([['stand']]); expect(s.tank.stand.height).toBe(h0);
     go(false); expect(s.tank.stand.height).toBe(h0); expect(s.tank.locks?.objects.some(o => o.target === 'tank')).toBe(true);
   });
   it('Unlock applies the edit and drops that lock only', () => {
@@ -22,5 +22,14 @@ describe('kit gate', () => {
   it('lets an unrelated edit through', () => {
     const s = mk(); s.kitGate = () => { throw new Error('asked'); };
     s.edit(t => { t.water.on = !t.water.on; });
+  });
+  it('a bundle with a hood and no stand leaves the stand free, holds the lid', () => {
+    const s = new Store(freshScene()); lockKitParts(s.tank, ['tank', 'lid', 'light']);
+    const h0 = s.tank.stand.height, asked: string[][] = [];
+    s.kitGate = (hit) => { asked.push(hit.map(x => x.name)); };
+    s.edit(t => { t.stand.height = h0 + 50; });
+    expect(asked).toEqual([]); expect(s.tank.stand.height).toBe(h0 + 50);
+    s.edit(t => { t.lid = t.lid === 'glass' ? 'mesh' : 'glass'; });
+    expect(asked).toEqual([['lid']]);
   });
 });
