@@ -14,8 +14,6 @@ export interface HoverSpec {
   caudal: number;
 }
 export const HOVER: Record<string, HoverSpec> = {
-  // sessile animals (anemones, clams; kind 'sessile'): never hover or swim, so the hover timers stay at rest
-  bta: { w: 0, pec: 0, caudal: 0 },
   // labyrinth fish: feel their way with the pectoral feelers, hang still between slow trips
   betta: { w: 0.7, pec: 1, caudal: 0.15 }, gourami: { w: 0.6, pec: 0.9, caudal: 0.2 }, dwarfgourami: { w: 0.6, pec: 0.9, caudal: 0.2 },
   honeygourami: { w: 0.6, pec: 0.9, caudal: 0.2 }, sparklinggourami: { w: 0.5, pec: 0.8, caudal: 0.25 }, croakinggourami: { w: 0.5, pec: 0.8, caudal: 0.25 },

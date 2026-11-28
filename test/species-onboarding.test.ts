@@ -47,7 +47,7 @@ const CHECKS: Record<string, (s: Species) => string | null> = {
   // 7. the rest of the touch points
   origin: s => (originOf(s.id) ? null : 'origin.json needs a row'),
   bodymass: s => ((bodymass as any).species[s.id] ? null : 'bodymass.json needs a row'),
-  behaviour: s => (HOVER[s.id] ? null : 'fishBehavior.ts HOVER needs a row'),
+  behaviour: s => (s.kind === 'sessile' || HOVER[s.id] ? null : 'fishBehavior.ts HOVER needs a row'), // a sessile animal never swims or hovers: no row
   'space-factor': s => (SPACE_FACTOR[s.id] ? null : 'spacefactor.ts needs a row (a class-matched factor with its note)'),
   // (AqAdvisor is not a data touch point any more: Nathan 2026-11-19, treat it as if it does not exist)
   demand: s => ((demand as any).rows['animal:' + s.id] ? null : 'demand-items.json needs an animal:<id> cost row'),
