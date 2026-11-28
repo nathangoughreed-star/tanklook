@@ -1483,7 +1483,6 @@ function starterItemsRaw(S: TankSetup, keepHard?: Item[]): Item[] {
   let items = out.slice(0, MAX_ITEMS);
   if (S.layout.fit) items = fitItems(items, S.layout.fit, S.grow.feed, !!S.water.salt, LIBRARY); // lane PG step 4: only plants that fit the light and care
   seatHook.corals?.({ ...S, items });
-  seatHook.epiphytes?.({ ...S, items }); // EP1: the tied plants onto the real surface of their piece
   return items;
 }
 

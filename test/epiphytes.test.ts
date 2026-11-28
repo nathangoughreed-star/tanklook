@@ -52,9 +52,12 @@ describe('tied plants sit on their rock or wood (lane EP1, R197)', () => {
     const bad: string[] = [];
     for (const look of ['nature', 'dutch', 'jungle', 'forest', 'iwagumi'] as const) for (const seed of [1, 17, 91]) {
       const build = emptyBuild(sizes()[1], 0), setup = structuredClone(build.setup); setup.layout = { ...setup.layout, seed };
-      const S = scapeSetup(build, look, 'live', setup, { dens: { hard: 1.2, plant: 1.5 } });
+      // a look reaches the tank through a store edit (the layout itself is drawn unseated, so its search is not changed by seating)
+      const st = new Store({ tanks: [scapeSetup(build, look, 'live', setup, { dens: { hard: 1.2, plant: 1.5 } })], active: 0 } as never);
+      st.edit(() => {});
+      const S = st.tank;
       let r = worst(S); if (r.gap > MAX_IN) bad.push(`${look} seed ${seed}: ${r.gap.toFixed(2)} in, ${r.who}`);
-      shuffleHard(S, seed + 5); r = worst(S); if (r.gap > MAX_IN) bad.push(`${look} seed ${seed} shuffled: ${r.gap.toFixed(2)} in, ${r.who}`);
+      st.edit(t => shuffleHard(t, seed + 5)); r = worst(st.tank); if (r.gap > MAX_IN) bad.push(`${look} seed ${seed} shuffled: ${r.gap.toFixed(2)} in, ${r.who}`);
     }
     expect(bad).toEqual([]);
   }, 900000);

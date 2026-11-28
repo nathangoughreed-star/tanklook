@@ -7,6 +7,7 @@
 import * as THREE from 'three';
 import { EPIPHYTES, seatHook } from '../scene/items';
 import { D2R } from '../scene/physics';
+import { isLocked } from '../scene/locks';
 import { groundHeight } from '../scene/terrain';
 import type { Item, TankSetup } from '../scene/types';
 import { itemMesh } from './items';
@@ -70,16 +71,16 @@ const LEAN_MAX = 35, LEAN_FROM = 0.85;
  * piece itself, render/items.ts mossHost).
  */
 export function tieTo(S: TankSetup, it: Item, h: SurfaceHit) {
-  it.x = Math.round(h.p.x * 10) / 10; it.depth = Math.round(-h.p.z * 10) / 10;
-  it.lift = Math.round((h.p.y - groundHeight(S, S.tank, it.x, it.depth)) * 10) / 10;
-  it.host = h.item; it.hostAt = [h.local.x, h.local.y, h.local.z].map(v => Math.round(v * 10) / 10) as [number, number, number];
+  it.x = Math.round(h.p.x * 10) / 10 || 0; it.depth = Math.round(-h.p.z * 10) / 10 || 0;
+  it.lift = Math.round((h.p.y - groundHeight(S, S.tank, it.x, it.depth)) * 10) / 10 || 0;
+  it.host = h.item; it.hostAt = [h.local.x, h.local.y, h.local.z].map(v => Math.round(v * 10) / 10 || 0) as [number, number, number];
   if (DRAPES_ON_HOST.has(it.variant) || h.n.y >= LEAN_FROM) { it.pitch = 0; it.tilt = 0; return; }
   // lean the plant's up from straight up toward the normal by at most LEAN_MAX°, then as Euler YXZ (pitch, yaw, tilt):
   // R = Ry(yaw) Rx(pitch) Rz(tilt) takes (0, 1, 0) to (-sin t, cos t cos p, cos t sin p) in the yawed frame
   const ang = Math.acos(Math.min(1, h.n.y)), k = Math.min(1, LEAN_MAX * D2R / Math.max(ang, 1e-6));
   const u = new THREE.Vector3(0, 1, 0).lerp(h.n, k).normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), -it.yaw * D2R);
-  it.tilt = Math.round(Math.asin(Math.max(-1, Math.min(1, -u.x))) / D2R);
-  it.pitch = Math.round(Math.atan2(u.z, u.y) / D2R);
+  it.tilt = Math.round(Math.asin(Math.max(-1, Math.min(1, -u.x))) / D2R) || 0; // (|| 0: never -0, which a saved file reads back as 0)
+  it.pitch = Math.round(Math.atan2(u.z, u.y) / D2R) || 0;
 }
 /** Unties a plant (it stands on the ground). */
 export function untie(it: Item) { delete it.host; delete it.hostAt; it.lift = 0; it.pitch = 0; it.tilt = 0; }
@@ -105,10 +106,10 @@ const TIE_SLACK = 25;
  * Seats every tied epiphyte of `S` on the real surface. A plant with a host follows it: the tie point in the host's frame,
  * snapped to that host's surface (it moved, turned, was resized or reshaped). One without a host, or moved away from its
  * tie point (dragged, pasted), takes the nearest surface of any piece; nearer to the ground than to any piece, it is
- * untied onto the ground. Returns how many moved.
+ * untied onto the ground. A locked plant is left as it is. Returns how many moved.
  */
 export function seatEpiphytes(S: TankSetup): number {
-  const tied = S.items.filter(isTied);
+  const tied = S.items.filter(it => isTied(it) && !(it.uid && isLocked(S, it.uid))); // a locked plant stays exactly where it is (DX0 locks)
   if (!tied.length) return 0;
   const meshes = hostMeshes(S), byId = new Map(meshes.map(m => [m.userData.item as number, m]));
   const seen = lastSeat.get(S) ?? new Map<number, string>();
