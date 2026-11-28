@@ -28,7 +28,7 @@ def map_mask(sheet):
     return a, M, bands, o, colw
 
 
-def clamp_profile(sheet, A, margin=1.0, skip_x=()):
+def clamp_profile(sheet, A, margin=1.0, skip_x=(), top=True):
     """Clamp a built depth profile (anatomy A, half-res side.png measures) to panel 5's grey body: no station's top / bottom past the map's
     back / belly + margin % SL. The side outline cannot tell a fin root from the body where a fin runs along it (cherry barb anal fin
     80-90 % SL: the solid filled its root, a dark strip under the stalk; Nathan 2026-11-24). Only ever lowers. Returns the stations changed."""
@@ -44,7 +44,8 @@ def clamp_profile(sheet, A, margin=1.0, skip_x=()):
         ys = np.nonzero(o[:, x])[0]
         if len(ys) < 3: continue
         mt, mb = (sy - ys.min()) / SL * 100 + margin, (ys.max() - sy) / SL * 100 + margin
-        if d['top'][i] > mt: changed.append((s, 'top', d['top'][i], round(mt, 2))); d['top'][i] = round(float(mt), 3)
+        # top=False (spec clamp_top: false, method row 77): the back keeps panel 2's height; deep angels, whose dorsal rises out of scaled skin that panel 5 paints red
+        if top and d['top'][i] > mt: changed.append((s, 'top', d['top'][i], round(mt, 2))); d['top'][i] = round(float(mt), 3)
         if d['bottom'][i] > mb: changed.append((s, 'bottom', d['bottom'][i], round(mb, 2))); d['bottom'][i] = round(float(mb), 3)
     return changed
 
