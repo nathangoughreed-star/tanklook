@@ -2,6 +2,11 @@
 
 Status: **research summary for Nathan to react to. Nothing built.** Source: the six ethograms in this folder (peacock gudgeon, panda cory, kribensis, bristlenose, rummynose, kuhli) and `patterns.md`. Per Nathan 2026-11-28, the new system is designed from these patterns, not fitted to the old swim code.
 
+## Nathan's priorities (2026-11-28) — these override the block list below
+- **High:** what the animals do in general (their everyday behavior mix); **interaction with substrate, plants, caves and hardscape**; **realism of movement**.
+- **Out of scope:** tank events (water change, lights, keeper movement: "this is the kind of stuff I dont really care about"), day vs night behavior, breeding.
+- So blocks 4 (darkness part), 8 (tank events), 9 and 11 are dropped. Colour states (10) are low priority, kept only where they show stress.
+
 ## The main finding
 Six very different fish (a hopper, a sand-sifter, a territorial cichlid pair, a surface crawler, a schooler, a burrower) need **no species-specific code**. Each is a different selection and tuning of about ten shared building blocks. New species become data: an ethogram (the prompt), then a choice of blocks and settings.
 
@@ -24,9 +29,9 @@ Six very different fish (a hopper, a sand-sifter, a territorial cichlid pair, a 
 - **Spaces fish can go inside and disappear into**: caves, crevices, root masses, leaf litter, soft sand (burrowing, needs a substrate type). Fish can be fully hidden.
 - **Tank events** the fish can react to: lights, feeding, water changes.
 
-## Decisions for Nathan before any design work
-1. **First slice:** which blocks get built first. Suggested: movement cycle + rest posture + cohesion scale + drives and triggers + day/night (it covers tetra, cory and gudgeon well). Surfaces, inside spaces and breeding come after.
-2. **Hidden fish:** a fully hidden kuhli or pleco is realistic, but users may think the fish is missing. Show a hint (an outline, a tail tip, a "3 hiding" label), or leave it real?
-3. **Breeding mode in scope?** It's a big source of distinctive behavior (fry herding, brood guarding) but rare in real tanks. Later, or never?
-4. **More species before designing?** Six already cover the main body plans. Candidates that might add something new: betta (a solitary surface fish with long fins), an angelfish (a tall mid-water cichlid), a shrimp or snail (invertebrates), an Amano or otocinclus (a schooling grazer).
-5. **Onboarding:** add the ethogram prompt to the new-species procedure now, or after the design is settled?
+## Decisions for Nathan (updated after his priorities)
+Settled: no tank events, no day/night, no breeding.
+1. **First slice**, suggested from his priorities: (a) **realistic movement**: the burst / glide / pause cycle per species, the three body modes (tail swimmer, surface crawler, whole-body undulator), explosive starts, real stillness at rest; (b) **interaction with the scape**: places as destinations (caves, cover, plants, open sand, hardscape surfaces), rest postures that use them (perch, lie on sand, cling at any angle, drape over a leaf, wedge in a crevice), substrate foraging (pick, sift, dig head-down), going into caves, roots and sand. Cohesion and home come with it because they decide where fish go.
+2. **Hidden fish:** a kuhli in the roots or a pleco in its cave can be fully out of sight. Show a hint (a tail tip sticking out, a "3 hiding" label), or keep it real?
+3. **More species first?** Candidates that might add a new scape interaction: betta (rests on leaves near the surface), otocinclus (grazes on leaves and glass in groups), a shrimp or snail (invertebrates walking on everything), angelfish (tall, weaves between stems).
+4. **Onboarding:** add the ethogram prompt to the new-species procedure now, or after the design is settled?
