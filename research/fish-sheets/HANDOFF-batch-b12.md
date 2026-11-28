@@ -49,4 +49,4 @@ Not in b12 (told Nathan): lined seahorse (upright body), kissing gourami and blo
 | bleedingheart | (group 2) | shown 2026-11-28 | |
 | bluedamsel | (group 2) | shown 2026-11-28 | blue very saturated |
 | boxfish | (group 2) | shown 2026-11-28 | proxy depth O. immaculatus; mass-soft 1.22-1.60x |
-| dwarfchainloach | (group 2) | shown 2026-11-28 | proxy depth B. histrionica: model deeper than the sheet; barbels lost |
+| dwarfchainloach | (group 2), fixed | fix 2026-11-28 ("Fix the loach"); rebuilt 21.5 % SL (was 30.1) + barbels, shown | fishshapes.json depth set by hand 23 / 22-26 (FishBase: "elongated"); plan_extra barbels |

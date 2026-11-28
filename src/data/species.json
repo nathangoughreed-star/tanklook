@@ -201,7 +201,7 @@
   {"id": "bleedingheartb", "name": "Bleeding heart tetra", "sci": "Hyphessobrycon erythrostigma", "tl": 65, "art": "bleedingheartb", "aspect": 0.615},
   {"id": "bluedamselb", "name": "Blue damselfish", "sci": "Chrysiptera cyanea", "tl": 75, "art": "bluedamselb", "aspect": 0.493},
   {"id": "boxfishb", "name": "Yellow boxfish", "sci": "Ostracion cubicus", "tl": 100, "art": "boxfishb", "aspect": 0.479},
-  {"id": "dwarfchainloachb", "name": "Dwarf chain loach", "sci": "Ambastaia sidthimunki", "tl": 50, "art": "dwarfchainloachb", "aspect": 0.443},
+  {"id": "dwarfchainloachb", "name": "Dwarf chain loach", "sci": "Ambastaia sidthimunki", "tl": 50, "art": "dwarfchainloachb", "aspect": 0.371},
   {"id": "oscar", "albino": "https://link.springer.com/article/10.1007/s10750-022-04921-w", "name": "Oscar", "sci": "Astronotus ocellatus", "tl": 300, "art": "oscar"},
   {"id": "goldfish", "name": "Fancy goldfish", "sci": "Carassius auratus", "tl": 203, "group": "shoal", "art": "goldfish"},
   {"id": "comet", "name": "Comet goldfish", "sci": "Carassius auratus", "tl": 250, "group": "shoal", "art": "comet", "note": "Single-tailed goldfish; grows to 30 cm, best in a pond or a very large tank."},
