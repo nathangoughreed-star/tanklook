@@ -934,6 +934,12 @@
    "b": 2.88,
    "src": "fishbase-bayes",
    "note": "FishBase ID 7763 Bayesian (TL cm, a 0.01227-0.05639, b 2.71-3.05); its one table row (SL, n=3, b 3.000) is not used (SO1 R202)"
+  },
+  "bumblebeegoby": {
+   "a": 0.01,
+   "b": 3.0,
+   "src": "fishbase-bayes",
+   "note": "FishBase ID 25066 Bayesian (TL cm, a 0.00442-0.02263, b 2.81-3.19); its one table row (SL, n=3, b 3.000) is not used (SO1 R202)"
   }
  }
 }

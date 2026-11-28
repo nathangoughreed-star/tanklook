@@ -3041,6 +3041,25 @@
     "url": "https://www.seriouslyfish.com/species/dichotomyctere-nigroviridis/"
    },
    "why": "the length is the same on both pages; the gallon figure is the mean of the two minimums that state one (Seriously Fish 29 gal; Pufferfish Enthusiasts Worldwide 53 gal), 41 gal (SO1 R202, 2026-11-28)"
+  },
+  "bumblebeegoby": {
+   "red": {
+    "L": 450,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/brachygobius-doriae/",
+    "states": "45 x 30 cm, about 41 litres (11 US gal)",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 10.5,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care pages",
+    "url": "https://www.seriouslyfish.com/species/brachygobius-doriae/"
+   },
+   "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of the two minimums found (Seriously Fish 11 gal; Aquarium Source 10 gal), 10.5 gal (SO1 R202, 2026-11-28)"
   }
  }
 }

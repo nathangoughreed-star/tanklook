@@ -2251,6 +2251,13 @@
    "hi": 17,
    "unit": "each, about 1 in; AquariumFish.com $8.49 sale (sold out), Petco $10.99, That Pet Place small $16.99 (snippets) (SO1 R202 search 2026-11-28; stock varies)",
    "url": "https://www.thatpetplace.com/Tetraodon-nigroviridis-green-spotted-puffer-213698"
+  },
+  "animal:bumblebeegoby": {
+   "lo": 5,
+   "mode": 6,
+   "hi": 6,
+   "unit": "each; Petco $5.49, AquariumFish.com $5.79 (3 for $15.29), Aquatic Arts $5.99 (snippets only) (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://aquariumfish.com/products/bumblebee-goby"
   }
  }
 }
