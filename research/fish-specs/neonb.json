@@ -1,6 +1,6 @@
 {
  "id": "neonb",
- "sheet": "C:/Users/nreed/fish-sheets/neon-b5-gen-s1.105/sheet3.png",
+ "sheet": "C:/Users/nreed/fish-sheets/neon-b5-gen-s1.096/sheet3.png",
  "species": {
   "name": "Neon tetra",
   "sci": "Paracheirodon innesi",
@@ -10,331 +10,331 @@
  "plan": "oscar",
  "landmarks": {
   "ped": [
-   221,
-   205
+   219,
+   206
   ],
   "dorsalBase": [
    [
-    233,
+    231,
+    167
+   ],
+   [
+    261,
+    171
+   ],
+   [
+    291,
     168
    ],
    [
-    263,
-    172
+    317,
+    154
    ],
    [
-    293,
-    168
+    345,
+    147
    ],
    [
-    323,
-    156
+    375,
+    147
    ],
    [
-    353,
-    148
+    405,
+    140
    ],
    [
-    383,
-    146
+    435,
+    134
    ],
    [
-    413,
-    139
-   ],
-   [
-    443,
-    132
-   ],
-   [
-    473,
-    127
-   ],
-   [
-    490,
+    479,
     118
    ],
    [
-    520,
-    113
+    497,
+    116
    ],
    [
-    550,
-    110
+    527,
+    112
    ],
    [
-    580,
-    108
+    557,
+    109
    ],
    [
-    602,
+    587,
     107
+   ],
+   [
+    605,
+    106
    ]
   ],
   "analBase": [
    [
-    233,
+    231,
     251
    ],
    [
-    263,
-    244
+    261,
+    243
    ],
    [
-    293,
-    249
+    291,
+    245
    ],
    [
-    311,
-    257
+    310,
+    255
    ],
    [
-    341,
-    264
+    340,
+    262
    ],
    [
-    371,
-    272
+    370,
+    271
    ],
    [
-    401,
-    280
+    400,
+    279
    ],
    [
-    431,
-    288
+    430,
+    286
    ],
    [
-    461,
-    293
+    460,
+    292
    ],
    [
-    482,
-    296
+    481,
+    294
    ]
   ]
  },
  "eye": [
   874,
-  214,
+  213,
   27
  ],
  "pectoral": {
   "root": [
    756,
-   252
+   251
   ],
   "poly": [
    [
     756,
-    252
+    251
    ],
    [
     741,
-    264
+    263
    ],
    [
     730,
-    265
-   ],
-   [
-    721,
-    265
-   ],
-   [
-    715,
-    265
-   ],
-   [
-    705,
     264
    ],
    [
-    699,
-    262
+    721,
+    264
+   ],
+   [
+    715,
+    264
+   ],
+   [
+    705,
+    263
+   ],
+   [
+    698,
+    261
    ],
    [
     692,
-    259
+    258
    ],
    [
     684,
-    254
+    253
    ],
    [
     676,
-    247
+    246
    ],
    [
     666,
-    236
+    235
    ],
    [
     655,
-    219
+    218
    ],
    [
     655,
-    216
+    215
    ],
    [
     679,
-    216
+    215
    ],
    [
     695,
-    219
+    218
    ],
    [
     704,
-    221
+    220
    ],
    [
     710,
-    223
+    222
    ],
    [
     716,
-    224
+    223
    ],
    [
     723,
-    226
+    225
    ],
    [
     729,
-    228
+    227
    ],
    [
     737,
-    231
+    230
    ],
    [
     750,
-    237
+    236
    ],
    [
     771,
-    249
+    248
    ],
    [
     773,
-    255
+    254
    ]
   ],
   "spread": 0.25
  },
  "pelvic": {
   "root": [
-   596,
-   305
+   595,
+   304
   ],
-  "len": 98,
+  "len": 95,
   "poly": [
    [
-    596,
-    305
+    595,
+    304
    ],
    [
     578,
-    321
+    319
    ],
    [
     569,
-    328
+    326
    ],
    [
     564,
-    332
-   ],
-   [
-    560,
-    334
-   ],
-   [
-    555,
-    338
-   ],
-   [
-    551,
-    340
-   ],
-   [
-    546,
-    343
-   ],
-   [
-    538,
-    348
-   ],
-   [
-    525,
-    355
-   ],
-   [
-    514,
-    359
-   ],
-   [
-    517,
-    347
-   ],
-   [
-    520,
-    335
-   ],
-   [
-    522,
-    327
-   ],
-   [
-    524,
-    320
-   ],
-   [
-    526,
-    315
-   ],
-   [
-    530,
-    308
-   ],
-   [
-    536,
-    304
-   ],
-   [
-    540,
-    302
-   ],
-   [
-    545,
-    302
+    330
    ],
    [
     557,
-    302
+    335
    ],
    [
-    564,
+    555,
+    336
+   ],
+   [
+    550,
+    339
+   ],
+   [
+    545,
+    342
+   ],
+   [
+    538,
+    346
+   ],
+   [
+    524,
+    354
+   ],
+   [
+    517,
+    357
+   ],
+   [
+    517,
+    345
+   ],
+   [
+    520,
+    333
+   ],
+   [
+    522,
+    325
+   ],
+   [
+    524,
+    318
+   ],
+   [
+    527,
+    312
+   ],
+   [
+    533,
+    305
+   ],
+   [
+    535,
     303
    ],
    [
-    574,
-    304
+    541,
+    300
    ],
    [
-    594,
-    305
+    550,
+    300
+   ],
+   [
+    556,
+    301
+   ],
+   [
+    562,
+    301
+   ],
+   [
+    574,
+    302
+   ],
+   [
+    589,
+    304
    ]
   ]
  },
- "card_sheet": "C:/Users/nreed/fish-sheets/neon-b5-gen-s1.105/sheet3card.png",
+ "card_sheet": "C:/Users/nreed/fish-sheets/neon-b5-gen-s1.096/sheet3card.png",
  "dorsals": 2,
  "dense": true,
  "eye_iris": [
-  "#8b959b",
-  "#68727a"
+  "#8c9599",
+  "#687376"
  ],
  "eye_pupil": "#0c0c0c",
  "eye_full": 36,
@@ -364,13 +364,5 @@
  "fin_opacity": {
   "preset": "clear"
  },
- "fin_opacity_source": "clear (photo check 2026-11-24; Commons: Neonsalmler Paracheirodon innesi.jpg, Paracheirodon innesi 01.jpg): tail, dorsal, anal clear with a faint grey tint, rays faint; body red runs onto the tail root; white leading edges on anal and pelvic (pigment, stage 5).",
- "body_clear": {
-  "zones": {
-   "belly": "faint",
-   "lowerrear": "faint"
-  },
-  "inner": {}
- },
- "body_clear_source": "belly faint, lowerrear faint (photo check): 2026-11-25; Commons: Neonsalmler Paracheirodon innesi.jpg, Paracheirodon innesi 01.jpg: back, stripe and red band opaque, plants do not show through; only a faint see-through strip along the silvery belly and above the anal fin; no spine or organs visible"
+ "fin_opacity_source": "clear (photo check 2026-11-24; Commons: Neonsalmler Paracheirodon innesi.jpg, Paracheirodon innesi 01.jpg): tail, dorsal, anal clear with a faint grey tint, rays faint; body red runs onto the tail root; white leading edges on anal and pelvic (pigment, stage 5)."
 }
