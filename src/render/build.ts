@@ -559,9 +559,9 @@ function shadedSolid(geo: THREE.BufferGeometry, color: number, grain?: Grain) {
 function addStand(sc: THREE.Scene, S: TankSetup, T: Tank) {
   if (!S.stand.show) return;
   const t = glassThickness(T, S.render.glass), top = tankUnderside(T, S.render), h = S.stand.height, fin = STAND_FINISHES[S.stand.finish], wf = S.stand.finish;
-  { // R96: a catalogue stand is drawn from its own look (sampled colours, sheen, grain, door / leg layout), not the three generic finishes
+  { // R96: a catalogue stand is drawn from its own look (a rectangular one under a bowfront too: the bow sits inside the L x D box the stand covers; a bowfront stand keeps the bow-shaped generic cabinet) (sampled colours, sheen, grain, door / leg layout), not the three generic finishes
     const prod = S.stand.style === 'cabinet' || S.stand.style === 'frame' ? standOf(S) : undefined;
-    if (prod?.look && shapeOf(T) === 'rect' && !tankView.standOpen) { addProductStand(sc, prod.kind, prod.look, { L: T.L, D: T.D, top, h }, shadedBox); return; }
+    if (prod?.look && (shapeOf(T) === 'rect' || (shapeOf(T) === 'bow' && prod.shape !== 'bow')) && !tankView.standOpen) { addProductStand(sc, prod.kind, prod.look, { L: T.L, D: T.D, top, h }, shadedBox); return; }
   }
   if (S.stand.style === 'frame') { addFrameStand(sc, T, t, top, h, fin.color); return; }
   if (S.stand.style === 'table') { addTableStand(sc, S, T, top, h, fin.color, wf); return; }

@@ -60,19 +60,23 @@ export const standProduct = (id?: string) => (id ? STAND_PRODUCTS.find(p => p.id
 export const GENERIC_STAND_NOTE = 'Generic stand: a price estimate by tank size, no product fits this size.';
 
 export function standFits(p: StandProduct, T: Tank): boolean {
-  if (shapeOf(T) !== (p.shape ?? 'rect')) return false;   // a bowfront stand fits only a bowfront tank, a rectangular one only a rectangular tank
-  const L = T.L / 25.4, D = T.D / 25.4;
-  return p.fits.some(([l, d]) => Math.abs(L - l) <= 1.5 && Math.abs(D - d) <= 1.3);
+  const shape = shapeOf(T), L = T.L / 25.4, D = T.D / 25.4;
+  if (p.shape === 'bow') return shape === 'bow' && p.fits.some(([l, d]) => Math.abs(L - l) <= 1.5 && Math.abs(D - d) <= 1.3);   // a bowfront stand fits only a bowfront tank
+  if (shape === 'rect') return p.fits.some(([l, d]) => Math.abs(L - l) <= 1.5 && Math.abs(D - d) <= 1.3);
+  // Nathan 2026-11-28 (a 46 gal bowfront on a 40 breeder stand): a rectangular stand holds a bowfront when its top covers the whole bow. A stand's top is at least the
+  // tank it is sold for, so the tank it is sold for must be as deep as the bow's deepest point and about as long (no more than 3 in longer, so it still looks made for it).
+  if (shape === 'bow') return p.fits.some(([l, d]) => l >= L - 1 && l <= L + 3 && d >= D - 0.3);
+  return false;
 }
-/** Every stand sold for this tank, cheapest first. */
-export const standsFor = (T: Tank): StandProduct[] => STAND_PRODUCTS.filter(p => !p.hidden && !p.kitOnly && standFits(p, T)).sort((a, b) => a.priceUsd - b.priceUsd);
+/** Every stand sold for this tank: stands made for its shape first (a bowfront stand before a rectangular one under a bowfront), then cheapest first. */
+export const standsFor = (T: Tank): StandProduct[] => { const bow = shapeOf(T) === 'bow'; return STAND_PRODUCTS.filter(p => !p.hidden && !p.kitOnly && standFits(p, T)).sort((a, b) => (bow ? +(a.shape !== 'bow') - +(b.shape !== 'bow') : 0) || a.priceUsd - b.priceUsd); };
 /** The stand a setup has: its picked product while it fits, else the cheapest fitting one of the drawn kind (cabinet or frame) in the drawn finish. undefined = generic estimate. */
 export function standOf(S: Pick<TankSetup, 'tank' | 'stand'>): StandProduct | undefined {
   const st = S.stand; if (!st.show || st.style === 'table' || st.style === 'custom') return undefined;
   const p = standProduct(st.product);
   if (p && standFits(p, S.tank)) return p;
   if (st.generic) return undefined; // R183: a bundle's stand we have no model for stays generic, never another product
-  const same = standsFor(S.tank).filter(x => x.kind === (st.style === 'frame' ? 'frame' : 'cabinet'));
+  const kind = standsFor(S.tank).filter(x => x.kind === (st.style === 'frame' ? 'frame' : 'cabinet')), bow = kind.filter(x => x.shape === 'bow'), same = bow.length ? bow : kind;   // under a bowfront, a bowfront stand is the default when one exists
   return same.find(x => x.finish === st.finish) ?? same[0]; // the cheapest in the finish the scene shows, else the cheapest
 }
 /** "Aqueon Black cabinet stand 20 long / 29 / 37, black" */

@@ -84,8 +84,17 @@ describe('bowfront stands', () => {
   it('a 36 gal bowfront gets its bowfront stands, a rectangular tank never does', () => {
     const bow = standsFor(setup('bow36').tank).map(p => p.id);
     expect(bow).toEqual(['topfin-bowfront-37-raven-oak', 'topfin-bowfront-36-light-brown']);
-    expect(standsFor(setup('bow72').tank).map(p => p.id)).toEqual(['topfin-bowfront-75-raven-oak']);
-    expect(STAND_PRODUCTS.filter(p => p.shape === 'bow').every(p => !standsFor(setup('g20l').tank).includes(p))).toBe(true);
+        expect(STAND_PRODUCTS.filter(p => p.shape === 'bow').every(p => !standsFor(setup('g20l').tank).includes(p))).toBe(true);
+    expect(standsFor(setup('bow72').tank)[0].id).toBe('topfin-bowfront-75-raven-oak');   // its bowfront stand first, then rectangular 48 x 18 stands
     expect(standOf(setup('bow36'))?.id).toBe('topfin-bowfront-37-raven-oak');
+  });
+  it('a rectangular stand holds a bowfront when its top covers the whole bow (Nathan 2026-11-28: a 46 gal bowfront on a 40 breeder stand)', () => {
+    const ids = standsFor(setup('bow46').tank).map(p => p.id);
+    expect(ids).toContain('af-40b-cabinet'); expect(ids).toContain('likeem-40');   // 36 x 18 stands under a 36.4 x 16.4 bow
+    expect(ids).not.toContain('imagitarium-brooklyn-55');                         // 48 x 13: too shallow for the bow, and a foot too long
+    expect(standsFor(setup('bow72').tank).map(p => p.id)).toContain('seapora-empress-48x18');
+    expect(standsFor(setup('bow72').tank).map(p => p.id)).not.toContain('seapora-empress-48x12');   // 48 x 13 under an 18 in deep bow
+    expect(standsFor(setup('bow36').tank).every(p => p.shape === 'bow')).toBe(true);   // no rectangular stand is 15.5 in deep and about 30 in long
+    expect(standOf(setup('bow72'))?.id).toBe('topfin-bowfront-75-raven-oak');   // the bowfront stand stays the default
   });
 });
