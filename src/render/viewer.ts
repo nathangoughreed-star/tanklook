@@ -1,5 +1,6 @@
 // Owns the WebGL renderer and the one or two viewports (one per tank setup; two after a split). Render-on-demand.
 import { FX, fxClock, onFx, tickFx } from './fx';
+import { backdropHooks } from './backdrop';
 import * as THREE from 'three';
 import { rayHitsDoorBox } from '../interact/doorBox';
 import { fishTL, speciesOf } from '../data/species';
@@ -453,6 +454,7 @@ export class Viewer {
     onPerf(() => { if (perf.level !== shownLevel) { shownLevel = perf.level; this.applyLevel(); this.causReset(); } });
     store.subscribe(kind => { if (kind !== 'view') this.needsBuild = true; if (kind === 'load') this.revealNext = true; this.dirty = true; });
     onGearSel(() => { this.syncGearSel(); this.dirty = true; });
+    backdropHooks.landed = () => { this.dirty = true; }; // the 3D backdrop's full textures land from the worker (BD1)
     setPieceSource(vi => this.vps[vi]?.scene?.children.flatMap(o => (o.userData.gearPieces ?? []) as GearPiece[]) ?? []);
     // visual-fidelity switches (render/fx.ts): shader ones are uniforms (a redraw), build-time ones (contact, variety) rebuild
     onShowView(() => { this.applyRatio(1); this.dirty = true; });

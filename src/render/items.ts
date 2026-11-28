@@ -616,6 +616,11 @@ const solidLook = (k: number) => (sh: THREE.WebGLProgramParametersWithUniforms) 
     .replace('#include <color_fragment>', '#include <color_fragment>\n  diffuseColor.rgb *= gritK();')
     .replace('#include <dithering_fragment>', `#include <dithering_fragment>\n  if (!gl_FrontFacing) gl_FragColor.rgb *= ${k.toFixed(2)};`);
 };
+/** The solid material's glass clip planes and pre-lighting patch, for a material of its own (the textured 3D backdrop, render/backdrop.ts). */
+export function solidParts(T: Tank) {
+  const { planes, patch } = glassClip(T), look = solidLook(0.55);
+  return { planes, pre: (sh: THREE.WebGLProgramParametersWithUniforms) => { patch(sh); look(sh); } };
+}
 export function solidMaterial(T: Tank) {
   const k = glassKey(T);
   let m = glassMats.get(k);

@@ -410,7 +410,7 @@ export interface PersonSettings { show: boolean; height: number; side: 'left' | 
 /** Everything that belongs to one tank. Split tanks are fully independent (Nathan 2026-10-08), camera included. */
 /** A 3D background panel inside the tank against the back glass: a relief wall of rock, river stones, live rock, cork bark
  * or moss (added 2026-10-15; older files: none). `depth` = how far it reaches in from the glass at its deepest (mm). */
-export type BackdropKind = 'none' | 'rock' | 'river' | 'reef' | 'cork' | 'moss' | 'jungle';
+export type BackdropKind = 'none' | 'rock' | 'rockblock' | 'river' | 'reef' | 'cork' | 'corkplate' | 'moss' | 'jungle';
 export interface BackdropSettings { kind: BackdropKind; depth: number; seed: number }
 
 /** How fast plants grow (lane GR3, 2026-10-15; no calendar units): the tank's feeding scales each species' speed, and

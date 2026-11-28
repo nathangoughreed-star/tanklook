@@ -363,7 +363,7 @@ function parseSetup(raw: Obj, warn0: (m: string) => void, pre: string): TankSetu
       })(),
     },
     backdrop: { // added 2026-10-15; older files: none
-      kind: pick(bd.kind, ['none', 'rock', 'river', 'reef', 'cork', 'moss', 'jungle'] as const, d.backdrop.kind),
+      kind: pick(bd.kind, ['none', 'rock', 'rockblock', 'river', 'reef', 'cork', 'corkplate', 'moss', 'jungle'] as const, d.backdrop.kind),
       depth: Math.round(num(bd.depth, d.backdrop.depth, ...LIMITS.backdrop)), seed: Math.round(num(bd.seed, 1, 1, 1e9)),
     },
     grow: { // added 2026-10-15 (lane GR3); older files: low-tech, Time 0
