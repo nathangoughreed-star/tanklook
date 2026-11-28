@@ -46,6 +46,12 @@ Social bottom fish that switch between busy foraging, short scoots and complete 
 **Breeding** (episodic)
 - Gets more active, males chase females, barbel-contact courtship, the T-position (also mid-water, rolling), the female carries eggs between her pelvic fins, searches for a spot, sticks them to glass or moss. Several males compete for one female. No pair bond and no guarding. Eats eggs opportunistically.
 
+## Added from the compact-prompt rerun (same day)
+- Explores more in the evening (often): roams and forages more as the light dims.
+- No leader: group moves start when one fish leaves and the nearby fish follow one after another, while some stay behind. Group moves come out of each fish reacting to its neighbors.
+- A startle dart can set off the neighbors scattering.
+- The rerun found 20 behaviors to the long answer's ~40. It lost pivoting, the start from stillness, settling, investigating objects, catching sinking food, yielding to other species, current swimming, climbing surfaces and rubbing on the substrate. That's why the prompt now asks for rare behaviors and a movement-mechanics paragraph.
+
 ## Its own suggestion for the sim (note, not a decision)
 Give each fish its own drives (activity, hunger, wish to be near others, need to rest, need for air), and let nearby companions influence when it switches behavior. Some behaviors override everything else: an air dash, the feeding response, escape, breeding. "A rigid schooling algorithm combined with a bottom-height constraint would miss much of what makes panda corydoras recognizable."
 
