@@ -298,10 +298,13 @@ export function attachPointer(viewer: Viewer, store: Store, canPick: (what: 'ite
         }
         for (const id of grp.fish) { const f = S.fish.find(z => z.id === id); if (f) fishRiders.push({ id, dx: f.x - it.x, dd: f.depth - it.depth, dy: f.y - base(it) }); }
       }
+      // EP1: an epiphyte on its own sticks to whatever it is slid over; nothing rides along on a plant
+      const epi = it.kind === 'plant' && EPIPHYTES.has(it.variant) && !inGroup;
+      if (epi) riders.length = 0;
       const at = new THREE.Raycaster(hit.ray.origin, hit.ray.direction).intersectObject(hit.mesh, false)[0]?.point ?? hit.mesh.position;
       const skip = new Set([it.id, ...riders.map(r => r.id)]);
       const coral = it.kind === 'coral', float = !coral && Math.abs(it.lift - supportLift(hit.vp, S, it.x, it.depth, skip)) > 2 ? new THREE.Plane(new THREE.Vector3(0, 1, 0), -at.y) : null;
-      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, fishRiders, skip, float, wall: wallPlane(hit.vp.cam, S.camera.el, at), coral, epi: it.kind === 'plant' && EPIPHYTES.has(it.variant) && !riders.length, moved: false };
+      move = { vp: hit.vp, id: it.id, grab: at.clone().sub(hit.mesh.position), riders, fishRiders, skip, float, wall: wallPlane(hit.vp.cam, S.camera.el, at), coral, epi, moved: false };
       return;
     }
     if (!editable || hit.fishId == null || !hit.mesh || !(canPick('fish', undefined, hit.fishId) || (store.groupCount > 1 && store.inGroup('fish', hit.fishId)))) {

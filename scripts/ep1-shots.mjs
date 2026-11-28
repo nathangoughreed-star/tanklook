@@ -14,11 +14,11 @@ let tabs; for (let i = 0; i < 40; i++) { try { tabs = await (await fetch(`http:/
 const ws = new WebSocket(tabs.find(t => t.type === 'page').webSocketDebuggerUrl); await new Promise(r => ws.onopen = r);
 let id = 0; const pend = new Map(); ws.onmessage = m => { const d = JSON.parse(m.data); if (d.id && pend.has(d.id)) { pend.get(d.id)(d); pend.delete(d.id); } };
 const send = (method, params = {}) => new Promise(r => { const i = ++id; pend.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); });
-const ev = async expr => { const r = await send('Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true }); if (r.result.exceptionDetails) throw new Error(expr.slice(0, 100) + ' :: ' + JSON.stringify(r.result.exceptionDetails).slice(0, 300)); return r.result.result.value; };
-/** A shot of the page, or (`close`) of the tank view alone at 2.5x (the view pane is small beside the menus). */
-const shot = async (name, wait = 2500, close = false) => { await sleep(wait); const clip = close ? await ev(`(() => { const r = __gb.viewer.host.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height * 0.72, scale: 2.5 }; })()`) : undefined; const r = await send('Page.captureScreenshot', { format: 'jpeg', quality: 88, ...(clip ? { clip } : {}) }); writeFileSync(`${OUT}/${name}.jpg`, Buffer.from(r.result.data, 'base64')); console.log('shot', name); };
+const ev = async expr => { const r = await send('Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true }); if (r.result.exceptionDetails) throw new Error(expr.slice(0, 100) + ' :: ' + (r.result.exceptionDetails.exception?.description ?? JSON.stringify(r.result.exceptionDetails)).slice(0, 400)); return r.result.result.value; };
+/** A shot of the page, or (`close`) of the tank view's middle band alone, at the page's 3x pixels (the view pane is small beside the menus). */
+const shot = async (name, wait = 2500, close = false) => { await sleep(wait); const clip = close ? await ev(`(() => { const r = __gb.viewer.host.getBoundingClientRect(); return { x: r.x, y: r.y + r.height * 0.3, width: r.width, height: r.height * 0.45, scale: 1 }; })()`) : undefined; const r = await send('Page.captureScreenshot', { format: 'jpeg', quality: 88, clip: clip ?? { x: 0, y: 0, width: 1280, height: 800, scale: 1 / 3 } }); writeFileSync(`${OUT}/${name}.jpg`, Buffer.from(r.result.data, 'base64')); console.log('shot', name); };
 const mouse = (type, x, y, buttons = 0) => send('Input.dispatchMouseEvent', { type, x, y, button: type === 'mouseMoved' && !buttons ? 'none' : 'left', buttons, clickCount: type === 'mouseMoved' ? 0 : 1 });
-await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false });
+await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 3, mobile: false });
 const errors = [];
 await send('Runtime.enable'); ws.addEventListener('message', m => { const d = JSON.parse(m.data); if (d.method === 'Runtime.exceptionThrown') errors.push((d.params.exceptionDetails.exception?.description ?? d.params.exceptionDetails.text).slice(0, 300)); });
 const open = async scene => {
@@ -40,24 +40,29 @@ for (const [name, file] of DRAG ? scenes.slice(0, 1) : scenes) {
   if (!DRAG) {
     await shot(`${name}-${TAG}`);
     // the proof view: only the tied plants (no fish, no stem / sword plants hiding the wood), closer, the tank view alone
-    await ev(`(() => { __gb.store.edit(t => { t.fish = []; t.items = t.items.filter(i => i.kind !== 'plant' || ['fern','anubias','buce','moss'].includes(i.variant)); }); __gb.store.cam(c => { c.zoom = 1.8; c.el = 8; }, 0); return true; })()`);
+    await ev(`(() => { __gb.store.edit(t => { t.fish = []; t.items = t.items.filter(i => i.kind !== 'plant' || ['fern','anubias','buce','moss'].includes(i.variant)); }); return true; })()`);
     await shot(`${name}-${TAG}-close`, 4000, true);
     continue;
   }
+  // the swords and stem plants stand in front of the fern: out of the way (and the fish), so the pointer reaches it
+  await ev(`(() => { __gb.store.edit(t => { t.fish = []; t.items = t.items.filter(i => i.kind !== 'plant' || ['fern','anubias','buce','moss'].includes(i.variant)); }); return true; })()`); await sleep(2500);
   // the drag: open Plants (pieces can be picked only while their menu is open), click the fern to select it, then drag it
   await ev(`(() => { const b = [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Plants'); b?.click(); return !!b })()`); await sleep(2500);
-  const fernAt = `(() => { const m = __gb.viewer.vps[0].itemMeshes.find(m => m.userData.item === 10); m.geometry.computeBoundingBox(); const b = m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld); return new m.position.constructor((b.min.x + b.max.x) / 2, b.min.y + (b.max.y - b.min.y) * 0.3, (b.min.z + b.max.z) / 2); })()`;
-  const rockAt = `(() => { const m = __gb.viewer.vps[0].itemMeshes.find(m => m.userData.item === 5); m.geometry.computeBoundingBox(); const b = m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld); return new m.position.constructor((b.min.x + b.max.x) / 2, b.max.y - 8, (b.min.z + b.max.z) / 2); })()`;
-  const [fx, fy] = await toScreen(fernAt), [rx, ry] = await toScreen(rockAt);
+  const fernAt = `(() => { const m = __gb.viewer.vps[0].itemMeshes.find(m => m.userData.item === 10 && m.userData.plant); return m.position.clone().setY(m.position.y + 45); })()`;
+  const rockAt = `(() => { const m = __gb.viewer.vps[0].itemMeshes.find(m => m.userData.item === 5); m.geometry.computeBoundingBox(); const b = m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld); return new m.position.constructor((b.min.x + b.max.x) / 2, b.min.y + (b.max.y - b.min.y) * 0.6, (b.min.z + b.max.z) / 2); })()`;
+  for (let i = 0; i < 30; i++) { if (await ev(`[10, 5].every(n => __gb.viewer.vps[0].itemMeshes?.some(m => m.userData.item === n))`).catch(() => false)) break; await sleep(1000); }
+  const retry = async fn => { for (let i = 0; ; i++) { try { return await fn(); } catch (e) { if (i > 25) { console.log('DUMP', await ev(`JSON.stringify(__gb.viewer.vps.map(p => (p.itemMeshes ?? []).map(m => [m.userData.item, !!m.userData.plant, m.type])))`)); throw e; } await sleep(1000); } } }; // the meshes are swapped while the view rebuilds
+  const [fx, fy] = await retry(() => toScreen(fernAt)), [rx, ry] = await retry(() => toScreen(rockAt));
   await shot('drag-0-start', 500, true);
   await mouse('mousePressed', fx, fy, 1); await mouse('mouseReleased', fx, fy); await sleep(1500); // select
-  facts.drag = [{ step: 'start', ...(await tie(10)) }];
-  await mouse('mousePressed', fx, fy, 1);
+  facts.drag = [{ step: 'start', sel: await ev('__gb.store.selItem ?? null'), ...(await tie(10)) }];
+  await sleep(800); await mouse('mousePressed', fx + 7, fy - 5, 1); // (a second press on the very spot picks what is behind: GD1 cycle)
+  facts.drag.push({ step: 'pressed', sel: await ev('__gb.store.selItem ?? null'), under: await ev(`(() => { const h = __gb.viewer.hitTest(${fx + 7}, ${fy - 5}); return h ? { item: h.itemId ?? null, fish: h.fishId ?? null, mesh: !!h.mesh, dot: h.dot ?? null, pool: !!h.pool, editing: __gb.store.isEditing(0), pair: __gb.viewer.pairShown } : null; })()`), cam: await ev('JSON.stringify(__gb.store.camOf(0))'), el: await ev(`(() => { const e = document.elementFromPoint(${fx + 7}, ${fy - 5}); return e ? e.tagName + '.' + e.className : null; })()`) });
   const steps = 6;
   for (let k = 1; k <= steps; k++) {
     const t = k / steps, x = fx + (rx - fx) * t, y = fy + (ry - fy) * t;
     await mouse('mouseMoved', x, y, 1); await sleep(400);
-    if (k % 2 === 0) { await shot(`drag-${k / 2}-step`, 800, true); facts.drag.push({ step: k, at: [x, y], ...(await tie(10)) }); }
+    if (k % 2 === 0) { await shot(`drag-${k / 2}-step`, 800, true); facts.drag.push({ step: k, at: [x, y], cam: await ev('JSON.stringify(__gb.store.camOf(0))'), ...(await tie(10)) }); }
   }
   // past the rock up into open water: the plant keeps its last spot on the rock
   await mouse('mouseMoved', rx, ry - 260, 1); await sleep(600);
