@@ -456,6 +456,18 @@
     "boxfish": {
       "look": "boxfishb",
       "approved": "2026-11-28"
+    },
+    "elephantnose": {
+      "look": "elephantnoseb",
+      "approved": "2026-11-28"
+    },
+    "bicolorblenny": {
+      "look": "bicolorblennyb",
+      "approved": "2026-11-28"
+    },
+    "arowana": {
+      "look": "arowanab",
+      "approved": "2026-11-28"
     }
   }
 }
