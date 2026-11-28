@@ -3236,6 +3236,25 @@
     "url": "https://www.saltwaterfish.com/education/yellow-boxfish-care-guide-ostracion-cubicus"
    },
    "why": "the mean of every adult minimum found (5 figures: ReefBuilders 125 gal; SaltwaterFish 180 gal; Reefapp 800 L = 211 gal; Quality Marine 250 gal; Top Shelf 250 gal), 203.2 gal; no source gives a juvenile minimum (ReefBuilders: the small size it is sold at is no reason for a small tank), so the adult figure is used; the footprint is the standard g180 tank (1809 x 590 mm) nearest that volume, because the pages give no base; Seriously Fish has no page for this species (SO3 R204, 2026-11-28)"
+  },
+  "elephantnose": {
+   "red": {
+    "L": 1200,
+    "W": 450,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/gnathonemus-petersii/",
+    "states": "120 x 45 cm (48 x 18 in), about 243 litres (64 US gal), 'just about acceptable'; a larger tank for a group",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 70.7,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care and retail pages",
+    "url": "https://www.seriouslyfish.com/species/gnathonemus-petersii/"
+   },
+   "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of every minimum found (6 figures: Seriously Fish 64 gal; Aquarium Source 50 gal in the text and 75 gal in its FAQ, 62.5 gal; Fishkeeping World 50 gal; TankFlare 75 gal; Guidarium 200 L (52.8 gal); That Pet Place 120 gal) = 70.7 gal; Fishkeeper wants at least 5 x 2 ft (no gallons); TankFlare and Guidarium are search-result snippets (SO3 R204, 2026-11-28)"
   }
  }
 }

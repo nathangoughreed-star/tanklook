@@ -1000,6 +1000,12 @@
    "b": 2.75,
    "src": "fishbase-bayes",
    "note": "FishBase ID 6555 summary-page Bayesian estimate (TL cm, a 0.03503-0.08622, b 2.61-2.89); its three table rows (a 0.060-0.129, b 2.52-2.72; two TL, one FL; n 12-20) are close to it (SO3 R204)"
+  },
+  "elephantnose": {
+   "a": 0.01259,
+   "b": 2.86,
+   "src": "fishbase-bayes",
+   "note": "FishBase ID 2085 summary-page Bayesian estimate (TL cm, a 0.00585-0.02711, b 2.68-3.04); FishBase lists 35 cm SL as its maximum, well above the hobby 9-10 in (SO3 R204)"
   }
  }
 }
