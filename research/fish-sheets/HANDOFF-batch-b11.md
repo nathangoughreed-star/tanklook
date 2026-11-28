@@ -67,3 +67,18 @@ TL = typical adult total length in the aquarium. Photos = Wikimedia Commons cate
 | nasotang | 63b7c58e | approved 2026-11-28 ("Approve all 4") | proxy N. lituratus; mass up to 2.0x |
 | paradisefish | 63b7c58e | approved 2026-11-28 ("Approve all 4") | |
 | lionfish | failed | - | step pending: build found 2 of 3 panels (spines and fan pectorals join the rows) |
+| powderbluetang | 7cd2abef | approved 2026-11-28 ("Approve the 4 good ones") | |
+| scarletbadis | 7cd2abef | approved 2026-11-28 | |
+| serpae | 7cd2abef | approved 2026-11-28 | |
+| silverdollar | 7cd2abef | approved 2026-11-28 | proxy depth (M. hypsauchen) |
+| pictus | 7cd2abef | fix | barbels lost in the model; head end cut flat in top view. Try plan_extra barbels (cory recipe, PIPELINE step 7) |
+| snowflakemoray | 7cd2abef | fix | reads as a flat strip; stray fin flaps by the head (eel body plan needs its own path) |
+| picasso | - | sheet redo | rows 4/5 touch (panel_gap 2-3 still finds 4 panels): `sheet-queue.py <folder> --redo` |
+
+## Next chat: start here (2026-11-28)
+- Approved, waiting for catalogue (SO1 / SO2 lanes, R202; they message "catalogue ready: <id>", then add `<id>: {look: "<id>b", approved: <date>}` to fishLive.json):
+  congotetra, denison, domino, flamehawk, frontosa, greenspotpuffer, jackdempsey, nasotang, paradisefish, powderbluetang, scarletbadis, serpae, silverdollar.
+- Not approved yet: bumblebeegoby (broad head kept; ask for model approval), copperband (tube snout rebuilt, show Nathan).
+- Fix: pictus (barbels), snowflakemoray (eel). Step pending (code path): blackghost (no dorsal), lionfish (rows join). Sheet redo: picasso.
+- b12: prompts ready (`HANDOFF-batch-b12.md`); Nathan runs the queue, then `fish-batch.py --batch b12 --group 4`.
+- Review pictures: `scripts/review/fishsheet.mjs` (usage `node fishsheet.mjs <port> <name> <ids>` against a dev server of this worktree, saves to `shots/`). Stop Vite servers after each batch (RAM).
