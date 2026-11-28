@@ -328,7 +328,8 @@ function step() {
   }
 }
 // build-B fish (the *b looks) exist only with the dogfood loaders, as in main.ts ?photoart; ?q loads them too so a new batch can be reviewed
-if (Q_IDS.length || new URLSearchParams(location.search).has('photoart')) {
+// always: REVIEW_LOOKS rows (the *b looks) are in LOOKS on every page load since 5f6b35d8, and without the loaders they have no plan (record run: 'cannot render angelb')
+{
   $('status').textContent = 'Loading the build-B fish…';
   await import('../art/photoart').catch(e => console.warn(e)); await import('../art/photofish').then(m => m.loadPhotoFish()).catch(e => console.warn(e));
 }
