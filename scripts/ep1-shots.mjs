@@ -32,13 +32,15 @@ const open = async scene => {
 /** Screen point of a 3D world point in view 0. */
 const toScreen = (expr) => ev(`(() => { const v = __gb.viewer, vp = v.vps[0], r = v.host.getBoundingClientRect(), p = (${expr}).clone().project(vp.cam); return [r.left + vp.x + (p.x + 1) / 2 * vp.w, r.top + vp.y + (1 - p.y) / 2 * vp.h]; })()`);
 const tie = n => ev(`(() => { const it = __gb.store.tank.items.find(i => i.id === ${n}); return it && { x: it.x, depth: it.depth, lift: it.lift, host: it.host ?? null, hostAt: it.hostAt ?? null, pitch: it.pitch, tilt: it.tilt }; })()`);
-const scenes = [['photo-60t', 'research/visual/vf0/scenes/photo-60t.json'], ...readdirSync(`${OUT}/scenes`).map(f => [f.replace('.json', ''), `${OUT}/scenes/${f}`])];
+// SCENES=<dir>: only the scene files in that folder (shot under their own names, TAG ignored)
+const SC = process.env.SCENES, scenes = SC ? readdirSync(SC).filter(f => f.endsWith('.json')).map(f => [f.replace('.json', ''), `${SC}/${f}`]) : [['photo-60t', 'research/visual/vf0/scenes/photo-60t.json'], ...readdirSync(`${OUT}/scenes`).map(f => [f.replace('.json', ''), `${OUT}/scenes/${f}`])];
 const facts = { tag: TAG, base: BASE, scenes: {} };
 for (const [name, file] of DRAG ? scenes.slice(0, 1) : scenes) {
   await open(readFileSync(file, 'utf8'));
   facts.scenes[name] = await ev(`__gb.store.tank.items.filter(i => i.kind === 'plant' && ['fern','anubias','buce','moss'].includes(i.variant) && (i.lift > 2 || i.host)).map(i => ({ id: i.id, v: i.variant, lift: i.lift, host: i.host ?? null }))`);
   if (!DRAG) {
-    await shot(`${name}-${TAG}`);
+    await shot(SC ? `recipes/${name}` : `${name}-${TAG}`);
+    if (SC) continue;
     // the proof view: only the tied plants (no fish, no stem / sword plants hiding the wood), closer, the tank view alone
     await ev(`(() => { __gb.store.edit(t => { t.fish = []; t.items = t.items.filter(i => i.kind !== 'plant' || ['fern','anubias','buce','moss'].includes(i.variant)); }); return true; })()`);
     await shot(`${name}-${TAG}-close`, 4000, true);
