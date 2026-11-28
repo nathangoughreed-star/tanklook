@@ -159,7 +159,7 @@ describe('species search', () => {
 });
 
 // the bound catches typos in tl (an extra digit); a species really longer than 400 mm is listed here with its length, so a typo in its own row still fails: the bound is its value, not a blanket raise
-const LARGE_KNOWN: Record<string, number> = { bichir: 445, clownknife: 915, bambooshark: 945 };
+const LARGE_KNOWN: Record<string, number> = { bichir: 445, clownknife: 915, bambooshark: 945, boxfish: 450, arowana: 926 };
 describe('species data', () => {
   it('every species has a sane size, card aspect and resting offset', () => {
     expect(new Set(SPECIES.map(s => s.id)).size).toBe(SPECIES.length);

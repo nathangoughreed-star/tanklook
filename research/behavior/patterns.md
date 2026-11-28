@@ -1,6 +1,6 @@
 # Behavior patterns across species (R208, running synthesis)
 
-Species so far: peacock gudgeon (`peacockgudgeon.md`), panda cory (`pandacory.md`), kribensis (`kribensis.md`), bristlenose pleco (`bristlenose.md`), rummynose tetra (`rummynose.md`), kuhli loach (`kuhli.md`). Design summary: `design-summary.md`. Research only: the new behavior system gets designed from this list, not fitted to `swimTypes.ts` (Nathan 2026-11-28).
+Species so far: peacock gudgeon (`peacockgudgeon.md`), panda cory (`pandacory.md`), kribensis (`kribensis.md`), bristlenose pleco (`bristlenose.md`), rummynose tetra (`rummynose.md`), kuhli loach (`kuhli.md`), betta (`betta.md`), angelfish (`angelfish.md`), nerite snail (`nerite.md`), Amano shrimp (`amano.md`), otocinclus (`otocinclus.md`). All 11 in. Design summary: `design-summary.md`. Research only: the new behavior system gets designed from this list, not fitted to `swimTypes.ts` (Nathan 2026-11-28).
 
 ## Shared by every species so far
 - **Stop-go, not cruising.** Short purposeful moves, then pauses (a hover or a settle). Even the rummynose's "smooth" cruising is burst-and-coast, so all five share one movement cycle (burst, glide, pause) with different lengths: a short glide and almost no pause for the tetra, long pauses and settling for the cory and gudgeon, crawl steps for the pleco.
@@ -36,6 +36,24 @@ Species so far: peacock gudgeon (`peacockgudgeon.md`), panda cory (`pandacory.md
 - **Tank events as triggers**: a water change sets off the kuhli dance, keeper movement sets off tetra feeding anticipation, lights off and on drive the day/night modes.
 - **Escape into concealment** (kuhli, pleco, krib, gudgeon) versus escape away with the group (tetra).
 - **Home variants**: owned and defended (gudgeon, krib, pleco) / shared communal spots (kuhli knots, cory piles) / none (tetra).
+
+## Added by the betta (7 species)
+- **Resting against structure** is now in 6 of 7 (all but the tetra): leaf, stem, substrate, ledge, cave. Picking a favourite rest spot and settling against it is a core shared behavior.
+- **Fins as secondary motion**: long fins drag, trail on turns and fold or ripple independently of the body. That's a movement-realism requirement (it also fits angelfish and fancy goldfish).
+- **Individual personality**: the betta and cory answers both ask for per-fish curiosity, aggression, prey drive, activity level and favourite spots, not one profile per species.
+- **Displays are a shared repertoire**: lateral display (gudgeon, krib, betta), frontal flare (betta, krib facing an intruder), fin spread (pleco, krib). They're set off by something (a rival, a reflection, a long-finned tankmate), not constant.
+- **Prey drive toward small animals** (betta, gudgeon: shrimplets and fry) is a per-species setting with stalk-then-lunge.
+
+## Added by angelfish, nerite, Amano and otocinclus (11 species)
+- **Surfaces are terrain at any angle** for 4 of 11 (pleco, otocinclus, nerite, Amano), and a resting surface for most of the rest. Glass, wood, rock, leaves (top and underside), stems, equipment and cave ceilings are joined at corners and edges. Swimming (pleco, oto, Amano) only links surfaces, and it's fast compared with crawling. The body takes the surface's angle. **Corner and edge transitions** (the nerite reaches across, then shifts over) and **falling off** (the nerite can get stuck upside down) belong to the surface model. The waterline isn't a wall (nerite and Amano climb out).
+- **Food lives on surfaces as a field**: grazers (nerite, oto, Amano, pleco) move according to where the algae or biofilm is, work a patch until it's used up and move on. The nerite leaves visible clean trails. So grazers need a "where is the food" map of the scape, not random wandering.
+- **Grazing vs. resting must look different** (oto, nerite): the mouth works while the body is still.
+- **Secondary motion is part of realism**: long fins and pelvic filaments (betta, angel), shrimp claws and antennae (always moving), snail antennae, the oto's mouth.
+- **Social rank** (angelfish): each fish keeps lasting relationships; the dominant fish takes the best spots and others yield without contact. Rank adds to the cohesion scale and to per-fish personality.
+- **Vertical-structure users** (angelfish hovers edge-on among stems, under wood) versus bottom and surface users: where a fish hovers depends on the shape of the structure, and body shape limits which gaps it can pass.
+- **Displays** add frontal, open-jaw, body-undulation and lip-locking (angelfish) to the shared repertoire.
+- **Long stillness is normal** for nerites, otos, plecos, kuhlis and corys.
+- **Loose groups again** (oto: spread out to graze, regroup to rest, follow a darter), the same cohesion scale as the cory.
 
 ## Axes along which species differ (the candidate per-species settings)
 | Axis | Gudgeon | Panda cory | Kribensis | Bristlenose | Rummynose | Kuhli |

@@ -143,3 +143,12 @@ describe('Print', () => {
     expect(paperText(full)).toMatch(/Quick rundown/); expect(paperCsv(full).split('\r\n')[0]).toBe('Section,Line');
   });
 });
+
+describe('R209: Show quick menu state', () => {
+  it('hiding is a view setting only: it round-trips through storage and the four labels are the menu', () => {
+    expect(SHOWS.map(s => s.label)).toEqual(['Animals', 'Plants', 'Hardscape', 'Equipment']);
+    const st = { m: new Map<string, string>(), getItem(k: string) { return this.m.get(k) ?? null; }, setItem(k: string, v: string) { this.m.set(k, v); } };
+    saveHidden(['plants'], st); expect([...loadHidden(st)]).toEqual(['plants']);
+    saveHidden([], st); expect(loadHidden(st).size).toBe(0);
+  });
+});

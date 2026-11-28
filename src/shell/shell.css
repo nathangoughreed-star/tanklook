@@ -176,6 +176,7 @@ a.btn { text-decoration: none; }
 /* ---- lane S8 (2026-11-13): View popover, Settings, Print, the viewpoint map ---- */
 .viewpop { position: absolute; top: calc(100% + var(--s1)); left: 50%; transform: translateX(-50%); width: 320px; max-height: calc(100vh - 160px); overflow: auto; padding: var(--s3); display: grid; gap: var(--s3); text-align: left; }
 .viewpop h3, .sgroup h3 { margin: 0 0 var(--s2); font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); font-weight: 600; }
+.viewpop.showpop { width: 260px; }
 .viewpop .vsec { display: grid; gap: var(--s2); } .viewpop .vsec h3 { margin-bottom: 0; }
 .viewpop .row { grid-template-columns: 78px minmax(0, 1fr) 56px; } .viewpop .row .val { justify-content: flex-end; color: var(--text-2); font-variant-numeric: tabular-nums; }
 .viewnote { position: absolute; top: calc(100% + var(--s1)); left: 50%; transform: translateX(-50%); width: max-content; max-width: 90vw; padding: var(--s1) var(--s3); font-size: var(--fs-sm); color: var(--text-2); border-radius: var(--r-ctl); }
