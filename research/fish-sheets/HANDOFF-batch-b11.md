@@ -62,3 +62,8 @@ TL = typical adult total length in the aquarium. Photos = Wikimedia Commons cate
 | copperband | c9e6fc2c, snout aaae5e4a | snout rebuilt as a tube (method row 75), awaiting his look | |
 | blackghost | failed | - | step pending: fish-spec-from-fins has no no-dorsal path |
 | denison | c9e6fc2c | not shown yet | no visual_check yet |
+| greenspotpuffer | 5cb46c6a | approved 2026-11-28 ("Approve all 4") | mass check up to 1.9x |
+| jackdempsey | 5cb46c6a | approved 2026-11-28 ("Approve all 4") | |
+| nasotang | 63b7c58e | approved 2026-11-28 ("Approve all 4") | proxy N. lituratus; mass up to 2.0x |
+| paradisefish | 63b7c58e | approved 2026-11-28 ("Approve all 4") | |
+| lionfish | failed | - | step pending: build found 2 of 3 panels (spines and fan pectorals join the rows) |
