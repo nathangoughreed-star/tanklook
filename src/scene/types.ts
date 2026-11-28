@@ -48,7 +48,18 @@ export type Grain = 'mud' | 'sand' | 'gravel' | 'pebble';
  * grain by grain, between = clumps of each with mixed ground between them. Files from before GB1 hold the two-grain
  * fields { grain, color, grain2, color2, share, mix }; scene/validate.ts reads them into this list.
  */
-export interface BlendGrain { grain: Grain; color: string; share: number }
+export interface BlendGrain {
+  grain: Grain; color: string; share: number;
+  /**
+   * Grain editor (Nathan 2026-11-28, no version bump): what each grain is like, so one editor makes 1/2" blue glass marbles,
+   * rough angular mixed gravel or oval semi-smooth river stone. All optional: absent = the kind's own (scene/blend.ts
+   * `grainShape`). Drawn on the 3D grains (gravel and pebbles); sand and mud stay painted.
+   * color2: the other end of the colour range (absent = shades of `color`); size: diameter range, mm; sphere: 0 flat and long ..
+   * 1 a ball; angular: 0 worn smooth .. 1 sharp broken corners; rough: 0 polished .. 1 rough grainy surface; opacity: 0.2 clear
+   * glass .. 1 solid.
+   */
+  color2?: string; size?: [number, number]; sphere?: number; angular?: number; rough?: number; opacity?: number;
+}
 export interface SubstrateBlend { grains: BlendGrain[]; mix: number; /** SB1: a named preset this blend came from ('clownpuke'); cleared by any edit */ preset?: string; /** Shuffle: picks a different layout of the same blend (absent = the original one) */ seed?: number }
 
 /** Tank floor outline (scene v8). L x D is always the bounding box; see scene/shape.ts. */

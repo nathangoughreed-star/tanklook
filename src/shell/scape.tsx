@@ -3,16 +3,18 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { ComponentChildren } from 'preact';
 import type { Store } from '../scene/store';
+import type { BlendGrain } from '../scene/types';
 import type { Viewer } from '../render/viewer';
 import { supportLift } from '../interact/pointer';
 import {
   terrainView, placedView, pieceView, brushView, groupBarView, scapeSec, type ScapeSec, type LibraryView, type PlacedView,
   setBlendGrain, setBlendColor, setBlendShare, setBlendMix, addBlendGrain, removeBlendGrain, shuffleBlend, setTerrainOn, setTerrainCols, flattenTerrain,
   removePool, setPoolField, removePiece, duplicatePiece, clearPieces, toggleKeep, reshapePiece, dropPiece, nudgePiece, setField, colourPiece, typePiece, resetLookPiece,
-  brushOn, pickBrush, groupTurn, groupSizeBy, groupDelete, groupDuplicate, GRAINS, KEEP_PROPS,
+  brushOn, pickBrush, groupTurn, groupSizeBy, groupDelete, groupDuplicate, GRAINS, KEEP_PROPS, setBlendShape, blendShapeView,
 } from './logic/scape';
 import { Icon } from './ui';
 import { MAX_GRAINS } from '../scene/blend';
+import { grain3D } from '../art/placeholder';
 
 /** Pieces can be picked and dragged in the view only while their section is open (as the old shell: its menu open). Boot's attachPointer reads this. */
 export const pickItems: { sec: ScapeSec | null } = { sec: null };
@@ -188,6 +190,44 @@ export function BrushBlock({ store }: { store: Store }) {
   );
 }
 
+/** Inches for a grain's size, to the nearest 1/100 in (US units; mm in the title). */
+const inch = (mm: number) => `${+(mm / 25.4).toFixed(2)}`;
+/**
+ * Grain editor (Nathan 2026-11-28): one 3D grain's colour range, size range, sphericity, angularity, surface roughness and
+ * opacity, folded under its line. Every value starts at its kind's own (scene/blend.ts GRAIN_SHAPE_DEFAULT); Reset clears them.
+ */
+function GrainShape({ store, i, g, seal }: { store: Store; i: number; g: BlendGrain; seal: () => void }) {
+  const v = blendShapeView(g), [lo, hi] = v.range, step = hi > 20 ? 0.5 : 0.1;
+  const set = (k: Parameters<typeof setBlendShape>[2], x: Parameters<typeof setBlendShape>[3]) => setBlendShape(store, i, k, x);
+  const edited = g.color2 != null || g.size != null || g.sphere != null || g.angular != null || g.rough != null || g.opacity != null;
+  const pct = (k: 'sphere' | 'angular' | 'rough' | 'opacity', left: string, right: string, title: string, min = 0) => (
+    <div class="bsrow"><span class="bend">{left}</span>
+      <input class="slider" type="range" min={min} max={100} value={Math.round(v[k] * 100)} aria-label={`Grain ${i + 1} ${title}`} title={title} onInput={e => set(k, +val(e) / 100)} onChange={seal} />
+      <span class="bend">{right}</span></div>
+  );
+  return (
+    <details class="bshape">
+      <summary>Shape and surface{edited ? ' (edited)' : ''}</summary>
+      <div class="bsrow"><span class="bend">Colors</span>
+        <span class="bcols"><input type="color" class="bswatch" value={g.color} aria-label={`Grain ${i + 1} color, one end`} onInput={e => setBlendColor(store, i, val(e))} onChange={seal} />
+          <span class="bend">to</span>
+          <input type="color" class="bswatch" value={v.color2} aria-label={`Grain ${i + 1} color, other end`} title="The other end of the color range: each grain is a color between the two" onInput={e => set('color2', val(e))} onChange={seal} /></span>
+        <span class="bend">{v.ranged ? 'Range' : 'Shades'}</span></div>
+      <div class="bsrow"><span class="bend">Size</span>
+        <span class="bsize">
+          <input class="slider" type="range" min={lo} max={hi} step={step} value={v.size[0]} aria-label={`Grain ${i + 1} smallest size`} title="Smallest grain" onInput={e => set('size', [Math.min(+val(e), v.size[1]), v.size[1]])} onChange={seal} />
+          <input class="slider" type="range" min={lo} max={hi} step={step} value={v.size[1]} aria-label={`Grain ${i + 1} largest size`} title="Largest grain" onInput={e => set('size', [v.size[0], Math.max(+val(e), v.size[0])])} onChange={seal} />
+        </span>
+        <span class="bend" title={`${v.size[0].toFixed(1)} to ${v.size[1].toFixed(1)} mm`}>{inch(v.size[0])}-{inch(v.size[1])} in</span></div>
+      {pct('sphere', 'Flat', 'Round', 'Sphericity: flat and long, or a ball')}
+      {pct('angular', 'Smooth', 'Sharp', 'Corners: worn smooth, or sharp broken edges')}
+      {pct('rough', 'Polished', 'Rough', 'Surface: polished, or rough and grainy')}
+      {pct('opacity', 'Clear', 'Solid', 'Opacity: see-through glass, or solid stone', 20)}
+      {edited ? <button type="button" class="btn sm ghost" onClick={() => { for (const k of ['color2', 'size', 'sphere', 'angular', 'rough', 'opacity'] as const) set(k, null); seal(); }}>Reset to {GRAINS.find(o => o.id === g.grain)?.label.toLowerCase()}</button> : null}
+    </details>
+  );
+}
+
 /** Custom blend (GB1): a bar of the mix in its colours, one compact line per grain (colour dot, kind, share, remove), how mixed, and Shuffle. */
 export function Blend({ store }: { store: Store }) {
   const c = store.tank.substrate.custom, n = c.grains.length, mix = Math.round(c.mix * 100);
@@ -211,6 +251,7 @@ export function Blend({ store }: { store: Store }) {
             {n > 1
               ? <button type="button" class="btn icon sm ghost" aria-label={`Remove grain ${i + 1}`} title="Remove this grain" onClick={() => removeBlendGrain(store, i)}><Icon name="x" /></button>
               : <span />}
+            {grain3D(g.grain) ? <GrainShape store={store} i={i} g={g} seal={seal} /> : null}
           </div>
         ))}
       </div>

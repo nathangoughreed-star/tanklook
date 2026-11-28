@@ -4,7 +4,7 @@
 // ONLY through P3's scene/itemEdit.ts and the existing scene modules; the substrate / terrain edits are the old panel's, moved here
 // unchanged in behaviour (ui/panels.ts "Substrate" and "Custom terrain" blocks).
 import { GRAIN_LOOK, SUBSTRATES } from '../../art/placeholder';
-import { BLEND_PRESETS, addGrain, nextBlendSeed, removeGrain, setShare } from '../../scene/blend';
+import { BLEND_PRESETS, GRAIN_SIZE_RANGE, addGrain, grainShape, nextBlendSeed, removeGrain, setShare } from '../../scene/blend';
 import { isClump, isFloat, isPatch, growthOf, type PlantType } from '../../art/plants';
 import { clumpAuto } from '../../render/plant3d';
 import { itemLights } from '../../scene/lightcheck';
@@ -21,7 +21,7 @@ import { BRUSHES, brushDef, isPlantBrush, plantBrushes } from '../../scene/brush
 import { COPY_DEFAULTS, copyGroup, groupSize, removeGroup, scaleGroup, turnGroup, type Group } from '../../scene/duplicate';
 import { MAX_ITEMS } from '../../scene/items';
 import { LIMITS } from '../../scene/validate';
-import { roughOf, type Item, type ItemKind, type TankSetup, type Units } from '../../scene/types';
+import { roughOf, type BlendGrain, type Item, type ItemKind, type TankSetup, type Units } from '../../scene/types';
 import type { Store } from '../../scene/store';
 
 export { scapeSec, type ScapeSec };
@@ -90,6 +90,15 @@ export function setBlendGrain(store: Store, i: number, v: string): void {
 }
 export function setBlendColor(store: Store, i: number, v: string): void {
   store.edit(s => { const g = s.substrate.custom.grains[i]; if (g) { g.color = v; delete s.substrate.custom.preset; } }, { coalesce: 'blendColor' + i });
+}
+/** Grain editor (Nathan 2026-11-28): set one grain's colour range, size range, sphericity, angularity, roughness or opacity; null clears it back to its kind's own. */
+export function setBlendShape(store: Store, i: number, k: 'color2' | 'size' | 'sphere' | 'angular' | 'rough' | 'opacity', v: string | number | [number, number] | null): void {
+  store.edit(s => { const g = s.substrate.custom.grains[i]; if (!g) return; if (v == null) delete g[k]; else (g as unknown as Record<string, unknown>)[k] = v; delete s.substrate.custom.preset; }, { coalesce: 'blendShape' + k + i });
+}
+/** The grain editor's view of one grain: its values with the kind's defaults, and the size range offered (mm). */
+export function blendShapeView(g: BlendGrain) {
+  const sh = grainShape(g), G = GRAIN_LOOK[g.grain], size = sh.size ?? [G.size[0] * 2, G.size[1] * 2] as [number, number];
+  return { ...sh, size, range: GRAIN_SIZE_RANGE[g.grain], color2: sh.color2 ?? g.color, ranged: !!sh.color2 };
 }
 /** One grain's share; the others are scaled to fill the rest. */
 export function setBlendShare(store: Store, i: number, v: number): void {

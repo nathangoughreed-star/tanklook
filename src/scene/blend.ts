@@ -14,7 +14,39 @@ const ADD_COLORS = ['#6f6556', '#a89678', '#3f3a34', '#c9b9a0'];
 /** SB1: named blends. 'clownpuke' = the popular multicolour aquarium gravel (mixed bright dyed gravel, every colour about equally common), evenly mixed. */
 export const BLEND_PRESETS: Record<string, SubstrateBlend> = {
   clownpuke: { grains: [['#d42a2a', 20], ['#1f5fd1', 20], ['#f2c81f', 20], ['#2ea84a', 20], ['#f06aa8', 20]].map(([color, share]) => ({ grain: 'gravel' as Grain, color: color as string, share: share as number })), mix: 1, preset: 'clownpuke' },
+  // grain editor examples (Nathan 2026-11-28): 1/2" blue glass marbles, rough angular mixed gravel, oval semi-smooth river stone
+  marbles: { grains: [{ grain: 'pebble', color: '#2f6fd6', color2: '#1d4fa8', share: 100, size: [12.7, 12.7], sphere: 1, angular: 0, rough: 0, opacity: 0.35 }], mix: 1, preset: 'marbles' },
+  crushed: { grains: [{ grain: 'gravel', color: '#8a8378', color2: '#4d4a46', share: 60, size: [3, 9], sphere: 0.45, angular: 0.9, rough: 0.85 }, { grain: 'gravel', color: '#b39a7a', color2: '#6e5a45', share: 40, size: [3, 8], sphere: 0.5, angular: 0.8, rough: 0.8 }], mix: 1, preset: 'crushed' },
+  riverstone: { grains: [{ grain: 'pebble', color: '#9a8f80', color2: '#5e5750', share: 100, size: [12, 32], sphere: 0.55, angular: 0.05, rough: 0.4 }], mix: 1, preset: 'riverstone' },
 };
+
+/** A grain's shape and surface with the kind's defaults filled in (absent fields: scene/types.ts BlendGrain). */
+export interface GrainShape { color2: string | null; size: [number, number] | null; sphere: number; angular: number; rough: number; opacity: number }
+export const GRAIN_SHAPE_DEFAULT: Record<Grain, Omit<GrainShape, 'color2' | 'size'>> = {
+  mud: { sphere: 0.8, angular: 0, rough: 0.7, opacity: 1 },
+  sand: { sphere: 0.75, angular: 0.2, rough: 0.6, opacity: 1 },
+  gravel: { sphere: 0.6, angular: 0.35, rough: 0.6, opacity: 1 },
+  pebble: { sphere: 0.6, angular: 0.1, rough: 0.4, opacity: 1 },
+};
+/** Size range offered per kind (mm diameter) by the grain editor. */
+export const GRAIN_SIZE_RANGE: Record<Grain, [number, number]> = { mud: [0.02, 0.1], sand: [0.1, 1], gravel: [1, 10], pebble: [5, 50] };
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+export function grainShape(g: BlendGrain): GrainShape {
+  const d = GRAIN_SHAPE_DEFAULT[g.grain], [lo, hi] = GRAIN_SIZE_RANGE[g.grain];
+  const size = g.size ? [Math.min(hi, Math.max(lo, Math.min(...g.size))), Math.min(hi, Math.max(lo, Math.max(...g.size)))] as [number, number] : null;
+  return {
+    color2: g.color2 ?? null, size, sphere: clamp01(g.sphere ?? d.sphere), angular: clamp01(g.angular ?? d.angular),
+    rough: clamp01(g.rough ?? d.rough), opacity: Math.min(1, Math.max(0.2, g.opacity ?? d.opacity)),
+  };
+}
+/** The grain-editor fields of a stored grain, checked; whatever is missing or bad is left out (= the kind's own). */
+export function shapeFields(o: Record<string, unknown>): Partial<BlendGrain> {
+  const out: Partial<BlendGrain> = {}, num = (v: unknown) => typeof v === 'number' && Number.isFinite(v);
+  if (typeof o.color2 === 'string' && HEX.test(o.color2)) out.color2 = o.color2.toLowerCase();
+  if (Array.isArray(o.size) && o.size.length === 2 && o.size.every(num) && o.size.every(v => (v as number) > 0)) out.size = [Math.min(200, o.size[0] as number), Math.min(200, o.size[1] as number)];
+  for (const k of ['sphere', 'angular', 'rough', 'opacity'] as const) if (num(o[k])) out[k] = clamp01(o[k] as number);
+  return out;
+}
 
 /** The six-field constructor the presets and recipes were written in: `grain2` 'none' = one grain; `share` = the second grain's %. */
 export function blendFrom(grain: Grain, color: string, grain2: Grain | 'none' = 'none', color2 = DEFAULT_COLOR2, share = 30, mix = 0.5): SubstrateBlend {
@@ -41,7 +73,7 @@ export function migrateBlend(raw: unknown, fallback: SubstrateBlend): SubstrateB
   if (Array.isArray(c.grains) && c.grains.length) {
     const gs: BlendGrain[] = c.grains.slice(0, MAX_GRAINS).map((e, i) => {
       const o = (e && typeof e === 'object' ? e : {}) as Record<string, unknown>, f = fallback.grains[Math.min(i, fallback.grains.length - 1)];
-      return { grain: pickG(o.grain, f.grain), color: hex(o.color, f.color), share: typeof o.share === 'number' ? o.share : 0 };
+      return { grain: pickG(o.grain, f.grain), color: hex(o.color, f.color), share: typeof o.share === 'number' ? o.share : 0, ...shapeFields(o) };
     });
     return { grains: normalizeShares(gs), mix, ...seedOf(c.seed), ...presetOf(c.preset) };
   }

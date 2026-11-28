@@ -1230,7 +1230,7 @@ function addSubstrate(sc: THREE.Scene, S: TankSetup, T: Tank) {
   };
   // coarse grounds in 3D (render/grains.ts): the painted surface darkened to the shadowed gaps between the grains
   const gd = gl && !(sub.type === 'custom' && sub.custom.grains.length > 1); // a blend darkens only its stones' patches (blendGrains)
-  mk(top, gd ? 0x6e6e6e : 0xffffff, topCol, topNrm, topWet); mk(side, gd ? 0x6e6e6e : 0xffffff, sideCol, undefined, undefined, undefined, sideMk.length ? sideMk : undefined); // the skirt a touch darker so the layer reads through the glass
+  mk(top, gd ? 0x4d4d4d : 0xffffff, topCol, topNrm, topWet); mk(side, gd ? 0x4d4d4d : 0xffffff, sideCol, undefined, undefined, undefined, sideMk.length ? sideMk : undefined); // the skirt a touch darker so the layer reads through the glass
   mk(leca, 0xb4b4b4, lecaCol, undefined, undefined, lecaTexture()); mk(mesh, 0x3a3d38, meshCol, undefined, undefined, meshTexture());
   // the bottom of the ground, seen through the bottom pane from under a tank with no stand (Nathan 2026-10-20: a plain
   // sand-coloured sheet showed there); a layered ground's bottom is its clay balls
@@ -1290,7 +1290,7 @@ function blendUniforms(b: TankSetup['substrate']['custom'], u?: BlendUniforms): 
   return out;
 }
 /** The painted ground under 3D stones, darkened to the shadowed gaps between them (a single grain: the material colour). */
-const GAPS = 0.45;
+const GAPS = 0.3; // grain editor (2026-11-28): the painted pebbles between 3D grains read cartoony at 0.45
 function blendGrains(m: THREE.MeshBasicMaterial, b: TankSetup['substrate']['custom']) {
   const ng = b.grains.length; if (ng === 1) return;
   const uniforms = m.userData.blend = blendUniforms(b); // patchLook updates them in place

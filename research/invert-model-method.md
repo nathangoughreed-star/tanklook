@@ -80,6 +80,21 @@ turbo, cleaner shrimp and zoanthid item render exactly as before. The tank shot 
    a top-down picture of an irregular pattern (a zoa morph's disc) to sample ring colours from.
 2. Zoanthid morphs: one colony = one morph (as sold), or mixed?
 
+## Sheet test (Nathan 2026-11-28: "lets do a sheet test for each unique kind of body shape just to check how well it works")
+One ChatGPT 5-row reference sheet per body plan in the milestone, to judge whether sheets beat the measured generator
+(open question 1). Prompts: `scripts/invert-sheet-prompts.py` -> `research/invert-sheets/prompts/<id>-t1.md` and
+`C:/Users/nreed/fish-sheets/<id>-inv1-gen/prompt.txt`. Header = build B's method block, reworded where it named fins.
+| Body plan | Test species | Rows |
+|---|---|---|
+| Cone snail | banded trochus | side crawling; shell aperture / back; apex + base; sole through glass |
+| Caridean shrimp | peppermint | side; side without appendages; top; front + map; side map |
+| True crab | emerald crab | top; top without legs; side; front + map; underside |
+| Hermit crab | scarlet reef hermit | side; crab out of shell; top; front + map; empty shell |
+| Urchin | tuxedo urchin | side; side without spines; top; bottom + zone map; spine strip |
+| Polyp colony | zoanthid (dragon-eye) | polyp top + side; disc ring map; closed polyp; colony patch; colony on rock |
+Judge each sheet on: same specimen in every row, measured ratios held, rows usable by a script (maps flat, black clean),
+and the look against the reference photos. Results go in the table below once the sheets are in.
+
 ## Correction log (Nathan's corrections, newest last)
 | Date | Model | Correction | Fix |
 |---|---|---|---|
