@@ -766,5 +766,11 @@
   "b": 3.09,
   "src": "fishbase-bayes",
   "note": "FishBase ID 10654 Bayesian (TL cm, a 0.00479-0.03019, b 2.89-3.29); its one table row (SL, n=1, b 3.000) is not used (SO3 R204)"
+ },
+ "bleedingheart": {
+  "a": 0.01995,
+  "b": 3.01,
+  "src": "fishbase-bayes",
+  "note": "FishBase ID 10651 Bayesian (TL cm, a 0.00906-0.04395, b 2.83-3.19); its one table row (SL, n=3, b 3.000) is not used (SO3 R204)"
  }
 }

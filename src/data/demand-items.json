@@ -2300,6 +2300,13 @@
    "hi": 7,
    "unit": "each; Petco 12-pack $18.99 (about $1.58 each), PetSmart $2.99 in store, Aquatic Arts $6.99, Live Fish Direct about $5 (search snippets, sizes not shown) (SO3 R204 search 2026-11-28; stock varies)",
    "url": "https://www.aquaticarts.com/products/black-neon-tetra"
+  },
+  "animal:bleedingheart": {
+   "lo": 5,
+   "mode": 8,
+   "hi": 15,
+   "unit": "each; Nuaqua from $7.17, Imperial Tropicals $14.99 (search snippets; a $6.49 listing is the lookalike Socolof's tetra), sizes not shown (SO3 R204 search 2026-11-28; stock varies)",
+   "url": "https://nuaquashop.com/products/bleeding-heart-tetra"
   }
  }
 }
