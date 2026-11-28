@@ -883,6 +883,14 @@
    "accessed": "2026-11-28",
    "kind": "consensus",
    "note": "SO1 R202: salinity by growth stage, adult tank size, temperament; per-value quote in the provenance rule"
+  },
+  "aqua-fish.net": {
+   "title": "aqua-fish.net species profiles",
+   "by": "aqua-fish.net",
+   "url": "https://en.aqua-fish.net",
+   "accessed": "2026-11-28",
+   "kind": "consensus",
+   "note": "hobby species profile (SO3 R204)"
   }
  }
 }

@@ -324,7 +324,13 @@
    "unit": "each; LiveAquaria $4.69, Nua $2.99, AquaticsUnl $9.99",
    "url": "https://www.liveaquaria.com/products/marble-hatchet"
   },
-  "animal:bta": {"lo": 60, "mode": 80, "hi": 100, "unit": "each; green and rose bubble-tips about $60-100 online", "url": "https://aquaticsunlimited.com/?p=18984"},
+  "animal:bta": {
+   "lo": 60,
+   "mode": 80,
+   "hi": 100,
+   "unit": "each; green and rose bubble-tips about $60-100 online",
+   "url": "https://aquaticsunlimited.com/?p=18984"
+  },
   "animal:hermit": {
    "lo": 2,
    "mode": 3,
@@ -2280,6 +2286,13 @@
    "hi": 30,
    "unit": "each, 1-3 in; iFISH $8.39, Quinns Fins $7.99-$39.99 by size, Aquatics Unlimited $9.99-$29.99 (snippets only) (SO1 R202 search 2026-11-28; stock varies)",
    "url": "https://aquaticsunlimited.com/product/tetra-silver-dollar-metynnis-argenteus/"
+  },
+  "animal:agassizii": {
+   "lo": 13,
+   "mode": 25,
+   "hi": 35,
+   "unit": "each; Aqua Huna fire red $24.00, Aquatics Unlimited double red $24.99 (range $12.99-$29.99), Wetspot Alenquer $34.99, wild-type listing $12.99 (search snippets, sizes not shown) (SO3 R204 search 2026-11-28; stock varies)",
+   "url": "https://aquahuna.com/products/apistogramma-agassizii-fire-red"
   }
  }
 }
