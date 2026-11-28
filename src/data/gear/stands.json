@@ -1569,5 +1569,143 @@
     "handleHex"
    ]
   }
+ },
+ {
+  "id": "topfin-bowfront-36-light-brown",
+  "brand": "Top Fin",
+  "line": "Bowfront aquarium stand 36 gal",
+  "kind": "cabinet",
+  "finish": "oak",
+  "color": "Light Brown (features text says sindoori mango finish)",
+  "fits": [
+   [
+    30.3,
+    15.5
+   ],
+   [
+    30.7,
+    15.7
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 157.24,
+  "seller": "PetSmart",
+  "url": "https://www.petsmart.com/fish/tanks-aquariums-and-nets/aquarium-stands/top-fin-bowfront-aquarium-stand---36-gallon-5309122.html",
+  "asOf": "2026-11-28",
+  "est": [
+   "fits"
+  ],
+  "note": "Item 5309122. Stand 31.2 W x 17.5 D x 30 H. $157.24 (15% off thru 11/29) from $184.99; other cached pages showed $239.99. Page says supports tanks up to 37 gal. Stock not stated (Add to cart shown). Fits inferred from 36 gal bowfront rating. Photo: https://s7d2.scene7.com/is/image/PetSmart/5309122?fmt=webp&wid=400&hei=400&fit=constrain Drawn as the generic bow cabinet in the nearest finish (product looks are drawn for rectangular stands only); Doors, handles, legs and layout read off the PetSmart photo 2026-11-28; colours estimated.",
+  "ratedGal": 37,
+  "ratingNote": "PetSmart page: 'Supports tanks up to 37 gallons'; no lb rating (page notes a 37 gal tank weighs ~435 lb)",
+  "look": {
+   "front": "#a07850",
+   "top": "#8f6a44",
+   "sheen": "satin",
+   "grain": "oak",
+   "doors": 2,
+   "handle": "bar",
+   "base": "feet",
+   "est": [
+    "front",
+    "top",
+    "sheen"
+   ],
+   "handleHex": "#1e1e1e"
+  },
+  "shape": "bow"
+ },
+ {
+  "id": "topfin-bowfront-37-raven-oak",
+  "brand": "Top Fin",
+  "line": "Bow front Raven Oak stand 37 gal",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "Raven Oak (dark)",
+  "fits": [
+   [
+    30.3,
+    15.5
+   ],
+   [
+    30.7,
+    15.7
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 152.99,
+  "seller": "PetSmart",
+  "url": "https://www.petsmart.com/5369630.html",
+  "asOf": "2026-11-28",
+  "est": [
+   "fits",
+   "finish"
+  ],
+  "note": "Item 5369630. Stand 31.18 W x 17.48 D x 30 H. $152.99 (15% off thru 11/29) from $179.99. Page says up to 37 gal; some cached listings showed out of stock. Doors not stated on page (the 50-75 sibling has shaker doors). Photo: https://s7d2.scene7.com/is/image/PetSmart/5369630?fmt=webp&wid=400&hei=400&fit=constrain Drawn as the generic bow cabinet in the nearest finish (product looks are drawn for rectangular stands only); Doors, handles, legs and layout read off the PetSmart photo 2026-11-28; colours estimated.",
+  "ratedGal": 37,
+  "ratingNote": "PetSmart page: up to 37 gallon aquariums; no lb rating",
+  "look": {
+   "front": "#3a3029",
+   "top": "#2f2722",
+   "sheen": "satin",
+   "grain": "oak",
+   "doors": 2,
+   "handle": "bar",
+   "base": "feet",
+   "est": [
+    "front",
+    "top",
+    "sheen"
+   ],
+   "handleHex": "#1e1e1e"
+  },
+  "shape": "bow"
+ },
+ {
+  "id": "topfin-bowfront-75-raven-oak",
+  "brand": "Top Fin",
+  "line": "Bow front Raven Oak stand 50-75 gal",
+  "kind": "cabinet",
+  "finish": "black",
+  "color": "Raven Oak (dark) with a light wood top",
+  "fits": [
+   [
+    48.4,
+    18
+   ],
+   [
+    48,
+    18
+   ]
+  ],
+  "heightIn": 30,
+  "priceUsd": 254.99,
+  "seller": "PetSmart",
+  "url": "https://www.petsmart.com/5369631.html",
+  "asOf": "2026-11-28",
+  "est": [
+   "fits",
+   "finish"
+  ],
+  "note": "Item 5369631. Stand 49.6 W x 18.97 D x 30 H. $254.99 (15% off thru 11/29) from $299.99. Holds up to 75 gal; shaker-style doors. Fits for 72 gal bowfronts inferred from 75 gal rating and footprint. Stock not stated. Photo: https://s7d2.scene7.com/is/image/PetSmart/5369631?fmt=webp&wid=400&hei=400&fit=constrain Drawn as the generic bow cabinet in the nearest finish (product looks are drawn for rectangular stands only); Doors, handles, legs and layout read off the PetSmart photo 2026-11-28; colours estimated.",
+  "ratedGal": 75,
+  "ratingNote": "PetSmart page: 'Holds: Up to 75 gallon aquariums'; no lb rating",
+  "look": {
+   "front": "#3a3029",
+   "top": "#e3cfa8",
+   "sheen": "satin",
+   "grain": "oak",
+   "doors": 2,
+   "handle": "bar",
+   "base": "feet",
+   "est": [
+    "front",
+    "top",
+    "sheen"
+   ],
+   "open": "center",
+   "handleHex": "#c9a14a"
+  },
+  "shape": "bow"
  }
 ]
