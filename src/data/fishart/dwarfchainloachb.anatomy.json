@@ -1,0 +1,737 @@
+{
+ "art": "dwarfchainloachb",
+ "source": {
+  "file": "side.png (input image; sheet and photos are not in the repo)",
+  "px": [
+   512,
+   512
+  ],
+  "view": "side, nose right, black background",
+  "sex": "unknown"
+ },
+ "method": {
+  "threshold": 8,
+  "openRadiusPx": 9,
+  "script": "scripts/fish-outline.py",
+  "rotationDeg": 0.0
+ },
+ "anatomy": {
+  "slPx": 399.0,
+  "tlPx": 470.0,
+  "tlOverSl": 1.178,
+  "caudalTipBeyondSlPctSL": 17.79,
+  "depthProfile": {
+   "stations": [
+    0,
+    0.5,
+    1,
+    1.5,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    10,
+    15,
+    20,
+    25,
+    30,
+    35,
+    40,
+    45,
+    50,
+    55,
+    60,
+    65,
+    70,
+    75,
+    80,
+    85,
+    90,
+    95,
+    97,
+    98.5,
+    100
+   ],
+   "top": [
+    -2.383,
+    -1.13,
+    -0.63,
+    -0.13,
+    0.37,
+    1.62,
+    2.37,
+    3.37,
+    4.37,
+    4.89,
+    5.39,
+    6.62,
+    8.9,
+    10.65,
+    12.09,
+    13.16,
+    14.16,
+    14.91,
+    15.41,
+    15.71,
+    15.27,
+    14.43,
+    13.31,
+    12.25,
+    11.44,
+    10.37,
+    9.37,
+    8.41,
+    7.58,
+    7.28,
+    7.08,
+    5.261
+   ],
+   "bottom": [
+    5.01,
+    5.51,
+    6.14,
+    6.64,
+    6.89,
+    7.39,
+    7.64,
+    7.89,
+    7.89,
+    8.13,
+    8.65,
+    9.37,
+    10.65,
+    11.4,
+    12.41,
+    13.16,
+    13.66,
+    14.16,
+    14.41,
+    14.41,
+    14.5,
+    14.04,
+    13.07,
+    12.41,
+    11.65,
+    10.89,
+    9.521,
+    7.91,
+    7.52,
+    7.61,
+    7.76,
+    4.885
+   ],
+   "axis": "snout tip to peduncle centre, level; values are distance from the axis in % SL; BODY ONLY (opened mask)"
+  },
+  "landmarks": {
+   "snoutPx": [
+    490.0,
+    117.5
+   ],
+   "pedunclePx": [
+    91,
+    117.5
+   ],
+   "snoutPxOriginal": [
+    490.0,
+    117.5
+   ],
+   "pedunclePxOriginal": [
+    91.0,
+    117.5
+   ],
+   "eye": null
+  },
+  "fins": {
+   "dorsal": {
+    "baseStartPctSL": 46.74,
+    "baseEndPctSL": 64.91,
+    "maxHeightPctSL": 10.41,
+    "heightProfile": [
+     [
+      64.91,
+      1.33
+     ],
+     [
+      63.91,
+      4.57
+     ],
+     [
+      62.91,
+      6.31
+     ],
+     [
+      61.9,
+      7.83
+     ],
+     [
+      60.9,
+      8.66
+     ],
+     [
+      59.9,
+      9.99
+     ],
+     [
+      58.9,
+      10.32
+     ],
+     [
+      57.89,
+      9.9
+     ],
+     [
+      56.89,
+      9.73
+     ],
+     [
+      55.89,
+      9.06
+     ],
+     [
+      54.89,
+      8.4
+     ],
+     [
+      53.88,
+      7.54
+     ],
+     [
+      52.88,
+      6.69
+     ],
+     [
+      51.88,
+      5.84
+     ],
+     [
+      50.88,
+      4.75
+     ],
+     [
+      49.87,
+      3.71
+     ],
+     [
+      48.87,
+      2.67
+     ],
+     [
+      47.87,
+      1.38
+     ]
+    ],
+    "note": "fin spines are dark/translucent: heights are lower bounds"
+   },
+   "anal": {
+    "baseStartPctSL": 76.82,
+    "baseEndPctSL": 89.72,
+    "maxHeightPctSL": 7.83,
+    "heightProfile": [
+     [
+      89.72,
+      6.45
+     ],
+     [
+      88.72,
+      7.79
+     ],
+     [
+      87.72,
+      7.38
+     ],
+     [
+      86.72,
+      6.94
+     ],
+     [
+      85.71,
+      6.25
+     ],
+     [
+      84.71,
+      5.69
+     ],
+     [
+      83.71,
+      4.92
+     ],
+     [
+      82.71,
+      4.4
+     ],
+     [
+      81.7,
+      3.63
+     ],
+     [
+      80.7,
+      2.9
+     ],
+     [
+      79.7,
+      1.92
+     ],
+     [
+      78.7,
+      1.19
+     ]
+    ]
+   },
+   "pelvicOrPectoral": {
+    "rootPctSL": 5.01,
+    "tipPctSL": 7.52,
+    "maxDropPctSL": 3.01,
+    "note": "any fin material under the belly in the head half; pelvic and pectoral are not separable in a side photo"
+   },
+   "caudal": {
+    "type": "round",
+    "notchFrac": 0.0,
+    "tipUPctSL": -17.79,
+    "outline": [
+     [
+      1.25,
+      7.14,
+      7.39
+     ],
+     [
+      2.76,
+      7.64,
+      8.15
+     ],
+     [
+      4.26,
+      8.4,
+      8.9
+     ],
+     [
+      5.76,
+      9.15,
+      9.9
+     ],
+     [
+      7.27,
+      9.65,
+      10.65
+     ],
+     [
+      8.77,
+      10.4,
+      11.4
+     ],
+     [
+      10.28,
+      10.9,
+      11.9
+     ],
+     [
+      11.78,
+      11.65,
+      12.41
+     ],
+     [
+      13.28,
+      11.9,
+      12.91
+     ],
+     [
+      14.79,
+      12.41,
+      13.16
+     ],
+     [
+      16.29,
+      12.41,
+      13.16
+     ],
+     [
+      17.79,
+      11.9,
+      -10.65
+     ]
+    ],
+    "outlineCols": "[u % SL from the peduncle (negative = behind), top, bottom] distance from the axis in % SL; full mask"
+   }
+  },
+  "thickness": {
+   "stations": [
+    0,
+    0.5,
+    1,
+    1.5,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    10,
+    15,
+    20,
+    25,
+    30,
+    35,
+    40,
+    45,
+    50,
+    55,
+    60,
+    65,
+    70,
+    75,
+    80,
+    85,
+    90,
+    95,
+    97,
+    98.5,
+    100
+   ],
+   "halfWidthPctSL": [
+    0.96,
+    1.63,
+    2.16,
+    2.62,
+    2.88,
+    3.37,
+    3.83,
+    4.15,
+    4.5,
+    4.81,
+    5.21,
+    6.44,
+    6.83,
+    7.66,
+    7.92,
+    8.18,
+    8.44,
+    8.7,
+    8.96,
+    8.71,
+    8.21,
+    7.58,
+    7.37,
+    6.773,
+    5.879,
+    4.825,
+    3.771,
+    2.877,
+    1.919,
+    1.413,
+    1.141,
+    1.035
+   ],
+   "source": "top panel of the generated sheet, blue-share mask (thr 0.60); the narrower side of the centre line",
+   "fit": {
+    "thick": 0.65,
+    "pedT": 0.3,
+    "rmsPctSL": 0.41,
+    "note": "least-squares fit of fish3d sections() half-thickness to the top-view half-width"
+   }
+  },
+  "render": {
+   "note": "built by scripts/fish-build.py from dwarfchainloachb.json",
+   "photo": {
+    "art": "dwarfchainloachb",
+    "plan": "oscar",
+    "sx": 980.0,
+    "sl": 798.0,
+    "ax": 235.0,
+    "eye": [
+     896,
+     227,
+     19
+    ],
+    "pec": {
+     "root": [
+      782,
+      264
+     ],
+     "poly": [
+      [
+       782,
+       264
+      ],
+      [
+       773,
+       273
+      ],
+      [
+       759,
+       282
+      ],
+      [
+       748,
+       287
+      ],
+      [
+       740,
+       290
+      ],
+      [
+       732,
+       293
+      ],
+      [
+       718,
+       295
+      ],
+      [
+       709,
+       296
+      ],
+      [
+       699,
+       294
+      ],
+      [
+       689,
+       290
+      ],
+      [
+       678,
+       283
+      ],
+      [
+       670,
+       273
+      ],
+      [
+       668,
+       263
+      ],
+      [
+       670,
+       258
+      ],
+      [
+       680,
+       246
+      ],
+      [
+       689,
+       240
+      ],
+      [
+       701,
+       236
+      ],
+      [
+       710,
+       236
+      ],
+      [
+       718,
+       236
+      ],
+      [
+       732,
+       238
+      ],
+      [
+       740,
+       240
+      ],
+      [
+       749,
+       243
+      ],
+      [
+       762,
+       248
+      ],
+      [
+       780,
+       256
+      ]
+     ],
+     "spread": 0.35
+    },
+    "pelvic": {
+     "root": [
+      567,
+      352
+     ],
+     "len": 91,
+     "poly": [
+      [
+       567,
+       352
+      ],
+      [
+       558,
+       359
+      ],
+      [
+       544,
+       369
+      ],
+      [
+       534,
+       375
+      ],
+      [
+       529,
+       378
+      ],
+      [
+       524,
+       380
+      ],
+      [
+       515,
+       383
+      ],
+      [
+       510,
+       384
+      ],
+      [
+       504,
+       386
+      ],
+      [
+       496,
+       387
+      ],
+      [
+       486,
+       385
+      ],
+      [
+       481,
+       379
+      ],
+      [
+       479,
+       376
+      ],
+      [
+       478,
+       369
+      ],
+      [
+       479,
+       359
+      ],
+      [
+       482,
+       352
+      ],
+      [
+       489,
+       346
+      ],
+      [
+       499,
+       347
+      ],
+      [
+       506,
+       347
+      ],
+      [
+       514,
+       348
+      ],
+      [
+       518,
+       349
+      ],
+      [
+       524,
+       349
+      ],
+      [
+       531,
+       349
+      ],
+      [
+       543,
+       351
+      ]
+     ]
+    },
+    "eyeIris": [
+     "#9e7b4c",
+     "#483a2c"
+    ],
+    "eyePupil": "#181514",
+    "eyeFull": 26,
+    "pupilFrac": 0.78,
+    "proj": {
+     "fk": 940.0,
+     "y0": -0.106
+    },
+    "thickx": 1.0,
+    "noTail": false,
+    "measuredWidth": true,
+    "aspect": 0.443,
+    "finImg": true,
+    "opacity": true,
+    "stalkEdge": [
+     [
+      193.6,
+      173.0
+     ],
+     [
+      188.2,
+      183.3
+     ],
+     [
+      184.3,
+      193.7
+     ],
+     [
+      182.0,
+      204.0
+     ],
+     [
+      180.0,
+      214.3
+     ],
+     [
+      179.0,
+      224.7
+     ],
+     [
+      179.0,
+      235.0
+     ],
+     [
+      179.3,
+      245.3
+     ],
+     [
+      180.5,
+      255.7
+     ],
+     [
+      182.4,
+      266.0
+     ],
+     [
+      185.3,
+      276.3
+     ],
+     [
+      189.1,
+      286.7
+     ],
+     [
+      194.6,
+      297.0
+     ]
+    ],
+    "ver": "113ef4fc"
+   },
+   "fit": "{'thick': 0.65, 'pedT': 0.3, 'rmsPctSL': 0.41, 'note': 'least-squares fit of fish3d sections() half-thickness to the top-view half-width'}"
+  }
+ },
+ "reliability": {
+  "note": "Per-species reliability is not assessed. Body edge = the opened mask at the stated threshold (about +-1-2 px); fin heights are lower bounds and fin base starts/ends are +-3 % SL unless set by --landmarks; see render.fit for the thickness fit."
+ }
+}

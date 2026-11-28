@@ -46,3 +46,7 @@ Not in b12 (told Nathan): lined seahorse (upright body), kissing gourami and blo
 | arowana | f86ea63a, rebuilt | fix 2026-11-28 ("arowana mouth/front needs work"); snout + forward barbels, shown | method row 81; mass 1.45-1.90x |
 | bicolorblenny | f86ea63a, rebuilt (row 76) | fix 2026-11-28 ("blenny looks too stretched long"); rebuilt, shown | method row 81 |
 | blackneon | f86ea63a | approved 2026-11-28 ("rest can ship") | go-live needs a catalogue row |
+| bleedingheart | (group 2) | shown 2026-11-28 | |
+| bluedamsel | (group 2) | shown 2026-11-28 | blue very saturated |
+| boxfish | (group 2) | shown 2026-11-28 | proxy depth O. immaculatus; mass-soft 1.22-1.60x |
+| dwarfchainloach | (group 2) | shown 2026-11-28 | proxy depth B. histrionica: model deeper than the sheet; barbels lost |
