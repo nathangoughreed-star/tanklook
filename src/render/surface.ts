@@ -155,28 +155,30 @@ export const mirrorWanted = (eyeY: number, waterY: number, level = perf.level) =
  * Before drawing a tank's view: make sure its mirror picture is current and point the shared uniforms at it, or switch
  * the mirror off. `rev` changes whenever the scene was built or patched; `w`, `h` = the view's size in device pixels.
  * Call with the view's Show-box hiding already applied (hidden parts are left out of the reflection too). `full`: the
- * Show view, which draws the mirror whatever the Performance level. `moving`: a camera-motion frame (no redraw: the mirror
- * waits for the rest frame, so orbiting costs nothing extra).
+ * Show view, which draws the mirror whatever the Performance level. `moving`: a camera-motion frame (an orbit, a zoom):
+ * the mirror stays on, drawn at half its rest resolution into its own picture (Nathan 2026-11-28: the shimmer band
+ * showing while orbiting read as the old version); the rest frame then redraws it sharp.
+ * Returns true when the mirror shows its rest picture; false when it is off or shows a motion picture (the caller owes a rest frame).
  */
 export function mirrorPass(r: THREE.WebGLRenderer, slot: number, sc: THREE.Scene, cam: THREE.PerspectiveCamera, rev: number, w: number, h: number, extraKey = '', full = false, moving = false) {
   const surf = surfOf(sc), wy = surf?.userData.waterY as number | undefined;
   cam.updateMatrixWorld();
   if (!surf || wy === undefined || !surf.visible || !mirrorWanted(cam.matrixWorld.elements[13], wy, full ? 0 : perf.level)) { mirrorOff(); return false; }
-  const rw = Math.max(16, Math.round(w / 2)), rh = Math.max(16, Math.round(h / 2));
+  const div = moving ? 4 : 2, rw = Math.max(16, Math.round(w / div)), rh = Math.max(16, Math.round(h / div));
   const key = [sc.id, rev, rw, rh, extraKey, mirrorOpts.live ? ++liveTick : 0, ...cam.matrixWorld.elements.map(x => x.toFixed(2)), ...cam.projectionMatrix.elements.map(x => x.toPrecision(6))].join(',');
-  let p = passes.get(slot);
+  // the motion picture has its own target, so starting and stopping an orbit never resizes (reallocates) either one
+  const pk = slot * 2 + (moving ? 1 : 0);
+  let p = passes.get(pk);
   if (!p) {
     const rt = new THREE.WebGLRenderTarget(rw, rh, { depthBuffer: true, stencilBuffer: true, type: THREE.UnsignedByteType, colorSpace: THREE.SRGBColorSpace });
     rt.texture.minFilter = rt.texture.magFilter = THREE.LinearFilter; rt.texture.generateMipmaps = false;
-    p = { rt, key: '' }; passes.set(slot, p);
+    p = { rt, key: '' }; passes.set(pk, p);
   }
   if (p.rt.width !== rw || p.rt.height !== rh) p.rt.setSize(rw, rh);
-  // camera motion (an orbit, a zoom): no redraw, the mirror rests (the shimmer band shows) until the view stops and the rest frame redraws it
-  if (moving && p.key !== key) { mirrorOff(); return false; }
   const vc = mirrorCamera(cam, wy);
   if (p.key !== key) { p.key = key; draw(r, sc, vc, p.rt); }
   SURF.uMirOn.value = 1; SURF.uMirTex.value = p.rt.texture; mirrorMatrix(vc, SURF.uMirMat.value);
-  return true;
+  return !moving;
 }
 
 /** After the views are drawn: other renderers (stills, previews, AR) never sample a view's picture. */
