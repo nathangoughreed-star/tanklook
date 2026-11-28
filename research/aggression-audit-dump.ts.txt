@@ -1,0 +1,24 @@
+import { test } from 'vitest';
+import { writeFileSync } from 'node:fs';
+import { SPECIES } from '../src/data/species';
+import { CARE } from '../src/data/care';
+import { whysAnimal } from '../src/scene/animalfit';
+test('dump', () => {
+  const sp = SPECIES.filter(s => s.habitat !== 'land');
+  const rows: any[] = [];
+  for (const s of sp) {
+    const c: any = CARE[s.id] ?? {};
+    const acts: Record<string, string[]> = {};
+    for (const o of sp) {
+      if (o === s) continue;
+      for (const w of whysAnimal(s, Infinity, 3, [o], {})) {
+        if (w.kind !== 'compat' || w.temp) continue;
+        const t = w.text.replace(/^compatibility: /, '').replace(/ \(.*\)$/, '');
+        if (/^(would eat|may eat|would harass|could nip|too aggressive)/.test(t)) (acts[t] ??= []).push(o.id);
+      }
+    }
+    rows.push({ id: s.id, name: s.name, sci: s.sci, cat: s.cat, tl: s.tl, temper: c.temper, nip: c.nip, slow: c.slow, feelers: c.feelers, alone: c.alone, solo: c.solo, guard: c.guard, prey: c.prey, preyChecked: c.preyChecked, acts });
+  }
+  writeFileSync(process.env.OUT!, JSON.stringify(rows));
+  console.log(rows.length);
+});
