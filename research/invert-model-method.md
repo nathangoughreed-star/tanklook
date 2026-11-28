@@ -131,6 +131,21 @@ outright. Body plans like these don't loft from silhouettes (see "Why not build 
 
 **Decision (Nathan 2026-11-28): "Yes, hybrid".** This answers open question 1. Each new invert: Commons photos, a sheet (the crab template for crustaceans), measured ratios and map colours from the sheet, a colour check against the photos, then the generator spec. The urchin needs a t2 sheet with its colours stated before it is measured.
 
+### First hybrid result: zoanthids (2026-11-28, Nathan: "can we see a result from the hybrid approach?")
+`reefShape('zoanthid-h')`, morph `dragoneye-h` in `src/render/coral3d.ts`; review picture
+`research/screens/invert-c/hybrid-zoanthid.jpg` (photo, sheet rows, pilot before, hybrid after). Lab only.
+- **From the sheet (by script):**
+  - ring radii from the ring map (mouth 0.21, orange to 0.59, dark disc to 0.85, pale rim to 1.0 of the rim radius);
+  - 28 tentacles reaching 1.35 rim radii;
+  - colony spacing 2.39 rim radii (median nearest neighbour, orange-disc blobs);
+  - the brown colony mat between the polyps.
+  The pilot had guessed 26 tentacles and spacing 1.77 (discs overlapping).
+- **Checked against the photo:** the sheet's hue and saturation are lifted to the photo's brightness. Where the hue drifts
+  more than 15 deg (mouth, rim, tentacles), the photo colour wins. The sheet's lone polyp stands 1.0 rim radius
+  tall, but packed polyps in the photo sit low, so the photo wins there too (0.3-0.55).
+- **Lesson:** match the *median* spacing, not the minimum gap. Dart throwing leaves the median about 15% above its
+  minimum, so the gap is set to 2.27 to land at 2.37 (the lab prints the spacing in the side label).
+
 ## Correction log (Nathan's corrections, newest last)
 | Date | Model | Correction | Fix |
 |---|---|---|---|
