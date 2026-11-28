@@ -42,7 +42,7 @@ Not in b12 (told Nathan): lined seahorse (upright body), kissing gourami and blo
 ## Review log
 | fish | built | verdict (Nathan) | note |
 |---|---|---|---|
-| agassizii | f86ea63a | approved 2026-11-28 ("rest can ship") | go-live needs a catalogue row |
+| agassizii | f86ea63a | approved 2026-11-28 ("rest can ship") | catalogue row SO3 c7a56040 (merged b1124904); fishLive entry added on this branch; live once the branch reaches main |
 | arowana | f86ea63a, rebuilt | fix 2026-11-28 ("arowana mouth/front needs work"); snout + forward barbels, shown | method row 81; mass 1.45-1.90x |
 | bicolorblenny | f86ea63a, rebuilt (row 76) | fix 2026-11-28 ("blenny looks too stretched long"); rebuilt, shown | method row 81 |
 | blackneon | f86ea63a | approved 2026-11-28 ("rest can ship") | go-live needs a catalogue row |

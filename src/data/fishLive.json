@@ -432,6 +432,10 @@
     "silverdollar": {
       "look": "silverdollarb",
       "approved": "2026-11-28"
+    },
+    "agassizii": {
+      "look": "agassiziib",
+      "approved": "2026-11-28"
     }
   }
 }
