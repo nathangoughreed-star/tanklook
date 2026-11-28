@@ -2230,6 +2230,13 @@
    "hi": 39,
    "unit": "each, 1-3 in juvenile; That Pet Place N. Burundi $24.99 (store only), AquariumFish.com $33.14 sale (reg. $38.99), LiveAquaria captive-bred $29.99 and Petco $29.99 (snippets) (SO1 R202 search 2026-11-28; stock varies)",
    "url": "https://www.thatpetplace.com/Cyphotilapia-frontosa-248205"
+  },
+  "animal:jackdempsey": {
+   "lo": 6,
+   "mode": 8,
+   "hi": 15,
+   "unit": "each, 1-2 in juvenile; That Pet Place small $6.99 (store only), Petco $6.49, AquaticArts $7.99 and iFISH $14.99 (snippets) (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://www.thatpetplace.com/Rocio-octofasciata-jack-dempsey-237530"
   }
  }
 }

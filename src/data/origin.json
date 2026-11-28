@@ -142,5 +142,6 @@
  "bichir": {"c": ["africa"], "r": "West and Central Africa: Senegal, Gambia, Niger, Volta, Chad and Nile basins, Lakes Turkana and Albert", "s": "Seriously Fish"},
  "congotetra": {"c": ["africa"], "r": "Congo River drainage: lower and middle Congo basin, DR Congo and Republic of Congo (captive-bred in the Far East and Eastern Europe for the trade)", "s": "Seriously Fish; FishBase"},
  "denison": {"c": ["asia"], "r": "Western Ghats rivers of Kerala and Karnataka, southern India; endangered in the wild, so the trade fish are commercially bred in Southeast Asia and Eastern Europe", "s": "Seriously Fish; FishBase"},
- "frontosa": {"c": ["africa"], "r": "Northern Lake Tanganyika, Cape Tembwe to Bulu Point: Burundi, DR Congo, Tanzania; commonly bred in aquariums, with regional variants sold", "s": "Seriously Fish; FishBase"}
+ "frontosa": {"c": ["africa"], "r": "Northern Lake Tanganyika, Cape Tembwe to Bulu Point: Burundi, DR Congo, Tanzania; commonly bred in aquariums, with regional variants sold", "s": "Seriously Fish; FishBase"},
+ "jackdempsey": {"c": ["camerica"], "r": "Atlantic slope of Central America: Rio Actopan, Veracruz, Mexico to the Chamelecon and Ulua rivers, Honduras; feral in the US and elsewhere", "s": "Seriously Fish; FishBase"}
 }

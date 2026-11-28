@@ -2983,6 +2983,25 @@
     "url": "https://www.seriouslyfish.com/species/cyphotilapia-frontosa/"
    },
    "why": "the mean of the group minimums found (4 figures: Seriously Fish 228 gal; Fishkeeping World 125 gal for 3+ adults; Aquariadise 125-150 gal for 4-6, 125 used; That Pet Place 150 gal), 157 gal; a single adult needs 70-75 gal (Fishkeeping World, Aquariadise) (SO1 R202, 2026-11-28)"
+  },
+  "jackdempsey": {
+   "red": {
+    "L": 1200,
+    "W": 450,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/rocio-octofasciata/",
+    "states": "120 x 45 cm, about 243 litres (64 US gal), for a single adult pair",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 63,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care pages",
+    "url": "https://www.seriouslyfish.com/species/rocio-octofasciata/"
+   },
+   "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of every minimum found (6 figures: Seriously Fish 64 gal; Aquarium Source 55 gal; Aquariadise 50 gal; Fishkeeping World 80 gal; LiveAquaria 55 gal; That Pet Place 75 gal), 63 gal (SO1 R202, 2026-11-28)"
   }
  }
 }

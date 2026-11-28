@@ -16,6 +16,7 @@ export const WATER: Record<string, { ok: R; tol: R; est?: true }> = {
   bichir: { ok: [24,28], tol: [22,30], est: true },
   clownknife: { ok: [24,28], tol: [20,30], est: true },
   bambooshark: { ok: [22,26], tol: [20,28], est: true },
+  jackdempsey: { ok: [24,27], tol: [20,30], est: true },
   frontosa: { ok: [23,27], tol: [22,28], est: true },
   denison: { ok: [18,25], tol: [15,26], est: true },
   congotetra: { ok: [23,27], tol: [22,28], est: true },
