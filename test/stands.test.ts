@@ -83,7 +83,7 @@ describe('R96: every stand has a look read off its photos', () => {
 describe('bowfront stands', () => {
   it('a 36 gal bowfront gets its bowfront stands, a rectangular tank never does', () => {
     const bow = standsFor(setup('bow36').tank).map(p => p.id);
-    expect(bow).toEqual(['topfin-bowfront-37-raven-oak', 'topfin-bowfront-36-light-brown']);
+    expect(bow.slice(0, 2)).toEqual(['topfin-bowfront-37-raven-oak', 'topfin-bowfront-36-light-brown']);   // bowfront stands first, cheapest first; larger rectangular stands follow
         expect(STAND_PRODUCTS.filter(p => p.shape === 'bow').every(p => !standsFor(setup('g20l').tank).includes(p))).toBe(true);
     expect(standsFor(setup('bow72').tank)[0].id).toBe('topfin-bowfront-75-raven-oak');   // its bowfront stand first, then rectangular 48 x 18 stands
     expect(standOf(setup('bow36'))?.id).toBe('topfin-bowfront-37-raven-oak');
@@ -94,7 +94,11 @@ describe('bowfront stands', () => {
     expect(ids).not.toContain('imagitarium-brooklyn-55');                         // 48 x 13: too shallow for the bow, and a foot too long
     expect(standsFor(setup('bow72').tank).map(p => p.id)).toContain('seapora-empress-48x18');
     expect(standsFor(setup('bow72').tank).map(p => p.id)).not.toContain('seapora-empress-48x12');   // 48 x 13 under an 18 in deep bow
-    expect(standsFor(setup('bow36').tank).every(p => p.shape === 'bow')).toBe(true);   // no rectangular stand is 15.5 in deep and about 30 in long
+    const b36 = standsFor(setup('bow36').tank).map(p => p.id);
+    expect(b36.slice(0, 2).sort()).toEqual(['topfin-bowfront-36-light-brown', 'topfin-bowfront-37-raven-oak']);   // its bowfront stands first
+    expect(b36).toContain('af-40b-cabinet');                    // a larger stand is fine: 36 x 18 under a 30.3 x 15.5 bow
+    expect(b36.some(id => id.includes('30'))).toBe(false);      // 30 x 12 stands are too shallow for the bow
+    expect(standsFor(setup('bow46').tank).map(p => p.id)).not.toContain('seapora-empress-48x18');   // a 4 ft stand under a 3 ft tank stays out
     expect(standOf(setup('bow72'))?.id).toBe('topfin-bowfront-75-raven-oak');   // the bowfront stand stays the default
   });
 });
