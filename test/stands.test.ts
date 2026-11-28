@@ -78,3 +78,14 @@ describe('R96: every stand has a look read off its photos', () => {
     for (const p of STAND_PRODUCTS) expect(existsSync(`public/gallery/stands/${p.id}.webp`), p.id).toBe(true);
   });
 });
+
+// Nathan 2026-11-28: "do we have a library of stands that you can buy that would fit this 36g bowfront?" Bowfront stands fit bowfront tanks only.
+describe('bowfront stands', () => {
+  it('a 36 gal bowfront gets its bowfront stands, a rectangular tank never does', () => {
+    const bow = standsFor(setup('bow36').tank).map(p => p.id);
+    expect(bow).toEqual(['topfin-bowfront-37-raven-oak', 'topfin-bowfront-36-light-brown']);
+    expect(standsFor(setup('bow72').tank).map(p => p.id)).toEqual(['topfin-bowfront-75-raven-oak']);
+    expect(STAND_PRODUCTS.filter(p => p.shape === 'bow').every(p => !standsFor(setup('g20l').tank).includes(p))).toBe(true);
+    expect(standOf(setup('bow36'))?.id).toBe('topfin-bowfront-37-raven-oak');
+  });
+});

@@ -1,6 +1,6 @@
 // Stands as real products (lane SP1, Nathan 2026-11-16: "is that stand priced accurately to a real product?" "Yes, real stands").
 // Data: src/data/gear/stands.json (brand, line, kind = cabinet | frame, finish, the tank footprints it is sold for, height, price + seller + dated URL).
-// A stand fits a plain rectangular tank whose outside footprint is within 1.5 in (length) and 1.3 in (depth) of one of its footprints.
+// A stand fits a tank of its shape (rectangular, or bowfront for shape 'bow') whose outside footprint is within 1.5 in (length) and 1.3 in (depth) of one of its footprints.
 // No fitting product (a custom size, another shape): the engine keeps the generic by-gallons estimate and says so.
 import standData from './gear/stands.json';
 import type { StandFinish, Tank, TankSetup } from '../scene/types';
@@ -38,8 +38,10 @@ export interface StandProduct {
   kind: 'cabinet' | 'frame';
   /** the nearest of the three drawn finishes, and the maker's colour in words */
   finish: StandFinish; color: string;
-  /** the tank footprints (L x D, inches) it is sold for */
+  /** the tank footprints (L x D, inches, at the widest point of a bow) it is sold for */
   fits: [number, number][];
+  /** the tank shape it is made for: 'bow' = a bowfront stand (bow-shaped top); absent = rectangular */
+  shape?: 'bow';
   heightIn: number; priceUsd: number; seller: string; url: string; asOf: string;
   /** fields that are estimates or not confirmed from the page */
   est: string[]; note?: string;
@@ -58,7 +60,7 @@ export const standProduct = (id?: string) => (id ? STAND_PRODUCTS.find(p => p.id
 export const GENERIC_STAND_NOTE = 'Generic stand: a price estimate by tank size, no product fits this size.';
 
 export function standFits(p: StandProduct, T: Tank): boolean {
-  if (shapeOf(T) !== 'rect') return false;
+  if (shapeOf(T) !== (p.shape ?? 'rect')) return false;   // a bowfront stand fits only a bowfront tank, a rectangular one only a rectangular tank
   const L = T.L / 25.4, D = T.D / 25.4;
   return p.fits.some(([l, d]) => Math.abs(L - l) <= 1.5 && Math.abs(D - d) <= 1.3);
 }
