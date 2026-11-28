@@ -63,9 +63,10 @@ export function standFits(p: StandProduct, T: Tank): boolean {
   const shape = shapeOf(T), L = T.L / 25.4, D = T.D / 25.4;
   if (p.shape === 'bow') return shape === 'bow' && p.fits.some(([l, d]) => Math.abs(L - l) <= 1.5 && Math.abs(D - d) <= 1.3);   // a bowfront stand fits only a bowfront tank
   if (shape === 'rect') return p.fits.some(([l, d]) => Math.abs(L - l) <= 1.5 && Math.abs(D - d) <= 1.3);
-  // Nathan 2026-11-28 (a 46 gal bowfront on a 40 breeder stand): a rectangular stand holds a bowfront when its top covers the whole bow. A stand's top is at least the
-  // tank it is sold for, so the tank it is sold for must be as deep as the bow's deepest point and about as long (no more than 3 in longer, so it still looks made for it).
-  if (shape === 'bow') return p.fits.some(([l, d]) => l >= L - 1 && l <= L + 3 && d >= D - 0.3);
+  // Nathan 2026-11-28 (a 46 gal bowfront on a 40 breeder stand; "you can put a tank on a larger stand just not the other way around"): a rectangular stand holds a bowfront
+  // when its top covers the whole bow. A stand's top is at least the tank it is sold for, so that tank must be as long and as deep as the bow at its deepest point. Up to 7 in
+  // longer: a 36 gal bowfront (30.3 in) on a 40 breeder stand (36 in) is in, a 4 ft stand under a 3 ft tank is not.
+  if (shape === 'bow') return p.fits.some(([l, d]) => l >= L - 1 && l <= L + 7 && d >= D - 0.3);
   return false;
 }
 /** Every stand sold for this tank: stands made for its shape first (a bowfront stand before a rectangular one under a bowfront), then cheapest first. */
