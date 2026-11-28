@@ -632,6 +632,44 @@ const BELLIES: Record<string, BellyPaint> = {
     slitsAndVent(ctx, px, t, s, 0.8, 0.45);
     suckerDisc(ctx, px, s, 0.93, t(0.93) * 0.68, 0.04, ['#cfc8ae', '#b0a98e'], 22);
   },
+  // clown pleco (Nathan 2026-11-27; aquaticrepublic.com Panaqolus maccus 13.jpg ventral juvenile, 20.jpg ventral female): a pale
+  // buff-cream belly, blue-grey down the middle; the dark bands run in from the flanks and fade before the midline, solid on the tail stem
+  clownpleco: (ctx, px, t, s) => {
+    const W = ctx.canvas.width, H = ctx.canvas.height, g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#3a2a1c'); g.addColorStop(0.14, '#9a8a70'); g.addColorStop(0.32, '#d8cdb2'); g.addColorStop(0.5, '#b9bcb4'); g.addColorStop(0.68, '#d8cdb2'); g.addColorStop(0.86, '#9a8a70'); g.addColorStop(1, '#3a2a1c');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    // band ends: dark wedges from each flank, wavy, reaching further in toward the tail
+    const R = rng(31);
+    for (const [u, w] of [[0.3, 0.05], [0.45, 0.045], [0.6, 0.05], [0.76, 0.04]] as const) for (const sgn of [-1, 1]) {
+      const reach = 0.72 - u * 0.25 + R() * 0.1; // the plate fades over its outer half, so the band ends must reach well in to show
+      ctx.fillStyle = 'rgba(48,30,18,0.88)'; ctx.beginPath();
+      const [ax, ay] = px(u - w, sgn * t(u) * 1.02), [bx, by] = px(u + w, sgn * t(u) * 1.02), [cx, cy] = px(u + w * (0.3 + R() * 0.4), sgn * t(u) * (1 - reach)), [dx, dy] = px(u - w * (0.3 + R() * 0.4), sgn * t(u) * (1 - reach * 0.85));
+      ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.quadraticCurveTo((bx + cx) / 2 + R() * 6, (by + cy) / 2, cx, cy); ctx.quadraticCurveTo((cx + dx) / 2, (cy + dy) / 2 + R() * 6, dx, dy); ctx.closePath(); ctx.fill();
+    }
+    // the tail stem is banded right round
+    for (const u of [0.18, 0.24]) { const [x0] = px(u - 0.025, 0), [x1] = px(u + 0.025, 0); ctx.fillStyle = 'rgba(52,34,20,0.7)'; ctx.fillRect(x0, 0, x1 - x0, H); }
+    speckle(ctx, px, t, s, 32, 120, 0.2, 0.95, 0.004, '#8a7a60');
+    slitsAndVent(ctx, px, t, s, 0.8, 0.46);
+    suckerDisc(ctx, px, s, 0.91, t(0.91) * 0.7, 0.058, ['#cbb894', '#a8946e'], 33);
+  },
+  // common pleco (Nathan 2026-11-27): no live ventral photo of H. plecostomus found; drawn from a live congener, scotcat.com
+  // images/hypostomus_ancistroides3.jpg (ventral, Rio Jau): olive-buff, paler down the middle, the flanks' dark spots showing at the
+  // edges, a big round disc with tan lips; the side model's spots carry onto the paired fins, not the belly
+  pleco: (ctx, px, t, s) => {
+    const W = ctx.canvas.width, H = ctx.canvas.height, g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#4a3c2a'); g.addColorStop(0.15, '#8a7c5e'); g.addColorStop(0.35, '#b8ae8c'); g.addColorStop(0.5, '#c4bc9c'); g.addColorStop(0.65, '#b8ae8c'); g.addColorStop(0.85, '#8a7c5e'); g.addColorStop(1, '#4a3c2a');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    // the flanks' spots at the edges only
+    const R = rng(41); ctx.fillStyle = '#2e2418';
+    for (let i = 0; i < 160; i++) {
+      const u = 0.2 + R() * 0.72, z = (0.72 + R() * 0.3) * (R() < 0.5 ? -1 : 1), [x, y] = px(u, z * t(u)), r = (0.006 + R() * 0.006) * s;
+      ctx.globalAlpha = 0.5 + R() * 0.4; ctx.beginPath(); ctx.ellipse(x, y, r, r * (0.7 + R() * 0.5), R() * 3, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    speckle(ctx, px, t, s, 42, 140, 0.2, 0.95, 0.004, '#6e6248');
+    slitsAndVent(ctx, px, t, s, 0.8, 0.45);
+    suckerDisc(ctx, px, s, 0.9, t(0.9) * 0.75, 0.065, ['#c8ae86', '#a08a64'], 43);
+  },
 };
 
 function bellyPlate(art: string, p: Plan, bend: number) {
