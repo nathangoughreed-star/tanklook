@@ -59,25 +59,32 @@ export const STAND_PRODUCTS = standData as unknown as StandProduct[];
 export const standProduct = (id?: string) => (id ? STAND_PRODUCTS.find(p => p.id === id) : undefined);
 export const GENERIC_STAND_NOTE = 'Generic stand: a price estimate by tank size, no product fits this size.';
 
-export function standFits(p: StandProduct, T: Tank): boolean {
+/** How a stand matches a tank (Nathan 2026-11-28: "a toggle for showing stands specifically designed for the tank vs technically compatible stands"):
+ *  'made' = sold for this size and shape (footprint within 1.5 in long, 1.3 in deep; a bowfront stand for a bowfront tank);
+ *  'fits' = a larger rectangular stand whose top covers the whole tank ("you can put a tank on a larger stand just not the other way around"). A stand's top is at least
+ *  the tank it is sold for, so that tank must be as long (1 in slack) and as deep (0.3 in slack; for a bowfront, at the bow's deepest point) as this one, and at most
+ *  7 in longer (a 40 breeder stand under a 36 gal bowfront is in, a 4 ft stand under a 3 ft tank is not). */
+export type StandMatch = 'made' | 'fits';
+export function standMatch(p: StandProduct, T: Tank): StandMatch | undefined {
   const shape = shapeOf(T), L = T.L / 25.4, D = T.D / 25.4;
-  if (p.shape === 'bow') return shape === 'bow' && p.fits.some(([l, d]) => Math.abs(L - l) <= 1.5 && Math.abs(D - d) <= 1.3);   // a bowfront stand fits only a bowfront tank
-  if (shape === 'rect') return p.fits.some(([l, d]) => Math.abs(L - l) <= 1.5 && Math.abs(D - d) <= 1.3);
-  // Nathan 2026-11-28 (a 46 gal bowfront on a 40 breeder stand; "you can put a tank on a larger stand just not the other way around"): a rectangular stand holds a bowfront
-  // when its top covers the whole bow. A stand's top is at least the tank it is sold for, so that tank must be as long and as deep as the bow at its deepest point. Up to 7 in
-  // longer: a 36 gal bowfront (30.3 in) on a 40 breeder stand (36 in) is in, a 4 ft stand under a 3 ft tank is not.
-  if (shape === 'bow') return p.fits.some(([l, d]) => l >= L - 1 && l <= L + 7 && d >= D - 0.3);
-  return false;
+  if ((p.shape ?? 'rect') === shape && p.fits.some(([l, d]) => Math.abs(L - l) <= 1.5 && Math.abs(D - d) <= 1.3)) return 'made';
+  if (p.shape === 'bow' || (shape !== 'rect' && shape !== 'bow')) return undefined;   // a bow-topped stand holds only a bowfront; other shapes get no larger stand
+  return p.fits.some(([l, d]) => l >= L - 1 && l <= L + 7 && d >= D - 0.3) ? 'fits' : undefined;
 }
-/** Every stand sold for this tank: stands made for its shape first (a bowfront stand before a rectangular one under a bowfront), then cheapest first. */
-export const standsFor = (T: Tank): StandProduct[] => { const bow = shapeOf(T) === 'bow'; return STAND_PRODUCTS.filter(p => !p.hidden && !p.kitOnly && standFits(p, T)).sort((a, b) => (bow ? +(a.shape !== 'bow') - +(b.shape !== 'bow') : 0) || a.priceUsd - b.priceUsd); };
+export const standFits = (p: StandProduct, T: Tank): boolean => !!standMatch(p, T);
+/** The stands for this tank: made for it only, or (all) every stand that holds it, made-for first, then cheapest first. */
+export function standsFor(T: Tank, all = false): StandProduct[] {
+  const m = new Map(STAND_PRODUCTS.filter(p => !p.hidden && !p.kitOnly).map(p => [p, standMatch(p, T)] as const));
+  return [...m].filter(([, k]) => k === 'made' || (all && k === 'fits')).sort(([a, ka], [b, kb]) => +(ka !== 'made') - +(kb !== 'made') || a.priceUsd - b.priceUsd).map(([p]) => p);
+}
 /** The stand a setup has: its picked product while it fits, else the cheapest fitting one of the drawn kind (cabinet or frame) in the drawn finish. undefined = generic estimate. */
 export function standOf(S: Pick<TankSetup, 'tank' | 'stand'>): StandProduct | undefined {
   const st = S.stand; if (!st.show || st.style === 'table' || st.style === 'custom') return undefined;
   const p = standProduct(st.product);
   if (p && standFits(p, S.tank)) return p;
   if (st.generic) return undefined; // R183: a bundle's stand we have no model for stays generic, never another product
-  const kind = standsFor(S.tank).filter(x => x.kind === (st.style === 'frame' ? 'frame' : 'cabinet')), bow = kind.filter(x => x.shape === 'bow'), same = bow.length ? bow : kind;   // under a bowfront, a bowfront stand is the default when one exists
+  // the default is a stand made for this tank; a larger stand that only fits is the user's own pick (a size with none made for it stays on the generic estimate)
+  const same = standsFor(S.tank).filter(x => x.kind === (st.style === 'frame' ? 'frame' : 'cabinet'));
   return same.find(x => x.finish === st.finish) ?? same[0]; // the cheapest in the finish the scene shows, else the cheapest
 }
 /** "Aqueon Black cabinet stand 20 long / 29 / 37, black" */

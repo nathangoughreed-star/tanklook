@@ -15,7 +15,7 @@ import { setLid, lidLocked, takeStandNote, clearStandNote, setDoors, doorLocked,
 import { lockNote } from '../scene/integrated';
 import { lockObject, unlockObject, isLocked } from '../scene/locks';
 import { placementOf, putOnFloor, putOnStand, putOnMyFurniture, putOnFurniture, minTop, setStandProduct, type Placement } from '../scene/placement';
-import { standsFor, standOf, standProduct, standRatingLine, standCheck, GENERIC_STAND_NOTE, type StandProduct } from '../data/stands';
+import { standsFor, standOf, standMatch, standProduct, standRatingLine, standCheck, GENERIC_STAND_NOTE, type StandProduct } from '../data/stands';
 import { tankKind, type SetupKind } from '../scene/pickerKind';
 import { keepInWater } from '../scene/water';
 import { clampItem } from '../scene/items';
@@ -481,11 +481,19 @@ function TankTile({ r }: { r: PickRow }) {
 
 /** SP1: real stands that fit this tank, as picture tiles (price, style, where sold); "Generic" is the fallback estimate. */
 function StandPicker({ S, store }: { S: TankSetup; store: Store }) {
-  const lb = filledLb(S), gal = volume(S.tank).gallons, fit = standsFor(S.tank), cur = standOf(S), explicit = !!S.stand.product && !!standProduct(S.stand.product) && cur?.id === S.stand.product;
-  if (!fit.length) return <div class="hint" data-testid="stand-generic">No stand product is listed for this size, so the budget uses a generic estimate ({GENERIC_STAND_NOTE.split(': ')[1]}).</div>;
+  const lb = filledLb(S), gal = volume(S.tank).gallons, cur = standOf(S), explicit = !!S.stand.product && !!standProduct(S.stand.product) && cur?.id === S.stand.product;
+  // Nathan 2026-11-28: a toggle between stands made for this tank and every stand that holds it (larger ones too); made-for first, then cheapest
+  const made = standsFor(S.tank), all = standsFor(S.tank, true);
+  const [wide, setWide] = useState(() => !made.length || (!!cur && standMatch(cur, S.tank) === 'fits'));
+  const showAll = wide || !made.length, fit = showAll ? all : made;
+  if (!all.length) return <div class="hint" data-testid="stand-generic">No stand product is listed for this size, so the budget uses a generic estimate ({GENERIC_STAND_NOTE.split(': ')[1]}).</div>;
   return (
-    <div class="standpick" role="group" aria-label="Stands that fit this tank">
-      <div class="cap">Stands that fit this tank <span class="n">{fit.length}</span></div>
+    <div class="standpick" role="group" aria-label="Stands for this tank">
+      {all.length > made.length ? <div class="seg full tiers" role="group" aria-label="Which stands to list">
+        <button type="button" class={!showAll ? 'on' : ''} aria-pressed={!showAll} data-testid="stands-made" disabled={!made.length} title={made.length ? 'Stands sold for this size and shape' : 'No stand is sold for this size and shape'} onClick={() => setWide(false)}>Made for this tank <span class="n">{made.length}</span></button>
+        <button type="button" class={showAll ? 'on' : ''} aria-pressed={showAll} data-testid="stands-all" title="Also larger stands whose top covers the whole tank" onClick={() => setWide(true)}>Any that fit <span class="n">{all.length}</span></button>
+      </div> : null}
+      <div class="hint tierhint">{showAll ? (made.length ? 'Made-for stands first, then larger stands whose top covers the whole tank.' : 'No stand is sold for this size and shape; these larger stands cover the whole tank. The budget uses a generic estimate until you pick one.') : 'Stands sold for this size and shape. Any that fit adds larger stands that hold it.'}</div>
       <div class="pgrid">
         {fit.map(p => { const rate = standRatingLine(p), chk = standCheck(p, lb, gal); return (
           <button type="button" class={`ptile stile${cur?.id === p.id ? ' on' : ''}`} aria-pressed={cur?.id === p.id} onClick={() => { clearStandNote(); store.edit(s => setStandProduct(s, p)); }}>
@@ -494,6 +502,7 @@ function StandPicker({ S, store }: { S: TankSetup; store: Store }) {
             <div class="tmeta"><span>${Math.round(p.priceUsd)}</span><span>{p.kind === 'cabinet' ? 'Cabinet' : 'Open frame'}, {p.color.split(',')[0].split(' (')[0]}</span></div>
             {rate ? <small class="why rating" data-testid="stand-rating">{rate}</small> : null}
             {chk ? <small class={`why ${chk.level === 'over' ? 'bad' : 'warn'}`} data-testid="stand-check">{chk.text}</small> : null}
+            {standMatch(p, S.tank) === 'fits' ? <small class="why" data-testid="stand-larger">Larger stand, made for {p.fits.map(([l, d]) => `${l} × ${d} in`).join(' or ')}</small> : null}
             <small class="why">{p.seller}{p.est.includes('priceUsd') ? ' · price is a guess' : ''}</small>
           </button>
         ); })}
