@@ -177,7 +177,7 @@
   {"id": "jackdempseyb", "name": "Jack Dempsey cichlid", "sci": "Rocio octofasciata", "tl": 250, "art": "jackdempseyb", "aspect": 0.479},
   {"id": "nasotangb", "name": "Naso tang", "sci": "Naso elegans", "tl": 300, "art": "nasotangb", "aspect": 0.4},
   {"id": "paradisefishb", "name": "Paradise fish", "sci": "Macropodus opercularis", "tl": 90, "art": "paradisefishb", "aspect": 0.429},
-  {"id": "pictusb", "name": "Pictus catfish", "sci": "Pimelodus pictus", "tl": 115, "art": "pictusb", "aspect": 0.431},
+  {"id": "pictusb", "name": "Pictus catfish", "sci": "Pimelodus pictus", "tl": 115, "art": "pictusb", "aspect": 0.433},
   {"id": "powderbluetangb", "name": "Powder blue tang", "sci": "Acanthurus leucosternon", "tl": 230, "art": "powderbluetangb", "aspect": 0.594},
   {"id": "scarletbadisb", "name": "Scarlet badis", "sci": "Dario dario", "tl": 20, "art": "scarletbadisb", "aspect": 0.488},
   {"id": "serpaeb", "name": "Serpae tetra", "sci": "Hyphessobrycon eques", "tl": 40, "art": "serpaeb", "aspect": 0.57},

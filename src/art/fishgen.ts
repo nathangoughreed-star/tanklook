@@ -103,6 +103,9 @@ export interface Plan {
   gapeDrop?: number;  // 3D: how far the mouth line curves down at its rear end (widths, default 0.02; 0 = straight)
   barbels?: number;   // barbel length (widths); bottom fish
   barbelR?: number;   // 3D: barbel root radius (widths, default 0.004); fine cylindrical barbels on slim fish (kuhli)
+  barbelTrail?: number;  // 3D: one long maxillary pair from the jaw corners trailing back just under and outside the belly, this long (u); pictus catfish (b11, 2026-11-28)
+  barbelC?: string;      // 3D: barbel colour (default the belly shade x 0.85); pale barbels on a dark-bellied card (pictus)
+  barbelTrailR?: number; // 3D: its root radius (u, default 0.0035), tapering to a third at the tip
   bristles?: boolean; // bristlenose snout
   headW?: number;     // 3D: the head (from the gill cover forward) this much wider than the trunk tapering to the tail (pleco: broad flat head)
   keel?: string;      // 3D: a raised row of bony scutes along each flank in this colour (armoured catfish)

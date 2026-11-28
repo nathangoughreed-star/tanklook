@@ -223,6 +223,42 @@ function barbelMeshes(p: Plan, bend: number, mat: THREE.Material) {
 }
 
 /**
+ * Long trailing barbels (`p.barbelTrail`, pictus catfish): one pair from the upper jaw corners that dips below the chin, then runs back
+ * just under the belly line and a little outside the flank (the sheet's side and top rows), tapering to a third. Body units with
+ * uv.x = u and aSwL like the inner spine, so the aft part waves with the tail instead of the body swinging through it.
+ */
+function barbelTrailMeshes(art: string, p: Plan, bend: number, swim: boolean, mat: THREE.Material) {
+  const out: THREE.Mesh[] = [], L = p.barbelTrail!, r0 = p.barbelTrailR ?? 0.0035, u0 = 0.965, uMin = p.pedU + 0.01, N = 28;
+  for (const side of [1, -1]) {
+    const key = `trail:${art}:${bend}:${swim}:${side}`;
+    let g = geoCache.get(key);
+    if (!g) {
+      const pts: THREE.Vector3[] = [];
+      for (let j = 0; j <= N; j++) {
+        const s = j / N, u = u0 - L * s, uc = Math.max(uMin, u), [t, b] = profile(p)(uc), x = u - 0.5;
+        const half = Math.abs(surfaceAt(p, uc, (t + b) / 2, 1, 0).z), root = surfaceAt(p, u0, b - 0.3 * (b - t), side, bend);
+        const e = Math.min(1, s / 0.12), ee = e * e * (3 - 2 * e); // the first ~12 % leaves the jaw corner and drops under the chin
+        const v = (b - 0.3 * (b - t)) * (1 - ee) + (b + 0.012) * ee, z = half * 0.3 * (1 - ee) + (half + 0.015) * ee;
+        pts.push(j === 0 ? root : new THREE.Vector3(x, -v, bendZ(bend, x) + side * z));
+      }
+      g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 64, r0, 5, false);
+      const pos = g.attributes.position, uv = new Float32Array(pos.count * 2), tub = g as THREE.TubeGeometry;
+      // taper: scale each ring about its centre on the curve, full at the root to a third at the tip
+      for (let k = 0; k < pos.count; k++) {
+        const ring = Math.floor(k / 6), f = ring / 64, c = tub.parameters.path.getPointAt(Math.min(1, f)), sc = 1 - 0.67 * f;
+        pos.setXYZ(k, c.x + (pos.getX(k) - c.x) * sc, c.y + (pos.getY(k) - c.y) * sc, c.z + (pos.getZ(k) - c.z) * sc);
+        uv[2 * k] = pos.getX(k) + 0.5;
+      }
+      g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+      g.setAttribute('aSwL', new THREE.Float32BufferAttribute(new Array(pos.count).fill(swim ? 1 : 0), 1));
+      g.computeVertexNormals(); g.userData.keep = true; geoCache.set(key, g);
+    }
+    out.push(new THREE.Mesh(g, mat));
+  }
+  return out;
+}
+
+/**
  * The mouth (`p.gape`): a thin dark line on each flank from the snout tip back along the jaw, curving a little down,
  * just outside the surface (the body's painted texture leaves the mouth out).
  */
@@ -913,8 +949,12 @@ export function fishBody(art: string, aspect: number, w: number, bend: number, m
     for (const m of scuteMeshes(art, p, b, mat)) grp.add(m);
   }
   if (p.barbels) {
-    const mat = fishMat('barbel:' + art, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(p.shade[2]).multiplyScalar(0.85) }));
+    const mat = fishMat('barbel:' + art, () => new THREE.MeshBasicMaterial({ color: p.barbelC ? new THREE.Color(p.barbelC) : new THREE.Color(p.shade[2]).multiplyScalar(0.85) }));
     for (const m of barbelMeshes(p, b, mat)) grp.add(m);
+  }
+  if (p.barbelTrail) {
+    const mat = fishMat('barbelT:' + art, () => { const m = new THREE.MeshBasicMaterial({ color: p.barbelC ? new THREE.Color(p.barbelC) : new THREE.Color(p.shade[2]).multiplyScalar(0.85) }); m.userData.swim = true; return m; });
+    for (const m of barbelTrailMeshes(art, p, b, swim, mat)) grp.add(m);
   }
   if (fish3d.merge) mergeShared(grp);
   return grp;
