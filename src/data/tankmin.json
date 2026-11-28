@@ -3236,6 +3236,67 @@
     "url": "https://www.saltwaterfish.com/education/yellow-boxfish-care-guide-ostracion-cubicus"
    },
    "why": "the mean of every adult minimum found (5 figures: ReefBuilders 125 gal; SaltwaterFish 180 gal; Reefapp 800 L = 211 gal; Quality Marine 250 gal; Top Shelf 250 gal), 203.2 gal; no source gives a juvenile minimum (ReefBuilders: the small size it is sold at is no reason for a small tank), so the adult figure is used; the footprint is the standard g180 tank (1809 x 590 mm) nearest that volume, because the pages give no base; Seriously Fish has no page for this species (SO3 R204, 2026-11-28)"
+  },
+  "elephantnose": {
+   "red": {
+    "L": 1200,
+    "W": 450,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/gnathonemus-petersii/",
+    "states": "120 x 45 cm (48 x 18 in), about 243 litres (64 US gal), 'just about acceptable'; a larger tank for a group",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 70.7,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care and retail pages",
+    "url": "https://www.seriouslyfish.com/species/gnathonemus-petersii/"
+   },
+   "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of every minimum found (6 figures: Seriously Fish 64 gal; Aquarium Source 50 gal in the text and 75 gal in its FAQ, 62.5 gal; Fishkeeping World 50 gal; TankFlare 75 gal; Guidarium 200 L (52.8 gal); That Pet Place 120 gal) = 70.7 gal; Fishkeeper wants at least 5 x 2 ft (no gallons); TankFlare and Guidarium are search-result snippets (SO3 R204, 2026-11-28)"
+  },
+  "bicolorblenny": {
+   "red": {
+    "L": 756,
+    "W": 306,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "Top Shelf Aquatics",
+    "url": "https://topshelfaquatics.com/pages/saltwater-fish/bicolor-blenny",
+    "states": "every figure found, averaged: Top Shelf 30 gal; Saltwater Aquarium Blog 30 gal; Quality Marine 30 gal; Microcosm 20 gal; CBA Aquatics 20+ gal = 26 gal",
+    "from": "volume",
+    "ref": "g29"
+   },
+   "vol": {
+    "gal": 26,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged retail and care pages",
+    "url": "https://www.saltwateraquariumblog.com/bicolor-blenny-care/"
+   },
+   "why": "the mean of every minimum found (5 figures: Top Shelf 30 gal; Saltwater Aquarium Blog 30 gal; Quality Marine 30 gal; Microcosm 20 gal; CBA Aquatics 20+ gal), 26 gal; Microcosm and CBA are search-result snippets, Fishkeeper gives no figure; the footprint is the standard g29 tank (756 x 306 mm) nearest that volume, because the pages give no base; Seriously Fish has no page for this species (SO3 R204, 2026-11-28)"
+  },
+  "arowana": {
+   "red": {
+    "L": 2414,
+    "W": 586,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged retail and care pages",
+    "url": "https://www.fishkeepingworld.com/silver-arowana",
+    "states": "every adult minimum found, averaged: Petco 250 gal; Fish Tank Advisor 250 gal; Fishkeeping World 300 gal; That Pet Place 150 gal; Chewy 200 gal = 230 gal",
+    "from": "volume",
+    "ref": "g240"
+   },
+   "vol": {
+    "gal": 230,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged retail and care pages",
+    "url": "https://www.fishkeepingworld.com/silver-arowana"
+   },
+   "why": "the mean of every adult minimum found (5 figures: Petco 250 gal; Fish Tank Advisor 250 gal; Fishkeeping World 300 gal; That Pet Place 150 gal; Chewy 200 gal), 230 gal; Petco and Chewy are search-result snippets; Seriously Fish gives no gallons, only at least 2 m long, and says it suits only public installations or the very largest private tanks; the footprint is the standard g240 tank (2414 x 586 mm inside, 8 ft long) nearest that volume, because only Seriously Fish gives a length; the largest standard tank in the repo, g300, is 8 ft x 24 in x 30 in (SO3 R204, 2026-11-28)"
   }
  }
 }
