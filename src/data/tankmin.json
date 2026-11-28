@@ -3175,6 +3175,25 @@
     "url": "https://www.seriouslyfish.com/species/hyphessobrycon-erythrostigma/"
    },
    "why": "the footprint is Seriously Fish's stated base (FishBase: a tank of at least 80 cm); the gallon figure is the mean of every minimum found (3 figures: Seriously Fish 21 gal; Aquarium Source 20 gal; Fishkeeping World 20 gal), 20.3 gal (SO3 R204, 2026-11-28)"
+  },
+  "dwarfchainloach": {
+   "red": {
+    "L": 800,
+    "W": 300,
+    "mark": "sourced",
+    "site": "Seriously Fish",
+    "url": "https://www.seriouslyfish.com/species/ambastaia-sidthimunki/",
+    "states": "80 x 30 cm, about 72 litres (19 US gal), long term; unsuitable for smaller aquaria",
+    "from": "footprint"
+   },
+   "vol": {
+    "gal": 23,
+    "mark": "derived (est)",
+    "est": true,
+    "site": "averaged care pages",
+    "url": "https://www.seriouslyfish.com/species/ambastaia-sidthimunki/"
+   },
+   "why": "the footprint is Seriously Fish's stated base; the gallon figure is the mean of every minimum found (3 figures: Seriously Fish 19 gal; Aquarium Co-Op 20 gal; Aquarium Source 30 gal for a small group), 23 gal (SO3 R204, 2026-11-28)"
   }
  }
 }

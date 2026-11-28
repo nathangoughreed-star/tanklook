@@ -2307,6 +2307,13 @@
    "hi": 15,
    "unit": "each; Nuaqua from $7.17, Imperial Tropicals $14.99 (search snippets; a $6.49 listing is the lookalike Socolof's tetra), sizes not shown (SO3 R204 search 2026-11-28; stock varies)",
    "url": "https://nuaquashop.com/products/bleeding-heart-tetra"
+  },
+  "animal:dwarfchainloach": {
+   "lo": 7,
+   "mode": 12,
+   "hi": 25,
+   "unit": "each; Aquahuna $10.00 (packs of 4), Dan's Fish $14.99 aquarium-bred, That Pet Place $12.99 (out of stock), Aquarium Co-Op article $7-15, Aquatics Unlimited $24.99-$34.99 (search snippets, sizes not shown) (SO3 R204 search 2026-11-28; stock varies)",
+   "url": "https://aquahuna.com/collections/loach/products/dwarf-chain-loach-sidthimunki-botia"
   }
  }
 }
