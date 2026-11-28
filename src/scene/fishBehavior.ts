@@ -38,6 +38,7 @@ export const HOVER: Record<string, HoverSpec> = {
   bichir: { w: 0.4, pec: 0.8, caudal: 0.15 }, // R150: props itself on its pectorals and fans them while still
   clownknife: { w: 0.5, pec: 0.4, caudal: 0.1 }, // R150: hangs in the water and creeps on its long anal fin
   bambooshark: { w: 0.5, pec: 0.3, caudal: 0.2 }, // R150: rests on the floor most of the day
+  denison: { w: 0.15, pec: 0.6, caudal: 0.4 }, // SO1 (R202)
   congotetra: { w: 0.15, pec: 0.6, caudal: 0.4 }, // SO1 (R202)
   flameangel: { w: 0.35, pec: 0.7, caudal: 0.3 },
   lawnmowerblenny: { w: 0.4, pec: 1, caudal: 0.2 },
@@ -99,7 +100,7 @@ const SLOWER: StyleSpec = { rate: 1.1, tau: 0.45, turn: 14, mix: [0.45, 0.3, 0.2
 export const STYLE: Record<string, StyleSpec> = {
   danio: { rate: 2.0, tau: 0.3, turn: 22, mix: [0.65, 0.15, 0.2] }, cpd: QUICK, whitecloud: QUICK, neon: QUICK, cardinal: QUICK, greenneon: QUICK, ember: QUICK,
   merah: QUICK, exclamation: QUICK, dwarfrasbora: QUICK, chili: QUICK, harlequin: SLOWER,
-  dwarfpencil: { rate: 0.9, tau: 0.5, turn: 12, mix: [0.4, 0.3, 0.3] }, guppy: SLOWER, endler: SLOWER, glasscatfish: SLOWER, neonrainbow: QUICK, clownkilli: SLOWER, glowlight: QUICK, congotetra: QUICK, cherrybarb: SLOWER, peapuffer: { rate: 1.0, tau: 0.4, turn: 25, mix: [0.4, 0.2, 0.4] },
+  dwarfpencil: { rate: 0.9, tau: 0.5, turn: 12, mix: [0.4, 0.3, 0.3] }, guppy: SLOWER, endler: SLOWER, glasscatfish: SLOWER, neonrainbow: QUICK, clownkilli: SLOWER, glowlight: QUICK, denison: QUICK, congotetra: QUICK, cherrybarb: SLOWER, peapuffer: { rate: 1.0, tau: 0.4, turn: 25, mix: [0.4, 0.2, 0.4] },
 };
 
 /**

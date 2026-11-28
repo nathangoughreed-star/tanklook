@@ -904,6 +904,12 @@
    "b": 3.02,
    "src": "fishbase-bayes",
    "note": "FishBase ID 10660 Bayesian (TL cm, a 0.00489-0.02350, b 2.84-3.20); its one table row (SL, n=3, b 3.000) is not used (SO1 R202)"
+  },
+  "denison": {
+   "a": 0.01047,
+   "b": 3.02,
+   "src": "fishbase-bayes",
+   "note": "FishBase ID 24148 Bayesian (TL cm, a 0.00895-0.01226, b 2.98-3.06); its five TL table rows (a 0.0061-0.0128, b 2.97-3.20, n 27-100, Kerala rivers) bracket it (SO1 R202)"
   }
  }
 }

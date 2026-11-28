@@ -2216,6 +2216,13 @@
    "hi": 33,
    "unit": "each, juvenile; That Pet Place $12.99 (store only), LiveAquaria $32.99 for a longfin group (search snippet, sold out); the middle is an estimate (SO1 R202 search 2026-11-28; stock varies)",
    "url": "https://www.thatpetplace.com/Phenacogrammus-interruptus-congo-tetra-213568"
+  },
+  "animal:denison": {
+   "lo": 13,
+   "mode": 25,
+   "hi": 38,
+   "unit": "each, 1-3 in; AquaticArts tank-bred $33.99 (search snippet), LiveAquaria $8.99 sold out and from $37.76 (snippets), Aquatics Unlimited $12.99-$79.99 by size; the middle is an estimate (SO1 R202 search 2026-11-28; stock varies)",
+   "url": "https://www.aquaticarts.com/"
   }
  }
 }

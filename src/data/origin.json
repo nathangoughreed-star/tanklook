@@ -140,5 +140,6 @@
  "clownknife": {"c": ["asia"], "r": "Mae Klong, Chao Phraya and Mekong basins: Thailand, Laos, Cambodia, Vietnam", "s": "Seriously Fish"},
  "bambooshark": {"c": ["indopacific"], "r": "Indo-West Pacific: India to Japan, the Philippines, southern New Guinea and northern Australia; shallow inshore reefs on sand and mud", "s": "FishBase; Florida Museum"},
  "bichir": {"c": ["africa"], "r": "West and Central Africa: Senegal, Gambia, Niger, Volta, Chad and Nile basins, Lakes Turkana and Albert", "s": "Seriously Fish"},
- "congotetra": {"c": ["africa"], "r": "Congo River drainage: lower and middle Congo basin, DR Congo and Republic of Congo (captive-bred in the Far East and Eastern Europe for the trade)", "s": "Seriously Fish; FishBase"}
+ "congotetra": {"c": ["africa"], "r": "Congo River drainage: lower and middle Congo basin, DR Congo and Republic of Congo (captive-bred in the Far East and Eastern Europe for the trade)", "s": "Seriously Fish; FishBase"},
+ "denison": {"c": ["asia"], "r": "Western Ghats rivers of Kerala and Karnataka, southern India; endangered in the wild, so the trade fish are commercially bred in Southeast Asia and Eastern Europe", "s": "Seriously Fish; FishBase"}
 }
