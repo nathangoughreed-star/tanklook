@@ -80,6 +80,9 @@ function RoomGroup({ store }: { store: Store }) {
   );
 }
 
+/** how many of the four categories are hidden now (lights the Show button) */
+const hiddenCount = (v: Viewer | undefined) => (v ? v.hidden.size : 0) + (gearShown() ? 0 : 1);
+
 /** R120: true while the fish are effectively swimming (setting on and not paused for a slow machine); re-renders when it changes */
 export function useFishSwimming(getViewer: () => Viewer | undefined): boolean {
   const [, bump] = useState(0);
@@ -90,6 +93,7 @@ export function useFishSwimming(getViewer: () => Viewer | undefined): boolean {
 
 export function ViewCluster({ store, getViewer, phone, compare }: { store: Store; getViewer: () => Viewer | undefined; phone: boolean; /** step 9: the Compare / Views linked / End compare buttons (compare.tsx) */ compare?: ComponentChildren }) {
   const [open, setOpen] = useState(false);
+  const [showOpen, setShowOpen] = useState(false);
   const [note, setNote] = useState('');
   const [, bump] = useState(0);
   const wrap = useRef<HTMLDivElement>(null);
@@ -103,6 +107,13 @@ export function ViewCluster({ store, getViewer, phone, compare }: { store: Store
     addEventListener('pointerdown', away); addEventListener('keydown', key, true);
     return () => { removeEventListener('pointerdown', away); removeEventListener('keydown', key, true); };
   }, [open]);
+  useEffect(() => {
+    if (!showOpen) return;
+    const away = (e: PointerEvent) => { if (!wrap.current?.contains(e.target as Node)) setShowOpen(false); };
+    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') { setShowOpen(false); e.stopPropagation(); } };
+    addEventListener('pointerdown', away); addEventListener('keydown', key, true);
+    return () => { removeEventListener('pointerdown', away); removeEventListener('keydown', key, true); };
+  }, [showOpen]);
   useEffect(() => { const f = () => bump(n => n + 1); addEventListener(MAP_EVENT, f); return () => removeEventListener(MAP_EVENT, f); }, []);
   useEffect(() => { if (!note) return; const t = setTimeout(() => setNote(''), 3500); return () => clearTimeout(t); }, [note]);
 
@@ -123,11 +134,20 @@ export function ViewCluster({ store, getViewer, phone, compare }: { store: Store
   return (
     <div class="cluster inhead" ref={wrap}>
       <div class="toolbar">
-        <button type="button" class={`btn sm${open ? ' on' : ''}`} aria-haspopup="dialog" aria-expanded={open} title="Camera, what is shown, viewpoint map, export a picture" onClick={() => setOpen(!open)}><Icon name="eye" /><span class="lb"> View{phone ? '' : ' ▾'}</span></button>
+        <button type="button" class={`btn sm${open ? ' on' : ''}`} aria-haspopup="dialog" aria-expanded={open} title="Camera, what is shown, viewpoint map, export a picture" onClick={() => { setShowOpen(false); setOpen(!open); }}><Icon name="eye" /><span class="lb"> View{phone ? '' : ' ▾'}</span></button>
+        <button type="button" class={`btn sm${showOpen || hiddenCount(v) ? ' on' : ''}`} data-testid="show-btn" aria-haspopup="dialog" aria-expanded={showOpen} title="Hide plants, equipment, hardscape or animals to find what is behind them (looks only; the design is unchanged)" onClick={() => { setOpen(false); setShowOpen(!showOpen); }}><Icon name="eyeoff" /><span class="lb"> Show{phone ? '' : ' ▾'}</span></button>
         {phone ? null : <>{compare}
         {swimming ? null : <button type="button" class="btn sm" disabled={!store.tank.fish.length} title={store.tank.fish.length ? 'Every animal in a new spot, as if the tank were photographed a little later. Plants and scape stay.' : 'Add an animal first'} onClick={moment}><Icon name="shuffle" /><span class="lb"> {phone ? 'Moment' : 'Another moment'}</span></button>}</>}
       </div>
       {note ? <div class="viewnote glass" role="status">{note}</div> : null}
+      {showOpen ? (
+        <div class="pop viewpop showpop" role="dialog" aria-label="Show">
+          <div class="vsec"><h3>Show</h3>
+            {SHOWS.map(s => <span title={s.title}><Toggle on={shown(s.id)} label={s.label} onFlip={on2 => setShow(s.id, on2)} /></span>)}
+            <div class="hint">Uncheck to hide, for example Plants to find an animal behind them. Looks only: your design is not changed.</div>
+          </div>
+        </div>
+      ) : null}
       {open ? (
         <div class="pop viewpop" role="dialog" aria-label="View">
           {phone ? <div class="vsec phoneacts" onClick={() => setOpen(false)}><h3>Actions</h3><div class="chips">{compare}
