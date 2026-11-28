@@ -43,11 +43,11 @@ Not in b12 (told Nathan): lined seahorse (upright body), kissing gourami and blo
 | fish | built | verdict (Nathan) | note |
 |---|---|---|---|
 | agassizii | f86ea63a | approved 2026-11-28 ("rest can ship") | catalogue row SO3 c7a56040 (merged b1124904); fishLive entry added on this branch; live once the branch reaches main |
-| arowana | f86ea63a, rebuilt | fix 2026-11-28 ("arowana mouth/front needs work"); snout + forward barbels, shown | method row 81; mass 1.45-1.90x |
-| bicolorblenny | f86ea63a, rebuilt (row 76) | fix 2026-11-28 ("blenny looks too stretched long"); rebuilt, shown | method row 81 |
+| arowana | f86ea63a, rebuilt | approved 2026-11-28 ("Approve all three") | method row 81; mass 1.45-1.90x |
+| bicolorblenny | f86ea63a, rebuilt (row 76) | approved 2026-11-28 ("Approve all three") | method row 81 |
 | blackneon | f86ea63a | approved 2026-11-28 ("rest can ship") | go-live needs a catalogue row |
 | bleedingheart | (group 2) | approved 2026-11-28 ("Approve group 2") | |
 | bluedamsel | (group 2) | approved 2026-11-28 ("Approve group 2") | blue very saturated |
 | boxfish | (group 2) | approved 2026-11-28 ("Approve group 2") | proxy depth O. immaculatus; mass-soft 1.22-1.60x |
 | dwarfchainloach | (group 2), fixed | approved 2026-11-28 ("Approve group 2") | fishshapes.json depth set by hand 23 / 22-26 (FishBase: "elongated"); plan_extra barbels |
-| elephantnose | (group 3) | shown 2026-11-28 | tube-snout outline --face 14 (row 78); gate head/mid 0.22 is the trunk; mass-soft 1.14-1.56x |
+| elephantnose | (group 3) | approved 2026-11-28 ("Approve all three") | tube-snout outline --face 14 (row 78); gate head/mid 0.22 is the trunk; mass-soft 1.14-1.56x |
