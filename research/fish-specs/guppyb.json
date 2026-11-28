@@ -1,6 +1,6 @@
 {
  "id": "guppyb",
- "sheet": "C:/Users/nreed/fish-sheets/guppy-b5-gen-s1.169/sheet3.png",
+ "sheet": "C:/Users/nreed/fish-sheets/guppy-b5-gen-s1.091/sheet3.png",
  "species": {
   "name": "Guppy",
   "sci": "Poecilia reticulata",
@@ -10,57 +10,57 @@
  "plan": "oscar",
  "landmarks": {
   "ped": [
-   210,
-   208
+   212,
+   202
   ],
   "dorsalBase": [
    [
-    222,
-    144
+    224,
+    141
    ],
    [
-    252,
-    144
+    254,
+    141
    ],
    [
-    282,
-    145
+    284,
+    142
    ],
    [
-    312,
-    144
-   ],
-   [
-    342,
+    314,
     140
    ],
    [
-    372,
-    135
+    344,
+    137
    ],
    [
-    397,
-    118
+    374,
+    132
    ],
    [
-    427,
-    113
+    399,
+    116
    ],
    [
-    457,
-    108
+    429,
+    111
    ],
    [
-    487,
-    103
+    459,
+    107
    ],
    [
-    517,
+    489,
+    102
+   ],
+   [
+    519,
     98
    ],
    [
-    547,
-    96
+    549,
+    95
    ],
    [
     569,
@@ -69,157 +69,157 @@
   ],
   "analBase": [
    [
-    222,
-    266
+    224,
+    254
    ],
    [
-    252,
-    263
+    254,
+    252
    ],
    [
-    282,
-    263
+    284,
+    252
    ],
    [
-    312,
-    262
+    314,
+    251
    ],
    [
-    342,
-    263
+    344,
+    252
    ],
    [
-    372,
-    267
+    374,
+    255
    ],
    [
-    402,
-    271
+    404,
+    260
    ],
    [
-    422,
-    284
+    426,
+    272
    ],
    [
-    452,
-    290
+    456,
+    278
    ],
    [
-    482,
-    297
+    486,
+    285
    ],
    [
-    507,
-    302
+    509,
+    289
    ]
   ]
  },
  "eye": [
   900,
-  183,
-  26
+  177,
+  25
  ],
  "pectoral": {
   "root": [
-   765,
-   217
+   761,
+   209
   ],
   "poly": [
    [
-    765,
-    217
-   ],
-   [
-    777,
-    216
+    761,
+    209
    ],
    [
     773,
-    225
+    207
    ],
    [
-    762,
+    769,
+    217
+   ],
+   [
+    759,
+    229
+   ],
+   [
+    746,
     237
    ],
    [
-    750,
-    245
+    734,
+    242
    ],
    [
-    739,
-    250
+    724,
+    244
    ],
    [
-    728,
-    253
+    714,
+    244
    ],
    [
-    718,
-    253
+    698,
+    242
    ],
    [
-    702,
-    251
+    691,
+    239
    ],
    [
-    692,
-    246
-   ],
-   [
-    684,
-    240
-   ],
-   [
-    676,
-    233
-   ],
-   [
-    668,
-    223
-   ],
-   [
-    662,
-    210
-   ],
-   [
-    657,
-    194
-   ],
-   [
-    658,
-    192
+    680,
+    232
    ],
    [
     672,
+    225
+   ],
+   [
+    664,
+    215
+   ],
+   [
+    659,
+    202
+   ],
+   [
+    654,
+    186
+   ],
+   [
+    655,
     184
    ],
    [
-    688,
-    182
+    668,
+    176
    ],
    [
-    700,
-    183
+    684,
+    174
    ],
    [
-    710,
-    185
+    697,
+    175
    ],
    [
-    720,
+    707,
+    177
+   ],
+   [
+    716,
+    179
+   ],
+   [
+    729,
+    184
+   ],
+   [
+    737,
     187
    ],
    [
-    732,
+    747,
     192
-   ],
-   [
-    741,
-    196
-   ],
-   [
-    752,
-    201
    ]
   ],
   "spread": 0.35
@@ -227,117 +227,117 @@
  "pelvic": {
   "root": [
    710,
-   310
+   296
   ],
-  "len": 84,
+  "len": 81,
   "poly": [
    [
     710,
-    310
-   ],
-   [
-    708,
-    312
+    296
    ],
    [
     692,
-    325
+    311
    ],
    [
-    683,
-    331
+    684,
+    316
    ],
    [
     679,
-    333
+    319
    ],
    [
     676,
-    334
-   ],
-   [
-    673,
-    336
-   ],
-   [
-    671,
-    337
-   ],
-   [
-    668,
-    338
-   ],
-   [
-    664,
-    341
-   ],
-   [
-    655,
-    346
-   ],
-   [
-    638,
-    354
-   ],
-   [
-    638,
-    351
-   ],
-   [
-    646,
-    337
-   ],
-   [
-    649,
-    330
-   ],
-   [
-    651,
-    325
-   ],
-   [
-    653,
     320
    ],
    [
-    655,
-    317
+    673,
+    322
    ],
    [
-    659,
-    315
+    671,
+    323
+   ],
+   [
+    668,
+    324
    ],
    [
     664,
-    315
+    327
+   ],
+   [
+    655,
+    332
+   ],
+   [
+    639,
+    337
+   ],
+   [
+    639,
+    336
+   ],
+   [
+    646,
+    323
+   ],
+   [
+    649,
+    316
+   ],
+   [
+    652,
+    310
+   ],
+   [
+    655,
+    304
+   ],
+   [
+    658,
+    301
+   ],
+   [
+    659,
+    301
+   ],
+   [
+    664,
+    301
    ],
    [
     667,
-    315
+    301
    ],
    [
-    673,
-    315
+    674,
+    300
    ],
    [
-    679,
-    314
+    680,
+    299
    ],
    [
     688,
-    313
+    299
+   ],
+   [
+    704,
+    299
    ]
   ]
  },
- "card_sheet": "C:/Users/nreed/fish-sheets/guppy-b5-gen-s1.169/sheet3card.png",
+ "card_sheet": "C:/Users/nreed/fish-sheets/guppy-b5-gen-s1.091/sheet3card.png",
  "dense": true,
  "eye_iris": [
-  "#82807a",
-  "#4d4435"
+  "#79705f",
+  "#464039"
  ],
- "eye_pupil": "#080707",
- "eye_full": 35,
- "eye_pupil_frac": 0.37,
+ "eye_pupil": "#070707",
+ "eye_full": 34,
+ "eye_pupil_frac": 0.356,
  "width_pct_sl": 20.5,
  "fishshapes": {
   "n": 3,
@@ -369,17 +369,5 @@
    "preset": "clear"
   }
  },
- "fin_opacity_source": "translucent, caudal pigmented, pectoral clear (photo check): wild-type males (like the sheet's spotted body): dorsal and unpatterned fin parts clearly see-through, the coloured caudal patch barely; the sheet's caudal is coloured, so caudal pigmented; pectorals clear. Commons: Trinidadian guppy (Poecilia reticulata) male and female.png, Trinidadian guppy (Poecilia reticulata) male.png, Poecilia reticulata (male).JPG, Golomine (Poecilia reticulata) male en Guadeloupe - 1.jpg",
- "body_clear": {
-  "zones": {
-   "trunk": "translucent",
-   "lowerrear": "translucent",
-   "stalk": "clear"
-  },
-  "inner": {
-   "spine": null,
-   "sac": null
-  }
- },
- "body_clear_source": "trunk translucent, lowerrear translucent, stalk clear (photo check): 2026-11-25; Commons: Trinidadian guppy (Poecilia reticulata) male.png (and the female in it), Poecilia reticulata (male).JPG: the trunk see-through with the spine showing as a line, the stalk clearest, a silver gut sac behind the head; the head solid; pigment spots solid"
+ "fin_opacity_source": "translucent, caudal pigmented, pectoral clear (photo check): wild-type males (like the sheet's spotted body): dorsal and unpatterned fin parts clearly see-through, the coloured caudal patch barely; the sheet's caudal is coloured, so caudal pigmented; pectorals clear. Commons: Trinidadian guppy (Poecilia reticulata) male and female.png, Trinidadian guppy (Poecilia reticulata) male.png, Poecilia reticulata (male).JPG, Golomine (Poecilia reticulata) male en Guadeloupe - 1.jpg"
 }
