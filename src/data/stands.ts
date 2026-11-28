@@ -72,10 +72,11 @@ export function standMatch(p: StandProduct, T: Tank): StandMatch | undefined {
   return p.fits.some(([l, d]) => l >= L - 1 && l <= L + 7 && d >= D - 0.3) ? 'fits' : undefined;
 }
 export const standFits = (p: StandProduct, T: Tank): boolean => !!standMatch(p, T);
-/** The stands for this tank: made for it only, or (all) every stand that holds it, made-for first, then cheapest first. */
-export function standsFor(T: Tank, all = false): StandProduct[] {
+/** The stands for this tank: made for it only, or (all) every stand that holds it, made-for first, then cheapest first. With `load` (the filled tank), a larger stand
+ *  is left out when the tank is over its stated weight limit or gallon rating (Nathan 2026-11-28: "and under the stands weight limit"); a made-for stand stays, with its warning. */
+export function standsFor(T: Tank, all = false, load?: { lb: number; gal: number }): StandProduct[] {
   const m = new Map(STAND_PRODUCTS.filter(p => !p.hidden && !p.kitOnly).map(p => [p, standMatch(p, T)] as const));
-  return [...m].filter(([, k]) => k === 'made' || (all && k === 'fits')).sort(([a, ka], [b, kb]) => +(ka !== 'made') - +(kb !== 'made') || a.priceUsd - b.priceUsd).map(([p]) => p);
+  return [...m].filter(([p, k]) => k === 'made' || (all && k === 'fits' && !(load && standCheck(p, load.lb, load.gal)))).sort(([a, ka], [b, kb]) => +(ka !== 'made') - +(kb !== 'made') || a.priceUsd - b.priceUsd).map(([p]) => p);
 }
 /** The stand a setup has: its picked product while it fits, else the cheapest fitting one of the drawn kind (cabinet or frame) in the drawn finish. undefined = generic estimate. */
 export function standOf(S: Pick<TankSetup, 'tank' | 'stand'>): StandProduct | undefined {
